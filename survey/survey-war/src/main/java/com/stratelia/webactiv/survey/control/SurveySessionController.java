@@ -20,24 +20,13 @@
  */
 package com.stratelia.webactiv.survey.control;
 
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.webactiv.questionResult.control.QuestionResultService;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.servlet.FileUploadUtil;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -46,21 +35,11 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import com.stratelia.webactiv.answer.model.Answer;
+import com.stratelia.webactiv.answer.model.AnswerPK;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.survey.SurveyException;
-import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.answer.model.Answer;
-import com.stratelia.webactiv.answer.model.AnswerPK;
-import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.question.model.QuestionPK;
 import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
@@ -68,7 +47,31 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerSelection;
+import com.stratelia.webactiv.questionResult.control.QuestionResultService;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
+import com.stratelia.webactiv.survey.SurveyException;
+import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
+import org.apache.commons.fileupload.FileItem;
+import org.owasp.encoder.Encode;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.*;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
+import javax.ejb.EJBException;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -82,18 +85,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJBException;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-import org.apache.commons.fileupload.FileItem;
-import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.servlet.HttpRequest;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -719,7 +710,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
     sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
     // param permettant de filtrer les users ayant acces au composant)
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set nom du
+    Pair<String, String> hostComponentName =
+        new Pair<>(getComponentLabel(), null); // set nom du
     // composant pour browsebar
     // (PairObject(nom_composant, lien_vers_composant))
     // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en

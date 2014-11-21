@@ -20,11 +20,9 @@
  */
 package com.stratelia.webactiv.quickinfo.control;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 import javax.ejb.EJBException;
-import javax.xml.bind.JAXBException;
 
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
@@ -49,7 +47,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EJBUtilitaire;
@@ -222,7 +220,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     // setting up browsebar
     sel.setHostSpaceName(getSpaceLabel());
     sel.setHostComponentId(getComponentId());
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
     sel.setNotificationMetaData(UserNotificationHelper.build(new NewsManualUserNotification(
         getNews(newsId, false), getUserDetail())));

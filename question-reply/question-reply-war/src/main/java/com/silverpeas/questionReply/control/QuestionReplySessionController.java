@@ -33,8 +33,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.silverpeas.core.admin.OrganizationController;
 
 import com.silverpeas.importExport.report.ExportReport;
@@ -68,7 +66,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -546,12 +544,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
     String cancelURL = webContext + "/RquestionReply/" + getComponentId()
         + "/ConsultQuestionQuery?questionId=" + getCurrentQuestion().getPK().getId();
-    PairObject hostComponentName = new PairObject(getComponentLabel(), webContext
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), webContext
         + "/RquestionReply/" + getComponentId() + "/Main");
-    PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
+    Pair<String, String> hostPath1 = new Pair<>(getCurrentQuestion().getTitle(),
         "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
         + getCurrentQuestion().getPK().getId());
-    PairObject[] hostPath = {hostPath1};
+    Pair<String, String>[] hostPath = new Pair[]{hostPath1};
 
     gp.resetAll();
 

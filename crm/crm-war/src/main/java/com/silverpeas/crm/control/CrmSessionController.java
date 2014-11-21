@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourcesWrapper;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.WAPrimaryKey;
@@ -422,7 +422,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
     String m_context =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
-    PairObject hostComponentName = new PairObject(getComponentLabel(),
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
         m_context + getComponentUrl() + compoName);
     String hostUrl = m_context + getComponentUrl() + operation;
 

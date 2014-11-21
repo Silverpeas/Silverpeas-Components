@@ -28,7 +28,7 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.GeneralPropertiesManager;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +88,7 @@ public class SubscribersProcessor implements MailingListRoutage {
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
     String hostSpaceName = controller.getSpaceLabel();
-    PairObject hostComponentName = new PairObject(controller
+    Pair<String, String> hostComponentName = new Pair<>(controller
         .getComponentLabel(), m_context + "/Rmailinglist/" + componentId
         + "/activity/" + componentId);
     String hostUrl = m_context + "/Rmailinglist/" + componentId + '/'

@@ -58,7 +58,7 @@ import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
@@ -632,10 +632,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
         "ApplicationURL");
     String hostSpaceName = getSpaceLabel();
-    PairObject hostComponentName = new PairObject(getComponentLabel(),
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
         m_context + "/RwhitePages/" + getComponentId() + "/Main");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("whitePages.usersList"),
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("whitePages.usersList"),
         "/RwhitePages/" + getComponentId() + "/Main");
     String hostUrl = m_context + "/RwhitePages/" + getComponentId()
         + "/createIdentity";

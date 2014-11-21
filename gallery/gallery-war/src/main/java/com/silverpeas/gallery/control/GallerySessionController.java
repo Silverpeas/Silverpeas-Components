@@ -75,7 +75,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
@@ -639,7 +639,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     sel.setHostSpaceName(getSpaceLabel());
     sel.setHostComponentId(getComponentId());
     // selectionPeas (extra param which allow to filter user with right access to application)
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null); // set
     // nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
     // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours
     // présenté en popup => pas de lien sur nom du composant)

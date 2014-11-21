@@ -46,7 +46,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -381,7 +381,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     sel.setMultiSelect(false);
     sel.setPopupMode(false);
     sel.setSetSelectable(false);
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
     sel.setFirstPage(Selection.FIRST_PAGE_SEARCH_ELEMENT);
@@ -411,7 +411,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     sel.setMultiSelect(true);
     sel.setPopupMode(false);
     sel.setSetSelectable(false);
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
     sel.setFirstPage(Selection.FIRST_PAGE_SEARCH_ELEMENT);

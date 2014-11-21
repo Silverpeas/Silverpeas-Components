@@ -42,7 +42,7 @@ import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ResourcesWrapper;
 import org.silverpeas.util.StringUtil;
@@ -392,7 +392,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     sel.setPopupMode(false);
     sel.setSetSelectable(false);
 
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
     sel.setFirstPage(Selection.FIRST_PAGE_DEFAULT);
@@ -456,9 +456,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public String initUPToSelectManager(String pubId) {
-    PairObject hostComponentName = new PairObject(getComponentLabel(), "");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("resourcesManagerSC.SelectManager"), "");
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("resourcesManagerSC.SelectManager"), "");
     String hostUrl = URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId()) +
         "SetManager?PubId=" + pubId;
     String cancelUrl = URLManager.getApplicationURL() + URLManager.getURL("useless",
@@ -494,10 +494,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public String initUserPanelOtherPlanning() {
-    PairObject hostComponentName = new PairObject(getString("resourcesManager.accueil"), URLManager.
+    Pair<String, String> hostComponentName =
+        new Pair<>(getString("resourcesManager.accueil"), URLManager.
         getApplicationURL() + "/RresourcesManager/jsp/Main");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("resourcesManager.otherPlanning"),
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("resourcesManager.otherPlanning"),
         URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) + "Main");
     String hostUrl = URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) +
         "ViewOtherPlanning";

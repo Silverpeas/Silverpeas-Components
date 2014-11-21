@@ -1814,9 +1814,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public String initUPToSelectValidator(String pubId) throws RemoteException {
     String m_context = URLManager.getApplicationURL();
-    PairObject hostComponentName = new PairObject(getComponentLabel(), "");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("kmelia.SelectValidator"), "");
     String hostUrl = m_context + URLManager.getURL("useless", getComponentId())
         + "SetValidator?PubId="
         + pubId;
@@ -1875,7 +1875,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
     // param permettant de filtrer les users ayant acces
     // au composant)
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set nom du
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null); // set nom du
     // composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
     // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté
     // en popup => pas de lien sur nom du composant)
@@ -2449,13 +2449,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public String initUserPanelForTopicProfile(String role, String nodeId) throws RemoteException {
     String m_context = URLManager.getApplicationURL();
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("kmelia.SelectValidator"), "");
 
     Selection sel = getSelection();
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel());
-    sel.setHostComponentName(new PairObject(getComponentLabel(), ""));
+    sel.setHostComponentName(new Pair<>(getComponentLabel(), ""));
     sel.setHostPath(hostPath);
 
     String hostUrl = m_context + URLManager.getURL("useless", getComponentId())

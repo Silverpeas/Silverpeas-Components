@@ -52,7 +52,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -131,9 +131,9 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
-    PairObject hostComponentName = new PairObject(getComponentName(), "");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("scheduleevent.form.selectContributors"), "");
+    Pair<String, String> hostComponentName = new Pair<>(getComponentName(), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("scheduleevent.form.selectContributors"), "");
 
     sel.resetAll();
     sel.setHostSpaceName(this.getString("domainName"));

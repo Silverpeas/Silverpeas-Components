@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.*;
@@ -121,7 +121,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
           + "SaveNotification";
       String cancelUrl = m_context + URLManager.getURL(getSpaceId(), getComponentId())
           + "schedulerParameters";
-      PairObject hostComponentName = new PairObject("", "");
+      Pair<String, String> hostComponentName = new Pair<>("", "");
       String hostSpaceName = getSpaceLabel();
 
       sel.resetAll();

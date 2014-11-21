@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
@@ -162,13 +162,13 @@ public class StatisticRequestHandler {
 
     String m_context =
         GeneralPropertiesManager.getString("ApplicationURL");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(kmelia.getString("kmelia.SelectValidator"), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(kmelia.getString("kmelia.SelectValidator"), "");
 
     Selection sel = kmelia.getSelection();
     sel.resetAll();
     sel.setHostSpaceName(kmelia.getSpaceLabel());
-    sel.setHostComponentName(new PairObject(kmelia.getComponentLabel(), ""));
+    sel.setHostComponentName(new Pair<>(kmelia.getComponentLabel(), ""));
     sel.setHostPath(hostPath);
 
     sel.setMultiSelect(false);

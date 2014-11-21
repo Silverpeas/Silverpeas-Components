@@ -59,7 +59,7 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -714,7 +714,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel());
     sel.setHostComponentId(getComponentId());
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("almanach", "AlmanachSessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId="

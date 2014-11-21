@@ -42,7 +42,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -512,9 +512,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public String initUserPanel() {
     String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
-    PairObject hostComponentName = new PairObject(getComponentLabel(), "");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("UserCreer"), "");
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("UserCreer"), "");
     String hostUrl = m_context + URLManager.getURL(null, getComponentId())
         + "saveUser";
     String cancelUrl = m_context + URLManager.getURL(null, getComponentId())
@@ -573,9 +573,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public String initGroupPanel() {
     String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
-    PairObject hostComponentName = new PairObject(getComponentLabel(), "");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("GroupAdd"), "");
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("GroupAdd"), "");
     String hostUrl = m_context + URLManager.getURL(null, getComponentId())
         + "AddGroup";
     String cancelUrl = m_context + URLManager.getURL(null, getComponentId())

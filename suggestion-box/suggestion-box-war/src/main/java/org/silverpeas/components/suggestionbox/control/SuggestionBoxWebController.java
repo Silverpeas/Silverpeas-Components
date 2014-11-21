@@ -23,11 +23,10 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -44,15 +43,16 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJ
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ws.rs.GET;
@@ -528,7 +528,8 @@ public class SuggestionBoxWebController extends
     // Browsebar settings
     sel.setHostSpaceName(context.getSpaceLabel());
     sel.setHostComponentId(context.getComponentInstanceId());
-    PairObject hostComponentName = new PairObject(context.getComponentInstanceLabel(), null);
+    Pair<String, String> hostComponentName =
+        new Pair<>(context.getComponentInstanceLabel(), null);
     sel.setHostComponentName(hostComponentName);
 
     // The notification

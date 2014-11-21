@@ -46,7 +46,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.xml.bind.JAXBException;
 
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
@@ -92,7 +91,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -152,7 +151,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   public String initUserPanel() throws InfoLetterException {
     String hostSpaceName = getSpaceLabel();
-    PairObject hostComponentName = new PairObject(getComponentLabel(),
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
         URLManager.getApplicationURL() + "/RinfoLetter/" + getComponentId() + "/Main");
     String hostUrl = URLManager.getApplicationURL() + "/RinfoLetter/" + getComponentId()
         + "/RetourPanel";

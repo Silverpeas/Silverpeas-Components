@@ -57,7 +57,7 @@ import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.EncodingException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -254,7 +254,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
     // param permettant de filtrer les users ayant acces
     // au composant)
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set nom du
+    Pair<String, String> hostComponentName =
+        new Pair<>(getComponentLabel(), null); // set nom du
     // composant pour
     // browsebar
     // (PairObject(nom_composant,

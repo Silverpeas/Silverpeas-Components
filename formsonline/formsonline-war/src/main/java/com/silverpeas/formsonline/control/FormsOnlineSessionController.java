@@ -57,7 +57,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -144,7 +144,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     // assure par le composant=> il est donc necessaire d'indiquer
     // a l'UserPanelPeas de ne pas s'occuper de cette fermeture!
     m_Selection.setHostPath(null);
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     m_Selection.setHostComponentName(hostComponentName);
     m_Selection.setHostSpaceName(getSpaceLabel());
     m_Selection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
