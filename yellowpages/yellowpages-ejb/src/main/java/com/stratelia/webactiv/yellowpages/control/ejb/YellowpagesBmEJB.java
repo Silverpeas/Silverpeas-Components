@@ -20,6 +20,19 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -27,11 +40,11 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.contact.control.ContactBm;
 import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -43,23 +56,8 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.dao.GroupDAO;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
-import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 /**
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -518,7 +516,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       Collection<NodePK> nodePKs = nodeBm.getDescendantPKs(nodePK);
       nodePKsWithout12.add(nodePK);
       for (NodePK pk : nodePKs) {
-        if ((!"1".equals(pk.getId())) && (!"2".equals(pk.getId()))) {
+        if (!pk.isTrash() && !pk.isUnclassed()) {
           nodePKsWithout12.add(pk);
         }
       }
@@ -601,22 +599,21 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param contactDetail a ContactDetail
    * @return the id of the new contact
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.util.contact.model.Contact
    * @since 1.0
    */
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public String createContact(ContactDetail contactDetail, NodePK nodePK) {
+  public String createContact(Contact contact, NodePK nodePK) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.createContact()",
-        "root.MSG_GEN_ENTER_METHOD", "contactDetail = " + contactDetail.toString());
+        "root.MSG_GEN_ENTER_METHOD", "contactDetail = " + contact.toString());
     ContactPK contactPK = null;
-    contactDetail.getPK().setComponentName(nodePK.getInstanceId());
-    contactDetail.setCreationDate(new Date());
+    contact.getPK().setComponentName(nodePK.getInstanceId());
 
     try {
       // create the contact
-      contactPK = contactBm.createContact(contactDetail);
-      contactDetail.getPK().setId(contactPK.getId());
+      contactPK = contactBm.createContact(contact);
+      contact.getPK().setId(contactPK.getId());
       // add this contact to the current topic
       addContactToTopic(contactPK, nodePK.getId());
     } catch (Exception re) {
@@ -633,11 +630,11 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * Update a contact (only the header - parameters)
    *
    * @param contactDetail a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.util.contact.model.Contact
    * @since 1.0
    */
   @Override
-  public void updateContact(ContactDetail contactDetail) {
+  public void updateContact(Contact contactDetail) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.updateContact()",
         "root.MSG_GEN_ENTER_METHOD", "contactDetail = " + contactDetail);
     try {
@@ -728,7 +725,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   public void emptyDZByUserId(String instanceId, String userId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.emptyDZByUserId()",
         "root.MSG_GEN_ENTER_METHOD");
-    ContactPK contactPK = new ContactPK(null, null, instanceId);
+    ContactPK contactPK = new ContactPK(null, instanceId);
     try {
       // delete all current user orphan contacts
       contactBm.deleteOrphanContactsByCreatorId(contactPK, userId);
@@ -758,17 +755,16 @@ public class YellowpagesBmEJB implements YellowpagesBm {
         Iterator<NodePK> iterator = fathers.iterator();
         if (iterator.hasNext()) {
           NodePK pk = iterator.next();
-          if ("1".equals(pk.getId())) {
+          if (pk.isTrash()) {
             contactBm.removeFather(contactPK, pk);
           }
         }
       }
       contactBm.addFather(contactPK, fatherPK);
       // reindexe le contact si pas dans la corbeille
-      if (!"1".equals(fatherId)) {
-        createIndex(contactPK);
+      if (!fatherPK.isTrash()) {
+        contactBm.index(contactPK);
       }
-      createIndex(contactPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.addContactToTopic()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_ADD_CONTACT_TO_TOPIC_FAILED", re);
@@ -820,7 +816,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   }
 
   /**
-   * Return all info of a contact and add a reading statistic
+   * Return all info of a contact
    *
    * @param ContactId the id of a contact
    * @param nodeId the id of the node
@@ -828,7 +824,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    */
   @Override
-  public UserCompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId) {
+  public CompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
         "root.MSG_GEN_ENTER_METHOD", "ContactPK = " + contactPK.toString() + ", NodeId=" + nodeId);
     CompleteContact completeContact = null;
@@ -841,6 +837,20 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.getCompleteContactInNode()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACT_FAILED", re);
     }
+    checkContactAsUser(completeContact);
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
+        "root.MSG_GEN_EXIT_METHOD");
+    return completeContact;
+  }
+  
+  @Override
+  public CompleteContact getCompleteContact(ContactPK contactPK) {
+    CompleteContact contact = contactBm.getCompleteContact(contactPK);
+    checkContactAsUser(contact);
+    return contact;
+  }
+  
+  private void checkContactAsUser(CompleteContact completeContact) {
     ContactDetail contactDetail = completeContact.getContactDetail();
     if (contactDetail.getUserId() != null) {
       // contact de type user Silverpeas
@@ -855,16 +865,10 @@ public class YellowpagesBmEJB implements YellowpagesBm {
           sendContactToBasket(contactDetail.getPK());
         }
       } catch (Exception e) {
-        SilverTrace.warn("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
-            "yellowpages.EX_GET_USER_DETAIL_FAILED", "contactPK = " + contactPK.toString(), e);
+        SilverTrace.warn("yellowpages", "YellowpagesBmEJB.checkContactAsUser()",
+            "yellowpages.EX_GET_USER_DETAIL_FAILED", "contactPK = " + contactDetail.getPK().toString(), e);
       }
     }
-    OrganisationController orga = getOrganisationController();
-    UserDetail userDetail = orga.getUserDetail(contactDetail.getCreatorId());
-    UserCompleteContact userCompleteContact = new UserCompleteContact(userDetail, completeContact);
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
-        "root.MSG_GEN_EXIT_METHOD");
-    return userCompleteContact;
   }
 
   /**
@@ -881,7 +885,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     List<ContactPK> contactPKs = new ArrayList<ContactPK>();
     List<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
     for (String contactId : contactIds) {
-      ContactPK contactPK = new ContactPK(contactId, null, instanceId);
+      ContactPK contactPK = new ContactPK(contactId, instanceId);
       contactPKs.add(contactPK);
     }
     try {
@@ -947,39 +951,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     }
   }
 
-  private void createIndex(ContactPK contactPK) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "contactPK = " + contactPK.toString());
-    try {
-      ContactDetail contactDetail = contactBm.getDetail(contactPK);
-
-      if (contactDetail != null) {
-        // Index the Contact Header
-        FullIndexEntry indexEntry = new FullIndexEntry(contactPK.getComponentName(), "Contact",
-            contactDetail.getPK().getId());
-        indexEntry.setTitle(contactDetail.getFirstName() + " " + contactDetail.getLastName());
-        indexEntry.setLang("fr");
-        indexEntry.setCreationDate(DateUtil.date2SQLDate(contactDetail.getCreationDate()));
-        indexEntry.setCreationUser(contactDetail.getCreatorId());
-        // Index the Contact Content
-        IndexEngineProxy.addIndexEntry(indexEntry);
-      }
-    } catch (Exception e) {
-      SilverTrace.warn("yellowpages", "YellowpagesBmEJB.createIndex()",
-          "root.EX_INDEX_FAILED", "contactPK = " + contactPK.toString(), e);
-    }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.createIndex()",
-        "root.MSG_GEN_EXIT_METHOD");
-  }
-
   private void deleteIndex(ContactPK contactPK) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "contactPK = " + contactPK.toString());
-    IndexEntryPK indexEntry = new IndexEntryPK(contactPK.getComponentName(),
-        "Contact", contactPK.getId());
-    IndexEngineProxy.removeIndexEntry(indexEntry);
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteIndex()",
-        "root.MSG_GEN_EXIT_METHOD");
+    contactBm.deleteIndex(contactPK);
   }
 
   @Override
@@ -1065,5 +1038,34 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       DBUtil.close(con);
     }
     return result;
+  }
+  
+  public void index(String instanceId) {
+    indexFolder(new NodePK(NodePK.ROOT_NODE_ID, instanceId));
+  }
+  
+  private void indexFolder(NodePK pk) {
+    NodeDetail node = nodeBm.getDetail(pk);
+    if (!pk.isRoot() && !pk.isTrash() && !pk.isUnclassed()) {
+      nodeBm.createIndex(node);
+    }
+
+    if (!pk.isTrash() && !pk.isUnclassed()) {
+      // treatment of the publications of current topic
+      indexContacts(pk);
+  
+      // treatment of the nodes of current topic
+      Collection<NodeDetail> subTopics = node.getChildrenDetails();
+      for (NodeDetail subTopic : subTopics) {
+        indexFolder(subTopic.getNodePK());
+      }
+    }
+  }
+
+  private void indexContacts(NodePK pk) {
+    Collection<ContactDetail> contacts = contactBm.getDetailsByFatherPK(pk);
+    for (ContactDetail contact : contacts) {
+      contactBm.index(contact.getPK());
+    }
   }
 }
