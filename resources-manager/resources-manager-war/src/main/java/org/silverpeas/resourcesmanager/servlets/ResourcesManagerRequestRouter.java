@@ -29,18 +29,29 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.resourcemanager.model.Category;
+import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.util.ResourceUtil;
+import org.silverpeas.resourcesmanager.control.ResourceManagerDataViewType;
+import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.StringUtil;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,18 +61,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.util.ResourceUtil;
-import org.silverpeas.resourcesmanager.control.ResourceManagerDataViewType;
-import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.GlobalContext;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
@@ -366,8 +365,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           }
 
           // Resources that are not available are removed from the list of resource reservation
-          if (CollectionUtils.isNotEmpty(resourcesOfReservation) && CollectionUtils.isNotEmpty(
-              unavailableReservationResources)) {
+          if (resourcesOfReservation != null && !resourcesOfReservation.isEmpty() &&
+              unavailableReservationResources != null &&
+              !unavailableReservationResources.isEmpty()) {
             resourcesOfReservation.removeAll(unavailableReservationResources);
           }
         }

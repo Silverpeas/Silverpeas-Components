@@ -35,7 +35,6 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.sun.jersey.api.view.Viewable;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -44,8 +43,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.media.Definition;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.ThumbnailPeriod;
 
 import javax.ws.rs.PathParam;
@@ -53,11 +52,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Collection;
 import java.util.EnumSet;
 
 import static com.silverpeas.gallery.constant.GalleryResourceURIs.*;
@@ -324,9 +323,13 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @return
    */
   protected boolean isUserPrivileged() {
-    return !CollectionUtils.intersection(EnumSet
-        .of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
-            SilverpeasRole.privilegedUser), getUserRoles()).isEmpty();
+    Collection<SilverpeasRole> userRoles = getUserRoles();
+    return EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
+        SilverpeasRole.privilegedUser)
+        .stream()
+        .filter(role -> userRoles.contains(role))
+        .findFirst()
+        .isPresent();
   }
 
   /**

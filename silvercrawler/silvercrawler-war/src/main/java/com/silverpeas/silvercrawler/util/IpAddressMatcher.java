@@ -1,6 +1,6 @@
 package com.silverpeas.silvercrawler.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
