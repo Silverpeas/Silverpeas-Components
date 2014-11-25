@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-La publication <b>$publicationName$</b> a été mise à jour. 
+<b>$publicationName$</b> a été publié.
 
 Emplacement : $path$
 

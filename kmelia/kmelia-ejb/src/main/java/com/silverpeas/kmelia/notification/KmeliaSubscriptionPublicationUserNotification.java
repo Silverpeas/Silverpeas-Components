@@ -108,9 +108,12 @@ public class KmeliaSubscriptionPublicationUserNotification
   protected String getFileName() {
     if (NotifAction.CREATE.equals(getAction())) {
       return "notificationSubscriptionCreate";
+    } else if(NotifAction.UPDATE.equals(getAction())) {
+      return "notificationSubscriptionUpdate";
+    } else {
+      // Draft out || Validate || ALIAS
+      return "notificationSubscriptionOtherAction";
     }
-    // Update
-    return "notificationSubscriptionUpdate";
   }
 
   @Override

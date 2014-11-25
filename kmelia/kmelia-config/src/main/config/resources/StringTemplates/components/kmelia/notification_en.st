@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-$senderName$  has created a new document <b>$publicationName$</b> which is now available here : $path$
+$senderName$  has created a new publication <b>$publicationName$</b> which is now available here : $path$
 
 $if(senderMessage)$
 <div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;">" $senderMessage$ " </div>
