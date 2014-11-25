@@ -100,7 +100,17 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public NewsByStatus getQuickInfos() {
-    return getService().getAllNewsByStatus(getComponentId(), getUserId());
+    NewsByStatus newsByStatus = getService().getAllNewsByStatus(getComponentId(), getUserId());
+    // removing drafts which have never been saved by the contributor
+    Iterator<News> drafts = newsByStatus.getDrafts().iterator();
+    while (drafts.hasNext()) {
+      News draft = drafts.next();
+      if (!draft.hasBeenModified()) {
+        getService().removeNews(draft.getId());
+        drafts.remove();
+      }
+    }
+    return newsByStatus;
   }
 
   public List<News> getVisibleQuickInfos() {
@@ -159,6 +169,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setImportant(updatedNews.isImportant());
     news.setTicker(updatedNews.isTicker());
     news.setMandatory(updatedNews.isMandatory());
+    news.markAsModified();
     if (forcePublish) {
       news.setPublished();
     }
