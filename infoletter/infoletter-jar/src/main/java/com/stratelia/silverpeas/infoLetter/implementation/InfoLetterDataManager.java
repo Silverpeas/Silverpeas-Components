@@ -31,9 +31,6 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.control.ByteArrayDataSource;
@@ -41,7 +38,6 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -50,37 +46,21 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
-
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -93,6 +73,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Class declaration
@@ -483,134 +472,9 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   private String getSmtpPwd() {
     return smtpSettings.getString("SMTPPwd");
   }
-  
-  private List<SimpleDocument> getListFilesInContent(String message) {
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.getListFilesInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText = " + message);
-       
-    List<SimpleDocument> listAttachedFiles = new ArrayList<SimpleDocument>();
-    
-    String fileUrl = URLManager.getApplicationURL()+"/attached_file/";
-    int fileUrlLength = fileUrl.length();
-    String attachmentIdText = "/attachmentId/";
-    int attachmentIdTextLength = attachmentIdText.length();
-    
-    while (message.contains(fileUrl)) {
-      int placeFileUrl = message.indexOf(fileUrl);
-      String end = message.substring(placeFileUrl+fileUrlLength);
-      int placeAttachmentId = end.indexOf(attachmentIdText);
-      end = end.substring(placeAttachmentId+attachmentIdTextLength);
-      int placeSlash = end.indexOf("/");
-      String idFile = end.substring(0, placeSlash);
-      
-      SimpleDocumentPK sdPK = new SimpleDocumentPK(idFile);
-      SimpleDocument attachedFile = AttachmentServiceFactory.getAttachmentService().
-          searchDocumentById(sdPK, null);
-      listAttachedFiles.add(attachedFile);
-      
-      message = end.substring(placeSlash);
-    }
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.getListFilesInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "nb attached files = "+listAttachedFiles.size());
-    return listAttachedFiles;
-  }
 
-  
-  private GalleryBm getGalleryBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
-  }
-
-  private List<PhotoDetail> getListImagesFromGalleryInContent(String message) {
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.getListImagesFromGalleryInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText = " + message);
-       
-    List<PhotoDetail> listImagesFromGallery = new ArrayList<PhotoDetail>();
-    
-    String imageUrl = URLManager.getApplicationURL()+"/GalleryInWysiwyg/";
-    int imageUrlLength = imageUrl.length();
-    String imageIdText = "ImageId=";
-    int imageIdTextLength = imageIdText.length();
-    String componentIdText = "ComponentId=";
-    int componentIdTextLength = componentIdText.length();
-    
-    while (message.contains(imageUrl)) {
-      int placeFileUrl = message.indexOf(imageUrl);
-      String end = message.substring(placeFileUrl+imageUrlLength);
-      int placeImageId = end.indexOf(imageIdText);
-      end = end.substring(placeImageId+imageIdTextLength);
-      int placeAmp = end.indexOf("&");
-      String imageId = end.substring(0, placeAmp);
-      end = end.substring(placeAmp+1);
-      int placeComponentId = end.indexOf(componentIdText);
-      end = end.substring(placeComponentId+componentIdTextLength);
-      placeAmp = end.indexOf("&");
-      String componentId = end.substring(0, placeAmp);
-      
-      PhotoDetail image = getGalleryBm().getPhoto(
-          new PhotoPK(imageId, componentId));
-      listImagesFromGallery.add(image);
-      
-      message = end.substring(placeAmp+1);
-    }
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.getListImagesFromGalleryInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "nb images from Gallery attached files = "+listImagesFromGallery.size());
-    return listImagesFromGallery;
-  }
-
-  private String replacePathFilesWithCidInContent(String message) {
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.replacePathFilesWithCidInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText before = " + message);
-    
-    String fileUrl = URLManager.getApplicationURL()+"/attached_file/";
-    int fileUrlLength = fileUrl.length();
-    String nameText = "/name/";
-    int nameTextLength = nameText.length();
-    
-    while (message.contains(fileUrl)) {
-      int placeFileUrl = message.indexOf(fileUrl);
-      String begin = message.substring(0, placeFileUrl);
-      String end = message.substring(placeFileUrl+fileUrlLength);
-      int placeQuote = end.indexOf("\"");
-      String pathFileUrl = end.substring(0, placeQuote);
-      end = end.substring(placeQuote);
-      int placeNameFile = pathFileUrl.indexOf(nameText);
-      
-      String nameFile = "cid:"+pathFileUrl.substring(placeNameFile+nameTextLength);
-      
-      message = begin + nameFile + end;
-    }
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.replacePathFilesWithCidInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText after = " + message);
-    return message;
-  }
-  
-  private String replacePathImagesFromGalleryWithCidInContent(String message, List<PhotoDetail> listAttachedImagesFromGallery) {
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.replacePathImagesFromGalleryWithCidInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText before = " + message);
-    
-    String imageUrl = URLManager.getApplicationURL()+"/GalleryInWysiwyg/";
-    int imageUrlLength = imageUrl.length();
-    int indexImages = 0;
-    
-    while (message.contains(imageUrl)) {
-      int placeFileUrl = message.indexOf(imageUrl);
-      String begin = message.substring(0, placeFileUrl);
-      String end = message.substring(placeFileUrl+imageUrlLength);
-      int placeQuote = end.indexOf("\"");
-      end = end.substring(placeQuote);
-      
-      PhotoDetail image = listAttachedImagesFromGallery.get(indexImages);
-      String nameFile = "cid:"+image.getImageName();
-      
-      message = begin + nameFile + end;
-      indexImages ++;
-    }
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.replacePathImagesFromGalleryWithCidInContent()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText after = " + message);
-    return message;
-  }
-  
-  private Multipart attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles) throws MessagingException {
+  private Multipart attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
+      throws MessagingException {
     for (SimpleDocument attachment : listAttachedFiles) {
       // create the second message part
       MimeBodyPart mbp = new MimeBodyPart();
@@ -620,79 +484,48 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       mbp.setDataHandler(new DataHandler(fds));
       // For Displaying images in the mail
       mbp.setFileName(attachment.getFilename());
-      mbp.setHeader("Content-ID", "<"+attachment.getFilename()+">");
+      mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
       SilverTrace.info("infoLetter", "InfoLetterDataManager.attachFilesToMail()",
-          "root.MSG_GEN_PARAM_VALUE", "Content-ID= " +mbp.getContentID());
+          "root.MSG_GEN_PARAM_VALUE", "Content-ID= " + mbp.getContentID());
 
       // create the Multipart and its parts to it
       mp.addBodyPart(mbp);
     }
     return mp;
   }
-  
-  private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart) throws IOException, MessagingException {
-    Multipart mp = new MimeMultipart(mimeMultipart);
-   
+
+  private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart)
+      throws Exception {
+    Multipart multipart = new MimeMultipart(mimeMultipart);
+
     // create and fill the first message part
     ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), ilp.getComponentInstanceId());
-    List<SimpleDocument> contents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg,
-        I18NHelper.defaultLanguage);
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    for (SimpleDocument content : contents) {
-      AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, content.getPk(),
-          content.getLanguage());
-    }
-    String wysiwygContent = IOUtils.toString(buffer.toByteArray(), CharEncoding.UTF_8);
-    
-    // Parse wysiwyg content to extract list of files to attach to the E-mail
-    List<SimpleDocument> listAttachedFiles = getListFilesInContent(wysiwygContent);
-    
-    // Parse wysiwyg content to replace pathFile by cid
-    String parsedFilesWysiwygContent = replacePathFilesWithCidInContent(wysiwygContent);
-    
-    // Parse wysiwyg content to extract list of images from Gallery, to attach to the E-mail
-    List<PhotoDetail> listAttachedImagesFromGallery = getListImagesFromGalleryInContent(parsedFilesWysiwygContent);
-    
-    // Parse wysiwyg content to replace images from gallery by cid
-    String finalParsedWysiwygContent = replacePathImagesFromGalleryWithCidInContent(parsedFilesWysiwygContent, listAttachedImagesFromGallery);
-    
-    MimeBodyPart mbp1 = new MimeBodyPart();
-    mbp1.setDataHandler(new DataHandler(new ByteArrayDataSource(finalParsedWysiwygContent,
-        MimeTypes.HTML_MIME_TYPE)));
-    IOUtils.closeQuietly(buffer);
-    mp.addBodyPart(mbp1);
-    
-    // Attach Files to E-mail
-    mp = attachFilesToMail(mp, listAttachedFiles);
 
-    // Attach Images from Gallery to E-mail
-    for (PhotoDetail image : listAttachedImagesFromGallery) {
-      // create the second message part
-      MimeBodyPart mbp2 = new MimeBodyPart();
+    // Load and transform WYSIWYG content for mailing
+    String wysiwygContent =
+        WysiwygController.load(foreignKey.getInstanceId(), foreignKey.getId(), null);
+    WysiwygContentTransformer.MailResult wysiwygMailTransformResult =
+        WysiwygContentTransformer.on(wysiwygContent).toMailContent();
 
-      // attach the file to the message
-      String imageName = image.getImageName();
-      String imagePath = FileRepositoryManager.getAbsolutePath(image.getPhotoPK().getInstanceId()) + "image"
-          + image.getId() + "/" + imageName;
-      FileDataSource fds = new FileDataSource(imagePath);
-      mbp2.setDataHandler(new DataHandler(fds));
-      mbp2.setFileName(imageName);
-      // For Displaying images in the mail
-      mbp2.setHeader("Content-ID", "<"+imageName+">");
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.createContentMessageMail()",
-          "root.MSG_GEN_PARAM_VALUE", "Content-ID= " + mbp2.getContentID());
+    // Prepare Mail parts
+    // First the WYSIWYG
+    MimeBodyPart wysiwygBodyPart = new MimeBodyPart();
+    wysiwygBodyPart.setDataHandler(new DataHandler(
+        new ByteArrayDataSource(wysiwygMailTransformResult.getWysiwygContent(),
+            MimeTypes.HTML_MIME_TYPE)));
+    multipart.addBodyPart(wysiwygBodyPart);
 
-      // create the Multipart and its parts to it
-      mp.addBodyPart(mbp2);
-    }
+    // Then all the referenced media content
+    wysiwygMailTransformResult.applyOn(multipart);
     
-    // Attach Files from attached files tab
-    List<SimpleDocument> listAttachedFilesFromTab = AttachmentServiceFactory.getAttachmentService().
-                  listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
-    mp = attachFilesToMail(mp, listAttachedFilesFromTab);
+    // Finally explicit attached files
+    List<SimpleDocument> listAttachedFilesFromTab =
+        AttachmentServiceProvider.getAttachmentService().
+            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
+    multipart = attachFilesToMail(multipart, listAttachedFilesFromTab);
 
-    return mp;
+    // The completed multipart mail to send
+    return multipart;
   }
   
   @Override

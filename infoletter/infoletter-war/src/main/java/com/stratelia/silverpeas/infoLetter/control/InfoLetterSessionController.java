@@ -21,26 +21,6 @@
 package com.stratelia.silverpeas.infoLetter.control;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -48,14 +28,6 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.csv.CSVReader;
-import com.silverpeas.util.csv.CSVWriter;
-import com.silverpeas.util.csv.Variant;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.InfoLetterPeasTrappedException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -74,19 +46,43 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.csv.CSVReader;
+import org.silverpeas.util.csv.CSVWriter;
+import org.silverpeas.util.csv.Variant;
+import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilTrappedException;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -589,7 +585,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /**
    * Export Csv emails
    *
-   * @throws FileNotFoundException
    * @throws IOException
    * @throws InfoLetterException
    * @return boolean
