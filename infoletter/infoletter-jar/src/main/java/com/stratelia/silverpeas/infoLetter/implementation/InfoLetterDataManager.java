@@ -32,9 +32,11 @@ import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
+import com.stratelia.silverpeas.infoLetter.control.ByteArrayDataSource;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
@@ -50,18 +52,36 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Class declaration
@@ -72,6 +92,13 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Statiques
   private final static String TableExternalEmails = "SC_IL_ExtSus";
+  
+  /**
+   * the tuning parameters
+   */
+  private static final ResourceLocator smtpSettings = new ResourceLocator(
+      "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
+  
   // Membres
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -420,5 +447,171 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
     return con;
+  }
+  
+  private String getSmtpHost() {
+    return smtpSettings.getString("SMTPServer");
+  }
+
+  private boolean isSmtpAuthentication() {
+    return smtpSettings.getBoolean("SMTPAuthentication", false);
+  }
+
+  private boolean isSmtpDebug() {
+    return smtpSettings.getBoolean("SMTPDebug", false);
+  }
+
+  private int getSmtpPort() {
+    return Integer.parseInt(smtpSettings.getString("SMTPPort"));
+  }
+
+  private String getSmtpUser() {
+    return smtpSettings.getString("SMTPUser");
+  }
+
+  private String getSmtpPwd() {
+    return smtpSettings.getString("SMTPPwd");
+  }
+
+  private Multipart attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
+      throws MessagingException {
+    for (SimpleDocument attachment : listAttachedFiles) {
+      // create the second message part
+      MimeBodyPart mbp = new MimeBodyPart();
+
+      // attach the file to the message
+      FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
+      mbp.setDataHandler(new DataHandler(fds));
+      // For Displaying images in the mail
+      mbp.setFileName(attachment.getFilename());
+      mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.attachFilesToMail()",
+          "root.MSG_GEN_PARAM_VALUE", "Content-ID= " + mbp.getContentID());
+
+      // create the Multipart and its parts to it
+      mp.addBodyPart(mbp);
+    }
+    return mp;
+  }
+
+  private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart)
+      throws Exception {
+    Multipart multipart = new MimeMultipart(mimeMultipart);
+
+    // create and fill the first message part
+    ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), ilp.getComponentInstanceId());
+
+    // Load and transform WYSIWYG content for mailing
+    String wysiwygContent =
+        WysiwygController.load(foreignKey.getInstanceId(), foreignKey.getId(), null);
+    WysiwygContentTransformer.MailResult wysiwygMailTransformResult =
+        WysiwygContentTransformer.on(wysiwygContent).toMailContent();
+
+    // Prepare Mail parts
+    // First the WYSIWYG
+    MimeBodyPart wysiwygBodyPart = new MimeBodyPart();
+    wysiwygBodyPart.setDataHandler(new DataHandler(
+        new ByteArrayDataSource(wysiwygMailTransformResult.getWysiwygContent(),
+            MimeTypes.HTML_MIME_TYPE)));
+    multipart.addBodyPart(wysiwygBodyPart);
+
+    // Then all the referenced media content
+    wysiwygMailTransformResult.applyOn(multipart);
+    
+    // Finally explicit attached files
+    List<SimpleDocument> listAttachedFilesFromTab = AttachmentServiceFactory.getAttachmentService().
+                  listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
+    multipart = attachFilesToMail(multipart, listAttachedFilesFromTab);
+
+    // The completed multipart mail to send
+    return multipart;
+  }
+  
+  @Override
+  public List<String> notifyExternals(InfoLetterPublicationPdC ilp, String server, String mimeMultipart, 
+      List<String> listEmailDest, String subject, String emailFrom) {
+    // Retrieve SMTP server information
+    String host = getSmtpHost();
+    boolean isSmtpAuthentication = isSmtpAuthentication();
+    int smtpPort = getSmtpPort();
+    String smtpUser = getSmtpUser();
+    String smtpPwd = getSmtpPwd();
+    boolean isSmtpDebug = isSmtpDebug();
+
+    List<String> emailErrors = new ArrayList<String>();
+
+    if (listEmailDest.size() > 0) {
+      // create some properties and get the default Session
+      Properties props = System.getProperties();
+      props.put("mail.smtp.host", host);
+      props.put("mail.smtp.auth", String.valueOf(isSmtpAuthentication));
+
+      Session session = Session.getInstance(props, null);
+      session.setDebug(isSmtpDebug); // print on the console all SMTP messages.
+
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+          "root.MSG_GEN_PARAM_VALUE", "from = " + emailFrom);
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+          "root.MSG_GEN_PARAM_VALUE", "host= " + host);
+
+      try {
+        // create a message
+        MimeMessage msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(emailFrom));
+        msg.setSubject(subject, CharEncoding.UTF_8);
+        
+        // create the Multipart and its parts to it
+        Multipart mp = createContentMessageMail(ilp, mimeMultipart);
+
+        // add the Multipart to the message
+        msg.setContent(mp);
+        // set the Date: header
+        msg.setSentDate(new Date());
+        
+        // create a Transport connection (TCP)
+        Transport transport = session.getTransport("smtp");
+
+        InternetAddress[] address = new InternetAddress[1];
+        for (String email : listEmailDest) {
+          try {
+            address[0] = new InternetAddress(email);
+            msg.setRecipients(Message.RecipientType.TO, address);
+            // add Transport Listener to the transport connection.
+            if (isSmtpAuthentication) {
+              SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort + " m_User="
+                  + smtpUser);
+              transport.connect(host, smtpPort, smtpUser, smtpPwd);
+              msg.saveChanges();
+            } else {
+              transport.connect();
+            }
+            transport.sendMessage(msg, address);
+          } catch (Exception ex) {
+            SilverTrace.error("infoLetter", "InfoLetterDataManager.notifyExternals()",
+                "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
+                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
+            emailErrors.add(email);
+          } finally {
+            if (transport != null) {
+              try {
+                transport.close();
+              } catch (Exception e) {
+                SilverTrace.error("infoLetter", "InfoLetterDataManager.notifyExternals()",
+                    "root.EX_IGNORED", "ClosingTransport", e);
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        throw new InfoLetterException(
+            "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
+            SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      }
+    }
+    return emailErrors;
   }
 }
