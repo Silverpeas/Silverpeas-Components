@@ -995,7 +995,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   private NodeService getNodeService() {
-    return NodeService.getInstance();
+    return NodeService.get();
   }
 
   /**

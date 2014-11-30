@@ -45,7 +45,7 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
     super(parentElementLister);
   }
 
-  private NodeService nodeService = NodeService.getInstance();
+  private NodeService nodeService = NodeService.get();
   private PublicationBm publicationBm;
 
   public NodeService getNodeService() {
