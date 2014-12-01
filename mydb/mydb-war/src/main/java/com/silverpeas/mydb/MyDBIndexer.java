@@ -27,6 +27,7 @@ package com.silverpeas.mydb;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -34,6 +35,7 @@ import javax.inject.Singleton;
  * @author Antoine HEDIN
  */
 @Singleton
+@Named("MyDBComponentIndexation")
 public class MyDBIndexer implements ComponentIndexation {
 
   @Override

@@ -28,9 +28,11 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("ClassifiedsComponentIndexation")
 public class ClassifiedsIndexer implements ComponentIndexation {
 
   @Inject

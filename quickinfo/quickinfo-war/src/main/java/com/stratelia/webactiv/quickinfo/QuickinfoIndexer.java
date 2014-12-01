@@ -31,10 +31,12 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 
 @Singleton
+@Named("QuickinfoComponentIndexation")
 public class QuickinfoIndexer implements ComponentIndexation {
 
   @Inject

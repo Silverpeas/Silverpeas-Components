@@ -24,9 +24,11 @@ package com.silverpeas.components.organizationchart;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("OrganizationChartComponentIndexation")
 public class OrganizationChartIndexer implements ComponentIndexation {
 
   @Override

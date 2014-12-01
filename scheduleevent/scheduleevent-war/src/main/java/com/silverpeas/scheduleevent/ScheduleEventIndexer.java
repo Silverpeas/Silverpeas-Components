@@ -27,9 +27,11 @@ package com.silverpeas.scheduleevent;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("ScheduleEventComponentIndexation")
 public class ScheduleEventIndexer implements ComponentIndexation {
 
   @Override

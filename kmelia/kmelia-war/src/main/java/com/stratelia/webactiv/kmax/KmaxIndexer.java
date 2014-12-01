@@ -33,10 +33,12 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.AttachmentService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 
 @Singleton
+@Named("KmaxComponentIndexation")
 public class KmaxIndexer implements ComponentIndexation {
 
   @Inject

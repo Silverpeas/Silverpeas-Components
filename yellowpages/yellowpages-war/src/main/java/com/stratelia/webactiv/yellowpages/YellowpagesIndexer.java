@@ -26,9 +26,11 @@ import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("YellowpagesComponentIndexation")
 public class YellowpagesIndexer implements ComponentIndexation {
 
   @Inject

@@ -26,6 +26,7 @@ package com.silverpeas.hyperlink;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -33,6 +34,7 @@ import javax.inject.Singleton;
  * @author ehugonnet
  */
 @Singleton
+@Named("HyperlinkComponentIndexation")
 public class HyperlinkIndexer implements ComponentIndexation {
 
   @Override

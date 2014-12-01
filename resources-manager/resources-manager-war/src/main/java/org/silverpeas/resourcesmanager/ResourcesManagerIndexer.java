@@ -26,9 +26,11 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.resourcemanager.control.ResourcesManager;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("ResourceManagerComponentIndexation")
 public class ResourcesManagerIndexer implements ComponentIndexation {
 
   @Inject

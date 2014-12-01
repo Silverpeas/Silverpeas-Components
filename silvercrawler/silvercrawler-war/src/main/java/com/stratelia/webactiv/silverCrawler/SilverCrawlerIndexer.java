@@ -26,9 +26,11 @@ package com.stratelia.webactiv.silverCrawler;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("SilverCrawlerComponentIndexation")
 public class SilverCrawlerIndexer implements ComponentIndexation {
 
   @Override

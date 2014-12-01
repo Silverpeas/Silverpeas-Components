@@ -33,12 +33,14 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
  * @author neysseri
  */
 @Singleton
+@Named("ProjectManagerComponentIndexation")
 public class ProjectManagerIndexer implements ComponentIndexation {
 
   @Inject

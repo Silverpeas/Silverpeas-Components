@@ -30,10 +30,12 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 
 @Singleton
+@Named("MailinglistComponentIndexation")
 public class MailinglistIndexer implements ComponentIndexation {
 
   @Inject

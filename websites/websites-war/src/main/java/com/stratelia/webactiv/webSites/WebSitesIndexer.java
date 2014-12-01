@@ -29,9 +29,11 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("WebSitesComponentIndexation")
 public class WebSitesIndexer implements ComponentIndexation {
 
   @Inject

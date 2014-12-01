@@ -26,9 +26,11 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("GalleryComponentIndexation")
 public class GalleryIndexer implements ComponentIndexation {
 
   @Inject

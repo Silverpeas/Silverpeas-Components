@@ -33,10 +33,12 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.attachment.AttachmentService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 
 @Singleton
+@Named("AlmanachComponentIndexation")
 public class AlmanachIndexer implements ComponentIndexation {
 
   @Inject

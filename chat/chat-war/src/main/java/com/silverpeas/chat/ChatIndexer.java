@@ -31,12 +31,14 @@ package com.silverpeas.chat;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
  * @author neysseri
  */
 @Singleton
+@Named("ChatComponentIndexation")
 public class ChatIndexer implements ComponentIndexation {
 
   @Override

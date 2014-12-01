@@ -31,10 +31,12 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 
 @Singleton
+@Named("QuizzComponentIndexation")
 public class QuizzIndexer implements ComponentIndexation {
 
   @Inject

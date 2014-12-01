@@ -47,6 +47,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Date;
 
@@ -54,6 +55,7 @@ import java.util.Date;
  * @author sdevolder
  */
 @Singleton
+@Named("WebPagesComponentIndexation")
 public class WebPagesIndexer implements ComponentIndexation {
 
   private static String XML_TEMPLATE_PARAM = "xmlTemplate";

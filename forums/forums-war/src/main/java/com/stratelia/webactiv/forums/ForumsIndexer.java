@@ -32,11 +32,13 @@ import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
 @Singleton
+@Named("ForumsComponentIndexation")
 public class ForumsIndexer implements ComponentIndexation {
 
   @Inject

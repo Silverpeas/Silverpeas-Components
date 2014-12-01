@@ -31,6 +31,7 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 
@@ -39,6 +40,7 @@ import java.util.Collection;
  * @author ehugonnet
  */
 @Singleton
+@Named("QuestionReplyComponentIndexation")
 public class QuestionReplyIndexer implements ComponentIndexation {
 
   private final QuestionIndexer questionIndexer = new QuestionIndexer();

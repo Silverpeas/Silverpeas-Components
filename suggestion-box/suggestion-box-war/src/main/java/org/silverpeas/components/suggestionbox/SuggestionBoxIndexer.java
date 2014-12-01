@@ -30,9 +30,11 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("SuggestionBoxComponentIndexation")
 public class SuggestionBoxIndexer implements ComponentIndexation {
 
   @Inject

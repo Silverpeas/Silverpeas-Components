@@ -28,9 +28,11 @@ package com.silverpeas.dataWarning;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("DataWarningComponentIndexation")
 public class DataWarningIndexer implements ComponentIndexation {
 
     @Override

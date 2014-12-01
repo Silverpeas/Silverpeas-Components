@@ -44,6 +44,8 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,6 +54,8 @@ import java.util.List;
 /**
  * @author neysseri
  */
+@Singleton
+@Named("WhitePagesComponentIndexation")
 public class WhitePagesIndexer implements ComponentIndexation {
 
   @Inject

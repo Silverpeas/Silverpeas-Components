@@ -31,6 +31,7 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 
@@ -39,6 +40,7 @@ import java.util.Collection;
  *
  */
 @Singleton
+@Named("SurveyComponentIndexation")
 public class SurveyIndexer implements ComponentIndexation {
 
   @Inject

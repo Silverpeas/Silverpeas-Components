@@ -29,9 +29,11 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("KmeliaComponentIndexation")
 public class KmeliaIndexer implements ComponentIndexation {
 
   @Inject
