@@ -23,8 +23,8 @@
  */
 package org.silverpeas.resourcesmanager.control;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * It defines the type of view of data displayed in resource manager calendar.

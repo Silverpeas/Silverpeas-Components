@@ -62,6 +62,10 @@
       <artifactId>sanselan</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>

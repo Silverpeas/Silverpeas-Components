@@ -25,7 +25,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.almanach</groupId>
-      <artifactId>almanach-jar</artifactId>
+      <artifactId>almanach-ejb</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

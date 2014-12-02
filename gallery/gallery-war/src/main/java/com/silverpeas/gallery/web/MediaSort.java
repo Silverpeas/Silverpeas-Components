@@ -27,8 +27,8 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaLogicalComparator;
 import org.apache.commons.collections.set.UnmodifiableSet;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Collections;
 import java.util.EnumSet;

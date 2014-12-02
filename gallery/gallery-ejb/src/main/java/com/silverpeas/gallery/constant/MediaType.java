@@ -25,8 +25,8 @@ package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.model.Media;
 import org.silverpeas.util.StringUtil;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author: Yohann Chastagnier
