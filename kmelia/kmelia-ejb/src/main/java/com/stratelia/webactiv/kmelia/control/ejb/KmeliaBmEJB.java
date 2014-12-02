@@ -85,7 +85,7 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.NodeTree;
@@ -125,7 +125,6 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -162,8 +161,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
   @Inject
   private NodeService nodeService;
-  @EJB
-  private PublicationBm publicationBm;
+  @Inject
+  private PublicationService publicationBm;
   @Inject
   private StatisticService statisticService;
   @Inject

@@ -29,13 +29,12 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -52,7 +51,7 @@ import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.g
 @Named("statisticService")
 public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.StatisticService {
 
-  private PublicationBm publicationBm;
+  private PublicationService publicationBm;
   @Inject
   private NodeService nodeService;
   @Inject
@@ -237,11 +236,10 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
         .before(endTime));
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
+        publicationBm = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",

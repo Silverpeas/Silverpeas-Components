@@ -20,21 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ParseException;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
@@ -43,22 +28,33 @@ import com.silverpeas.form.fileitem.InternalFileItem;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.SearchEngineProvider;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ParseException;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class PublicationImport {
 
@@ -376,7 +372,7 @@ public class PublicationImport {
 
   public Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
       String fieldName) {
-    PublicationBm publicationBm = getPublicationBm();
+    PublicationService publicationBm = getPublicationBm();
     Collection<PublicationDetail> publications = publicationBm.getAllPublications(new PublicationPK(
         "useless", componentId));
     List<String> result = new ArrayList<String>();
@@ -500,7 +496,7 @@ public class PublicationImport {
     ignoreMissingFormFields = ignore;
   }
 
-  private PublicationBm getPublicationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  private PublicationService getPublicationBm() {
+    return ServiceProvider.getService(PublicationService.class);
   }
 }

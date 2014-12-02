@@ -23,17 +23,14 @@ package com.stratelia.webactiv.kmelia;
 import com.silverpeas.look.PublicationHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
-import javax.ejb.EJBException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,7 +41,7 @@ import java.util.List;
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
-  private PublicationBm publicationBm = ServiceProvider.getService(PublicationBm.class);
+  private PublicationService publicationBm = ServiceProvider.getService(PublicationService.class);
   private OrganizationController organizationControl =
       OrganizationControllerProvider.getOrganisationController();
 
@@ -222,7 +219,7 @@ public class KmeliaTransversal implements PublicationHelper {
     return organizationControl;
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     return publicationBm;
   }
 }

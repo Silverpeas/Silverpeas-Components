@@ -51,7 +51,7 @@ import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeOrderComparator;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -65,6 +65,7 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -824,8 +825,8 @@ public class DefaultBlogService implements BlogService {
     return SubscriptionServiceProvider.getSubscribeService();
   }
 
-  private PublicationBm getPublicationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  private PublicationService getPublicationBm() {
+    return ServiceProvider.getService(PublicationService.class);
   }
 
   private NodeService getNodeBm() {

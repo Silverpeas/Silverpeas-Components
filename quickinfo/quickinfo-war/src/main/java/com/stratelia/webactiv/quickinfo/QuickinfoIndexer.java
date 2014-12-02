@@ -26,7 +26,7 @@ package com.stratelia.webactiv.quickinfo;
 
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 
@@ -42,7 +42,7 @@ public class QuickinfoIndexer implements ComponentIndexation {
   @Inject
   private QuickInfoService quickInfoService;
   @Inject
-  private PublicationBm publicationBm;
+  private PublicationService publicationBm;
 
   @Override
   public void index(ComponentInst componentInst) throws Exception {

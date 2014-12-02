@@ -20,11 +20,6 @@
  */
 package com.stratelia.webactiv.quickinfo;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -32,17 +27,21 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.util.ServiceProvider;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class QuickInfoContentManager implements ContentInterface {
 
   private ContentManager contentManager;
-  private PublicationBm currentPublicationBm;
+  private PublicationService currentPublicationBm;
   public final static String CONTENT_ICON = "quickinfoSmall.gif";
 
   /**
@@ -50,8 +49,8 @@ public class QuickInfoContentManager implements ContentInterface {
    *
    * @param ids list of silverContentId to retrieve
    * @param componentId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
+   * @param sUserId the id of the user who wants to retrieve silverContent
+   * @param alContentUserRoles the roles of the user
    * @return a List of SilverContent
    */
   @Override
@@ -176,11 +175,10 @@ public class QuickInfoContentManager implements ContentInterface {
     return headers;
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (currentPublicationBm == null) {
       try {
-        currentPublicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
+        currentPublicationBm = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         throw new PublicationRuntimeException("QuickInfoContentManager.getPublicationBm()",
             PublicationRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

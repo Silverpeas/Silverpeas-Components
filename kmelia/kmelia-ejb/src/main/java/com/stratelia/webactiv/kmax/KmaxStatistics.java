@@ -20,31 +20,30 @@
  */
 package com.stratelia.webactiv.kmax;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ejb.EJBException;
-
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-
 /**
  * Class declaration
- *
  * @author
  */
 public class KmaxStatistics implements ComponentStatisticsInterface {
 
-  private PublicationBm publicationBm = null;
+  @Inject
+  private PublicationService publicationBm = null;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
@@ -63,27 +62,21 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (publicationBm == null) {
-      try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
-      } catch (Exception e) {
-        SilverTrace.error("kmax", "KmaxStatistics.getPublicationBm",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
-      }
+      SilverTrace.error("kmax", "KmaxStatistics.getPublicationBm", "root.MSG_EJB_CREATE_FAILED",
+          JNDINames.PUBLICATIONBM_EJBHOME);
+      throw new KmeliaRuntimeException("kmax", SilverpeasException.ERROR,
+          "KmaxStatistics.getPublicationBm", "root.MSG_EJB_CREATE_FAILED");
     }
     return publicationBm;
   }
 
   /**
    * Method declaration
-   *
    * @param spaceId
    * @param componentId
    * @return
@@ -91,6 +84,7 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
    * @see
    */
   public Collection<PublicationDetail> getPublications(String spaceId, String componentId) {
-    return getPublicationBm().getAllPublications(new PublicationPK("useless", spaceId, componentId));
+    return getPublicationBm()
+        .getAllPublications(new PublicationPK("useless", spaceId, componentId));
   }
 }

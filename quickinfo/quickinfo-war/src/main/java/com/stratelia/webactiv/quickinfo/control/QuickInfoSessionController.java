@@ -20,10 +20,22 @@
  */
 package com.stratelia.webactiv.quickinfo.control;
 
-import java.util.List;
-
-import javax.ejb.EJBException;
-
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
+import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.thumbnail.ThumbnailSettings;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import com.stratelia.silverpeas.alertUser.AlertUser;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
@@ -31,30 +43,15 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
-
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.thumbnail.ThumbnailSettings;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.util.exception.DecodingException;
+
+import javax.ejb.EJBException;
+import java.util.List;
 
 /**
  * @author squere
@@ -62,7 +59,7 @@ import org.silverpeas.util.exception.DecodingException;
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
-  private PublicationBm publicationBm = null;
+  private PublicationService publicationBm = null;
   private QuickInfoComponentSettings instanceSettings = null;
 
   /**
@@ -78,11 +75,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         QuickInfoComponentSettings.SETTINGS_PATH);
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
+        publicationBm = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         SilverTrace.error("quickinfo", "QuickInfoSessionController.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);

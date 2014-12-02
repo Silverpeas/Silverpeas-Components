@@ -20,6 +20,29 @@
  */
 package com.stratelia.webactiv.kmelia;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.security.ComponentSecurity;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,30 +50,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.security.ComponentSecurity;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
@@ -65,7 +64,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String PUBLICATION_TYPE = "Publication";
   public static final String NODE_TYPE = "Node";
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
-  private PublicationBm publicationBm;
+  private PublicationService publicationBm;
   private NodeService nodeService = NodeService.get();
   private KmeliaBm kmeliaBm;
   private OrganizationController controller = null;
@@ -369,11 +368,10 @@ public class KmeliaSecurity implements ComponentSecurity {
     return controller.getUserProfiles(userId, appId);
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (publicationBm == null) {
       try {
-        setPublicationBm(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class));
+        setPublicationBm(ServiceProvider.getService(PublicationService.class));
       } catch (UtilException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
@@ -406,7 +404,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   /**
    * @param publicationBm the publicationBm to set
    */
-  void setPublicationBm(PublicationBm publicationBm) {
+  void setPublicationBm(PublicationService publicationBm) {
     this.publicationBm = publicationBm;
   }
 

@@ -20,11 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -32,12 +27,16 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The kmelia implementation of ContentInterface.
@@ -102,7 +101,6 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * PublicationDetail
    *
    * @param pubDetail the content
-   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail)
       throws ContentManagerException {
@@ -126,7 +124,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * PublicationDetail
    *
    * @param pubDetail the content
-   * @param silverObjectId the unique identifier of the content
+   * @param isVisible
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail,
       boolean isVisible) throws ContentManagerException {
@@ -222,11 +220,10 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     return contentManager;
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (currentPublicationBm == null) {
       try {
-        currentPublicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
+        currentPublicationBm = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaContentManager.getPublicationBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
@@ -236,5 +233,5 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     return currentPublicationBm;
   }
   private ContentManager contentManager = null;
-  private PublicationBm currentPublicationBm = null;
+  private PublicationService currentPublicationBm = null;
 }

@@ -20,25 +20,23 @@
  */
 package com.silverpeas.blog;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.silverpeas.blog.model.BlogRuntimeException;
-
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.inject.Inject;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The blog implementation of ContentInterface.
@@ -169,7 +167,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
   /**
    * update the visibility attributes of the content.
    *
-   * @param SilverContentVisibility 
+   * @param scv
    * @param pubDetail the pubDetail
    * @param silverContentId
    */
@@ -229,19 +227,14 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
     return contentManager;
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (currentPublicationBm == null) {
-      try {
-        currentPublicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
-      } catch (Exception e) {
         throw new BlogRuntimeException("BlogContentManager.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR, "blog.EX_GET_PUBLICATIONBM_OBJECT",
-            e);
-      }
+            SilverpeasRuntimeException.ERROR, "blog.EX_GET_PUBLICATIONBM_OBJECT");
     }
     return currentPublicationBm;
   }
   private ContentManager contentManager = null;
-  private PublicationBm currentPublicationBm = null;
+  @Inject
+  private PublicationService currentPublicationBm;
 }

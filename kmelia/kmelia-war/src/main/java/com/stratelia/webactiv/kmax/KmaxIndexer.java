@@ -27,7 +27,7 @@ package com.stratelia.webactiv.kmax;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.AttachmentService;
@@ -44,7 +44,7 @@ public class KmaxIndexer implements ComponentIndexation {
   @Inject
   private AttachmentService attachmentService;
   @Inject
-  private PublicationBm publicationBm;
+  private PublicationService publicationBm;
   @Inject
   private KmeliaBm kmeliaBm;
 

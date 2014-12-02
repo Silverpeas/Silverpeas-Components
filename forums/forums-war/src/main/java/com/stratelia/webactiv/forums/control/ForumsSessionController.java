@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.forums.control;
 
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -28,11 +27,7 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -47,15 +42,9 @@ import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
@@ -65,10 +54,20 @@ import org.silverpeas.components.forum.notification.ForumsMessagePendingValidati
 import org.silverpeas.components.forum.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forum.notification.ForumsMessageValidationUserNotification;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ejb.EJBException;
-import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -109,7 +108,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public String typeMessages = "Messages";
   public String typeSubjects = "Subjects";
   private ResourceLocator settings = null;
-  private PublicationBm publicationBm = null;
+  private PublicationService publicationBm;
   private StatisticService statisticService = null;
   private boolean displayAllMessages = true;
   private boolean external = false;
@@ -869,11 +868,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return StringUtil.getBooleanValue(getComponentParameterValue("isValidationActive"));
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
+        publicationBm = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         SilverTrace.error("forum", "ForumSessionController.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);

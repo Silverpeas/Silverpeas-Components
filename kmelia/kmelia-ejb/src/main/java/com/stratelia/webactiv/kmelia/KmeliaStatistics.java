@@ -20,22 +20,20 @@
  */
 package com.stratelia.webactiv.kmelia;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.ejb.EJBException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.ejb.EJBException;
-
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
 
 /**
  * Class declaration
@@ -44,7 +42,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
  */
 public class KmeliaStatistics implements ComponentStatisticsInterface {
 
-  private PublicationBm publicationBm = null;
+  private PublicationService publicationBm = null;
 
   /**
    * Method declaration
@@ -76,11 +74,10 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
    * @return
    * @see
    */
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
+        publicationBm = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaStatistics.getPublicationBm",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);

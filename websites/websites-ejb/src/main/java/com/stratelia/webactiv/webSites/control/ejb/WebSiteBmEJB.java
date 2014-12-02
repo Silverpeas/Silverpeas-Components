@@ -31,6 +31,7 @@ package com.stratelia.webactiv.webSites.control.ejb;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -65,8 +66,8 @@ public class WebSiteBmEJB implements WebSiteBm {
   private static final long serialVersionUID = 7063837019701682671L;
   @Inject
   private NodeService nodeService;
-  @EJB
-  private PublicationBm publicationBm;
+  @Inject
+  private PublicationService publicationBm;
   /**
    * use for the PDC utilization
    */

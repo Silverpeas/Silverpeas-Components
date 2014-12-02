@@ -20,14 +20,6 @@
  */
 package com.silverpeas.kmelia.ui;
 
-import java.util.Iterator;
-import java.util.Properties;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -39,18 +31,23 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Iterator;
+import java.util.Properties;
 
 /**
  * <pre>
@@ -81,7 +78,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
    * Attribute loaded with dependency injection
    */
   @Inject
-  private PublicationBm publicationBm;
+  private PublicationService publicationBm;
 
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
@@ -221,14 +218,14 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
   /**
    * @return a publicationBm (EJB)
    */
-  public PublicationBm getPublicationBm() {
+  public PublicationService getPublicationBm() {
     return publicationBm;
   }
 
   /**
    * @param publicationBm the publicationBm to set
    */
-  public void setPublicationBm(PublicationBm publicationBm) {
+  public void setPublicationBm(PublicationService publicationBm) {
     this.publicationBm = publicationBm;
   }
 }

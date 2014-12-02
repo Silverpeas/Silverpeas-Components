@@ -24,20 +24,18 @@
 
 package com.silverpeas.delegatednews.model;
 
-import java.util.Date;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import java.util.Date;
 
 @Entity
 @Table(name = "sc_delegatednews_news")
@@ -176,8 +174,7 @@ public class DelegatedNews implements java.io.Serializable {
 	
 	public PublicationDetail getPublicationDetail() {
 	  try {
-      PublicationBm publicationBm =EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBm.class);
+      PublicationService publicationBm = ServiceProvider.getService(PublicationService.class);
       PublicationPK pubPk = new PublicationPK(Integer.toString(this.pubId), this.instanceId);
       return publicationBm.getDetail(pubPk);
     } catch (Exception e) {
