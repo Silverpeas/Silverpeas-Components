@@ -64,7 +64,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String PUBLICATION_TYPE = "Publication";
   public static final String NODE_TYPE = "Node";
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
   private NodeService nodeService = NodeService.get();
   private KmeliaBm kmeliaBm;
   private OrganizationController controller = null;
@@ -287,7 +287,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   private Collection<NodePK> getPublicationFolderPKs(PublicationPK pk) {
     Collection<NodePK> fatherPKs = null;
     try {
-      fatherPKs = getPublicationBm().getAllFatherPK(pk);
+      fatherPKs = getPublicationService().getAllFatherPK(pk);
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaSecurity.getPublicationFolderPKs",
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "PubId = " + pk.toString());
@@ -304,7 +304,7 @@ public class KmeliaSecurity implements ComponentSecurity {
 
   private PublicationDetail getPublicationDetail(PublicationPK pk) {
     try {
-      return getPublicationBm().getDetail(pk);
+      return getPublicationService().getDetail(pk);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationDetail()",
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
@@ -344,7 +344,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       profiles = getAppProfiles(userId, pubPK.getInstanceId());
     } else {
       // get topic-level profiles
-      Collection<NodePK> nodePKs = getPublicationBm().getAllFatherPK(pubPK);
+      Collection<NodePK> nodePKs = getPublicationService().getAllFatherPK(pubPK);
       List<String> lProfiles = new ArrayList<String>();
       for (NodePK nodePK : nodePKs) {
         NodeDetail node = getNodeService().getHeader(nodePK);
@@ -368,17 +368,11 @@ public class KmeliaSecurity implements ComponentSecurity {
     return controller.getUserProfiles(userId, appId);
   }
 
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        setPublicationBm(ServiceProvider.getService(PublicationService.class));
-      } catch (UtilException e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
-            e);
-      }
+  private PublicationService getPublicationService() {
+    if (publicationService == null) {
+        setPublicationService(ServiceProvider.getService(PublicationService.class));
     }
-    return publicationBm;
+    return publicationService;
   }
 
   public NodeService getNodeService() {
@@ -402,10 +396,10 @@ public class KmeliaSecurity implements ComponentSecurity {
   }
 
   /**
-   * @param publicationBm the publicationBm to set
+   * @param publicationService the publicationBm to set
    */
-  void setPublicationBm(PublicationService publicationBm) {
-    this.publicationBm = publicationBm;
+  void setPublicationService(PublicationService publicationService) {
+    this.publicationService = publicationService;
   }
 
   /**

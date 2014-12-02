@@ -156,7 +156,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
   private PublicationDetail getPublication(News news) {
-    return getPublicationBm().getDetail(news.getForeignPK());
+    return getPublicationService().getDetail(news.getForeignPK());
   }
 
   @Override
@@ -179,7 +179,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     // Creating publication
     final PublicationDetail publication = news.getPublication();
     publication.setIndexOperation(IndexManager.NONE);
-    final PublicationPK pubPK = getPublicationBm().createPublication(publication);
+    final PublicationPK pubPK = getPublicationService().createPublication(publication);
     publication.setPk(pubPK);
 
     News savedNews = Transaction.performInOne(new Transaction.Process<News>() {
@@ -212,7 +212,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     });
 
     PublicationDetail publication = news.getPublication();
-    getPublicationBm().setDetail(publication, false);
+    getPublicationService().setDetail(publication, false);
 
     try {
       new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
@@ -245,7 +245,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     if (news.isDraft()) {
       publication.setIndexOperation(IndexManager.NONE);
     }
-    getPublicationBm().setDetail(publication);
+    getPublicationService().setDetail(publication);
 
     Transaction.performInOne(new Transaction.Process<News>() {
       @Override
@@ -292,7 +292,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     PublicationPK foreignPK = news.getForeignPK();
 
     // Deleting publication
-    getPublicationBm().removePublication(foreignPK);
+    getPublicationService().removePublication(foreignPK);
 
     // De-reffering contribution in taxonomy
     try(Connection connection = DBUtil.openConnection()) {
@@ -392,7 +392,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
 
-  private PublicationService getPublicationBm() {
+  private PublicationService getPublicationService() {
     return ServiceProvider.getService(PublicationService.class);
   }
 

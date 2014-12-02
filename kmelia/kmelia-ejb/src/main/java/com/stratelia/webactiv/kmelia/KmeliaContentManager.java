@@ -198,7 +198,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     KmeliaSecurity security = new KmeliaSecurity();
     boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
 
-    Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
+    Collection<PublicationDetail> publicationDetails = getPublicationService().getPublications(ids);
     for (PublicationDetail pubDetail : publicationDetails) {
       if (!checkRights || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
         pubDetail.setIconUrl("kmeliaSmall.gif");
@@ -220,18 +220,12 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     return contentManager;
   }
 
-  private PublicationService getPublicationBm() {
-    if (currentPublicationBm == null) {
-      try {
-        currentPublicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaContentManager.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
-            e);
-      }
+  private PublicationService getPublicationService() {
+    if (currentPublicationService == null) {
+        currentPublicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return currentPublicationBm;
+    return currentPublicationService;
   }
   private ContentManager contentManager = null;
-  private PublicationService currentPublicationBm = null;
+  private PublicationService currentPublicationService = null;
 }

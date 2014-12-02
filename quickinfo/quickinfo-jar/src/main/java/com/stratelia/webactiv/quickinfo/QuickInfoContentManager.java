@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Connection;
@@ -41,7 +40,7 @@ import java.util.List;
 public class QuickInfoContentManager implements ContentInterface {
 
   private ContentManager contentManager;
-  private PublicationService currentPublicationBm;
+  private PublicationService currentPublicationService;
   public final static String CONTENT_ICON = "quickinfoSmall.gif";
 
   /**
@@ -166,7 +165,7 @@ public class QuickInfoContentManager implements ContentInterface {
    */
   private List getHeaders(List<PublicationPK> pubPKs) {
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>(
-        getPublicationBm().getPublications(pubPKs));
+        getPublicationService().getPublications(pubPKs));
     List<PublicationDetail> headers = new ArrayList<PublicationDetail>(publicationDetails.size());
     for (PublicationDetail pubDetail : publicationDetails) {
       pubDetail.setIconUrl(CONTENT_ICON);
@@ -175,16 +174,11 @@ public class QuickInfoContentManager implements ContentInterface {
     return headers;
   }
 
-  private PublicationService getPublicationBm() {
-    if (currentPublicationBm == null) {
-      try {
-        currentPublicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        throw new PublicationRuntimeException("QuickInfoContentManager.getPublicationBm()",
-            PublicationRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+  private PublicationService getPublicationService() {
+    if (currentPublicationService == null) {
+        currentPublicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return currentPublicationBm;
+    return currentPublicationService;
   }
 
   private ContentManager getContentManager() {

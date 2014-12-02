@@ -44,7 +44,7 @@ public class KmaxIndexer implements ComponentIndexation {
   @Inject
   private AttachmentService attachmentService;
   @Inject
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
   @Inject
   private KmeliaBm kmeliaBm;
 
@@ -53,7 +53,7 @@ public class KmaxIndexer implements ComponentIndexation {
     kmeliaBm.indexKmax(componentInst.getId());
 
     Collection<PublicationDetail> publications =
-        publicationBm.getAllPublications(new PublicationPK("useless", componentInst.getId()),
+        publicationService.getAllPublications(new PublicationPK("useless", componentInst.getId()),
             "pubId desc");
     for (PublicationDetail aPublication : publications) {
       attachmentService.indexAllDocuments(aPublication.getPK(), null, null);

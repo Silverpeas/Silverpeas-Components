@@ -78,7 +78,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
    * Attribute loaded with dependency injection
    */
   @Inject
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
 
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
@@ -89,7 +89,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
     PublicationPK pubPK = new PublicationPK(silverResult.getId());
     PublicationDetail pubDetail = null;
     try {
-      pubDetail = getPublicationBm().getDetail(pubPK);
+      pubDetail = getPublicationService().getDetail(pubPK);
     } catch (Exception e) {
       SilverTrace.warn("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent",
           "Unable to load publication " + pubPK.getId() + " from EJB", e);
@@ -218,14 +218,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
   /**
    * @return a publicationBm (EJB)
    */
-  public PublicationService getPublicationBm() {
-    return publicationBm;
-  }
-
-  /**
-   * @param publicationBm the publicationBm to set
-   */
-  public void setPublicationBm(PublicationService publicationBm) {
-    this.publicationBm = publicationBm;
+  public PublicationService getPublicationService() {
+    return publicationService;
   }
 }

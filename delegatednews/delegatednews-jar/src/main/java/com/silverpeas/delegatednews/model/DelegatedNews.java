@@ -174,9 +174,9 @@ public class DelegatedNews implements java.io.Serializable {
 	
 	public PublicationDetail getPublicationDetail() {
 	  try {
-      PublicationService publicationBm = ServiceProvider.getService(PublicationService.class);
+      PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
       PublicationPK pubPk = new PublicationPK(Integer.toString(this.pubId), this.instanceId);
-      return publicationBm.getDetail(pubPk);
+      return publicationService.getDetail(pubPk);
     } catch (Exception e) {
       throw new PublicationRuntimeException("DelegatedNews.getPublicationDetail()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "pubId = "+this.pubId, e);

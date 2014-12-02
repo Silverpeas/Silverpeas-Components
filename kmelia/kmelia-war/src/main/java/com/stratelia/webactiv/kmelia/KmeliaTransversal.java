@@ -41,7 +41,7 @@ import java.util.List;
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
-  private PublicationService publicationBm = ServiceProvider.getService(PublicationService.class);
+  private PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
   private OrganizationController organizationControl =
       OrganizationControllerProvider.getOrganisationController();
 
@@ -82,7 +82,7 @@ public class KmeliaTransversal implements PublicationHelper {
         "root.MSG_GEN_PARAM_VALUE", "componentIds = " + componentIds.toString());
     List<PublicationPK> publicationPKs = null;
     try {
-      publicationPKs = (List<PublicationPK>) getPublicationBm().getPublicationPKsByStatus(
+      publicationPKs = (List<PublicationPK>) getPublicationService().getPublicationPKsByStatus(
           PublicationDetail.VALID, componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
@@ -92,7 +92,7 @@ public class KmeliaTransversal implements PublicationHelper {
         nbPublis);
 
     try {
-      return (List<PublicationDetail>) getPublicationBm().getPublications(filteredPublicationPKs);
+      return (List<PublicationDetail>) getPublicationService().getPublications(filteredPublicationPKs);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
@@ -121,7 +121,7 @@ public class KmeliaTransversal implements PublicationHelper {
 
     List<PublicationPK> publicationPKs = null;
     try {
-      publicationPKs = (List<PublicationPK>) getPublicationBm().getUpdatedPublicationPKsByStatus(
+      publicationPKs = (List<PublicationPK>) getPublicationService().getUpdatedPublicationPKsByStatus(
           PublicationDetail.VALID, since, 0, componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
@@ -130,7 +130,7 @@ public class KmeliaTransversal implements PublicationHelper {
     Collection<PublicationPK> filteredPublicationPKs = filterPublicationPKs(publicationPKs,
         nbPublis);
     try {
-      return (List<PublicationDetail>) getPublicationBm().getPublications(filteredPublicationPKs);
+      return (List<PublicationDetail>) getPublicationService().getPublications(filteredPublicationPKs);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
@@ -165,7 +165,7 @@ public class KmeliaTransversal implements PublicationHelper {
     try {
       List<String> componentIds = new ArrayList<String>();
       componentIds.add(componentId);
-      publications = (List<PublicationDetail>) getPublicationBm().getPublicationsByStatus("Valid",
+      publications = (List<PublicationDetail>) getPublicationService().getPublicationsByStatus("Valid",
           componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublicationsByComponentId()",
@@ -219,7 +219,7 @@ public class KmeliaTransversal implements PublicationHelper {
     return organizationControl;
   }
 
-  private PublicationService getPublicationBm() {
-    return publicationBm;
+  private PublicationService getPublicationService() {
+    return publicationService;
   }
 }

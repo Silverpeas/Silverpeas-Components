@@ -59,7 +59,7 @@ import java.util.List;
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
-  private PublicationService publicationBm = null;
+  private PublicationService publicationService = null;
   private QuickInfoComponentSettings instanceSettings = null;
 
   /**
@@ -75,17 +75,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         QuickInfoComponentSettings.SETTINGS_PATH);
   }
 
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        SilverTrace.error("quickinfo", "QuickInfoSessionController.getPublicationBm()",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
-      }
+  private PublicationService getPublicationService() {
+    if (publicationService == null) {
+        publicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return publicationBm;
+    return publicationService;
   }
 
   public QuickInfoComponentSettings getInstanceSettings() {
@@ -186,8 +180,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   @Override
   public void close() {
-    if (publicationBm != null) {
-      publicationBm = null;
+    if (publicationService != null) {
+      publicationService = null;
     }
   }
 

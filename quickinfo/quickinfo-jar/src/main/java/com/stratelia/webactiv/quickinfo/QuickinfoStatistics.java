@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class QuickinfoStatistics implements ComponentStatisticsInterface {
 
-  private PublicationService publicationBm = null;
+  private PublicationService publicationService = null;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
@@ -58,21 +58,15 @@ public class QuickinfoStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        SilverTrace.error("quickinfo", "QuickinfoStatistics.getPublicationBm()",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
-      }
+  private PublicationService getPublicationService() {
+    if (publicationService == null) {
+        publicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return publicationBm;
+    return publicationService;
   }
 
   public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId)
       throws RemoteException {
-    return getPublicationBm().getOrphanPublications(new PublicationPK("", spaceId, componentId));
+    return getPublicationService().getOrphanPublications(new PublicationPK("", spaceId, componentId));
   }
 }

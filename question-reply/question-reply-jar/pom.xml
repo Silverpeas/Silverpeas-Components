@@ -22,7 +22,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -35,12 +34,6 @@
       <groupId>org.silverpeas.components.whitepages</groupId>
       <artifactId>whitepages-jar</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>pdc</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

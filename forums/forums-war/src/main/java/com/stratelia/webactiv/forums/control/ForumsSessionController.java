@@ -108,7 +108,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public String typeMessages = "Messages";
   public String typeSubjects = "Subjects";
   private ResourceLocator settings = null;
-  private PublicationService publicationBm;
+  private PublicationService publicationService = null;
   private StatisticService statisticService = null;
   private boolean displayAllMessages = true;
   private boolean external = false;
@@ -811,7 +811,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public PublicationDetail getDetail(String id) {
-    return getPublicationBm().getDetail(new PublicationPK(id, getSpaceId(), getComponentId()));
+    return getPublicationService().getDetail(new PublicationPK(id, getSpaceId(), getComponentId()));
   }
 
   public void addMessageStat(int messageId, String userId) {
@@ -868,17 +868,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return StringUtil.getBooleanValue(getComponentParameterValue("isValidationActive"));
   }
 
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        SilverTrace.error("forum", "ForumSessionController.getPublicationBm()",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
-      }
+  private PublicationService getPublicationService() {
+    if (publicationService == null) {
+        publicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return publicationBm;
+    return publicationService;
   }
 
   protected StatisticService getStatisticService() {

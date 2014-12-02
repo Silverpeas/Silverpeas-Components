@@ -54,7 +54,7 @@ public class KmeliaPublicationSimulationElementLister
     if (sourcePK instanceof NodePK) {
       listPublicationDocumentsFromNode((NodePK) sourcePK, language);
     } else {
-      listPublicationDocumentsFromPublication(getPublicationBm()
+      listPublicationDocumentsFromPublication(getPublicationService()
           .getDetail(new PublicationPK(sourcePK.getId(), sourcePK.getInstanceId())), language);
     }
   }
@@ -68,7 +68,7 @@ public class KmeliaPublicationSimulationElementLister
   private void listPublicationDocumentsFromNode(NodePK nodePK, String language) {
 
     // Retrieving all publication of a node
-    Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(nodePK);
+    Collection<PublicationDetail> publications = getPublicationService().getDetailsByFatherPK(nodePK);
     for (PublicationDetail publication : publications) {
 
       // Using here the default implementation of document lister

@@ -42,13 +42,13 @@ public class QuickinfoIndexer implements ComponentIndexation {
   @Inject
   private QuickInfoService quickInfoService;
   @Inject
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
 
   @Override
   public void index(ComponentInst componentInst) throws Exception {
     List<News> infos = quickInfoService.getVisibleNews(componentInst.getId());
     for (News news : infos) {
-      publicationBm.createIndex(news.getPublication().getPK());
+      publicationService.createIndex(news.getPublication().getPK());
     }
   }
 }

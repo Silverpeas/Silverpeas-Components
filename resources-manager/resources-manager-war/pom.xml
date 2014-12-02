@@ -40,7 +40,6 @@
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-      <classifier>client</classifier>
     </dependency>
 
     <!-- TESTS -->

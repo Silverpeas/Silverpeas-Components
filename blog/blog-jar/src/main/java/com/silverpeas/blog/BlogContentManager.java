@@ -156,7 +156,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
    */
   private List<PublicationDetail> getHeaders(List<PublicationPK> ids) {
     List<PublicationDetail> headers = new ArrayList<PublicationDetail>(ids.size());
-    Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
+    Collection<PublicationDetail> publicationDetails = getPublicationService().getPublications(ids);
     for (PublicationDetail pubDetail : publicationDetails) {
       pubDetail.setIconUrl("blogSmall.gif");
       headers.add(pubDetail);
@@ -227,14 +227,15 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
     return contentManager;
   }
 
-  private PublicationService getPublicationBm() {
-    if (currentPublicationBm == null) {
-        throw new BlogRuntimeException("BlogContentManager.getPublicationBm()",
+  private PublicationService getPublicationService() {
+    if (currentPublicationService == null) {
+        throw new BlogRuntimeException("BlogContentManager.getPublicationService()",
             SilverpeasRuntimeException.ERROR, "blog.EX_GET_PUBLICATIONBM_OBJECT");
     }
-    return currentPublicationBm;
+    return currentPublicationService;
   }
+
   private ContentManager contentManager = null;
   @Inject
-  private PublicationService currentPublicationBm;
+  private PublicationService currentPublicationService;
 }

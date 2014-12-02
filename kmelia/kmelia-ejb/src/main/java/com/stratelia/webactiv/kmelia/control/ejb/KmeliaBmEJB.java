@@ -162,7 +162,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Inject
   private NodeService nodeService;
   @Inject
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
   @Inject
   private StatisticService statisticService;
   @Inject
@@ -285,7 +285,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         int nbPublisOnRoot = getNbPublicationsOnRoot(pk.getInstanceId());
         if (nbPublisOnRoot == 0 || !isTreeStructureUsed || KmeliaHelper.isToolbox(
             pk.getInstanceId())) {
-          pubDetails = publicationBm.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
+          pubDetails = publicationService.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
         } else {
           return getLatestPublications(pk.getInstanceId(), nbPublisOnRoot, isRightsOnTopicsUsed,
               userId);
@@ -299,7 +299,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           "root.MSG_GEN_PARAM_VALUE", "publicationBm.getDetailsByFatherPK(pk) BEGIN");
       try {
         // get the publication details linked to this topic
-        pubDetails = publicationBm.getDetailsByFatherPK(pk, "P.pubUpdateDate DESC, P.pubId DESC",
+        pubDetails = publicationService.getDetailsByFatherPK(pk, "P.pubUpdateDate DESC, P.pubId DESC",
             false);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsOfFolder()", ERROR,
@@ -315,7 +315,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
       boolean isRightsOnTopicsUsed, String userId) {
     PublicationPK pubPK = new PublicationPK("unknown", instanceId);
-    Collection<PublicationDetail> pubDetails = publicationBm.
+    Collection<PublicationDetail> pubDetails = publicationService.
         getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK,
         PublicationDetail.VALID, nbPublisOnRoot, NodePK.BIN_NODE_ID);
     if (isRightsOnTopicsUsed) {// The list of publications must be filtered
@@ -567,18 +567,18 @@ public class KmeliaBmEJB implements KmeliaBm {
       while (itNode.hasNext()) {
         oneNodeToDelete = itNode.next();
         // get pubs linked to current node (includes alias)
-        pubsToCheck = publicationBm.getPubPKsInFatherPK(oneNodeToDelete);
+        pubsToCheck = publicationService.getPubPKsInFatherPK(oneNodeToDelete);
         itPub = pubsToCheck.iterator();
         // check each pub contained in current node
         while (itPub.hasNext()) {
           onePubToCheck = itPub.next();
           if (onePubToCheck.getInstanceId().equals(oneNodeToDelete.getInstanceId())) {
             // get fathers of the pub
-            pubFathers = publicationBm.getAllFatherPK(onePubToCheck);
+            pubFathers = publicationService.getAllFatherPK(onePubToCheck);
             if (pubFathers.size() >= 2) {
               // the pub have got many fathers
               // delete only the link between pub and current node
-              publicationBm.removeFather(onePubToCheck, oneNodeToDelete);
+              publicationService.removeFather(onePubToCheck, oneNodeToDelete);
               SilverTrace.info("kmelia", "KmeliaBmEJB.deleteTopic()", "root.MSG_GEN_PARAM_VALUE",
                   "RemoveFather(pubId, fatherId) with  pubId = " + onePubToCheck.getId()
                   + ", fatherId = " + oneNodeToDelete);
@@ -591,7 +591,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             // remove alias
             aliases.clear();
             aliases.add(new Alias(oneNodeToDelete.getId(), oneNodeToDelete.getInstanceId()));
-            publicationBm.removeAlias(onePubToCheck, aliases);
+            publicationService.removeAlias(onePubToCheck, aliases);
           }
         }
       }
@@ -877,7 +877,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             "')");
       }
 
-      NodeTree root = publicationBm.getDistributionTree(nodePK.getInstanceId(),
+      NodeTree root = publicationService.getDistributionTree(nodePK.getInstanceId(),
           statusSubQuery.toString(), checkVisibility);
 
       // set right number of publications in basket
@@ -909,7 +909,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (SilverpeasRole.admin.isInRole(userProfile)) {// Admin can see all Publis in the basket.
         currentUserId = null;
       }
-      Collection<PublicationDetail> pubDetails = publicationBm.getDetailsByFatherPK(pk, null,
+      Collection<PublicationDetail> pubDetails = publicationService.getDetailsByFatherPK(pk, null,
           false, currentUserId);
       SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsInBasket()",
           "root.MSG_GEN_EXIT_METHOD", "nbPublis = " + pubDetails.size());
@@ -1121,7 +1121,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationDetail()", "root.MSG_GEN_ENTER_METHOD");
     try {
       SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationDetail()", "root.MSG_GEN_EXIT_METHOD");
-      return publicationBm.getDetail(pubPK);
+      return publicationService.getDetail(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationDetail()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
@@ -1142,7 +1142,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     Collection<NodePK> fatherPKs = null;
     try {
       // get all nodePK whick contains this publication
-      fatherPKs = publicationBm.getAllFatherPK(pubPK);
+      fatherPKs = publicationService.getAllFatherPK(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPathList()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_EMPLACEMENTS_DE_LA_PUBLICATION", e);
@@ -1220,7 +1220,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     try {
       pubDetail = changePublicationStatusOnCreation(pubDetail, fatherPK);
       // create the publication
-      pubPK = publicationBm.createPublication(pubDetail);
+      pubPK = publicationService.createPublication(pubDetail);
       pubDetail.getPK().setId(pubPK.getId());
       // register the new publication as a new content to content manager
       createSilverContent(pubDetail, pubDetail.getCreatorId());
@@ -1387,10 +1387,10 @@ public class KmeliaBmEJB implements KmeliaBm {
       final boolean isPublicationInBasket = isPublicationInBasket(pubDetail.getPK());
       if (isClone) {
         // update only updateDate
-        publicationBm.setDetail(pubDetail, forceUpdateDate);
+        publicationService.setDetail(pubDetail, forceUpdateDate);
       } else {
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
-        publicationBm.setDetail(pubDetail, forceUpdateDate);
+        publicationService.setDetail(pubDetail, forceUpdateDate);
 
         if (!isPublicationInBasket) {
           if (statusChanged) {
@@ -1490,8 +1490,8 @@ public class KmeliaBmEJB implements KmeliaBm {
       sendPublicationToBasket(pub.getPK());
     } else {
       // update parent
-      publicationBm.removeAllFather(pub.getPK());
-      publicationBm.addFather(pub.getPK(), to);
+      publicationService.removeAllFather(pub.getPK());
+      publicationService.addFather(pub.getPK(), to);
       processPublicationAfterMove(pub, to, userId);
     }
   }
@@ -1587,7 +1587,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       statisticService.moveStat(toPubliForeignPK, 1, "Publication");
 
       // move publication itself
-      publicationBm.movePublication(pub.getPK(), to, false);
+      publicationService.movePublication(pub.getPK(), to, false);
       pub.getPK().setComponentName(to.getInstanceId());
 
       processPublicationAfterMove(pub, to, userId);
@@ -1613,7 +1613,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     // status must be checked according to topic rights and last modifier (current user)
     boolean statusChanged = changePublicationStatusOnMove(pub, to);
     // update publication
-    publicationBm.setDetail(pub, statusChanged);
+    publicationService.setDetail(pub, statusChanged);
 
     // check visibility on taxonomy
     updateSilverContentVisibility(pub);
@@ -1715,9 +1715,9 @@ public class KmeliaBmEJB implements KmeliaBm {
       // delete all reading controls associated to this publication
       deleteAllReadingControlsByPublication(pubPK);
       // delete all links
-      publicationBm.removeAllFather(pubPK);
+      publicationService.removeAllFather(pubPK);
       // delete the publication
-      publicationBm.removePublication(pubPK);
+      publicationService.removePublication(pubPK);
       // delete reference to contentManager
       deleteSilverContent(pubPK);
 
@@ -1744,13 +1744,13 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.sendPublicationToBasket()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      PublicationDetail pubDetail = publicationBm.getDetail(pubPK);
+      PublicationDetail pubDetail = publicationService.getDetail(pubPK);
       // remove coordinates for Kmax
       if (kmaxMode) {
         CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK.getSpaceId(), pubPK.
             getComponentName());
 
-        Collection<NodePK> fatherPKs = publicationBm.getAllFatherPK(pubPK);
+        Collection<NodePK> fatherPKs = publicationService.getAllFatherPK(pubPK);
         // delete publication coordinates
         Iterator<NodePK> it = fatherPKs.iterator();
         List<String> coordinates = new ArrayList<String>();
@@ -1766,9 +1766,9 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
 
       // remove all links between this publication and topics
-      publicationBm.removeAllFather(pubPK);
+      publicationService.removeAllFather(pubPK);
       // add link between this publication and the basket topic
-      publicationBm.addFather(pubPK, new NodePK("1", pubPK));
+      publicationService.addFather(pubPK, new NodePK("1", pubPK));
 
       // remove all the todos attached to the publication
       removeAllTodosForPublication(pubPK);
@@ -1820,12 +1820,12 @@ public class KmeliaBmEJB implements KmeliaBm {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     if (!isACreation) {
       try {
-        Collection<NodePK> fathers = publicationBm.getAllFatherPK(pubPK);
+        Collection<NodePK> fathers = publicationService.getAllFatherPK(pubPK);
         if (isPublicationInBasket(pubPK, fathers)) {
-          publicationBm.removeFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, fatherPK));
+          publicationService.removeFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, fatherPK));
           if (PublicationDetail.VALID.equalsIgnoreCase(pubDetail.getStatus())) {
             // index publication
-            publicationBm.createIndex(pubPK);
+            publicationService.createIndex(pubPK);
             // index external elements
             indexExternalElementsOfPublication(pubDetail);
             // publication is accessible again
@@ -1838,7 +1838,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           // The publi have got no father
           // change the end date to make this publi visible
           pubDetail.setEndDate(null);
-          publicationBm.setDetail(pubDetail);
+          publicationService.setDetail(pubDetail);
           // publication is accessible again
           updateSilverContentVisibility(pubDetail);
         }
@@ -1849,7 +1849,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
 
     try {
-      publicationBm.addFather(pubPK, fatherPK);
+      publicationService.addFather(pubPK, fatherPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addPublicationToTopic()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_PLACER_LA_PUBLICATION_DANS_LE_THEME", e);
@@ -1862,7 +1862,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private boolean isPublicationInBasket(PublicationPK pubPK, Collection<NodePK> fathers) {
     if (fathers == null) {
-      fathers = publicationBm.getAllFatherPK(pubPK);
+      fathers = publicationService.getAllFatherPK(pubPK);
     }
     if (fathers.size() == 1) {
       Iterator<NodePK> iterator = fathers.iterator();
@@ -1962,9 +1962,9 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deletePublicationFromTopic()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<NodePK> pubFathers = publicationBm.getAllFatherPK(pubPK);
+      Collection<NodePK> pubFathers = publicationService.getAllFatherPK(pubPK);
       if (pubFathers.size() >= 2) {
-        publicationBm.removeFather(pubPK, fatherPK);
+        publicationService.removeFather(pubPK, fatherPK);
       } else {
         // la publication n'a qu'un seul emplacement
         // elle est donc placée dans la corbeille du créateur
@@ -1983,7 +1983,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deletePublicationFromAllTopics()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      publicationBm.removeAllFather(pubPK);
+      publicationService.removeAllFather(pubPK);
 
       // la publication n'a qu'un seul emplacement
       // elle est donc placée dans la corbeille du créateur
@@ -2008,7 +2008,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.addInfoLinks()", "root.MSG_GEN_ENTER_METHOD",
         "pubId = " + pubPK.getId() + ", pubIds = " + links.toString());
     try {
-      publicationBm.addLinks(pubPK, links);
+      publicationService.addLinks(pubPK, links);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addInfoLinks()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LE_CONTENU_DU_MODELE", e);
@@ -2021,7 +2021,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteInfoLinks()", "root.MSG_GEN_ENTER_METHOD",
         "pubId = " + pubPK.getId() + ", pubIds = " + links.toString());
     try {
-      publicationBm.deleteInfoLinks(pubPK, links);
+      publicationService.deleteInfoLinks(pubPK, links);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.deleteInfoLinks()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LE_CONTENU_DU_MODELE", e);
@@ -2035,7 +2035,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     CompletePublication completePublication = null;
 
     try {
-      completePublication = publicationBm.getCompletePublication(pubPK);
+      completePublication = publicationService.getCompletePublication(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getCompletePublication()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
@@ -2102,7 +2102,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     try {
-      Collection<NodePK> fathers = publicationBm.getAllFatherPK(pubPK);
+      Collection<NodePK> fathers = publicationService.getAllFatherPK(pubPK);
       if (CollectionUtil.isEmpty(fathers)) {
         SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
             "root.MSG_GEN_PARAM_VALUE", "Following publication have got no fathers : pubPK = "
@@ -2114,7 +2114,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         if (alwaysVisibleModeActivated) {
           SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
               "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
-          PublicationDetail publi = publicationBm.getDetail(pubPK);
+          PublicationDetail publi = publicationService.getDetail(pubPK);
           if (publi != null) {
             boolean isClone = isClone(publi);
             SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
@@ -2122,7 +2122,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             if (isClone) {
               // This publication is a clone
               // Get fathers from main publication
-              fathers = publicationBm.getAllFatherPK(publi.getClonePK());
+              fathers = publicationService.getAllFatherPK(publi.getClonePK());
               SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
                   "root.MSG_GEN_PARAM_VALUE", "Main publication's fathers fetched. # of fathers = "
                   + fathers.size());
@@ -2156,7 +2156,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       publicationPKs.add(pubPK);
     }
     try {
-      publications = publicationBm.getPublications(publicationPKs);
+      publications = publicationService.getPublications(publicationPKs);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationDetails()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_PUBLICATIONS", e);
@@ -2246,7 +2246,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     Collection<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     PublicationPK pubPK = new PublicationPK("useless", componentId);
     try {
-      Collection<PublicationDetail> temp = publicationBm.getPublicationsByStatus(
+      Collection<PublicationDetail> temp = publicationService.getPublicationsByStatus(
           PublicationDetail.TO_VALIDATE, pubPK);
       // only publications which must be validated by current user must be returned
       for (PublicationDetail publi : temp) {
@@ -2342,7 +2342,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     // get all users who have to validate
     List<String> allValidators = new ArrayList<String>();
     if (isTargetedValidationEnabled(pubPK.getInstanceId())) {
-      PublicationDetail publi = publicationBm.getDetail(pubPK);
+      PublicationDetail publi = publicationService.getDetail(pubPK);
       allValidators = getValidatorIds(publi);
     }
     if (allValidators.isEmpty()) {
@@ -2393,7 +2393,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @
    */
   private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators) {
-    List<ValidationStep> steps = publicationBm.getValidationSteps(pubPK);
+    List<ValidationStep> steps = publicationService.getValidationSteps(pubPK);
 
     // get users who have already validate
     List<String> stepUserIds = new ArrayList<String>();
@@ -2419,7 +2419,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
     try {
-      CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
+      CompletePublication currentPub = publicationService.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
       boolean validationOnClone = currentPubDetail.haveGotClone();
       PublicationPK validatedPK = pubPK;
@@ -2442,7 +2442,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
             // check that validators are well defined
             // If not, considering validation as classic one
-            PublicationDetail publi = publicationBm.getDetail(validatedPK);
+            PublicationDetail publi = publicationService.getDetail(validatedPK);
             if (!isDefined(publi.getTargetValidatorId())) {
               validationComplete = true;
             }
@@ -2463,7 +2463,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
               ValidationStep validation = new ValidationStep(validatedPK, userId,
                   PublicationDetail.VALID);
-              publicationBm.addValidationStep(validation);
+              publicationService.addValidationStep(validation);
               // check if all validators have give their decision
               validationComplete = isValidationComplete(validatedPK, allValidators);
             }
@@ -2485,7 +2485,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           currentPubDetail.setStatus(PublicationDetail.VALID);
         }
         KmeliaHelper.checkIndex(currentPubDetail);
-        publicationBm.setDetail(currentPubDetail);
+        publicationService.setDetail(currentPubDetail);
         updateSilverContentVisibility(currentPubDetail);
         // index all publication's elements
         indexExternalElementsOfPublication(currentPubDetail);
@@ -2583,7 +2583,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     String cloneId = currentPubDetail.getCloneId();
     if (!"-1".equals(cloneId)) {
       PublicationPK tempPK = new PublicationPK(cloneId, pubPK);
-      CompletePublication tempPubli = publicationBm.getCompletePublication(tempPK);
+      CompletePublication tempPubli = publicationService.getCompletePublication(tempPK);
       PublicationDetail tempPubliDetail = tempPubli.getPublicationDetail();
       // le clone devient la publi de référence
       currentPubDetail = getClone(tempPubliDetail);
@@ -2661,7 +2661,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         case KmeliaHelper.VALIDATION_COLLEGIATE:
         case KmeliaHelper.VALIDATION_TARGET_N:
           // reset other decisions
-          publicationBm.removeValidationSteps(pubPK);
+          publicationService.removeValidationSteps(pubPK);
           break;
         case KmeliaHelper.VALIDATION_CLASSIC:
         case KmeliaHelper.VALIDATION_TARGET_1:
@@ -2669,22 +2669,22 @@ public class KmeliaBmEJB implements KmeliaBm {
           break;// do nothing
         }
 
-      PublicationDetail currentPubDetail = publicationBm.getDetail(pubPK);
+      PublicationDetail currentPubDetail = publicationService.getDetail(pubPK);
 
       if (currentPubDetail.haveGotClone()) {
         String cloneId = currentPubDetail.getCloneId();
         PublicationPK tempPK = new PublicationPK(cloneId, pubPK);
-        PublicationDetail clone = publicationBm.getDetail(tempPK);
+        PublicationDetail clone = publicationService.getDetail(tempPK);
 
         // change clone's status
         clone.setStatus("UnValidate");
         clone.setIndexOperation(IndexManager.NONE);
-        publicationBm.setDetail(clone);
+        publicationService.setDetail(clone);
 
         // Modification de la publication de reference
         currentPubDetail.setCloneStatus(PublicationDetail.REFUSED);
         currentPubDetail.setUpdateDateMustBeSet(false);
-        publicationBm.setDetail(currentPubDetail);
+        publicationService.setDetail(currentPubDetail);
 
         // we have to alert publication's last updater
         List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubPK);
@@ -2702,7 +2702,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
         KmeliaHelper.checkIndex(currentPubDetail);
 
-        publicationBm.setDetail(currentPubDetail);
+        publicationService.setDetail(currentPubDetail);
 
         // change visibility over PDC
         updateSilverContentVisibility(currentPubDetail);
@@ -2731,14 +2731,14 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.suspendPublication()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      PublicationDetail currentPubDetail = publicationBm.getDetail(pubPK);
+      PublicationDetail currentPubDetail = publicationService.getDetail(pubPK);
 
       // change publication's status
       currentPubDetail.setStatus(PublicationDetail.TO_VALIDATE);
 
       KmeliaHelper.checkIndex(currentPubDetail);
 
-      publicationBm.setDetail(currentPubDetail);
+      publicationService.setDetail(currentPubDetail);
 
       // change visibility over PDC
       updateSilverContentVisibility(currentPubDetail);
@@ -2810,7 +2810,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     try {
       PublicationDetail changedPublication = null;
-      CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
+      CompletePublication currentPub = publicationService.getCompletePublication(pubPK);
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
@@ -2823,11 +2823,11 @@ public class KmeliaBmEJB implements KmeliaBm {
       } else {
         if (pubDetail.haveGotClone()) {
           // changement du statut du clone
-          PublicationDetail clone = publicationBm.getDetail(pubDetail.getClonePK());
+          PublicationDetail clone = publicationService.getDetail(pubDetail.getClonePK());
           clone.setStatus(PublicationDetail.TO_VALIDATE);
           clone.setIndexOperation(IndexManager.NONE);
           clone.setUpdateDateMustBeSet(false);
-          publicationBm.setDetail(clone);
+          publicationService.setDetail(clone);
           changedPublication = clone;
           pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE);
         } else {
@@ -2836,7 +2836,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
       }
       KmeliaHelper.checkIndex(pubDetail);
-      publicationBm.setDetail(pubDetail, forceUpdateDate);
+      publicationService.setDetail(pubDetail, forceUpdateDate);
       if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
         // update visibility attribute on PDC
         updateSilverContentVisibility(pubDetail);
@@ -2888,14 +2888,14 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     try {
-      PublicationDetail pubDetail = publicationBm.getDetail(pubPK);
+      PublicationDetail pubDetail = publicationService.getDetail(pubPK);
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
       if (pubDetail.isRefused() || pubDetail.isValid()) {
         pubDetail.setStatus(PublicationDetail.DRAFT);
         pubDetail.setUpdaterId(userId);
         KmeliaHelper.checkIndex(pubDetail);
-        publicationBm.setDetail(pubDetail);
+        publicationService.setDetail(pubDetail);
         updateSilverContentVisibility(pubDetail);
         unIndexExternalElementsOfPublication(pubDetail.getPK());
         removeAllTodosForPublication(pubPK);
@@ -3049,7 +3049,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private void indexPublications(PublicationPK pubPK) {
     Collection<PublicationDetail> pubs = null;
     try {
-      pubs = publicationBm.getAllPublications(pubPK);
+      pubs = publicationService.getAllPublications(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.indexPublications()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DINDEXER_LES_PUBLICATIONS", e);
@@ -3062,7 +3062,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           List<NodePK> pubFathers;
           // index only valid publications
           if (pub.getStatus() != null && pub.isValid()) {
-            pubFathers = (List<NodePK>) publicationBm.getAllFatherPK(pubPK);
+            pubFathers = (List<NodePK>) publicationService.getAllFatherPK(pubPK);
             // index only valid publications which are not only in
             // dz or basket
             if (pubFathers.size() >= 2) {
@@ -3089,7 +3089,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private void indexPublication(PublicationDetail pub) {
     // index publication itself
-    publicationBm.createIndex(pub.getPK());
+    publicationService.createIndex(pub.getPK());
 
     // index external elements
     indexExternalElementsOfPublication(pub);
@@ -3129,7 +3129,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (validationType == KmeliaHelper.VALIDATION_TARGET_N || validationType
           == KmeliaHelper.VALIDATION_COLLEGIATE) {
         // removing potential older validation decision
-        publicationBm.removeValidationSteps(pubDetail.getPK());
+        publicationService.removeValidationSteps(pubDetail.getPK());
       }
       List<String> validators = getAllValidators(pubDetail.getPK());
       String[] users = validators.toArray(new String[validators.size()]);
@@ -3546,7 +3546,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           fatherIds.add(coordinateId);
         }
         if (fatherIds.size() > 0) {
-          publicationBm.removeFathers(pubPK, fatherIds);
+          publicationService.removeFathers(pubPK, fatherIds);
         }
       }
       // delete coordinate which contains subComponents of this component
@@ -3730,14 +3730,14 @@ public class KmeliaBmEJB implements KmeliaBm {
         // all criterias is "Toutes Catégories"
         // get all publications classified
         NodePK basketPK = new NodePK("1", componentId);
-        publications = publicationBm.getDetailsNotInFatherPK(basketPK);
+        publications = publicationService.getDetailsNotInFatherPK(basketPK);
       } else {
         if (combination != null && combination.size() > 0) {
           coordinates = coordinatesService.getCoordinatesByFatherPaths(
               (ArrayList<String>) combination, coordinatePK);
         }
         if (!coordinates.isEmpty()) {
-          publications = publicationBm.getDetailsByFatherIds((ArrayList<String>) coordinates,
+          publications = publicationService.getDetailsByFatherIds((ArrayList<String>) coordinates,
               pk, false);
         }
       }
@@ -3753,7 +3753,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     PublicationPK pk = new PublicationPK("useless", componentId);
     Collection<PublicationDetail> publications = null;
     try {
-      publications = publicationBm.getOrphanPublications(pk);
+      publications = publicationService.getOrphanPublications(pk);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.getUnbalancedPublications()", ERROR,
           "kmax.EX_IMPOSSIBLE_DOBTENIR_LA_LISTE_DES_PUBLICATIONS_NON_CLASSEES", e);
@@ -3825,7 +3825,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     try {
       pubPK = new PublicationPK(pubId);
-      completePublication = publicationBm.getCompletePublication(pubPK);
+      completePublication = publicationService.getCompletePublication(pubPK);
     } catch (Exception e) {
       throw new KmaxRuntimeException(
           "KmeliaBmEjb.getKmaxCompletePublication()",
@@ -3843,7 +3843,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.getPublicationCoordinates()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      return publicationBm.getCoordinates(pubId, componentId);
+      return publicationService.getCoordinates(pubId, componentId);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.getPublicationCoordinates()", ERROR,
           "root.MSG_GEN_PARAM_VALUE", e);
@@ -3896,7 +3896,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         i++;
       }
       int coordinateId = coordinatesService.addCoordinate(coordinatePK, allnodes);
-      publicationBm.addFather(pubPK, new NodePK(String.valueOf(coordinateId), pubPK));
+      publicationService.addFather(pubPK, new NodePK(String.valueOf(coordinateId), pubPK));
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.addPublicationToCombination()", ERROR,
           "kmax.EX_IMPOSSIBLE_DAJOUTER_LA_PUBLICATION_A_CETTE_COMBINAISON", e);
@@ -3951,7 +3951,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     CoordinatePK coordinatePK = new CoordinatePK(combinationId, pubPK);
     try {
       // remove publication fathers
-      publicationBm.removeFather(pubPK, fatherPK);
+      publicationService.removeFather(pubPK, fatherPK);
       // remove coordinate
       List<String> coordinateIds = new ArrayList<String>(1);
       coordinateIds.add(combinationId);
@@ -3979,7 +3979,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       // create the publication
       pubDetail = changePublicationStatusOnCreation(pubDetail, new NodePK("useless",
           pubDetail.getPK()));
-      pubPK = publicationBm.createPublication(pubDetail);
+      pubPK = publicationService.createPublication(pubDetail);
       pubDetail.getPK().setId(pubPK.getId());
 
       // creates todos for publishers
@@ -4000,7 +4000,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public Collection<Alias> getAlias(PublicationPK pubPK) {
     try {
-      return publicationBm.getAlias(pubPK);
+      return publicationService.getAlias(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getAlias()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DAVOIR_LES_ALIAS_DE_PUBLICATION", e);
@@ -4010,7 +4010,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public void setAlias(PublicationPK pubPK, List<Alias> alias) {
 
-    publicationBm.setAlias(pubPK, alias);
+    publicationService.setAlias(pubPK, alias);
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
@@ -4191,7 +4191,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public void doAutomaticDraftOut() {
     // get all clones with draftoutdate <= current date
     // pubCloneId <> -1 AND pubCloneStatus == 'Draft'
-    Collection<PublicationDetail> pubs = publicationBm.getPublicationsToDraftOut(true);
+    Collection<PublicationDetail> pubs = publicationService.getPublicationsToDraftOut(true);
     // for each clone, call draftOutPublication method
     for (PublicationDetail pub : pubs) {
       draftOutPublication(pub.getClonePK(), null, "admin", true);
@@ -4235,7 +4235,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       clone.setCloneId(fromId);
       clone.setIndexOperation(IndexManager.NONE);
 
-      PublicationPK clonePK = publicationBm.createPublication(clone);
+      PublicationPK clonePK = publicationService.createPublication(clone);
       clonePK.setComponentName(fromComponentId);
       cloneId = clonePK.getId();
 
@@ -4541,7 +4541,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
 
     if (getValidationType(pubPK.getInstanceId()) == KmeliaHelper.VALIDATION_TARGET_N) {
-      ValidationStep validationStep = publicationBm.getValidationStepByUser(pubPK, userId);
+      ValidationStep validationStep = publicationService.getValidationStepByUser(pubPK, userId);
       // user has not yet validated publication, so validation is allowed
       return validationStep == null;
     }
@@ -4757,7 +4757,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, String userId) {
-    Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(fromPK);
+    Collection<PublicationDetail> publications = publicationService.getDetailsByFatherPK(fromPK);
     for (PublicationDetail publi : publications) {
       movePublication(publi.getPK(), toPK, userId);
     }
@@ -4849,7 +4849,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Action(ActionType.COPY)
   @Override
   public void copyPublications(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
-    Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(copyDetail.getFromNodePK());
+    Collection<PublicationDetail> publications = publicationService.getDetailsByFatherPK(copyDetail.getFromNodePK());
     for (PublicationDetail publi : publications) {
       copyPublication(publi, copyDetail);
     }

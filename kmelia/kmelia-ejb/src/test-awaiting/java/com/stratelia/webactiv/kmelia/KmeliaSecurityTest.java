@@ -30,7 +30,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.junit.After;
@@ -107,7 +107,7 @@ public class KmeliaSecurityTest {
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     NodeService nodeService = mock(NodeService.class);
     instance.setNodeBm(nodeService);
-    PublicationBm validBm = mock(PublicationBm.class);
+    PublicationService validBm = mock(PublicationService.class);
     PublicationDetail validPublication = mock(PublicationDetail.class);
     when(validPublication.getStatus()).thenReturn(PublicationDetail.VALID);
     PublicationPK validPk = new PublicationPK("2000", null, instanceId);
@@ -151,7 +151,7 @@ public class KmeliaSecurityTest {
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     NodeService nodeService = mock(NodeService.class);
     instance.setNodeBm(nodeService);
-    PublicationBm validBm = mock(PublicationBm.class);
+    PublicationService validBm = mock(PublicationService.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.TO_VALIDATE);
     when(toValidatePublication.isValidationRequired()).thenReturn(Boolean.TRUE);
@@ -202,7 +202,7 @@ public class KmeliaSecurityTest {
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     NodeService nodeService = mock(NodeService.class);
     instance.setNodeBm(nodeService);
-    PublicationBm validBm = mock(PublicationBm.class);
+    PublicationService validBm = mock(PublicationService.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.DRAFT);
     when(toValidatePublication.isDraft()).thenReturn(Boolean.TRUE);

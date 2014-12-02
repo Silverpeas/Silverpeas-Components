@@ -45,17 +45,17 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
   }
 
   private NodeService nodeService = NodeService.get();
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
 
   public NodeService getNodeService() {
     return nodeService;
   }
 
-  public PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      publicationBm = ServiceProvider.getService(PublicationService.class);
+  public PublicationService getPublicationService() {
+    if (publicationService == null) {
+      publicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return publicationBm;
+    return publicationService;
   }
 
   @Override

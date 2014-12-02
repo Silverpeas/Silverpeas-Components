@@ -372,15 +372,15 @@ public class PublicationImport {
 
   public Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
       String fieldName) {
-    PublicationService publicationBm = getPublicationBm();
-    Collection<PublicationDetail> publications = publicationBm.getAllPublications(new PublicationPK(
+    PublicationService publicationService = getPublicationService();
+    Collection<PublicationDetail> publications = publicationService.getAllPublications(new PublicationPK(
         "useless", componentId));
     List<String> result = new ArrayList<String>();
     Iterator<PublicationDetail> iter = publications.iterator();
     while (iter.hasNext()) {
       PublicationDetail publication = iter.next();
       if (publication.getInfoId().equals(xmlFormName)) {
-        Collection<NodePK> fatherPKs = publicationBm.getAllFatherPK(publication.getPK());
+        Collection<NodePK> fatherPKs = publicationService.getAllFatherPK(publication.getPK());
         if (!fatherPKs.isEmpty()) {
           NodePK fatherPK = fatherPKs.iterator().next();
           if (!fatherPK.isTrash()) {
@@ -496,7 +496,7 @@ public class PublicationImport {
     ignoreMissingFormFields = ignore;
   }
 
-  private PublicationService getPublicationBm() {
+  private PublicationService getPublicationService() {
     return ServiceProvider.getService(PublicationService.class);
   }
 }

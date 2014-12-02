@@ -51,7 +51,8 @@ import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.g
 @Named("statisticService")
 public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.StatisticService {
 
-  private PublicationService publicationBm;
+  @Inject
+  private PublicationService publicationService;
   @Inject
   private NodeService nodeService;
   @Inject
@@ -163,7 +164,7 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
         fatherIds.add(Integer.toString(node.getId()));
       }
       validPubli =
-          getPublicationBm().getDetailsByFatherIdsAndStatus(fatherIds,
+          getPublicationService().getDetailsByFatherIdsAndStatus(fatherIds,
           new PublicationPK("", statFilter.getInstanceId()), null, "Valid");
       publis.addAll(validPubli);
     }
@@ -236,17 +237,8 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
         .before(endTime));
   }
 
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
-            e);
-      }
-    }
-    return publicationBm;
+  private PublicationService getPublicationService() {
+    return publicationService;
   }
 
   private NodeService getNodeService() {

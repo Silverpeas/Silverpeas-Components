@@ -63,14 +63,12 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -83,7 +81,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

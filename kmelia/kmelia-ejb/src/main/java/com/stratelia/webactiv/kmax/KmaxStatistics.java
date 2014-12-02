@@ -22,13 +22,9 @@ package com.stratelia.webactiv.kmax;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import java.rmi.RemoteException;
@@ -43,7 +39,7 @@ import java.util.List;
 public class KmaxStatistics implements ComponentStatisticsInterface {
 
   @Inject
-  private PublicationService publicationBm = null;
+  private PublicationService publicationService;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
@@ -65,14 +61,8 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
    * @return
    * @see
    */
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      SilverTrace.error("kmax", "KmaxStatistics.getPublicationBm", "root.MSG_EJB_CREATE_FAILED",
-          JNDINames.PUBLICATIONBM_EJBHOME);
-      throw new KmeliaRuntimeException("kmax", SilverpeasException.ERROR,
-          "KmaxStatistics.getPublicationBm", "root.MSG_EJB_CREATE_FAILED");
-    }
-    return publicationBm;
+  private PublicationService getPublicationService() {
+    return publicationService;
   }
 
   /**
@@ -84,7 +74,7 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
    * @see
    */
   public Collection<PublicationDetail> getPublications(String spaceId, String componentId) {
-    return getPublicationBm()
-        .getAllPublications(new PublicationPK("useless", spaceId, componentId));
+    return getPublicationService().getAllPublications(
+        new PublicationPK("useless", spaceId, componentId));
   }
 }

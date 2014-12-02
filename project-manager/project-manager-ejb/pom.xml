@@ -27,7 +27,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>calendar</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

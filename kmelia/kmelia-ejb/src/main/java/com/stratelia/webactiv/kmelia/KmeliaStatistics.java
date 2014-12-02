@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class KmeliaStatistics implements ComponentStatisticsInterface {
 
-  private PublicationService publicationBm = null;
+  private PublicationService publicationService = null;
 
   /**
    * Method declaration
@@ -74,17 +74,11 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
    * @return
    * @see
    */
-  private PublicationService getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = ServiceProvider.getService(PublicationService.class);
-      } catch (Exception e) {
-        SilverTrace.error("kmelia", "KmeliaStatistics.getPublicationBm",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
-      }
+  private PublicationService getPublicationService() {
+    if (publicationService == null) {
+        publicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return publicationBm;
+    return publicationService;
   }
 
   /**
@@ -97,6 +91,6 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
    */
   public Collection<PublicationDetail> getElements(String componentId)
       throws RemoteException {
-    return getPublicationBm().getAllPublications(new PublicationPK("useless", componentId));
+    return getPublicationService().getAllPublications(new PublicationPK("useless", componentId));
   }
 }

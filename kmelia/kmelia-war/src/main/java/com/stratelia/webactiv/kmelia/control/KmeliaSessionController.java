@@ -2038,12 +2038,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public PublicationService getPublicationBm() {
-    try {
       return ServiceProvider.getService(PublicationService.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaSessionController.getPublicationBm()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-    }
   }
 
   /**

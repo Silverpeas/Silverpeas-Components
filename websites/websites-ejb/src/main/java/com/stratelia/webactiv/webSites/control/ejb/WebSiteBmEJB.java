@@ -37,7 +37,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.webSites.WebSitesContentManager;
@@ -67,7 +67,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   @Inject
   private NodeService nodeService;
   @Inject
-  private PublicationService publicationBm;
+  private PublicationService publicationService;
   /**
    * use for the PDC utilization
    */
@@ -94,7 +94,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     // get the publications associated to this topic
     try {
       // get the publication details linked to this topic
-      pubDetails = publicationBm.getDetailsByFatherPK(nodeDetail.getNodePK());
+      pubDetails = publicationService.getDetailsByFatherPK(nodeDetail.getNodePK());
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.goTo()",
           SilverpeasRuntimeException.ERROR,
@@ -125,7 +125,7 @@ public class WebSiteBmEJB implements WebSiteBm {
       try {
         // get the total number of publication associated to this descendant
         // topics
-        nbPub = publicationBm.getNbPubByFatherPath(childPK, childPath);
+        nbPub = publicationService.getNbPubByFatherPath(childPK, childPath);
       } catch (Exception re) {
         throw new WebSitesRuntimeException("WebSiteBmEJB.goTo()",
             SilverpeasRuntimeException.ERROR,
@@ -245,10 +245,10 @@ public class WebSiteBmEJB implements WebSiteBm {
       nodesToDelete.add(pkToDelete);
       for (NodePK oneNodeToDelete : nodesToDelete) {
         // get pubs linked to current node
-        Collection<PublicationPK> pubsToCheck = publicationBm.getPubPKsInFatherPK(oneNodeToDelete);
+        Collection<PublicationPK> pubsToCheck = publicationService.getPubPKsInFatherPK(oneNodeToDelete);
         // check each pub contained in current node
         for (PublicationPK onePubToCheck : pubsToCheck) {
-          publicationBm.removeFather(onePubToCheck, oneNodeToDelete);
+          publicationService.removeFather(onePubToCheck, oneNodeToDelete);
         }
       }
       // Delete the topic
@@ -344,7 +344,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   public PublicationDetail getPublicationDetail(PublicationPK pk) {
     SilverTrace.info("webSites", "WebSiteBmEJB.getPublicationDetail()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      return publicationBm.getDetail(pk);
+      return publicationService.getDetail(pk);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getPublicationDetail()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_GET_PUBLICATION_DETAIL_FAILED",
@@ -367,7 +367,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     pubDetail.setStatus(PublicationDetail.VALID);
     try {
       // create the publication
-      PublicationPK pubPK = publicationBm.createPublication(pubDetail);
+      PublicationPK pubPK = publicationService.createPublication(pubDetail);
       pubDetail.getPK().setId(pubPK.getId());
       return pubPK.getId();
     } catch (Exception re) {
@@ -387,7 +387,7 @@ public class WebSiteBmEJB implements WebSiteBm {
         "root.MSG_GEN_ENTER_METHOD");
     pubDetail.getPK().setComponentName(componentId);
     try {
-      publicationBm.setDetail(pubDetail);
+      publicationService.setDetail(pubDetail);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updatePublication()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_UPDATE_FAILED", "pubDetail = "
@@ -405,8 +405,8 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.deletePublication()", "root.MSG_GEN_PARAM_VALUE",
         "pubId = " + pubPK);
     try {
-      publicationBm.removeAllFather(pubPK);
-      publicationBm.removePublication(pubPK);
+      publicationService.removeAllFather(pubPK);
+      publicationService.removePublication(pubPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.deletePublication()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_DELETE_FAILED", "pubPK = "
@@ -424,7 +424,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.addPublicationToTopic()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      publicationBm.addFather(pubPK, fatherPK);
+      publicationService.addFather(pubPK, fatherPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.addPublicationToTopic()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED", "pubPK = "
@@ -437,7 +437,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.removePublicationToTopic()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      publicationBm.removeFather(pubPK, fatherPK);
+      publicationService.removeFather(pubPK, fatherPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.removePublicationToTopic()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED",
@@ -454,7 +454,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.getAllFatherPK()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return publicationBm.getAllFatherPK(pubPK);
+      return publicationService.getAllFatherPK(pubPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getAllFatherPK()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_GET_PUBLICATION_FATHER_FAILED",
@@ -481,7 +481,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   @Override
   public void updateClassification(PublicationPK pubPK, List<String> arrayTopic) {
     SilverTrace.info("webSites", "WebSiteBmEJB.updateClassification()", "root.MSG_GEN_ENTER_METHOD");
-    Collection<NodePK> oldFathersColl = publicationBm.getAllFatherPK(pubPK);
+    Collection<NodePK> oldFathersColl = publicationService.getAllFatherPK(pubPK);
 
     List<NodePK> oldFathers = new ArrayList<NodePK>(); // List of NodePK
     List<NodePK> newFathers = new ArrayList<NodePK>(); // List of NodePK
@@ -510,9 +510,9 @@ public class WebSiteBmEJB implements WebSiteBm {
     it = newFathers.iterator();
     while (it.hasNext()) {
       nodePK = it.next();
-      publicationBm.addFather(pubPK, nodePK);
+      publicationService.addFather(pubPK, nodePK);
     }
-    publicationBm.removeFathers(pubPK, remFathers);
+    publicationService.removeFathers(pubPK, remFathers);
   }
 
   /**
@@ -525,7 +525,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.changePubsOrder()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK + ", nodePK = "
         + nodePK.toString() + ", direction = " + direction);
-    publicationBm.changePublicationOrder(pubPK, nodePK, direction);
+    publicationService.changePublicationOrder(pubPK, nodePK, direction);
   }
 
   /**
@@ -738,11 +738,11 @@ public class WebSiteBmEJB implements WebSiteBm {
       }
       // index all publications
       PublicationPK pubPK = new PublicationPK("useless", "useless", componentId);
-      Collection<PublicationDetail> publications = publicationBm.getAllPublications(pubPK);
+      Collection<PublicationDetail> publications = publicationService.getAllPublications(pubPK);
       Iterator<PublicationDetail> itPub = publications.iterator();
       while (itPub.hasNext()) {
         PublicationDetail pub = itPub.next();
-        publicationBm.createIndex(pub);
+        publicationService.createIndex(pub);
       }
     } catch (Exception e) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.index(" + componentId + ")",

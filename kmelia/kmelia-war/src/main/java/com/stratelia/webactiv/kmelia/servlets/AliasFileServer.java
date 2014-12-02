@@ -34,10 +34,10 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +58,9 @@ import java.util.List;
 public class AliasFileServer extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  @Inject
+  private PublicationService publicationService;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -97,7 +100,7 @@ public class AliasFileServer extends HttpServlet {
 
     if (foreignKey != null) {
       PublicationPK pubPK = new PublicationPK(foreignKey.getId(), foreignKey.getInstanceId());
-      List<Alias> aliases = (List<Alias>) getPublicationBm().getAlias(pubPK);
+      List<Alias> aliases = (List<Alias>) getPublicationService().getAlias(pubPK);
 
       // check if user have rights to see alias files
       boolean rightsOK = false;
@@ -166,12 +169,7 @@ public class AliasFileServer extends HttpServlet {
     }
   }
 
-  private PublicationService getPublicationBm() {
-    try {
-      return ServiceProvider.getService(PublicationService.class);
-    } catch (Exception e) {
-      SilverTrace.warn("kmelia", "AliasFileServer.getPublicationBm", "root.EX_CANT_GET_EJB");
-      return null;
+  private PublicationService getPublicationService() {
+      return publicationService;
     }
-  }
 }

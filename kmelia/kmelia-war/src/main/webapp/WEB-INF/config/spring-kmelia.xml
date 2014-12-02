@@ -41,10 +41,10 @@
   <ctx:component-scan base-package="com.stratelia.webactiv.kmelia.control"/>
 
   <jee:local-slsb id="publicationBm" jndi-name="${PUBLICATIONBM_EJBHOME}"
-                business-interface="com.stratelia.webactiv.publication.control.PublicationBm" />
+                business-interface="com.stratelia.webactiv.publication.control.PublicationService" />
 
   <bean id="kmeliaSearchResultRenderer" class="com.silverpeas.kmelia.ui.ResultSearchRenderer">
-  	<property name="publicationBm" ref="publicationBm" />
+	<property name="publicationService" ref="publicationBm" />
   </bean>
 
 </beans>
