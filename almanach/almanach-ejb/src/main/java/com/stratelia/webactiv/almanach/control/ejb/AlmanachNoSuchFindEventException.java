@@ -24,9 +24,7 @@
 package com.stratelia.webactiv.almanach.control.ejb;
 
 /**
- * 
  * @author groccia
- * @version
  */
 public class AlmanachNoSuchFindEventException extends AlmanachPrivateException {
 

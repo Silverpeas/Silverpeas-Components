@@ -28,7 +28,6 @@ import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import org.silverpeas.date.Period;
 
-import java.util.Calendar;
 import java.util.List;
 
 /**

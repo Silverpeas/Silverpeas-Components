@@ -550,12 +550,12 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
 
   public String getFlag(String[] profiles) {
     String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
+    for (final String profile : profiles) {
       // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
-      } else if (profiles[i].equals("publisher")) {
-        flag = profiles[i];
+      if (profile.equals("admin")) {
+        return profile;
+      } else if (profile.equals("publisher")) {
+        flag = profile;
       }
     }
     return flag;

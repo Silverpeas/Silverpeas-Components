@@ -157,7 +157,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
 
     String eventURL = event.getEventUrl();
     if (StringUtil.isDefined(eventURL)) {
-      if (eventURL.indexOf("://") == -1) {
+      if (!eventURL.contains("://")) {
         eventURL = "http://" + eventURL;
       }
       template.setAttribute("evtURL", EncodeHelper.javaStringToHtmlString(eventURL));

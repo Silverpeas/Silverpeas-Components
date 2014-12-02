@@ -20,44 +20,52 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import static org.silverpeas.util.DateUtil.*;
-
-import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.DBUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.*;
+import java.util.List;
+
+import static org.silverpeas.util.DateUtil.*;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 public class EventDAO {
 
   private static final String EVENT_COLUMNNAMES =
-          "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, "
-          + "eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
-  private static final String EVENTS_IN_RANGE_QUERY = "select distinct * from " + EventPK.TABLE_NAME
-          + " left outer join " + Periodicity.getTableName() + " on " + EventPK.TABLE_NAME
-          + ".eventId = " + Periodicity.getTableName() + ".eventId where ((eventStartDay <= ''{0}'' "
-          + "and eventEndDay >= ''{0}'') or (eventStartDay >= ''{0}'' and eventStartDay <= ''{1}'') or "
-          + "(id is not null and eventStartDay < ''{1}'' and (untildateperiod >= ''{0}'' or "
-          + "untildateperiod is null))) and instanceId in ({2}) order by eventStartDay";
-  private static final String EVENTS_FROM_DATE = "select distinct * from " + EventPK.TABLE_NAME
-          + " left outer join " + Periodicity.getTableName() + " on " + EventPK.TABLE_NAME
-          + ".eventId = " + Periodicity.getTableName() + ".eventId where ((eventStartDay >= ''{0}'') "
-          + "or (eventEndDay >= ''{0}'') or (id is not null and (untildateperiod >= ''{0}'' or "
-          + "untildateperiod is null))) and instanceId in ({1}) order by eventStartDay";
+      "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, " +
+          "eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
+  private static final String EVENTS_IN_RANGE_QUERY =
+      "select distinct * from " + EventPK.TABLE_NAME + " left outer join " +
+          Periodicity.getTableName() + " on " + EventPK.TABLE_NAME + ".eventId = " +
+          Periodicity.getTableName() + ".eventId where ((eventStartDay <= ''{0}'' " +
+          "and eventEndDay >= ''{0}'') or (eventStartDay >= ''{0}'' and eventStartDay <= ''{1}'')" +
+          " or " +
+          "(id is not null and eventStartDay < ''{1}'' and (untildateperiod >= ''{0}'' or " +
+          "untildateperiod is null))) and instanceId in ({2}) order by eventStartDay";
+  private static final String EVENTS_FROM_DATE =
+      "select distinct * from " + EventPK.TABLE_NAME + " left outer join " +
+          Periodicity.getTableName() + " on " + EventPK.TABLE_NAME + ".eventId = " +
+          Periodicity.getTableName() + ".eventId where ((eventStartDay >= ''{0}'') " +
+          "or (eventEndDay >= ''{0}'') or (id is not null and (untildateperiod >= ''{0}'' or " +
+          "untildateperiod is null))) and instanceId in ({1}) order by eventStartDay";
 
-  public void updateEvent(final EventDetail event) throws SQLException, Exception {
+  public void updateEvent(final EventDetail event) throws Exception {
     Connection connection = openConnection();
 
     String updateQuery = "update " + event.getPK().getTableName();
     updateQuery +=
-            " set eventName = ? , eventDelegatorId = ? , eventStartDay = ? , eventEndDay = ? , "
-            + "eventStartHour = ? , eventEndHour = ? , eventPriority = ? , eventTitle = ? , "
-            + "eventPlace = ? , eventUrl = ? ";
+        " set eventName = ? , eventDelegatorId = ? , eventStartDay = ? , eventEndDay = ? , " +
+            "eventStartHour = ? , eventEndHour = ? , eventPriority = ? , eventTitle = ? , " +
+            "eventPlace = ? , eventUrl = ? ";
     updateQuery += " where eventId = ? and instanceId = ?";
 
     PreparedStatement updateStmt = null;
@@ -80,7 +88,7 @@ public class EventDAO {
       updateStmt.setString(8, event.getTitle());
       updateStmt.setString(9, event.getPlace());
       updateStmt.setString(10, event.getEventUrl());
-      updateStmt.setInt(11, new Integer(event.getPK().getId()).intValue());
+      updateStmt.setInt(11, Integer.parseInt(event.getPK().getId()));
       updateStmt.setString(12, event.getPK().getComponentName());
 
       updateStmt.executeUpdate();
@@ -90,8 +98,7 @@ public class EventDAO {
     }
   }
 
-  public String addEvent(final Connection connection, final EventDetail event) throws SQLException,
-          Exception {
+  public String addEvent(final Connection connection, final EventDetail event) throws Exception {
     String insertQuery = "insert into " + event.getPK().getTableName();
     insertQuery += " (" + EVENT_COLUMNNAMES + ") ";
     insertQuery += " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -125,15 +132,14 @@ public class EventDAO {
 
       insertStmt.executeUpdate();
     } catch (SQLException ue) {
-      SilverTrace.warn("almanach", "EventDAO.addEvent()",
-              "almanach.EXE_ADD_EVENT_FAIL", "id : " + id, ue);
+      SilverTrace
+          .warn("almanach", "EventDAO.addEvent()", "almanach.EXE_ADD_EVENT_FAIL", "id : " + id, ue);
     }
 
     return String.valueOf(id);
   }
 
-  public void removeEvent(final Connection connection, final EventPK pk)
-          throws SQLException, Exception {
+  public void removeEvent(final Connection connection, final EventPK pk) throws Exception {
     String deleteQuery = "delete from " + pk.getTableName();
     deleteQuery += " where eventId=" + pk.getId();
     Statement deleteStmt = null;
@@ -148,7 +154,6 @@ public class EventDAO {
 
   /**
    * Find all events that can occur in the specified range and for the specified almanachs.
-   *
    * @param startDay the start date of the range. It has to be in the format yyyy/MM/dd.
    * @param endDay the end date of the range. It has to be in the format yyyy/MM/dd. If the end
    * date is null or empty, then there is no end date and all events from startDay are taken into
@@ -159,7 +164,7 @@ public class EventDAO {
    * @throws Exception if an error occurs during the process of this method.
    */
   public Collection<EventDetail> findAllEventsInRange(String startDay, String endDay,
-          String... almanachIds) throws SQLException, Exception {
+      String... almanachIds) throws Exception {
     Connection connection = openConnection();
 
     ResultSet rs = null;
@@ -176,14 +181,15 @@ public class EventDAO {
 
     String selectQuery;
     if (isDefined(endDay)) {
-      selectQuery  = MessageFormat.format(EVENTS_IN_RANGE_QUERY, startDay, endDay, paramInstanceIds.toString());
+      selectQuery = MessageFormat
+          .format(EVENTS_IN_RANGE_QUERY, startDay, endDay, paramInstanceIds.toString());
     } else {
       selectQuery = MessageFormat.format(EVENTS_FROM_DATE, startDay, paramInstanceIds.toString());
     }
     try {
       selectStmt = connection.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
-      List<EventDetail> events = new ArrayList<EventDetail>();
+      List<EventDetail> events = new ArrayList<>();
       while (rs.next()) {
         EventDetail event = decodeEventDetailFromResultSet(rs);
         events.add(event);
@@ -196,14 +202,14 @@ public class EventDAO {
   }
 
   public Collection<EventDetail> findAllEventsInPeriod(final Period period, String... instanceIds)
-          throws Exception {
+      throws Exception {
     String startDay = formatDate(period.getBeginDate());
     String endDay = formatDate(period.getEndDate());
     return findAllEventsInRange(startDay, endDay, instanceIds);
   }
 
   public Collection<EventDetail> findAllEvents(String... instanceIds)
-          throws SQLException, Exception {
+      throws Exception {
     Connection connection = openConnection();
 
     ResultSet rs = null;
@@ -219,21 +225,20 @@ public class EventDAO {
       throw new SQLException("Missing instance identifiers");
     }
 
-    SilverTrace.debug("almanach", "EventDAO.findAllEvents()", "paramInstanceIds="
-            + paramInstanceIds);
+    SilverTrace
+        .debug("almanach", "EventDAO.findAllEvents()", "paramInstanceIds=" + paramInstanceIds);
     try {
-      String selectQuery = "select distinct * "
-              + " from " + EventPK.TABLE_NAME + " left outer join " + Periodicity.getTableName()
-              + " on " + EventPK.TABLE_NAME + ".eventId = " + Periodicity.getTableName()
-              + ".eventId"
-              + paramInstanceIds + " order by eventStartDay";
+      String selectQuery =
+          "select distinct * " + " from " + EventPK.TABLE_NAME + " left outer join " +
+              Periodicity.getTableName() + " on " + EventPK.TABLE_NAME + ".eventId = " +
+              Periodicity.getTableName() + ".eventId" + paramInstanceIds +
+              " order by eventStartDay";
 
-      SilverTrace.debug("almanach", "EventDAO.getAllEvents()", "selectQuery="
-              + selectQuery);
+      SilverTrace.debug("almanach", "EventDAO.getAllEvents()", "selectQuery=" + selectQuery);
 
       selectStmt = connection.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
-      List<EventDetail> list = new ArrayList<EventDetail>();
+      List<EventDetail> list = new ArrayList<>();
       while (rs.next()) {
         EventDetail event = decodeEventDetailFromResultSet(rs);
         list.add(event);
@@ -246,10 +251,10 @@ public class EventDAO {
   }
 
   public Collection<EventDetail> findAllEventsByPK(final Collection<EventPK> eventPKs)
-          throws SQLException, Exception {
+      throws Exception {
     Connection connection = openConnection();
 
-    List<EventDetail> events = new ArrayList<EventDetail>();
+    List<EventDetail> events = new ArrayList<>();
     try {
       for (EventPK pk : eventPKs) {
         EventDetail event = getEventDetail(connection, pk);
@@ -261,7 +266,7 @@ public class EventDAO {
     return events;
   }
 
-  public EventDetail findEventByPK(final EventPK pk) throws SQLException, Exception {
+  public EventDetail findEventByPK(final EventPK pk) throws Exception {
     Connection connection = openConnection();
     try {
       return getEventDetail(connection, pk);
@@ -271,13 +276,13 @@ public class EventDAO {
   }
 
   private EventDetail getEventDetail(final Connection connection, final EventPK pk)
-          throws SQLException, Exception {
+      throws Exception {
     ResultSet rs = null;
     Statement selectStmt = null;
-    String selectQuery = "select * "
-            + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
-            + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-            + " where " + pk.getTableName() + ".eventId=" + pk.getId();
+    String selectQuery = "select * " + " from " + pk.getTableName() + " left outer join " +
+        Periodicity.getTableName() + " on " + pk.getTableName() + ".eventId = " +
+        Periodicity.getTableName() + ".eventId" + " where " + pk.getTableName() + ".eventId=" +
+        pk.getId();
 
     EventDetail event = null;
     try {
@@ -292,8 +297,7 @@ public class EventDAO {
     return event;
   }
 
-  protected EventDetail decodeEventDetailFromResultSet(final ResultSet rs)
-          throws Exception {
+  protected EventDetail decodeEventDetailFromResultSet(final ResultSet rs) throws Exception {
     String id;
     try {
       id = rs.getString(EventPK.TABLE_NAME + ".eventId");
@@ -332,7 +336,8 @@ public class EventDAO {
     return event;
   }
 
-  protected void fixIncorrectDatesForAlreadyExistingEvent(final EventDetail event) throws Exception {
+  protected void fixIncorrectDatesForAlreadyExistingEvent(final EventDetail event)
+      throws Exception {
     if (event.getStartDate().equals(event.getEndDate()) && isDefined(event.getEndHour())) {
       int endHour = extractHour(event.getEndHour());
       int endMinute = extractMinutes(event.getEndHour());

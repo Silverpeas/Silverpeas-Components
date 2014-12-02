@@ -71,7 +71,9 @@ public class AlmanachInstanciator extends SQLRequest implements ComponentsInstan
       throw ie;
     } finally {
       try {
-        stmt.close();
+        if (stmt != null) {
+          stmt.close();
+        }
       } catch (SQLException err_closeStatement) {
         InstanciationException ie = new InstanciationException(
             "AlmanachInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,

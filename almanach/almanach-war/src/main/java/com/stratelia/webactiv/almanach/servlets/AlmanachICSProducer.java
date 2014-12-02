@@ -23,10 +23,21 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.export.Exporter;
+import com.silverpeas.export.ExporterProvider;
+import com.silverpeas.export.ical.ExportableCalendar;
+import com.stratelia.webactiv.almanach.control.CalendarEventEncoder;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.UtilException;
 
 import javax.ejb.CreateException;
 import javax.inject.Inject;
@@ -37,24 +48,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterProvider;
-import com.silverpeas.export.ical.ExportableCalendar;
-
-import com.stratelia.webactiv.almanach.control.CalendarEventEncoder;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.UtilException;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 
@@ -115,7 +112,7 @@ public class AlmanachICSProducer {
   /**
    * Gets all events of the underlying almanach.
    *
-   * @param almanachId
+   * @param almanachId the almanach identifier
    * @return a list with the details of the events registered in the almanach.
    * @throws AlmanachException if an error occurs while getting the list of events.
    * @throws RemoteException if the communication with the remote business object fails.
@@ -125,8 +122,7 @@ public class AlmanachICSProducer {
   public List<EventDetail> getAllEvents(final String almanachId) throws AlmanachException,
       RemoteException, UtilException, CreateException {
     EventPK pk = new EventPK("", null, almanachId);
-    AlmanachBm almanachBm = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME,
-        AlmanachBm.class);
-    return new ArrayList<EventDetail>(almanachBm.getAllEvents(pk));
+    AlmanachBm almanachBm = ServiceProvider.getService(AlmanachBm.class);
+    return new ArrayList<>(almanachBm.getAllEvents(pk));
   }
 }

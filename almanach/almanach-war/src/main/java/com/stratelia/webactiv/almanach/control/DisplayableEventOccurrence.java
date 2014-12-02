@@ -59,8 +59,7 @@ public class DisplayableEventOccurrence extends EventOccurrence {
    * specified occurrences.
    */
   public static List<DisplayableEventOccurrence> decorate(final List<EventOccurrence> occurrences) {
-    List<DisplayableEventOccurrence> decorators =
-            new ArrayList<DisplayableEventOccurrence>(occurrences.size());
+    List<DisplayableEventOccurrence> decorators = new ArrayList<>(occurrences.size());
     for (EventOccurrence occurrence : occurrences) {
       decorators.add(decorate(occurrence));
     }
@@ -72,7 +71,7 @@ public class DisplayableEventOccurrence extends EventOccurrence {
    * @return a list with the CSS classes that are applied to this.
    */
   protected List<String> getCSSClasses() {
-    List<String> cssClasses = new ArrayList<String>(2);
+    List<String> cssClasses = new ArrayList<>(2);
     cssClasses.add(getEventDetail().getInstanceId());
     if (isPriority()) {
       cssClasses.add("priority");

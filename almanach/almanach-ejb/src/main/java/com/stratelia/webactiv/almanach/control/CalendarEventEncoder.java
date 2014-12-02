@@ -68,7 +68,7 @@ public class CalendarEventEncoder {
    * @return the calendar events corresponding to the almanach events.
    */
   public List<CalendarEvent> encode(final List<EventDetail> eventDetails) {
-    List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+    List<CalendarEvent> events = new ArrayList<>();
     TimeZone timeZone = TimeZone.getTimeZone(settings.getString("almanach.timezone"));
     for (EventDetail eventDetail : eventDetails) {
       Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
@@ -130,7 +130,7 @@ public class CalendarEventEncoder {
    */
   private CalendarEventRecurrence asCalendarEventRecurrence(final Periodicity periodicity) {
     TimeUnit timeUnit;
-    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<>();
     switch (periodicity.getUnity()) {
       case Periodicity.UNIT_WEEK:
         timeUnit = TimeUnit.WEEK;
@@ -163,7 +163,7 @@ public class CalendarEventEncoder {
    * @return a list of day of week occurrences.
    */
   private List<DayOfWeekOccurrence> extractMonthlyDaysOfWeek(final Periodicity periodicity) {
-    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<>();
     int nth = periodicity.getNumWeek();
     if (nth != 0) {
       if (periodicity.getDay() == java.util.Calendar.MONDAY) {
@@ -192,7 +192,7 @@ public class CalendarEventEncoder {
    * @return a list of days of week.
    */
   private List<DayOfWeekOccurrence> extractWeeklyDaysOfWeek(final Periodicity periodicity) {
-    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<>();
     String encodedDaysOfWeek = periodicity.getDaysWeekBinary();
     if (encodedDaysOfWeek.charAt(0) == '1') {// Monday
       daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.MONDAY));

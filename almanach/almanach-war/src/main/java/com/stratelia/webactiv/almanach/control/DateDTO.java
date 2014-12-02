@@ -30,7 +30,7 @@ import org.silverpeas.util.DateUtil;
 import java.util.Date;
 
 /**
- * A DTO on a date in the alamanch. The date is made up of the day in year and optionally of the
+ * A DTO on a date in the almanach. The date is made up of the day in year and optionally of the
  * time in the day. It is a way to carry the information pertinence about the date to render in an
  * almanach.
  */

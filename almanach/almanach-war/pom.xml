@@ -25,9 +25,8 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.almanach</groupId>
-      <artifactId>almanach-ejb</artifactId>
+      <artifactId>almanach-jar</artifactId>
       <version>${project.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -46,7 +45,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

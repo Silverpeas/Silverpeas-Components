@@ -82,7 +82,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    */
   private List<EventOccurrence> generateOccurrencesOf(final List<EventDetail> events,
           final Period inPeriod) {
-    List<EventOccurrence> occurrences = new ArrayList<EventOccurrence>();
+    List<EventOccurrence> occurrences = new ArrayList<>();
     Calendar iCal4JCalendar = anICalCalendarWith(events);
     ComponentList componentList = iCal4JCalendar.getComponents(Component.VEVENT);
     for (Object eventObject : componentList) {

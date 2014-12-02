@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.almanach</groupId>
   <artifactId>almanach-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB Almanach</name>
 
   <dependencies>
@@ -22,7 +22,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

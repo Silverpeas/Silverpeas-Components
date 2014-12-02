@@ -20,12 +20,6 @@
  */
 package com.stratelia.webactiv.almanach;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -36,18 +30,22 @@ import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class AlmanachContentManager implements ContentInterface {
 
   private ContentManager contentManager;
+  @Inject
   private AlmanachBm currentAlmanachBm;
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   *
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
@@ -55,47 +53,43 @@ public class AlmanachContentManager implements ContentInterface {
    * @return a List of SilverContent
    */
   @SuppressWarnings("unchecked")
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  public List getSilverContentById(List ids, String peasId, String userId, List userRoles) {
     if (getContentManager() == null) {
       return new ArrayList<EventDetail>();
     }
     return getHeaders(makePKArray(ids, peasId), peasId);
   }
 
-  public int getSilverObjectId(String pubId, String peasId)
-      throws ContentManagerException {
-    SilverTrace.info("almanach", "AlmanachContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
+  public int getSilverObjectId(String pubId, String peasId) throws ContentManagerException {
+    SilverTrace
+        .info("almanach", "AlmanachContentManager.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
+            "pubId = " + pubId);
     return getContentManager().getSilverContentId(pubId, peasId);
   }
 
   /**
    * add a new content. It is registered to contentManager service
-   *
    * @param con a Connection
-   * @param pubDetail the content to register
+   * @param eventDetail the content to register
    * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
-  public int createSilverContent(Connection con, EventDetail eventDetail,
-      String userId) throws ContentManagerException {
+  public int createSilverContent(Connection con, EventDetail eventDetail, String userId)
+      throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility();
-    return getContentManager().addSilverContent(con,
-        eventDetail.getPK().getId(), eventDetail.getPK().getComponentName(),
-        userId, scv);
+    return getContentManager()
+        .addSilverContent(con, eventDetail.getPK().getId(), eventDetail.getPK().getComponentName(),
+            userId, scv);
   }
 
   /**
    * delete a content. It is registered to contentManager service
-   *
    * @param con a Connection
-   * @param pubPK the identifiant of the content to unregister
+   * @param eventPK the identifiant of the content to unregister
    */
-  public void deleteSilverContent(Connection con, EventPK eventPK)
-      throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(eventPK.getId(),
-        eventPK.getComponentName());
+  public void deleteSilverContent(Connection con, EventPK eventPK) throws ContentManagerException {
+    int contentId =
+        getContentManager().getSilverContentId(eventPK.getId(), eventPK.getComponentName());
     SilverTrace.info("almanach", "AlmanachContentManager.deleteSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + eventPK.getId() + ", contentId = " + contentId);
     if (contentId != -1) {
@@ -105,13 +99,12 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * update the visibility attributes of the content. Here, the type of content is a EventDetail
-   *
    * @param eventDetail the content
    */
   public void updateSilverContentVisibility(EventDetail eventDetail)
       throws ContentManagerException {
-    int silverContentId = getContentManager().getSilverContentId(
-        eventDetail.getPK().getId(), eventDetail.getPK().getComponentName());
+    int silverContentId = getContentManager()
+        .getSilverContentId(eventDetail.getPK().getId(), eventDetail.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility();
     SilverTrace.info("almanach", "AlmanachContentManager.updateSilverContentVisibility()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv);
@@ -119,8 +112,9 @@ public class AlmanachContentManager implements ContentInterface {
     if (silverContentId == -1) {
       createSilverContent(null, eventDetail, eventDetail.getDelegatorId());
     } else {
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          eventDetail.getPK().getComponentName(), silverContentId);
+      getContentManager()
+          .updateSilverContentVisibilityAttributes(scv, eventDetail.getPK().getComponentName(),
+              silverContentId);
     }
 
     ClassifyEngine.clearCache();
@@ -128,26 +122,21 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * return a list of almanachPK according to a list of silverContentId
-   *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
    * @return a list of almanachPK
    */
   private List<EventPK> makePKArray(List<Integer> idList, String peasId) {
-    List<EventPK> pks = new ArrayList<EventPK>();
-    EventPK eventPK = null;
-    Iterator<Integer> iter = idList.iterator();
-    String id = null;
+    List<EventPK> pks = new ArrayList<>();
+    EventPK eventPK;
+    String id;
     // for each silverContentId, we get the corresponding almanachId
-    while (iter.hasNext()) {
-      int contentId = iter.next().intValue();
+    for (Integer contentId : idList) {
       try {
         id = getContentManager().getInternalContentId(contentId);
         eventPK = new EventPK(id, "useless", peasId);
         pks.add(eventPK);
-      } catch (ClassCastException ignored) {
-        ;// ignore unknown item
-      } catch (ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException ignored) {
         ;// ignore unknown item
       }
     }
@@ -156,12 +145,11 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of almanachPK
-   *
    * @param ids a list of almanachPK
    * @return a list of EventDetail
    */
   private List<EventDetail> getHeaders(List<EventPK> ids, String peasId) {
-    List<EventDetail> headers = new ArrayList<EventDetail>();
+    List<EventDetail> headers = new ArrayList<>();
     try {
       Collection<EventDetail> eventDetails = getAlmanachBm().getEvents(ids);
       for (EventDetail eventDetail : eventDetails) {
@@ -177,13 +165,8 @@ public class AlmanachContentManager implements ContentInterface {
 
   private AlmanachBm getAlmanachBm() throws AlmanachException {
     if (currentAlmanachBm == null) {
-      try {
-        currentAlmanachBm = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME,
-            AlmanachBm.class);
-      } catch (Exception e) {
-        throw new AlmanachException("AlmanachContentManager.getAlmanachBm()",
-            SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL", e);
-      }
+      throw new AlmanachException("AlmanachContentManager.getAlmanachBm()",
+          SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL");
     }
     return currentAlmanachBm;
   }

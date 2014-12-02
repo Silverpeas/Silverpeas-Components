@@ -23,31 +23,19 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import org.silverpeas.util.ServiceProvider;
+
 /**
  * A factory of EventOccurrenceGenerator instances. It manages the life-cycle of the generators and
  * abstracts the concrete implementation used to generate event occurrences.
  */
-public class EventOccurrenceGeneratorFactory {
+public class EventOccurrenceGeneratorProvider {
 
-  private static final EventOccurrenceGeneratorFactory instance = new EventOccurrenceGeneratorFactory();
-  
-  private static final EventOccurrenceGenerator generator = new ICal4JEventOccurrencesGenerator();
-  
-  /**
-   * Gets a factory of event occurrences generators.
-   * The returned factory abstracts the concrete implementation of the EventOccurrenceGenerator
-   * interface.
-   * @return an EventOccurrenceGeneratorFactory instance.
-   */
-  public static EventOccurrenceGeneratorFactory getFactory() {
-    return instance;
-  }
-  
   /**
    * Gets a generator of event occurrences.
    * @return an instance of the EventOccurrenceGenerator interface.
    */
-  public EventOccurrenceGenerator getEventOccurrenceGenerator() {
-    return generator;
+  public static EventOccurrenceGenerator getEventOccurrenceGenerator() {
+    return ServiceProvider.getService(EventOccurrenceGenerator.class);
   }
 }

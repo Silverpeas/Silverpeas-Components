@@ -23,34 +23,33 @@
  */
 package com.stratelia.webactiv.almanach;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-
 /**
  * Class declaration
- *
  * @author
  */
 public class AlmanachStatistics implements ComponentStatisticsInterface {
 
+  @Inject
   private AlmanachBm almanachBm = null;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     Collection<EventDetail> events = getEvents(spaceId, componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(events.size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(events.size());
     for (EventDetail detail : events) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(detail.getDelegatorId());
@@ -62,19 +61,13 @@ public class AlmanachStatistics implements ComponentStatisticsInterface {
 
   private AlmanachBm getAlmanachBm() throws Exception {
     if (almanachBm == null) {
-      try {
-        almanachBm =EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
-      } catch (Exception e) {
-        SilverTrace.error("almanach", "AlmanachStatistics.getAlmanachBm",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw e;
-      }
+      throw new AlmanachRuntimeException("almanach", SilverpeasRuntimeException.ERROR,
+          "AlmanachStatistics.getAlmanachBm", "CDI bootstrap error");
     }
     return almanachBm;
   }
 
-  public Collection<EventDetail> getEvents(String spaceId, String componentId)
-      throws Exception {
+  public Collection<EventDetail> getEvents(String spaceId, String componentId) throws Exception {
     return getAlmanachBm().getAllEvents(new EventPK("", spaceId, componentId));
   }
 

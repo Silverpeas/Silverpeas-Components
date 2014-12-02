@@ -52,7 +52,7 @@ public class ExceptionDatesGenerator {
    * @return a set of exception dates.
    */
   public Set<Date> generateExceptionDates(final EventDetail event) {
-    Set<Date> exceptionDates = new HashSet<Date>();
+    Set<Date> exceptionDates = new HashSet<>();
     if (event.isPeriodic()) {
       Collection<PeriodicityException> exceptions = getPeriodicityExceptions(event.getPeriodicity());
       java.util.Calendar exceptionsStartDate = java.util.Calendar.getInstance();

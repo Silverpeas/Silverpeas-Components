@@ -20,15 +20,7 @@
  */
 package org.silverpeas.almanach.workflowextensions;
 
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.upload.UploadedFile;
-
 import com.silverpeas.form.DataRecordUtil;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
@@ -37,12 +29,15 @@ import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * The aim of this class is to provide a new workflow extension in order to create an almanach event
@@ -109,8 +104,7 @@ public class SendInAlmanach extends ExternalActionImpl {
       if (priority) {
         event.setPriority(1);
       }
-      Collection<UploadedFile> uploadedFiles = null;
-      String eventId = getAlmanachBm().addEvent(event, uploadedFiles);
+      String eventId = getAlmanachBm().addEvent(event, null);
       SilverTrace
           .info("processManager", "SendInAlmanach", "Add an event successfully id=" + eventId);
     } else {
@@ -151,7 +145,7 @@ public class SendInAlmanach extends ExternalActionImpl {
   }
 
   /**
-   * @param almanachParam
+   * @param almanachParam the almanach trigger param
    * @return
    */
   private String getFolderValueFromTriggerParam(AlmanachTriggerParam almanachParam) {
@@ -185,7 +179,7 @@ public class SendInAlmanach extends ExternalActionImpl {
                 .getAllDataRecord(role,
                     "fr"), "fr");
       } catch (WorkflowException e) {
-        SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+        SilverTrace.error("workflowEngine", "SendInAlmanach.execute()", "root.MSG_GEN_ERROR", e);
       }
     }
     return evaluateValue;
@@ -201,9 +195,9 @@ public class SendInAlmanach extends ExternalActionImpl {
 
   protected AlmanachBm getAlmanachBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
+      return ServiceProvider.getService(AlmanachBm.class);
     } catch (Exception e) {
-      throw new AlmanachRuntimeException("SendInKmelia.getKmeliaBm()",
+      throw new AlmanachRuntimeException("SendInAlmanach.getKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }

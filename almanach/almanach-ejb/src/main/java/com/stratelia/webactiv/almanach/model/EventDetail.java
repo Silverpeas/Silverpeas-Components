@@ -41,9 +41,8 @@ import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -273,8 +272,7 @@ public class EventDetail extends AbstractBean
 
   public Collection<SimpleDocument> getAttachments() {
     try {
-      AlmanachBm almanachService =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
+      AlmanachBm almanachService = ServiceProvider.getService(AlmanachBm.class);
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
       Logger.getLogger(EventDetail.class.getName()).log(Level.SEVERE, null, ex);

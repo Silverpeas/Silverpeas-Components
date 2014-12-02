@@ -52,7 +52,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
   public Collection<EventDetail> getListElements(String instanceId, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 10 prochains événements de l'Almanach
-    Collection<EventDetail> result = new ArrayList<EventDetail>();
+    Collection<EventDetail> result = new ArrayList<>();
 
     Collection<EventDetail> allEvents = getAlmanachBm().getAllEvents(
         new EventPK("", "", instanceId));

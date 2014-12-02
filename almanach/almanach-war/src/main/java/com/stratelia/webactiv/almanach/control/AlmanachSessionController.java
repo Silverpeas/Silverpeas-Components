@@ -55,10 +55,8 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -98,12 +96,13 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 public class AlmanachSessionController extends AbstractComponentSessionController {
 
-  private AlmanachBm almanachBm = null;
+  @Inject
+  private AlmanachBm almanachBm;
   private Calendar currentDay = Calendar.getInstance();
   private EventDetail currentEvent;
   private static final String AE_MSG1 = "almanach.ASC_NoSuchFindEvent";
   // Almanach Agregation
-  private List<String> agregateAlmanachsIds = new ArrayList<String>();
+  private List<String> agregateAlmanachsIds = new ArrayList<>();
   private static final String ALMANACHS_IN_SUBSPACES = "0";
   private static final String ALMANACHS_IN_SPACE_AND_SUBSPACES = "1";
   private static final String ALL_ALMANACHS = "2";
@@ -225,7 +224,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public List<EventDetail> getAllEvents() throws AlmanachException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
-    return new ArrayList<EventDetail>(getAlmanachBm().getAllEvents(pk));
+    return new ArrayList<>(getAlmanachBm().getAllEvents(pk));
   }
 
   /**
@@ -261,7 +260,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<EventDetail> getAllEvents(final List<String> instanceIds) throws AlmanachException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
-    return new ArrayList<EventDetail>(getAlmanachBm().getAllEvents(pk,
+    return new ArrayList<>(getAlmanachBm().getAllEvents(pk,
         instanceIds.toArray(new String[instanceIds.size()])));
   }
 
@@ -431,12 +430,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   protected AlmanachBm getAlmanachBm() throws AlmanachException {
     if (almanachBm == null) {
-      try {
-        almanachBm = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
-      } catch (Exception e) {
         throw new AlmanachException("AlmanachSessionControl.getAlmanachBm()",
-            SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL", e);
-      }
+            SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL");
     }
     return almanachBm;
   }
@@ -536,7 +531,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @return a list of DTO carrying information about the others almanach instances.
    */
   public List<AlmanachDTO> getAccessibleInstances() {
-    List<AlmanachDTO> accessibleInstances = new ArrayList<AlmanachDTO>();
+    List<AlmanachDTO> accessibleInstances = new ArrayList<>();
 
     if (ACCESS_NONE.equals(getAccessPolicy())) {
       return null;
@@ -620,7 +615,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @return a list of AlmanachDTO instances, each of them carrying some data about an almanach.
    */
   public List<AlmanachDTO> getAggregatedAlmanachs() {
-    List<AlmanachDTO> aggregatedAlmanachs = new ArrayList<AlmanachDTO>();
+    List<AlmanachDTO> aggregatedAlmanachs = new ArrayList<>();
 
     String agregationMode = getSettings()
         .getString("almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
@@ -834,7 +829,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public AlmanachCalendarView getAlmanachCalendarView() throws AlmanachException,
       AlmanachNoSuchFindEventException {
-    AlmanachCalendarView view = null;
+    AlmanachCalendarView view;
     switch (viewMode) {
       case YEARLY:
         view = getYearlyAlmanachCalendarView();

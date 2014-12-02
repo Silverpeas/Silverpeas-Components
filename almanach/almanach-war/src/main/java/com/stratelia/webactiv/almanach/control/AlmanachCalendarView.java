@@ -41,7 +41,7 @@ public class AlmanachCalendarView {
 
   private CalendarViewContext viewContext;
   private AlmanachDTO almanach;
-  private List<DisplayableEventOccurrence> events = new ArrayList<DisplayableEventOccurrence>();
+  private List<DisplayableEventOccurrence> events = new ArrayList<>();
   private String label = "";
 
   /**

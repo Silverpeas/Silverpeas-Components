@@ -20,25 +20,19 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.Local;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.date.Period;
-import org.silverpeas.upload.UploadedFile;
-
 import com.silverpeas.pdc.model.PdcClassification;
-
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.PeriodicityException;
-
 import net.fortuna.ical4j.model.Calendar;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.date.Period;
+import org.silverpeas.upload.UploadedFile;
 
-@Local
+import java.util.Collection;
+import java.util.List;
+
 public interface AlmanachBm {
 
   /**
