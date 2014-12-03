@@ -204,6 +204,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     }
   }
 
+  private String getObjectUrl(String pubId) {
+    return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubId, false);
+  }
+
   /**
    * Notifie l'Equipe éditoriale d'une actualité à valider
    */
@@ -235,6 +239,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
               "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsSuggest");
           notifMetaData.addLanguage(lang, subject, "");
+
+          String url = getObjectUrl(id);
+          Link link = new Link(url, localizedMessage.getString("delegatednews.notifLinkLabel"));
+          notifMetaData.setLink(link, lang);
         }
         List<String> roles = new ArrayList<String>();
         roles.add("admin");
@@ -244,7 +252,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           notifMetaData.addUserRecipient(new UserRecipient(editorId));
         }
         notifMetaData.setComponentId(delegatednewsInstanceId);
-        notifMetaData.setLink(URLManager.getSimpleURL(URLManager.URL_PUBLI, id, false));
+        notifMetaData.displayReceiversInFooter();
         notifyUsers(notifMetaData, senderId);
       }
     } catch (Exception e) {
@@ -316,6 +324,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
               "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsValid");
           notifMetaData.addLanguage(lang, subject, "");
+
+          String url = getObjectUrl(publication.getId());
+          Link link = new Link(url, localizedMessage.getString("delegatednews.notifLinkLabel"));
+          notifMetaData.setLink(link, lang);
         }
         notifMetaData.addUserRecipient(new UserRecipient(publication.getUpdaterId()));
         notifMetaData.setComponentId(delegatednewsInstanceId);
@@ -360,6 +372,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
               "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsRefused");
           notifMetaData.addLanguage(lang, subject, "");
+
+          String url = getObjectUrl(publication.getId());
+          Link link = new Link(url, localizedMessage.getString("delegatednews.notifLinkLabel"));
+          notifMetaData.setLink(link, lang);
         }
         notifMetaData.addUserRecipient(new UserRecipient(publication.getUpdaterId()));
         notifMetaData.setComponentId(delegatednewsInstanceId);

@@ -53,7 +53,6 @@ public abstract class AbstractSuggestionUserNotification
     template.setAttribute("content", resource.getContent());
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());
     template.setAttribute("senderName", getSenderName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override

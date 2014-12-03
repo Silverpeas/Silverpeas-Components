@@ -33,9 +33,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
@@ -70,6 +71,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.Link;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -784,9 +786,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   /*-------------- Methodes de la classe ------------------*/
   public WhitePagesSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
-    super(mainSessionCtrl, context, "com.silverpeas.whitePages.multilang.whitePagesBundle",
-        "com.silverpeas.whitePages.settings.whitePagesIcons",
-        "com.silverpeas.whitePages.settings.settings");
+    super(mainSessionCtrl, context, "org.silverpeas.whitePages.multilang.whitePagesBundle",
+        "org.silverpeas.whitePages.settings.whitePagesIcons",
+        "org.silverpeas.whitePages.settings.settings");
     if (context == null) {
       setComponentRootName(URLManager.CMP_WHITEPAGESPEAS);
     }
@@ -832,20 +834,34 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   }
 
-  public void sendNotification(String message)
+  public void sendNotification(String bodyMessage)
       throws NotificationManagerException {
-    NotificationMetaData notifMetaData = new NotificationMetaData();
+    String url = URLManager.getURL(null, getComponentId())
+        + "consultIdentity?userCardId=" + notifiedUserCard.getPK().getId();
+
+    ResourceLocator message = new ResourceLocator(
+        "org.silverpeas.whitePages.multilang.whitePagesBundle", DisplayI18NHelper.
+        getDefaultLanguage());
+
+    String subject = message.getString("whitePages.notificationTitle");
+    NotificationMetaData notifMetaData = new NotificationMetaData(
+        NotificationParameters.NORMAL, subject, bodyMessage);
+
+
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator("org.silverpeas.whitePages.multilang.whitePagesBundle", language);
+      subject = message.getString("whitePages.notificationTitle");
+      notifMetaData.addLanguage(language, subject, bodyMessage);
+
+      Link link = new Link(url, message.getString("whitePages.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+
     notifMetaData.addUserRecipient(new UserRecipient(notifiedUserCard.getUserId()));
     notifMetaData.setAnswerAllowed(false);
     notifMetaData.setComponentId(getComponentId());
-    notifMetaData.setContent(message);
     notifMetaData.setDate(new Date());
     notifMetaData.setSender(getSettings().getString("whitePages.genericUserId"));
-    notifMetaData.setTitle(getString("whitePages.notificationTitle"));
-
-    String link = URLManager.getURL(null, getComponentId())
-        + "consultIdentity?userCardId=" + notifiedUserCard.getPK().getId();
-    notifMetaData.setLink(link);
 
     NotificationSender sender = new NotificationSender(getComponentId());
     sender.notifyUser(notifMetaData);

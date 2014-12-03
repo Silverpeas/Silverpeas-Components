@@ -27,16 +27,18 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import org.silverpeas.util.Link;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,7 +68,7 @@ public class SubscriptionNotifier extends Notifier {
     if (recipients != null && !recipients.isEmpty()) {
       try {
         // Get default resource bundle
-        ResourceLocator message = new ResourceLocator(BUNDLE_NAME, I18NHelper.defaultLanguage);
+        ResourceLocator message = new ResourceLocator(BUNDLE_NAME, DisplayI18NHelper.getDefaultLanguage());
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
         NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
             String.format(message.getString("questionReply.subscription.title", "Réponse à : %1$s"),
@@ -80,15 +82,18 @@ public class SubscriptionNotifier extends Notifier {
           template.setAttribute("questionTitle", question.getTitle());
           template.setAttribute("replyTitle", reply.getTitle());
           template.setAttribute("replyContent", reply.loadWysiwygContent());
-          template.setAttribute("url", question._getPermalink());
+          template.setAttribute("silverpeasURL", question._getPermalink());
           templates.put(language, template);
           notifMetaData.addLanguage(language, String
               .format(message.getString("questionReply.subscription.title", "Réponse à : %1$s"),
                   question.getTitle()), "");
+
+          Link link = new Link(question._getPermalink(), message.getString("questionReply.notifLinkLabel"));
+          notifMetaData.setLink(link, language);
         }
         notifMetaData.addUserRecipients(recipients);
         notifMetaData.setSender(sender.getId());
-        notifMetaData.setLink(question._getPermalink());
+
         notificationSender.notifyUser(notifMetaData);
       } catch (NotificationManagerException e) {
         throw new QuestionReplyException("QuestionReplySessionController.notify()",

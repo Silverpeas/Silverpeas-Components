@@ -728,48 +728,44 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
     EventDetail eventDetail = getAlmanachBm().getEventDetail(eventPK);
-    SilverTrace.debug("alamanch", "AlamanachSessionController.getAlertNotificationEvent()",
+    SilverTrace.debug("alamanch", "AlmanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "event = " + eventDetail.toString());
 
     // recherche de l’emplacement de l’évènement
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
 
-    // création des messages ...
-    ResourceLocator message
-        = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", "fr");
-    ResourceLocator message_en = new ResourceLocator("org.silverpeas.almanach.multilang.almanach",
-        "en");
-
-    // notifications en français
+    // création des notifications
+    ResourceLocator message = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", DisplayI18NHelper.
+        getDefaultLanguage());
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(eventDetail, htmlPath, message, senderName);
-    SilverTrace.debug("almanach",
-        "AlamanachSessionController.getAlertNotificationEvent()",
-        "root.MSG_GEN_PARAM_VALUE", "message = " + message.toString()
-        + " message_en = " + message_en.toString());
-    SilverTrace.debug("almanach",
-        "AlamanachSessionController.getAlertNotificationEvent()",
-        "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
-
-    // english notifications
-    String subject_en = getNotificationSubject(message_en);
-    String body_en = getNotificationBody(eventDetail, htmlPath, message_en, senderName);
-    SilverTrace.debug("almanach",
-        "AlmanachSessionController.getAlertNotificationEvent()",
-        "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = "
-        + body_en);
-
-    // création des notifications
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, body);
-    notifMetaData.addLanguage("en", subject_en, body_en);
-    notifMetaData.setLink(getObjectUrl(eventDetail));
+    
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      // création des messages ...
+      message
+          = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", language);
+  
+      subject = getNotificationSubject(message);
+      body = getNotificationBody(eventDetail, htmlPath, message, senderName);
+      SilverTrace.debug("almanach",
+          "AlmanachSessionController.getAlertNotificationEvent()",
+          "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
+      
+      notifMetaData.addLanguage(language, subject, body);
+      
+      String url = getObjectUrl(eventDetail);
+      Link link = new Link(url, getNotificationLinkLabel(message));
+      notifMetaData.setLink(link, language);
+    }
     notifMetaData.setComponentId(eventPK.getInstanceId());
     notifMetaData.setSender(getUserId());
-
+    notifMetaData.displayReceiversInFooter();
+   
     return notifMetaData;
   }
-
+  
   private String getNotificationSubject(final ResourceLocator message) {
     return message.getString("notifSubject");
   }
@@ -783,6 +779,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     messageText.append(message.getString("notifInfo2")).append("\n\n");
     messageText.append(message.getString("path")).append(" : ").append(htmlPath);
     return messageText.toString();
+  }
+  
+  private String getNotificationLinkLabel(final ResourceLocator message) {
+    return message.getString("notifLinkLabel");
   }
 
   private String getObjectUrl(EventDetail eventDetail) {

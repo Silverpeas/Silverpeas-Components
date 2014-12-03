@@ -55,4 +55,9 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
    */
   protected abstract UserDetail getSenderDetail();
 
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "quickinfo.news.notifNewsLinkLabel";
+  }
+
 }

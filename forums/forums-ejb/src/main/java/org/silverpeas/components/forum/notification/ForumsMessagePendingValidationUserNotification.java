@@ -46,6 +46,12 @@ public class ForumsMessagePendingValidationUserNotification
   }
 
   @Override
+  protected void perform(final Message resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return getNotificationBundleKeyPrefix() + "subject.toValidate";
   }

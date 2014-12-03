@@ -43,6 +43,12 @@ public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestion
   }
 
   @Override
+  protected void perform(final Suggestion resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
     return null;

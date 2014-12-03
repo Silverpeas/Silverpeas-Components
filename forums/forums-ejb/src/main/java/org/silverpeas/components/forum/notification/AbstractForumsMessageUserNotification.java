@@ -93,4 +93,9 @@ public abstract class AbstractForumsMessageUserNotification
     }
     return bundleKeyPrefix.append(".notification.").toString();
   }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return getNotificationBundleKeyPrefix()+"notifLinkLabel";
+  }
 }

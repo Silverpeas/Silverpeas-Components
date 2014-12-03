@@ -53,6 +53,12 @@ public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestio
   }
 
   @Override
+  protected void perform(final Suggestion resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return "GML.subscription";
   }

@@ -66,4 +66,10 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
   protected boolean isSendImmediatly() {
     return true;
   }
+
+  @Override
+  protected void perform(final ClassifiedDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
 }

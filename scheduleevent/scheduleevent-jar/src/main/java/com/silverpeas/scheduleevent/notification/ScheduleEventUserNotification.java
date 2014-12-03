@@ -94,7 +94,6 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
     template.setAttribute("eventCreationDate", DateUtil.getOutputDate(resource.getCreationDate(), language));
     template.setAttribute("event", resource);
     template.setAttribute("senderName", senderUserDetail.getDisplayedName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override
@@ -117,5 +116,10 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
   @Override
   protected String getSender() {
     return senderUserDetail.getId();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "scheduleevent.notifEventLinkLabel";
   }
 }

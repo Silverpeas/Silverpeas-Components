@@ -59,7 +59,6 @@ public abstract class AbstractClassifiedUserNotification extends
     getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("classified", resource);
     template.setAttribute("classifiedName", resource.getTitle());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override
@@ -81,5 +80,10 @@ public abstract class AbstractClassifiedUserNotification extends
   @Override
   protected String getSender() {
     return getResource().getCreatorId();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "classifieds.notifClassifiedLinkLabel";
   }
 }

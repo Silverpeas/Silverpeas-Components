@@ -20,7 +20,6 @@
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
-
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -55,21 +54,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.csv.CSVReader;
-import org.silverpeas.util.csv.CSVWriter;
-import org.silverpeas.util.csv.Variant;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilTrappedException;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.Link;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.File;
@@ -291,16 +276,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         }
         template.setAttribute("infoLetterDesc", desc);
         template.setAttribute("senderName", getUserDetail().getDisplayedName());
-        template.setAttribute("silverpeasURL", url);
 
         ResourceLocator localizedMessage = new ResourceLocator(
             "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
         notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject",
             getString("infoLetter.emailSubject")) + ilp.getName(), "");
+
+        Link link = new Link(url, localizedMessage.getString("infoLetter.notifLinkLabel"));
+        notifMetaData.setLink(link, lang);
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      notifMetaData.setLink(url);
+      notifMetaData.displayReceiversInFooter();
 
       // Internal subscribers
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
@@ -489,6 +476,48 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   private void deleteIndex(InfoLetter il) {
     IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "Publication", il.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
+  }
+
+  // Remplacement des appels au FileServer par le nom de fichier simple
+  private String replaceFileServerWithLocal(String message, String server) {
+    SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
+        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
+    String retour = replacePermalinkWithServer(message, server);
+    while (retour.contains("/FileServer/")) {
+      int place = retour.indexOf("/FileServer/");
+      String debut = retour.substring(0, place);
+      int srcPlace = debut.lastIndexOf("\"");
+      debut = debut.substring(0, srcPlace + 1);
+      String suite =
+          retour.substring(place + "/FileServer/".length(), retour.length());
+      int finNom = suite.indexOf('?');
+      String nomFichier = "cid:" + suite.substring(0, finNom);
+      nomFichier = nomFichier.replace('_', ' ');
+      int finURL = suite.indexOf('\"');
+      suite = suite.substring(finURL, suite.length());
+      retour = debut + nomFichier + suite;
+    }
+    SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
+        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
+    return retour;
+  }
+
+  /**
+   * Replace /silverpeas/xxx by http(s)://server:port/silverpeas/xxx (Only in notifyExternals case)
+   *
+   * @param message
+   * @param server: http(s)://server:port
+   * @return codeHtml
+   */
+  private String replacePermalinkWithServer(String message, String server) {
+    SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
+        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
+    String urlContext = URLManager.getApplicationURL();
+    String retour = message.replaceAll("\"".toLowerCase() + urlContext + "/",
+        "\"" + server + urlContext + "/");
+    SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
+        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
+    return retour;
   }
 
   public boolean isPdcUsed() {

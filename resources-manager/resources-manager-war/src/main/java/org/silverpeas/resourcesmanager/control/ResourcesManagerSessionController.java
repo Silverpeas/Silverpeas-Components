@@ -24,6 +24,8 @@
 package org.silverpeas.resourcesmanager.control;
 
 
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -45,11 +47,7 @@ import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.Link;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -302,15 +300,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
-      ResourceLocator message =
-          new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-              "fr");
-      ResourceLocator message_en =
-          new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-              "en");
+      ResourceLocator message = new ResourceLocator(
+          "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+          DisplayI18NHelper.getDefaultLanguage());
 
       StringBuilder messageBody = new StringBuilder();
-      StringBuilder messageBody_en = new StringBuilder();
 
       // liste des responsables (de la ressource) à notifier
       List<ResourceValidator> validators = ResourcesManagerProvider.getResourcesManager().
@@ -322,26 +316,29 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         for (ResourceValidator validator : validators) {
           managers.add(new UserRecipient(String.valueOf(validator.getManagerId())));
         }
+        String url = URLManager.getURL(null, getComponentId()) +
+            "ViewReservation?reservationId=" + reservationId;
 
-        // french notifications
         String subject = message.getString("resourcesManager.notifSubject");
-        messageBody = messageBody.append(user).append(" ")
-            .append(message.getString("resourcesManager.notifBody")).append(" ")
-            .append(resource.getName());
-
-        // english notifications
-        String subject_en = message_en.getString("resourcesManager.notifSubject");
-        messageBody_en = messageBody_en.append(user).append(" ")
-            .append(message.getString("resourcesManager.notifBody")).append(" ")
-            .append(resource.getName());
+        messageBody = messageBody.append(user).append(" ").append(message.getString(
+            "resourcesManager.notifBody")).append(" '").append(resource.getName()).append("'");
 
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject,
                 messageBody.toString());
-        notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-        notifMetaData.setLink(URLManager.getURL(null, getComponentId()) +
-            "ViewReservation?reservationId=" + reservationId);
+        for (String language : DisplayI18NHelper.getLanguages()) {
+          message = new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+          subject = message.getString("resourcesManager.notifSubject");
+          messageBody = new StringBuilder();
+          messageBody = messageBody.append(user).append(" ").append(message.getString(
+              "resourcesManager.notifBody")).append(" '").append(resource.getName()).append("'");
+          notifMetaData.addLanguage(language, subject, messageBody.toString());
+
+          Link link = new Link(url, message.getString("resourcesManager.notifReservationLinkLabel"));
+          notifMetaData.setLink(link, language);
+        }
+
         notifMetaData.setComponentId(getComponentId());
         notifMetaData.addUserRecipients(managers);
         notifMetaData.setSender(user);
@@ -562,40 +559,40 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
+  private String getMessageBodyValidReservation(ResourceLocator message, Reservation reservation) {
+    StringBuilder messageBody = new StringBuilder();
+    messageBody.append(message.getString("resourcesManager.notifBodyValideBegin")).append(" '");
+    messageBody.append(reservation.getEvent()).append("' ");
+    messageBody.append(message.getString("resourcesManager.notifBodyValideEnd"));
+    return messageBody.toString();
+  }
+
   public void sendNotificationValidateReservation(Reservation reservation)
       throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
+    String url = URLManager.getURL(null, getComponentId()) +
+        "ViewReservation?reservationId=" + reservation.getId();
 
-    ResourceLocator message =
-        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-            "fr");
-    ResourceLocator message_en =
-        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-            "en");
+    ResourceLocator message = new ResourceLocator(
+        "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+        DisplayI18NHelper.getDefaultLanguage());
 
-    StringBuilder messageBody = new StringBuilder();
-    StringBuilder messageBody_en = new StringBuilder();
-
-    // french notifications
     String subject = message.getString("resourcesManager.notifSubjectValide");
-    messageBody.append(message.getString("resourcesManager.notifBodyValideBegin")).append(" '");
-    messageBody.append(reservation.getEvent()).append("' ");
-    messageBody.append(message.getString("resourcesManager.notifBodyValideEnd"));
 
-    // english notifications
-    String subject_en = message_en.getString("resourcesManager.notifSubjectValide");
-    messageBody_en.append(message_en.getString("resourcesManager.notifBodyValideBegin"));
-    messageBody_en.append(" '").append(reservation.getEvent()).append("' ");
-    messageBody_en.append(message_en.getString("resourcesManager.notifBodyValideEnd"));
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+        subject, getMessageBodyValidReservation(message, reservation));
 
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, messageBody.toString());
-    notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+      subject = message.getString("resourcesManager.notifSubjectValide");
+      notifMetaData.addLanguage(language, subject, getMessageBodyValidReservation(message, reservation));
 
-    notifMetaData.setLink(URLManager.getURL(null, getComponentId()) +
-        "ViewReservation?reservationId=" + reservation.getId());
+      Link link = new Link(url, message.getString("resourcesManager.notifReservationLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));
     notifMetaData.setSender(user);
@@ -603,25 +600,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     getNotificationSender().notifyUser(notifMetaData);
   }
 
-  public void sendNotificationRefuseReservation(Reservation reservation, Long resourceId,
-      String motive) throws NotificationManagerException {
-    // envoyer une notification au créateur de la réservation
-    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
-
-    ResourceLocator message =
-        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-            "fr");
-    ResourceLocator message_en =
-        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-            "en");
-
-    Resource resource = getResource(resourceId);
+  private String getMessageBodyRefusedReservation(ResourceLocator message, Resource resource, Reservation reservation, String motive) {
     StringBuilder messageBody = new StringBuilder(512);
-    StringBuilder messageBody_en = new StringBuilder(512);
-
-    // french notifications
-    String subject = message.getString("resourcesManager.notifSubjectRefuse");
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(" '");
     messageBody.append(resource.getName()).append("' ");
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '");
@@ -629,23 +609,39 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseEnd"));
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseMotive")).append(" ");
     messageBody.append(motive);
+    return messageBody.toString();
+  }
 
-    // english notifications
-    String subject_en = message_en.getString("resourcesManager.notifSubjectRefuse");
-    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseBegin"));
-    messageBody_en.append(" '").append(resource.getName()).append("' ");
-    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseMiddle"));
-    messageBody_en.append(" '").append(reservation.getEvent()).append("' ");
-    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseEnd"));
-    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseMotive"));
-    messageBody_en.append(" ").append(motive);
+  public void sendNotificationRefuseReservation(Reservation reservation, Long resourceId,
+      String motive) throws NotificationManagerException {
+    // envoyer une notification au créateur de la réservation
+    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
+    String user = orga.getUserDetail(getUserId()).getDisplayedName();
+    String url = URLManager.getURL(null, getComponentId()) +
+        "ViewReservation?reservationId=" + reservation.getId();
 
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, messageBody.toString());
-    notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
+    ResourceLocator message =
+        new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+            DisplayI18NHelper.getDefaultLanguage());
 
-    notifMetaData.setLink(URLManager.getURL(null, getComponentId()) +
-        "ViewReservation?reservationId=" + reservation.getId());
+    Resource resource = getResource(resourceId);
+
+    String subject = message.getString("resourcesManager.notifSubjectRefuse");
+
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+        subject, getMessageBodyRefusedReservation(message, resource, reservation, motive));
+
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+      subject = message.getString("resourcesManager.notifSubjectRefuse");
+
+      notifMetaData.addLanguage(language, subject,
+          getMessageBodyRefusedReservation(message, resource, reservation, motive));
+
+      Link link = new Link(url, message.getString("resourcesManager.notifReservationLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));
     notifMetaData.setSender(user);

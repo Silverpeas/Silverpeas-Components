@@ -43,6 +43,7 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.Link;
 
 import java.util.Collection;
 
@@ -86,33 +87,33 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       String currentInstanceId = null;
 
       ResourceLocator message =
-          new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", "fr");
-      ResourceLocator message_en = new ResourceLocator(
-          "com.silverpeas.gallery.multilang.galleryBundle", "en");
+          new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle", DisplayI18NHelper.
+              getDefaultLanguage());
 
       StringBuilder messageBody = new StringBuilder();
-      StringBuilder messageBody_en = new StringBuilder();
       Media nextMedia = null;
 
       for (Media media : mediaList) {
         nextMedia = media;
+
         if (media.getInstanceId().equals(currentInstanceId)) {
           // construire la liste des images pour cette instance (a mettre dans
           // le corps du message)
           messageBody.append(message.getString("gallery.notifName")).append(" : ").append(media.
               getName()).append("\n");
-          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(
-              media.
-                  getName()).append("\n");
           SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         } else {
           if (currentInstanceId != null) {
             // Création du message à envoyer aux admins
             UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-            createMessage(message, messageBody, message_en, messageBody_en, media, admins);
+            String subject = message.getString("gallery.notifSubject");
+            String body = messageBody.append("\n").append(
+                message.getString("gallery.notifUserInfo")).append("\n\n").toString();
+            NotificationMetaData notifMetaData = new NotificationMetaData(
+                NotificationParameters.NORMAL, subject, body);
+            createMessage(notifMetaData, media, admins);
             messageBody = new StringBuilder();
-            messageBody_en = new StringBuilder();
           }
           currentInstanceId = media.getInstanceId();
           String nameInstance = orga.getComponentInst(currentInstanceId).getLabel();
@@ -125,22 +126,22 @@ public class ScheduledAlertUser implements SchedulerEventListener {
               nameInstance).append("\n").append("\n");
           messageBody.append(message.getString("gallery.notifName")).append(" : ")
               .append(media.getName()).append("\n");
-          messageBody_en.append(message.getString("gallery.notifTitle")).append(nameInstance).
-              append(
-              "\n").append("\n");
-          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(
-              media.
-                  getName()).append("\n");
 
           SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         }
       }
+
       // Création du message à envoyer aux admins pour la dernière instance en
       // cours
       if (currentInstanceId != null) {
         UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-        createMessage(message, messageBody, message_en, messageBody_en, nextMedia, admins);
+        String subject = message.getString("gallery.notifSubject");
+        String body = messageBody.append("\n").append(
+            message.getString("gallery.notifUserInfo")).append("\n\n").toString();
+        NotificationMetaData notifMetaData = new NotificationMetaData(
+            NotificationParameters.NORMAL, subject, body);
+        createMessage(notifMetaData, nextMedia, admins);
       }
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledAlertUser.doScheduledAlertUser()",
@@ -151,31 +152,32 @@ public class ScheduledAlertUser implements SchedulerEventListener {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void createMessage(ResourceLocator message, StringBuilder messageBody,
-      ResourceLocator message_en, StringBuilder messageBody_en, Media media, UserDetail[] admins) {
+  private void createMessageByLanguage(String url, NotificationMetaData notifMetaData) {
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      ResourceLocator message =
+          new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle", language);
+      String subject = message.getString("gallery.notifSubject");
+      StringBuilder messageBody = new StringBuilder();
+      String body = messageBody.append("\n").append(
+          message.getString("gallery.notifUserInfo")).append("\n\n").toString();
+      notifMetaData.addLanguage(language, subject, body);
+      Link link = new Link(url, message.getString("gallery.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+  }
+
+  private void createMessage(NotificationMetaData notifMetaData, Media media, UserDetail[] admins) {
     if (admins == null || admins.length == 0) {
       return;
     }
 
     // 1. création du message
+    String url = getPhotoUrl(media);
+    createMessageByLanguage(url, notifMetaData);
 
-    // french notifications
-    String subject = message.getString("gallery.notifSubject");
-    String body = messageBody.append("\n").append(
-        message.getString("gallery.notifUserInfo")).append("\n\n").toString();
-
-    // english notifications
-    String subject_en = message_en.getString("gallery.notifSubject");
-    String body_en = messageBody_en.append("\n").append(
-        message.getString("gallery.notifUserInfo")).append("\n\n").toString();
-
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, subject, body);
-    notifMetaData.addLanguage("en", subject_en, body_en);
     for (UserDetail admin : admins) {
       notifMetaData.addUserRecipient(new UserRecipient(admin));
     }
-    notifMetaData.setLink(getPhotoUrl(media));
     notifMetaData.setComponentId(media.getInstanceId());
 
     // 2. envoie de la notification aux admin

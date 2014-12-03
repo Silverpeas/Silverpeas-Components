@@ -54,7 +54,6 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
     template.setAttribute("description", resource.getDescription());
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());
     template.setAttribute("senderName", getSenderName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override

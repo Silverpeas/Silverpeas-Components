@@ -105,7 +105,6 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     template.setAttribute("path", "");
     template.setAttribute("senderName", OrganizationControllerProvider.getOrganisationController().
         getUserDetail(userId).getDisplayedName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   /*
@@ -230,5 +229,10 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   @Override
   protected Collection<String> getGroupIdsToNotify() {
     return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "webPages.notifWebPageLinkLabel";
   }
 }

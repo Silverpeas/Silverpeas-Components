@@ -66,7 +66,6 @@ public abstract class AbstractKmeliaPublicationUserNotification
     template.setAttribute("publicationDesc", resource.getDescription(language));
     template.setAttribute("publicationKeywords", resource.getKeywords(language));
     template.setAttribute("senderName", getSenderName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override
@@ -123,5 +122,10 @@ public abstract class AbstractKmeliaPublicationUserNotification
       return userId;
     }
     return getResource().getUpdaterId();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "kmelia.notifPublicationLinkLabel";
   }
 }

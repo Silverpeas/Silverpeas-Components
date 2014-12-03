@@ -85,6 +85,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import org.silverpeas.util.Link;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -734,13 +735,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
     UserDetail curUser = getUserDetail();
     String senderName = curUser.getDisplayedName();
     QuestionContainerDetail questionDetail = getSurvey(surveyId);
+    String url = getSurveyUrl(questionDetail);
     SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
         "root.MSG_GEN_PARAM_VALUE", "survey = " + questionDetail.toString());
     String htmlPath = getQuestionContainerService().getHTMLQuestionPath(questionDetail);
 
     // Get default resource bundle
     String resource = "org.silverpeas.survey.multilang.surveyBundle";
-    ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
+    ResourceLocator message = new ResourceLocator(resource, DisplayI18NHelper.getDefaultLanguage());
 
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
     String subject = message.getString("survey.notifSubject");
@@ -769,11 +771,15 @@ public class SurveySessionController extends AbstractComponentSessionController 
       template.setAttribute("htmlPath", htmlPath);
       templates.put(language, template);
       notifMetaData.addLanguage(language, message.getString("survey.notifSubject", subject), "");
+
+      Link link = new Link(url, message.getString("survey.notifSurveyLinkLabel"));
+      notifMetaData.setLink(link, language);
     }
     notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-    notifMetaData.setLink(getSurveyUrl(questionDetail));
     notifMetaData.setComponentId(pk.getInstanceId());
     notifMetaData.setSender(getUserId());
+    notifMetaData.displayReceiversInFooter();
+
     return notifMetaData;
   }
 
