@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.silverpeas.util.Link;
+
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -135,6 +137,12 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
   }
 
   @Override
+  protected void perform(final NodeDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected void performTemplateData(final String language, final NodeDetail resource, final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
@@ -142,7 +150,6 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     template.setAttribute("topicName", resource.getName(language));
     template.setAttribute("topicDescription", resource.getDescription(language));
     template.setAttribute("senderName", "");
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override
@@ -172,5 +179,10 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
   @Override
   protected String getSender() {
     return getResource().getCreatorId();
+  }
+  
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "kmelia.notifTopicLinkLabel";
   }
 }

@@ -44,6 +44,12 @@ public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaP
   }
 
   @Override
+  protected void perform(final PublicationDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return "kmelia.SupervisorNotifSubject";
   }

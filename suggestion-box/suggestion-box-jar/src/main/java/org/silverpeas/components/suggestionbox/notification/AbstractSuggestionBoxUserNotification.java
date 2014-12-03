@@ -86,4 +86,9 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
    * @return
    */
   protected abstract UserDetail getSenderDetail();
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "suggestionBox.notifSuggestionLinkLabel";
+  }
 }

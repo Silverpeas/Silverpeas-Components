@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GlobalContext;
 
@@ -63,6 +64,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.Link;
 
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
@@ -73,10 +75,6 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private SelectionUsersGroups sugReceivers = null;
   private FormDetail choosenForm;
   private NotificationSender notifSender;
-  private ResourceLocator messagesEn =
-      new ResourceLocator("com.silverpeas.formsonline.multilang.formsOnlineBundle", "en");
-  private ResourceLocator messagesFr =
-      new ResourceLocator("com.silverpeas.formsonline.multilang.formsOnlineBundle", "fr");
 
   /**
    * Standard Session Controller Constructeur
@@ -310,19 +308,28 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
     FormDetail form = dao.getForm(getComponentId(), formId);
     String emetteur = getUserDetail().getDisplayedName();
+    String url = "/RformsOnline/" + getComponentId()
+        + "/ValidFormInstance?formInstanceId=" + formInstanceId;
 
-    // french notifications
-    String subject = messagesFr.getString("formsOnline.msgFormToValid");
-    String messageText = emetteur + " " + messagesFr.getString(
+    ResourceLocator message =
+        new ResourceLocator("org.silverpeas.formsonline.multilang.formsOnlineBundle",
+            DisplayI18NHelper.getDefaultLanguage());
+    String subject = message.getString("formsOnline.msgFormToValid");
+    String messageText = emetteur + " " + message.getString(
         "formsOnline.msgUserHasSentAForm") + "  \n \n";
-
-    // english notifications
-    String subject_en = messagesEn.getString("formsOnline.msgFormToValid");
-    String messageText_en = emetteur + " " + messagesEn.getString(
-        "formsOnline.msgUserHasSentAForm") + "  \n \n";
-
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, messageText);
+
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator("org.silverpeas.formsonline.multilang.formsOnlineBundle", language);
+      subject = message.getString("formsOnline.msgFormToValid");
+      messageText = emetteur + " " + message.getString(
+          "formsOnline.msgUserHasSentAForm") + "  \n \n";
+      notifMetaData.addLanguage(language, subject, messageText);
+      Link link = new Link(url, message.getString("formsOnline.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+
     notifMetaData.setSender(getUserId());
     List<String> userIds = dao.getReceiversAsUsers(formId, getComponentId());
     for (String user : userIds) {
@@ -333,11 +340,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       notifMetaData.addGroupRecipient(new GroupRecipient(group));
     }
     notifMetaData.setSource(getSpaceLabel() + " - " + form.getName());
-    notifMetaData.setLink("/RformsOnline/" + getComponentId()
-        + "/ValidFormInstance?formInstanceId=" + formInstanceId);
 
-    notifMetaData.addLanguage("en", subject_en, messageText_en);
-    notifMetaData.addLanguage("fr", subject, messageText);
     try {
       getNotificationSender().notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
@@ -357,47 +360,69 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private void notifySender(FormInstance formInstance) throws FormsOnlineDatabaseException {
 
     FormDetail form = dao.getForm(getComponentId(), formInstance.getFormId());
+    String url = "/RformsOnline/" + getComponentId()
+        + "/ViewFormInstance?formInstanceId=" + formInstance.getId();
+    ResourceLocator message =
+        new ResourceLocator("org.silverpeas.formsonline.multilang.formsOnlineBundle",
+            DisplayI18NHelper.getDefaultLanguage());
 
     // Subject
     String subject;
-    String subject_en;
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
-      subject = messagesFr.getString("formsOnline.msgFormValidated");
-      subject_en = messagesEn.getString("formsOnline.msgFormValidated");
+      subject = message.getString("formsOnline.msgFormValidated");
     } else {
-      subject = messagesFr.getString("formsOnline.msgFormRefused");
-      subject_en = messagesEn.getString("formsOnline.msgFormRefused");
+      subject = message.getString("formsOnline.msgFormRefused");
     }
 
     // sender
     String sender = getUserDetail().getDisplayedName();
 
     // message
-    StringBuffer messageText = new StringBuffer(sender).append(" ");
-    StringBuffer messageText_en = new StringBuffer(sender).append(" ");
+    StringBuilder messageText = new StringBuilder();
+    messageText.append(sender).append(" ");
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
-      messageText.append(messagesFr.getString("formsOnline.msgHasValidatedYourForm"));
-      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
+      messageText.append(message.getString("formsOnline.msgHasValidatedYourForm"));
     } else {
-      messageText.append(messagesFr.getString("formsOnline.msgHasRefusedYourForm"));
-      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
+      messageText.append(message.getString("formsOnline.msgHasRefusedYourForm"));
       if (StringUtil.isDefined(formInstance.getComments())) {
-        messageText.append(" ").append(messagesFr.getString("formsOnline.notif.comment"))
-            .append(formInstance.getComments());
-        messageText_en.append(" ").append(messagesEn.getString("formsOnline.notif.comment"))
+        messageText.append(" ").append(message.getString("formsOnline.notif.comment"))
             .append(formInstance.getComments());
       }
     }
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, messageText.toString());
+
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator("org.silverpeas.formsonline.multilang.formsOnlineBundle", language);
+      // Subject
+      if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
+        subject = message.getString("formsOnline.msgFormValidated");
+      } else {
+        subject = message.getString("formsOnline.msgFormRefused");
+      }
+
+      // message
+      messageText = new StringBuilder();
+      messageText.append(sender).append(" ");
+      if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
+        messageText.append(message.getString("formsOnline.msgHasValidatedYourForm"));
+      } else {
+        messageText.append(message.getString("formsOnline.msgHasRefusedYourForm"));
+        if (StringUtil.isDefined(formInstance.getComments())) {
+          messageText.append(" ").append(message.getString("formsOnline.notif.comment"))
+              .append(formInstance.getComments());
+        }
+      }
+
+      notifMetaData.addLanguage(language, subject, messageText.toString());
+      Link link = new Link(url, message.getString("formsOnline.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+
     notifMetaData.setSender(getUserId());
     notifMetaData.addUserRecipient(new UserRecipient(formInstance.getCreatorId()));
     notifMetaData.setSource(getSpaceLabel() + " - " + form.getName());
-    notifMetaData.setLink("/RformsOnline/" + getComponentId()
-        + "/ViewFormInstance?formInstanceId=" + formInstance.getId());
-    notifMetaData.addLanguage("en", subject_en, messageText_en.toString());
-    notifMetaData.addLanguage("fr", subject, messageText.toString());
 
     try {
       getNotificationSender().notifyUser(notifMetaData);

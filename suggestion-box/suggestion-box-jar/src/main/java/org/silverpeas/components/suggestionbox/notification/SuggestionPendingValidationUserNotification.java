@@ -39,6 +39,12 @@ public class SuggestionPendingValidationUserNotification
   }
 
   @Override
+  protected void perform(final Suggestion resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return "suggestionBox.suggestion.notification.pendingValidation.subject";
   }
