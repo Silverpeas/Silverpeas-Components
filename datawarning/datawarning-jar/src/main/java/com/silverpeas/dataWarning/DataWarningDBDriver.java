@@ -23,39 +23,39 @@
  */
 package com.silverpeas.dataWarning;
 
-public class DataWarningDBDriver extends Object {
+public class DataWarningDBDriver {
 
-  private String DriverUniqueID = "";
-  private String DriverName = "";
-  private String ClassName = "";
-  private String Description = "";
-  private String JDBCUrl = null;
+  private String driverUniqueID = "";
+  private String driverName = "";
+  private String className = "";
+  private String description = "";
+  private String jdbcUrl = null;
 
   public DataWarningDBDriver(String dui, String dn, String cn, String d, String du) {
-    DriverUniqueID = dui;
-    DriverName = dn;
-    ClassName = cn;
-    Description = d;
-    JDBCUrl = du;
+    driverUniqueID = dui;
+    driverName = dn;
+    className = cn;
+    description = d;
+    jdbcUrl = du;
   }
 
   public String getClassName() {
-    return ClassName;
+    return className;
   }
 
   public String getDescription() {
-    return Description;
+    return description;
   }
 
   public String getDriverName() {
-    return DriverName;
+    return driverName;
   }
 
   public String getDriverUniqueID() {
-    return DriverUniqueID;
+    return driverUniqueID;
   }
 
-  public String getJDBCUrl() {
-    return JDBCUrl;
+  public String getJdbcUrl() {
+    return jdbcUrl;
   }
 }

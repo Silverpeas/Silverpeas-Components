@@ -23,7 +23,8 @@
  */
 package com.silverpeas.dataWarning.model;
 
-import com.stratelia.webactiv.persistence.*;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 public class DataWarningGroup extends SilverpeasBean {
 

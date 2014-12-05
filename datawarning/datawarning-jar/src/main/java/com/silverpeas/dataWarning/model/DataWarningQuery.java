@@ -172,11 +172,13 @@ public class DataWarningQuery extends SilverpeasBean {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    DataWarningQueryResult valret = new DataWarningQueryResult(this, (getPersoValid()
-        == QUERY_PERSO_VALID), getPersoColNB(), getPersoUID());
+    DataWarningQueryResult valret =
+        new DataWarningQueryResult(this, (getPersoValid() == QUERY_PERSO_VALID), getPersoColNB(),
+            getPersoUID());
 
-    SilverTrace.info("dataWarning", "DataWarningQueryResult.executeQuery()",
-        "root.MSG_GEN_ENTER_METHOD", "query=" + getQuery());
+    SilverTrace
+        .info("dataWarning", "DataWarningQueryResult.executeQuery()", "root.MSG_GEN_ENTER_METHOD",
+            "query=" + getQuery());
     try {
       con = dataModel.openConnection();
       prepStmt = con.prepareStatement(getQuery());
@@ -187,7 +189,6 @@ public class DataWarningQuery extends SilverpeasBean {
           //get columns names
           for (int i = 1; i < rsmd.getColumnCount() + 1; i++) {
             valret.addColumn(rsmd.getColumnName(i));
-//						SilverTrace.info("dataWarning", "DataWarningQueryResult.executeQuery()","root.MSG_GEN_PARAM_VALUE","Col" + i + " = " + rsmd.getColumnName(i));
           }
         }
         int j = 1;
@@ -195,18 +196,19 @@ public class DataWarningQuery extends SilverpeasBean {
           ArrayList ligne = new ArrayList();
           for (int k = 1; k < rsmd.getColumnCount() + 1; k++) {
             ligne.add(rs.getString(k));
-//						SilverTrace.info("dataWarning", "DataWarningQueryResult.executeQuery()","root.MSG_GEN_PARAM_VALUE","Val(" + j + ", " + k + ") = " + rs.getString(k));
           }
           valret.addRow(ligne);
           j++;
         }
       }
-      SilverTrace.info("dataWarning", "DataWarningQueryResult.executeQuery()",
-          "root.MSG_GEN_PARAM_VALUE", "Nb de Lignes = " + valret.getNbRows());
+      SilverTrace
+          .info("dataWarning", "DataWarningQueryResult.executeQuery()", "root.MSG_GEN_PARAM_VALUE",
+              "Nb de Lignes = " + valret.getNbRows());
     } catch (Exception e) {
       valret.addError(e, getQuery());
-      SilverTrace.warn("dataWarning", "DataWarningQueryResult.executeQuery()",
-          "root.MSG_GEN_PARAM_VALUE", getQuery(), e);
+      SilverTrace
+          .warn("dataWarning", "DataWarningQueryResult.executeQuery()", "root.MSG_GEN_PARAM_VALUE",
+              getQuery(), e);
     } finally {
       DBUtil.close(rs, prepStmt);
       dataModel.closeConnection(con);
@@ -219,7 +221,8 @@ public class DataWarningQuery extends SilverpeasBean {
   }
 
   public boolean checkTriggerSatisfied(long theValue) {
-    boolean valret = true; // dans le doute, on accepte...
+    // default is true
+    boolean valret = true;
 
     switch (theTriggerCondition) {
       case TRIGGER_CONDITION_SUP:
@@ -244,7 +247,6 @@ public class DataWarningQuery extends SilverpeasBean {
     return valret;
   }
 
-  // Perso fonctions
   /**
    * @return Returns the persoColNB.
    */

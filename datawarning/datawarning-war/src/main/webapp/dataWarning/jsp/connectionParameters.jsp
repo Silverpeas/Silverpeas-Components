@@ -127,7 +127,7 @@ DataWarningDBDriver currentDBDriver = (DataWarningDBDriver)request.getAttribute(
 				<TR>
 					<TD class="txtlibform"><%=resource.getString("champUrlJDBC")%> :</TD>
 					<TD>
-						<input type="text" name="JDBCUrl" size="100" disabled value="<%=currentDBDriver.getJDBCUrl()%>">
+						<input type="text" name="JDBCUrl" size="100" disabled value="<%=currentDBDriver.getJdbcUrl()%>">
                     </TD>
 				</TR>
 				<TR>

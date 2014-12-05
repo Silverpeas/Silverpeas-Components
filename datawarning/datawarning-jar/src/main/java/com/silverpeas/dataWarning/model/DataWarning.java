@@ -23,14 +23,21 @@
  */
 package com.silverpeas.dataWarning.model;
 
-import java.util.*;
-import java.sql.*;
-
-import com.stratelia.webactiv.persistence.*;
-import com.silverpeas.dataWarning.*;
+import com.silverpeas.dataWarning.DataWarningDBDriver;
+import com.silverpeas.dataWarning.DataWarningDBDrivers;
+import com.silverpeas.dataWarning.DataWarningException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataWarning extends SilverpeasBean {
 
@@ -40,7 +47,7 @@ public class DataWarning extends SilverpeasBean {
   public static final int ON_VARIATION_ANALYSIS = 2; // Not implemented yet...
   public static final int ON_NO_VARIATION_ANALYSIS = 3; // Not implemented yet...
   private String description;
-  private String JDBCDriverName;
+  private String jdbcDriverName;
   private String login;
   private String pwd;
   private int rowLimit;
@@ -57,7 +64,7 @@ public class DataWarning extends SilverpeasBean {
     DataWarning newOne = new DataWarning();
 
     newOne.description = description;
-    newOne.JDBCDriverName = JDBCDriverName;
+    newOne.jdbcDriverName = jdbcDriverName;
     newOne.login = login;
     newOne.pwd = pwd;
     newOne.rowLimit = rowLimit;
@@ -68,11 +75,11 @@ public class DataWarning extends SilverpeasBean {
     return newOne;
   }
 
-  public DataWarning(String description, String JDBCDriverName, String login, String password,
+  public DataWarning(String description, String jdbcDriverName, String login, String password,
       int rowLimit, String instanceId, int analysisType) {
     super();
     this.description = description;
-    this.JDBCDriverName = JDBCDriverName;
+    this.jdbcDriverName = jdbcDriverName;
     this.login = login;
     this.pwd = password;
     this.rowLimit = rowLimit;
@@ -88,12 +95,12 @@ public class DataWarning extends SilverpeasBean {
     return getSureString(description);
   }
 
-  public void setJDBCDriverName(String JDBCDriverName) {
-    this.JDBCDriverName = JDBCDriverName;
+  public void setJdbcDriverName(String jdbcDriverName) {
+    this.jdbcDriverName = jdbcDriverName;
   }
 
-  public String getJDBCDriverName() {
-    return JDBCDriverName;
+  public String getJdbcDriverName() {
+    return jdbcDriverName;
   }
 
   public void setLogin(String login) {
@@ -156,13 +163,13 @@ public class DataWarning extends SilverpeasBean {
   public Connection openConnection() throws DataWarningException {
     DataWarningDBDrivers dataWarningDBDrivers = new DataWarningDBDrivers();
 
-    DataWarningDBDriver dbDriver = dataWarningDBDrivers.getDBDriver(JDBCDriverName);
-    Connection con = null;
-    SilverTrace.info("dataWarning", "DataWarning.openConnection()", "root.MSG_GEN_PARAM_VALUE", "JDBCDriverName="
-        + JDBCDriverName + " | login=" + login);
+    DataWarningDBDriver dbDriver = dataWarningDBDrivers.getDBDriver(jdbcDriverName);
+    Connection con;
+    SilverTrace.info("dataWarning", "DataWarning.openConnection()", "root.MSG_GEN_PARAM_VALUE", "jdbcDriverName="
+        + jdbcDriverName + " | login=" + login);
     try {
       Class.forName(dbDriver.getClassName());
-      con = DriverManager.getConnection(dbDriver.getJDBCUrl(), login, pwd);
+      con = DriverManager.getConnection(dbDriver.getJdbcUrl(), login, pwd);
     } catch (Exception e) {
       throw new DataWarningException("DataWarning.openConnection()", SilverpeasException.ERROR,
           "DataWarning.EX_DATA_ACCESS_FAILED", e);
@@ -188,25 +195,23 @@ public class DataWarning extends SilverpeasBean {
   public String[] getAllTableNames() throws DataWarningException {
     String[] retour = null;
     Connection con = openConnection();
-    ResultSet tables_rs = null;
-    ResultSetMetaData tables_rsmd = null;
+    ResultSet tablesRs = null;
     try {
       DatabaseMetaData dbMetaData = con.getMetaData();
-      tables_rs = dbMetaData.getTables(null, null, null, null);
-      tables_rsmd = tables_rs.getMetaData();
-      List tables = new ArrayList();
-      while (tables_rs.next()) {
-        tables.add(tables_rs.getString("TABLE_NAME"));
+      tablesRs = dbMetaData.getTables(null, null, null, null);
+      List<String> tables = new ArrayList<>();
+      while (tablesRs.next()) {
+        tables.add(tablesRs.getString("TABLE_NAME"));
       }
       retour = new String[tables.size()];
       for (int i = 0; i < tables.size(); i++) {
-        retour[i] = (String) tables.get(i);
+        retour[i] = tables.get(i);
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getAllTableNames()",
           SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
     } finally {
-      DBUtil.close(tables_rs);
+      DBUtil.close(tablesRs);
       closeConnection(con);
     }
     return retour;
@@ -218,23 +223,23 @@ public class DataWarning extends SilverpeasBean {
   public String[] getColumnNames(String tableName) throws DataWarningException {
     String[] retour = null;
     Connection con = openConnection();
-    ResultSet colonnes_rs = null;
+    ResultSet colonnesRs = null;
     try {
       DatabaseMetaData dbMetaData = con.getMetaData();
-      colonnes_rs = dbMetaData.getColumns(null, null, tableName, null);
-      List colonnes = new ArrayList();
-      while (colonnes_rs.next()) {
-        colonnes.add(colonnes_rs.getString("COLUMN_NAME"));
+      colonnesRs = dbMetaData.getColumns(null, null, tableName, null);
+      List<String> colonnes = new ArrayList<>();
+      while (colonnesRs.next()) {
+        colonnes.add(colonnesRs.getString("COLUMN_NAME"));
       }
       retour = new String[colonnes.size()];
       for (int i = 0; i < colonnes.size(); i++) {
-        retour[i] = (String) colonnes.get(i);
+        retour[i] = colonnes.get(i);
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getColumnNames()",
           SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
     } finally {
-      DBUtil.close(colonnes_rs);
+      DBUtil.close(colonnesRs);
       closeConnection(con);
     }
     return retour;

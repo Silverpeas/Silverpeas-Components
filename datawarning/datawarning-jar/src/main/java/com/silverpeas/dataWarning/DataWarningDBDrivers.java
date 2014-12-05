@@ -32,8 +32,8 @@ import java.util.*;
 
 public final class DataWarningDBDrivers extends Object {
 
-  static protected Map<String, DataWarningDBDriver> allDBDrivers =
-      new HashMap<String, DataWarningDBDriver>(); // This one is there for optimized research
+  // This one is there for optimized research
+  static protected Map<String, DataWarningDBDriver> allDBDrivers = new HashMap<>();
   static protected DataWarningDBDriver[] sortedDBDrivers = null;
 
   public DataWarningDBDrivers() {
@@ -46,26 +46,29 @@ public final class DataWarningDBDrivers extends Object {
       String configFileStr = "settings/dataWarningSettings";
       String[] driversUniqueIds;
 
-      //    configFileInputStream = ResourceLocator.getResourceAsStream(new DataWarningSchedulerTable(),null,configFileStr,".xml");
-      configFileInputStream = ResourceLocator.getResourceAsStream(this, null, configFileStr, ".xml");
+      configFileInputStream =
+          ResourceLocator.getResourceAsStream(this, null, configFileStr, ".xml");
 
-      XMLConfigurationStore m_XMLConfig = new XMLConfigurationStore(null, configFileInputStream,
-          "DataWarning-configuration");
-      driversUniqueIds = m_XMLConfig.getValues("Drivers");
+      XMLConfigurationStore curXMLConfig =
+          new XMLConfigurationStore(null, configFileInputStream, "DataWarning-configuration");
+      driversUniqueIds = curXMLConfig.getValues("Drivers");
       configFileInputStream.close();
 
       sortedDBDrivers = new DataWarningDBDriver[driversUniqueIds.length];
       for (int j = 0; j < driversUniqueIds.length; j++) {
-        SilverTrace.info("dataWarning", "DataWarningDBDrivers.loadDrivers",
-            "DataWarning.MSG_DRIVER_NAME", "DriverUniqueId=" + driversUniqueIds[j]);
+        SilverTrace
+            .info("dataWarning", "DataWarningDBDrivers.loadDrivers", "DataWarning.MSG_DRIVER_NAME",
+                "DriverUniqueId=" + driversUniqueIds[j]);
 
-        configFileInputStream = ResourceLocator
-            .getResourceAsStream(this, null, configFileStr, ".xml");
-        m_XMLConfig = new XMLConfigurationStore(null, configFileInputStream, driversUniqueIds[j]
-            + "-configuration");
-        sortedDBDrivers[j] = new DataWarningDBDriver(driversUniqueIds[j], m_XMLConfig.getString(
-            "DriverName"), m_XMLConfig.getString("ClassName"), m_XMLConfig.getString("Description"), m_XMLConfig.
-            getString("JDBCUrl"));
+        configFileInputStream =
+            ResourceLocator.getResourceAsStream(this, null, configFileStr, ".xml");
+        curXMLConfig = new XMLConfigurationStore(null, configFileInputStream,
+            driversUniqueIds[j] + "-configuration");
+        sortedDBDrivers[j] =
+            new DataWarningDBDriver(driversUniqueIds[j], curXMLConfig.getString("DriverName"),
+                curXMLConfig.getString("ClassName"), curXMLConfig.getString("Description"),
+                curXMLConfig.
+                    getString("JDBCUrl"));
         allDBDrivers.put(driversUniqueIds[j], sortedDBDrivers[j]);
         configFileInputStream.close();
       }
@@ -84,7 +87,7 @@ public final class DataWarningDBDrivers extends Object {
     if ((driverUniqueId == null) || (driverUniqueId.length() <= 0)) {
       return sortedDBDrivers[0];
     } else {
-      return (DataWarningDBDriver) allDBDrivers.get(driverUniqueId);
+      return allDBDrivers.get(driverUniqueId);
     }
   }
 }

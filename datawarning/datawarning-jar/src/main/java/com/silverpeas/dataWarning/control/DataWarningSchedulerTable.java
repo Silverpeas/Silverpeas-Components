@@ -31,7 +31,7 @@ import java.util.Map;
 public class DataWarningSchedulerTable {
 
   private static Map<String, DataWarningSchedulerImpl> schedulers =
-      Collections.synchronizedMap(new HashMap<String, DataWarningSchedulerImpl>());
+      Collections.synchronizedMap(new HashMap<>());
 
   /**
    * Add a scheduler
@@ -39,7 +39,7 @@ public class DataWarningSchedulerTable {
   public static void addScheduler(String instanceId) {
     SilverTrace.info("dataWarning", "DataWarningSchedulerTable.addScheduler()",
         "root.MSG_GEN_PARAM_VALUE", "Add Scheduler : " + instanceId);
-    //test if connecteur already exist
+    //test if connector already exist
     DataWarningSchedulerImpl theScheduler = getScheduler(instanceId);
     if (theScheduler != null) {
       removeScheduler(instanceId);
@@ -75,6 +75,6 @@ public class DataWarningSchedulerTable {
    * Get the scheduler associated with an instance
    */
   public static DataWarningSchedulerImpl getScheduler(String instanceId) {
-    return (DataWarningSchedulerImpl) schedulers.get(instanceId);
+    return schedulers.get(instanceId);
   }
-};
+}

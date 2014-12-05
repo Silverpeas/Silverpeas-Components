@@ -31,12 +31,11 @@ import com.silverpeas.dataWarning.model.DataWarningQuery;
 import com.silverpeas.dataWarning.model.DataWarningScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.sql.Connection;
 
 /**
- *
- * @author  nesseric
- *
+ * @author nesseric
  */
 public class DataWarningInstanciator implements ComponentsInstanciatorIntf {
 
@@ -44,29 +43,31 @@ public class DataWarningInstanciator implements ComponentsInstanciatorIntf {
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-    SilverTrace.info("dataWarning", "DataWarningInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("dataWarning", "DataWarningInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
     try {
       DataWarningDataManager dataManager = new DataWarningDataManager();
-      dataManager.createDataWarning(new DataWarning("", "", "", "", 0, componentId,
-          DataWarning.INCONDITIONAL_QUERY));
+      dataManager.createDataWarning(
+          new DataWarning("", "", "", "", 0, componentId, DataWarning.INCONDITIONAL_QUERY));
       dataManager.createDataWarningScheduler(new DataWarningScheduler(componentId, 1,
           DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR, 0, 0, 2, 0, 0,
           DataWarningScheduler.SCHEDULER_STATE_OFF));
       dataManager.createDataWarningQuery(new DataWarningQuery(componentId));
     } catch (DataWarningException dwe) {
-      throw new InstanciationException("DataWarningInstanciator.create()", SilverpeasException.ERROR,
-          "DataWarning.EX_DATA_ACCESS_FAILED", dwe);
+      throw new InstanciationException("DataWarningInstanciator.create()",
+          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", dwe);
     }
     SilverTrace.info("dataWarning", "DataWarningInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
 
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-    SilverTrace.info("dataWarning", "DataWarningInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("dataWarning", "DataWarningInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
     try {
       DataWarningDataManager dataManager = new DataWarningDataManager();
       dataManager.deleteDataWarningUsers(componentId);
@@ -75,8 +76,8 @@ public class DataWarningInstanciator implements ComponentsInstanciatorIntf {
       dataManager.deleteDataWarningScheduler(componentId);
       dataManager.deleteDataWarning(componentId);
     } catch (DataWarningException dwe) {
-      throw new InstanciationException("DataWarningInstanciator.delete()", SilverpeasException.ERROR,
-          "DataWarning.EX_DATA_ACCESS_FAILED", dwe);
+      throw new InstanciationException("DataWarningInstanciator.delete()",
+          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", dwe);
     }
     SilverTrace.info("dataWarning", "DataWarningInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }

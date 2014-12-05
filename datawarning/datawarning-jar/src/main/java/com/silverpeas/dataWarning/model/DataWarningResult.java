@@ -190,7 +190,7 @@ public class DataWarningResult extends Object {
   }
 
   public String getConditionDisplayedString(ResourceLocator rl) {
-    String valret = null;
+    String valret;
     switch (getTriggerCondition()) {
       case DataWarningQuery.TRIGGER_CONDITION_SUP:
         valret = rl.getString("triggerCondition0");

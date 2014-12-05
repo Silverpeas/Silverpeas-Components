@@ -34,13 +34,14 @@ import org.silverpeas.util.exception.WithNested;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class DataWarningQueryResult extends Object {
 
   protected DataWarningQuery queryParent = null;
   // Query result
-  protected ArrayList columns = null;
-  protected ArrayList values = null;
+  protected ArrayList<String> columns = null;
+  protected List values = null;
   protected boolean hasError = false;
   protected Exception errEx = null;
   protected String errQuery = "";
@@ -52,7 +53,7 @@ public class DataWarningQueryResult extends Object {
 
   public DataWarningQueryResult(DataWarningQuery qp, boolean pe, int colNum, String puid) {
     queryParent = qp;
-    columns = new ArrayList();
+    columns = new ArrayList<>();
     values = new ArrayList();
     hasError = false;
     if (pe) {
@@ -89,14 +90,14 @@ public class DataWarningQueryResult extends Object {
     errEx = ex;
     errQuery = sqlQuery;
     // Now, put the error messages as values
-    ArrayList dummyRow = new ArrayList();
+    ArrayList<String> dummyRow = new ArrayList<>();
 
     columns.clear();
     values.clear();
-    addColumn("!!! ERREUR !!! (REQUETE)");
+    addColumn("!!! ERROR !!! (QUERY)");
     dummyRow.add(sqlQuery);
-    sb.append("!!! ERREUR !!!\nREQUETE :\n").append(sqlQuery);
-    addColumn("!!! ERREUR !!! (MSG HAUT NIVEAU)");
+    sb.append("!!! ERROR !!!\nQUERY :\n").append(sqlQuery);
+    addColumn("!!! ERROR !!! (HIGH LVL MSG)");
     sb.append("\nMSG HAUT NIVEAU :\n");
     if (ex instanceof SilverpeasException) {
       boolean notTheSame = false;
@@ -110,7 +111,7 @@ public class DataWarningQueryResult extends Object {
         notTheSame = true;
       }
       if (notTheSame) {
-        addColumn("!!! ERREUR !!! (MSG BAS NIVEAU)");
+        addColumn("!!! ERROR !!! (MSG BAS NIVEAU)");
         if (nested instanceof SilverpeasException) {
           errLowestLevel = ((SilverpeasException) nested).getMessageLang();
         } else {
@@ -134,14 +135,14 @@ public class DataWarningQueryResult extends Object {
     columns.add(columnName);
   }
 
-  public ArrayList getColumns() {
+  public List getColumns() {
     return columns;
   }
 
   // Values functions
   // ----------------
-  // Return all values (arraylist of arraylist)
-  public ArrayList getValues() {
+  // Return all values (list of list)
+  public List getValues() {
     return values;
   }
 
@@ -167,8 +168,9 @@ public class DataWarningQueryResult extends Object {
             maxVal = theVal;
           }
         }
-        SilverTrace.info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult(perso)",
-            "root.MSG_GEN_PARAM_VALUE", "maxVal = " + maxVal);
+        SilverTrace
+            .info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult(perso)",
+                "root.MSG_GEN_PARAM_VALUE", "maxVal = " + maxVal);
         return maxVal;
       } else {
         return Long.parseLong(getValue(0, 0));
@@ -186,8 +188,8 @@ public class DataWarningQueryResult extends Object {
     // Add reduced row to user specific results if needed
     if (isPersoEnabled()) {
       String userPersoValue = (String) row.get(persoColumnNumber);
-      ArrayList allUserRows = getValues(userPersoValue);
-      ArrayList clonedOne = (ArrayList) row.clone();
+      List allUserRows = getValues(userPersoValue);
+      List clonedOne = (ArrayList) row.clone();
       if (allUserRows == null) {
         allUserRows = new ArrayList();
       }
@@ -238,9 +240,9 @@ public class DataWarningQueryResult extends Object {
             "root.MSG_GEN_PARAM_VALUE", "maxVal = " + getValue(userId, 0, 0));
         return Long.parseLong(getValue(userId, 0, 0));
       } else {
-        SilverTrace.info("dataWarning",
-            "DataWarningQueryResult.returnTriggerValueFromResult(userId)",
-            "root.MSG_GEN_PARAM_VALUE", "maxVal = " + Long.parseLong(getValue(0, 0)));
+        SilverTrace
+            .info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult(userId)",
+                "root.MSG_GEN_PARAM_VALUE", "maxVal = " + Long.parseLong(getValue(0, 0)));
         return Long.parseLong(getValue(0, 0));
       }
     } catch (Exception e) {
@@ -249,15 +251,15 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public ArrayList getValues(String userId) {
+  public List getValues(String userId) {
     if (isPersoEnabled()) {
       // Translate user Id to user Perso Value
       String userPersoValue = returnPersoValue(userId);
       SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
           "root.MSG_GEN_PARAM_VALUE", "userPersoValue = " + userPersoValue);
-      ArrayList valret = new ArrayList();
+      List<List> valret = new ArrayList<>();
       for (int i = 0; i < values.size(); i++) {
-        ArrayList valeur = (ArrayList) getValues().get(i);
+        List valeur = (List) getValues().get(i);
         SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
             "root.MSG_GEN_PARAM_VALUE", "valeur = " + valeur);
         SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
@@ -273,9 +275,6 @@ public class DataWarningQueryResult extends Object {
         }
       }
 
-      if (valret == null) {
-        valret = new ArrayList();
-      }
       SilverTrace.info("dataWarning", "DataWarningQueryResult.getValues(userId)",
           "root.MSG_GEN_PARAM_VALUE", "Taille valret = " + valret.size());
       return valret;
@@ -286,7 +285,7 @@ public class DataWarningQueryResult extends Object {
 
   protected ArrayList getRow(String userId, int row) {
     if (isPersoEnabled()) {
-      ArrayList al = getValues(userId);
+      List al = getValues(userId);
       SilverTrace.info("dataWarning", "DataWarningQueryResult.getRow(userId, row)",
           "root.MSG_GEN_PARAM_VALUE", "userId=" + userId + " row=" + row + " al=" + al);
       if (al.size() > row) {
@@ -317,7 +316,7 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public ArrayList getColumns(String userId) {
+  public List getColumns(String userId) {
     if (isPersoEnabled()) {
       ArrayList clo = ((ArrayList) columns.clone());
       if (clo.size() > persoColumnNumber) {
@@ -338,7 +337,7 @@ public class DataWarningQueryResult extends Object {
   }
 
   public int getNbRows(String userId) {
-    ArrayList allUserRows = getValues(userId);
+    List allUserRows = getValues(userId);
     if (allUserRows != null) {
       return allUserRows.size();
     } else {

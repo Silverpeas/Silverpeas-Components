@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
@@ -58,47 +59,35 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
   private String instanceId = "";
   private DataWarningEngine dataWarningEngine = null;
   private String[] idAllUniqueUsers = new String[0];
-  private String[] idUsers = new String[0];
-  private String[] idGroups = new String[0];
   private ScheduledJob theJob = null;
   private Scheduler scheduler = null;
   private String jobName = null;
-  private ResourceLocator messages = new ResourceLocator(
-          "com.silverpeas.dataWarning.multilang.dataWarning", "");
+  private ResourceLocator messages =
+      new ResourceLocator("com.silverpeas.dataWarning.multilang.dataWarning", "");
 
-  public DataWarningSchedulerImpl(String compoId) {
+  public DataWarningSchedulerImpl(String instanceId) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    this.instanceId = compoId;
-    this.jobName = DATAWARNING_JOB_NAME + instanceId;
-    HashSet hs = new HashSet();
+    this.instanceId = instanceId;
+    this.jobName = DATAWARNING_JOB_NAME + this.instanceId;
+    HashSet<String> hs = new HashSet<>();
     try {
-      Collection theCol;
-      Iterator it;
-      int i;
-      Group gr;
-      String[] uids;
-
       // Get main classes
-      dataWarningEngine = new DataWarningEngine(compoId);
-      //load idGroups
-      theCol = dataWarningEngine.getDataWarningGroups();
-      idGroups = new String[theCol.size()];
-      it = theCol.iterator();
-      for (i = 0; i < theCol.size(); i++) {
-        idGroups[i] = Integer.toString(((DataWarningGroup) it.next()).getGroupId());
-        gr = oc.getGroup(idGroups[i]);
-        uids = gr.getUserIds();
-        hs.addAll(Arrays.asList(uids));
+      dataWarningEngine = new DataWarningEngine(instanceId);
+
+      //load user identifiers from group
+      Collection<DataWarningGroup> dataWarningGroups = dataWarningEngine.getDataWarningGroups();
+      for (DataWarningGroup dataWarningGroup : dataWarningGroups) {
+        String idGroup = Integer.toString(dataWarningGroup.getGroupId());
+        Group gr = oc.getGroup(idGroup);
+        hs.addAll(Arrays.asList(gr.getUserIds()));
       }
-      //load idUsers
-      theCol = dataWarningEngine.getDataWarningUsers();
-      idUsers = new String[theCol.size()];
-      it = theCol.iterator();
-      for (i = 0; i < theCol.size(); i++) {
-        idUsers[i] = Integer.toString(((DataWarningUser) it.next()).getUserId());
-        hs.add(idUsers[i]);
+
+      // load user identifiers
+      Collection<DataWarningUser> dataWarningUsers = dataWarningEngine.getDataWarningUsers();
+      for (DataWarningUser dataWarningUser : dataWarningUsers) {
+        hs.add(Integer.toString(dataWarningUser.getUserId()));
       }
-      idAllUniqueUsers = (String[]) hs.toArray(new String[0]);
+      idAllUniqueUsers = hs.toArray(new String[idAllUniqueUsers.length]);
 
       this.scheduler = SchedulerProvider.getScheduler();
     } catch (Exception e) {
@@ -150,7 +139,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
   public synchronized void doDataWarningSchedulerImpl() {
     DataWarningResult dwr = dataWarningEngine.run();
     SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-            "root.MSG_GEN_ENTER_METHOD", "hasError=" + dwr.hasError() + "-" + dwr.getQueryResult().
+        "root.MSG_GEN_ENTER_METHOD", "hasError=" + dwr.hasError() + "-" + dwr.getQueryResult().
             getErrorFullText());
     if (!dwr.hasError()) {
       try {
@@ -159,7 +148,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
         DataWarningQueryResult dwqr = dwr.getQueryResult();
         String descriptionRequete = dwr.getDataQuery().getDescription();
         SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                "root.MSG_GEN_PARAM_VALUE", "descriptionRequete=" + descriptionRequete);
+            "root.MSG_GEN_PARAM_VALUE", "descriptionRequete=" + descriptionRequete);
         StringBuilder msgToSend = new StringBuilder();
         int nbRowMax = dataWarningEngine.getDataWarning().getRowLimit();
         //Request Description
@@ -168,90 +157,90 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
         }
 
         //Notification for the Managers:
-        ArrayList managerDestIds = new ArrayList();
-        ArrayList profilesList = new ArrayList();
+        List<String> managerDestIds = new ArrayList<>();
+        List<String> profilesList = new ArrayList<>();
         profilesList.add("admin");
         profilesList.add("publisher");
         String[] managerIds = oc.getUsersIdsByRoleNames(instanceId, profilesList);
         SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                "root.MSG_GEN_PARAM_VALUE", "managerIds :" + managerIds.length + " - " + managerIds.
-                toString());
+            "root.MSG_GEN_PARAM_VALUE", "managerIds :" + managerIds.length + " - " +
+                Arrays.toString(managerIds));
 
         //Inconditional Query Type
-        if (dataWarningEngine.getDataWarning().getAnalysisType() == DataWarning.INCONDITIONAL_QUERY) {
-          for (int j = 0; j < idAllUniqueUsers.length; j++) {
-            String resultForMessage = buildResultForMessage(dwqr, nbRowMax, idAllUniqueUsers[j]);
+        if (dataWarningEngine.getDataWarning().getAnalysisType() ==
+            DataWarning.INCONDITIONAL_QUERY) {
+          for (final String idAllUniqueUser : idAllUniqueUsers) {
+            String resultForMessage = buildResultForMessage(dwqr, nbRowMax, idAllUniqueUser);
             if (!resultForMessage.equals("")) {
               //Personalized Query
               if (dwqr.isPersoEnabled()) {
-                String userPersoValue = dwqr.returnPersoValue(idAllUniqueUsers[j]);
-                UserDetail userDetail = oc.getUserDetail(idAllUniqueUsers[j]);
+                String userPersoValue = dwqr.returnPersoValue(idAllUniqueUser);
+                UserDetail userDetail = oc.getUserDetail(idAllUniqueUser);
                 msgForManager.append(messages.getString("separateurUserMail")).append(userDetail.
-                        getDisplayedName()).append(" (").append(userPersoValue).append(") :\n\n");
+                    getDisplayedName()).append(" (").append(userPersoValue).append(") :\n\n");
                 msgForManager.append(resultForMessage).append("\n\n");
               }
               sendMessage(messages.getString("titreMail"), msgToSend.toString() + resultForMessage,
-                      idAllUniqueUsers[j]);
+                  idAllUniqueUser);
             }
             //We only send a notification for managers who have subscribed.
-            for (int i = 0; i < managerIds.length; i++) {
-              if (managerIds[i].equals(idAllUniqueUsers[j])) {
-                managerDestIds.add(managerIds[i]);
+            for (final String managerId : managerIds) {
+              if (managerId.equals(idAllUniqueUser)) {
+                managerDestIds.add(managerId);
               }
-              SilverTrace.info("dataWarning",
-                      "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                      "root.MSG_GEN_PARAM_VALUE", "managerIds[i]=" + managerIds[i]);
+              SilverTrace
+                  .info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
+                      "root.MSG_GEN_PARAM_VALUE", "managerIds[i]=" + managerId);
             }
           }
-        } //Conditional Query Type (Trigger)
-        else if (dataWarningEngine.getDataWarning().getAnalysisType()
-                == DataWarning.TRIGGER_ANALYSIS) {
-          for (int j = 0; j < idAllUniqueUsers.length; j++) {
+        } else if (dataWarningEngine.getDataWarning().getAnalysisType() ==
+            DataWarning.TRIGGER_ANALYSIS) {
+          //Conditional Query Type (Trigger)
+          for (final String idAllUniqueUser : idAllUniqueUsers) {
             StringBuilder msgByUser = new StringBuilder();
-            SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                    "root.MSG_GEN_PARAM_VALUE", "Nb Rows = " + dwqr.getNbRows(idAllUniqueUsers[j]));
-            if (dwr.getTriggerEnabled(idAllUniqueUsers[j])) {
-              SilverTrace.debug("dataWarning",
-                      "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                      "root.MSG_GEN_PARAM_VALUE", "idAllUniqueUsers[j]=" + idAllUniqueUsers[j]);
-              //msgByUser.append("\n"+messages.getString("resultatSeuil") + " " + dwr.getConditionDisplayedString(messages) + " " + dwr.getTrigger() + ".\n\n");
+            SilverTrace
+                .debug("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
+                    "root.MSG_GEN_PARAM_VALUE", "Nb Rows = " + dwqr.getNbRows(idAllUniqueUser));
+            if (dwr.getTriggerEnabled(idAllUniqueUser)) {
+              SilverTrace
+                  .debug("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
+                      "root.MSG_GEN_PARAM_VALUE", "idAllUniqueUsers[j]=" + idAllUniqueUser);
               msgByUser.append(messages.getString("resultatSeuilValeur")).append(" : ").append(dwr.
-                      getTriggerActualValue(idAllUniqueUsers[j])).append("\n\n");
-              msgByUser.append(buildResultForMessage(dwqr, nbRowMax, idAllUniqueUsers[j]));
-              sendMessage(messages.getString("titreMail"), msgToSend.toString()
-                      + msgByUser.toString(), idAllUniqueUsers[j]);
+                  getTriggerActualValue(idAllUniqueUser)).append("\n\n");
+              msgByUser.append(buildResultForMessage(dwqr, nbRowMax, idAllUniqueUser));
+              sendMessage(messages.getString("titreMail"),
+                  msgToSend.toString() + msgByUser.toString(), idAllUniqueUser);
               //For Managers only:
-              String userPersoValue = dwqr.returnPersoValue(idAllUniqueUsers[j]);
-              UserDetail userDetail = oc.getUserDetail(idAllUniqueUsers[j]);
+              String userPersoValue = dwqr.returnPersoValue(idAllUniqueUser);
+              UserDetail userDetail = oc.getUserDetail(idAllUniqueUser);
               msgForManager.append(messages.getString("separateurUserMail")).append(userDetail.
-                      getDisplayedName()).append(" (").append(userPersoValue).append(") :");
+                  getDisplayedName()).append(" (").append(userPersoValue).append(") :");
               msgForManager.append(msgByUser).append("\n\n");
             }
-            for (int i = 0; i < managerIds.length; i++) {
-              if (managerIds[i].equals(idAllUniqueUsers[j])) {
-                managerDestIds.add(managerIds[i]);
+            for (final String managerId : managerIds) {
+              if (managerId.equals(idAllUniqueUser)) {
+                managerDestIds.add(managerId);
               }
-              SilverTrace.info("dataWarning",
-                      "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                      "root.MSG_GEN_PARAM_VALUE", "managerIds[i]=" + managerIds[i]);
+              SilverTrace
+                  .info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
+                      "root.MSG_GEN_PARAM_VALUE", "managerIds[i]=" + managerId);
             }
           }
         }
 
-
-        //Notification for the Managers:
+        // Notification for the Managers:
         for (int i = 0; i < managerDestIds.size(); i++) {
           SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                  "root.MSG_GEN_PARAM_VALUE", "managerId :" + managerIds[i]);
-          sendMessage(messages.getString("titreMail"), msgToSend.toString()
-                  + msgForManager.toString(), (String) managerDestIds.get(i));
+              "root.MSG_GEN_PARAM_VALUE", "managerId :" + managerIds[i]);
+          sendMessage(messages.getString("titreMail"),
+              msgToSend.toString() + msgForManager.toString(), managerDestIds.get(i));
         }
 
         // Re-init the WakeUp time to the next wake time
         dataWarningEngine.updateSchedulerWakeUp(theJob.getNexExecutionTimeInMillis());
       } catch (Exception e) {
         SilverTrace.warn("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                "root.MSG_GEN_ENTER_METHOD", "hasError", e);
+            "root.MSG_GEN_ENTER_METHOD", "hasError", e);
       }
     }
   }
@@ -260,10 +249,10 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
     StringBuilder msgToSend = new StringBuilder();
     String userPersoValue = dwqr.returnPersoValue(userId);
 
-    ArrayList cols = dwqr.getColumns(userId);
+    List cols = dwqr.getColumns(userId);
     int nbCols = cols.size();
     SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-            "root.MSG_GEN_ENTER_METHOD", "nbCols=" + nbCols);
+        "root.MSG_GEN_ENTER_METHOD", "nbCols=" + nbCols);
     Iterator it = cols.iterator();
 
     while (it.hasNext()) {
@@ -281,24 +270,23 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
     msgToSend.append("\n");
     SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "msgToSend=" + msgToSend);
-    ArrayList vals = dwqr.getValues(userId);
+        "root.MSG_GEN_PARAM_VALUE", "msgToSend=" + msgToSend);
+    List vals = dwqr.getValues(userId);
     for (int j = 0; (j < vals.size()) && ((nbRowMax <= 0) || (j < nbRowMax)); j++) {
       ArrayList theRow = (ArrayList) vals.get(j);
       //Do not send persoColumn if necessary
       if (dwqr.isPersoEnabled() && theRow.get(dwqr.getPersoColumnNumber()).equals(userPersoValue)) {
         SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-                "root.MSG_GEN_PARAM_VALUE", "dwqr.getPersoColumnNumber()=" + dwqr.
-                getPersoColumnNumber()
-                + " userPersoValue=" + userPersoValue);
+            "root.MSG_GEN_PARAM_VALUE", "dwqr.getPersoColumnNumber()=" + dwqr.
+                getPersoColumnNumber() + " userPersoValue=" + userPersoValue);
         theRow.remove(dwqr.getPersoColumnNumber());
       }
       for (int k = 0; k < nbCols; k++) {
         SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-                "root.MSG_GEN_PARAM_VALUE", "theRow=" + theRow);
+            "root.MSG_GEN_PARAM_VALUE", "theRow=" + theRow);
         msgToSend.append((String) theRow.get(k));
         SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-                "root.MSG_GEN_PARAM_VALUE", "msgToSend boucle=" + msgToSend);
+            "root.MSG_GEN_PARAM_VALUE", "msgToSend boucle=" + msgToSend);
         if (k + 1 < nbCols) {
           msgToSend.append(" | ");
         }
@@ -314,34 +302,34 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
   private void sendMessage(String title, String msgToSend, String uid) {
     try {
-      NotificationMetaData notificationMetaData = new NotificationMetaData(
-              NotificationParameters.NORMAL, title, msgToSend);
+      NotificationMetaData notificationMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, title, msgToSend);
       notificationMetaData.addUserRecipient(new UserRecipient(uid));
       notificationMetaData.setSender("0");
       NotificationSender notificationSender = new NotificationSender(instanceId);
       notificationSender.notifyUser(notificationMetaData);
     } catch (Exception e) {
       SilverTrace.error("dataWarning", "DataWarning_TimeoutManagerImpl.sendMessage()",
-              "Envoi impossible de la notification pour l'instanceId " + instanceId, e);
+          "Envoi impossible de la notification pour l'instanceId " + instanceId, e);
     }
   }
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     SilverTrace.debug("dataWarning", "DataWarning_TimeoutManagerImpl.handleSchedulerEvent",
-            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
     doDataWarningSchedulerImpl();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
     SilverTrace.debug("dataWarning", "DataWarning_TimeoutManagerImpl.handleSchedulerEvent",
-            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("dataWarning", "DataWarning_TimeoutManagerImpl.handleSchedulerEvent",
-            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

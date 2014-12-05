@@ -52,11 +52,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   *
    * @see
    */
   public DataWarningSessionController(MainSessionController mainSessionCtrl,
@@ -95,32 +92,32 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   public String initSelectionPeas() throws DataWarningException {
     String retour = null;
     //get usersId and groupsId
-    Collection groups = dataWarningEngine.getDataWarningGroups();
-    Collection users = dataWarningEngine.getDataWarningUsers();
+    Collection<DataWarningGroup> groups = dataWarningEngine.getDataWarningGroups();
+    Collection<DataWarningUser> users = dataWarningEngine.getDataWarningUsers();
     //transforme la collection en tableau de string
     String[] idGroups = null;
     String[] idUsers = null;
     if (groups != null && groups.size() > 0) {
       idGroups = new String[groups.size()];
-      DataWarningGroup[] Groups = (DataWarningGroup[]) groups.toArray(new DataWarningGroup[0]);
+      DataWarningGroup[] Groups = groups.toArray(new DataWarningGroup[groups.size()]);
       for (int i = 0; i < groups.size(); i++) {
         idGroups[i] = String.valueOf(Groups[i].getGroupId());
       }
     }
     if (users != null && users.size() > 0) {
       idUsers = new String[users.size()];
-      DataWarningUser[] Users = (DataWarningUser[]) users.toArray(new DataWarningUser[0]);
+      DataWarningUser[] Users = users.toArray(new DataWarningUser[users.size()]);
       for (int i = 0; i < users.size(); i++) {
         idUsers[i] = String.valueOf(Users[i].getUserId());
       }
     }
     try {
-      String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "ApplicationURL");
-      String hostUrl = m_context + URLManager.getURL(getSpaceId(), getComponentId())
-          + "SaveNotification";
-      String cancelUrl = m_context + URLManager.getURL(getSpaceId(), getComponentId())
-          + "schedulerParameters";
+      String curContext =
+          GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      String hostUrl =
+          curContext + URLManager.getURL(getSpaceId(), getComponentId()) + "SaveNotification";
+      String cancelUrl =
+          curContext + URLManager.getURL(getSpaceId(), getComponentId()) + "schedulerParameters";
       Pair<String, String> hostComponentName = new Pair<>("", "");
       String hostSpaceName = getSpaceLabel();
 
@@ -136,10 +133,10 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
       sel.setPopupMode(true);
 
       if ((idUsers == null || idUsers.length == 0) && (idGroups == null || idGroups.length == 0)) {
-        //Affichera la page d'accueil du selectionPeas si aucun utilisateur n'était selectionne
+        //Display welcome page if user has no selection
         sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
       } else {
-        //Affichera le caddie du selectionPeas si des utilisateurs ont d�j� �t� s�lectionn�s
+        //Display basket if user has already done selection
         sel.setFirstPage(Selection.FIRST_PAGE_CART);
       }
       retour = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
@@ -157,25 +154,25 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     //save groups and users selected
     dataWarningEngine.deleteDataWarningGroups();
     if (idGroups != null) {
-      for (int i = 0; i < idGroups.length; i++) {
+      for (final String idGroup : idGroups) {
         dataWarningEngine.createDataWarningGroup(new DataWarningGroup(getComponentId(), Integer.
-            parseInt(idGroups[i])));
+            parseInt(idGroup)));
       }
     }
     dataWarningEngine.deleteDataWarningUsers();
     if (idUsers != null) {
-      for (int i = 0; i < idUsers.length; i++) {
+      for (final String idUser : idUsers) {
         dataWarningEngine.createDataWarningUser(new DataWarningUser(getComponentId(), Integer.
-            parseInt(idUsers[i])));
+            parseInt(idUser)));
       }
     }
   }
 
-  public String buildOptions(ArrayList ar, String selectValue, String selectText, boolean bSorted) {
+  public String buildOptions(List ar, String selectValue, String selectText, boolean bSorted) {
     StringBuilder valret = new StringBuilder();
     Properties elmt;
     String selected;
-    ArrayList arToDisplay = ar;
+    List arToDisplay = ar;
     int i;
 
     if (selectText != null) {
@@ -185,8 +182,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
         selected = "";
       }
       valret.append("<option value=\"\" ").append(selected).append(">").
-          append(EncodeHelper.javaStringToHtmlString(
-          selectText)).append("</option>\n");
+          append(EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
@@ -213,17 +209,17 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
         valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").
             append(selected).append(">").
             append(EncodeHelper.
-            javaStringToHtmlString(elmt.getProperty("name"))).append("</option>\n");
+                javaStringToHtmlString(elmt.getProperty("name"))).append("</option>\n");
       }
     }
     return valret.toString();
   }
 
-  public ArrayList getSelectedGroups(String[] selectedGroupsId) throws DataWarningException {
+  public List<Properties> getSelectedGroups(String[] selectedGroupsId) throws DataWarningException {
     Group[] selectedGroups;
     Properties p;
     int i;
-    ArrayList ar = new ArrayList();
+    List<Properties> ar = new ArrayList<>();
 
     if (selectedGroupsId != null && selectedGroupsId.length > 0) {
       selectedGroups = getGroupList(selectedGroupsId);
@@ -259,19 +255,18 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     return getOrganisationController().getUserDetails(idUsers);
   }
 
-  public ArrayList<Properties> getSelectedUsersNames(String[] selectedUsersId) throws
-      DataWarningException {
-    ArrayList<Properties> ar = new ArrayList<Properties>();
+  public List<Properties> getSelectedUsersNames(String[] selectedUsersId)
+      throws DataWarningException {
+    List<Properties> ar = new ArrayList<>();
     UserDetail[] selectedUsers;
 
     if (selectedUsersId != null && selectedUsersId.length > 0) {
       selectedUsers = getUserDetailList(selectedUsersId);
       if (selectedUsers != null && selectedUsers.length > 0) {
-        for (int i = 0; i < selectedUsers.length; i++) {
+        for (final UserDetail selectedUser : selectedUsers) {
           Properties p = new Properties();
-          p.setProperty("id", selectedUsers[i].getId());
-          p.setProperty("name", selectedUsers[i].getLastName() + " " + selectedUsers[i].
-              getFirstName());
+          p.setProperty("id", selectedUser.getId());
+          p.setProperty("name", selectedUser.getLastName() + " " + selectedUser.getFirstName());
           ar.add(p);
         }
         if (ar.size() != selectedUsers.length) {
@@ -283,18 +278,18 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     return ar;
   }
 
-  public ArrayList<Properties> getSelectedGroupsNames(String[] selectedGroupsId) throws
-      DataWarningException {
+  public List<Properties> getSelectedGroupsNames(String[] selectedGroupsId)
+      throws DataWarningException {
     Group[] selectedGroups;
-    ArrayList<Properties> ar = new ArrayList<Properties>();
+    ArrayList<Properties> ar = new ArrayList<>();
 
     if (selectedGroupsId != null && selectedGroupsId.length > 0) {
       selectedGroups = getGroupList(selectedGroupsId);
       if (selectedGroups != null && selectedGroups.length > 0) {
-        for (int i = 0; i < selectedGroups.length; i++) {
+        for (final Group selectedGroup : selectedGroups) {
           Properties p = new Properties();
-          p.setProperty("id", selectedGroups[i].getId());
-          p.setProperty("name", selectedGroups[i].getName());
+          p.setProperty("id", selectedGroup.getId());
+          p.setProperty("name", selectedGroup.getName());
           ar.add(p);
         }
         if (ar.size() != selectedGroups.length) {
@@ -307,26 +302,21 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   }
 
   public boolean isUserInDataWarningGroups() throws DataWarningException {
-    boolean trouve = false;
-    Collection dataGroups = dataWarningEngine.getDataWarningGroups();
+    Collection<DataWarningGroup> dataGroups = dataWarningEngine.getDataWarningGroups();
     if (dataGroups != null) {
       try {
-        String[] idGroups = new String[dataGroups.size()];
-        Iterator it = dataGroups.iterator();
-        int i = 0;
-        while (it.hasNext()) {
-          DataWarningGroup group = (DataWarningGroup) it.next();
-          idGroups[i] = String.valueOf(group.getGroupId());
-          i++;
+        List<String> groupIds = new ArrayList<>();
+        for (DataWarningGroup dataGroup : dataGroups) {
+          groupIds.add(Integer.toString(dataGroup.getGroupId()));
         }
-        Group[] groups = getOrganisationController().getGroups(idGroups);
-        for (int j = 0; j < idGroups.length; j++) {
-          Group group = groups[j];
+        Group[] groups = getOrganisationController()
+            .getGroups(groupIds.toArray(new String[groupIds.size()]));
+        for (Group group : groups) {
           String[] userIds = group.getUserIds();
           if (userIds != null && userIds.length > 0) {
-            for (int k = 0; k < userIds.length; k++) {
-              if (userIds[k].equals(getUserId())) {
-                trouve = true;
+            for (final String userId : userIds) {
+              if (userId.equals(getUserId())) {
+                return true;
               }
             }
           }
@@ -336,67 +326,73 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
             "DataWarning.DataWarning.EX_LOAD_GROUPS", null, e);
       }
     }
-    return trouve;
+    return false;
   }
 
   public String getTextFrequenceScheduler() throws DataWarningException {
     String retour = "";
     DataWarningScheduler scheduler = dataWarningEngine.getDataWarningScheduler();
-    ResourceLocator messages = new ResourceLocator(
-        "org.silverpeas.dataWarning.multilang.dataWarning", "");
+    ResourceLocator messages =
+        new ResourceLocator("org.silverpeas.dataWarning.multilang.dataWarning", "");
     if (scheduler != null) {
       if (scheduler.getNumberOfTimes() == 1) {
         switch (scheduler.getNumberOfTimesMoment()) {
           case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
-            retour += messages.getString("frequenceSchedulerRequete") + " " + messages.getString(
-                "schedulerPeriodicity0") + " (" + messages.getString("minute") + " : " + scheduler.
+            retour += messages.getString("frequenceSchedulerRequete") + " " +
+                messages.getString("schedulerPeriodicity0") + " (" + messages.getString("minute") +
+                " : " + scheduler.
                 getMinits() + ")";
             break;
           case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
-            retour += messages.getString("frequenceSchedulerRequete") + " " + messages.getString(
-                "schedulerPeriodicity1") + " (" + messages.getString("heure") + " : " + scheduler.
-                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits()
-                + ")";
+            retour += messages.getString("frequenceSchedulerRequete") + " " +
+                messages.getString("schedulerPeriodicity1") + " (" + messages.getString("heure") +
+                " : " + scheduler.
+                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits() +
+                ")";
             break;
           case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
-            retour += messages.getString("frequenceSchedulerRequete") + " " + messages.getString(
-                "schedulerPeriodicity2") + " (" + messages.getString("jourSemaine") + " : "
-                + scheduler.getDayOfWeek() + ", " + messages.getString("heure") + " : " + scheduler.
-                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits()
-                + ")";
+            retour += messages.getString("frequenceSchedulerRequete") + " " +
+                messages.getString("schedulerPeriodicity2") + " (" +
+                messages.getString("jourSemaine") + " : " + scheduler.getDayOfWeek() + ", " +
+                messages.getString("heure") + " : " + scheduler.
+                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits() +
+                ")";
             break;
           case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
-            retour += messages.getString("frequenceSchedulerRequete") + " " + messages.getString(
-                "schedulerPeriodicity3") + " (" + messages.getString("jourMois") + " : "
-                + (scheduler.getDayOfMonth() + 1) + ", " + messages.getString("heure") + " : "
-                + scheduler.getHours() + ", " + messages.getString("minute") + " : " + scheduler.
+            retour += messages.getString("frequenceSchedulerRequete") + " " +
+                messages.getString("schedulerPeriodicity3") + " (" +
+                messages.getString("jourMois") + " : " + (scheduler.getDayOfMonth() + 1) + ", " +
+                messages.getString("heure") + " : " + scheduler.getHours() + ", " +
+                messages.getString("minute") + " : " + scheduler.
                 getMinits() + ")";
             break;
           case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
-            retour += messages.getString("frequenceSchedulerRequete") + " " + messages.getString(
-                "schedulerPeriodicity4") + " (" + messages.getString("mois") + " : " + (scheduler.
+            retour += messages.getString("frequenceSchedulerRequete") + " " +
+                messages.getString("schedulerPeriodicity4") + " (" + messages.getString("mois") +
+                " : " + (scheduler.
                 getTheMonth() + 1) + ", " + messages.getString("jourMois") + " : " + (scheduler.
                 getDayOfMonth() + 1) + ", " + messages.getString("heure") + " : " + scheduler.
-                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits()
-                + ")";
+                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits() +
+                ")";
             break;
         }
       } else {
         retour += messages.getString("frequenceSchedulerRequete") + " " + scheduler.
             getNumberOfTimes() + " " + messages.getString("schedulerPeriodicity5") + " ";
-        if (scheduler.getNumberOfTimesMoment() == DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR) {
+        if (scheduler.getNumberOfTimesMoment() ==
+            DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR) {
           retour += messages.getString("heure");
-        } else if (scheduler.getNumberOfTimesMoment()
-            == DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY) {
+        } else if (scheduler.getNumberOfTimesMoment() ==
+            DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY) {
           retour += messages.getString("jour");
-        } else if (scheduler.getNumberOfTimesMoment()
-            == DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK) {
+        } else if (scheduler.getNumberOfTimesMoment() ==
+            DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK) {
           retour += messages.getString("semaine");
-        } else if (scheduler.getNumberOfTimesMoment()
-            == DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH) {
+        } else if (scheduler.getNumberOfTimesMoment() ==
+            DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH) {
           retour += messages.getString("mois");
-        } else if (scheduler.getNumberOfTimesMoment()
-            == DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR) {
+        } else if (scheduler.getNumberOfTimesMoment() ==
+            DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR) {
           retour += messages.getString("annee");
         }
       }
@@ -405,11 +401,15 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   }
 
   public String[] getColumns() {
-    return columns;
+    return columns != null ? columns.clone() : null;
   }
 
   public void setColumns(String[] col) {
-    columns = col;
+    if (col != null) {
+      columns = col.clone();
+    } else {
+      columns = null;
+    }
   }
 
   public String getAnalysisTypeString() throws DataWarningException {

@@ -46,6 +46,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarningSessionController> {
+  private static final long serialVersionUID = -2163372588036955415L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -56,7 +58,6 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -70,12 +71,11 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
-   * @param function    The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param dataWarningSC The component Session Control, build and initialised.
    * @param request
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach
+   * .jsp?flag=user")
    */
   public String getDestination(String function, DataWarningSessionController dataWarningSC,
       HttpRequest request) {
@@ -87,7 +87,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
     try {
       DataWarningEngine dwe = dataWarningSC.getDataWarningEngine();
 
-/********************** main *****************************************/
+      /********************** main *****************************************/
       if (function.startsWith("Main") || function.startsWith("dataWarning")) {
         // Init the DataWarningEngine each time we go to the first page
         dwe.init();
@@ -96,14 +96,15 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         DataWarningScheduler scheduler = dwe.getDataWarningScheduler();
         DataWarningResult dwr = dwe.run();
 
-        //mettre en place un systeme de backlist... lors envoi mail, enlever les user qui sont ds la back list
+        //mettre en place un systeme de backlist... lors envoi mail, enlever les user qui sont ds
+        // la back list
         boolean isAbonne = false;
         if (dataWarningSC.isUserInDataWarningGroups()) {
           isAbonne = true;
         } else if (dwe.getDataWarningUser(dataWarningSC.getUserId()) != null) {
           isAbonne = true;
         }
-        request.setAttribute("isAbonne", new Boolean(isAbonne));
+        request.setAttribute("isAbonne", Boolean.valueOf(isAbonne));
         request.setAttribute("analysisTypeString", dataWarningSC.getAnalysisTypeString());
         request.setAttribute("result", dwr);
         request.setAttribute("data", data);
@@ -111,26 +112,23 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         request.setAttribute("scheduler", scheduler);
         request.setAttribute("textFrequenceScheduler", dataWarningSC.getTextFrequenceScheduler());
         destination = "dataWarning.jsp";
-      }
-/********************** page des parametres de connexion *****************************************/
-      else if ("connectionParameters".equals(function)) {
-        dataWarningSC.setCurrentDBDriver(dwe.getDataWarning().getJDBCDriverName());
+      } else if ("connectionParameters".equals(function)) {
+        /********************** page des parametres de connexion *********************************/
+        dataWarningSC.setCurrentDBDriver(dwe.getDataWarning().getJdbcDriverName());
         request.setAttribute("dataWarningObject", dwe.getDataWarning());
         request.setAttribute("dataWarningDBDrivers", dataWarningSC.getDBDrivers());
         request.setAttribute("currentDBDriver", dataWarningSC.getCurrentDBDriver());
         destination = "connectionParameters.jsp";
-      }
-/********************** validation des parametres de connexion *****************************************/
-      else if ("updateConnection".equals(function)) {
-        dataWarningSC.setCurrentDBDriver((String) request.getParameter("JDBCdriverNameSelect"));
+      } else if ("updateConnection".equals(function)) {
+        /********************** validation des parametres de connexion ***************************/
+        dataWarningSC.setCurrentDBDriver(request.getParameter("JDBCdriverNameSelect"));
         request.setAttribute("dataWarningObject", dwe.getDataWarning());
         request.setAttribute("dataWarningDBDrivers", dataWarningSC.getDBDrivers());
         request.setAttribute("currentDBDriver", dataWarningSC.getCurrentDBDriver());
         destination = "connectionParameters.jsp";
-      }
-/********************** validation des parametres de connexion *****************************************/
-      else if ("SetConnection".equals(function)) {
-        String DBDriverUniqueId = (String) request.getParameter("JDBCdriverNameSelect");
+      } else if ("SetConnection".equals(function)) {
+        /********************** validation des parametres de connexion ***************************/
+        String dbDriverUniqueId = request.getParameter("JDBCdriverNameSelect");
         String login = request.getParameter("Login");
         String password = request.getParameter("Password");
         int rowLimit = 0;
@@ -141,7 +139,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
 
         DataWarning data = dwe.getDataWarningWritable();
 
-        data.setJDBCDriverName(DBDriverUniqueId);
+        data.setJdbcDriverName(dbDriverUniqueId);
         data.setLogin(login);
         data.setPwd(password);
         data.setRowLimit(rowLimit);
@@ -160,8 +158,8 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       }
 /********************** sauvegarde des parametres generaux **********************************/
       else if ("SaveParamGen".equals(function)) {
-        String description = (String) request.getParameter("SQLReqDescription");
-        int typeAnalyse = Integer.parseInt((String) request.getParameter("typeAnalyse"));
+        String description = request.getParameter("SQLReqDescription");
+        int typeAnalyse = Integer.parseInt(request.getParameter("typeAnalyse"));
         //get the datawarning and test if analysis type is different
         DataWarning data = dwe.getDataWarningWritable();
         if (data.getAnalysisType() != typeAnalyse) {
@@ -206,20 +204,22 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
             "Type requete sortie=" + dataWarningSC.getCurrentQueryType());
         destination = getDestination("requestParameters", dataWarningSC, request);
       }
-/********************** edition des parametres de seuil *****************************************************/
+/********************** edition des parametres de seuil
+ * *****************************************************/
       else if ("EditParamGenQuery".equals(function)) {
         request.setAttribute("dataQuery", dataWarningSC.getCurrentQuery());
         destination = "editParamGenQuery.jsp";
       }
-/********************** sauvegarde des parametres de seuil *****************************************************/
+/********************** sauvegarde des parametres de seuil
+ * *****************************************************/
       else if ("SaveParamGenQuery".equals(function)) {
         DataWarningQuery dataQuery = dataWarningSC.getCurrentQuery();
-        String description = (String) request.getParameter("SQLReqDescription");
+        String description = request.getParameter("SQLReqDescription");
 
         dataQuery.setDescription(description);
         if (dataQuery.getType() == DataWarningQuery.QUERY_TYPE_TRIGGER) {
-          int condition = Integer.parseInt((String) request.getParameter("condition"));
-          long seuil = Long.parseLong((String) request.getParameter("seuil"));
+          int condition = Integer.parseInt(request.getParameter("condition"));
+          long seuil = Long.parseLong(request.getParameter("seuil"));
 
           dataQuery.setTheTriggerCondition(condition);
           dataQuery.setTheTrigger(seuil);
@@ -238,14 +238,16 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         request.setAttribute("TheCommand", "requestParameters");
         destination = "closeJsp.jsp";
       }
-/********************** edition de la requete en mode expert *****************************************************/
+/********************** edition de la requete en mode expert
+ * *****************************************************/
       else if (function.equals("EditReqExpert")) {
         request.setAttribute("requete", dataWarningSC.getCurrentQuery().getQuery());
         destination = "editReqExpert.jsp";
       }
-/********************** sauvegarde de la requete en mode expert *****************************************************/
+/********************** sauvegarde de la requete en mode expert
+ * *****************************************************/
       else if (function.equals("SaveRequete")) {
-        String requete = (String) request.getParameter("SQLReq");
+        String requete = request.getParameter("SQLReq");
         SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().SaveRequete",
             "root.MSG_GEN_PARAM_VALUE", "requete=" + requete);
         DataWarning data = dwe.getDataWarning();
@@ -277,9 +279,10 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
           destination = "closeJsp.jsp";
         }
       }
-/********************** previsualisation du resultat de la requete (mode expert) *****************************************************/
+/********************** previsualisation du resultat de la requete (mode expert)
+ * *****************************************************/
       else if (function.equals("PreviewReq")) {
-        String requete = (String) request.getParameter("SQLReq");
+        String requete = request.getParameter("SQLReq");
         SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().PreviewReq",
             "root.MSG_GEN_PARAM_VALUE", "requete=" + requete);
         DataWarning data = dwe.getDataWarning();
@@ -295,7 +298,8 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         }
         destination = "previewReq.jsp";
       }
-/********************** edition des parametres du scheduler *****************************************************/
+/********************** edition des parametres du scheduler
+ * *****************************************************/
       else if (function.equals("schedulerParameters") ||
           function.equals("schedulerParametersWithoutReset")) {
         Collection groups = dwe.getDataWarningGroups();
@@ -339,65 +343,65 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       else if (function.equals("UpdateLayer")) {
         DataWarningScheduler scheduler = dataWarningSC.getEditedScheduler();
 
-        int numberOfTimes = Integer.parseInt((String) request.getParameter("numberOfTimes"));
-        int numberOfTimesMoment =
-            Integer.parseInt((String) request.getParameter("numberOfTimesMoment"));
+        int numberOfTimes = Integer.parseInt(request.getParameter("numberOfTimes"));
+        int numberOfTimesMoment = Integer.parseInt(request.getParameter("numberOfTimesMoment"));
 
         //save parameters
         scheduler.setNumberOfTimes(numberOfTimes);
         scheduler.setNumberOfTimesMoment(numberOfTimesMoment);
         if ((request.getParameter("month") != null) &&
             (request.getParameter("month").length() > 0)) {
-          scheduler.setTheMonth(Integer.parseInt((String) request.getParameter("month")));
+          scheduler.setTheMonth(Integer.parseInt(request.getParameter("month")));
         }
         if ((request.getParameter("dayOfMonth") != null) &&
             (request.getParameter("dayOfMonth").length() > 0)) {
-          scheduler.setDayOfMonth(Integer.parseInt((String) request.getParameter("dayOfMonth")));
+          scheduler.setDayOfMonth(Integer.parseInt(request.getParameter("dayOfMonth")));
         }
         if ((request.getParameter("dayOfWeek") != null) &&
             (request.getParameter("dayOfWeek").length() > 0)) {
-          scheduler.setDayOfWeek(Integer.parseInt((String) request.getParameter("dayOfWeek")));
+          scheduler.setDayOfWeek(Integer.parseInt(request.getParameter("dayOfWeek")));
         }
         if ((request.getParameter("heure") != null) &&
             (request.getParameter("heure").length() > 0)) {
-          scheduler.setHours(Integer.parseInt((String) request.getParameter("heure")));
+          scheduler.setHours(Integer.parseInt(request.getParameter("heure")));
         }
         if ((request.getParameter("min") != null) && (request.getParameter("min").length() > 0)) {
-          scheduler.setMinits(Integer.parseInt((String) request.getParameter("min")));
+          scheduler.setMinits(Integer.parseInt(request.getParameter("min")));
         }
         destination = getDestination("schedulerParametersWithoutReset", dataWarningSC, request);
-      }
-/********************** sauvegarde des parametres du scheduler et d�marrage de celui-ci *****************************************************/
-      else if (function.equals("SetScheduler")) {
+      } else if (function.equals("SetScheduler")) {
+/********************** sauvegarde des parametres du scheduler et d�marrage de celui-ci
+ * *****************************************************/
         getDestination("UpdateLayer", dataWarningSC, request);
         dwe.updateDataWarningScheduler(dataWarningSC.getEditedScheduler());
         destination = getDestination("schedulerParameters", dataWarningSC, request);
-      }
+      } else if (function.equals("StartScheduler")) {
 /********************** lancer le scheduler *****************************************************/
-      else if (function.equals("StartScheduler")) {
         dwe.startScheduler();
 
         destination = getDestination("schedulerParameters", dataWarningSC, request);
-      }
+      } else if (function.equals("StopScheduler")) {
 /********************** arreter le scheduler *****************************************************/
-      else if (function.equals("StopScheduler")) {
         dwe.stopScheduler();
 
         destination = getDestination("schedulerParameters", dataWarningSC, request);
       }
-/********************** choix des groupes et users dans l'onglet scheduler *****************************************************/
+/********************** choix des groupes et users dans l'onglet scheduler
+ * *****************************************************/
       else if (function.equals("Notification")) {
         return dataWarningSC.initSelectionPeas();
       }
-/********************** groupes et users choisis *****************************************************/
+/********************** groupes et users choisis
+ * *****************************************************/
       else if (function.equals("SaveNotification")) {
         dataWarningSC.returnSelectionPeas();
         destination = getDestination("schedulerParameters", dataWarningSC, request);
       }
-/********************** groupes et users choisis *****************************************************/
+/********************** groupes et users choisis
+ * *****************************************************/
       else if (function.equals("Suscribe")) {
         boolean isAbonne = false;
-        String suscribe = (String) request.getParameter("suscribeAction");
+        String suscribe = request.getParameter("suscribeAction");
         DataWarningUser user = new DataWarningUser(dataWarningSC.getComponentId(),
             Integer.parseInt(dataWarningSC.getUserId()));
         if ("true".equals(suscribe)) {
@@ -409,15 +413,17 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         }
         destination = getDestination("dataWarning", dataWarningSC, request);
       }
-/********************** selection d'une table lors de la requete simplifiee *****************************************************/
+/********************** selection d'une table lors de la requete simplifiee
+ * *****************************************************/
       else if (function.equals("SelectTable")) {
         request.setAttribute("allTables", dwe.getDataWarning().getAllTableNames());
         request.setAttribute("dataQuery", dataWarningSC.getCurrentQuery());
         destination = "selectTable.jsp";
       }
-/********************** sauvegarde de la table selectionn�e lors de la requete simplifiee *****************************************************/
+/********************** sauvegarde de la table selectionn�e lors de la requete simplifiee
+ * *****************************************************/
       else if (function.equals("SaveSelectTable")) {
-        String tableName = (String) request.getParameter("table");
+        String tableName = request.getParameter("table");
         String req = "select * from " + tableName;
         DataWarningQuery dataQuery = dataWarningSC.getCurrentQuery();
         dataQuery.setQuery(req);
@@ -425,9 +431,10 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         request.setAttribute("TheCommand", "requestParameters");
         destination = "closeJsp.jsp";
       }
-/********************** selection de colonnes apres avoir selectionn� une table lors de la requete simplifiee ****************************/
+/********************** selection de colonnes apres avoir selectionn� une table lors de la
+ * requete simplifiee ****************************/
       else if (function.equals("SelectColumns")) {
-        String tableName = (String) request.getParameter("table");
+        String tableName = request.getParameter("table");
 
         request.setAttribute("data", dwe.getDataWarning());
         request.setAttribute("dataQuery", dataWarningSC.getCurrentQuery());
@@ -435,9 +442,10 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         request.setAttribute("tableName", tableName);
         destination = "selectColumns.jsp";
       }
-/********************** sauvegarde de la requete lors de la requete simplifiee *****************************************************/
+/********************** sauvegarde de la requete lors de la requete simplifiee
+ * *****************************************************/
       else if (function.startsWith("SaveSelectColumns")) {
-        String req = (String) request.getParameter("SQLReq");
+        String req = request.getParameter("SQLReq");
         SilverTrace
             .info("dataWarning", "DataWarningRequestRouter.getDestination().SaveSelectColumns",
                 "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
@@ -447,23 +455,25 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         request.setAttribute("TheCommand", "requestParameters");
         destination = "closeJsp.jsp";
       }
-/********************** selection des agregas lors de la requete simplifiee *****************************************************/
+/********************** selection des agregas lors de la requete simplifiee
+ * *****************************************************/
       else if (function.startsWith("SelectAgrega")) {
-        String tableName = (String) request.getParameter("table");
-        String[] columns = (String[]) request.getParameterValues("sColumns");
+        String tableName = request.getParameter("table");
+        String[] columns = request.getParameterValues("sColumns");
 
         request.setAttribute("tableName", tableName);
         request.setAttribute("columns", columns);
         destination = "selectAgrega.jsp";
       }
-/********************** selection des contraintes lors de la requete simplifiee *****************************************************/
+/********************** selection des contraintes lors de la requete simplifiee
+ * *****************************************************/
       else if (function.startsWith("SelectConstraints")) {
-        int colSize = Integer.parseInt((String) request.getParameter("columnsSize"));
+        int colSize = Integer.parseInt(request.getParameter("columnsSize"));
         String[] columns = new String[colSize];
         for (int i = 0; i < colSize; i++) {
           columns[i] = request.getParameter("Colonne" + i);
         }
-        String req = (String) request.getParameter("SQLReq");
+        String req = request.getParameter("SQLReq");
         SilverTrace
             .info("dataWarning", "DataWarningRequestRouter.getDestination().SelectConstraints",
                 "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
@@ -472,7 +482,8 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         request.setAttribute("columns", columns);
         destination = "selectConstraints.jsp";
       }
-/********************** ajout des contraintes lors de la requete simplifiee *****************************************************/
+/********************** ajout des contraintes lors de la requete simplifiee
+ * *****************************************************/
       else if (function.startsWith("AddCriter")) {
         String[] columns = dataWarningSC.getColumns();
         String req = request.getParameter("SQLReq");
@@ -481,7 +492,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         String critere = request.getParameter("critere");
         String sizeString = request.getParameter("critereSize");
         int size;
-        List criteres = new ArrayList();
+        List<String> criteres = new ArrayList<>();
         if (sizeString != null && !sizeString.equals("")) {
           size = Integer.parseInt(sizeString);
           for (int i = 0; i < size; i++) {
@@ -492,14 +503,15 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
           criteres.add(critere);
         }
 
-        String[] constraints = (String[]) criteres.toArray(new String[]{});
+        String[] constraints = criteres.toArray(new String[criteres.size()]);
 
         request.setAttribute("constraints", constraints);
         request.setAttribute("req", req);
         request.setAttribute("columns", columns);
         destination = "selectConstraints.jsp";
       }
-/********************** suppression des contraintes lors de la requete simplifiee *****************************************************/
+/********************** suppression des contraintes lors de la requete simplifiee
+ * *****************************************************/
       else if (function.startsWith("DelCriter")) {
         String[] columns = dataWarningSC.getColumns();
         String req = request.getParameter("SQLReq");
@@ -507,7 +519,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
             "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
         String sizeString = request.getParameter("critereSize");
         int size;
-        List criteres = new ArrayList();
+        List<String> criteres = new ArrayList<>();
         if (sizeString != null && !sizeString.equals("")) {
           size = Integer.parseInt(sizeString);
           for (int i = 0; i < size; i++) {
@@ -519,15 +531,15 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
           }
         }
 
-        String[] constraints = (String[]) criteres.toArray(new String[]{});
+        String[] constraints = criteres.toArray(new String[criteres.size()]);
 
         request.setAttribute("constraints", constraints);
         request.setAttribute("req", req);
         request.setAttribute("columns", columns);
         destination = "selectConstraints.jsp";
       }
-/********************** autre cas *****************************************/
       else {
+        /********************** autre cas *****************************************/
         destination = function;
       }
 
