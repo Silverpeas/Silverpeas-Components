@@ -20,20 +20,6 @@
  */
 package com.stratelia.webactiv.quickinfo.control;
 
-import java.rmi.RemoteException;
-import java.util.List;
-
-import javax.ejb.EJBException;
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.components.quickinfo.NewsByStatus;
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
-import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
-import org.silverpeas.date.Period;
-
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
@@ -55,6 +41,22 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
+import org.silverpeas.date.Period;
+
+import javax.ejb.EJBException;
+import javax.xml.bind.JAXBException;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.silverpeas.cache.service.CacheServiceFactory
+    .getSessionVolatileResourceCacheService;
 
 /**
  * @author squere
@@ -110,7 +112,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public NewsByStatus getQuickInfos() {
-    return getService().getAllNewsByStatus(getComponentId(), getUserId());
+    NewsByStatus newsByStatus = getService().getAllNewsByStatus(getComponentId(), getUserId());
+    // TODO - REMOVE THIS PART OF BELOW CODE IN WILDFLY VERSION
+    // removing drafts which have never been saved by the contributor
+    Iterator<News> drafts = newsByStatus.getDrafts().iterator();
+    while (drafts.hasNext()) {
+      News draft = drafts.next();
+      if (!draft.hasBeenModified()) {
+        getService().removeNews(draft.getId());
+        drafts.remove();
+      }
+    }
+    return newsByStatus;
   }
 
   public List<News> getVisibleQuickInfos() {
@@ -138,31 +151,64 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Create a new quick info (PublicationDetail)
-   *
-   * @param name the quick info name
-   * @param description the quick info description
-   * @param begin the start visibility date time
-   * @param end the end visibility date time
-   * @param positions the JSON positions
+   * Publish a news represented by the given identifier.
+   * @param id the identifier of the news that must be published.
    */
   public void publish(String id) {
     getService().publish(id, getUserId());
   }
 
-  public News createEmptyNews() {
+  /**
+   * Prepare an instance of a news that will exists only in memory if no action persistence will be
+   * applied on.
+   * @return an in memory instance of a news.
+   */
+  public News prepareEmptyNews() {
     Period period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
     News news = new News(getString("quickinfo.news.untitled"), null, period, false, false, false);
     news.setDraft();
-    news.setCreatorId(getUserId());
     news.setComponentInstanceId(getComponentId());
-    return getService().create(news);
+    // Dummy identifiers
+    news.setId("volatileId@" + getComponentId() + "@" + System.nanoTime());
+    news.setPublicationId(
+        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString());
+    news.getPublication().getPK().setId(news.getPublicationId());
+    getSessionVolatileResourceCacheService().addComponentResource(news.getPublication());
+    return news;
   }
 
   private QuickInfoService getService() {
     return QuickInfoServiceFactory.getQuickInfoService();
   }
 
+  /**
+   * Indicates if the given news identifier is one that indicates the news is in memory only.
+   * @param newsId the news identifier to verify.
+   * @return true if the news identifier is one for memory use, false otherwise (id is one of
+   * persisted news).
+   */
+  public boolean isNewsIdentifierFromMemory(String newsId) {
+    return StringUtil.isNotDefined(newsId) || newsId.startsWith("volatileId@" + getComponentId());
+  }
+
+  /**
+   * Creates into persistence the news with minimal data.
+   * @param news the news to persist.
+   */
+  public void create(News news) {
+    news.setDraft();
+    news.setComponentInstanceId(getComponentId());
+    news.setCreatorId(getUserId());
+    getService().create(news);
+  }
+
+  /**
+   * Updates all the data of a news.
+   * @param id the identifier of the news (used to load previous data).
+   * @param updatedNews the data to save.
+   * @param pdcPositions the pdc positions.
+   * @param forcePublish true to indicate a publish action, false otherwise.
+   */
   public void update(String id, News updatedNews, String pdcPositions, boolean forcePublish) {
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
@@ -173,6 +219,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setImportant(updatedNews.isImportant());
     news.setTicker(updatedNews.isTicker());
     news.setMandatory(updatedNews.isMandatory());
+    news.markAsModified();
     if (forcePublish) {
       news.setPublished();
     }
@@ -180,8 +227,16 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     getService().update(news, getPositionsFromJSON(pdcPositions), forcePublish);
   }
 
+  /**
+   * Removes from persistence the news which the identifier is the one given.
+   * If the given identifier corresponds to a volatile one, nothing is done.
+   * @param id the identifier of the news to remove from the persistence.
+   */
   public void remove(String id) {
-    getService().removeNews(id);
+    if (!isNewsIdentifierFromMemory(id)) {
+      // Case of a news that exists
+      getService().removeNews(id);
+    }
   }
 
   public boolean isPdcUsed() {

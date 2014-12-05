@@ -20,36 +20,6 @@
  */
 package org.silverpeas.components.quickinfo.model;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.authentication.UserAuthenticationListener;
-import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
-import org.silverpeas.components.quickinfo.NewsByStatus;
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
-import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
-import org.silverpeas.components.quickinfo.repository.NewsRepository;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
@@ -63,6 +33,7 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -79,6 +50,35 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.authentication.UserAuthenticationListener;
+import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
+import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
+import org.silverpeas.components.quickinfo.repository.NewsRepository;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 @Service
 public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComponentService<News> {
@@ -179,6 +179,9 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
 
   @Override
   public News create(final News news) {
+    ForeignPK volatileAttachmentSourcePK =
+        new ForeignPK(news.getPublicationId(), news.getComponentInstanceId());
+
     // Creating publication
     final PublicationDetail publication = news.getPublication();
     publication.setIndexOperation(IndexManager.NONE);
@@ -188,16 +191,29 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     News savedNews = Transaction.performInOne(new Transaction.Process<News>() {
       @Override
       public News execute() {
+        news.setId(null);
         news.setPublicationId(pubPK.getId());
         return newsRepository.save(OperationContext.fromUser(publication.getCreatorId()), news);
       }
     });
 
+    // Attaching all documents linked to volatile news to the persisted news
+    List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceFactory.getAttachmentService()
+        .moveAllDocuments(volatileAttachmentSourcePK, savedNews.getPublication().getPK());
+    if (!movedDocumentPks.isEmpty()) {
+      // Change images path in wysiwyg
+      WysiwygController.wysiwygPlaceHaveChanged(news.getComponentInstanceId(),
+          volatileAttachmentSourcePK.getId(), news.getComponentInstanceId(), savedNews.getId());
+    }
+
     // Referring new content into taxonomy
     try {
-      new QuickInfoContentManager().createSilverContent(null, publication, publication.getCreatorId(), false);
+      new QuickInfoContentManager()
+          .createSilverContent(null, publication, publication.getCreatorId(), false);
     } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "DefaultQuickInfoService.addNews()", "root.ContentManagerException", e);
+      SilverTrace
+          .error("quickinfo", "DefaultQuickInfoService.addNews()", "root.ContentManagerException",
+              e);
     }
 
     return savedNews;
@@ -405,7 +421,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
    * Classify the info letter publication on the PdC only if the positions parameter is filled
    *
    * @param publi the quickInfo PublicationDetail to classify
-   * @param positions the string json positions
+   * @param pdcPositions the string json positions
    */
   private void classifyQuickInfo(PublicationDetail publi, List<PdcPosition> pdcPositions) {
     if (pdcPositions != null && !pdcPositions.isEmpty()) {

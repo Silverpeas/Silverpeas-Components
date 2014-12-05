@@ -111,6 +111,11 @@ function isCorrectForm() {
 	if (isWhitespace($("#Name").val())) {
   	  errorMsg +=" - '<fmt:message key="GML.title" />' <fmt:message key="GML.MustBeFilled" />\n";
   	  errorNb++; 
+    } else {
+      if ($("#Name").val().length > 150) {
+   		errorMsg +=" - '<fmt:message key="GML.title" />' <fmt:message key="GML.data.error.message.string.limit"><fmt:param value="150"/></fmt:message>\n";
+    	errorNb++; 
+      }
     }
     
 	if ($("#Description").val().length > 300) {
@@ -214,7 +219,7 @@ $(document).ready(function() {
       <label class="txtlibform" for="name"><fmt:message key="GML.title" /> </label>
       <div class="champs">
         <c:if test="${not empty curQuickInfo}"><c:set var="curName" value="${curQuickInfo.title}"/></c:if>
-        <input type="text" name="Name" size="50" id="Name" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<view:encodeHtmlParagraph string="${curName}"/>" />
+        <input type="text" name="Name" size="50" id="Name" maxlength="400" value="<view:encodeHtmlParagraph string="${curName}"/>" />
         &nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
@@ -313,14 +318,7 @@ $(document).ready(function() {
 	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()"/>
 </c:otherwise>
 </c:choose>
-<c:choose>
-<c:when test="${newOneInProgress}">
-<view:button label="${buttonCancel}" action="javascript:onclick=abortNews()"/>
-</c:when>
-<c:otherwise>
 <view:button label="${buttonCancel}" action="Main"/>
-</c:otherwise>
-</c:choose>
 </view:buttonPane>
     
 </view:frame>
