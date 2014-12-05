@@ -1195,10 +1195,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                   }
                   String fieldValue = sw.getBuffer().toString();
                   // removing ending carriage return appended by out.println() of displayers
-                  if (fieldValue.endsWith("\r\n")) {
-                    fieldValue = fieldValue.substring(0, fieldValue.length() - 2);
-                  }
-                  addCSVValue(csvRow, fieldValue);
+                  addCSVValue(csvRow, fieldValue.replaceFirst("\\s+$",""));
                 }
               }
             }
