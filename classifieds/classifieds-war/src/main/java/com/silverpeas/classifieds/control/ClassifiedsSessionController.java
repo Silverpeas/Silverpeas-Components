@@ -515,7 +515,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   private ClassifiedService getClassifiedService() {
     if (classifiedService == null) {
-      classifiedService = ClassifiedServiceFactory.getFactory().getClassifiedService();
+      classifiedService = ClassifiedServiceProvider.getClassifiedService();
     }
     return classifiedService;
   }
@@ -746,7 +746,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   
   /**
    * Gets the template of the publication based on the classified XML form.
-   * @param classifiedsSC the session controller.
    * @return the publication template for classifieds.
    * @throws PublicationTemplateException if an error occurs while getting the publication template.
    */

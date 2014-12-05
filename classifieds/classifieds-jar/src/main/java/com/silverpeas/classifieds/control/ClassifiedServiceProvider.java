@@ -23,37 +23,23 @@
  */
 package com.silverpeas.classifieds.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * The factory of the classified service objects.
  * It wraps the access the underlying IoC to retrieve the classified service instances.
  */
-public final class ClassifiedServiceFactory {
-  
-  private static final ClassifiedServiceFactory instance = new ClassifiedServiceFactory();
-  
-  @Inject
-  private ClassifiedService classifiedService;
-  
-  public static ClassifiedServiceFactory getFactory() {
-    return instance;
-  }
+public final class ClassifiedServiceProvider {
   
   /**
    * Gets a classified service instance from the underlying IoC container.
    * @return a ClassifiedService instance.
    */
-  public ClassifiedService getClassifiedService() {
-    if (classifiedService == null) {
-      SilverTrace.error("classifieds", getClass().getSimpleName() + ".getClassifiedService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no ClassifiedService bean found!");
-    }
-    return classifiedService;
+  public static ClassifiedService getClassifiedService() {
+    return ServiceProvider.getService(ClassifiedService.class);
   }
 
-  private ClassifiedServiceFactory() {
+  private ClassifiedServiceProvider() {
   }
   
 }

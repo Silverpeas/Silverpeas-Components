@@ -24,7 +24,7 @@
 package com.silverpeas.classifieds;
 
 import com.silverpeas.classifieds.control.ClassifiedService;
-import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
+import com.silverpeas.classifieds.control.ClassifiedServiceProvider;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
@@ -33,17 +33,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Class declaration
- *
- * @author
- */
 public class ClassifiedsStatistics implements ComponentStatisticsInterface {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     Collection<ClassifiedDetail> c = getElements(spaceId, componentId);
     for (ClassifiedDetail classified : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -56,8 +51,7 @@ public class ClassifiedsStatistics implements ComponentStatisticsInterface {
 
   public Collection<ClassifiedDetail> getElements(String spaceId, String componentId)
       throws RemoteException {
-    ClassifiedServiceFactory factory = ClassifiedServiceFactory.getFactory();
-    ClassifiedService service = factory.getClassifiedService();
+    ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
     return service.getAllClassifieds(componentId);
   }
 

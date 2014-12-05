@@ -58,21 +58,18 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Services provided by the Classified Silverpeas component.
  */
-@Named("classifiedService")
 public class DefaultClassifiedService implements ClassifiedService {
 
   private static final String MESSAGES_PATH =
@@ -385,7 +382,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public List<ClassifiedDetail> search(QueryDescription query) {
-    List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
+    List<ClassifiedDetail> classifieds = new ArrayList<>();
     try {
       List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
@@ -429,7 +426,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   private void createIndex(ClassifiedDetail classified, PublicationTemplate template) {
-    FullIndexEntry indexEntry = null;
+    FullIndexEntry indexEntry;
     if (classified != null) {
       indexEntry =
           new FullIndexEntry(classified.getInstanceId(), "Classified", Integer.toString(classified
@@ -613,9 +610,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public void deleteAllSubscribes(String instanceId) {
     Collection<Subscribe> subscribes = getAllSubscribes(instanceId);
-    Iterator<Subscribe> it = subscribes.iterator();
-    while (it.hasNext()) {
-      Subscribe subscribe = it.next();
+    for (final Subscribe subscribe : subscribes) {
       deleteSubscribe(subscribe.getSubscribeId());
     }
   }

@@ -28,7 +28,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 public class ClassifiedsRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 2413240875023557772L;
   /**
-   * --------------------------------------------------------------------------constructors
+   * --------------------------------------------------------------------------
    * constructors
    */
   public ClassifiedsRuntimeException(String callingClass, int errorLevel, String message) {
@@ -51,7 +51,8 @@ public class ClassifiedsRuntimeException extends SilverpeasRuntimeException {
   }
 
   /**
-   * --------------------------------------------------------------------------getModule getModule
+   * --------------------------------------------------------------------------
+   * getModule
    */
   public String getModule() {
     return "Classifieds";

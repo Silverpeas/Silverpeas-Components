@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.classifieds.servlets.handler;
 
 import java.util.ArrayList;
@@ -25,12 +49,12 @@ import org.silverpeas.servlet.HttpRequest;
 public class DefaultHandler extends FunctionHandler {
 
   @Override
-  public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpRequest request) throws Exception {
-    
+  public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
+      throws Exception {
+
     Form formUpdate = null;
     DataRecord data = null;
-    String nbTotalClassifieds = null;
+    String nbTotalClassifieds;
 
     PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
     try {
@@ -54,15 +78,16 @@ public class DefaultHandler extends FunctionHandler {
 
     } catch (Exception e) {
       // form error
-      request.setAttribute("ErrorType", classifiedsSC.getResources().getString("classifieds.labelErrorForm"));      
+      request.setAttribute("ErrorType",
+          classifiedsSC.getResources().getString("classifieds.labelErrorForm"));
       return "error.jsp";
     }
 
     //Affichage page d'accueil annonces par catégorie
-    if(classifiedsSC.isHomePageDisplayCategorized()) {
-      
+    if (classifiedsSC.isHomePageDisplayCategorized()) {
+
       Collection<Category> categories = null;
-      
+
       if (pubTemplate != null) {
         // Template Name
         String templateFileName = pubTemplate.getFileName();
@@ -77,27 +102,27 @@ public class DefaultHandler extends FunctionHandler {
         categories = createCategory(templateName, label, keys, values, classifiedsSC);
       }
       request.setAttribute("Categories", categories);
-        
+
       // Returns jsp to redirect to
       return "accueil.jsp";
-        
-     } else { //Affichage page d'accueil annonces listées
-       
-       String currentPage = request.getParameter("CurrentPage");
-       if (!StringUtil.isDefined(currentPage)) {
-         currentPage = "0";
-       }
-       int currentPageInt = Integer.parseInt(currentPage);
-       classifiedsSC.setCurrentPage(currentPageInt);
-       
-       request.setAttribute("CurrentPage", currentPage);
-       request.setAttribute("NbPages", classifiedsSC.getNbPages(nbTotalClassifieds));
-       request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds(currentPageInt));
-       
-       // Returns jsp to redirect to
-       return "accueilNotCategorized.jsp";
-     }
-    
+
+    } else { //Affichage page d'accueil annonces listées
+
+      String currentPage = request.getParameter("CurrentPage");
+      if (!StringUtil.isDefined(currentPage)) {
+        currentPage = "0";
+      }
+      int currentPageInt = Integer.parseInt(currentPage);
+      classifiedsSC.setCurrentPage(currentPageInt);
+
+      request.setAttribute("CurrentPage", currentPage);
+      request.setAttribute("NbPages", classifiedsSC.getNbPages(nbTotalClassifieds));
+      request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds(currentPageInt));
+
+      // Returns jsp to redirect to
+      return "accueilNotCategorized.jsp";
+    }
+
   }
 
   /**
@@ -109,13 +134,10 @@ public class DefaultHandler extends FunctionHandler {
    * @param classifiedsSC Classified Session Controller
    * @return
    */
-  private Collection<Category> createCategory(String templateName,
-      String label,
-      String stringKeys,
-      String stringValues,
-      ClassifiedsSessionController classifiedsSC) {
+  private Collection<Category> createCategory(String templateName, String label, String stringKeys,
+      String stringValues, ClassifiedsSessionController classifiedsSC) {
 
-    Collection<Category> categories = new ArrayList<Category>();
+    Collection<Category> categories = new ArrayList<>();
     String[] keys = stringKeys.split("##");
     String[] values = stringValues.split("##");
 
@@ -127,7 +149,7 @@ public class DefaultHandler extends FunctionHandler {
       // search for classified inside this category
       QueryDescription query = new QueryDescription();
       query.addFieldQuery(new FieldDescription(templateName + "$$" + label, keys[i], null));
-      Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
+      Collection<ClassifiedDetail> classifieds;
       try {
         classifieds = classifiedsSC.getClassifieds(query, 5);
       } catch (Exception e) {

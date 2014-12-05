@@ -57,23 +57,22 @@ public class ClassifiedsDAO {
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId("SC_Classifieds_Classifieds", "classifiedId");
-      id = new Integer(newId).toString();
+      id = Integer.toString(newId);
       // création de la requete
       String query =
-          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, description, price, creatorId, creationDate, "
-              + "updateDate, status, validatorId, validateDate) "
-              + "values (?,?,?,?,?,?,?,?,?,?,?)";
+          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, description, " +
+              "price, creatorId, creationDate, " +
+              "updateDate, status, validatorId, validateDate) " + "values (?,?,?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, classified);
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
     return id;
   }
-  
+
 
   /**
    * update a classified
@@ -87,8 +86,8 @@ public class ClassifiedsDAO {
     try {
       // création de la requete
       String query =
-          "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status = ?  , updateDate = ? , validatorId = ? , validateDate = ? "
-              +
+          "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status" +
+              " = ?  , updateDate = ? , validatorId = ? , validateDate = ? " +
               " where classifiedId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
@@ -107,10 +106,9 @@ public class ClassifiedsDAO {
       } else {
         prepStmt.setString(7, null);
       }
-      prepStmt.setInt(8, new Integer(classified.getClassifiedId()).intValue());
+      prepStmt.setInt(8, classified.getClassifiedId());
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
@@ -132,7 +130,6 @@ public class ClassifiedsDAO {
       prepStmt.setInt(1, new Integer(classifiedId));
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
@@ -159,7 +156,6 @@ public class ClassifiedsDAO {
         classified = recupClassified(rs);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return classified;
@@ -175,7 +171,7 @@ public class ClassifiedsDAO {
   public static Collection<ClassifiedDetail> getAllClassifieds(Connection con, String instanceId)
       throws SQLException {
     // récupérer toutes les petites annonces
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -188,7 +184,6 @@ public class ClassifiedsDAO {
         listClassifieds.add(classified);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
@@ -201,11 +196,13 @@ public class ClassifiedsDAO {
    * @return the number : String
    * @throws SQLException
    */
-  public static String getNbTotalClassifieds(Connection con, String instanceId) throws SQLException {
+  public static String getNbTotalClassifieds(Connection con, String instanceId)
+      throws SQLException {
     // récupérer le nombre total d'annonces validées
     String nb = "";
     String query =
-        "select count(classifiedId) from SC_Classifieds_Classifieds where instanceId = ? and status = ? ";
+        "select count(classifiedId) from SC_Classifieds_Classifieds where instanceId = ? and " +
+            "status = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -217,7 +214,6 @@ public class ClassifiedsDAO {
         nb = rs.getString(1);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return nb;
@@ -231,10 +227,10 @@ public class ClassifiedsDAO {
    * @return a collection of ClassifiedDetail
    * @throws SQLException
    */
-  public static Collection<ClassifiedDetail> getClassifiedsByUser(Connection con,
-      String instanceId, String userId) throws SQLException {
+  public static Collection<ClassifiedDetail> getClassifiedsByUser(Connection con, String instanceId,
+      String userId) throws SQLException {
     // récupérer toutes les petites annonces de l'utilisateur
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query =
         "select * from SC_Classifieds_Classifieds where instanceId = ? and creatorId = ? ";
     PreparedStatement prepStmt = null;
@@ -249,7 +245,6 @@ public class ClassifiedsDAO {
         listClassifieds.add(classified);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
@@ -263,24 +258,24 @@ public class ClassifiedsDAO {
    * @return a list of ClassifiedDetail
    * @throws SQLException
    */
-  public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
-      String instanceId, String status, int currentPage, int elementsPerPage) throws SQLException {
-    List<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+  public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con, String instanceId,
+      String status, int currentPage, int elementsPerPage) throws SQLException {
+    List<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? " +
-                  " order by CASE WHEN validatedate IS NULL THEN " +
-                  " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END "+ 
-                  " ELSE validatedate END DESC, "+
-                  " validatedate DESC, updatedate DESC, creationdate DESC";
+        " order by CASE WHEN validatedate IS NULL THEN " +
+        " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END " +
+        " ELSE validatedate END DESC, " +
+        " validatedate DESC, updatedate DESC, creationdate DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    
+
     int firstIndexResult = currentPage * elementsPerPage;
     int lastIndexResult = firstIndexResult + elementsPerPage - 1;
     boolean displayAllElements = false;
-    if(elementsPerPage == -1) {
+    if (elementsPerPage == -1) {
       displayAllElements = true;
     }
-    
+
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
@@ -288,14 +283,13 @@ public class ClassifiedsDAO {
       rs = prepStmt.executeQuery();
       int index = 0;
       while (rs.next()) {
-        if(displayAllElements || (index >= firstIndexResult && index <= lastIndexResult)) {
+        if (displayAllElements || (index >= firstIndexResult && index <= lastIndexResult)) {
           ClassifiedDetail classified = recupClassified(rs);
           listClassifieds.add(classified);
         }
-        index ++;
+        index++;
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
@@ -309,12 +303,12 @@ public class ClassifiedsDAO {
    * @return a list of ClassifiedDetail
    * @throws SQLException
    */
-  public static List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays, String instanceId)
-      throws SQLException {
+  public static List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays,
+      String instanceId) throws SQLException {
     SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
         "root.MSG_GEN_PARAM_VALUE", "nbDays = " + nbDays);
     // récupérer toutes les petites annonces arrivant à échéance
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
 
     // calcul de la date de fin
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
@@ -324,7 +318,10 @@ public class ClassifiedsDAO {
     SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
         "root.MSG_GEN_PARAM_VALUE", "date = " + Long.toString(date.getTime()));
 
-    String query = "select * from SC_Classifieds_Classifieds where ( (updateDate is null and creationDate < ?) or (updateDate is not null and updateDate < ?) ) and instanceId = ? and status = 'Valid'";
+    String query =
+        "select * from SC_Classifieds_Classifieds where ( (updateDate is null and creationDate < " +
+            "?) or (updateDate is not null and updateDate < ?) ) and instanceId = ? and status = " +
+            "'Valid'";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -344,7 +341,6 @@ public class ClassifiedsDAO {
         listClassifieds.add(classified);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
@@ -358,24 +354,24 @@ public class ClassifiedsDAO {
    * @throws SQLException
    * @throws UtilException
    */
-  public static String createSubscribe(Connection con, Subscribe subscribe) throws SQLException,
-      UtilException {
+  public static String createSubscribe(Connection con, Subscribe subscribe)
+      throws SQLException, UtilException {
     // Création d'un abonnement
     String id = "";
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId("SC_Classifieds_Subscribes", "subscribeId");
-      id = new Integer(newId).toString();
+      id = Integer.toString(newId);
       // création de la requete
       String query =
-          "insert into SC_Classifieds_Subscribes (subscribeId, userId, instanceId, field1, field2) "
-              + "values (?,?,?,?,?)";
+          "insert into SC_Classifieds_Subscribes (subscribeId, userId, instanceId, field1, " +
+              "field2) " +
+              "values (?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParamSubscribe(prepStmt, newId, subscribe);
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
     return id;
@@ -397,7 +393,6 @@ public class ClassifiedsDAO {
       prepStmt.setInt(1, new Integer(subscribeId));
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
@@ -412,7 +407,7 @@ public class ClassifiedsDAO {
   public static Collection<Subscribe> getAllSubscribes(Connection con, String instanceId)
       throws SQLException {
     // récupérer tous les abonnements
-    ArrayList<Subscribe> listSubscribes = new ArrayList<Subscribe>();
+    ArrayList<Subscribe> listSubscribes = new ArrayList<>();
     String query = "select * from SC_Classifieds_Subscribes where instanceId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -425,7 +420,6 @@ public class ClassifiedsDAO {
         listSubscribes.add(subscribe);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listSubscribes;
@@ -442,7 +436,7 @@ public class ClassifiedsDAO {
   public static Collection<Subscribe> getSubscribesByUser(Connection con, String instanceId,
       String userId) throws SQLException {
     // récupérer tous les abonnements de l'utilisateur
-    ArrayList<Subscribe> listSubscribes = new ArrayList<Subscribe>();
+    ArrayList<Subscribe> listSubscribes = new ArrayList<>();
     String query = "select * from SC_Classifieds_Subscribes where instanceId = ? and userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -456,7 +450,6 @@ public class ClassifiedsDAO {
         listSubscribes.add(subscribe);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listSubscribes;
@@ -473,7 +466,7 @@ public class ClassifiedsDAO {
   public static Collection<String> getUsersBySubscribe(Connection con, String field1, String field2)
       throws SQLException {
     // récupérer tous les utilisateurs abonnés à une recherche
-    ArrayList<String> listUsers = new ArrayList<String>();
+    ArrayList<String> listUsers = new ArrayList<>();
     String query = "select userId from SC_Classifieds_Subscribes where field1 = ? and field2 = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -487,7 +480,6 @@ public class ClassifiedsDAO {
         listUsers.add(userId);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listUsers;
@@ -505,8 +497,8 @@ public class ClassifiedsDAO {
     String instanceId = rs.getString("instanceId");
     String title = rs.getString("title");
     String description = rs.getString("description");
-    Integer price = new Integer(0);
-    if(rs.getString("price") != null) {
+    Integer price = 0;
+    if (rs.getString("price") != null) {
       price = new Integer(rs.getString("price"));
     }
     String creatorId = rs.getString("creatorId");
@@ -545,7 +537,7 @@ public class ClassifiedsDAO {
    */
   private static void initParam(PreparedStatement prepStmt, int classifiedId,
       ClassifiedDetail classified) throws SQLException {
-    prepStmt.setInt(1, new Integer(classifiedId).intValue());
+    prepStmt.setInt(1, classifiedId);
     prepStmt.setString(2, classified.getInstanceId());
     prepStmt.setString(3, classified.getTitle());
     prepStmt.setString(4, classified.getDescription());
@@ -597,7 +589,7 @@ public class ClassifiedsDAO {
    */
   private static void initParamSubscribe(PreparedStatement prepStmt, int subscribeId,
       Subscribe subscribe) throws SQLException {
-    prepStmt.setInt(1, new Integer(subscribeId).intValue());
+    prepStmt.setInt(1, subscribeId);
     prepStmt.setString(2, subscribe.getUserId());
     prepStmt.setString(3, subscribe.getInstanceId());
     prepStmt.setString(4, subscribe.getField1());
@@ -613,10 +605,11 @@ public class ClassifiedsDAO {
    * @throws SQLException
    */
   public static Collection<ClassifiedDetail> getUnpublishedClassifieds(Connection con,
-      String instanceId, String userId)
-      throws SQLException {
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
-    String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = 'Unpublished' and creatorId = ? ";
+      String instanceId, String userId) throws SQLException {
+    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
+    String query =
+        "select * from SC_Classifieds_Classifieds where instanceId = ? and status = 'Unpublished'" +
+            " and creatorId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -630,7 +623,6 @@ public class ClassifiedsDAO {
         listClassifieds.add(classified);
       }
     } finally {
-      // fermeture
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;

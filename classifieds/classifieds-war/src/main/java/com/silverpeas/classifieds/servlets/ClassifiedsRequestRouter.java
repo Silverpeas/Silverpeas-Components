@@ -50,7 +50,6 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -65,12 +64,11 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
-   * @param function      The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param classifiedsSC The component Session Control, build and initialised.
    * @param request
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach
+   * .jsp?flag=user")
    */
   @Override
   public String getDestination(String function, ClassifiedsSessionController classifiedsSC,
@@ -112,8 +110,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
-  
- 
+
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());

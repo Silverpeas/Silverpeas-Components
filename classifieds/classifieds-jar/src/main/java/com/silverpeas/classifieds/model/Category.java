@@ -32,7 +32,7 @@ public class Category implements Serializable {
 
   private String key;
   private String value;
-  private Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
+  private Collection<ClassifiedDetail> classifieds = new ArrayList<>();
 
   public Category() {
   }

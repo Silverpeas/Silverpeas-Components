@@ -29,19 +29,16 @@ import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Collection;
-import java.util.Iterator;
 
-@Named
 public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListener {
 
   @Inject
@@ -99,10 +96,8 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
 
         // iterate over classified to unpublished them
         if (classifieds != null) {
-          Iterator<ClassifiedDetail> it = classifieds.iterator();
-          while (it.hasNext()) {
+          for (final ClassifiedDetail classified : classifieds) {
             // unpublish classified
-            ClassifiedDetail classified = (ClassifiedDetail) it.next();
             int classifiedId = classified.getClassifiedId();
             classifiedService.unpublishClassified(Integer.toString(classifiedId));
           }

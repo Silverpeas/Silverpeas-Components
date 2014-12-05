@@ -27,6 +27,7 @@ import com.silverpeas.ApplicationService;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.Subscribe;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return classifiedId : String
    * @
    */
-  public String createClassified(ClassifiedDetail classified) ;
+  public String createClassified(ClassifiedDetail classified);
 
   /**
    * update the classified and send notification if notify is true
@@ -51,7 +52,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param notify : boolean
    * @
    */
-  public void updateClassified(ClassifiedDetail classified, boolean notify) ;
+  public void updateClassified(ClassifiedDetail classified, boolean notify);
 
   /**
    * delete the classified corresponding to classifiedId
@@ -66,14 +67,14 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param instanceId : String
    * @
    */
-  public void deleteAllClassifieds(String instanceId) ;
+  public void deleteAllClassifieds(String instanceId);
 
   /**
    * pass the classified corresponding to classifiedId in draft mode
    * @param classifiedId : String
    * @
    */
-  public void draftInClassified(String classifiedId) ;
+  public void draftInClassified(String classifiedId);
 
   /**
    * take out draft mode the classified corresponding to classified
@@ -82,7 +83,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param isValidationEnabled : boolean
    * @
    */
-  public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) ;
+  public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled);
 
   /**
    * get all classifieds for an instance corresponding to instanceId
@@ -90,7 +91,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> getAllClassifieds(String instanceId) ;
+  public Collection<ClassifiedDetail> getAllClassifieds(String instanceId);
 
   /**
    * get all classifieds for user and instance corresponding to userId and instanceId
@@ -99,8 +100,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId)
-      ;
+  public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId);
 
   /**
    * get the number of classifieds for an instance corresponding to instanceId
@@ -108,7 +108,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return the number of classified : String
    * @
    */
-  public String getNbTotalClassifieds(String instanceId) ;
+  public String getNbTotalClassifieds(String instanceId);
 
   /**
    * get all classifieds to validate for an instance corresponding to instanceId
@@ -116,8 +116,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a Collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId)
-      ;
+  public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId);
 
   /**
    * pass to status refused because the user corresponding to userId refused the classified
@@ -127,8 +126,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param refusalMotive : String
    * @
    */
-  public void refusedClassified(String classifiedId, String userId, String refusalMotive)
-      ;
+  public void refusedClassified(String classifiedId, String userId, String refusalMotive);
 
   /**
    * pass to status validate because the user corresponding to userId validated the classified
@@ -137,7 +135,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param userId
    * @
    */
-  public void validateClassified(String classifiedId, String userId) ;
+  public void validateClassified(String classifiedId, String userId);
 
   /**
    * search all classifieds corresponding to the query
@@ -145,14 +143,14 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a collection of ClassifiedDetail
    * @
    */
-  public List<ClassifiedDetail> search(QueryDescription query) ;
+  public List<ClassifiedDetail> search(QueryDescription query);
 
   /**
    * index all the classifieds for the instance corresponding to instanceId
    * @param instanceId : String
    * @
    */
-  public void indexClassifieds(String instanceId) ;
+  public void indexClassifieds(String instanceId);
 
   /**
    * get all expiring classifieds (corresponding of a number of day nbDays)
@@ -161,25 +159,25 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) ;
+  public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId);
 
   /**
    * create a subscription
    * @param subscribe : Subscribe
    * @
    */
-  public void createSubscribe(Subscribe subscribe) ;
+  public void createSubscribe(Subscribe subscribe);
 
   /**
    * delete a subscription corresponding to subscribeId
    * @param subscribeId : String
    * @
    */
-  public void deleteSubscribe(String subscribeId) ;
+  public void deleteSubscribe(String subscribeId);
 
   /**
-   * unpublish a subscription corresponding to subscribeId
-   * @param subscribeId : String
+   * unpublish a subscription corresponding to classifiedId
+   * @param classifiedId : String classified identifier
    * @
    */
   public void unpublishClassified(String classifiedId);
@@ -201,20 +199,19 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @
    */
   public Collection<String> getUsersBySubscribe(String field1, String field2);
-  
+
   /**
    * delete all subscriptions for the instance corresponding to instanceId
    * @param instanceId
    * @
    */
   public void deleteAllSubscribes(String instanceId);
-  
+
   /**
    * send a notification for subscribers to field1 and field2 when classified modified
    * @param field1 : string
    * @param field2 : String
    * @param classified : ClassifiedDetail
-   * @throws RemoteException
    */
   public void sendSubscriptionsNotification(String field1, String field2,
       ClassifiedDetail classified);
@@ -227,20 +224,23 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @
    */
   Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId);
-  
+
   /**
-  * get all valid classifieds
-  * @param instanceId : String
-  * @param mapFields1 : HashMap des champs de recherche 1 
-  * @param mapFields2 : HashMap des champs de recherche 1
-  * @param searchField1 : champ de recherche 1
-  * @param searchField2 : champ de recherche 2
-  * @param currentPage : numéro de page actuelle 
-  * @param elementsPerPage : nombre d'éléments à afficher par page
-  * @return a collection of ClassifiedDetail
-  */
-  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1, String searchField2, int currentPage, int elementsPerPage);
-  
-  public void setClassification(ClassifiedDetail classified, String searchField1, String searchField2, String xmlFormName);
-  
+   * get all valid classifieds
+   * @param instanceId : String
+   * @param mapFields1 : HashMap des champs de recherche 1
+   * @param mapFields2 : HashMap des champs de recherche 1
+   * @param searchField1 : champ de recherche 1
+   * @param searchField2 : champ de recherche 2
+   * @param currentPage : numéro de page actuelle
+   * @param elementsPerPage : nombre d'éléments à afficher par page
+   * @return a collection of ClassifiedDetail
+   */
+  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId,
+      Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1,
+      String searchField2, int currentPage, int elementsPerPage);
+
+  public void setClassification(ClassifiedDetail classified, String searchField1,
+      String searchField2, String xmlFormName);
+
 }

@@ -46,12 +46,10 @@ public abstract class FunctionHandler {
       String destination = getDestination(session, request);
       if (destination.startsWith("/")) {
         return destination;
-      }
-      else {
+      } else {
         return ROOT_DESTINATION + destination;
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
@@ -62,25 +60,26 @@ public abstract class FunctionHandler {
    * @param request the user request params
    * @param session the user request context
    */
-  public abstract String getDestination(ClassifiedsSessionController session, HttpRequest request) throws Exception;
+  public abstract String getDestination(ClassifiedsSessionController session, HttpRequest request)
+      throws Exception;
 
   /**
    * Gets the template of the publication based on the classified XML form.
    * @param classifiedsSC the session controller.
    * @return the publication template for classifieds.
-   * @throws PublicationTemplateException if an error occurs while getting the publication template.
+   * @throws PublicationTemplateException if an error occurs while getting the publication
+   * template.
    */
   protected PublicationTemplate getPublicationTemplate(
       final ClassifiedsSessionController classifiedsSC) throws PublicationTemplateException {
     PublicationTemplateImpl pubTemplate = null;
     String xmlFormName = classifiedsSC.getXMLFormName();
     if (StringUtil.isDefined(xmlFormName)) {
-      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
-          xmlFormName.indexOf("."));
-      pubTemplate =
-          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-          classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-          xmlFormName);
+      String xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+          .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+              xmlFormName);
     }
     return pubTemplate;
   }

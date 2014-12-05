@@ -27,7 +27,7 @@ import java.sql.Connection;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.classifieds.control.ClassifiedService;
-import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
+import com.silverpeas.classifieds.control.ClassifiedServiceProvider;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -50,8 +50,7 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("classifieds", "classifiedsInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     try {
-      ClassifiedServiceFactory factory = ClassifiedServiceFactory.getFactory();
-      ClassifiedService service = factory.getClassifiedService();
+      ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
       service.deleteAllClassifieds(componentId);
       service.deleteAllSubscribes(componentId);
       CommentServiceProvider.getCommentService()
