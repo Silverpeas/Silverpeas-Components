@@ -44,21 +44,16 @@ import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.components.quickinfo.NewsByStatus;
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
-import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
-import org.silverpeas.date.Period;
 
-import javax.ejb.EJBException;
+import java.util.Iterator;
 import java.util.List;
+
+import static org.silverpeas.cache.service.CacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 
 /**
  * @author squere

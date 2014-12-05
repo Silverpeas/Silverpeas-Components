@@ -45,6 +45,7 @@ import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.components.quickinfo.NewsByStatus;
@@ -56,27 +57,11 @@ import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.authentication.UserAuthenticationListener;
-import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
-import org.silverpeas.components.quickinfo.NewsByStatus;
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
-import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
-import org.silverpeas.components.quickinfo.repository.NewsRepository;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -212,7 +197,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     });
 
     // Attaching all documents linked to volatile news to the persisted news
-    List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceFactory.getAttachmentService()
+    List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
         .moveAllDocuments(volatileAttachmentSourcePK, savedNews.getPublication().getPK());
     if (!movedDocumentPks.isEmpty()) {
       // Change images path in wysiwyg
