@@ -319,14 +319,7 @@ $(document).ready(function() {
 	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()"/>
 </c:otherwise>
 </c:choose>
-<c:choose>
-<c:when test="${newOneInProgress}">
-<view:button label="${buttonCancel}" action="javascript:onclick=abortNews()"/>
-</c:when>
-<c:otherwise>
 <view:button label="${buttonCancel}" action="Main"/>
-</c:otherwise>
-</c:choose>
 </view:buttonPane>
     
 </view:frame>

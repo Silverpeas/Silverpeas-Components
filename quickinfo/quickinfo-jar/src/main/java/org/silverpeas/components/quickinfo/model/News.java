@@ -284,7 +284,11 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {
     String silverObjectId = getPublication().getSilverObjectId();
-    return getTaxonomyService().getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
+    if (StringUtil.isDefined(silverObjectId)) {
+      return getTaxonomyService()
+          .getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
+    }
+    return Collections.emptyList();
   }
   
   private PdcManager getTaxonomyService() {

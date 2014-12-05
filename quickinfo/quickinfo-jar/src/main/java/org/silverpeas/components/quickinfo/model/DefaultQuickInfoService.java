@@ -61,6 +61,23 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.authentication.UserAuthenticationListener;
+import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
+import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
+import org.silverpeas.components.quickinfo.repository.NewsRepository;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -176,6 +193,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
 
   @Override
   public News create(final News news) {
+    ForeignPK volatileAttachmentSourcePK =
+        new ForeignPK(news.getPublicationId(), news.getComponentInstanceId());
+
     // Creating publication
     final PublicationDetail publication = news.getPublication();
     publication.setIndexOperation(IndexManager.NONE);
@@ -185,16 +205,29 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     News savedNews = Transaction.performInOne(new Transaction.Process<News>() {
       @Override
       public News execute() {
+        news.setId(null);
         news.setPublicationId(pubPK.getId());
         return newsRepository.save(OperationContext.fromUser(publication.getCreatorId()), news);
       }
     });
 
+    // Attaching all documents linked to volatile news to the persisted news
+    List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceFactory.getAttachmentService()
+        .moveAllDocuments(volatileAttachmentSourcePK, savedNews.getPublication().getPK());
+    if (!movedDocumentPks.isEmpty()) {
+      // Change images path in wysiwyg
+      WysiwygController.wysiwygPlaceHaveChanged(news.getComponentInstanceId(),
+          volatileAttachmentSourcePK.getId(), news.getComponentInstanceId(), savedNews.getId());
+    }
+
     // Referring new content into taxonomy
     try {
-      new QuickInfoContentManager().createSilverContent(null, publication, publication.getCreatorId(), false);
+      new QuickInfoContentManager()
+          .createSilverContent(null, publication, publication.getCreatorId(), false);
     } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "DefaultQuickInfoService.addNews()", "root.ContentManagerException", e);
+      SilverTrace
+          .error("quickinfo", "DefaultQuickInfoService.addNews()", "root.ContentManagerException",
+              e);
     }
 
     return savedNews;

@@ -120,9 +120,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       } else if ("View".equals(function)) {
         News news = (News) request.getAttribute("News");
         if (news == null) {
-          String id = request.getParameter("Id");
+          String id = (String) request.getAttribute("Id");
           if (!StringUtil.isDefined(id)) {
-            id = (String) request.getAttribute("Id");
+            id = request.getParameter("Id");
           }
           request.setAttribute("News", quickInfo.getNews(id, true));
         }
@@ -142,7 +142,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         if (!isContributor(flag)) {
           throwHttpForbiddenError();
         }
-        News news = quickInfo.createEmptyNews();
+        News news = quickInfo.prepareEmptyNews();
         request.setAttribute("NewOneInProgress", true);
         setCommonAttributesToAddOrUpdate(quickInfo, news, request);
         destination = "/quickinfo/jsp/quickInfoEdit.jsp";
@@ -225,6 +225,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     News news = requestToNews(items, quickInfo.getLanguage());
 
     String positions = request.getParameter("Positions");
+
+    if (quickInfo.isNewsIdentifierFromMemory(news.getId())) {
+      quickInfo.create(news);
+    }
 
     String id = news.getId();
 
