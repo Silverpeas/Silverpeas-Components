@@ -40,11 +40,9 @@ import java.util.Properties;
 public abstract class Notifier {
 
   final UserDetail sender;
-  final String serverUrl;
   
-  public Notifier(UserDetail sender, String serverUrl) {
+  public Notifier(UserDetail sender) {
     this.sender = sender;
-    this.serverUrl = serverUrl;
   }
 
   public String getSendername() {
