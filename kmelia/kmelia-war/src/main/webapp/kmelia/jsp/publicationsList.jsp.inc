@@ -41,7 +41,7 @@
 <%@ page import="java.net.URLEncoder"%>
 
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
