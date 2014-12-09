@@ -30,7 +30,6 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -947,8 +946,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       QuestionReplyException {
     if (reply.getPublicReply() == 1) {
       UserDetail sender = reply.readAuthor();
-      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, URLManager.getServerURL(null),
-              question, reply);
+      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, question, reply);
       Collection<String> subscribers = SubscriptionServiceProvider.getSubscribeService().
               getUserSubscribers(ComponentSubscriptionResource.from(question.getInstanceId()));
       Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();

@@ -52,10 +52,10 @@ public class SubscriptionNotifier extends Notifier {
   private final Reply reply;
   private final Question question;
   final NotificationSender notificationSender;
-  private static final String BUNDLE_NAME = "com.silverpeas.questionReply.multilang.questionReplyBundle";
+  private static final String BUNDLE_NAME = "org.silverpeas.questionReply.multilang.questionReplyBundle";
 
-  public SubscriptionNotifier(UserDetail sender, String serverUrl, Question question, Reply reply) {
-    super(sender, serverUrl);
+  public SubscriptionNotifier(UserDetail sender, Question question, Reply reply) {
+    super(sender);
     this.reply = reply;
     this.question = question;
     this.notificationSender = new NotificationSender(question.getInstanceId());
