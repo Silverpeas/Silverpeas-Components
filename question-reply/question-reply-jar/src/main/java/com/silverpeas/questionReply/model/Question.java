@@ -158,11 +158,7 @@ public class Question extends SilverpeasBean {
   }
 
   public String _getPermalink() {
-    if (URLManager.displayUniversalLinks()) {
-      return URLManager.getApplicationURL() + "/Question/" + getPK().getId();
-    }
-
-    return null;
+    return URLManager.getSimpleURL(URLManager.URL_QUESTION, getPK().getId(), false);
   }
 
   public String _getURL() {

@@ -24,7 +24,6 @@ package com.silverpeas.questionReply.control.notification;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -51,9 +50,9 @@ public class QuestionNotifier extends Notifier {
   final String source;
   final NotificationSender notifSender;
 
-  public QuestionNotifier(UserDetail sender, String serverUrl, Question question,
+  public QuestionNotifier(UserDetail sender, Question question,
           NotificationData data) {
-    super(sender, serverUrl);
+    super(sender);
     this.question = question;
     this.componentLabel = data.getComponentLabel();
     this.subject = data.getSubject();
@@ -70,7 +69,7 @@ public class QuestionNotifier extends Notifier {
   public void sendNotification(Collection<UserRecipient> users) throws QuestionReplyException {
     try {
       // Get default resource bundle
-      String resource = "com.silverpeas.questionReply.multilang.questionReplyBundle";
+      String resource = "org.silverpeas.questionReply.multilang.questionReplyBundle";
       ResourceLocator message;
       // Initialize templates
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
@@ -88,22 +87,14 @@ public class QuestionNotifier extends Notifier {
         template.setAttribute("QuestionDetail", question);
         template.setAttribute("questionTitle", question.getTitle());
         template.setAttribute("questionContent", question.getContent());
-        if (StringUtil.isDefined(serverUrl)) {
-          template.setAttribute("url", serverUrl + question._getPermalink());
-        } else {
-          template.setAttribute("url", question._getPermalink());
-        }
+        template.setAttribute("url", question._getPermalink());
         templates.put(language, template);
         notifMetaData.addLanguage(language, message.getString("questionReply.notification", "")
                 + componentLabel, "");
       }
       notifMetaData.setSender(sender.getId());
       notifMetaData.addUserRecipients(users);
-      if (StringUtil.isDefined(serverUrl)) {
-        notifMetaData.setLink(serverUrl + question._getPermalink());
-      } else {
-        notifMetaData.setLink(question._getPermalink());
-      }
+      notifMetaData.setLink(question._getPermalink());
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",
