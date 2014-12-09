@@ -54,9 +54,13 @@
 <script type="text/javascript">
   <!--
 
+var $firstCategoryClickEventProcessedPromise;
+  
 var etat = new Array();
 function bindQuestionsEvent() {
-  $('.questionTitle').on('click', function(event) {
+  var $questions = $('.questionTitle');
+  $questions.off('click');
+  $questions.on('click', function(event) {
     question = this.id;
     id = question.substring(1);
     answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
@@ -107,6 +111,7 @@ function bindCategoryEvent() {
         $.each(etat, function(index) {
           etat[index] = 'close';
         });
+        var $internalPromise = $.Deferred();
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {
 
@@ -125,16 +130,23 @@ function bindCategoryEvent() {
 						  answersDiv.hide();
 						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
 						});
-						$('.questionTitle').off('click');
-						bindQuestionsEvent();
+						$internalPromise.resolve(true);
 					}
 				});
 
 
 
-        }
-        $('#qc'+id).show();
-        $(this).parent().addClass('select');
+        } else {
+		  $internalPromise.resolve(false);
+		}
+        $internalPromise.then(function(isQuestionBindingRequired) {
+          $('#qc' + id).show();
+          $(this).parent().addClass('select');
+		  if (isQuestionBindingRequired) {
+		    bindQuestionsEvent();
+		  }
+          $firstCategoryClickEventProcessedPromise.resolve();
+        });
       }
     });
 }
@@ -142,6 +154,7 @@ function bindCategoryEvent() {
 $(document).ready(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
+  $firstCategoryClickEventProcessedPromise = $.Deferred();
   $('.questions').hide();
   <c:choose>
     <c:when test="${param.categoryId != null}">
@@ -156,7 +169,9 @@ $(document).ready(function() {
     </c:otherwise>
   </c:choose>
   <c:if test="${param.questionId != null}">
-    setTimeout("$('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'))", 250);
+    $firstCategoryClickEventProcessedPromise.then(function(){
+      $('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'));
+    });
   </c:if>
 
   $('.category').hover(function() {
