@@ -315,7 +315,9 @@ $(document).ready(function() {
 	<view:button label="${buttonSaveDraft}" action="javascript:onclick=saveNews()"/>
 </c:when>
 <c:otherwise>
-	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()"/>
+	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()">
+    <view:confirmComponentSubscriptionNotificationSending/>
+  </view:button>
 </c:otherwise>
 </c:choose>
 <view:button label="${buttonCancel}" action="Main"/>

@@ -4,7 +4,7 @@ import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public abstract class AbstractQuickInfoUserNotification<T> extends
@@ -34,7 +34,7 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
    * @return the subscriptions service instance.
    */
   protected SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**

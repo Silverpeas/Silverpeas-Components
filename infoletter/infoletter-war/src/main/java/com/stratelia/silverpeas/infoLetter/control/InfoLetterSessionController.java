@@ -21,32 +21,13 @@
 package com.stratelia.silverpeas.infoLetter.control;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
@@ -55,7 +36,6 @@ import com.silverpeas.util.csv.Variant;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.InfoLetterPeasTrappedException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -84,9 +64,25 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -146,12 +142,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     sel.setPopupMode(false);
 
     // Internal subscribers
-    Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-        dataInterface.getInternalSuscribers(getComponentId());
+    SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+        dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
     // Users
-    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER));
+    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER).getAllIds());
     // Groups
-    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP));
+    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds());
 
     if (sel.getSelectedElements().length == 0 && sel.getSelectedSets().length == 0) {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
@@ -307,12 +303,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       notifMetaData.setLink(url);
 
       // Internal subscribers
-      Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-          dataInterface.getInternalSuscribers(getComponentId());
-      for (String userId : subscriberIdsByTypes.get(SubscriberType.USER)) {
+      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
+      for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
         notifMetaData.addUserRecipient(new UserRecipient(userId));
       }
-      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP)) {
+      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
         notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
       }
 
@@ -590,7 +586,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /**
    * Export Csv emails
    *
-   * @throws FileNotFoundException
    * @throws IOException
    * @throws InfoLetterException
    * @return boolean

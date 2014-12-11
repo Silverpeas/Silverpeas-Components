@@ -72,6 +72,26 @@
       <version>3.0</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- For tests -->
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>tagcloud</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>node</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>notation</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

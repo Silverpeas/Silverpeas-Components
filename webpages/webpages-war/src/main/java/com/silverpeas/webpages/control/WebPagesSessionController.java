@@ -33,7 +33,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -142,7 +142,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**

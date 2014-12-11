@@ -23,22 +23,23 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
-public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestionUserNotification {
+public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestionUserNotification
+    implements UserSubscriptionNotificationBehavior {
 
-  private final Map<SubscriberType, Collection<String>> subscriberIdsByTypes = SubscriptionUtil.
-      indexSubscriberIdsByType(null);
+  private final SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+      new SubscriptionSubscriberMapBySubscriberType();
 
   public SuggestionBoxSubscriptionUserNotification(final Suggestion resource) {
     super(resource, NotifAction.CREATE);
@@ -47,9 +48,8 @@ public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestio
   @Override
   protected void initialize() {
     super.initialize();
-    SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes, getSubscribeBm().getSubscribers(
-        ComponentSubscriptionResource.from(getResource().getComponentInstanceId())));
-    subscriberIdsByTypes.get(SubscriberType.USER).remove(getSender());
+    subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
+        .getSubscribersOfComponent(getResource().getComponentInstanceId()));
   }
 
   @Override
@@ -64,11 +64,11 @@ public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestio
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.USER);
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
   }
 
   @Override
   protected Collection<String> getGroupIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.GROUP);
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 }

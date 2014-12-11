@@ -1265,7 +1265,7 @@ public class ForumsDAO {
     } finally {
       DBUtil.close(rs, selectStmt);
     }
-    return new Vector();
+    return new ArrayList();
   }
   private static final String QUERY_GET_MESSAGE = "SELECT " + MESSAGE_COLUMNS
       + " FROM " + MESSAGE_TABLE + " WHERE " + MESSAGE_COLUMN_MESSAGE_ID

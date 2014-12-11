@@ -51,7 +51,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
@@ -203,7 +203,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   public SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**

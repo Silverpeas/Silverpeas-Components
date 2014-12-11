@@ -23,23 +23,25 @@
  */
 package com.silverpeas.blog.notification;
 
-import java.util.Collection;
-
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
+import java.util.Collection;
+
 /**
  * The centralization of the construction of the blog notifications
  * @author Yohann Chastagnier
  */
-public class BlogUserNotification extends AbstractTemplateUserNotificationBuilder<PostDetail> {
+public class BlogUserNotification extends AbstractTemplateUserNotificationBuilder<PostDetail>
+    implements UserSubscriptionNotificationBehavior {
 
   private final UserDetail userDetail;
   private final String componentInstanceId;

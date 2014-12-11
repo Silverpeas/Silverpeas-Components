@@ -25,7 +25,7 @@ import com.silverpeas.questionReply.control.QuestionReplySessionController;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
@@ -143,7 +143,7 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("UserId", scc.getUserId());
         request.setAttribute("Categories", scc.getAllCategories());
         request.setAttribute("userAlreadySubscribed",
-            SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
+            SubscriptionServiceProvider.getSubscribeService().existsSubscription(
                 new ComponentSubscription(scc.getUserId(), scc.getComponentId())));
         request.setAttribute("PDCUsed", scc.isPDCUsed());
         if (request.getAttribute("QuestionId") != null) {

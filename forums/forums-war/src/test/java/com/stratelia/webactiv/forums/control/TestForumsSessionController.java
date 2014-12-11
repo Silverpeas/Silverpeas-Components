@@ -24,8 +24,13 @@ public class TestForumsSessionController {
     when(mainController.getCurrentUserDetail()).thenReturn(user);
     when(user.getId()).thenReturn("5");
     ComponentContext context = mock(ComponentContext.class);
-    ForumsSessionController controller = new ForumsSessionController(mainController, context);
-    ForumsBM forum = mock(ForumsBM.class);
+    final ForumsBM forum = mock(ForumsBM.class);
+    ForumsSessionController controller = new ForumsSessionController(mainController, context) {
+      @Override
+      protected ForumsBM getForumsService() {
+        return forum;
+      }
+    };
     when(forum.isModerator(eq("5"), any(ForumPK.class))).thenReturn(false);
     when(forum.getForumParentId(forumId)).thenReturn(new Integer(0));
     controller.setForumsBM(forum);
@@ -37,7 +42,7 @@ public class TestForumsSessionController {
     assertEquals(false, result);
     verify(forum, times(2)).isModerator(eq("5"), any(ForumPK.class));
     verify(forum, times(2)).getForumParentId(forumId);
-    forum = mock(ForumsBM.class);
+    reset(forum);
     when(forum.isModerator(eq("5"), any(ForumPK.class))).thenReturn(true);
     when(forum.getForumParentId(forumId)).thenReturn(new Integer(0));
     controller.setForumsBM(forum);

@@ -28,6 +28,8 @@ import java.util.Map;
 import javax.ejb.Local;
 
 import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
@@ -149,11 +151,11 @@ public interface ForumsBM {
 
   public void unsubscribeForum(ForumPK forumPK, String userId);
 
-  public Map<SubscriberType, Collection<String>> listAllSubscribers(MessagePK messagePK);
+  public SubscriptionSubscriberList listAllSubscribers(MessagePK messagePK);
 
-  public Map<SubscriberType, Collection<String>> listAllSubscribers(ForumPK forumPK);
+  public SubscriptionSubscriberList listAllSubscribers(ForumPK forumPK);
 
-  public Map<SubscriberType, Collection<String>> listAllSubscribers(String instanceId);
+  public SubscriptionSubscriberList listAllSubscribers(String instanceId);
 
   public boolean isSubscriber(MessagePK messagePK, String userId);
 

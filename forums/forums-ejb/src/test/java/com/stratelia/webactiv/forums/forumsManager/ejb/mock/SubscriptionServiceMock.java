@@ -21,8 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.suggestionbox.mock;
+package com.stratelia.webactiv.forums.forumsManager.ejb.mock;
 
+import com.silverpeas.annotation.Service;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -34,9 +35,10 @@ import org.mockito.Mockito;
 import java.util.Collection;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
-public class SubscriptionServiceMockWrapper implements SubscriptionService {
+@Service
+public class SubscriptionServiceMock implements SubscriptionService {
 
   private final SubscriptionService mock = Mockito.mock(SubscriptionService.class);
 
@@ -45,116 +47,114 @@ public class SubscriptionServiceMockWrapper implements SubscriptionService {
   }
 
   @Override
-  public void subscribe(final Subscription subscription) {
+  public void subscribe(Subscription subscription) {
     mock.subscribe(subscription);
   }
 
   @Override
-  public void subscribe(final Collection<? extends Subscription> subscriptions) {
+  public void subscribe(Collection<? extends Subscription> subscriptions) {
     mock.subscribe(subscriptions);
   }
 
   @Override
-  public void unsubscribe(final Subscription subscription) {
+  public void unsubscribe(Subscription subscription) {
     mock.unsubscribe(subscription);
   }
 
   @Override
-  public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
-    unsubscribe(subscriptions);
+  public void unsubscribe(Collection<? extends Subscription> subscriptions) {
+    mock.unsubscribe(subscriptions);
   }
 
   @Override
-  public void unsubscribeBySubscriber(final SubscriptionSubscriber subscriber) {
+  public void unsubscribeBySubscriber(SubscriptionSubscriber subscriber) {
     mock.unsubscribeBySubscriber(subscriber);
   }
 
   @Override
-  public void unsubscribeBySubscribers(
-      final Collection<? extends SubscriptionSubscriber> subscribers) {
+  public void unsubscribeBySubscribers(Collection<? extends SubscriptionSubscriber> subscribers) {
     mock.unsubscribeBySubscribers(subscribers);
   }
 
   @Override
-  public void unsubscribeByResource(final SubscriptionResource resource) {
+  public void unsubscribeByResource(SubscriptionResource resource) {
     mock.unsubscribeByResource(resource);
   }
 
   @Override
-  public void unsubscribeByResources(final Collection<? extends SubscriptionResource> resources) {
+  public void unsubscribeByResources(Collection<? extends SubscriptionResource> resources) {
     mock.unsubscribeByResources(resources);
   }
 
   @Override
-  public boolean existsSubscription(final Subscription subscription) {
+  public boolean existsSubscription(Subscription subscription) {
     return mock.existsSubscription(subscription);
   }
 
   @Override
-  public Collection<Subscription> getByResource(final SubscriptionResource resource) {
+  public Collection<Subscription> getByResource(SubscriptionResource resource) {
     return mock.getByResource(resource);
   }
 
   @Override
-  public Collection<Subscription> getByResource(final SubscriptionResource resource,
-      final SubscriptionMethod method) {
+  public Collection<Subscription> getByResource(SubscriptionResource resource,
+      SubscriptionMethod method) {
     return mock.getByResource(resource, method);
   }
 
   @Override
-  public Collection<Subscription> getByUserSubscriber(final String userId) {
+  public Collection<Subscription> getByUserSubscriber(String userId) {
     return mock.getByUserSubscriber(userId);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriber(final SubscriptionSubscriber subscriber) {
+  public Collection<Subscription> getBySubscriber(SubscriptionSubscriber subscriber) {
     return mock.getBySubscriber(subscriber);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndComponent(
-      final SubscriptionSubscriber subscriber, final String instanceId) {
+  public Collection<Subscription> getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
+      String instanceId) {
     return mock.getBySubscriberAndComponent(subscriber, instanceId);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndResource(
-      final SubscriptionSubscriber subscriber, final SubscriptionResource resource) {
+  public Collection<Subscription> getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+      SubscriptionResource resource) {
     return mock.getBySubscriberAndResource(subscriber, resource);
   }
 
   @Override
-  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource) {
+  public SubscriptionSubscriberList getSubscribers(SubscriptionResource resource) {
     return mock.getSubscribers(resource);
   }
 
   @Override
-  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource,
-      final SubscriptionMethod method) {
+  public SubscriptionSubscriberList getSubscribers(SubscriptionResource resource,
+      SubscriptionMethod method) {
     return mock.getSubscribers(resource, method);
   }
 
   @Override
   public SubscriptionSubscriberList getSubscribers(
-      final Collection<? extends SubscriptionResource> resources) {
+      Collection<? extends SubscriptionResource> resources) {
     return mock.getSubscribers(resources);
   }
 
   @Override
   public SubscriptionSubscriberList getSubscribers(
-      final Collection<? extends SubscriptionResource> resources, final SubscriptionMethod method) {
+      Collection<? extends SubscriptionResource> resources, SubscriptionMethod method) {
     return mock.getSubscribers(resources, method);
   }
 
   @Override
-  public boolean isSubscriberSubscribedToResource(final SubscriptionSubscriber subscriber,
-      final SubscriptionResource resource) {
+  public boolean isSubscriberSubscribedToResource(SubscriptionSubscriber subscriber,
+      SubscriptionResource resource) {
     return mock.isSubscriberSubscribedToResource(subscriber, resource);
   }
 
   @Override
-  public boolean isUserSubscribedToResource(final String user,
-      final SubscriptionResource resource) {
+  public boolean isUserSubscribedToResource(String user, SubscriptionResource resource) {
     return mock.isUserSubscribedToResource(user, resource);
   }
 }

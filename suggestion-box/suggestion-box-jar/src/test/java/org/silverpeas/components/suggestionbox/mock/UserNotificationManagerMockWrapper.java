@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.mock;
 
-import com.silverpeas.notification.builder.UserNotificationBuider;
+import com.silverpeas.notification.builder.UserNotificationBuilder;
 import com.silverpeas.notification.builder.helper.UserNotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
@@ -44,18 +44,18 @@ public class UserNotificationManagerMockWrapper extends UserNotificationManager 
   }
 
   @Override
-  public void buildAndSend(final UserNotificationBuider notificationBuider) {
+  public void buildAndSend(final UserNotificationBuilder notificationBuider) {
     mock.buildAndSend(notificationBuider);
   }
 
   @Override
   public void buildAndSend(final NotifMediaType mediaType,
-      final UserNotificationBuider notificationBuider) {
+      final UserNotificationBuilder notificationBuider) {
     mock.buildAndSend(mediaType, notificationBuider);
   }
 
   @Override
-  public NotificationMetaData build(final UserNotificationBuider notificationBuider) {
+  public NotificationMetaData build(final UserNotificationBuilder notificationBuider) {
     return mock.build(notificationBuider);
   }
 }

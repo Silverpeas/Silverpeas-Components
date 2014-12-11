@@ -24,13 +24,13 @@
 package com.stratelia.silverpeas.infoLetter.implementation;
 
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -80,7 +80,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -294,10 +293,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   @Override
-  public Map<SubscriberType, Collection<String>> getInternalSuscribers(final String componentId) {
-    return SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
-            .getSubscribers(ComponentSubscriptionResource.from(componentId)));
+  public SubscriptionSubscriberList getInternalSuscribers(final String componentId) {
+    return ResourceSubscriptionProvider.getSubscribersOfComponent(componentId);
   }
 
   @Override
@@ -318,16 +315,16 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
     // Getting all existing subscriptions and selecting those that have to be deleted
     Collection<Subscription> subscriptionsToDelete =
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
+        SubscriptionServiceProvider.getSubscribeService()
             .getByResource(ComponentSubscriptionResource.from(componentId));
     subscriptionsToDelete.removeAll(subscriptions);
 
     // Deleting
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribe(subscriptionsToDelete);
 
     // Creating subscriptions (nothing is registered for subscriptions that already exist)
-    SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscriptions);
+    SubscriptionServiceProvider.getSubscribeService().subscribe(subscriptions);
   }
 
   // Recuperation de la liste des emails externes
@@ -401,16 +398,16 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     Subscription subscription =
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId);
     if (isUserSubscribing) {
-      SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
     } else {
-      SubscriptionServiceFactory.getFactory().getSubscribeService().unsubscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
     }
   }
 
   // test d'abonnement d'un utilisateur interne
   @Override
   public boolean isUserSuscribed(String userId, String componentId) {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
+    return SubscriptionServiceProvider.getSubscribeService().existsSubscription(
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId));
   }
 
