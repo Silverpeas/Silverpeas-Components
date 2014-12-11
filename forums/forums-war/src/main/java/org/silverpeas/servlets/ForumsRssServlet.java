@@ -23,20 +23,17 @@
  */
 package org.silverpeas.servlets;
 
+import com.silverpeas.peasUtil.RssServlet;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
-import com.silverpeas.peasUtil.RssServlet;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
+    .getForumsService;
 
 import javax.inject.Inject;
 
@@ -51,10 +48,11 @@ public class ForumsRssServlet extends RssServlet {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
    */
+  @Override
   public Collection getListElements(String instanceId, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 15 derniers messages des forums
-    Collection events = getForumsBM().getLastMessageRSS(instanceId, nbReturned);
+    Collection events = getForumsService().getLastMessageRSS(instanceId, nbReturned);
 
     SilverTrace.debug("forums", "ForumsRssServlet.getListElements()",
         "root.MSG_GEN_PARAM_VALUE", "events = " + events);
@@ -66,25 +64,27 @@ public class ForumsRssServlet extends RssServlet {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
    */
+  @Override
   public String getElementTitle(Object element, String userId) {
-    Vector message = (Vector) element;
+    List message = (List) element;
 
     SilverTrace.debug("forums", "ForumsRssServlet.getElementTitle()",
-        "root.MSG_GEN_PARAM_VALUE", "message.elementAt(1) = "
-        + message.elementAt(1));
+        "root.MSG_GEN_PARAM_VALUE", "message.get(1) = "
+        + message.get(1));
 
-    return (String) message.elementAt(1);
+    return (String) message.get(1);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object, java.lang.String)
    */
+  @Override
   public String getElementLink(Object element, String userId) {
-    Vector message = (Vector) element;
+    List message = (List) element;
     String messageUrl = URLManager.getApplicationURL() + "/ForumsMessage/"
-        + (String) message.elementAt(0) + "?ForumId="
-        + (String) message.elementAt(4);
+        + message.get(0) + "?ForumId="
+        + message.get(4);
 
     SilverTrace.debug("forums", "ForumsRssServlet.getElementLink()",
         "root.MSG_GEN_PARAM_VALUE", "messageUrl = " + messageUrl);
@@ -97,24 +97,26 @@ public class ForumsRssServlet extends RssServlet {
    * @see com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
+  @Override
   public String getElementDescription(Object element, String userId) {
-    Vector message = (Vector) element;
+    List message = (List) element;
 
     SilverTrace.debug("forums", "ForumsRssServlet.getElementDescription()",
-        "root.MSG_GEN_PARAM_VALUE", "message.elementAt(6) = "
-        + message.elementAt(1));
+        "root.MSG_GEN_PARAM_VALUE", "message.get(6) = "
+        + message.get(1));
 
-    return (String) message.elementAt(1);
+    return (String) message.get(1);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
+  @Override
   public Date getElementDate(Object element) {
-    Vector message = (Vector) element;
-    // Date messageCreationDate = new Date(Long.parseLong((String) message.elementAt(3)));
-    Date messageCreationDate = (Date) message.elementAt(3);
+    List message = (List) element;
+    // Date messageCreationDate = new Date(Long.parseLong((String) message.get(3)));
+    Date messageCreationDate = (Date) message.get(3);
     SilverTrace.debug("forums", "ForumsRssServlet.getElementDate()",
         "root.MSG_GEN_PARAM_VALUE", "messageCreationDate = "
         + messageCreationDate);
@@ -122,12 +124,9 @@ public class ForumsRssServlet extends RssServlet {
     return messageCreationDate;
   }
 
+  @Override
   public String getElementCreatorId(Object element) {
-    Vector message = (Vector) element;
-    return (String) message.elementAt(2);
-  }
-
-  private ForumsBM getForumsBM() {
-    return forumsBM;
+    List message = (List) element;
+    return (String) message.get(2);
   }
 }

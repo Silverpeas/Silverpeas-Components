@@ -270,7 +270,9 @@
     } else if ("UpdatePost".equals(action) && PublicationDetail.VALID.equals(post.getPublication().getStatus())) {
     %>
 		<view:button action="javascript:onClick=sendData();" disabled="false"
-                   label="${validateLabel}"/>
+                   label="${validateLabel}">
+      <view:confirmComponentSubscriptionNotificationSending/>
+		</view:button>
     <%
     }
     %>

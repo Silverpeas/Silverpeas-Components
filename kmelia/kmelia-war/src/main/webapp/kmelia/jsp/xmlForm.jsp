@@ -32,6 +32,7 @@
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
 
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 
@@ -186,16 +187,36 @@
     </form>
     <%
           out.println(board.printAfter());
-          ButtonPane buttonPane = gef.getButtonPane();
-          if (wizard.equals("progress")) {
+          if (wizard != null && wizard.equals("progress")) {
+            ButtonPane buttonPane = gef.getButtonPane();
             buttonPane.addButton(nextButton);
             buttonPane.addButton(cancelWButton);
+            out.println("<br/><center>" + buttonPane.print() + "</center>");
           } else {
-            buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-            buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
-          }
-          out.println("<br/><center>" + buttonPane.print() + "</center>");
+    %>
+          <view:buttonPane>
+            <c:set var="saveLabel"><%=resources.getString("GML.validate")%></c:set>
+            <c:set var="cancelLabel"><%=resources.getString("GML.cancel")%></c:set>
+            <view:button label="${saveLabel}" action="javascript:onClick=B_VALIDER_ONCLICK();">
+              <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
+              <c:if test="${not empty subscriptionManagementContext}">
+                <c:set var="formData" value="<%=data%>"/>
+                <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+                <c:if test="${not empty formData
+                              and subscriptionManagementContext.entityStatusBeforePersistAction.validated
+                              and subscriptionManagementContext.entityStatusAfterPersistAction.validated
+                              and subscriptionManagementContext.entityPersistenceAction.update}">
+                  <view:confirmResourceSubscriptionNotificationSending
+                      subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
+                      subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
 
+                </c:if>
+              </c:if>
+            </view:button>
+            <view:button label="${cancelLabel}" action="javascript:onClick=B_ANNULER_ONCLICK();"/>
+          </view:buttonPane>
+    <%
+          }
           out.println(frame.printAfter());
           out.println(window.printAfter());%>
 	<script type="text/javascript">

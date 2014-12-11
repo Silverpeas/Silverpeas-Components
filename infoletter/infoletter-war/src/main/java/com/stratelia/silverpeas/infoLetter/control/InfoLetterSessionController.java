@@ -27,6 +27,7 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.InfoLetterPeasTrappedException;
@@ -142,12 +143,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     sel.setPopupMode(false);
 
     // Internal subscribers
-    Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-        dataInterface.getInternalSuscribers(getComponentId());
+    SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+        dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
     // Users
-    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER));
+    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER).getAllIds());
     // Groups
-    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP));
+    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds());
 
     if (sel.getSelectedElements().length == 0 && sel.getSelectedSets().length == 0) {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
@@ -302,12 +303,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       notifMetaData.setLink(url);
 
       // Internal subscribers
-      Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-          dataInterface.getInternalSuscribers(getComponentId());
-      for (String userId : subscriberIdsByTypes.get(SubscriberType.USER)) {
+      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
+      for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
         notifMetaData.addUserRecipient(new UserRecipient(userId));
       }
-      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP)) {
+      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
         notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
       }
 

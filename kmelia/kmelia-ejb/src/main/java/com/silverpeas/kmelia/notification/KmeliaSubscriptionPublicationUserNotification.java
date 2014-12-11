@@ -23,30 +23,30 @@
  */
 package com.silverpeas.kmelia.notification;
 
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.OrganizationController;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
 public class KmeliaSubscriptionPublicationUserNotification
-    extends AbstractKmeliaPublicationUserNotification {
+    extends AbstractKmeliaPublicationUserNotification implements
+    UserSubscriptionNotificationBehavior {
 
-  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-      SubscriptionUtil.indexSubscriberIdsByType(null);
+  private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+      new SubscriptionSubscriberMapBySubscriberType();
   private Collection<String> userIdsToExcludeFromNotifying = new HashSet<String>();
 
   public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK,
@@ -62,31 +62,14 @@ public class KmeliaSubscriptionPublicationUserNotification
     // Subscribers
     // ###########
 
-    // In the report case, users that have to be notified can't be known at this level
-    Collection<NodeDetail> path = null;
-    if (!"kmax".equals(getResource().getInstanceId())) {
-      path = getNodeBm().getPath(getNodePK());
-    }
-    // build a Collection of nodePK which are the ascendants of fatherPK
-    if (path != null) {
-      for (final NodeDetail descendant : path) {
-        SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes,
-            getSubscribeService().getSubscribers(NodeSubscriptionResource.from(descendant.getNodePK())));
-      }
-    }
+    subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
+        .getSubscribersOfSubscriptionResource(NodeSubscriptionResource.from(getNodePK())));
 
-    // Identifying users to be excluded from notifying
-    final OrganizationController orgaController = getOrganisationController();
-    final Collection<String> allUserSubscriberIds =
-        new ArrayList<String>(subscriberIdsByTypes.get(SubscriberType.USER));
-    for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP)) {
-      for (UserDetail user : orgaController.getAllUsersOfGroup(groupId)) {
-        allUserSubscriberIds.add(user.getId());
-      }
-    }
-
+    Collection<String> allUserSubscriberIds = subscriberIdsByTypes.getAllUserIds();
     if (!allUserSubscriberIds.isEmpty()) {
-      // get only subscribers who have sufficient rights to read pubDetail
+      // Identifying users to be excluded from notifying
+      final OrganisationController orgaController = getOrganisationController();
+      // Get only subscribers who have sufficient rights to read pubDetail
       final NodeDetail node = getNodeHeader(getNodePK());
       for (final String userId : allUserSubscriberIds) {
         if (!orgaController.isComponentAvailable(getNodePK().getInstanceId(), userId) || (node.
@@ -118,7 +101,7 @@ public class KmeliaSubscriptionPublicationUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.USER);
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
   }
 
   @Override
@@ -128,6 +111,6 @@ public class KmeliaSubscriptionPublicationUserNotification
 
   @Override
   protected Collection<String> getGroupIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.GROUP);
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 }

@@ -32,12 +32,13 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.node.model.NodeDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
-import javax.ejb.EJBException;
 import java.sql.Connection;
 import java.util.Collection;
+
+import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
+    .getForumsService;
 
 public class ForumsInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -75,33 +76,18 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
         "spaceId : " + spaceId);
 
     // Forums
-    final Collection<Forum> forumRoots = getForumsBM().getForumRootList(componentId);
+    final Collection<Forum> forumRoots = getForumsService().getForumRootList(componentId);
     for (Forum forum : forumRoots) {
-      getForumsBM().deleteForum(forum.getPk());
+      getForumsService().deleteForum(forum.getPk());
     }
 
     // Categories
-    for (NodeDetail categoryId : getForumsBM().getAllCategories(componentId)) {
-      getForumsBM().deleteCategory(String.valueOf(categoryId.getId()), componentId);
+    for (NodeDetail categoryId : getForumsService().getAllCategories(componentId)) {
+      getForumsService().deleteCategory(String.valueOf(categoryId.getId()), componentId);
     }
 
     // Unsubscribe component subscribers
     SubscriptionServiceProvider.getSubscribeService()
         .unsubscribeByResource(ComponentSubscriptionResource.from(componentId));
-  }
-
-  /**
-   * Gets the instance of forum services.
-   * @return
-   */
-  protected ForumsBM getForumsBM() {
-    if (forumsBM == null) {
-      try {
-        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage(), e);
-      }
-    }
-    return forumsBM;
   }
 }

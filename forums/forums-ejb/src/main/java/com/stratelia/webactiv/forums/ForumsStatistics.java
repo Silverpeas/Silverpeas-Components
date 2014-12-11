@@ -24,20 +24,17 @@ package com.stratelia.webactiv.forums;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 
-import javax.ejb.EJBException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ForumsStatistics implements ComponentStatisticsInterface {
+import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
+    .getForumsService;
 
-  private ForumsBM forumsBM = null;
+public class ForumsStatistics implements ComponentStatisticsInterface {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
@@ -53,18 +50,7 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
     return couples;
   }
 
-  private ForumsBM getForumsBM() {
-    if (forumsBM == null) {
-      try {
-        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-      } catch (Exception e) {
-        throw new EJBException(e);
-      }
-    }
-    return forumsBM;
-  }
-
   private List<Forum> getForums(String spaceId, String componentId) {
-    return getForumsBM().getForums(new ForumPK(componentId, spaceId));
+    return getForumsService().getForums(new ForumPK(componentId, spaceId));
   }
 }

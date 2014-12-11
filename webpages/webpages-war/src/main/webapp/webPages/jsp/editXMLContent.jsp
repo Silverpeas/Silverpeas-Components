@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
 
@@ -77,14 +78,29 @@ function cancel() {
     	</form>
 	</td></tr>
 	</table>
-<%	
 
-	ButtonPane buttonPane = gef.getButtonPane();
-  	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=save();", false));
-  	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=cancel();", false));
-	out.println("<br/><center>" + buttonPane.print() + "</center>");
+<view:buttonPane>
+  <c:set var="saveLabel"><%=resource.getString("GML.validate")%></c:set>
+  <c:set var="cancelLabel"><%=resource.getString("GML.cancel")%></c:set>
+  <view:button label="${saveLabel}" action="javascript:onClick=save();">
+    <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
+    <c:if test="${not empty subscriptionManagementContext}">
+      <c:set var="formData" value="<%=data%>"/>
+      <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+      <c:if test="${not empty formData
+                    and subscriptionManagementContext.entityPersistenceAction.update}">
+        <view:confirmResourceSubscriptionNotificationSending
+            subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
+            subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
 
-	out.println(frame.printAfter());
+      </c:if>
+    </c:if>
+  </view:button>
+  <view:button label="${cancelLabel}" action="javascript:onClick=cancel();"/>
+</view:buttonPane>
+
+<%
+out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>	
 <view:progressMessage/>

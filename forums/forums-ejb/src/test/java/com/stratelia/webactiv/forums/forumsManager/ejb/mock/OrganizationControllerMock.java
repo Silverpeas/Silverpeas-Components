@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,40 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.forum.notification;
+package com.stratelia.webactiv.forums.forumsManager.ejb.mock;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import javax.inject.Named;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractForumsUserNotification<T>
-    extends AbstractTemplateUserNotificationBuilder<T> {
-  protected ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
+@Named("organizationController")
+public class OrganizationControllerMock extends OrganizationController {
+  private static final long serialVersionUID = -8307476470533272352L;
 
-  protected AbstractForumsUserNotification(final T resource) {
-    super(resource);
+  private final OrganizationController mock = mock(OrganizationController.class);
+
+  private OrganizationController getMock() {
+    return mock;
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
-    return "org.silverpeas.forums.multilang.forumsBundle";
+  public ComponentInstLight getComponentInstLight(final String sComponentId) {
+    return getMock().getComponentInstLight(sComponentId);
   }
 
   @Override
-  protected String getTemplatePath() {
-    return "forums";
+  public UserDetail[] getAllUsersOfGroup(final String groupId) {
+    return getMock().getAllUsersOfGroup(groupId);
   }
 
-  /**
-   * Gets the services of forum.
-   * @return
-   */
-  protected ForumsBM getForumsService() {
-    return ForumsServiceProvider.getForumsService();
+  @Override
+  public String[] getAllGroupIdsOfUser(final String userId) {
+    return getMock().getAllGroupIdsOfUser(userId);
   }
 }

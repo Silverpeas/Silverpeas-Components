@@ -155,7 +155,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
     verify(getWysiwygManager(), times(0))
         .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
@@ -283,7 +283,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
     verify(getWysiwygManager(), times(0))
         .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
@@ -325,7 +325,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
     verify(getWysiwygManager(), times(0))
         .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
@@ -372,10 +372,10 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(index, "validationComment"), is(nullValue()));
     assertThat((String) table.getValue(index, "validationBy"), is("38"));
 
-    ArgumentCaptor<UserNotificationBuider> argCaptor =
-        ArgumentCaptor.forClass(UserNotificationBuider.class);
+    ArgumentCaptor<UserNotificationBuilder> argCaptor =
+        ArgumentCaptor.forClass(UserNotificationBuilder.class);
     verify(getUserNotificationManager(), times(2)).buildAndSend(argCaptor.capture());
-    List<UserNotificationBuider> valueCaptured = argCaptor.getAllValues();
+    List<UserNotificationBuilder> valueCaptured = argCaptor.getAllValues();
     assertThat(valueCaptured, hasSize(2));
     assertThat(valueCaptured.get(0), instanceOf(SuggestionBoxSubscriptionUserNotification.class));
     assertThat(valueCaptured.get(1), instanceOf(SuggestionValidationUserNotification.class));

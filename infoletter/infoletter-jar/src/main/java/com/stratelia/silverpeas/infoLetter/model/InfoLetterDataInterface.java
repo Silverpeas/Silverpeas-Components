@@ -30,6 +30,7 @@ import java.util.Map;
 
 import com.silverpeas.subscribe.constant.SubscriberType;
 
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -122,7 +123,7 @@ public interface InfoLetterDataInterface {
    * @param componentId componentId component instance id
    * @return map of subscriber ids indexed by type of subscriber
    */
-  public Map<SubscriberType, Collection<String>> getInternalSuscribers(String componentId);
+  public SubscriptionSubscriberList getInternalSuscribers(String componentId);
 
   /**
    * Update internal user subscribers list

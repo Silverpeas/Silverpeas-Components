@@ -390,8 +390,8 @@ function displayAll() {
 
 <%
 if (nbChannelsToLoad > 0) { %>
-<form name="loadChannels" action="LoadChannels" method="post"></form>
-<script language="javascript">
+<view:form name="loadChannels" action="LoadChannels" method="post"><!----></view:form>
+<script language="javascript" type="text/javascript">
   window.setTimeout("document.loadChannels.submit()", 500);
 </script>
 <% } %>
@@ -399,14 +399,14 @@ if (nbChannelsToLoad > 0) { %>
   </c:otherwise>
 </c:choose>
 
-<form name="refresh" action="LoadChannels" method="post"></form>
-<form name="deleteChannel" action="DeleteChannel" method="post">
+<view:form name="refresh" action="LoadChannels" method="post"><!----></view:form>
+<view:form name="deleteChannel" action="DeleteChannel" method="post">
   <input type="hidden" name="Id"/>
-</form>
-<form name="rssForm" action="Main" method="post">
+</view:form>
+<view:form name="rssForm" action="Main" method="post">
   <input type="hidden" name="action" id="hiddenRssFormAction"/>
   <input type="hidden" name="id" id="hiddenRssFormId"/>
-</form>
+</view:form>
 
 </view:window>
 

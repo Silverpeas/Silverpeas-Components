@@ -56,7 +56,7 @@ public abstract class AbstractForumsMessageUserNotification
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("text", resource.getText());
     template.setAttribute("originTitle",
-        getForumsBm().getMessageTitle(getForumsBm().getMessageParentId(getResource().getId())));
+        getForumsService().getMessageTitle(getForumsService().getMessageParentId(getResource().getId())));
   }
 
   @Override

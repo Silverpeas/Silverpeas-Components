@@ -29,8 +29,8 @@ import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -39,19 +39,20 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
-public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilder<NodePK> {
+public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilder<NodePK>
+    implements UserSubscriptionNotificationBehavior {
 
   private final String userId;
 
-  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes;
+  private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;
 
   /**
    * Builds and sends a webpages notification. A warning message is logged when an exception is
@@ -84,9 +85,9 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     super.initialize();
 
     // Subscribers
-    subscriberIdsByTypes = SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceProvider.getSubscribeService()
-            .getSubscribers(ComponentSubscriptionResource.from(getResource().getInstanceId())));
+    subscriberIdsByTypes =
+        ResourceSubscriptionProvider.getSubscribersOfComponent(getResource().getInstanceId())
+            .indexBySubscriberType();
   }
 
   /*
@@ -224,11 +225,11 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    */
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.USER);
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
   }
 
   @Override
   protected Collection<String> getGroupIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.GROUP);
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 }

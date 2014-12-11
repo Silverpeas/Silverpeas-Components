@@ -23,23 +23,23 @@
  */
 package org.silverpeas.components.forum.notification;
 
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.forums.models.Message;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * User: Yohann Chastagnier
  * Date: 10/06/13
  */
-public class ForumsMessageSubscriptionUserNotification
-    extends AbstractForumsMessageUserNotification {
+public class ForumsMessageSubscriptionUserNotification extends AbstractForumsMessageUserNotification
+    implements UserSubscriptionNotificationBehavior {
 
-  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-      SubscriptionUtil.indexSubscriberIdsByType(null);
+  private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+      new SubscriptionSubscriberMapBySubscriberType();
 
   /**
    * Default constructor.
@@ -52,9 +52,7 @@ public class ForumsMessageSubscriptionUserNotification
   @Override
   protected void initialize() {
     super.initialize();
-    SubscriptionUtil.mergeIndexedSubscriberIdsByType(subscriberIdsByTypes,
-        getForumsBm().listAllSubscribers(getResource().getPk()));
-    subscriberIdsByTypes.get(SubscriberType.USER).remove(getSender());
+    subscriberIdsByTypes.addAll(getForumsService().listAllSubscribers(getResource().getPk()));
   }
 
   @Override
@@ -79,11 +77,11 @@ public class ForumsMessageSubscriptionUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.USER);
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
   }
 
   @Override
   protected Collection<String> getGroupIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.GROUP);
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 }

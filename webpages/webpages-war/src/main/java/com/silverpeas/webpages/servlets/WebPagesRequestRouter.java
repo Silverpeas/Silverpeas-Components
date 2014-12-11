@@ -21,6 +21,8 @@
 package com.silverpeas.webpages.servlets;
 
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionManagementContext;
 import com.silverpeas.webpages.control.WebPagesSessionController;
 import com.silverpeas.webpages.model.WebPagesException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -28,9 +30,11 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ActionType;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.owasp.encoder.Encode;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -114,6 +118,9 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
               URLManager.getApplicationURL() + webPagesSC.getComponentUrl() + "Preview");
           request.setAttribute("UserId", webPagesSC.getUserId());
           request.setAttribute("IndexIt", "false");
+
+          setupRequestForSubscriptionNotificationSending(request, webPagesSC.getComponentId());
+
           destination = "/wysiwyg/jsp/htmlEditor.jsp";
         }
       } else if (function.equals("Preview")) {
@@ -149,6 +156,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         request.setAttribute("Form", webPagesSC.getUpdateForm());
         request.setAttribute("Data", webPagesSC.getDataRecord());
 
+        setupRequestForSubscriptionNotificationSending(request, webPagesSC.getComponentId());
+
         destination = rootDestination + "editXMLContent.jsp";
       } else if ("UpdateXMLContent".equals(function)) {
         // user saves updated data
@@ -167,6 +176,20 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
     SilverTrace.info("webPages", "WebPagesRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
+  }
+
+  /**
+   * Setup the request to manager some behaviors around subscription notification sending.
+   * @param request the current request.
+   * @param componentInstanceId the identifier of current component instance.
+   */
+  private void setupRequestForSubscriptionNotificationSending(HttpRequest request,
+      String componentInstanceId) {
+    ContributionStatus statusBeforeSave = ContributionStatus.VALIDATED;
+    ContributionStatus statusAfterSave = ContributionStatus.VALIDATED;
+    request.setAttribute("subscriptionManagementContext", SubscriptionManagementContext
+        .on(ComponentSubscriptionResource.from(componentInstanceId), componentInstanceId)
+        .forPersistenceAction(statusBeforeSave, ActionType.UPDATE, statusAfterSave));
   }
 
   private boolean processHaveGotContent(WebPagesSessionController webPagesSC,

@@ -32,7 +32,12 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import org.silverpeas.util.MapUtil;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import com.silverpeas.util.MapUtil;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.forums.forumsManager.ejb.mock.OrganizationControllerMock;
+import com.stratelia.webactiv.forums.forumsManager.ejb.mock.SubscriptionServiceMock;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import org.silverpeas.util.DBUtil;
@@ -46,17 +51,20 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.components.forum.subscription.ForumMessageSubscriptionResource;
 import org.silverpeas.components.forum.subscription.ForumSubscriptionResource;
+import org.silverpeas.core.admin.OrganisationController;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -78,7 +86,7 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
    */
   @Test
   public void isNotSubscriberOfComponent() {
-    assertThat(forumsBMEJB.isSubscriber(INSTANCE_ID, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriber(INSTANCE_ID, USER_ID), is(false));
   }
 
   /**
@@ -87,7 +95,7 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void isSubscriberOfComponent() {
     setUpComponentUserSubscription(USER_ID);
-    assertThat(forumsBMEJB.isSubscriber(INSTANCE_ID, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriber(INSTANCE_ID, USER_ID), is(true));
   }
 
   /**
@@ -99,8 +107,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void isNotSubscriberOfForum() {
     ForumPK forumPK = new ForumPK(INSTANCE_ID, FORUM_FILS_ID);
-    assertThat(forumsBMEJB.isSubscriber(forumPK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(forumPK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriber(forumPK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(forumPK, USER_ID), is(false));
   }
 
   /**
@@ -113,8 +121,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForum() {
     setUpForumUserSubscription(USER_ID, FORUM_FILS_ID);
     ForumPK forumPK = new ForumPK(INSTANCE_ID, FORUM_FILS_ID);
-    assertThat(forumsBMEJB.isSubscriber(forumPK, USER_ID), is(true));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(forumPK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriber(forumPK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(forumPK, USER_ID), is(false));
   }
 
   /**
@@ -127,8 +135,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForumByComponentInheritance() {
     setUpComponentUserSubscription(USER_ID);
     ForumPK forumPK = new ForumPK(INSTANCE_ID, FORUM_FILS_ID);
-    assertThat(forumsBMEJB.isSubscriber(forumPK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(forumPK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriber(forumPK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(forumPK, USER_ID), is(true));
   }
 
   /**
@@ -141,8 +149,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForumByParentForumInheritance() {
     setUpForumUserSubscription(USER_ID, FORUM_PERE_ID);
     ForumPK forumPK = new ForumPK(INSTANCE_ID, FORUM_FILS_ID);
-    assertThat(forumsBMEJB.isSubscriber(forumPK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(forumPK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriber(forumPK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(forumPK, USER_ID), is(true));
   }
 
   /**
@@ -153,8 +161,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void isNotSubscriberOfForumMessage() {
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
-    assertThat(forumsBMEJB.isSubscriber(messagePK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(messagePK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriber(messagePK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(messagePK, USER_ID), is(false));
   }
 
   /**
@@ -166,8 +174,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForumMessage() {
     setUpForumMessageUserSubscription(USER_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
-    assertThat(forumsBMEJB.isSubscriber(messagePK, USER_ID), is(true));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(messagePK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriber(messagePK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(messagePK, USER_ID), is(false));
   }
 
   /**
@@ -179,8 +187,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForumMessageByComponentInheritance() {
     setUpComponentUserSubscription(USER_ID);
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
-    assertThat(forumsBMEJB.isSubscriber(messagePK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(messagePK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriber(messagePK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(messagePK, USER_ID), is(true));
   }
 
   /**
@@ -192,8 +200,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForumMessageByParentForumInheritance() {
     setUpForumUserSubscription(USER_ID, FORUM_RACINE_ID);
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
-    assertThat(forumsBMEJB.isSubscriber(messagePK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(messagePK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriber(messagePK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(messagePK, USER_ID), is(true));
   }
 
   /**
@@ -205,8 +213,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   public void isSubscriberOfForumMessageByParentForumMessageInheritance() {
     setUpForumMessageUserSubscription(USER_ID, FORUM_RACINE_SUBJECT_ID);
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
-    assertThat(forumsBMEJB.isSubscriber(messagePK, USER_ID), is(false));
-    assertThat(forumsBMEJB.isSubscriberByInheritance(messagePK, USER_ID), is(true));
+    assertThat(getTestedForumsService().isSubscriber(messagePK, USER_ID), is(false));
+    assertThat(getTestedForumsService().isSubscriberByInheritance(messagePK, USER_ID), is(true));
   }
 
 
@@ -215,8 +223,8 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
    */
   @Test
   public void listAllSubscribersOfComponent() {
-    Map<SubscriberType, Collection<String>> subscribersByType =
-        forumsBMEJB.listAllSubscribers(INSTANCE_ID);
+    SubscriptionSubscriberMapBySubscriberType subscribersByType =
+        getTestedForumsService().listAllSubscribers(INSTANCE_ID).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
@@ -227,15 +235,16 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
     setUpForumMessageUserSubscription("401", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("402", FORUM_RACINE_SUBJECT_ID);
     setUpForumUserSubscription("503", FORUM_RACINE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(INSTANCE_ID);
+    subscribersByType = getTestedForumsService().listAllSubscribers(INSTANCE_ID).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding component subscribers
     setUpComponentUserSubscription("600");
     setUpComponentUserSubscription("601");
-    subscribersByType = forumsBMEJB.listAllSubscribers(INSTANCE_ID);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("600", "601"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(INSTANCE_ID).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
+        containsInAnyOrder("600", "601"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
   }
 
@@ -245,15 +254,15 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void listAllSubscribersOfForum() {
     ForumPK forumPK = new ForumPK(INSTANCE_ID, FORUM_RACINE_ID);
-    Map<SubscriberType, Collection<String>> subscribersByType =
-        forumsBMEJB.listAllSubscribers(forumPK);
+    SubscriptionSubscriberMapBySubscriberType subscribersByType =
+        getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to messages
     setUpForumMessageUserSubscription("500", FORUM_RACINE_RE_RE_MESSAGE_ID);
     setUpForumMessageUserSubscription("501", FORUM_RACINE_RE_RE_MESSAGE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
@@ -261,21 +270,22 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
     setUpForumMessageUserSubscription("400", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("401", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("402", FORUM_RACINE_SUBJECT_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to forums
     setUpForumUserSubscription("503", FORUM_RACINE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("503"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(), containsInAnyOrder("503"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding component subscribers
     setUpComponentUserSubscription("600");
     setUpComponentUserSubscription("601");
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("503", "600", "601"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
+        containsInAnyOrder("503", "600", "601"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
   }
 
@@ -285,29 +295,30 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void listAllSubscribersOfChildForum() {
     ForumPK forumPK = new ForumPK(INSTANCE_ID, FORUM_FILS_ID);
-    Map<SubscriberType, Collection<String>> subscribersByType =
-        forumsBMEJB.listAllSubscribers(forumPK);
+    SubscriptionSubscriberMapBySubscriberType subscribersByType =
+        getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to child forums
     setUpForumUserSubscription("503", FORUM_FILS_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("503"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(), containsInAnyOrder("503"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to parent forums
     setUpForumUserSubscription("704", FORUM_PERE_ID);
     setUpForumUserSubscription("705", FORUM_PERE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("704", "705", "503"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
+        containsInAnyOrder("704", "705", "503"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding component subscribers
     setUpComponentUserSubscription("600");
     setUpComponentUserSubscription("601");
-    subscribersByType = forumsBMEJB.listAllSubscribers(forumPK);
-    assertThat(subscribersByType.get(SubscriberType.USER),
+    subscribersByType = getTestedForumsService().listAllSubscribers(forumPK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
         containsInAnyOrder("704", "705", "503", "600", "601"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
   }
@@ -318,15 +329,15 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void listAllSubscribersOfSubject() {
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_SUBJECT_ID);
-    Map<SubscriberType, Collection<String>> subscribersByType =
-        forumsBMEJB.listAllSubscribers(messagePK);
+    SubscriptionSubscriberMapBySubscriberType subscribersByType =
+        getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to messages
     setUpForumMessageUserSubscription("500", FORUM_RACINE_RE_RE_MESSAGE_ID);
     setUpForumMessageUserSubscription("501", FORUM_RACINE_RE_RE_MESSAGE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
@@ -334,22 +345,23 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
     setUpForumMessageUserSubscription("400", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("401", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("402", FORUM_RACINE_SUBJECT_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("400", "401", "402"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
+        containsInAnyOrder("400", "401", "402"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to forums
     setUpForumUserSubscription("503", FORUM_RACINE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER),
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
         containsInAnyOrder("400", "401", "402", "503"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding component subscribers
     setUpComponentUserSubscription("600");
     setUpComponentUserSubscription("601");
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER),
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
         containsInAnyOrder("400", "401", "402", "503", "600", "601"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
   }
@@ -360,39 +372,40 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   @Test
   public void listAllSubscribersOfMessage() {
     MessagePK messagePK = new MessagePK(INSTANCE_ID, FORUM_RACINE_RE_RE_MESSAGE_ID);
-    Map<SubscriberType, Collection<String>> subscribersByType =
-        forumsBMEJB.listAllSubscribers(messagePK);
+    SubscriptionSubscriberMapBySubscriberType subscribersByType =
+        getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
     assertThat(subscribersByType.get(SubscriberType.USER), empty());
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to messages
     setUpForumMessageUserSubscription("500", FORUM_RACINE_RE_RE_MESSAGE_ID);
     setUpForumMessageUserSubscription("501", FORUM_RACINE_RE_RE_MESSAGE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER), containsInAnyOrder("500", "501"));
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
+        containsInAnyOrder("500", "501"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to subjects
     setUpForumMessageUserSubscription("400", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("401", FORUM_RACINE_SUBJECT_ID);
     setUpForumMessageUserSubscription("402", FORUM_RACINE_SUBJECT_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER),
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
         containsInAnyOrder("500", "501", "400", "401", "402"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding subscribers to forums
     setUpForumUserSubscription("503", FORUM_RACINE_ID);
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER),
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
         containsInAnyOrder("500", "501", "400", "401", "402", "503"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
 
     // Adding component subscribers
     setUpComponentUserSubscription("600");
     setUpComponentUserSubscription("601");
-    subscribersByType = forumsBMEJB.listAllSubscribers(messagePK);
-    assertThat(subscribersByType.get(SubscriberType.USER),
+    subscribersByType = getTestedForumsService().listAllSubscribers(messagePK).indexBySubscriberType();
+    assertThat(subscribersByType.get(SubscriberType.USER).getAllIds(),
         containsInAnyOrder("500", "501", "400", "401", "402", "503", "600", "601"));
     assertThat(subscribersByType.get(SubscriberType.GROUP), empty());
   }
@@ -403,8 +416,9 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
   ################################################################################################
    */
 
+  // Spring context
+  private ClassPathXmlApplicationContext context;
   private IDatabaseConnection dbConnection;
-  private ForumsEJBEJBForTest forumsBMEJB;
   private SubscriptionService subscriptionServiceMock;
 
   private final Map<String, List<SubscriptionSubscriber>> componentSubscribers =
@@ -433,11 +447,11 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
 
   @Before
   public void bootstrapDatabase() throws Exception {
+    context = new ClassPathXmlApplicationContext("spring-subscription.xml");
     dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dbConnection.getConnection();
     DBUtil.getInstanceForTest(connection);
-    forumsBMEJB = new ForumsEJBEJBForTest();
-    subscriptionServiceMock = mock(SubscriptionService.class);
+    subscriptionServiceMock = context.getBean(SubscriptionServiceMock.class).getMock();
     componentSubscribers.clear();
     forumSubscribers.clear();
     forumMessageSubscribers.clear();
@@ -447,17 +461,35 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
           @Override
           public Collection<SubscriptionSubscriber> answer(final InvocationOnMock invocation)
               throws Throwable {
+            Collection<SubscriptionSubscriber> subscribers = null;
             if (invocation.getArguments()[0] instanceof ComponentSubscriptionResource) {
-              return componentSubscribers
+              subscribers = componentSubscribers
                   .get(((SubscriptionResource) invocation.getArguments()[0]).getInstanceId());
             } else if (invocation.getArguments()[0] instanceof ForumSubscriptionResource) {
-              return forumSubscribers
+              subscribers = forumSubscribers
                   .get(((SubscriptionResource) invocation.getArguments()[0]).getId());
             } else if (invocation.getArguments()[0] instanceof ForumMessageSubscriptionResource) {
-              return forumMessageSubscribers
+              subscribers = forumMessageSubscribers
                   .get(((SubscriptionResource) invocation.getArguments()[0]).getId());
             }
-            return null;
+            if (subscribers == null) {
+              subscribers = new HashSet<SubscriptionSubscriber>();
+            }
+            return new SubscriptionSubscriberList(subscribers);
+          }
+        });
+
+    OrganisationController mockedOrganisationController =
+        (OrganizationControllerMock) context.getBean("organizationController");
+    when(mockedOrganisationController.getComponentInstLight(anyString()))
+        .thenAnswer(new Answer<ComponentInstLight>() {
+          @Override
+          public ComponentInstLight answer(final InvocationOnMock invocation) throws Throwable {
+            String componentId = (String) invocation.getArguments()[0];
+            ComponentInstLight componentInstLight = new ComponentInstLight();
+            componentInstLight.setId(componentId);
+            componentInstLight.setName(componentId.replaceAll("[0-9]", ""));
+            return componentInstLight;
           }
         });
   }
@@ -488,20 +520,19 @@ public class ForumsBMEJBTest extends AbstractJndiCase {
         .thenReturn(true);
   }
 
+  private ForumsBM getTestedForumsService() {
+    return ForumsServiceProvider.getForumsService();
+  }
+
   /**
-   * An ForumsBMEJB instance dedicated to tests. It overrides some methods in order to set a
+   * An getTestedForumsService() instance dedicated to tests. It overrides some methods in order to set a
    * context adapted to the tests.
    */
-  private class ForumsEJBEJBForTest extends ForumsBMEJB {
+  public static class ForumsBMEJBForTest extends ForumsBMEJB {
 
     @Override
     protected String getWysiwygContent(final String componentId, final String messageId) {
       return "componentId=" + componentId + ",messageId=" + messageId;
-    }
-
-    @Override
-    protected SubscriptionService getSubscribeBm() {
-      return subscriptionServiceMock;
     }
   }
 }

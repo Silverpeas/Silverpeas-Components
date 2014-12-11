@@ -39,7 +39,7 @@ import com.silverpeas.pdcSubscription.util.PdcSubscriptionManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
@@ -68,6 +68,12 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -185,8 +191,9 @@ public class DefaultBlogService implements BlogService {
   @Override
   public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
       final Comment comment, final String type, final String senderId) {
-    Collection<String> subscriberIds = getSubscribeService()
-        .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
+    Collection<String> subscriberIds =
+        ResourceSubscriptionProvider.getSubscribersOfComponent(fatherPK.getInstanceId())
+            .getAllUserIds();
     if (subscriberIds != null && !subscriberIds.isEmpty()) {
       // get only subscribers who have sufficient rights to read pubDetail
       NodeDetail node = getNodeBm().getHeader(fatherPK);

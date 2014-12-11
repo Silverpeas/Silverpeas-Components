@@ -25,12 +25,12 @@ package com.stratelia.silverpeas.infoLetter.implementation;
 
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.control.ByteArrayDataSource;
@@ -80,7 +80,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -294,10 +293,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   @Override
-  public Map<SubscriberType, Collection<String>> getInternalSuscribers(final String componentId) {
-    return SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceProvider.getSubscribeService()
-            .getSubscribers(ComponentSubscriptionResource.from(componentId)));
+  public SubscriptionSubscriberList getInternalSuscribers(final String componentId) {
+    return ResourceSubscriptionProvider.getSubscribersOfComponent(componentId);
   }
 
   @Override

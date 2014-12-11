@@ -129,7 +129,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
 
-    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -213,7 +213,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
 
-    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -243,7 +243,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.REFUSED));
 
-    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -273,10 +273,10 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.VALIDATED));
 
-    ArgumentCaptor<UserNotificationBuider> argCaptor =
-        ArgumentCaptor.forClass(UserNotificationBuider.class);
+    ArgumentCaptor<UserNotificationBuilder> argCaptor =
+        ArgumentCaptor.forClass(UserNotificationBuilder.class);
     verify(getUserNotificationManager(), times(2)).buildAndSend(argCaptor.capture());
-    List<UserNotificationBuider> valueCaptured = argCaptor.getAllValues();
+    List<UserNotificationBuilder> valueCaptured = argCaptor.getAllValues();
     MatcherAssert.assertThat(valueCaptured, hasSize(2));
     MatcherAssert.assertThat(valueCaptured.get(0),
         instanceOf(SuggestionBoxSubscriptionUserNotification.class));

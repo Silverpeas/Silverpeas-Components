@@ -72,10 +72,6 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     return OrganizationControllerProvider.getOrganisationController();
   }
 
-  protected SubscriptionService getSubscribeService() {
-    return SubscriptionServiceProvider.getSubscribeService();
-  }
-
   protected NodeService getNodeBm() {
     try {
       return ServiceProvider.getService(NodeService.class);
