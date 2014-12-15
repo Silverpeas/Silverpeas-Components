@@ -144,3 +144,23 @@ fieldset#answersFieldset legend {
 .thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
   vertical-align: middle;
 }
+
+.titreFenetre {
+  font-size: 13pt;
+  font-weight: bold;
+  color: #666
+}
+
+.titreFenetre2 {
+  font-size: 13pt;
+  font-weight: bold;
+  color: #FFF
+}
+
+.quizzscore {
+  background-color: #CCC;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #607090;
+  text-decoration: none
+}
