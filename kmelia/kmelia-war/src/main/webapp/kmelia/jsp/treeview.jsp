@@ -948,21 +948,21 @@ $(document).ready(
 		// the `plugins` array allows you to configure the active plugins on this instance
 		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
     });
-
-	$("#splitter").splitter({
-		splitVertical: true,
-		minLeft: 50, sizeLeft: 300, minRight: 250,
-		anchorToWindow: true,
-		resizeToWidth: false,
-		accessKey: 'I'
-	});
-
+	
 	$.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
         language: '<%=language%>',
         mode: 'map'
     });
+
+	$("#splitter").splitter({
+		splitVertical: true,
+		minLeft: 50, sizeLeft: 300, minRight: 250,
+		anchorToWindow: true,
+		resizeToWidth: true,
+		accessKey: 'I'
+	});
 
 	<% if (displaySearch.booleanValue()) { %>
 		document.getElementById("topicQuery").focus();
