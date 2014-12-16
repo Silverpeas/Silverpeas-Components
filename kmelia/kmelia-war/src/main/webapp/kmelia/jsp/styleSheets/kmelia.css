@@ -796,21 +796,27 @@ a.button.refuse span {
 /*tree view splitter style*/ 
 #splitter {
 	min-width: 500px;	
-	min-height: 100px;	
-	height: 100%;
+	height: auto;	
+
 	border: 0;
 }
 
 /*** leftPane ****/
 #splitter #treeDiv1 {
-	overflow:auto;
+
 	width:250px;
+}
+#splitter #treeDiv1 > ul{
+	overflow:auto;
+}
+
+#pubList {
+    padding:6px 14px;
 }
 
 /*** rightPane ****/
 #rightSide {
-	overflow:auto;
-	left:300px;
+	margin-left:-7px;
 }
 
 #footer {
