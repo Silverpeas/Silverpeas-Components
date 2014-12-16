@@ -111,44 +111,461 @@
       </help>
     </profile>
   </profiles>
-  <parameters>
-    <parameter>
-      <name>slideshow</name>
+  <groupsOfParameters>
+    <groupOfParameters>
       <label>
-        <message lang="fr">Diaporama</message>
-        <message lang="en">Slideshow</message>
-        <message lang="de">Slideshow</message>
+        <message lang="fr">Navigation</message>
+        <message lang="en">Visuals</message>
+        <message lang="de">Visuals</message>
       </label>
+      <description>
+        <message lang="fr">Les médias sont stockés dans une arborescence d'albums.</message>
+        <message lang="en">The media are stored in an album tree.</message>
+        <message lang="de">The media are stored in an album tree.</message>
+      </description>
+      <help></help>
       <order>1</order>
-      <mandatory>true</mandatory>
-      <value>5</value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Temps d'attente entre deux médias (en secondes)</message>
-        <message lang="en">Time wait between two media (in seconds)</message>
-        <message lang="de">Zeit zwischen zwei Bildern (in Sekunden)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>dragAndDrop</name>
+      <parameters>
+        <parameter>
+          <name>viewList</name>
+          <label>
+            <message lang="fr">Albums sous forme de liste</message>
+            <message lang="en">Albums as lists</message>
+            <message lang="de">Alben als Liste zeigen</message>
+          </label>
+          <order>6</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de visualiser les informations détaillées des médias dans le format 266x150</message>
+            <message lang="en">Display detailed information of media (size 266x150 only)</message>
+            <message lang="de">Zeigt eine detaillierte Liste die Medien (Größe nur 266x150)</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>privateSearch</name>
+          <label>
+            <message lang="fr">Moteur de recherche dédié</message>
+            <message lang="en">Dedicated search engine</message>
+            <message lang="de">Gewidmete Suchmaschinen</message>
+          </label>
+          <order>12</order>
+          <mandatory>false</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Si ce paramètre est activé, les médias indexés ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.</message>
+            <message lang="en">If this parameter is enabled, indexed media will not be findable by global search engine but only by the dedicated search engine of this application.</message>
+            <message lang="de">Wenn dieser Parameter aktiviert ist, werden indexierte Bilder von der globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle Suchmaschinen dieser Komponente.</message>
+          </help>
+          <personalSpaceValue>yes</personalSpaceValue>
+        </parameter>
+        <parameter>
+          <name>slideshow</name>
+          <label>
+            <message lang="fr">Diaporama</message>
+            <message lang="en">Slideshow</message>
+            <message lang="de">Slideshow</message>
+          </label>
+          <order>1</order>
+          <mandatory>true</mandatory>
+          <value>5</value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Temps d'attente entre deux médias (en secondes)</message>
+            <message lang="en">Time wait between two media (in seconds)</message>
+            <message lang="de">Zeit zwischen zwei Bildern (in Sekunden)</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
       <label>
-        <message lang="fr">Glisser/déposer</message>
-        <message lang="en">Drag and Drop</message>
-        <message lang="de">Drag and Drop</message>
+        <message lang="fr">Médias</message>
+        <message lang="en">Visuals</message>
+        <message lang="de">Visuals</message>
       </label>
+      <description>
+        <message lang="fr">Cette application gère trois types de média : images, vidéos et sons.</message>
+        <message lang="en">This application supports three types of media: images, videos and sounds.</message>
+        <message lang="de">This application supports three types of media: images, videos and sounds.</message>
+      </description>
+      <help></help>
       <order>2</order>
-      <mandatory>false</mandatory>
-      <value>false</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet de publier très rapidement des images, des vidéos et des sons par glisser/déposer. Les fichiers zip sont également pris en charge.</message>
-        <message lang="en">Allow you to quickly publish some images, videos or sounds by drag and drop. Zip files are also allowed.</message>
-        <message lang="de">Damit können Sie schnell einige Bilder per Drag and Drop veröffentlichen . Zip-Dateien sind ebenfalls erlaubt.</message>
-      </help>
-    </parameter>
+      <parameters>
+        <parameter>
+          <name>viewMetadata</name>
+          <label>
+            <message lang="fr">Méta-données</message>
+            <message lang="en">Metadata</message>
+            <message lang="de">Metadaten</message>
+          </label>
+          <order>5</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'afficher les méta-données (EXIF, IPTC, Windows) de chaque image</message>
+            <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
+            <message lang="de">Bilder Metadaten anzeigen (EXIF, IPTC, Windows)</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>dragAndDrop</name>
+          <label>
+            <message lang="fr">Glisser/déposer</message>
+            <message lang="en">Drag and Drop</message>
+            <message lang="de">Drag and Drop</message>
+          </label>
+          <order>2</order>
+          <mandatory>false</mandatory>
+          <value>false</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de publier très rapidement des images, des vidéos et des sons par glisser/déposer. Les fichiers zip sont également pris en charge.</message>
+            <message lang="en">Allow you to quickly publish some images, videos or sounds by drag and drop. Zip files are also allowed.</message>
+            <message lang="de">Damit können Sie schnell einige Bilder per Drag and Drop veröffentlichen . Zip-Dateien sind ebenfalls erlaubt.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>dayBeforeEndVisible</name>
+          <label>
+            <message lang="fr">Nb de jours avant la fin de visibilité des médias</message>
+            <message lang="en">Number of days before the media are no longer visible.</message>
+            <message lang="de">Anzahl der Tage, bevor die Medien nicht mehr sichtbar sind.</message>
+          </label>
+          <order>8</order>
+          <mandatory>true</mandatory>
+          <value>3</value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nombre de jours avant l'envoi du message au gestionnaire quand une photo arrive en fin de visibilité</message>
+            <message lang="en">Number of days before sending an alert when an image will expired</message>
+            <message lang="de">Anzahl der Tage bevor ein Bild abgelaufen ist und dass einer Warnung deswegen gesendet werden muss</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>XMLFormname</name>
+          <label>
+            <message lang="fr">Formulaire XML</message>
+            <message lang="en">XML Form</message>
+            <message lang="de">XML Formular</message>
+          </label>
+          <order>9</order>
+          <mandatory>false</mandatory>
+          <value/>
+          <type>xmltemplates</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom du formulaire associé à la médiathèque</message>
+            <message lang="en">Form name attached to this multimedia library</message>
+            <message lang="de">Name des XML Formulars, der an der Fotothek gebunden ist</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>viewInWysiwyg</name>
+          <label>
+            <message lang="fr">Images réutilisables</message>
+            <message lang="en">Reusable images</message>
+            <message lang="de">Wiederverwendbare Bilder</message>
+          </label>
+          <order>10</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'utiliser les images de cette application depuis l'éditeur Wysiwyg et les applications Vote et Enquête</message>
+            <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey applications</message>
+            <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
+          </help>
+          <warning>
+            <message lang="fr">En cochant cette case, les images gérées par cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.</message>
+            <message lang="en">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+            <message lang="de">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+          </warning>
+        </parameter>
+        <parameter>
+          <name>comments</name>
+          <label>
+            <message lang="fr">Commentaires</message>
+            <message lang="en">Comments</message>
+            <message lang="de">Kommentare</message>
+          </label>
+          <order>11</order>
+          <mandatory>true</mandatory>
+          <value>yes</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque média</message>
+            <message lang="en">Readers are able to post comments on a media</message>
+            <message lang="de">Leser können Kommentare auf eine Medien lassen</message>
+          </help>
+          <personalSpaceValue>no</personalSpaceValue>
+        </parameter>
+        <parameter>
+          <name>download</name>
+          <label>
+            <message lang="fr">Original téléchargeable</message>
+            <message lang="en">Enable download of original media</message>
+            <message lang="de">Aktivieren Sie des Download der Original-Medien</message>
+          </label>
+          <order>13</order>
+          <mandatory>false</mandatory>
+          <value>yes</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque média.</message>
+            <message lang="en">If this parameter is enabled, original media will be downloadable.</message>
+            <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter geladen werden</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>previewSize</name>
+          <label>
+            <message lang="fr">Format de prévisualisation</message>
+            <message lang="en">Preview format</message>
+            <message lang="de">Vorschau Format</message>
+          </label>
+          <order>14</order>
+          <mandatory>true</mandatory>
+          <value>preview</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">600x400</message>
+                <message lang="en">600x400</message>
+                <message lang="de">600x400</message>
+              </name>
+              <value>preview</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">266x150</message>
+                <message lang="en">266x150</message>
+                <message lang="de">266x150</message>
+              </name>
+              <value>266x150</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">133x100</message>
+                <message lang="en">133x100</message>
+                <message lang="de">133x100</message>
+              </name>
+              <value>133x100</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Choix de la taille du format de la preview</message>
+            <message lang="en">Choice off the preview size</message>
+            <message lang="de">Wahl der Vorschau Größe</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>exportImages</name>
+          <label>
+            <message lang="fr">Export des images</message>
+            <message lang="en">Export images</message>
+            <message lang="de">Export images</message>
+          </label>
+          <order>20</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Oui, pour tout le monde</message>
+                <message lang="en">Yes, every users</message>
+                <message lang="de">Yes, every users</message>
+              </name>
+              <value>yes_all</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Oui, pour les gestionnaires et publieurs</message>
+                <message lang="en">Yes, only for administrators and publishers</message>
+                <message lang="de">Yes, only for administrators and publishers</message>
+              </name>
+              <value>yes_publisher</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Non</message>
+                <message lang="en">No</message>
+                <message lang="de">nein</message>
+              </name>
+              <value>no</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Si ce paramètre est activé, les utilisateurs auront la possibilité d'exporter les images d'un album ou du panier</message>
+            <message lang="en">Users can export images from an album or from their basket</message>
+            <message lang="de">Users can export images from an album or from their basket</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Filigrane</message>
+        <message lang="en">Watermark</message>
+        <message lang="de">Watermark</message>
+      </label>
+      <description>
+        <message lang="fr">La technique du "watermarking" permet d'ajouter une information de copyright à une image. Cette information est ajoutée automatiquement aux nouvelles images en fonction du paramétrage ci-dessous.</message>
+        <message lang="en">The technique of "watermarking" permits to add copyright information to an image. This information is automatically added to new images according to the settings below.</message>
+        <message lang="de">The technique of "watermarking" permits to add copyright information to an image. This information is automatically added to new images according to the settings below.</message>
+      </description>
+      <help></help>
+      <order>3</order>
+      <parameters>
+        <parameter>
+          <name>watermark</name>
+          <label>
+            <message lang="fr">Watermark</message>
+            <message lang="en">Watermark</message>
+            <message lang="de">Watermark</message>
+          </label>
+          <order>7</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
+            <message lang="en">Insert photographer's name into image as watermark</message>
+            <message lang="de">Name des Fotografen ins Bild als Wasserzeichen einfügen</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>WatermarkHD</name>
+          <label>
+            <message lang="fr">Watermark image originale</message>
+            <message lang="en">Put a watermark on the original image</message>
+            <message lang="de">Setzen Sie ein Wasserzeichen auf dem Original Bild</message>
+          </label>
+          <order>15</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</message>
+            <message lang="en">IPTC number to be used for watermarking on High definition image</message>
+            <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>WatermarkOther</name>
+          <label>
+            <message lang="fr">Watermark vignettes</message>
+            <message lang="en">Thumbnail watermark</message>
+            <message lang="de">Verwenden Sie IPTC-Daten für Wasserzeichen</message>
+          </label>
+          <order>16</order>
+          <mandatory>false</mandatory>
+          <value/>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</message>
+            <message lang="en">IPTC number to be used for watermarking on thumbnails</message>
+            <message lang="de">IPTC Nummer verwenden für Wasserzeichen</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Demandes d'images</message>
+        <message lang="en">Image requests</message>
+        <message lang="de">Image requests</message>
+      </label>
+      <description>
+        <message lang="fr">Les lecteurs peuvent demander le téléchargement des images dans leurs qualités d'origine.</message>
+        <message lang="en">Readers may ask to download images in their original quality.</message>
+        <message lang="de">Readers may ask to download images in their original quality.</message>
+      </description>
+      <help></help>
+      <order>4</order>
+      <parameters>
+        <parameter>
+          <name>order</name>
+          <label>
+            <message lang="fr">Demandes activées</message>
+            <message lang="en">Ask for images</message>
+            <message lang="de">Fordern Sie ein Bildes</message>
+          </label>
+          <order>17</order>
+          <mandatory>false</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de faire des demandes d'images.</message>
+            <message lang="en">Readers can ask for HD images</message>
+            <message lang="de">Leser können das HD-Bildes anfordern</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>XMLOrderFormname</name>
+          <label>
+            <message lang="fr">Formulaire associé</message>
+            <message lang="en">Associated form</message>
+            <message lang="de">Formular für Bilder anforderung</message>
+          </label>
+          <order>18</order>
+          <mandatory>false</mandatory>
+          <value/>
+          <type>xmltemplates</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom du formulaire associé aux demandes de photos</message>
+            <message lang="en">Form name attached to the order</message>
+            <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>UrlCharte</name>
+          <label>
+            <message lang="fr">URL de la charte</message>
+            <message lang="en">URL of the usage policy</message>
+            <message lang="de">URL der Charta</message>
+          </label>
+          <order>19</order>
+          <mandatory>false</mandatory>
+          <value/>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">URL de la charte associée aux demandes de photos</message>
+            <message lang="en">URL of the usage policy defining the images usage</message>
+            <message lang="de">URL der an den Anforderung der Bilder gebundenen Charta</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+  </groupsOfParameters>
+  <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
@@ -165,357 +582,6 @@
         <message lang="fr">Les médias créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Media would be classified on taxonomy</message>
         <message lang="de">Bilder werden auf dem KP Klassifiziert</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>viewMetadata</name>
-      <label>
-        <message lang="fr">Méta-données</message>
-        <message lang="en">Metadata</message>
-        <message lang="de">Metadaten</message>
-      </label>
-      <order>5</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'afficher les méta-données (EXIF, IPTC, Windows) de chaque image</message>
-        <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
-        <message lang="de">Bilder Metadaten anzeigen (EXIF, IPTC, Windows)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>viewList</name>
-      <label>
-        <message lang="fr">Albums sous forme de liste</message>
-        <message lang="en">Albums as lists</message>
-        <message lang="de">Alben als Liste zeigen</message>
-      </label>
-      <order>6</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet de visualiser les informations détaillées des médias dans le format 266x150</message>
-        <message lang="en">Display detailed information of media (size 266x150 only)</message>
-        <message lang="de">Zeigt eine detaillierte Liste die Medien (Größe nur 266x150)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>watermark</name>
-      <label>
-        <message lang="fr">Watermark</message>
-        <message lang="en">Watermark</message>
-        <message lang="de">Watermark</message>
-      </label>
-      <order>7</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
-        <message lang="en">Insert photographer's name into image as watermark</message>
-        <message lang="de">Name des Fotografen ins Bild als Wasserzeichen einfügen</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>dayBeforeEndVisible</name>
-      <label>
-        <message lang="fr">Nb de jours avant la fin de visibilité des médias</message>
-        <message lang="en">Number of days before the media are no longer visible.</message>
-        <message lang="de">Anzahl der Tage, bevor die Medien nicht mehr sichtbar sind.</message>
-      </label>
-      <order>8</order>
-      <mandatory>true</mandatory>
-      <value>3</value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nombre de jours avant l'envoi du message au gestionnaire quand une photo arrive en fin de visibilité</message>
-        <message lang="en">Number of days before sending an alert when an image will expired</message>
-        <message lang="de">Anzahl der Tage bevor ein Bild abgelaufen ist und dass einer Warnung deswegen gesendet werden muss</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>XMLFormname</name>
-      <label>
-        <message lang="fr">Formulaire XML</message>
-        <message lang="en">XML Form</message>
-        <message lang="de">XML Formular</message>
-      </label>
-      <order>9</order>
-      <mandatory>false</mandatory>
-      <value/>
-      <type>xmltemplates</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom du formulaire associé à la médiathèque</message>
-        <message lang="en">Form name attached to this multimedia library</message>
-        <message lang="de">Name des XML Formulars, der an der Fotothek gebunden ist</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>viewInWysiwyg</name>
-      <label>
-        <message lang="fr">Images réutilisables</message>
-        <message lang="en">Reusable images</message>
-        <message lang="de">Wiederverwendbare Bilder</message>
-      </label>
-      <order>10</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'utiliser les images de cette application depuis l'éditeur Wysiwyg et les applications Vote et Enquête</message>
-        <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey applications</message>
-        <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
-      </help>
-      <warning>
-        <message lang="fr">En cochant cette case, les images gérées par cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.</message>
-        <message lang="en">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
-        <message lang="de">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
-      </warning>
-    </parameter>
-    <parameter>
-      <name>comments</name>
-      <label>
-        <message lang="fr">Commentaires</message>
-        <message lang="en">Comments</message>
-        <message lang="de">Kommentare</message>
-      </label>
-      <order>11</order>
-      <mandatory>true</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque média</message>
-        <message lang="en">Readers are able to post comments on a media</message>
-        <message lang="de">Leser können Kommentare auf eine Medien lassen</message>
-      </help>
-      <personalSpaceValue>no</personalSpaceValue>
-    </parameter>
-    <parameter>
-      <name>privateSearch</name>
-      <label>
-        <message lang="fr">Moteur de recherche dédié</message>
-        <message lang="en">Dedicated search engine</message>
-        <message lang="de">Gewidmete Suchmaschinen</message>
-      </label>
-      <order>12</order>
-      <mandatory>false</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Si ce paramètre est activé, les médias indexés ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.</message>
-        <message lang="en">If this parameter is enabled, indexed media will not be findable by global search engine but only by the dedicated search engine of this application.</message>
-        <message lang="de">Wenn dieser Parameter aktiviert ist, werden indexierte Bilder von der globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle Suchmaschinen dieser Komponente.</message>
-      </help>
-      <personalSpaceValue>yes</personalSpaceValue>
-    </parameter>
-    <parameter>
-      <name>download</name>
-      <label>
-        <message lang="fr">Média original téléchargeable</message>
-        <message lang="en">Enable download of the original media</message>
-        <message lang="de">Aktivieren Sie des Download der Original-Medien</message>
-      </label>
-      <order>13</order>
-      <mandatory>false</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque média.</message>
-        <message lang="en">If this parameter is enabled, original media will be downloadable.</message>
-        <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter geladen werden</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>previewSize</name>
-      <label>
-        <message lang="fr">Format de prévisualisation</message>
-        <message lang="en">Preview format</message>
-        <message lang="de">Vorschau Format</message>
-      </label>
-      <order>14</order>
-      <mandatory>true</mandatory>
-      <value>preview</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">600x400</message>
-            <message lang="en">600x400</message>
-            <message lang="de">600x400</message>
-          </name>
-          <value>preview</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">266x150</message>
-            <message lang="en">266x150</message>
-            <message lang="de">266x150</message>
-          </name>
-          <value>266x150</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">133x100</message>
-            <message lang="en">133x100</message>
-            <message lang="de">133x100</message>
-          </name>
-          <value>133x100</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Choix de la taille du format de la preview</message>
-        <message lang="en">Choice off the preview size</message>
-        <message lang="de">Wahl der Vorschau Größe</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>WatermarkHD</name>
-      <label>
-        <message lang="fr">Watermark image originale</message>
-        <message lang="en">Put a watermark on the original image</message>
-        <message lang="de">Setzen Sie ein Wasserzeichen auf dem Original Bild</message>
-      </label>
-      <order>15</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>25</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</message>
-        <message lang="en">IPTC number to be used for watermarking on High definition image</message>
-        <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>WatermarkOther</name>
-      <label>
-        <message lang="fr">Watermark vignettes</message>
-        <message lang="en">Thumbnail watermark</message>
-        <message lang="de">Verwenden Sie IPTC-Daten für Wasserzeichen</message>
-      </label>
-      <order>16</order>
-      <mandatory>false</mandatory>
-      <value/>
-      <type>text</type>
-      <size>25</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</message>
-        <message lang="en">IPTC number to be used for watermarking on thumbnails</message>
-        <message lang="de">IPTC Nummer verwenden für Wasserzeichen</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>order</name>
-      <label>
-        <message lang="fr">Demandes de photos</message>
-        <message lang="en">Ask for photos</message>
-        <message lang="de">Fordern Sie ein Bildes</message>
-      </label>
-      <order>17</order>
-      <mandatory>false</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de faire des demandes de photos depuis le panier.</message>
-        <message lang="en">Readers can ask for HD images from basket</message>
-        <message lang="de">Leser können das HD-Bildes anfordern</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>XMLOrderFormname</name>
-      <label>
-        <message lang="fr">Formulaire associé aux demandes</message>
-        <message lang="en">Form to ask for images</message>
-        <message lang="de">Formular für Bilder anforderung</message>
-      </label>
-      <order>18</order>
-      <mandatory>false</mandatory>
-      <value/>
-      <type>xmltemplates</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom du formulaire associé aux demandes de photos</message>
-        <message lang="en">Form name attached to the order</message>
-        <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>UrlCharte</name>
-      <label>
-        <message lang="fr">URL de la charte</message>
-        <message lang="en">URL of the usage policy</message>
-        <message lang="de">URL der Charta</message>
-      </label>
-      <order>19</order>
-      <mandatory>false</mandatory>
-      <value/>
-      <type>text</type>
-      <size>25</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">URL de la charte associée aux demandes de photos</message>
-        <message lang="en">URL of the usage policy defining the images usage</message>
-        <message lang="de">URL der an den Anforderung der Bilder gebundenen Charta</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>exportImages</name>
-      <label>
-        <message lang="fr">Export des images</message>
-        <message lang="en">Export images</message>
-        <message lang="de">Export images</message>
-      </label>
-      <order>20</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Oui, pour tout le monde</message>
-            <message lang="en">Yes, every users</message>
-            <message lang="de">Yes, every users</message>
-          </name>
-          <value>yes_all</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Oui, pour les gestionnaires et publieurs</message>
-            <message lang="en">Yes, only for administrators and publishers</message>
-            <message lang="de">Yes, only for administrators and publishers</message>
-          </name>
-          <value>yes_publisher</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Non</message>
-            <message lang="en">No</message>
-            <message lang="de">nein</message>
-          </name>
-          <value>no</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Si ce paramètre est activé, les utilisateurs auront la possibilité d'exporter les images d'un album ou du panier</message>
-        <message lang="en">Users can export images from an album or from their basket</message>
-        <message lang="de">Users can export images from an album or from their basket</message>
       </help>
     </parameter>
   </parameters>
