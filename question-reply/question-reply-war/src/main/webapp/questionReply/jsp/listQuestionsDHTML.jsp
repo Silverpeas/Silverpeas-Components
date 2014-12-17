@@ -155,6 +155,7 @@ $(document).ready(function() {
   $firstCategoryClickEventProcessedPromise = $.Deferred();
   bindCategoryEvent();
   bindQuestionsEvent();
+  $firstCategoryClickEventProcessedPromise = $.Deferred();
   $('.questions').hide();
   <c:choose>
     <c:when test="${param.categoryId != null}">
