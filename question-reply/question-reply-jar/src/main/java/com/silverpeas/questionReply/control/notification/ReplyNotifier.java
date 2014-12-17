@@ -28,7 +28,6 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -49,7 +48,7 @@ import java.util.Map;
  */
 public class ReplyNotifier extends Notifier {
 
-  private static final String RESOURCE_NAME = "com.stratelia.webactiv.survey.multilang.surveyBundle";
+  private static final String RESOURCE_NAME = "org.silverpeas.questionReply.multilang.questionReplyBundle";
   final Reply reply;
   final Question question;
   final String componentLabel;
@@ -57,8 +56,8 @@ public class ReplyNotifier extends Notifier {
   final String source;
   final NotificationSender notifSender;
 
-  public ReplyNotifier(UserDetail sender, String serverUrl, Question question, Reply reply, NotificationData data) {
-    super(sender, serverUrl);
+  public ReplyNotifier(UserDetail sender, Question question, Reply reply, NotificationData data) {
+    super(sender);
     this.reply = reply;
     this.question = question;
     this.componentLabel = data.getComponentLabel();
@@ -96,11 +95,7 @@ public class ReplyNotifier extends Notifier {
       }
       notifMetaData.setSender(sender.getId());
       notifMetaData.addUserRecipients(users);
-      if(StringUtil.isDefined(serverUrl)) {
-        notifMetaData.setLink(serverUrl + question._getPermalink());
-      }else {
-         notifMetaData.setLink(question._getPermalink());
-      }
+      notifMetaData.setLink(question._getPermalink());
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",
