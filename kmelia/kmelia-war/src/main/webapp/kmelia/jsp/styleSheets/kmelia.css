@@ -792,25 +792,41 @@ a.button.refuse span {
 .table-result-statistics .principal-element-table {
 	font-weight:bold;
  }
- 
-/*tree view splitter style*/ 
-#splitter {
-	min-width: 500px;	
-	min-height: 100px;	
-	height: 100%;
-	border: 0;
-}
 
-/*** leftPane ****/
-#splitter #treeDiv1 {
-	overflow:auto;
-	width:250px;
+#pubList {
+    padding:6px 14px;
 }
 
 /*** rightPane ****/
-#rightSide {
+#treeDiv1 {
 	overflow:auto;
-	left:300px;
+}
+
+.wrap{
+  width: 100%;
+  border: 0;
+  font-size: 0;
+}
+
+.wrap .resizable{
+  width:30%;
+  padding:0;
+  display:block;
+  float:left;
+}
+
+.wrap .resizable.resizable2{
+  width:70%;
+}
+
+.wrap .ui-resizable-e{
+  background:#f2f2f2 url("../../../util/icons/splitter/layout_sprite_vertical.png") 1px center no-repeat ;
+  width: 7px;
+  display:block !important;
+  cursor: e-resize;
+  right: -5px;
+  top: 0;
+  bottom: 0;
 }
 
 #footer {
@@ -825,10 +841,6 @@ a.button.refuse span {
 	color: #000000;
 }
 
-.vsplitbar {
-	width: 7px;
-	background: #F2F2F2 url(/silverpeas/util/icons/splitter/layout_sprite_vertical.png) 1px center no-repeat;
-}
 
 .basDroiteFrame img, 
 .basMilieuFrame img,
