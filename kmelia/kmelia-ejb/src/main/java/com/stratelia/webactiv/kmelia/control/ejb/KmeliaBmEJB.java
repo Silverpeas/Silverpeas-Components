@@ -1355,7 +1355,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone = isClone(pubDetail);
+      boolean isClone = pubDetail.isClone();
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
 
@@ -1638,8 +1638,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         return;
       }
 
-      boolean clone = isClone(pubDetail);
-      if (clone) {
+      if (pubDetail.isClone()) {
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
 

@@ -1874,12 +1874,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isVersionControlled() {
+    if (isPublicationAlwaysVisibleEnabled()) {
+      // This mode is not compatible, for now, with the possibility to manage versioned
+      // attachments.
+      return false;
+    }
     return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
   public boolean isVersionControlled(String anotherComponentId) {
-    String strVersionControlled =
-        getOrganisationController().getComponentParameterValue(anotherComponentId, VERSION_MODE);
+    String strPublicationAlwaysVisible = getOrganisationController()
+        .getComponentParameterValue(anotherComponentId, "publicationAlwaysVisible");
+    if (StringUtil.getBooleanValue(strPublicationAlwaysVisible)) {
+      // This mode is not compatible, for now, with the possibility to manage versioned
+      // attachments.
+      return false;
+    }
+    String strVersionControlled = getOrganisationController().getComponentParameterValue(
+        anotherComponentId, VERSION_MODE);
     return StringUtil.getBooleanValue(strVersionControlled);
 
   }

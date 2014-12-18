@@ -298,24 +298,13 @@ $(function() {
 		    out.println("<a name=\"attachments\"></a>");
 			try {
 				out.flush();
-				if (kmeliaScc.isVersionControlled()) {
-					getServletConfig().getServletContext().getRequestDispatcher(
-                "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId
-                + "&Context=attachment&Language=" + resources.getLanguage()
-                    + "&AttachmentPosition="
-                + resources.getSetting("attachmentPosition") + "&ShowIcon=" + showIcon
-                + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize
-                + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo)
-                .include(request, response);
-				} else {
-					getServletConfig().getServletContext().getRequestDispatcher(
-                "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId
-                + "&Context=attachment&AttachmentPosition=" + resources.getSetting(
-                "attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle
-                      + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation="
-                      + showDownloadEstimation + "&ShowInfo=" + showInfo + "&Profile=" + profile)
-                      .include(request, response);
-				}
+        getServletConfig().getServletContext().getRequestDispatcher(
+            "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId +
+                "&Context=attachment&AttachmentPosition=" +
+                resources.getSetting("attachmentPosition") + "&ShowIcon=" + showIcon +
+                "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize +
+                "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
+                "&Profile=" + profile).include(request, response);
 			} catch (Exception e) {
 				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",
             SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);

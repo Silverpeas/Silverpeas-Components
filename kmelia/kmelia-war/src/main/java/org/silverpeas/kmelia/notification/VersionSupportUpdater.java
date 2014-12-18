@@ -21,6 +21,7 @@
 
 package org.silverpeas.kmelia.notification;
 
+import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
@@ -41,6 +42,8 @@ public class VersionSupportUpdater extends CDIResourceEventListener<ComponentIns
 
   @Inject
   private AttachmentService service;
+  @Inject
+  private Administration administration;
 
   @Override
   public void onUpdate(final ComponentInstanceEvent event) throws Exception {
@@ -52,7 +55,12 @@ public class VersionSupportUpdater extends CDIResourceEventListener<ComponentIns
       if (isVersionParameterChanged(previousInst, updatedInst)) {
         boolean versioned = StringUtil
             .getBooleanValue(updatedInst.getParameterValue(AttachmentService.VERSION_MODE));
-        service.switchComponentBehaviour(updatedInst.getId(), versioned);
+        boolean alwaysVisible = StringUtil
+            .getBooleanValue(administration.getComponentParameterValue(previousInst.getId(),
+                "publicationAlwaysVisible"));
+        if (!alwaysVisible || !versioned) {
+          service.switchComponentBehaviour(updatedInst.getId(), versioned);
+        }
       }
     }
   }

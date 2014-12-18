@@ -43,9 +43,7 @@
 
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="com.silverpeas.kmelia.SearchContext"%>
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
-<%@page import="org.silverpeas.importExport.versioning.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 <%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
@@ -531,10 +529,6 @@
         }
         out.println(frame.printBefore());
 
-        int type = 0;
-        if (kmeliaScc.isVersionControlled()) {
-          type = 1; // Versioning
-        }
         /*********************************************************************************************************************/
         /** Affichage des boutons de navigation (next / previous)															**/
         /*********************************************************************************************************************/
@@ -624,15 +618,9 @@
 			          try {
 			            out.flush();
 			            String attProfile = kmeliaScc.getProfile();
-			            if (kmeliaScc.isVersionControlled(componentId)) {
-			              if (!isOwner) {
-			                attProfile = "user";
-			              }
-			            } else {
-				              if (!attachmentsUpdatable) {
-				                attProfile = "user";
-				              }
-			            }
+                  if (!attachmentsUpdatable) {
+                    attProfile = "user";
+                  }
                   getServletConfig().getServletContext().getRequestDispatcher(
                       "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
                           getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
