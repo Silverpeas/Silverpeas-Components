@@ -137,17 +137,8 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -174,7 +165,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import org.owasp.encoder.Encode;
+import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -1968,10 +1959,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isVersionControlled() {
+    if (isPublicationAlwaysVisibleEnabled()) {
+      // This mode is not compatible, for now, with the possibility to manage versioned
+      // attachments.
+      return false;
+    }
     return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
   public boolean isVersionControlled(String anotherComponentId) {
+    String strPublicationAlwaysVisible = getOrganisationController()
+        .getComponentParameterValue(anotherComponentId, "publicationAlwaysVisible");
+    if (StringUtil.getBooleanValue(strPublicationAlwaysVisible)) {
+      // This mode is not compatible, for now, with the possibility to manage versioned
+      // attachments.
+      return false;
+    }
     String strVersionControlled = getOrganisationController().getComponentParameterValue(
         anotherComponentId, VERSION_MODE);
     return StringUtil.getBooleanValue(strVersionControlled);

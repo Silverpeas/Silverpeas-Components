@@ -349,9 +349,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de gérer les versions des fichiers joints.</message>
-        <message lang="en">Attachments are versioned.</message>
-        <message lang="de">Anhänge werden versioniert.</message>
+        <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramètre est ignoré et considéré comme désactivé si celui "Publication toujours visible" est activé.</message>
+        <message lang="en">Attachments are versioned. This parameter is ignored and considered disabled if "Publication always visible" is enabled.</message>
+        <message lang="de">Anhänge werden versioniert. Dieser Parameter wird ignoriert und deaktiviert, wenn "Veröffentlichung immer Sichtbar" aktiviert ist.</message>
       </help>
     </parameter>
     <parameter>
@@ -667,9 +667,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</message>
-        <message lang="en">The latest valid version of a publication is always visible even if it is waiting approval.</message>
-        <message lang="de">Die letztgültigen Fassung einer Veröffentlichung ist immer sichtbar, auch wenn es auf einer Genehmigung wartet.</message>
+        <message lang="fr">La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation. Si activé, le paramètre "Fichiers joints versionnés" est ignoré et est considéré comme désactivé.</message>
+        <message lang="en">The latest valid version of a publication is always visible even if it is waiting approval. If enabled, "Versioned attachments" parameter is ignored and is considered deactivated.</message>
+        <message lang="de">Die letztgültigen Fassung einer Veröffentlichung ist immer sichtbar, auch wenn es auf einer Genehmigung wartet. Wenn aktiviert, die Parameter "Versionierte Anhänge" wird ignoriert, und gilt als deaktiviert.</message>
       </help>
     </parameter>
     <parameter>
