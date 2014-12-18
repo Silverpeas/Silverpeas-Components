@@ -44,7 +44,7 @@ import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
 import com.silverpeas.kmelia.export.KmeliaPublicationExporter;
-import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
+import com.silverpeas.kmelia.search.KmeliaSearchServiceProvider;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -3287,7 +3287,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // Insert this new search inside persistence layer in order to compute statistics
     TopicSearch newTS = new TopicSearch(getComponentId(), Integer.parseInt(getCurrentFolderId()),
         Integer.parseInt(getUserId()), getLanguage(), query.toLowerCase(), new Date());
-    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
+    KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
 
     List<KmeliaPublication> userPublications = new ArrayList<KmeliaPublication>();
     QueryDescription queryDescription = new QueryDescription(query);

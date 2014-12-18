@@ -33,7 +33,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.kmelia.model.StatsFilterVO;
-import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
+import com.silverpeas.kmelia.search.KmeliaSearchServiceProvider;
 import com.silverpeas.kmelia.stats.StatisticService;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -77,7 +77,7 @@ public class StatisticRequestHandler {
     String curTopicId = kmelia.getCurrentFolderId();
     // Check if we are on the root node in order to display most interested query
     if (NodePK.ROOT_NODE_ID.equals(curTopicId)) {
-      request.setAttribute("mostInterestedSearch", KmeliaSearchServiceFactory
+      request.setAttribute("mostInterestedSearch", KmeliaSearchServiceProvider
             .getTopicSearchService().getMostInterestedSearch(kmelia.getComponentId()));
     }
     // Retrieve profile name and list
@@ -126,7 +126,7 @@ public class StatisticRequestHandler {
       }
     }
 
-    StatisticService statService = KmeliaSearchServiceFactory.getStatisticService();
+    StatisticService statService = KmeliaSearchServiceProvider.getStatisticService();
     // request.setAttribute("nbConsultedPublication",
     // statService.getNbConsultedPublication(statFilter));
     // request.setAttribute("nbActivity", statService.getNbStatisticActivityByPeriod(statFilter));

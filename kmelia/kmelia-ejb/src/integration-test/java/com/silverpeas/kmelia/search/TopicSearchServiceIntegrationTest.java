@@ -45,9 +45,9 @@ import static org.junit.Assert.assertEquals;
  * @author ebonnet
  */
 @RunWith(Arquillian.class)
-public class TopicSearchServiceTest {
+public class TopicSearchServiceIntegrationTest {
 
-  public TopicSearchServiceTest() {
+  public TopicSearchServiceIntegrationTest() {
   }
 
   private TopicSearchService searchService;
@@ -58,7 +58,7 @@ public class TopicSearchServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(TopicSearchServiceTest.class)
+    return BasicWarBuilder.onWarForTestClass(TopicSearchServiceIntegrationTest.class)
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");

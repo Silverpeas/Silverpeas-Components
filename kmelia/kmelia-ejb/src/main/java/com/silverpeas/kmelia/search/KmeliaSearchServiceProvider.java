@@ -31,12 +31,12 @@ import org.silverpeas.util.ServiceProvider;
  * Factory of KmeliaSearchService, you can change the implementation using JEE IoC configuration
  * @author ebonnet
  */
-public class KmeliaSearchServiceFactory {
+public class KmeliaSearchServiceProvider {
 
   /**
    * Default private constructor
    */
-  private KmeliaSearchServiceFactory() {
+  private KmeliaSearchServiceProvider() {
   }
 
   public static TopicSearchService getTopicSearchService() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,35 +19,42 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.kmelia.search;
+package com.silverpeas.kmelia.dao;
 
-import com.silverpeas.kmelia.stats.StatisticService;
+import com.silverpeas.kmelia.model.MostInterestedQueryVO;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.util.ServiceProvider;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author ebonnet
  */
 @RunWith(Arquillian.class)
-public class KmeliaSearchServiceFactoryTest {
+public class TopicSearchDaoIntegrationTest {
 
-  public KmeliaSearchServiceFactoryTest() {
-  }
+  private TopicSearchDao dao;
+
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule("create-database.sql", "kmelia-dataset.xml");
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(TopicSearchServiceTest.class)
+    return BasicWarBuilder.onWarForTestClass(TopicSearchDaoIntegrationTest.class)
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
@@ -62,34 +69,30 @@ public class KmeliaSearchServiceFactoryTest {
           warBuilder.addMavenDependencies("org.apache.tika:tika-core");
           warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
           warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
-          warBuilder.addPackages(true, "com.silverpeas.kmelia");
+          warBuilder.addClasses(MostInterestedQueryVO.class);
+          warBuilder.addPackages(true, "com.silverpeas.kmelia.dao");
           warBuilder.addAsResource("org/silverpeas/kmelia/settings/kmeliaSettings.properties");
         }).build();
   }
 
   @Before
-  public void setUp() {
+  public void generalSetup() {
+    dao = ServiceProvider.getService(TopicSearchDao.class);
   }
 
-  @After
-  public void tearDown() {
-  }
-
-  /**
-   * Test of getTopicSearchService method, of class KmeliaSearchServiceProvider.
-   */
-  @Test
-  public void testGetTopicSearchService() {
-    TopicSearchService result = KmeliaSearchServiceFactory.getTopicSearchService();
-    assertNotNull(result);
+  public TopicSearchDaoIntegrationTest() {
   }
 
   /**
-   * Test of getStatisticService method, of class KmeliaSearchServiceProvider.
+   * Test of getMostInterestedSearch method, of class TopicSearchDao.
    */
   @Test
-  public void testGetStatisticService() {
-    StatisticService result = KmeliaSearchServiceFactory.getStatisticService();
-    assertNotNull(result);
+  public void testGetMostInterestedSearch() {
+    String instanceId = "kmelia111";
+    List<MostInterestedQueryVO> result = dao.getMostInterestedSearch(instanceId);
+    assertEquals(4, result.size());
+    assertEquals("ma recherche", result.get(0).getQuery());
+    assertEquals(2, result.get(0).getOccurrences().intValue());
   }
+
 }

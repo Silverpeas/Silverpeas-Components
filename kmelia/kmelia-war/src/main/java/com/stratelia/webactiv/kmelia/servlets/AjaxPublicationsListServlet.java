@@ -23,7 +23,7 @@ package com.stratelia.webactiv.kmelia.servlets;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
-import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
+import com.silverpeas.kmelia.search.KmeliaSearchServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -255,7 +255,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
     TopicSearch newTS = new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(
         kmeliaSC.getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
-    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
+    KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
   }
 
   /**
