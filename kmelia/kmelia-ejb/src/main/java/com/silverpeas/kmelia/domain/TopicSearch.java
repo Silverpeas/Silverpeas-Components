@@ -24,15 +24,15 @@
 
 package com.silverpeas.kmelia.domain;
 
-import java.io.Serializable;
-import java.util.Date;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * TopicSearch represents a kmelia specific topic search entity
@@ -40,16 +40,13 @@ import javax.persistence.TableGenerator;
  */
 @Entity
 @Table(name = "sc_kmelia_search")
-public class TopicSearch implements Serializable{
+@NamedQueries({@NamedQuery(name = "topicSearch.findByInstanceId",
+    query = "SELECT ts FROM TopicSearch ts WHERE ts.instanceId = :instanceId")})
+public class TopicSearch extends AbstractJpaCustomEntity<TopicSearch, UniqueLongIdentifier>
+    implements Serializable {
 
   private static final long serialVersionUID = 2162863596852109037L;
 
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "sc_kmelia_search", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  private Long id;
-  
   private String instanceId;
   private Integer topicId;
   private Integer userId;
@@ -65,16 +62,16 @@ public class TopicSearch implements Serializable{
    * @param id topic search identifier
    */
   public TopicSearch(Long id) {
-    this.id = id;
+    setId(Long.toString(id));
   }
 
   /**
-   * @param instanceId
-   * @param topicId
-   * @param userId
-   * @param language
-   * @param query
-   * @param date
+   * @param instanceId the application instance identifier
+   * @param topicId the topic identifier
+   * @param userId the user identifier
+   * @param language the language
+   * @param query the query
+   * @param date the date
    */
   public TopicSearch(String instanceId, Integer topicId, Integer userId, String language,
       String query, Date date) {
@@ -170,20 +167,6 @@ public class TopicSearch implements Serializable{
     this.userId = userId;
   }
 
-  /**
-   * @return the id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-  
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -193,7 +176,8 @@ public class TopicSearch implements Serializable{
       return false;
     }
     TopicSearch other = (TopicSearch) obj;
-    if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+    if ((this.getId() == null && other.getId() != null) ||
+        (this.getId() != null && !this.getId().equals(other.getId()))) {
       return false;
     }
     return true;
@@ -202,12 +186,12 @@ public class TopicSearch implements Serializable{
   @Override
   public int hashCode() {
     int hash = 0;
-    hash += (id != null ? id.hashCode() : 0);
+    hash += (this.getId() != null ? getId().hashCode() : 0);
     return hash;
   }
-  
+
   @Override
   public String toString() {
-    return "com.silverpeas.kmelia.domain.TopicSearch[ id=" + id + " ] ";
+    return "com.silverpeas.kmelia.domain.TopicSearch[ id=" + this.getId() + " ] ";
   }
 }

@@ -38,7 +38,9 @@
   <bean id="topicSearchDao" class="com.silverpeas.kmelia.dao.TopicSearchDaoImpl">
     <property name="dataSource" ref="jpaDataSource" />
   </bean>
-  <bean id="kmeliaSearchServiceFactory" class="com.silverpeas.kmelia.search.KmeliaSearchServiceFactory"
+  <!-- ebo
+  <bean id="kmeliaSearchServiceFactory" class="com.silverpeas.kmelia.search.KmeliaSearchServiceProvider"
     factory-method="getInstance">
   </bean>
+  -->
 </beans>

@@ -67,9 +67,8 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -506,7 +505,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
   private KmeliaBm getKmeliaBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
+      return ServiceProvider.getService(KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("SendInKmelia.getKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -579,6 +578,6 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   protected NodeService getNodeBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
+    return ServiceProvider.getService(NodeService.class);
   }
 }

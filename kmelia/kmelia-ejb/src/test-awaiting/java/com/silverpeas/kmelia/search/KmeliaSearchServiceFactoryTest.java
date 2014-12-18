@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,41 +19,52 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.kmelia.search;
 
-import static org.junit.Assert.assertNotNull;
-
+import com.silverpeas.kmelia.stats.StatisticService;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.test.BasicWarBuilder;
 
-import com.silverpeas.kmelia.stats.StatisticService;
+import static org.junit.Assert.assertNotNull;
 
 /**
- *
  * @author ebonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-kmelia-search.xml", "/spring-kmelia-search-embbed-datasource.xml"})
+@RunWith(Arquillian.class)
 public class KmeliaSearchServiceFactoryTest {
 
   public KmeliaSearchServiceFactoryTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(TopicSearchServiceTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:statistic");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:calendar");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:comment");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-core");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
+          warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+          warBuilder.addPackages(true, "com.silverpeas.kmelia");
+          warBuilder.addAsResource("org/silverpeas/kmelia/settings/kmeliaSettings.properties");
+        }).build();
   }
 
   @Before
@@ -64,33 +75,20 @@ public class KmeliaSearchServiceFactoryTest {
   public void tearDown() {
   }
 
-
   /**
-   * Test of getInstance method, of class KmeliaSearchServiceFactory.
-   */
-  @Test
-  public void testGetInstance() {
-    //System.out.println("getInstance");
-    KmeliaSearchServiceFactory result = KmeliaSearchServiceFactory.getInstance();
-    assertNotNull(result);
-  }
-
-  /**
-   * Test of getTopicSearchService method, of class KmeliaSearchServiceFactory.
+   * Test of getTopicSearchService method, of class KmeliaSearchServiceProvider.
    */
   @Test
   public void testGetTopicSearchService() {
-    //System.out.println("getTopicSearchService");
     TopicSearchService result = KmeliaSearchServiceFactory.getTopicSearchService();
     assertNotNull(result);
   }
 
   /**
-   * Test of getStatisticService method, of class KmeliaSearchServiceFactory.
+   * Test of getStatisticService method, of class KmeliaSearchServiceProvider.
    */
   @Test
   public void testGetStatisticService() {
-    //System.out.println("getStatisticService");
     StatisticService result = KmeliaSearchServiceFactory.getStatisticService();
     assertNotNull(result);
   }

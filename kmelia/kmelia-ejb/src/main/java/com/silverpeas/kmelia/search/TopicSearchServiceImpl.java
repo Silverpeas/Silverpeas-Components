@@ -24,21 +24,20 @@
 
 package com.silverpeas.kmelia.search;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.silverpeas.kmelia.dao.TopicSearchDao;
 import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.model.MostInterestedQueryVO;
 import com.silverpeas.kmelia.repository.TopicSearchRepository;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.List;
+
 /**
  * This implementation use JPA TopicSearchRepository and JDBC TopicSearchDao
  * @see TopicSearchService
  */
-@Named("topicSearchService")
+@Singleton
 public class TopicSearchServiceImpl implements TopicSearchService {
 
   @Inject

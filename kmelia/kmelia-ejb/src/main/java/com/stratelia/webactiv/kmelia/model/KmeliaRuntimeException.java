@@ -30,11 +30,10 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 3262113459027359252L;
 
   /**
-   * -------------------------------------------------------------------------- constructors
+   * --------------------------------------------------------------------------
    * constructors
    */
-  public KmeliaRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public KmeliaRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -44,10 +43,9 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
    */
-  public KmeliaRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public KmeliaRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -57,10 +55,9 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
    */
-  public KmeliaRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public KmeliaRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -71,17 +68,14 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
    */
-  public KmeliaRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public KmeliaRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   @Override
   public String getModule() {

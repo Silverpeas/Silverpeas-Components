@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.kmelia</groupId>
   <artifactId>kmelia-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB kmelia</name>
 
   <dependencies>
@@ -67,9 +67,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-      <scope>provided</scope>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>tagcloud</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.lowagie</groupId>

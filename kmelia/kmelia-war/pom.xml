@@ -45,7 +45,6 @@
     <dependency>
       <groupId>org.silverpeas.components.kmelia</groupId>
       <artifactId>kmelia-ejb</artifactId>
-      <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -53,12 +52,6 @@
       <groupId>com.lowagie</groupId>
       <artifactId>itext</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>net.sf.jtidy</groupId>
-      <artifactId>jtidy</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>

@@ -31,7 +31,7 @@ import java.util.Collection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-public class FileFolder extends Object implements java.io.Serializable {
+public class FileFolder implements java.io.Serializable {
   private static final long serialVersionUID = 5071147110169726697L;
 
   /**
@@ -62,7 +62,6 @@ public class FileFolder extends Object implements java.io.Serializable {
   /**
    * Constructor declaration
    * @param path
-   * @see
    */
   public FileFolder(String path) {
     this.path = path;
@@ -107,45 +106,35 @@ public class FileFolder extends Object implements java.io.Serializable {
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public Collection getFiles() {
     return files;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public Collection getFolders() {
     return folders;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public String getPath() {
     return path;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public ArrayList getChildren() {
     return children;

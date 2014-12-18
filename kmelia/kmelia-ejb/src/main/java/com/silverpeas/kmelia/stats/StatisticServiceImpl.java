@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -25,7 +25,6 @@ import com.silverpeas.kmelia.model.StatsFilterVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -34,13 +33,11 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -48,7 +45,7 @@ import java.util.List;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
-@Named("statisticService")
+@Singleton
 public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.StatisticService {
 
   @Inject
@@ -120,7 +117,7 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
    * @return
    */
   private List<WAPrimaryKey> getPrimaryKeysFromPublis(List<PublicationDetail> publis) {
-    List<WAPrimaryKey> publiPKs = new ArrayList<WAPrimaryKey>();
+    List<WAPrimaryKey> publiPKs = new ArrayList<>();
     // Check access for each publication
     for (PublicationDetail publi : publis) {
       publiPKs.add(publi.getPK());
@@ -134,7 +131,7 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
    * list if an exception occurs
    */
   private List<String> getListUserIdsFromGroup(Integer groupId) {
-    List<String> userIds = new ArrayList<String>();
+    List<String> userIds = new ArrayList<>();
     try {
       Group selectedGroup = getAdminService().getGroup(Integer.toString(groupId));
       String[] arrayUserIds = selectedGroup.getUserIds();
@@ -155,11 +152,11 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
   private List<PublicationDetail> getValidApplicationPublications(StatsFilterVO statFilter) {
     NodePK fatherPK =
         new NodePK(Integer.toString(statFilter.getTopicId()), statFilter.getInstanceId());
-    Collection<PublicationDetail> validPubli = null;
-    List<PublicationDetail> publis = new ArrayList<PublicationDetail>();
+    Collection<PublicationDetail> validPubli;
+    List<PublicationDetail> publis = new ArrayList<>();
     List<NodeDetail> nodes = getNodeService().getSubTree(fatherPK);
     if (nodes != null) {
-      ArrayList<String> fatherIds = new ArrayList<String>();
+      List<String> fatherIds = new ArrayList<>();
       for (NodeDetail node : nodes) {
         fatherIds.add(Integer.toString(node.getId()));
       }

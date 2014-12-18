@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -34,8 +34,6 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
@@ -345,7 +343,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     } else {
       // get topic-level profiles
       Collection<NodePK> nodePKs = getPublicationService().getAllFatherPK(pubPK);
-      List<String> lProfiles = new ArrayList<String>();
+      List<String> lProfiles = new ArrayList<>();
       for (NodePK nodePK : nodePKs) {
         NodeDetail node = getNodeService().getHeader(nodePK);
         if (node != null) {
@@ -382,7 +380,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public KmeliaBm getKmeliaBm() {
     if (kmeliaBm == null) {
       try {
-        setKmeliaBm(EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class));
+        kmeliaBm = ServiceProvider.getService(KmeliaBm.class);
       } catch (UtilException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getKmeliaBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KMELIABM_HOME", e);
@@ -402,10 +400,4 @@ public class KmeliaSecurity implements ComponentSecurity {
     this.publicationService = publicationService;
   }
 
-  /**
-   * @param kmeliaBm the KmeliaBm to set
-   */
-  void setKmeliaBm(KmeliaBm kmeliaBm) {
-    this.kmeliaBm = kmeliaBm;
-  }
 }

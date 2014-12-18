@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.kmelia.model.updatechain;
@@ -47,10 +47,9 @@ public class JdbcFieldDisplayer {
   static private final String VARIABLE_REGEX_USER_ID = "\\$\\$userId";
 
   /**
-   * Constructeur
+   * default constructor
    */
   public JdbcFieldDisplayer() {
-
   }
 
   public void display(PrintWriter out, FieldUpdateChainDescriptor field,
@@ -63,7 +62,7 @@ public class JdbcFieldDisplayer {
     String fieldName = field.getName();
     List<FieldParameter> parameters = field.getParams();
 
-    Collection listRes = null; // liste de valeurs String
+    Collection<String> listRes = null;
 
     // Parameters
     String driverName = null;
@@ -71,8 +70,8 @@ public class JdbcFieldDisplayer {
     String login = null;
     String password = null;
     String query = null;
-    String valueFieldType = "1"; // valeurs possibles 1 = choix restreint à la liste ou 2 = saisie
-    // libre, par défaut 1
+    // Values :  1 = list constraint, 2 = free input, default value is 1
+    String valueFieldType = "1";
     int size = 30;
     for (FieldParameter param : parameters) {
       if ("url".equals(param.getName())) {
@@ -99,18 +98,19 @@ public class JdbcFieldDisplayer {
     }
 
     if (field != null) {
-      // Connexion JDBC
+      // JDBC connection
       Connection jdbcConnection = null;
 
       try {
         jdbcConnection = connectJdbc(driverName, url, login, password);
 
-        // Requête SQL
+        // SQL query
         listRes = selectSql(jdbcConnection, query);
       } finally {
         try {
-          if (jdbcConnection != null)
+          if (jdbcConnection != null) {
             jdbcConnection.close();
+          }
         } catch (SQLException e) {
           SilverTrace.error("formTemplate", "JdbcFieldDisplayer.selectSql",
               "root.EX_CONNECTION_CLOSE_FAILED", e);
@@ -121,11 +121,10 @@ public class JdbcFieldDisplayer {
     if (listRes != null && listRes.size() > 0) {
       String m_context =
           GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-      int zindex =
-          (fieldsContext.getLastFieldIndex() - Integer.parseInt(
-              fieldsContext.getCurrentFieldIndex())) * 9000;
+      int zindex = (fieldsContext.getLastFieldIndex() -
+          Integer.parseInt(fieldsContext.getCurrentFieldIndex())) * 9000;
 
-      //Liste des valeurs 
+      // list of values
       html += "<script type=\"text/javascript\">\n";
       html += "listArray" + fieldName + " = [\n";
       Iterator itRes = listRes.iterator();
@@ -136,22 +135,23 @@ public class JdbcFieldDisplayer {
         html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
 
       }
-      // supprime dernière virgule inutile
+      // remove last useless comma
       html = html.substring(0, html.length() - 1);
 
       html += "];\n";
       html += "</script>\n";
 
-      html += "<script type=\"text/javascript\" src=\""+m_context+"/util/yui/yuiloader/yuiloader-min.js\"></script>";
+      html += "<script type=\"text/javascript\" src=\"" + m_context +
+          "/util/yui/yuiloader/yuiloader-min.js\"></script>";
       html += "<script type=\"text/javascript\">\n";
-      html += "var loader = new YAHOO.util.YUILoader({require: ['fonts', 'autocomplete', 'animation'], base: '"+m_context+"/util/yui/', Optional: false, \n";
+      html += "var loader = new YAHOO.util.YUILoader({require: ['fonts', 'autocomplete', " +
+          "'animation'], base: '" +
+          m_context + "/util/yui/', Optional: false, \n";
       html += "onSuccess: function(displayList) {\n";
 
-      html +=
-            " this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
-            ");\n";
-      html +=
-          " this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
+      html += " this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
+          ");\n";
+      html += " this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
           "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
       html += " this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
       html += " this.oAutoComp" + fieldName + ".typeAhead = true;\n";
@@ -159,8 +159,8 @@ public class JdbcFieldDisplayer {
       html += " this.oAutoComp" + fieldName + ".useShadow = true;\n";
       html += " this.oAutoComp" + fieldName + ".minQueryLength = 0;\n";
 
-      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-        // saisie libre, par défaut 1
+      // Values :  1 = list constraint, 2 = free input, default value is 1
+      if ("1".equals(valueFieldType)) {
         html += " this.oAutoComp" + fieldName + ".forceSelection = true;\n";
       }
 
@@ -172,7 +172,7 @@ public class JdbcFieldDisplayer {
       html += "   }\n";
       html += " });\n";
       html += "}\n";
-      
+
       html += ",\n";
       html += "onFailure: function(o)      {\n";
       html += "alert(\"Error\");\n";
@@ -181,21 +181,6 @@ public class JdbcFieldDisplayer {
       html += "loader.insert();\n";
       html += "</script>\n";
 
-      /*
-      html +=
-          "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-          "/util/yui/fonts/fonts-min.css\" />\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/animation/animation-min.js\"></script>\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/autocomplete/autocomplete-debug.js\"></script>\n";
-*/
-
       html += "<style type=\"text/css\">\n";
 
       html += "	#listAutocomplete" + fieldName + " {\n";
@@ -203,8 +188,7 @@ public class JdbcFieldDisplayer {
       html += "		padding-bottom:2em;\n";
       html += "	}\n";
       html += "	#listAutocomplete" + fieldName + " {\n";
-      html +=
-          "		z-index:" + zindex +
+      html += "		z-index:" + zindex +
           "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
       html += "	}\n";
       html += "	#" + fieldName + " {\n";
@@ -213,8 +197,7 @@ public class JdbcFieldDisplayer {
       html += "</style>\n";
 
       html += "<div id=\"listAutocomplete" + fieldName + "\">\n";
-      html +=
-          "<input id=\"" + fieldName + "\" size=\"" + size + "\" name=\"" + fieldName +
+      html += "<input id=\"" + fieldName + "\" size=\"" + size + "\" name=\"" + fieldName +
           "\" type=\"text\"";
       if (value != null) {
         html += " value=\"" + value + "\"";
@@ -223,59 +206,26 @@ public class JdbcFieldDisplayer {
       html += "<div id=\"container" + fieldName + "\"/>\n";
       html += "</div>\n";
 
-
-//      html += "<script type=\"text/javascript\">\n";
-/*
-      html += "function displayList() { \n";
-
-    html +=
-          "	this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
-          ");\n";
-      html +=
-          "	this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
-          "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
-      html += "	this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
-      html += "	this.oAutoComp" + fieldName + ".typeAhead = true;\n";
-      html += "	this.oAutoComp" + fieldName + ".useShadow = true;\n";
-      html += "	this.oAutoComp" + fieldName + ".minQueryLength = 0;\n";
-
-      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-        // saisie libre, par défaut 1
-        html += "	this.oAutoComp" + fieldName + ".forceSelection = true;\n";
-      }
-
-      html += "	this.oAutoComp" + fieldName + ".textboxFocusEvent.subscribe(function(){\n";
-      html += "		var sInputValue = YAHOO.util.Dom.get('" + fieldName + "').value;\n";
-      html += "		if(sInputValue.length == 0) {\n";
-      html += "			var oSelf = this;\n";
-      html += "			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n";
-      html += "		}\n";
-      html += "	});\n";
-      html += "}\n";
-*/
       if (mandatory) {
         String sizeMandatory = Integer.toString(size / 2 + 1);
-        html +=
-            "<img src=\"" + mandatoryImg +
+        html += "<img src=\"" + mandatoryImg +
             "\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:" +
             sizeMandatory + "em;top:5px\">\n";
       }
 
     } else {
-      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-        // saisie libre, par défaut 1
+      // Values :  1 = list constraint, 2 = free input, default value is 1
+      if ("1".equals(valueFieldType)) {
         html += "<SELECT name=\"" + EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
         html += " >\n";
         html += "</SELECT>\n";
       } else {
-        html +=
-            "<input type=\"text\" size=\"" + size + "\" name=\"" +
+        html += "<input type=\"text\" size=\"" + size + "\" name=\"" +
             EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
         html += " >\n";
       }
       if (mandatory) {
-        html +=
-            "&nbsp;<img src=\"" + mandatoryImg +
+        html += "&nbsp;<img src=\"" + mandatoryImg +
             "\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n";
       }
     }
@@ -285,7 +235,7 @@ public class JdbcFieldDisplayer {
 
   public Connection connectJdbc(String driverName, String url, String login, String password)
       throws FormException {
-    Connection result = null;
+    Connection result;
 
     try {
       Class.forName(driverName);
@@ -301,12 +251,13 @@ public class JdbcFieldDisplayer {
     return result;
   }
 
-  public Collection<String> selectSql(Connection jdbcConnection, String query) throws FormException {
+  public Collection<String> selectSql(Connection jdbcConnection, String query)
+      throws FormException {
 
-    Collection<String> result = new ArrayList<String>();
+    Collection<String> result = new ArrayList<>();
 
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
+    PreparedStatement prepStmt;
+    ResultSet rs;
 
     if (jdbcConnection != null) {
       try {
@@ -326,15 +277,14 @@ public class JdbcFieldDisplayer {
           ResultSetMetaData metadata = rs.getMetaData();
           int nbColumns = metadata.getColumnCount();
           String value = "";
-          for (int i = 1; i <= nbColumns; i++)
+          for (int i = 1; i <= nbColumns; i++) {
             value += rs.getString(i) + " ";
+          }
           result.add(value.trim());
         }
       } catch (SQLException e) {
         throw new FormException("JdbcField.selectSql", "form.EX_CANT_BROWSE_RESULT_JDBC", e);
-      }
-
-      finally {
+      } finally {
         DBUtil.close(rs, prepStmt);
       }
     }

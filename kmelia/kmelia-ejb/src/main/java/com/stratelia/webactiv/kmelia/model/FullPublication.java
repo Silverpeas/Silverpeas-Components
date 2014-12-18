@@ -35,7 +35,7 @@ import com.stratelia.webactiv.publication.model.CompletePublication;
  * @deprecated this class is now deprecated. Please use instead the KmeliaPublication objects.
  */
 @Deprecated
-public class FullPublication extends Object implements java.io.Serializable {
+public class FullPublication implements java.io.Serializable {
   private static final long serialVersionUID = 7021715318778228441L;
 
   private List attachments;

@@ -15,21 +15,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.component.kmelia;
 
-public class InstanceParameters {
+package com.silverpeas.kmelia.repository;
 
-  public static final String rightsOnFolders = "rightsOnTopics";
-  public static final String displayNbItemsOnFolders = "displayNB";
-  public static final String coWriting = "coWriting";
-  public static final String suppressionOnlyForAdmin = "suppressionOnlyForAdmin";
-  public static final String nbPubliOnRoot = "nbPubliOnRoot";
-  public static final String treeEnabled = "istree";
-  public static final String validation = "targetValidation";
+import com.silverpeas.kmelia.domain.TopicSearch;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+
+import java.util.List;
+
+/**
+ * @author: ebonnet
+ */
+public class TopicSearchJpaManager
+    extends JpaBasicEntityManager<TopicSearch, UniqueLongIdentifier>
+    implements TopicSearchRepository {
+
+    @Override
+    public List<TopicSearch> findByInstanceId(final String instanceId) {
+        return listFromNamedQuery("topicSearch.findByInstanceId",
+            newNamedParameters().add("instanceId", instanceId));
+    }
 }

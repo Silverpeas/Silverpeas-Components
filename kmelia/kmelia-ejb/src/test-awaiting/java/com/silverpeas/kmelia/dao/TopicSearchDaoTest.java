@@ -24,75 +24,63 @@
 
 package com.silverpeas.kmelia.dao;
 
-import static org.junit.Assert.assertEquals;
+import com.silverpeas.kmelia.model.MostInterestedQueryVO;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.util.ServiceProvider;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.sql.DataSource;
-
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-
-import com.silverpeas.kmelia.model.MostInterestedQueryVO;
-import com.silverpeas.kmelia.repository.TopicSearchRepositoryTest;
+import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author ebonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-kmelia-search.xml", "/spring-kmelia-search-embbed-datasource.xml"})
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
+@RunWith(Arquillian.class)
 public class TopicSearchDaoTest {
 
-  @Autowired
   private TopicSearchDao dao;
 
-  @Inject
-  private DataSource dataSource;
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule("create-database.sql", "kmelia-dataset.xml");
 
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(TopicSearchDaoTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:statistic");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:calendar");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:comment");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-core");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
+          warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+          warBuilder.addClasses(MostInterestedQueryVO.class);
+          warBuilder.addPackages(true, "com.silverpeas.kmelia.dao");
+          warBuilder.addAsResource("org/silverpeas/kmelia/settings/kmeliaSettings.properties");
+        }).build();
+  }
+
+  @Before
+  public void generalSetup() {
+    dao = ServiceProvider.getService(TopicSearchDao.class);
+  }
 
   public TopicSearchDaoTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        TopicSearchRepositoryTest.class.getClassLoader().getResourceAsStream(
-        "com/silverpeas/kmelia/model/kmelia-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**
@@ -100,7 +88,6 @@ public class TopicSearchDaoTest {
    */
   @Test
   public void testGetMostInterestedSearch() {
-    //System.out.println("getMostInterestedSearch");
     String instanceId = "kmelia111";
     List<MostInterestedQueryVO> result = dao.getMostInterestedSearch(instanceId);
     assertEquals(4, result.size());

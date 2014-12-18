@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -27,7 +27,6 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 
 import javax.inject.Inject;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,8 +44,7 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     Collection<PublicationDetail> publications = getPublications(spaceId, componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(publications.
-        size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(publications.size());
     for (PublicationDetail detail : publications) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(detail.getCreatorId());
@@ -57,24 +55,19 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   private PublicationService getPublicationService() {
     return publicationService;
   }
 
   /**
-   * Method declaration
-   * @param spaceId
-   * @param componentId
+   * @param spaceId the space identifier
+   * @param componentId the component identifier
    * @return
-   * @throws RemoteException
-   * @see
    */
   public Collection<PublicationDetail> getPublications(String spaceId, String componentId) {
-    return getPublicationService().getAllPublications(
-        new PublicationPK("useless", spaceId, componentId));
+    return getPublicationService()
+        .getAllPublications(new PublicationPK("useless", spaceId, componentId));
   }
 }

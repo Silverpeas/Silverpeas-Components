@@ -24,13 +24,12 @@ import com.silverpeas.ApplicationService;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
-import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
+import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.Alias;
@@ -38,27 +37,23 @@ import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.ForeignPK;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.Local;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
- * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
- * controls all the activities that happen in a client session. It also provides mechanisms to
- * access other session EJBs.
- *
+ * This is the Service interface controller of the MVC. It controls all the activities that happen
+ * in a client session. It also provides mechanisms to access other services.
  * @author Nicolas Eysseric
  */
-@Local
 public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Return the detail of a topic.
-   *
    * @param nodePK
    * @param userId
    * @param isTreeStructureUsed
@@ -75,7 +70,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
    * returned else the new topic NodePK
-   *
    * @param fatherPK the topic Id of the future father
    * @param subtopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
@@ -89,7 +83,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
-   *
    * @param subtopic the NodeDetail of the new sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
    * "All"|"Publisher"|"None"
@@ -102,9 +95,9 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   public NodePK addSubTopic(NodePK fatherPK, NodeDetail subtopic, String alertType);
 
   /**
-   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
+   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists
+   * a
    * NodePK with id=-1 is returned else the new topic NodePK
-   *
    * @param topic the NodeDetail of the updated sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
    * "All"|"Publisher"|"None"
@@ -118,7 +111,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Return a subtopic to currentTopic
-   *
    * @param nodePK the id of the researched topic
    * @return the detail of the specified topic
    * @see com.stratelia.webactiv.node.model.NodeDetail
@@ -127,10 +119,10 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   public NodeDetail getSubTopicDetail(NodePK nodePK);
 
   /**
-   * Delete a topic and all descendants. Delete all links between descendants and publications. This
+   * Delete a topic and all descendants. Delete all links between descendants and publications.
+   * This
    * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
    * on this topics and all descendants
-   *
    * @param nodePK the id of the topic to delete
    * @since 1.0
    */
@@ -157,7 +149,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
    */
   /**
    * Subscriptions - get the subscription list of the current user
-   *
    * @return a Path Collection - it's a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
@@ -166,7 +157,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Subscriptions - remove a subscription to the subscription list of the current user
-   *
    * @param topicPK the subscribe topic Id to remove
    * @since 1.0
    */
@@ -174,7 +164,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Subscriptions - add a subscription
-   *
    * @param topicPK the subscription topic Id to add
    * @since 1.0
    */
@@ -184,7 +173,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Return the detail of a publication (only the Header)
-   *
    * @param pubPK the id of the publication
    * @return a PublicationDetail
    * @see com.stratelia.webactiv.publication.model.PublicationDetail
@@ -200,7 +188,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
-   *
    * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.node.model.NodeDetail
@@ -212,7 +199,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Create a new Publication (only the header - parameters) to the current Topic
-   *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
    * @see com.stratelia.webactiv.publication.model.PublicationDetail
@@ -221,9 +207,9 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK);
 
   /**
-   * Creates a new publication into the specified topic and with the specified classification on the
+   * Creates a new publication into the specified topic and with the specified classification on
+   * the
    * PdC.
-   *
    * @param pubDetail the detail about the publication to create.
    * @param fatherPK the unique identifier of the topic into which the publication is published.
    * @param classification the classification on the PdC of the publication content.
@@ -235,7 +221,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Update a publication (only the header - parameters)
-   *
    * @param detail a PublicationDetail
    * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
@@ -247,7 +232,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   /**
    * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
    * database Else it only send to the basket
-   *
    * @param pubPK the id of the publication to delete
    * @return a TopicDetail
    * @see com.stratelia.webactiv.kmelia.model.TopicDetail
@@ -261,7 +245,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Add a publication to a topic and send email alerts to topic subscribers
-   *
    * @param pubPK the id of the publication
    * @param fatherPK the id of the topic
    * @since 1.0
@@ -273,7 +256,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Delete a path between publication and topic
-   *
    * @param pubPK the id of the publication
    * @param fatherPK the id of the topic
    * @since 1.0
@@ -282,7 +264,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Delete a path of publication
-   *
    * @param pubPK the id of the publication
    * @since 1.0
    */
@@ -290,7 +271,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Updates the publication links
-   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    */
@@ -298,7 +278,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Removes links between publications and the specified publication
-   *
    * @param pubPK
    * @param links list of links to remove
    * @
@@ -319,9 +298,9 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * gets a list of authorized publications
-   *
    * @param links list of publication defined by his id and component id
-   * @param userId identifier User. allow to check if the publication is accessible for current user
+   * @param userId identifier User. allow to check if the publication is accessible for current
+   * user
    * @param isRightsOnTopicsUsed indicates if the right must be checked
    * @return a collection of Kmelia publications
    * @
@@ -333,18 +312,17 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   /**
    * Gets the publications linked with the specified one and for which the specified user is
    * authorized to access.
-   *
    * @param publication the publication from which linked publications are get.
    * @param userId the unique identifier of a user. It allows to check if a linked publication is
    * accessible for the specified user.
    * @return a list of Kmelia publications.
    * @ if an error occurs while communicating with the remote business service.
    */
-  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication, String userId);
+  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
+      String userId);
 
   /**
    * Gets all the publications linked with the specified one.
-   *
    * @param publication the publication from which linked publications are get.
    * @return a list of Kmelia publications.
    * @ if an error occurs while communicating with the remote business service.
@@ -374,7 +352,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Change publication status from draft to valid (for publisher) or toValidate (for redactor)
-   *
    * @param pubPK the id of the publication
    */
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile);
@@ -387,13 +364,12 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Change publication status from any state to draft
-   *
    * @param pubPK the id of the publication
    */
   public void draftInPublication(PublicationPK pubPK);
 
   public void draftInPublication(PublicationPK pubPK, String userId);
-  
+
   public void movePublication(PublicationPK pubPK, NodePK to, String userId);
 
   public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
@@ -404,7 +380,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
    * created, updated or removed
-   *
    * @param pubPK - id of the publication which contains this external elements
    * @
    */
@@ -414,7 +389,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Send an email to alert users of a publication creation
-   *
    * @param pubPK the publication Id
    */
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, NodePK topicPK,
@@ -422,7 +396,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Send an email to alert users of a attachment
-   *
    * @param pubPK the publication Id
    */
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
@@ -430,7 +403,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * delete reading controls to a publication
-   *
    * @param pubPK the id of a publication
    * @since 1.0
    */
@@ -450,7 +422,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get list of Axis
-   *
    * @param componentId
    * @return List of Axis
    * @
@@ -459,7 +430,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get list of Axis Headers
-   *
    * @param componentId
    * @return List of Axis Headers
    * @
@@ -468,7 +438,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Add an axis
-   *
    * @param axis
    * @param componentId
    * @return
@@ -478,7 +447,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Update an axis
-   *
    * @param axis
    * @param componentId
    * @
@@ -487,7 +455,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Delete axis
-   *
    * @param axisId
    * @param componentId
    * @
@@ -496,7 +463,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get Node Header
-   *
    * @param id
    * @param componentId
    * @return NodeDetail
@@ -506,7 +472,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Add position to a axis
-   *
    * @param fatherId
    * @param position
    * @param componentId
@@ -514,11 +479,11 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
    * @return NodePK
    * @
    */
-  public NodePK addPosition(String fatherId, NodeDetail position, String componentId, String userId);
+  public NodePK addPosition(String fatherId, NodeDetail position, String componentId,
+      String userId);
 
   /**
    * Update a position in an axis
-   *
    * @param position
    * @param componentId
    * @
@@ -527,7 +492,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Delete a position in an axis
-   *
    * @param positionId
    * @param componentId
    * @
@@ -536,7 +500,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get path from a position
-   *
    * @param positionId
    * @param componentId
    * @return
@@ -546,7 +509,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get publications in a combination
-   *
    * @param combination
    * @param componentId
    * @return Collection of publication
@@ -556,7 +518,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get publications in a combination with time criteria
-   *
    * @param combination
    * @param componentId
    * @return Collection of publication
@@ -566,7 +527,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get publications with no classement
-   *
    * @param componentId
    * @return Collection of publication
    * @
@@ -577,7 +537,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get a publication of a user
-   *
    * @param pubId , pubId
    * @return a Kmelia publication
    * @
@@ -586,7 +545,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Get Collection of coordinates for a publication
-   *
    * @param pubId , componentId
    * @return a collection of coordinates
    * @
@@ -595,16 +553,15 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Add a combination for this publication
-   *
    * @param pubId , combination, componentId
    * @return
    * @
    */
-  public void addPublicationToCombination(String pubId, List<String> combination, String componentId);
+  public void addPublicationToCombination(String pubId, List<String> combination,
+      String componentId);
 
   /**
    * Remove a combination for this publication
-   *
    * @param pubId , combinationId, componentId
    * @return
    * @
@@ -614,7 +571,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Create a new Publication (only the header - parameters)
-   *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
    * @see com.stratelia.webactiv.publication.model.PublicationDetail
@@ -624,7 +580,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Delete coordinates of a publication (ie: when publication is deleted)
-   *
    * @param coordinatePK
    * @param coordinates
    */
@@ -637,9 +592,9 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   public void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);
 
-  public boolean importPublication(String componentId, String topicId, String spaceId, String userId,
-      Map<String, String> publiParams, Map<String, String> formParams, String language,
-      String xmlFormName, String discrimatingParameterName, String userProfile);
+  public boolean importPublication(String componentId, String topicId, String spaceId,
+      String userId, Map<String, String> publiParams, Map<String, String> formParams,
+      String language, String xmlFormName, String discrimatingParameterName, String userProfile);
 
   public boolean importPublication(String componentId, String topicId, String userId,
       Map<String, String> publiParams, Map<String, String> formParams, String language,
@@ -647,13 +602,12 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
       boolean ignoreMissingFormFields);
 
   public boolean importPublication(String publicationId, String componentId, String topicId,
-      String spaceId, String userId, Map<String, String> publiParams, Map<String, String> formParams,
-      String language, String xmlFormName, String userProfile);
+      String spaceId, String userId, Map<String, String> publiParams,
+      Map<String, String> formParams, String language, String xmlFormName, String userProfile);
 
-  public void importPublications(String componentId, String topicId,
-      String spaceId, String userId, List<Map<String, String>> publiParamsList,
-      List<Map<String, String>> formParamsList, String language, String xmlFormName,
-      String discrimatingParameterName, String userProfile);
+  public void importPublications(String componentId, String topicId, String spaceId, String userId,
+      List<Map<String, String>> publiParamsList, List<Map<String, String>> formParamsList,
+      String language, String xmlFormName, String discrimatingParameterName, String userProfile);
 
   public List<XMLField> getPublicationXmlFields(String publicationId, String componentId,
       String spaceId, String userId);
@@ -682,7 +636,6 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
    * Clone CompletePublication. Create new publication based on pubDetail object if not null or
    * CompletePublication otherwise. Original publication will not be modified (except references to
    * clone : cloneId and cloneStatus).
-   *
    * @param pubDetail If not null, attribute values are set to the clone
    * @param nextStatus Draft or Clone
    * @return
@@ -701,28 +654,29 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   public boolean isUserCanWrite(String componentId, String userId);
 
   public boolean isUserCanValidate(String componentId, String userId);
-  
+
   public boolean isUserCanPublish(String componentId, String userId);
 
   public String getUserTopicProfile(NodePK pk, String userId);
 
   public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId);
-  
+
   public List<String> getUserIdsOfFolder(NodePK pk);
-  
-  public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId);
+
+  public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK,
+      String excludedUserId);
 
   public NodeDetail copyNode(KmeliaCopyDetail copyDetail);
-  
+
   public void copyPublications(KmeliaCopyDetail copyDetail);
-  
+
   public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId);
-  
+
   public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId);
-  
+
   public List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
       String instanceId, SilverpeasRole profile, String userId);
-  
+
   public boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
       String userId);
 

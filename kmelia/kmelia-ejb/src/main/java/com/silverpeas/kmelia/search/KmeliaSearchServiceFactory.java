@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,28 +19,19 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.kmelia.search;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 import com.silverpeas.kmelia.stats.StatisticService;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * Factory of KmeliaSearchService, you can change the implementation using spring IoC configuration
+ * Factory of KmeliaSearchService, you can change the implementation using JEE IoC configuration
  * @author ebonnet
  */
-public class KmeliaSearchServiceFactory implements ApplicationContextAware {
-
-  public static final String TOPIC_SEARCH_SERVICE = "topicSearchService";
-  public static final String STATISTIC_SERVICE = "statisticService";
-
-  private ApplicationContext context;
-  private static KmeliaSearchServiceFactory instance;
+public class KmeliaSearchServiceFactory {
 
   /**
    * Default private constructor
@@ -48,28 +39,11 @@ public class KmeliaSearchServiceFactory implements ApplicationContextAware {
   private KmeliaSearchServiceFactory() {
   }
 
-  public void setApplicationContext(ApplicationContext context) throws BeansException {
-    this.context = context;
-  }
-
-  /**
-   * Gets an instance of this KmeliaSearchServiceFactory class.
-   * @return a KmeliaSearchServiceFactory instance.
-   */
-  public static KmeliaSearchServiceFactory getInstance() {
-    synchronized (KmeliaSearchServiceFactory.class) {
-      if (KmeliaSearchServiceFactory.instance == null) {
-        KmeliaSearchServiceFactory.instance = new KmeliaSearchServiceFactory();
-      }
-    }
-    return KmeliaSearchServiceFactory.instance;
-  }
-
   public static TopicSearchService getTopicSearchService() {
-    return (TopicSearchService) getInstance().context.getBean(TOPIC_SEARCH_SERVICE);
+    return ServiceProvider.getService(TopicSearchService.class);
   }
 
   public static StatisticService getStatisticService() {
-    return (StatisticService) getInstance().context.getBean(STATISTIC_SERVICE);
+    return ServiceProvider.getService(StatisticService.class);
   }
 }
