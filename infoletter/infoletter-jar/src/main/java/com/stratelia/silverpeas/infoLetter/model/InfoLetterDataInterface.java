@@ -159,4 +159,19 @@ public interface InfoLetterDataInterface {
   public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
 
   public int getSilverObjectId(String pubId, String componentId);
+  
+  /**
+   * Notify externals emails about the information letter
+   *
+   *
+   * @param ilp the information letter
+   * @param server
+   * @param mimeMultipart
+   * @param listEmailDest
+   * @param subject
+   * @param emailFrom
+   * @return list of emails in error
+   */
+  public List<String> notifyExternals(InfoLetterPublicationPdC ilp, String server, String mimeMultipart, 
+      List<String> listEmailDest, String subject, String emailFrom);
 }

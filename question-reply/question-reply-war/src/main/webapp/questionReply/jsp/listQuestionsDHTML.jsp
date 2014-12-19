@@ -54,9 +54,13 @@
 <script type="text/javascript">
   <!--
 
+var $firstCategoryClickEventProcessedPromise;
+  
 var etat = new Array();
 function bindQuestionsEvent() {
-  $('.questionTitle').on('click', function(event) {
+  var $questions = $('.questionTitle');
+  $questions.off('click');
+  $questions.on('click', function(event) {
     question = this.id;
     id = question.substring(1);
     answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
@@ -107,6 +111,7 @@ function bindCategoryEvent() {
         $.each(etat, function(index) {
           etat[index] = 'close';
         });
+        var $internalPromise = $.Deferred();
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {
 
@@ -125,21 +130,29 @@ function bindCategoryEvent() {
 						  answersDiv.hide();
 						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
 						});
-						$('.questionTitle').off('click');
-						bindQuestionsEvent();
+						$internalPromise.resolve(true);
 					}
 				});
 
 
 
-        }
-        $('#qc'+id).show();
-        $(this).parent().addClass('select');
+        } else {
+		  $internalPromise.resolve(false);
+		}
+        $internalPromise.then(function(isQuestionBindingRequired) {
+          $('#qc' + id).show();
+          $(this).parent().addClass('select');
+		  if (isQuestionBindingRequired) {
+		    bindQuestionsEvent();
+		  }
+          $firstCategoryClickEventProcessedPromise.resolve();
+        });
       }
     });
 }
 
 $(document).ready(function() {
+  $firstCategoryClickEventProcessedPromise = $.Deferred();
   bindCategoryEvent();
   bindQuestionsEvent();
   $('.questions').hide();
@@ -156,7 +169,9 @@ $(document).ready(function() {
     </c:otherwise>
   </c:choose>
   <c:if test="${param.questionId != null}">
-    setTimeout("$('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'))", 250);
+    $firstCategoryClickEventProcessedPromise.then(function(){
+      $('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'));
+    });
   </c:if>
 
   $('.category').hover(function() {
@@ -454,16 +469,18 @@ function confirmDeleteCategory(categoryId) {
 }
 <fmt:message key="GML.subscribe" var="labelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
+
 function successUnsubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
-   "javascript:subscribe();").attr('title',
-   '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
+  setSubscriptionMenu('<view:encodeJs string="${labelSubscribe}" />', 'subscribe');
+}
+function successSubscribe() {
+  setSubscriptionMenu('<view:encodeJs string="${labelUnsubscribe}" />', 'unsubscribe');
 }
 
-function successSubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
-   'href', "javascript:unsubscribe();").attr('title',
-   '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelUnsubscribe}" />') );
+function setSubscriptionMenu(label, actionMethodName) {
+  var $menuLabel = $("#subscriptionMenuLabel");
+  $menuLabel.html(label);
+  $menuLabel.parents('a').attr('href', "javascript:" + actionMethodName + "();");
 }
 
 function unsubscribe() {
@@ -511,11 +528,13 @@ function subscribe() {
           "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
 
   if(((Boolean)request.getAttribute("userAlreadySubscribed"))) {
-    operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
-          "GML.unsubscribe"), "javascript:unsubscribe();");
+    operationPane.addOperation(resource.getIcon("GML.unsubscribe"),
+        "<span id='subscriptionMenuLabel'>" + resource.getString("GML.unsubscribe") + "</span>",
+        "javascript:unsubscribe();");
   }else {
-    operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
-          "GML.subscribe"), "javascript:subscribe();");
+    operationPane.addOperation(resource.getIcon("questionReply.subscribe"),
+        "<span id='subscriptionMenuLabel'>" + resource.getString("GML.subscribe") + "</span>",
+        "javascript:subscribe();");
   }
 
   out.println(window.printBefore());

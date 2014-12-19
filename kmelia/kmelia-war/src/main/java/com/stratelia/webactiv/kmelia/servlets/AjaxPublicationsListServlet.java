@@ -1078,7 +1078,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       // Add info
       if (StringUtil.isDefined(info) && resources.getSetting("showInfo", true)) {
-        result.append("<br/>").append(EncodeHelper.javaStringToHtmlParagraphe(info));
+        result.append("<br/>").append(EncodeHelper.convertWhiteSpacesForHTMLDisplay(info));
       }
       result.append("</td></tr>");
 

@@ -650,12 +650,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private void notifyTemplateQuestion(Question question, Collection<UserRecipient> users)
       throws QuestionReplyException {
-    QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), URLManager.
-        getServerURL(null), question, new NotificationData(getString(
-        "questionReply.notification")
-        + getComponentLabel(), getSpaceLabel() + " - " + getComponentLabel(),
-        getComponentLabel(),
-        getComponentId()));
+    QuestionNotifier notifier =
+        new QuestionNotifier(getUserDetail(getUserId()), question, new NotificationData(
+            getString("questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - " +
+                getComponentLabel(), getComponentLabel(), getComponentId()));
     notifier.sendNotification(users);
   }
 
@@ -694,10 +692,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private void notifyReply(Reply reply) throws QuestionReplyException {
     UserDetail user = getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
-    ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
-        null), getCurrentQuestion(), reply, new NotificationData(getString(
-        "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
-        + getComponentLabel(), getComponentLabel(), getComponentId()));
+    ReplyNotifier notifier =
+        new ReplyNotifier(getUserDetail(getUserId()), getCurrentQuestion(), reply,
+            new NotificationData(getString("questionReply.notification") + getComponentLabel(),
+                getSpaceLabel() + " - " + getComponentLabel(), getComponentLabel(),
+                getComponentId()));
     notifier.sendNotification((List<UserRecipient>) Collections.singletonList(
         new UserRecipient(user)));
   }
