@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.processManager.servlets;
 
@@ -80,7 +83,6 @@ public class ProcessManagerRequestRouter
    * Return a new ProcessManagerSessionController wich will be used for each request made in the
    * given componentContext. Returns a ill session controler when the a fatal error occures. This
    * ill session controller can only display an error page.
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -99,7 +101,6 @@ public class ProcessManagerRequestRouter
 
   /**
    * Process the request and returns the response url.
-   *
    * @param function the user request name
    * @param sessionController the user request context
    * @param request the user request params
@@ -146,6 +147,7 @@ public class ProcessManagerRequestRouter
     }
     return handlerMap;
   }
+
   /**
    * Map the function name to the function handler
    */
@@ -158,7 +160,7 @@ public class ProcessManagerRequestRouter
     if (handlerMap != null) {
       return;
     }
-    handlerMap = new HashMap<String, FunctionHandler>(35);
+    handlerMap = new HashMap<>(35);
     handlerMap.put("Main", listProcessHandler);
     handlerMap.put("listProcess", listProcessHandler);
     handlerMap.put("listSomeProcess", listSomeProcessHandler);
@@ -195,6 +197,7 @@ public class ProcessManagerRequestRouter
     handlerMap.put("adminReAssign", adminReAssignHandler);
     handlerMap.put("adminDoReAssign", adminDoReAssignHandler);
   }
+
   /**
    * The removeProcess handler for the supervisor.
    */
@@ -204,12 +207,13 @@ public class ProcessManagerRequestRouter
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
-          "root.MSG_GEN_ENTER_METHOD", session.getTrace("adminRemoveProcess", "processId="
-          + processId));
+          "root.MSG_GEN_ENTER_METHOD",
+          session.getTrace("adminRemoveProcess", "processId=" + processId));
       session.removeProcess(processId);
       return listProcessHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The viewErrors handler for the supervisor
    */
@@ -221,13 +225,15 @@ public class ProcessManagerRequestRouter
       session.resetCurrentProcessInstance(processId);
       SilverTrace.
           debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
-          "root.MSG_GEN_ENTER_METHOD", session.getTrace("adminViewErrors", "processId=" + processId));
+              "root.MSG_GEN_ENTER_METHOD",
+              session.getTrace("adminViewErrors", "processId=" + processId));
       WorkflowError[] errors = session.getProcessInstanceErrors(processId);
       request.setAttribute("errors", errors);
       setSharedAttributes(session, request);
       return "/processManager/jsp/admin/viewErrors.jsp";
     }
   };
+
   /**
    * The reAssign handler for the supervisor
    */
@@ -252,6 +258,7 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/admin/reAssign.jsp";
     }
   };
+
   /**
    * The doReAssign handler for the supervisor Get the new users affected and creates tasks
    */
@@ -280,6 +287,7 @@ public class ProcessManagerRequestRouter
       }
     }
   };
+
   /**
    * The listProcess handler. Used as the Main handler too.
    */
@@ -309,14 +317,15 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      String welcomeMessage = WysiwygController.load(session.getComponentId(),
-          session.getComponentId(), session.getLanguage());
+      String welcomeMessage = WysiwygController
+          .load(session.getComponentId(), session.getComponentId(), session.getLanguage());
       request.setAttribute("WelcomeMessage", welcomeMessage);
       setProcessFilterAttributes(session, request, session.getCurrentFilter());
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
     }
   };
+
   /**
    * The listProcess handler (modified in order to skip the list re-computation).
    */
@@ -330,6 +339,7 @@ public class ProcessManagerRequestRouter
       return listProcessHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The changeRole handler.
    */
@@ -344,6 +354,7 @@ public class ProcessManagerRequestRouter
       return listProcessHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The filterProcess handler.
    */
@@ -358,14 +369,14 @@ public class ProcessManagerRequestRouter
       return listProcessHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The attachmentManager handler
    */
   static private FunctionHandler attachmentManagerHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
       if (processId != null) {
         session.resetCurrentProcessInstance(processId);
@@ -376,6 +387,7 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/attachmentManager.jsp";
     }
   };
+
   /**
    * The removeLock handler
    */
@@ -388,22 +400,21 @@ public class ProcessManagerRequestRouter
       String userId = request.getParameter("userId");
       session.resetCurrentProcessInstance(processId);
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
-          "root.MSG_GEN_ENTER_METHOD", session.getTrace("removeLock",
-          "stateName=" + stateName + ",lock_userId=" + userId));
+          "root.MSG_GEN_ENTER_METHOD",
+          session.getTrace("removeLock", "stateName=" + stateName + ",lock_userId=" + userId));
 
       session.unlock(userId, stateName);
 
       return viewProcessHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The viewProcess handler
    */
   static private FunctionHandler viewProcessHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
       String force = request.getParameter("force");
 
@@ -449,14 +460,13 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/viewProcess.jsp";
     }
   };
+
   /**
    * The searchResult handler
    */
   static private FunctionHandler searchResultHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String type = request.getParameter("Type");
       String todoId = request.getParameter("Id");
 
@@ -465,9 +475,8 @@ public class ProcessManagerRequestRouter
           session.getTrace("searchResult", "Type=" + type + ", Id=" + todoId));
 
       // Accept only links coming from todo details
-      if (type == null || (!type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail")
-          && !type
-          .equals("ProcessInstance"))) {
+      if (type == null || (!type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail") &&
+          !type.equals("ProcessInstance"))) {
         return listProcessHandler.getDestination(function, session, request);
       }
 
@@ -483,8 +492,7 @@ public class ProcessManagerRequestRouter
         SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
             "root.MSG_GEN_ENTER_METHOD",
             session.getTrace("searchResult", "Changing role to :" + roleName));
-        SilverTrace.debug("processManager",
-            "ProcessManagerRequestRouter.getDestination",
+        SilverTrace.debug("processManager", "ProcessManagerRequestRouter.getDestination",
             "root.MSG_GEN_PARAM_VALUE", "From notification, role=" + roleName);
         if (roleName != null) {
           session.resetCurrentRole(roleName);
@@ -534,14 +542,13 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/viewProcess.jsp";
     }
   };
+
   /**
    * The viewHistory handler
    */
   static private FunctionHandler viewHistoryHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
@@ -559,14 +566,13 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/viewHistory.jsp";
     }
   };
+
   /**
    * The createProcess handler
    */
   static private FunctionHandler createProcessHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
       session.resetCurrentProcessInstance();
 
@@ -592,6 +598,7 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/createProcess.jsp";
     }
   };
+
   /**
    * The saveCreation handler
    */
@@ -612,18 +619,18 @@ public class ProcessManagerRequestRouter
         List<String> attachmentIds = form.update(items, data, context, false);
 
         boolean isDraft = StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isDraft"));
-        boolean isFirstTimeSaved = StringUtil.getBooleanValue(FileUploadUtil.getParameter(items,
-            "isFirstTimeSaved"));
+        boolean isFirstTimeSaved =
+            StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isFirstTimeSaved"));
 
         SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
             "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveCreation",
-            "isDraft=" + isDraft + ", isFirstTimeSaved=" + isFirstTimeSaved));
+                "isDraft=" + isDraft + ", isFirstTimeSaved=" + isFirstTimeSaved));
         String instanceId = session.createProcessInstance(data, isDraft, isFirstTimeSaved);
-        
+
         // launch update again to have a correct object id in wysiwyg
         context.setObjectId(instanceId);
         form.updateWysiwyg(items, data, context);
-        
+
         // Attachment's foreignkey must be set with the just created instanceId
         for (String attachmentId : attachmentIds) {
 
@@ -631,11 +638,11 @@ public class ProcessManagerRequestRouter
           SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
               searchDocumentById(pk, null);
           document.setForeignId(instanceId);
-          AttachmentServiceProvider.getAttachmentService().lock(attachmentId, session.getUserId(),
-              null);
+          AttachmentServiceProvider.getAttachmentService()
+              .lock(attachmentId, session.getUserId(), null);
           AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
-          AttachmentServiceProvider.getAttachmentService().unlock(new UnlockContext(attachmentId,
-              session.getUserId(), null));
+          AttachmentServiceProvider.getAttachmentService()
+              .unlock(new UnlockContext(attachmentId, session.getUserId(), null));
         }
 
         return listProcessHandler.getDestination(function, session, request);
@@ -645,6 +652,7 @@ public class ProcessManagerRequestRouter
       }
     }
   };
+
   /**
    * The listTasks handler
    */
@@ -679,8 +687,8 @@ public class ProcessManagerRequestRouter
         Task[] tasks = session.getTasks();
 
         SilverTrace.debug("processManager", "ProcessManagerRequestRouter.getDestination",
-            "root.MSG_GEN_PARAM_VALUE", "gettings tasks list, nb found : " + ((tasks == null) ? 0
-            : tasks.length));
+            "root.MSG_GEN_PARAM_VALUE",
+            "gettings tasks list, nb found : " + ((tasks == null) ? 0 : tasks.length));
 
         for (int i = 0; tasks != null && i < tasks.length; i++) {
           SilverTrace.debug("processManager", "ProcessManagerRequestRouter.getDestination",
@@ -696,7 +704,7 @@ public class ProcessManagerRequestRouter
               List<String> grantedUserIds = session.getUsers(qualifiedUsers, true);
               SilverTrace.debug("processManager", "ProcessManagerRequestRouter.getDestination",
                   "root.MSG_GEN_PARAM_VALUE", "granted user ids for action " + action.getAction().
-                  getName() + " : " + grantedUserIds);
+                      getName() + " : " + grantedUserIds);
               if (grantedUserIds.contains(session.getUserId())) {
                 filteredActions.addAllowedAction(action);
               }
@@ -718,6 +726,7 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/listTasks.jsp";
     }
   };
+
   /**
    * The resumeAction handler
    */
@@ -765,14 +774,13 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/editAction.jsp";
     }
   };
+
   /**
    * The editAction handler
    */
   static private FunctionHandler editActionHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
       // Set process instance
       String processId = request.getParameter("processId");
@@ -782,9 +790,7 @@ public class ProcessManagerRequestRouter
       String stateName = request.getParameter("state");
       String actionName = request.getParameter("action");
 
-      SilverTrace.debug(
-          "processManagerTrace",
-          "ProcessManagerRequestRouter.getDestination()",
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
           "root.MSG_GEN_ENTER_METHOD",
           session.getTrace("editAction", "stateName=" + stateName + ", actionName=" + actionName));
 
@@ -830,14 +836,13 @@ public class ProcessManagerRequestRouter
       }
     }
   };
+
   /**
    * The saveAction handler
    */
   static private FunctionHandler saveActionHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
       try {
         // Session Safe : reset Token Id
@@ -852,8 +857,8 @@ public class ProcessManagerRequestRouter
 
         SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
             "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveAction",
-            "stateName=" + stateName + ", actionName=" + actionName + ", isDraft=" + isDraft
-            + ", isFirstTimeSaved=" + isFirstTimeSaved));
+                "stateName=" + stateName + ", actionName=" + actionName + ", isDraft=" + isDraft +
+                    ", isFirstTimeSaved=" + isFirstTimeSaved));
 
         com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
         PagesContext context = getFormContext("actionForm", "0", session);
@@ -871,14 +876,13 @@ public class ProcessManagerRequestRouter
       }
     }
   };
+
   /**
    * The cancelAction handler
    */
   static private FunctionHandler cancelActionHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
@@ -895,14 +899,13 @@ public class ProcessManagerRequestRouter
       return listTasksHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The cancelResponse handler
    */
   static private FunctionHandler cancelResponseHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
@@ -915,14 +918,13 @@ public class ProcessManagerRequestRouter
       return viewProcessHandler.getDestination(function, session, request);
     }
   };
+
   /**
    * The editQuestion handler
    */
   static private FunctionHandler editQuestionHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String stepId = request.getParameter("stepId");
 
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
@@ -957,14 +959,13 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/editQuestion.jsp";
     }
   };
+
   /**
    * The saveQuestion handler
    */
   static private FunctionHandler saveQuestionHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       try {
         // Session Safe : reset Token Id
         resetTokenId(session, request);
@@ -990,14 +991,13 @@ public class ProcessManagerRequestRouter
       }
     }
   };
+
   /**
    * The editResponse handler
    */
   static private FunctionHandler editResponseHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String questionId = request.getParameter("questionId");
 
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
@@ -1042,10 +1042,8 @@ public class ProcessManagerRequestRouter
    * The saveResponse handler
    */
   static private FunctionHandler saveResponseHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       try {
         // Session Safe : reset Token Id
         resetTokenId(session, request);
@@ -1074,10 +1072,8 @@ public class ProcessManagerRequestRouter
    * The editUserSetting handler
    */
   static private FunctionHandler editUserSettingsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
           "root.MSG_GEN_ENTER_METHOD", session.getTrace("editUserSettings", ""));
 
@@ -1101,10 +1097,8 @@ public class ProcessManagerRequestRouter
    * The saveUserSetting handler
    */
   static private FunctionHandler saveUserSettingsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       com.silverpeas.form.Form form = session.getUserSettingsForm();
       PagesContext context = getFormContext("userSettingsForm", "0", session);
       DataRecord data = session.getEmptyUserSettingsRecord();
@@ -1127,10 +1121,8 @@ public class ProcessManagerRequestRouter
    * The listQuestions handler
    */
   static private FunctionHandler listQuestionsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
@@ -1158,10 +1150,8 @@ public class ProcessManagerRequestRouter
   /**
    * Builds the ProcessFilter from the http request parameters.
    */
-  static private void updateProcessFilter(
-      ProcessManagerSessionController session,
-      HttpServletRequest request,
-      ProcessFilter filter, List<FileItem> items)
+  static private void updateProcessFilter(ProcessManagerSessionController session,
+      HttpServletRequest request, ProcessFilter filter, List<FileItem> items)
       throws ProcessManagerException {
 
     try {
@@ -1188,11 +1178,8 @@ public class ProcessManagerRequestRouter
   /**
    * Send the filter parameters
    */
-  static private void setProcessFilterAttributes(
-      ProcessManagerSessionController session,
-      HttpServletRequest request,
-      ProcessFilter filter)
-      throws ProcessManagerException {
+  static private void setProcessFilterAttributes(ProcessManagerSessionController session,
+      HttpServletRequest request, ProcessFilter filter) throws ProcessManagerException {
     String collapse = filter.getCollapse();
     request.setAttribute("collapse", collapse);
 
@@ -1205,25 +1192,24 @@ public class ProcessManagerRequestRouter
     DataRecord data = filter.getCriteriaRecord();
     request.setAttribute("data", data);
   }
+
   /**
    * The printProcessFrameset handler
    */
   static private FunctionHandler printProcessFramesetHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
+    protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) {
       setSharedAttributes(session, request);
       return "/processManager/jsp/printProcessFrameset.jsp";
     }
   };
+
   /**
    * The printProcess handler
    */
   static private FunctionHandler printProcessHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
           "root.MSG_GEN_ENTER_METHOD", session.getTrace("printProcess", ""));
 
@@ -1243,36 +1229,34 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/printProcess.jsp";
     }
   };
+
   /**
    * The printButtons handler
    */
   static private FunctionHandler printButtonsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
+    protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) {
       setSharedAttributes(session, request);
       return "/processManager/jsp/printButtons.jsp";
     }
   };
+
   static private FunctionHandler toWelcomeWysiwyg = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
       StringBuilder destination = new StringBuilder();
 
       try {
         String returnURL = URLEncoder.encode(
-            URLManager.getApplicationURL()
-            + URLManager.getURL(null, session.getComponentId())
-            + "FromWysiwygWelcome", "UTF-8");
+            URLManager.getApplicationURL() + URLManager.getURL(null, session.getComponentId()) +
+                "FromWysiwygWelcome", "UTF-8");
         destination.append("/wysiwyg/jsp/htmlEditor.jsp?");
-        destination.append("SpaceName=").append(
-            URLEncoder.encode(session.getSpaceLabel(), "UTF-8"));
+        destination.append("SpaceName=")
+            .append(URLEncoder.encode(session.getSpaceLabel(), "UTF-8"));
         destination.append("&ComponentId=").append(session.getComponentId());
-        destination.append("&ComponentName=").append(
-            URLEncoder.encode(session.getComponentLabel(), "UTF-8"));
+        destination.append("&ComponentName=")
+            .append(URLEncoder.encode(session.getComponentLabel(), "UTF-8"));
         destination.append("&BrowseInfo=")
             .append(session.getString("processManager.welcomeWysiwyg"));
         destination.append("&Language=").append(session.getLanguage());
@@ -1285,11 +1269,10 @@ public class ProcessManagerRequestRouter
       return destination.toString();
     }
   };
+
   static private FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function,
-        ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String csvFilename = session.exportListAsCSV();
 
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
@@ -1298,9 +1281,8 @@ public class ProcessManagerRequestRouter
       request.setAttribute("CSVFilename", csvFilename);
       if (StringUtil.isDefined(csvFilename)) {
         File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
-        request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
+        request.setAttribute("CSVFileSize", file.length());
         request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-        file = null;
       }
 
       return "/processManager/jsp/downloadCSV.jsp";
@@ -1322,13 +1304,13 @@ public class ProcessManagerRequestRouter
     request.setAttribute("currentRole", session.getCurrentRole());
     request.setAttribute("canCreate", canCreate);
     request.setAttribute("process", session.getCurrentProcessInstance());
-    request.setAttribute("isActiveUser", new Boolean(session.isActiveUser()));
-    request.setAttribute("isAttachmentTabEnable", new Boolean(session.isAttachmentTabEnable()));
-    request.setAttribute("isHistoryTabEnable", new Boolean(session.isHistoryTabVisible()));
-    request.setAttribute("isProcessIdVisible", new Boolean(session.isProcessIdVisible()));
-    request.setAttribute("isPrintButtonEnabled", new Boolean(session.isPrintButtonEnabled()));
-    request.setAttribute("isSaveButtonEnabled", new Boolean(session.isSaveButtonEnabled()));
-    request.setAttribute("isReturnEnabled", new Boolean(session.isViewReturn()));
+    request.setAttribute("isActiveUser", session.isActiveUser());
+    request.setAttribute("isAttachmentTabEnable", session.isAttachmentTabEnable());
+    request.setAttribute("isHistoryTabEnable", session.isHistoryTabVisible());
+    request.setAttribute("isProcessIdVisible", session.isProcessIdVisible());
+    request.setAttribute("isPrintButtonEnabled", session.isPrintButtonEnabled());
+    request.setAttribute("isSaveButtonEnabled", session.isSaveButtonEnabled());
+    request.setAttribute("isReturnEnabled", session.isViewReturn());
   }
 
   /**
@@ -1337,7 +1319,7 @@ public class ProcessManagerRequestRouter
   static int intValue(String parameter, int defaultValue) {
     try {
       if (parameter != null) {
-        return (new Integer(parameter)).intValue();
+        return Integer.parseInt(parameter);
       } else {
         return defaultValue;
       }
@@ -1346,28 +1328,23 @@ public class ProcessManagerRequestRouter
     }
   }
 
-  static private PagesContext getFormContext(String formName,
-      String formIndex,
+  static private PagesContext getFormContext(String formName, String formIndex,
       ProcessManagerSessionController session) {
     return getFormContext(formName, formIndex, session, false);
   }
 
-  static private PagesContext getFormContext(String formName,
-      String formIndex,
-      ProcessManagerSessionController session,
-      boolean printTitle) {
+  static private PagesContext getFormContext(String formName, String formIndex,
+      ProcessManagerSessionController session, boolean printTitle) {
     PagesContext pagesContext =
-        new PagesContext(formName, formIndex, session.getLanguage(), printTitle, session
-        .getComponentId(), session.getUserId());
+        new PagesContext(formName, formIndex, session.getLanguage(), printTitle,
+            session.getComponentId(), session.getUserId());
 
     if (session.getCurrentProcessInstance() != null) {
       String currentInstanceId = session.getCurrentProcessInstance().getInstanceId();
       pagesContext.setObjectId(currentInstanceId);
     }
-
     // versioning used ?
     pagesContext.setVersioningUsed(session.isVersionControlled());
-
     return pagesContext;
   }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.processManager.record;
@@ -33,17 +33,17 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import org.silverpeas.util.ResourceLocator;
 
 public class QuestionTemplate implements RecordTemplate {
-  private static ResourceLocator label = null;
+  private ResourceLocator label = null;
   private String language;
   private boolean readonly;
 
   /**
-   * A UserTemplate is built from a language : use addFieldTemplate for each field.
-   * @see addFieldTemplate
+   * A QuestionTemplate is built from a language.
+   * @param language the language
+   * @param readonly is read only
    */
   public QuestionTemplate(String language, boolean readonly) {
-    label = new ResourceLocator(
-        "com.silverpeas.processManager.multilang.processManagerBundle",
+    label = new ResourceLocator("com.silverpeas.processManager.multilang.processManagerBundle",
         language);
     this.language = language;
     this.readonly = readonly;
@@ -75,13 +75,12 @@ public class QuestionTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     GenericFieldTemplate fieldTemplate = null;
     fieldTemplate = new GenericFieldTemplate(fieldName, "text");
-    fieldTemplate.addLabel(label.getString("processManager." + fieldName),
-        language);
+    fieldTemplate.addLabel(label.getString("processManager." + fieldName), language);
     if (readonly) {
       fieldTemplate.setDisplayerName("simpletext");
     } else {
@@ -95,13 +94,14 @@ public class QuestionTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
-    if (fieldName.equals("Content"))
+    if (fieldName.equals("Content")) {
       return 0;
-    else
+    } else {
       return -1;
+    }
   }
 
   /**

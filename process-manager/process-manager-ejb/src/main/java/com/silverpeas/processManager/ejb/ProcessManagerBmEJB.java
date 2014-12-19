@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.processManager.ejb;
 
@@ -55,9 +58,8 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -70,11 +72,13 @@ import java.util.Map;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
-@Stateless(name = "ProcessManager", description = "Stateless session bean to manage processes.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+/**
+ * Process manager service which manage processes
+ */
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
 public class ProcessManagerBmEJB implements ProcessManagerBm {
 
-  private static final long serialVersionUID = -3111458120777031058L;
   /**
    * Default role for creating workflow processes.
    */
@@ -85,7 +89,6 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
    * of thoose defined in a given workflow definition. The contents of a file is passed in as a
    * single parameter. This file is uploaded into the process data and stored in the first field of
    * the file type.
-   *
    * @param componentId the ID of the component which defines the workflow (must be a workflow
    * component).
    * @param userId the current user ID.
@@ -96,9 +99,9 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
    * @throws ProcessManagerException
    */
   @Override
-  public String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
-      throws ProcessManagerException {
-    Map<String, FileContent> metadata = new HashMap<String, FileContent>(1);
+  public String createProcess(String componentId, String userId, String fileName,
+      byte[] fileContent) throws ProcessManagerException {
+    Map<String, FileContent> metadata = new HashMap<>(1);
     metadata.put(null, new FileContent(fileName, fileContent));
     return createProcess(componentId, userId, DEFAULT_ROLE, metadata);
   }
@@ -108,20 +111,21 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
    * of thoose defined in a given workflow definition.
    * <p>
    * Some information may be specified that will fill in the creation form of the new process
-   * instance. Such data should be placed into a map structure of key-value pairs where keys are the
+   * instance. Such data should be placed into a map structure of key-value pairs where keys are
+   * the
    * name of the intended fields of the creation form and values are strins (text fields), dates
    * (date fields), colelctions of strings, collections of dates, or a single {@link FileContent}
    * object. </p>
    * <p>
    * {@link FileContent} are used to pass in as an argument a complete file of binary data, loaded
    * into memory. </p>
-   *
    * @param componentId the ID of the component which defines the workflow (must be a workflow
    * component).
    * @param userId the current user ID.
    * @param userRole the role of the user while creating the process instance (this role must have
    * been defined in the workflow process definition).
-   * @param metadata a map of all input metadata, coming with the file and describing it. The key is
+   * @param metadata a map of all input metadata, coming with the file and describing it. The key
+   * is
    * expected to be the name of a field in the process form definition (with specification of the
    * type name of the field), and the value must be the value to put into this field (it may be a
    * collection of value if the field is multivaluated, else only the first value is considered).
@@ -141,16 +145,15 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
     try {
       ProcessModel processModel = getProcessModel(componentId);
       XmlForm form = (XmlForm) getCreationForm(processModel);
-      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(
-          processModel, userRole);
-      PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
-          componentId, userId);
+      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
+      PagesContext pagesContext =
+          new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
       boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
           getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
       pagesContext.setVersioningUsed(versioningUsed);
 
       // 1 - Populate form data (save file on disk, populate file field)
-      List<String> attachmentIds = new ArrayList<String>();
+      List<String> attachmentIds = new ArrayList<>();
 
       // Populate file name and file content
       for (Map.Entry<String, ?> entry : metadata.entrySet()) {
@@ -165,8 +168,9 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
         } else if (fieldValue instanceof Collection<?>) {
           populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
         } else if (FileField.TYPE.equals(fieldType)) {
-          attachmentIds.add(populateFileField(form, data, (FileField) field, fieldName,
-              (FileContent) fieldValue, pagesContext));
+          attachmentIds.add(
+              populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
+                  pagesContext));
         } else {
           populateSimpleField(field, fieldName, fieldValue, fieldType);
         }
@@ -185,12 +189,12 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
         document.setForeignId(instanceId);
         AttachmentServiceProvider.getAttachmentService().lock(attachmentId, userId, null);
         AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
-        AttachmentServiceProvider.getAttachmentService().unlock(new UnlockContext(attachmentId,
-            userId, null));
+        AttachmentServiceProvider.getAttachmentService()
+            .unlock(new UnlockContext(attachmentId, userId, null));
       }
     } catch (ProcessManagerException e) {
-      SilverTrace.error("processManager", "ProcessManagerBmEJB.createProcess()",
-          "root.MSG_GEN_ERROR", e);
+      SilverTrace
+          .error("processManager", "ProcessManagerBmEJB.createProcess()", "root.MSG_GEN_ERROR", e);
       throw e;
     }
     return instanceId;
@@ -199,7 +203,6 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
   /**
    * Retrieve and return the name of the data type, as expected by form templates in workflow
    * processing, from the Java data type of a given value object.
-   *
    * @param value the value object we want to set into a form field
    * @return the corresponding data type of value (or values if the argument is a data collection),
    * or return <code>null</code> if the value is an empty or null value (which means that any type
@@ -230,20 +233,21 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
   }
 
   /**
-   * Find and return the matching field in the current form, knowing its name and type name. If name
+   * Find and return the matching field in the current form, knowing its name and type name. If
+   * name
    * is
    * <code>null</code>, then search the first mandatory field of the right type.
-   *
    * @param form the form template.
    * @param data the instanciated current form.
-   * @param name the searched name or <code>null</code> for looking for the first mandatory field of
+   * @param name the searched name or <code>null</code> for looking for the first mandatory field
+   * of
    * the given type.
    * @param typeName the searched type name.
    * @return the found field (never return <code>null</code>).
    * @throws ProcessManagerException if no field exists for the given name and type.
    */
-  private Field findMatchingField(XmlForm form, GenericDataRecord data, String name, String typeName)
-      throws ProcessManagerException {
+  private Field findMatchingField(XmlForm form, GenericDataRecord data, String name,
+      String typeName) throws ProcessManagerException {
 
     for (FieldTemplate fieldTemplate : form.getFieldTemplates()) {
       String fieldType = fieldTemplate.getTypeName();
@@ -253,18 +257,18 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       }
       String fieldName = fieldTemplate.getFieldName();
 
-      if (((typeName == null) || fieldType.equals(typeName)) && (fieldName.equals(name) || ((name
-          == null) && fieldTemplate.isMandatory()))) {
+      if (((typeName == null) || fieldType.equals(typeName)) &&
+          (fieldName.equals(name) || ((name == null) && fieldTemplate.isMandatory()))) {
 
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
           SilverTrace.error("processManager", "ProcessManagerBmEJB.findMatchingField()",
-              "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name + ", field type: "
-              + typeName, e);
+              "processManager.FORM_FIELD_NOT_FOUND",
+              "field name: " + name + ", field type: " + typeName, e);
           throw new ProcessManagerException("ProcessManagerBmEJB",
-              "processManager.FORM_FIELD_BAD_TYPE", "field name: " + name + ", field type: "
-              + typeName, e);
+              "processManager.FORM_FIELD_BAD_TYPE",
+              "field name: " + name + ", field type: " + typeName, e);
         }
       }
     }
@@ -278,7 +282,6 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
   /**
    * Transform and return a gievn value into a string value suitable for a form field, depending
    * with the given field type name.
-   *
    * @param value the value to convert into a string.
    * @param type the field type name.
    * @return the converetd string value.
@@ -296,16 +299,17 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
 
   /**
    * Fill a form field in with a given value.
-   *
    * @param field the field object to fill in.
    * @param name the name of the field.
-   * @param value the value object (to be converted into a string value during the execution of this
+   * @param value the value object (to be converted into a string value during the execution of
+   * this
    * method).
    * @param type the type name of the field.
-   * @throws ProcessManagerException if an error occurs while setting the value of the field object.
+   * @throws ProcessManagerException if an error occurs while setting the value of the field
+   * object.
    */
-  private void populateSimpleField(Field field, String name, Object value,
-      String type) throws ProcessManagerException {
+  private void populateSimpleField(Field field, String name, Object value, String type)
+      throws ProcessManagerException {
 
     try {
       if (value == null) {
@@ -342,13 +346,14 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       }
     }
     // Then store the file content and attach it to the field
-    String attachmentId = processUploadedFile(content.getContent(), content.getName(), pagesContext);
+    String attachmentId =
+        processUploadedFile(content.getContent(), content.getName(), pagesContext);
     field.setAttachmentId(attachmentId);
     return attachmentId;
   }
 
-  private void populateListField(Field field, String name, Collection<?> values, String type) throws
-      ProcessManagerException {
+  private void populateListField(Field field, String name, Collection<?> values, String type)
+      throws ProcessManagerException {
     try {
       StringBuilder valuesStr = new StringBuilder(512);
       for (Object value : values) {
@@ -358,11 +363,11 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
         String str = getSimpleFieldValueString(value, type);
         if (str == null) {
           SilverTrace.error("processManager", "ProcessManagerBmEJB.populateListField()",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED", "field name: " + name
-              + ", field type: " + type);
+              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
+              "field name: " + name + ", field type: " + type);
           throw new ProcessManagerException("ProcessManagerBmEJB",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED", "field name: " + name
-              + ", field type: " + type);
+              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
+              "field name: " + name + ", field type: " + type);
         }
         valuesStr.append(str);
       }
@@ -379,8 +384,8 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
   /**
    * Create a new process instance with the filled form.
    */
-  private String createProcessInstance(ProcessModel processModel, String userId,
-      String currentRole, DataRecord data) throws ProcessManagerException {
+  private String createProcessInstance(ProcessModel processModel, String userId, String currentRole,
+      DataRecord data) throws ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction(currentRole);
       TaskDoneEvent event = getCreationTask(processModel, userId, currentRole).
@@ -408,8 +413,8 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
   /**
    * Returns the an empty creation record which will be filled in with the creation form.
    */
-  private DataRecord getEmptyCreationRecord(ProcessModel processModel, String currentRole) throws
-      ProcessManagerException {
+  private DataRecord getEmptyCreationRecord(ProcessModel processModel, String currentRole)
+      throws ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
@@ -421,14 +426,14 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
   /**
    * Returns the creation task.
    */
-  private Task getCreationTask(ProcessModel processModel, String userId,
-      String currentRole) throws ProcessManagerException {
+  private Task getCreationTask(ProcessModel processModel, String userId, String currentRole)
+      throws ProcessManagerException {
 
     try {
       User user = new UserImpl(UserDetail.getById(userId));
-      Task creationTask = Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
+      Task creationTask =
+          Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
       return creationTask;
-
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerBmEJB",
           "processManager.CREATION_TASK_UNAVAILABLE", e);
@@ -447,7 +452,8 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
     }
   }
 
-  private String processUploadedFile(byte[] fileContent, String fileName, PagesContext pagesContext) {
+  private String processUploadedFile(byte[] fileContent, String fileName,
+      PagesContext pagesContext) {
     String attachmentId = null;
     String foreignId = pagesContext.getObjectId();
     String logicalName = fileName;
@@ -463,26 +469,26 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
           mimeType = MimeTypes.SPINFIRE_MIME_TYPE;
         }
       }
-      SimpleDocument ad = createSimpleDocument(foreignId, pagesContext.getComponentId(),
-          logicalName, mimeType, fileContent, DocumentType.attachment, pagesContext.getUserId(),
-          pagesContext.isVersioningUsed());
+      SimpleDocument ad =
+          createSimpleDocument(foreignId, pagesContext.getComponentId(), logicalName, mimeType,
+              fileContent, DocumentType.attachment, pagesContext.getUserId(),
+              pagesContext.isVersioningUsed());
       attachmentId = ad.getId();
     }
     return attachmentId;
   }
 
-  private SimpleDocument createSimpleDocument(String foreignId, String componentId,
-      String fileName, String mimeType, byte[] content, DocumentType context,
-      String userId, boolean versioned) {
+  private SimpleDocument createSimpleDocument(String foreignId, String componentId, String fileName,
+      String mimeType, byte[] content, DocumentType context, String userId, boolean versioned) {
 
     // create AttachmentPK with spaceId and componentId
     SimpleDocumentPK simpleDocPk = new SimpleDocumentPK(null, componentId);
     SimpleDocument doc = new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId,
         new SimpleAttachment(fileName, getLanguage(), fileName, "", content.length, mimeType,
-        userId, new Date(), null));
+            userId, new Date(), null));
     doc.setDocumentType(context);
-    return AttachmentServiceProvider.getAttachmentService().createAttachment(doc,
-        new ByteArrayInputStream(content));
+    return AttachmentServiceProvider.getAttachmentService()
+        .createAttachment(doc, new ByteArrayInputStream(content));
   }
 
   private String getLanguage() {

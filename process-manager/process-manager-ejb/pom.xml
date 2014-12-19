@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.process-manager</groupId>
   <artifactId>process-manager-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB process-manager</name>
 
   <dependencies>

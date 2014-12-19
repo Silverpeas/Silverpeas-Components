@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.processManager;
@@ -55,8 +55,7 @@ public class ProcessFilter {
 
     RecordTemplate folderTemplate = null;
     try {
-      folderTemplate = model.getDataFolder()
-          .toRecordTemplate(role, lang, false);
+      folderTemplate = model.getDataFolder().toRecordTemplate(role, lang, false);
     } catch (WorkflowException e1) {
       throw new ProcessManagerException("ProcessFilter",
           "processFilter.FAIL_TO_CREATE_CRITERIA_FORM", e1);
@@ -64,18 +63,17 @@ public class ProcessFilter {
 
     try {
       // Affichage d'une liste déroulante des états possibles
-      GenericFieldTemplate state = new GenericFieldTemplate("instance.state",
-          "text");
+      GenericFieldTemplate state = new GenericFieldTemplate("instance.state", "text");
       State[] states = model.getStates();
-      String values = "";
+      StringBuilder values = new StringBuilder();
       for (int s = 0; s < states.length; s++) {
-        if (s != 0)
-          values += "##";
-        values += ((State) states[s]).getLabel(role, lang);
+        if (s != 0) {
+          values.append("##");
+        }
+        values.append(states[s].getLabel(role, lang));
       }
-      // state.addParameter("keys",
-      // "A qualifier##Correction en attente##Correction en cours");
-      state.addParameter("keys", values);
+      // state.addParameter("keys", "A qualifier##Correction en attente##Correction en cours");
+      state.addParameter("keys", values.toString());
       filter.addFieldParameter("instance.state", state);
 
       // Affichage d'une liste déroulante pour chaque donnée multivaluée
@@ -83,12 +81,11 @@ public class ProcessFilter {
       FieldTemplate field = null;
       for (int f = 2; f < fields.length; f++) {
         field = fields[f];
-        FieldTemplate folderField = folderTemplate.getFieldTemplate(field
-            .getFieldName());
+        FieldTemplate folderField = folderTemplate.getFieldTemplate(field.getFieldName());
         Map<String, String> parameters = folderField.getParameters(lang);
-        if (parameters != null
-            && (parameters.containsKey("values") || parameters
-            .containsKey("keys") || folderField.getTypeName().equals("jdbc"))) {
+        if (parameters != null &&
+            (parameters.containsKey("values") || parameters.containsKey("keys") ||
+                folderField.getTypeName().equals("jdbc"))) {
           filter.addFieldParameter(field.getFieldName(), folderField);
         }
       }
@@ -153,9 +150,9 @@ public class ProcessFilter {
     for (int i = 0; i < criteriaNames.length; i++) {
       try {
         criteriumField = criteria.getField(criteriaNames[i]);
-        if (criteriumField != null && copiedCriteria != null)
-          criteriumField.setValue(copiedCriteria.getField(criteriaNames[i])
-              .getValue(""), "");
+        if (criteriumField != null && copiedCriteria != null) {
+          criteriumField.setValue(copiedCriteria.getField(criteriaNames[i]).getValue(""), "");
+        }
       } catch (FormException ignored) {
         continue;
       }
@@ -173,17 +170,18 @@ public class ProcessFilter {
    * Set the collapse status of the filter panel.
    */
   public void setCollapse(String collapse) {
-    if ("false".equals(collapse))
+    if ("false".equals(collapse)) {
       this.collapse = "false";
-    else
+    } else {
       this.collapse = "true";
+    }
   }
 
   /**
    * Returns only the process instance matching the filter.
    */
-  public DataRecord[] filter(ProcessInstance[] allInstances, String role,
-      String lang) throws ProcessManagerException {
+  public DataRecord[] filter(ProcessInstance[] allInstances, String role, String lang)
+      throws ProcessManagerException {
     try {
       List<DataRecord> allRecords = new ArrayList<DataRecord>();
       for (int i = 0; i < allInstances.length; i++) {
