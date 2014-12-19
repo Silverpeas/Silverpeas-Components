@@ -25,26 +25,25 @@
 package com.silverpeas.kmelia.updatechainhelpers;
 
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class DefineServiceOfUser extends UpdateChainHelperImpl {
 
   public void execute(UpdateChainHelperContext uchc) {
-    // récupération des données
+    // Retrieve publication detail
     PublicationDetail pubDetail = uchc.getPubDetail();
 
-    // Recherche du service de l'utilisateur
-    String service = "";
-    String userName = pubDetail.getName();
-    service = getUserService(userName);
+    // Retrieve user service
+    String service = getUserService(pubDetail.getName());
 
     // associer le service au node
     String[] topics = new String[1];
@@ -58,28 +57,28 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
     uchc.setTopics(topics);
   }
 
+  /**
+   * @param userName the user name
+   * @return user service from user name given in parameter
+   */
   private String getUserService(String userName) {
     Connection con = getConnection();
     String service = "";
     String query = "select service from personnel where (lastname||' '||firstname) = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, userName);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        // récupération du service
-        service = rs.getString(1);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          // Retrieve service
+          service = rs.getString(1);
+        }
       }
-    } catch (Exception e) {
+    } catch (SQLException sqlEx) {
       throw new KmeliaRuntimeException("DefineServiceOfUser.getUserService()",
-          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", e);
+          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", sqlEx);
     } finally {
-      // fermer la connexion
       freeConnection(con);
     }
-
     return service;
   }
 
@@ -99,8 +98,7 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
         con.close();
       } catch (Exception e) {
         throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
-            SilverpeasRuntimeException.ERROR,
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+            SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
   }

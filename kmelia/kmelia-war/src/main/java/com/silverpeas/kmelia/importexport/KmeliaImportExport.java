@@ -20,30 +20,27 @@
  */
 package com.silverpeas.kmelia.importexport;
 
-import java.util.Date;
-
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
 import com.silverpeas.importExport.control.GEDImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.KmeliaException;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+
+import java.util.Date;
 
 import static com.stratelia.webactiv.publication.model.PublicationDetail.*;
 
@@ -65,45 +62,45 @@ public class KmeliaImportExport extends GEDImportExport {
   }
 
   /**
-   * @return l'EJB KmeliaBm
+   * @return KmeliaBm service
    * @throws ImportExportException
    */
   protected KmeliaBm getKmeliaBm() throws ImportExportException {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
+    return ServiceProvider.getService(KmeliaBm.class);
   }
 
   @Override
-  protected void updatePublication(PublicationDetail pubDet_temp,
+  protected void updatePublication(PublicationDetail pubDetTemp,
       PublicationDetail pubDetailToCreate, UserDetail userDetail) throws Exception {
     // Ces tests sont utiles dans le cas d'une publication à mettre à jour par id
     if (StringUtil.isDefined(pubDetailToCreate.getName())) {
-      pubDet_temp.setName(pubDetailToCreate.getName());
+      pubDetTemp.setName(pubDetailToCreate.getName());
     }
     if (StringUtil.isDefined(pubDetailToCreate.getDescription())) {
-      pubDet_temp.setDescription(pubDetailToCreate.getDescription());
+      pubDetTemp.setDescription(pubDetailToCreate.getDescription());
     }
     if (StringUtil.isDefined(pubDetailToCreate.getVersion())) {
-      pubDet_temp.setVersion(pubDetailToCreate.getVersion());
+      pubDetTemp.setVersion(pubDetailToCreate.getVersion());
     }
     if (StringUtil.isDefined(pubDetailToCreate.getKeywords())) {
-      pubDet_temp.setKeywords(pubDetailToCreate.getKeywords());
+      pubDetTemp.setKeywords(pubDetailToCreate.getKeywords());
     }
     if (StringUtil.isDefined(pubDetailToCreate.getStatus())) {
-      pubDet_temp.setStatusMustBeChecked(false);
-      pubDet_temp.setStatus(pubDetailToCreate.getStatus());
+      pubDetTemp.setStatusMustBeChecked(false);
+      pubDetTemp.setStatus(pubDetailToCreate.getStatus());
     }
 
-    pubDet_temp.setUpdateDate(new Date());
-    pubDet_temp.setUpdaterId(userDetail.getId());
-    getKmeliaBm().updatePublication(pubDet_temp);
+    pubDetTemp.setUpdateDate(new Date());
+    pubDetTemp.setUpdaterId(userDetail.getId());
+    getKmeliaBm().updatePublication(pubDetTemp);
   }
 
   @Override
-  protected String createPublicationIntoTopic(PublicationDetail pubDet_temp, NodePK topicPK,
+  protected String createPublicationIntoTopic(PublicationDetail pubDetTemp, NodePK topicPK,
       UserDetail userDetail) throws Exception {
     OrganizationController orgnaisationController = OrganizationControllerProvider
         .getOrganisationController();
-    if (pubDet_temp.isStatusMustBeChecked()) {
+    if (pubDetTemp.isStatusMustBeChecked()) {
       String profile = "writer";
       if ("yes".equalsIgnoreCase(orgnaisationController.getComponentParameterValue(topicPK
           .getInstanceId(), "rightsOnTopics"))) {
@@ -120,12 +117,12 @@ public class KmeliaImportExport extends GEDImportExport {
             topicPK.getInstanceId()));
       }
       if ("publisher".equals(profile) || "admin".equals(profile)) {
-        pubDet_temp.setStatus(VALID);
+        pubDetTemp.setStatus(VALID);
       } else {
-        pubDet_temp.setStatus(TO_VALIDATE);
+        pubDetTemp.setStatus(TO_VALIDATE);
       }
     }
-    return getKmeliaBm().createPublicationIntoTopic(pubDet_temp, topicPK);
+    return getKmeliaBm().createPublicationIntoTopic(pubDetTemp, topicPK);
   }
 
   @Override

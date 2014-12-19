@@ -23,27 +23,28 @@
  */
 package com.silverpeas.kmelia.export;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.odftoolkit.odfdom.pkg.OdfPackage;
-import java.net.URI;
-import java.net.URISyntaxException;
-import org.w3c.dom.NamedNodeMap;
-import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
-import org.odftoolkit.odfdom.dom.element.style.StyleMasterPageElement;
-import java.util.Iterator;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
+import org.odftoolkit.odfdom.dom.element.style.StyleMasterPageElement;
 import org.odftoolkit.odfdom.dom.style.OdfStyleFamily;
+import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeMasterStyles;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeStyles;
 import org.odftoolkit.odfdom.incubator.doc.style.OdfStyle;
+import org.odftoolkit.odfdom.pkg.OdfPackage;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.draw.Frame;
 import org.odftoolkit.simple.draw.Image;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import static org.silverpeas.util.StringUtil.*;
+
+import java.net.URI;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A decorator of an OpenDocument text document. It decorates an ODT document by adding document
@@ -113,7 +114,7 @@ class ODTDocumentsMerging extends TextDocument {
   /**
    * Merges the specified document into the wrapped one. The content is merge at the specified
    * text section.
-   * @param document the document to merge.
+   * @param theDocument the document to merge.
    * @param section the name of the section at which the imported document as to be inserted.
    * @return the document resulting of the merge.
    */
@@ -274,7 +275,6 @@ class ODTDocumentsMerging extends TextDocument {
   /**
    * Embeds external images mapped with the specified XML nodes into this document.
    * @param imageNodes a list of XML nodes mapping each of them an image.
-   * @throws URISyntaxException if the URI defining an image is malformed.
    */
   private void embedImages(final NodeList imageNodes) {
     for (int i = 0; i < imageNodes.getLength(); i++) {

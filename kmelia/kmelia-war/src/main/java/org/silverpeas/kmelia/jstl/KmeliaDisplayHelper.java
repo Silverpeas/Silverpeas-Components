@@ -48,6 +48,12 @@ import org.silverpeas.util.viewGenerator.html.tabs.TabbedPane;
  */
 public class KmeliaDisplayHelper {
 
+  /**
+   * Default constructor
+   */
+  private KmeliaDisplayHelper() {
+  }
+
   private static void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc,
       JspWriter out) throws IOException {
     out.println("<form Name=\"operationsForm\" ACTION=\"null\" Method=\"POST\">");

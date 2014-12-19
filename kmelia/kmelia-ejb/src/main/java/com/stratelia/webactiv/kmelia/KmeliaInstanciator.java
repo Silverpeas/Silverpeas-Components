@@ -44,14 +44,16 @@ import java.sql.SQLException;
  */
 public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
-  /** Creates new KmeliaInstanciator */
+  /**
+   * Creates new KmeliaInstanciator
+   */
   public KmeliaInstanciator() {
     super("com.stratelia.webactiv.kmelia");
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.info("kmelia", "KmeliaInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
         "Space = " + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.kmelia");
@@ -63,8 +65,8 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.info("kmelia", "KmeliaInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
         "Space = " + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.kmelia");
@@ -76,48 +78,40 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);
     // delete all comments related to the component instance id (also any indexes)
-    CommentServiceProvider.getCommentService()
-        .deleteAllCommentsByComponentInstanceId(componentId);
+    CommentServiceProvider.getCommentService().deleteAllCommentsByComponentInstanceId(componentId);
   }
 
-  private void insertSpecialNode(Connection con, String componentId, String userId) throws
-      InstanciationException {
+  private void insertSpecialNode(Connection con, String componentId, String userId)
+      throws InstanciationException {
     String insertStatement = getInsertQuery(componentId, "Root");
     String creationDate = DateUtil.today2SQLDate();
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(insertStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("KmeliaInstanciator.insertSpecialNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "Query = " + insertStatement, se);
     }
     insertStatement = getInsertQuery(componentId, "Basket");
-    try {
-      prepStmt = con.prepareStatement(insertStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("KmeliaInstanciator.insertSpecialNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "INSERT BASKET with query = " + insertStatement, se);
     }
     insertStatement = getInsertQuery(componentId, "DZ");
-    try {
-      prepStmt = con.prepareStatement(insertStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("KmeliaInstanciator.insertSpecialNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",

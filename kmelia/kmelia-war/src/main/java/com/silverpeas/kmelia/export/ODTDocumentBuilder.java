@@ -56,10 +56,9 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -86,8 +85,8 @@ import static org.silverpeas.util.StringUtil.isInteger;
 public class ODTDocumentBuilder {
 
   private static final String DOCUMENT_TEMPLATE = "kmelia.export.template";
-  private static final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.kmelia.settings.kmeliaSettings", "");
+  private static final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "");
   private UserDetail user;
   private String language = "";
   private String topicIdToConsider;
@@ -95,7 +94,6 @@ public class ODTDocumentBuilder {
 
   /**
    * Gets an instance of a builder of ODT documents.
-   *
    * @return an ODTDocumentBuilder instance.
    */
   public static ODTDocumentBuilder anODTDocumentBuilder() {
@@ -106,7 +104,6 @@ public class ODTDocumentBuilder {
    * Informs this builder the build is for the specified user. If not set, then the builds will be
    * performed for the publication creator. Only information the user is authorized to access will
    * be rendered into the ODT documents.
-   *
    * @param user the user for which the build of the documents should be done.
    * @return itself.
    */
@@ -116,10 +113,10 @@ public class ODTDocumentBuilder {
   }
 
   /**
-   * Informs this builder the prefered language to use for the content of the documents to build. If
+   * Informs this builder the prefered language to use for the content of the documents to build.
+   * If
    * the publication doesn't have a content in the specified language, then it is the default
    * publication's text that will be taken (whatever the language in which it is written).
-   *
    * @param language the language in which the text should be displayed in the built documents.
    * @return itself.
    */
@@ -129,12 +126,12 @@ public class ODTDocumentBuilder {
   }
 
   /**
-   * Informs explicitly the topic to consider when building a document from publications. This topic
+   * Informs explicitly the topic to consider when building a document from publications. This
+   * topic
    * can be provided by the caller itself as it was already computed for the publications to export
    * and according to the rights of the user on a such topic. If this topic isn't provided
    * explicitly, then it is computed directly from the publication and according to the rights of
    * the user on the topics the publication belongs to.
-   *
    * @param topicId the topic to explicitly consider.
    * @return itself.
    */
@@ -147,7 +144,6 @@ public class ODTDocumentBuilder {
    * A convenient method to improve the readability in the call of the method
    * buildFromPublication(). It can be uses as:
    * <code>File odt = builder.buildFrom(mypublication, anODTAt("/tmp/foo.odt"));</code>
-   *
    * @param documentPath the path of the document to build.
    * @return the document path as passed as parameter.
    */
@@ -157,8 +153,8 @@ public class ODTDocumentBuilder {
 
   /**
    * Builds an ODT document at the specified path and from the specified Kmelia publication. If an
-   * error occurs while building the document, a runtime exception DocumentBuildException is thrown.
-   *
+   * error occurs while building the document, a runtime exception DocumentBuildException is
+   * thrown.
    * @param publication the publication from which an ODT document is built.
    * @param documentPath the path of the ODT document to build.
    * @return the file corresponding to the ODT document built from the publication.
@@ -200,7 +196,6 @@ public class ODTDocumentBuilder {
 
   /**
    * Loads the template to use in the build of ODT documents.
-   *
    * @return an ODT document corresponding to the loaded template.
    * @throws Exception if the template loading fails.
    */
@@ -216,8 +211,8 @@ public class ODTDocumentBuilder {
     translator.translate(odtDocument);
   }
 
-  private void fill(final TextDocument odtDocument, final KmeliaPublication publication) throws
-      Exception {
+  private void fill(final TextDocument odtDocument, final KmeliaPublication publication)
+      throws Exception {
     buildInfoSection(in(odtDocument), with(publication));
     buildContentSection(in(odtDocument), with(publication));
     buildAttachmentsSection(in(odtDocument), with(publication));
@@ -226,7 +221,8 @@ public class ODTDocumentBuilder {
     buildCommentSection(in(odtDocument), with(publication));
   }
 
-  private void buildInfoSection(final TextDocument odtDocument, final KmeliaPublication publication) {
+  private void buildInfoSection(final TextDocument odtDocument,
+      final KmeliaPublication publication) {
     PublicationDetail detail = publication.getDetail();
     Meta metadata = odtDocument.getOfficeMetadata();
     metadata.setCreator(detail.getCreatorName());
@@ -312,8 +308,7 @@ public class ODTDocumentBuilder {
     String templateId = publication.getDetail().getInfoId();
     if (!isInteger(templateId)) {
       PublicationTemplate template = PublicationTemplateManager.getInstance().
-          getPublicationTemplate(
-          publication.getPk().getInstanceId() + ":" + templateId);
+          getPublicationTemplate(publication.getPk().getInstanceId() + ":" + templateId);
       Form viewForm = template.getViewForm();
       RecordSet recordSet = template.getRecordSet();
       DataRecord dataRecord = recordSet.getRecord(publication.getPk().getId(), getLanguage());
@@ -360,8 +355,7 @@ public class ODTDocumentBuilder {
         row.getCellByIndex(2).setStringValue(attachment.getDescription());
         row.getCellByIndex(3).setStringValue(UnitUtil.formatMemSize(attachment.getSize()));
         row.getCellByIndex(4).setStringValue(attachmentHolder.getVersionNumber());
-        row.getCellByIndex(5)
-            .setStringValue(attachmentHolder.getLastModification(getLanguage()));
+        row.getCellByIndex(5).setStringValue(attachmentHolder.getLastModification(getLanguage()));
         row.getCellByIndex(6).setStringValue(attachmentHolder.getAuthorFullName());
       }
     }
@@ -375,8 +369,8 @@ public class ODTDocumentBuilder {
       final KmeliaPublication publication) {
     try {
       Section seeAlso = odtDocument.getSectionByName(SECTION_SEEALSO);
-      List<KmeliaPublication> linkedPublications = getKmeliaService().getLinkedPublications(
-          publication, getUser().getId());
+      List<KmeliaPublication> linkedPublications =
+          getKmeliaService().getLinkedPublications(publication, getUser().getId());
       if (linkedPublications.isEmpty()) {
         seeAlso.remove();
       } else {
@@ -386,8 +380,8 @@ public class ODTDocumentBuilder {
         }
         for (KmeliaPublication aLinkedPublication : linkedPublications) {
           PublicationDetail publicationDetail = aLinkedPublication.getDetail();
-          if (publicationDetail.isValid() && !publicationDetail.getPK().getId().equals(publication
-              .getPk().getId())) {
+          if (publicationDetail.isValid() &&
+              !publicationDetail.getPK().getId().equals(publication.getPk().getId())) {
             TextAElement hyperlink = new TextAElement(odtDocument.getContentDom());
             hyperlink.setXlinkHrefAttribute(aLinkedPublication.getURL());
             hyperlink.setXlinkTypeAttribute("simple");
@@ -397,8 +391,8 @@ public class ODTDocumentBuilder {
             li.getOdfElement().getFirstChild().appendChild(hyperlink);
             seeAlso.getOdfElement().appendChild(ul.getOdfElement().cloneNode(true));
             ul.remove();
-            seeAlso.addParagraph(aLinkedPublication.getLastModifier().getDisplayedName()
-                + " - " + getOutputDate(publicationDetail.getUpdateDate(), getLanguage()));
+            seeAlso.addParagraph(aLinkedPublication.getLastModifier().getDisplayedName() + " - " +
+                getOutputDate(publicationDetail.getUpdateDate(), getLanguage()));
             seeAlso.addParagraph(publicationDetail.getDescription(getLanguage()));
           }
         }
@@ -435,8 +429,8 @@ public class ODTDocumentBuilder {
             }
             pathToRender.append("...").append(pathSeparator);
             for (int i = pathNodeMinNb; i > 0; i--) {
-              pathToRender.append(pathNodes.get(pathLength - i).getName(getLanguage())).append(
-                  pathSeparator);
+              pathToRender.append(pathNodes.get(pathLength - i).getName(getLanguage()))
+                  .append(pathSeparator);
             }
           } else {
             for (Value pathNode : pathNodes) {
@@ -454,13 +448,13 @@ public class ODTDocumentBuilder {
   }
 
   private boolean isRightsOnTopicsEnabled(final String componentInstanceId) {
-    return Boolean.valueOf(getOrganizationService().getComponentParameterValue(componentInstanceId,
-        "rightsOnTopics"));
+    return Boolean.valueOf(
+        getOrganizationService().getComponentParameterValue(componentInstanceId, "rightsOnTopics"));
   }
 
   private boolean isTree(final String componentInstanceId) {
-    String isTree = getOrganizationService().getComponentParameterValue(componentInstanceId,
-        "istree");
+    String isTree =
+        getOrganizationService().getComponentParameterValue(componentInstanceId, "istree");
     if (!isDefined(isTree)) {
       return true;
     }
@@ -472,8 +466,8 @@ public class ODTDocumentBuilder {
     if (theTopicId == null) {
       String componentId = publication.getPk().getInstanceId();
       NodePK pk = getKmeliaService().
-          getPublicationFatherPK(publication.getPk(), isTree(componentId),
-          getUser().getId(), isRightsOnTopicsEnabled(componentId));
+          getPublicationFatherPK(publication.getPk(), isTree(componentId), getUser().getId(),
+              isRightsOnTopicsEnabled(componentId));
       theTopicId = pk.getId();
     }
     return theTopicId;
@@ -489,8 +483,8 @@ public class ODTDocumentBuilder {
 
   private ResourceLocator getMessagesBundle() {
     if (this.messages == null) {
-      this.messages = new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaExport",
-          getLanguage());
+      this.messages =
+          new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaExport", getLanguage());
     }
     return this.messages;
 
@@ -498,12 +492,11 @@ public class ODTDocumentBuilder {
 
   /**
    * Gets the Kmelia service.
-   *
    * @return an instance of KmeliaBm.
    */
   protected KmeliaBm getKmeliaService() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
+      return ServiceProvider.getService(KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getKmeliaService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -512,7 +505,6 @@ public class ODTDocumentBuilder {
 
   /**
    * Gets the organization controller.
-   *
    * @return an instance of OrganizationController.
    */
   protected OrganizationController getOrganizationService() {

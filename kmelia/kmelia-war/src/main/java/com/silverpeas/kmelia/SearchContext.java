@@ -25,9 +25,9 @@ package com.silverpeas.kmelia;
 
 public class SearchContext {
   
-  public static int NONE = 0;
-  public static int GLOBAL = 1;
-  public static int LOCAL = 2;
+  public static final int NONE = 0;
+  public static final int GLOBAL = 1;
+  public static final int LOCAL = 2;
   
   private String query;
   

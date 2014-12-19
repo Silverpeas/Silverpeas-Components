@@ -20,7 +20,17 @@
  */
 package org.silverpeas.kmelia.web;
 
-import java.net.URI;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.publication.web.PublicationEntity;
+import org.silverpeas.util.ServiceProvider;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -30,17 +40,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import org.silverpeas.util.EJBUtilitaire;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
-import org.silverpeas.publication.web.PublicationEntity;
-import static org.silverpeas.util.JNDINames.KMELIABM_EJBHOME;
+import java.net.URI;
 
 /**
  * A REST Web resource allowing to update data related to a publication.
@@ -132,9 +132,9 @@ public class KmeliaResource extends RESTWebService {
   
   private KmeliaBm getKmeliaBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(KMELIABM_EJBHOME, KmeliaBm.class);
+      return ServiceProvider.getService(KmeliaBm.class);
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
   }
   

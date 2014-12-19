@@ -26,9 +26,8 @@ package com.stratelia.webactiv.kmelia.model.updatechain;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
-import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.GeneralPropertiesManager;
 
 import java.io.PrintWriter;
@@ -40,7 +39,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class JdbcFieldDisplayer {
@@ -56,13 +54,11 @@ public class JdbcFieldDisplayer {
       FieldsContext fieldsContext, boolean mandatory) throws FormException {
     String value = "";
     String html = "";
+    Collection<String> listRes = null;
 
     String mandatoryImg = Util.getIcon("mandatoryField");
-
     String fieldName = field.getName();
     List<FieldParameter> parameters = field.getParams();
-
-    Collection<String> listRes = null;
 
     // Parameters
     String driverName = null;
@@ -97,29 +93,25 @@ public class JdbcFieldDisplayer {
       }
     }
 
-    if (field != null) {
-      // JDBC connection
-      Connection jdbcConnection = null;
-
+    // JDBC connection
+    Connection jdbcConnection = null;
+    try {
+      jdbcConnection = connectJdbc(driverName, url, login, password);
+      // SQL query
+      listRes = selectSql(jdbcConnection, query);
+    } finally {
       try {
-        jdbcConnection = connectJdbc(driverName, url, login, password);
-
-        // SQL query
-        listRes = selectSql(jdbcConnection, query);
-      } finally {
-        try {
-          if (jdbcConnection != null) {
-            jdbcConnection.close();
-          }
-        } catch (SQLException e) {
-          SilverTrace.error("formTemplate", "JdbcFieldDisplayer.selectSql",
-              "root.EX_CONNECTION_CLOSE_FAILED", e);
+        if (jdbcConnection != null) {
+          jdbcConnection.close();
         }
+      } catch (SQLException e) {
+        SilverTrace.error("formTemplate", "JdbcFieldDisplayer.selectSql",
+            "root.EX_CONNECTION_CLOSE_FAILED", e);
       }
     }
 
     if (listRes != null && listRes.size() > 0) {
-      String m_context =
+      String mContext =
           GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
       int zindex = (fieldsContext.getLastFieldIndex() -
           Integer.parseInt(fieldsContext.getCurrentFieldIndex())) * 9000;
@@ -127,13 +119,8 @@ public class JdbcFieldDisplayer {
       // list of values
       html += "<script type=\"text/javascript\">\n";
       html += "listArray" + fieldName + " = [\n";
-      Iterator itRes = listRes.iterator();
-      String val;
-      while (itRes.hasNext()) {
-        val = (String) itRes.next();
-
+      for (String val : listRes) {
         html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
-
       }
       // remove last useless comma
       html = html.substring(0, html.length() - 1);
@@ -141,12 +128,12 @@ public class JdbcFieldDisplayer {
       html += "];\n";
       html += "</script>\n";
 
-      html += "<script type=\"text/javascript\" src=\"" + m_context +
+      html += "<script type=\"text/javascript\" src=\"" + mContext +
           "/util/yui/yuiloader/yuiloader-min.js\"></script>";
       html += "<script type=\"text/javascript\">\n";
       html += "var loader = new YAHOO.util.YUILoader({require: ['fonts', 'autocomplete', " +
           "'animation'], base: '" +
-          m_context + "/util/yui/', Optional: false, \n";
+          mContext + "/util/yui/', Optional: false, \n";
       html += "onSuccess: function(displayList) {\n";
 
       html += " this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
@@ -256,36 +243,21 @@ public class JdbcFieldDisplayer {
 
     Collection<String> result = new ArrayList<>();
 
-    PreparedStatement prepStmt;
-    ResultSet rs;
-
     if (jdbcConnection != null) {
-      try {
-        prepStmt = jdbcConnection.prepareStatement(query);
-      } catch (SQLException e) {
-        throw new FormException("JdbcField.selectSql", "form.EX_CANT_PREPARE_STATEMENT_JDBC", e);
-      }
-
-      try {
-        rs = prepStmt.executeQuery();
-      } catch (SQLException e) {
-        throw new FormException("JdbcField.selectSql", "form.EX_CANT_EXECUTE_QUERY_JDBC", e);
-      }
-
-      try {
-        while (rs.next()) {
-          ResultSetMetaData metadata = rs.getMetaData();
-          int nbColumns = metadata.getColumnCount();
-          String value = "";
-          for (int i = 1; i <= nbColumns; i++) {
-            value += rs.getString(i) + " ";
+      try (PreparedStatement prepStmt = jdbcConnection.prepareStatement(query)) {
+        try (ResultSet rs = prepStmt.executeQuery()) {
+          while (rs.next()) {
+            ResultSetMetaData metadata = rs.getMetaData();
+            int nbColumns = metadata.getColumnCount();
+            String value = "";
+            for (int i = 1; i <= nbColumns; i++) {
+              value += rs.getString(i) + " ";
+            }
+            result.add(value.trim());
           }
-          result.add(value.trim());
         }
       } catch (SQLException e) {
-        throw new FormException("JdbcField.selectSql", "form.EX_CANT_BROWSE_RESULT_JDBC", e);
-      } finally {
-        DBUtil.close(rs, prepStmt);
+        throw new FormException("JdbcField.selectSql", "form.EX_CANT_PREPARE_STATEMENT_JDBC", e);
       }
     }
     return result;

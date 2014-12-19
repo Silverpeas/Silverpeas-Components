@@ -23,21 +23,19 @@
  */
 package com.silverpeas.kmelia.export;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.Photo;
 import org.apache.commons.lang3.SystemUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.Photo;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A finder of images that were uploaded by a Silverpeas component instance, whatever this component
@@ -53,11 +51,11 @@ import org.silverpeas.util.JNDINames;
 public class SilverpeasImageFinder {
 
   private static SilverpeasImageFinder instance = new SilverpeasImageFinder();
-  private static String ATTACHED_FILE = "attached_file";
-  private static String SERVED_FILE = "FileServer";
-  private static String IMAGE_IN_GALLERY = "GalleryInWysiwyg";
-  private static String ATTACHMENT_ID_KEY = "attachmentId";
-  private static String LANGUAGE_KEY = "lang";
+  private static final String ATTACHED_FILE = "attached_file";
+  private static final String SERVED_FILE = "FileServer";
+  private static final String IMAGE_IN_GALLERY = "GalleryInWysiwyg";
+  private static final String ATTACHMENT_ID_KEY = "attachmentId";
+  private static final String LANGUAGE_KEY = "lang";
 
   /**
    * Gets an instance of this class.
@@ -78,7 +76,7 @@ public class SilverpeasImageFinder {
    * @throws Exception if an error occurs while finding the image referenced by the specified href.
    */
   public String findImageReferenceddBy(String href) throws Exception {
-    String path = "";
+    String path;
     if (isAnAttachment(href)) {
       path = findWithAttachmentController(href);
     } else if (isServedByFileServer(href)) {
@@ -147,7 +145,7 @@ public class SilverpeasImageFinder {
   }
 
   private Map<String, String> getQueryParameters(String href) {
-    Map<String, String> queryParameters = new HashMap<String, String>();
+    Map<String, String> queryParameters = new HashMap<>();
     String querySeparator = "%3F"; // the URL encoding of the ? token
     String queryPart = href.substring(href.indexOf(querySeparator) + querySeparator.length());
     String[] parameters = queryPart.split("&");
@@ -159,6 +157,6 @@ public class SilverpeasImageFinder {
   }
 
   private GalleryBm getGalleryBm() throws Exception {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+    return ServiceProvider.getService(GalleryBm.class);
   }
 }

@@ -38,6 +38,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -50,8 +51,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     // récupération des données
     PublicationDetail pubDetail = uchc.getPubDetail();
 
-    // Recherche du service et du matricule de l'utilisateur
-
+    // Retrieve service and matricule of user
     String userName = pubDetail.getName();
     String lastName = getField("lastname", userName);
     String firstName = getField("firstname", userName);
@@ -62,9 +62,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String[] topics = new String[1];
     List<NodeDetail> allTopics = uchc.getAllTopics();
     for (NodeDetail node : allTopics) {
-      if (node.getName().toUpperCase().equals(service.toUpperCase()))
-      // enregistrer
-      {
+      if (node.getName().toUpperCase().equals(service.toUpperCase())) {
         topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
       }
     }
@@ -80,43 +78,40 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     uchc.setPubDetail(pubDetail);
 
     // Classer la publication sur le service
-    String positionLabel = service;
     int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
     try {
-      List<Value> axisValues = kmeliaScc.getPdcManager().getAxisValuesByName(positionLabel);
+      List<Value> axisValues = kmeliaScc.getPdcManager().getAxisValuesByName(service);
       for (Value axisValue : axisValues) {
         String selectedPosition = axisValue.getTreeId() + "|" + axisValue.getFullPath();
         ClassifyPosition position = buildPosition(null, selectedPosition);
-        kmeliaScc.getPdcManager().addPosition(silverObjectId, position, kmeliaScc.getComponentId(),
-            false);
+        kmeliaScc.getPdcManager()
+            .addPosition(silverObjectId, position, kmeliaScc.getComponentId(), false);
       }
     } catch (PdcException pde) {
       pde.printStackTrace();
     }
   }
 
+
   private String getField(String field, String userName) {
     Connection con = getConnection();
     String result = "";
 
-    String query = "select "
-        + field
-        + " from personnel where (lastname||' '||firstname|| ' '||matricule) = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    String query = "select " + field +
+        " from personnel where (lastname||' '||firstname|| ' '||matricule) = ? ";
+
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, userName);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        result = rs.getString(1);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          // Retrieve result
+          result = rs.getString(1);
+        }
       }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(
-          "DefineServiceOfUser.getUserServiceMatricule()",
-          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", e);
+    } catch (SQLException sqlEx) {
+      throw new KmeliaRuntimeException("DefineServiceOfUserAndDocuments.getUserServiceMatricule()",
+          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", sqlEx);
     } finally {
-      // fermer la connexion
       freeConnection(con);
     }
     return result;
@@ -138,8 +133,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
         con.close();
       } catch (Exception e) {
         throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
-            SilverpeasRuntimeException.ERROR,
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+            SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
   }
@@ -152,12 +146,12 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String axisId = "";
     String valuePath = "";
     ClassifyValue value = null;
-    List<ClassifyValue> values = new ArrayList<ClassifyValue>();
+    List<ClassifyValue> values = new ArrayList<>();
     for (; st.hasMoreTokens(); ) {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {
-        axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
-        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo.length());
+        axisId = valueInfo.substring(0, valueInfo.indexOf('|'));
+        valuePath = valueInfo.substring(valueInfo.indexOf('|') + 1, valueInfo.length());
         value = new ClassifyValue(Integer.parseInt(axisId), valuePath);
         values.add(value);
       }

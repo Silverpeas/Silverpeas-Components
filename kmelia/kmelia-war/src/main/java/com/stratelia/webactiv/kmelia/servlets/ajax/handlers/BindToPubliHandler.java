@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -41,7 +41,7 @@ public class BindToPubliHandler implements AjaxHandler {
       Set<String> list = (Set<String>) request.getSession().getAttribute(
           KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
       if (list == null) {
-        list = new HashSet<String>(0);
+        list = new HashSet<>(0);
         request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, list);
       }
       list.add(request.getParameter("TopicToLinkId"));

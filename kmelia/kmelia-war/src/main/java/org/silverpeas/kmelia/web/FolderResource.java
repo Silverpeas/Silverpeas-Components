@@ -20,31 +20,37 @@
  */
 package org.silverpeas.kmelia.web;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.encoder.Encode;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.apache.commons.lang3.StringUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.node.web.NodeAttrEntity;
 import org.silverpeas.node.web.NodeEntity;
-import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A REST Web resource representing a given node. It is a web service that provides an access to a
@@ -67,11 +73,11 @@ public class FolderResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot(@QueryParam("lang") String language) {
-    NodeDetail root = null;
+    NodeDetail root;
     try {
       root = getKmeliaBm().getRoot(componentId, getUserDetail().getId());
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
 
     URI uri = getUriInfo().getRequestUriBuilder().path(root.getNodePK().getId()).build();
@@ -118,18 +124,18 @@ public class FolderResource extends RESTWebService {
 
     List<NodeDetail> nodes;
     try {
-      nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(nodePK));
+      nodes = new ArrayList<>(getNodeBm().getPath(nodePK));
       Collections.reverse(nodes);
 
       String requestUri = getUriInfo().getRequestUri().toString();
-      String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
+      String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
-      List<NodeEntity> entities = new ArrayList<NodeEntity>();
+      List<NodeEntity> entities = new ArrayList<>();
       for (NodeDetail node : nodes) {
         entities.add(NodeEntity.fromNodeDetail(node, uri, language));
       }
       
-      NodeEntity[] aEntities = entities.toArray(new NodeEntity[0]);
+      NodeEntity[] aEntities = entities.toArray(new NodeEntity[entities.size()]);
       if (nodePK.isTrash()) {
         // decorate special nodes
         decorateRootChildren(aEntities, language);
@@ -137,7 +143,7 @@ public class FolderResource extends RESTWebService {
 
       return aEntities;
     } catch (Exception e1) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e1, Status.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -163,14 +169,14 @@ public class FolderResource extends RESTWebService {
     }
 
     String requestUri = getUriInfo().getRequestUri().toString();
-    String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
+    String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
-    List<NodeEntity> entities = new ArrayList<NodeEntity>();
+    List<NodeEntity> entities = new ArrayList<>();
     for (NodeDetail child : children) {
       entities.add(NodeEntity.fromNodeDetail(child, uri, language));
     }
 
-    NodeEntity[] aEntities = entities.toArray(new NodeEntity[0]);
+    NodeEntity[] aEntities = entities.toArray(new NodeEntity[entities.size()]);
 
     if (nodePK.isRoot()) {
       // decorate special nodes
@@ -201,11 +207,11 @@ public class FolderResource extends RESTWebService {
       throw new WebApplicationException(Status.NO_CONTENT);
     }
     
-    Collection<NodeDetail> children = null;
+    Collection<NodeDetail> children;
     try {
       children = getKmeliaBm().getFolderChildren(nodePK, getUserDetail().getId());
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
     
     if (children != null) {
@@ -275,14 +281,14 @@ public class FolderResource extends RESTWebService {
     String nodeId = nodeIds[nodeIds.length - 2];
 
     try {
-      List<NodeDetail> nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(new NodePK(nodeId,
+      List<NodeDetail> nodes = new ArrayList<>(getNodeBm().getPath(new NodePK(nodeId,
           componentId)));
       Collections.reverse(nodes);
       NodeDetail root = getKmeliaBm().getExpandedPathToNode(new NodePK(nodeId, componentId),
           getUserDetail().getId());
 
       String requestUri = getUriInfo().getRequestUri().toString();
-      String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
+      String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
       NodeEntity rootEntity = NodeEntity.fromNodeDetail(root, uri, language);
       decorateRoot(rootEntity, language);
@@ -291,7 +297,7 @@ public class FolderResource extends RESTWebService {
 
       return rootEntity;
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -327,7 +333,7 @@ public class FolderResource extends RESTWebService {
     try {
       return getNodeBm().getDetail(getNodePK(id));
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -337,17 +343,17 @@ public class FolderResource extends RESTWebService {
 
   private NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeService.class);
+      return NodeService.get();
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
   }
 
   public KmeliaBm getKmeliaBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
+      return ServiceProvider.getService(KmeliaBm.class);
     } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
   }
 }

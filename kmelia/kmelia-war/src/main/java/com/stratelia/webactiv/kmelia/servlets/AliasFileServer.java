@@ -51,8 +51,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Class declaration
- *
  * @author
  */
 public class AliasFileServer extends HttpServlet {

@@ -127,9 +127,6 @@ public class StatisticRequestHandler {
     }
 
     StatisticService statService = KmeliaSearchServiceProvider.getStatisticService();
-    // request.setAttribute("nbConsultedPublication",
-    // statService.getNbConsultedPublication(statFilter));
-    // request.setAttribute("nbActivity", statService.getNbStatisticActivityByPeriod(statFilter));
     request.setAttribute("detailActivity", statService.getStatisticActivity(statFilter));
     request.setAttribute("distinctPublications", statService
         .getNumberOfDifferentConsultedPublications(statFilter));
@@ -142,12 +139,12 @@ public class StatisticRequestHandler {
    * @return the list of pertinent group for statistics (it means ROLE_WRITER and ROLE_READER)
    */
   private List<String> getPertinentGroups(KmeliaSessionController kmelia) {
-    Set<String> groupsSet = new HashSet<String>();
+    Set<String> groupsSet = new HashSet<>();
     ProfileInst writerProfile = kmelia.getProfile(KmeliaHelper.ROLE_WRITER);
     ProfileInst readerProfile = kmelia.getProfile(KmeliaHelper.ROLE_READER);
     groupsSet.addAll(writerProfile.getAllGroups());
     groupsSet.addAll(readerProfile.getAllGroups());
-    List<String> groups = new ArrayList<String>(groupsSet);
+    List<String> groups = new ArrayList<>(groupsSet);
     return groups;
   }
 
@@ -194,7 +191,7 @@ public class StatisticRequestHandler {
     ProfileInst writerProfile = kmelia.getProfile(KmeliaHelper.ROLE_WRITER);
     ProfileInst readerProfile = kmelia.getProfile(KmeliaHelper.ROLE_READER);
 
-    List<String> profileNames = new ArrayList<String>();
+    List<String> profileNames = new ArrayList<>();
     profileNames.add(readerProfile.getName());
     profileNames.add(writerProfile.getName());
     sug.setProfileNames(profileNames);

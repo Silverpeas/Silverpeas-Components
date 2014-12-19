@@ -81,7 +81,7 @@ public class JSONServlet extends HttpServlet {
     String profile = kmeliaSC.getUserTopicProfile(id);
 
     // getting operations of topic according to profile and current
-    HashMap<String, Boolean> operations = new HashMap<String, Boolean>(10);
+    HashMap<String, Boolean> operations = new HashMap<>(10);
 
     boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
     boolean isPublisher = SilverpeasRole.publisher.isInRole(profile);

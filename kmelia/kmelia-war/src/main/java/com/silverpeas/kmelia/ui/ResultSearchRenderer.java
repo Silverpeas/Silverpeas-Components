@@ -145,11 +145,9 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
       // if content not found in specified language, check other ones
       if (!StringUtil.isDefined(content)) {
         Iterator<String> languages = I18NHelper.getLanguages();
-        if (languages != null) {
-          while (languages.hasNext() && !StringUtil.isDefined(content)) {
-            language = languages.next();
-            content = WysiwygController.load(componentId, id, language);
-          }
+        while (languages.hasNext() && !StringUtil.isDefined(content)) {
+          language = languages.next();
+          content = WysiwygController.load(componentId, id, language);
         }
       }
       // dynamic value functionnality : check if active and try to replace the keys by their
@@ -216,7 +214,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
   }
 
   /**
-   * @return a publicationBm (EJB)
+   * @return a publication service
    */
   public PublicationService getPublicationService() {
     return publicationService;
