@@ -271,7 +271,7 @@
     %>
 		<view:button action="javascript:onClick=sendData();" disabled="false"
                    label="${validateLabel}">
-      <view:confirmComponentSubscriptionNotificationSending/>
+      <view:confirmComponentSubscriptionNotificationSending jsValidationCallbackMethodName="isCorrectForm"/>
 		</view:button>
     <%
     }

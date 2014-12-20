@@ -809,6 +809,7 @@
                       and subscriptionManagementContext.entityStatusAfterPersistAction.validated
                       and subscriptionManagementContext.entityPersistenceAction.update}">
                   <view:confirmResourceSubscriptionNotificationSending
+                      jsValidationCallbackMethodName="isCorrectForm"
                       subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
                       subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
 
