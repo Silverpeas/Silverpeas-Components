@@ -316,7 +316,7 @@ $(document).ready(function() {
 </c:when>
 <c:otherwise>
 	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()">
-    <view:confirmComponentSubscriptionNotificationSending/>
+    <view:confirmComponentSubscriptionNotificationSending jsValidationCallbackMethodName="isCorrectForm"/>
   </view:button>
 </c:otherwise>
 </c:choose>

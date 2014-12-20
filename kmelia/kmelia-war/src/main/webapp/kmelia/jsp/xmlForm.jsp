@@ -202,11 +202,12 @@
               <c:if test="${not empty subscriptionManagementContext}">
                 <c:set var="formData" value="<%=data%>"/>
                 <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
-                <c:if test="${not empty formData
+                <c:if test="${not empty formData and not formData.new
                               and subscriptionManagementContext.entityStatusBeforePersistAction.validated
                               and subscriptionManagementContext.entityStatusAfterPersistAction.validated
                               and subscriptionManagementContext.entityPersistenceAction.update}">
                   <view:confirmResourceSubscriptionNotificationSending
+                      jsValidationCallbackMethodName="isCorrectForm"
                       subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
                       subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
 
