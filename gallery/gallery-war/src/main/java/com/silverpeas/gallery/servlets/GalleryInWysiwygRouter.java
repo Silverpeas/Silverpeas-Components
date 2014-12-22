@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.gallery.servlets;
@@ -32,9 +32,8 @@ import com.silverpeas.gallery.model.Photo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -53,7 +52,6 @@ import java.io.OutputStream;
 import java.util.Collection;
 
 /**
- * Class declaration
  * @author
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
@@ -201,7 +199,12 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   private GalleryBm getGalleryBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+    try {
+      return ServiceProvider.getService(GalleryBm.class);
+    } catch (final Exception e) {
+      throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
   }
 
   private OrganizationController getOrganisationController() {

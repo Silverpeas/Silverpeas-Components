@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.gallery;
 
@@ -30,8 +33,7 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
@@ -57,7 +59,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
       String userId, List<String> userRoles) {
     if (getContentManager() == null) {
-      return new ArrayList<SilverContentInterface>();
+      return new ArrayList<>();
     }
 
     return getHeaders(makePKArray(ids, peasId));
@@ -114,16 +116,14 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @return a list of MediaPK
    */
   private List<MediaPK> makePKArray(List<Integer> idList, String peasId) {
-    List<MediaPK> pks = new ArrayList<MediaPK>();
+    List<MediaPK> pks = new ArrayList<>();
     // for each silverContentId, we get the corresponding mediaId
     for (int contentId : idList) {
       try {
         String id = getContentManager().getInternalContentId(contentId);
         MediaPK mediaPK = new MediaPK(id, peasId);
         pks.add(mediaPK);
-      } catch (ClassCastException ignored) {
-        // ignore unknown item
-      } catch (ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException ignored) {
         // ignore unknown item
       }
     }
@@ -136,7 +136,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @return a list of media
    */
   private List<SilverContentInterface> getHeaders(List<MediaPK> ids) {
-    List<SilverContentInterface> headers = new ArrayList<SilverContentInterface>();
+    List<SilverContentInterface> headers = new ArrayList<>();
     // création de la liste "headers" avec toutes les media (format Media)
     // en fonction de la liste "ids" des media (format MediaPK)
     if (ids != null) {
@@ -163,8 +163,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   private GalleryBm getGalleryBm() {
     if (currentGalleryBm == null) {
       try {
-        currentGalleryBm =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+        currentGalleryBm = ServiceProvider.getService(GalleryBm.class);
       } catch (Exception e) {
         throw new GalleryRuntimeException("GalleryContentManager.getGalleryBm()",
             SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_FABRIQUER_GALLERYBM_HOME",

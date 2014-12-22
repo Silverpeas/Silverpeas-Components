@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.gallery</groupId>
   <artifactId>gallery-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB gallery</name>
 
   <dependencies>

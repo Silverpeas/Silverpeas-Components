@@ -15,11 +15,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.gallery.model;
 
@@ -29,7 +29,7 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.gallery.constant.GalleryResourceURIs;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.silverpeas.gallery.control.ejb.MediaServiceProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -481,7 +481,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
    * Removes the current media from all albums which it is attached to.
    */
   public void removeFromAllAlbums() {
-    MediaServiceFactory.getMediaService().removeMediaFromAllAlbums(this);
+    MediaServiceProvider.getMediaService().removeMediaFromAllAlbums(this);
   }
 
   /**
@@ -489,7 +489,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
    * @param albumIds the identifier of albums.
    */
   public void addToAlbums(String... albumIds) {
-    MediaServiceFactory.getMediaService().addMediaToAlbums(this, albumIds);
+    MediaServiceProvider.getMediaService().addMediaToAlbums(this, albumIds);
   }
 
   /**

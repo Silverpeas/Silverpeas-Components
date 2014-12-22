@@ -28,7 +28,7 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.silverpeas.gallery.control.ejb.MediaServiceProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
@@ -65,7 +65,7 @@ public class MediaTest {
   @Before
   public void setup() {
     mediaServiceMock = mock(GalleryBm.class);
-    MediaServiceFactory.getInstance().setMediaService(mediaServiceMock);
+    MediaServiceProvider.getInstance().setMediaService(mediaServiceMock);
     AccessController<String> componentAccessController = mock(AccessController.class);
     when(componentAccessController.isUserAuthorized("userIdAccessTest", "instanceIdForTest"))
         .thenReturn(true);
@@ -94,7 +94,7 @@ public class MediaTest {
   public void tearDown() {
     // For all other tests...
     AccessControllerProvider.getInstance().setApplicationContext(accessControllerProviderSave);
-    MediaServiceFactory.getInstance().setMediaService(null);
+    MediaServiceProvider.getInstance().setMediaService(null);
   }
 
   @Test

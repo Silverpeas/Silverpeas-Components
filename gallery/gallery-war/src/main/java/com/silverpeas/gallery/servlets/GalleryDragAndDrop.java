@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.gallery.servlets;
 
@@ -30,10 +33,9 @@ import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -54,9 +56,6 @@ import java.util.List;
 import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
- * Class declaration
- *
- *
  * @author
  */
 public class GalleryDragAndDrop extends HttpServlet {
@@ -71,20 +70,20 @@ public class GalleryDragAndDrop extends HttpServlet {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("importExportPeas", "ImportDragAndDrop.init",
-        "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace
+          .fatal("importExportPeas", "ImportDragAndDrop.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
+      throws ServletException, IOException {
     doPost(req, res);
   }
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
+      throws ServletException, IOException {
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     String userId = null;
     HttpRequest request = HttpRequest.decorate(req);
@@ -94,24 +93,26 @@ public class GalleryDragAndDrop extends HttpServlet {
       String albumId = request.getParameter("AlbumId");
       userId = request.getParameter("UserId");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-        "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
-      String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId
-        + System.currentTimeMillis() + File.separatorChar;
+          "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
+      String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId +
+          System.currentTimeMillis() + File.separatorChar;
       List<FileItem> items = request.getFileItems();
       String parentPath = getParameterValue(items, "userfile_parent");
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
+      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "parentPath = " + parentPath);
 
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "debut de la boucle");
+      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "debut de la boucle");
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileName = FileUploadUtil.getFileName(item);
-          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getFieldName() + " - " + fileName);
+          SilverTrace
+              .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+                  "item = " + item.getFieldName() + " - " + fileName);
           if (fileName != null) {
-            SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
+            SilverTrace
+                .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+                    "fileName = " + fileName);
             // modifier le nom avant de l'écrire
             File f = new File(savePath + File.separatorChar + fileName);
             File parent = f.getParentFile();
@@ -129,8 +130,8 @@ public class GalleryDragAndDrop extends HttpServlet {
       importRepository(new File(savePath), userId, componentId, albumId);
       FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
-      SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-          e);
+      SilverTrace
+          .debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       final StringBuilder sb = new StringBuilder("ERROR");
       final String errorMessage = SilverpeasTransverseWebErrorUtil
           .performAppletAlertExceptionMessage(e,
@@ -144,8 +145,8 @@ public class GalleryDragAndDrop extends HttpServlet {
     res.getOutputStream().println("SUCCESS");
   }
 
-  private void importRepository(final File repository, final String userId, final String componentId,
-      final String albumId) throws Exception {
+  private void importRepository(final File repository, final String userId,
+      final String componentId, final String albumId) throws Exception {
     boolean watermark = "yes".equalsIgnoreCase(
         organizationController.getComponentParameterValue(componentId, "watermark"));
     boolean download = !"no".equalsIgnoreCase(
@@ -166,15 +167,15 @@ public class GalleryDragAndDrop extends HttpServlet {
       final UserDetail user = UserDetail.getById(userId);
       CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, user);
       final MediaDataCreateDelegate delegate =
-          new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(),
-              albumId);
+          new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(), albumId);
       delegate.getHeaderData().setDownloadAuthorized(download);
       getGalleryBm().importFromRepository(user, componentId, repository, watermark, watermarkHD,
           watermarkOther, delegate);
 
     } catch (Exception e) {
-      SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
-          "gallery.MSG_NOT_ADD_METADATA", "message = " + e.getMessage());
+      SilverTrace
+          .info("gallery", "GalleryDragAndDrop.importRepository", "gallery.MSG_NOT_ADD_METADATA",
+              "message = " + e.getMessage());
       if (e instanceof EJBException) {
         throw e;
       }
@@ -191,12 +192,12 @@ public class GalleryDragAndDrop extends HttpServlet {
   }
 
   /**
-   * Gets the GalleryBm EJB proxy
-   * @return
+   * Gets the GalleryBm Service
+   * @return a GalleryBm
    */
   private static GalleryBm getGalleryBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+      return ServiceProvider.getService(GalleryBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

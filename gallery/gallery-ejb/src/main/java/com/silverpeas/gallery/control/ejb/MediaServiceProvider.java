@@ -21,55 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.model;
+package com.silverpeas.gallery.control.ejb;
 
-public class MediaWithStatus {
+import com.silverpeas.gallery.model.GalleryRuntimeException;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
 
-  private Media media;
-  private boolean update;
+/**
+ * @author: Yohann Chastagnier
+ */
+public class MediaServiceProvider {
 
-  public MediaWithStatus(Media media, boolean update) {
-    this.media = media;
-    this.update = update;
-  }
-
-  public Media getMedia() {
-    return media;
-  }
-
-  public boolean isUpdate() {
-    return update;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((media == null) ? 0 : media.hashCode());
-    result = prime * result + (update ? 1231 : 1237);
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
+  /**
+   * @return an instance of {@link GalleryBm} gallery service layer using JEE CDI BeanManager.
+   */
+  public static GalleryBm getMediaService() {
+    try {
+      return ServiceProvider.getService(GalleryBm.class);
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("MediaServiceProvider.getMediaService()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    if (obj == null) {
-      return false;
-    }
-    if (!(obj instanceof MediaWithStatus)) {
-      return false;
-    }
-    MediaWithStatus other = (MediaWithStatus) obj;
-    if (media == null) {
-      if (other.media != null) {
-        return false;
-      }
-    } else if (!media.equals(other.media)) {
-      return false;
-    }
-    return update == other.update;
   }
 
 }

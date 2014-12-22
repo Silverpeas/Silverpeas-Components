@@ -37,8 +37,7 @@ import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Singleton;
@@ -53,10 +52,9 @@ public class SocialGallery implements SocialGalleryInterface {
 
   /**
    * get the my SocialInformationGallery according to number of Item and the first Index
-   *
-   * @param userId
-   * @param begin 
-   * @param end 
+   * @param userId the user identifier
+   * @param begin date
+   * @param end date
    * @return List<SocialInformationGallery>
    */
   @Override
@@ -65,40 +63,41 @@ public class SocialGallery implements SocialGalleryInterface {
   }
 
   /**
-   * get the SocialInformationGallery of my contatcs according to number of Item and the first Index
-   *
+   * get the SocialInformationGallery of my contatcs according to number of Item and the first
+   * Index
    * @param myId
    * @param myContactsIds
-   * @param begin 
-   * @param end 
+   * @param begin date
+   * @param end date
    * @return List
    * @throws SilverpeasException
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-    List<SocialInformation> listSocialInfo = new ArrayList<SocialInformation>();
+    List<SocialInformation> listSocialInfo = new ArrayList<>();
     List<String> listComponents = this.getListAvailable(myId);
-    if(listComponents != null && listComponents.size() > 0) {
-      listSocialInfo = getGalleryBm().getSocialInformationListOfMyContacts(myContactsIds, listComponents, Period.from(begin, end));
+    if (listComponents != null && listComponents.size() > 0) {
+      listSocialInfo = getGalleryBm()
+          .getSocialInformationListOfMyContacts(myContactsIds, listComponents,
+              Period.from(begin, end));
     }
     return listSocialInfo;
   }
 
   private GalleryBm getGalleryBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+    return ServiceProvider.getService(GalleryBm.class);
   }
 
   /**
    * gets the available component for a given users list
-   *
-   * @param userId
+   * @param userId the user identifier
    * @return List<String>
    */
   private List<String> getListAvailable(String userId) {
     List<ComponentInstLight> availableList = OrganizationControllerProvider.
         getOrganisationController().getAvailComponentInstLights(userId, "gallery");
-    List<String> idsList = new ArrayList<String>(availableList.size());
+    List<String> idsList = new ArrayList<>(availableList.size());
     for (ComponentInstLight comp : availableList) {
       idsList.add(comp.getId());
     }

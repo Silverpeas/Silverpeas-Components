@@ -64,6 +64,7 @@ public class KmeliaSearchServiceProviderTest {
           warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
           warBuilder.addPackages(true, "com.silverpeas.kmelia");
           warBuilder.addAsResource("org/silverpeas/kmelia/settings/kmeliaSettings.properties");
+          warBuilder.addAsResource("org/silverpeas/publication/publicationSettings.properties");
         }).build();
   }
 
