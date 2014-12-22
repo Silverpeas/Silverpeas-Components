@@ -23,10 +23,16 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.GalleryWarBuilder;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +41,19 @@ import static com.silverpeas.gallery.constant.MediaResolution.*;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-
+@RunWith(Arquillian.class)
 public class SoundTest extends AbstractMediaTest {
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(SoundTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addClasses(GalleryComponentSettings.class);
+          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
+          warBuilder.addAsResource("maven.properties");
+        }).build();
+  }
 
   @Test
   public void justInstancedTest() {
@@ -51,7 +68,7 @@ public class SoundTest extends AbstractMediaTest {
     Sound sound = defaultSound();
     assertDefaultSound(sound);
 
-    Map<MediaResolution, String> expected = new HashMap<MediaResolution, String>();
+    Map<MediaResolution, String> expected = new HashMap<>();
     expected.put(TINY, "/silverpeas/gallery/jsp/icons/sound_66x50.png");
     expected.put(SMALL, "/silverpeas/gallery/jsp/icons/sound_133x100.png");
     expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/sound_266x150.png");

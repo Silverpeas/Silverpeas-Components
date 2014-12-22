@@ -23,17 +23,37 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.GalleryWarBuilder;
+import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.silverpeas.media.Definition;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Arquillian.class)
 public class PhotoTest extends AbstractMediaTest {
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(PhotoTest.class).testFocusedOn(warBuilder -> {
+      warBuilder.addClasses(GalleryComponentSettings.class, MediaUtil.class);
+      warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+      warBuilder.addPackages(true, "com.silverpeas.gallery.media");
+      warBuilder.addPackages(true, "com.silverpeas.gallery.model");
+      warBuilder.addPackages(true, "com.silverpeas.gallery.process");
+      warBuilder.addAsResource("maven.properties");
+    }).build();
+  }
 
   @Test
   public void justInstancedTest() {

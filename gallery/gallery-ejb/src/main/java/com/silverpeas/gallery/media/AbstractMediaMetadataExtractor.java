@@ -103,7 +103,7 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
     } catch (Exception e) {
       this.settings = DEFAULT_SETTINGS;
     }
-    this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
+    this.metaDataBundles = new HashMap<>(I18NHelper.allLanguages.size());
     for (String lang : I18NHelper.allLanguages.keySet()) {
       metaDataBundles.put(lang, new ResourceLocator(
           "org.silverpeas.gallery.multilang.metadataBundle", lang));

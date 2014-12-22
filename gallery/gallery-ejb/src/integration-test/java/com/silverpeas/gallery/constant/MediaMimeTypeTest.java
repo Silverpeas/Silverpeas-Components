@@ -21,9 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.GalleryWarBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -43,23 +45,12 @@ public class MediaMimeTypeTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(MediaMimeTypeTest.class).testFocusedOn(warBuilder -> {
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
-      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
-      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
-      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
-      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:comment");
-      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-      warBuilder.addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
-      warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
-      warBuilder.addAsResource("org/silverpeas/gallery/multilang/galleryBundle.properties");
-      warBuilder.addAsResource("org/silverpeas/gallery/settings/gallerySettings.properties");
-      warBuilder.addAsResource("org/silverpeas/util/attachment/mime_types.properties");
-      warBuilder.addClasses(GalleryComponentSettings.class);
-      warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
-    }).build();
+    return GalleryWarBuilder.onWarForTestClass(MediaMimeTypeTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addAsResource("org/silverpeas/util/attachment/mime_types.properties");
+          warBuilder.addClasses(GalleryComponentSettings.class);
+          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+        }).build();
   }
 
   @Test

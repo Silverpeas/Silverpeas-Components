@@ -23,10 +23,16 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.GalleryWarBuilder;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.silverpeas.media.Definition;
 
 import java.util.HashMap;
@@ -37,7 +43,19 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Arquillian.class)
 public class VideoTest extends AbstractMediaTest {
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(VideoTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addClasses(GalleryComponentSettings.class);
+          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
+          warBuilder.addAsResource("maven.properties");
+        }).build();
+  }
 
   @Test
   public void justInstancedTest() {
@@ -55,7 +73,7 @@ public class VideoTest extends AbstractMediaTest {
     Video video = defaultVideo();
     assertDefaultVideo(video);
 
-    Map<MediaResolution, String> expected = new HashMap<MediaResolution, String>();
+    Map<MediaResolution, String> expected = new HashMap<>();
     expected.put(TINY, "/silverpeas/gallery/jsp/icons/video_66x50.png");
     expected.put(SMALL, "/silverpeas/gallery/jsp/icons/video_133x100.png");
     expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/video_266x150.png");

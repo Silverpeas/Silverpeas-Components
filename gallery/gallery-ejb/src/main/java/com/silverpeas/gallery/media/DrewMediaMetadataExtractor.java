@@ -48,7 +48,6 @@ import org.apache.commons.lang3.CharEncoding;
 import static com.drew.metadata.iptc.IptcDirectory.*;
 
 /**
- *
  * @author ehugonnet
  */
 public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
@@ -58,16 +57,16 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
   }
 
   @Override
-  public List<MetaData> extractImageExifMetaData(File image) throws MediaMetadataException,
-    IOException {
+  public List<MetaData> extractImageExifMetaData(File image)
+      throws MediaMetadataException, IOException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
-  public List<MetaData> extractImageExifMetaData(File image, String lang) throws
-                                                                          MediaMetadataException, IOException {
+  public List<MetaData> extractImageExifMetaData(File image, String lang)
+      throws MediaMetadataException, IOException {
     try {
-      List<MetaData> result = new ArrayList<MetaData>();
+      List<MetaData> result = new ArrayList<>();
       // lire le fichier des properties
       // 1. Traitement des metadata EXIF
       Metadata metadata = ImageMetadataReader.readMetadata(image);
@@ -106,31 +105,29 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
             metaData.setLabel(property.getLabel(lang));
             metaData.setProperty(property.getProperty() + "");
             SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
-              "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
-              + " value = " + value);
+                "root.MSG_GEN_ENTER_METHOD",
+                "METADATA EXIF label = " + property.getLabel() + " value = " + value);
             result.add(metaData);
           }
         }
       }
       return result;
-    } catch (IOException ex) {
-      throw new MediaMetadataException(ex);
-    } catch (ImageProcessingException ex) {
+    } catch (IOException | ImageProcessingException ex) {
       throw new MediaMetadataException(ex);
     }
   }
 
   @Override
-  public List<MetaData> extractImageIptcMetaData(File image) throws MediaMetadataException,
-    IOException {
+  public List<MetaData> extractImageIptcMetaData(File image)
+      throws MediaMetadataException, IOException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
-  public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
-    IOException, MediaMetadataException {
+  public List<MetaData> extractImageIptcMetaData(File image, String lang)
+      throws IOException, MediaMetadataException {
     try {
-      List<MetaData> result = new ArrayList<MetaData>();
+      List<MetaData> result = new ArrayList<>();
       Metadata metadata = ImageMetadataReader.readMetadata(image);
       ByteArrayOutputStream forEncodingDetection = new ByteArrayOutputStream(1024);
       IptcDirectory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
@@ -172,8 +169,8 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       if (iptcCharset != null) {
         defaultEncoding = iptcCharset;
       }
-      String encoding = StringUtil.detectStringEncoding(forEncodingDetection.toByteArray(),
-        defaultEncoding);
+      String encoding =
+          StringUtil.detectStringEncoding(forEncodingDetection.toByteArray(), defaultEncoding);
 
       for (MetaData metaData : result) {
         metaData.convert(encoding);
@@ -186,7 +183,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
 
   private void addStringMetaData(List<MetaData> metadata, IptcDirectory iptcDirectory,
       IptcProperty iptcProperty, String lang, ByteArrayOutputStream forEncodingDetection)
-      throws IOException, UnsupportedEncodingException {
+      throws IOException {
     String value = getIptcStringValue(iptcDirectory, iptcProperty.getProperty());
     if (value != null) {
       MetaData meta = new MetaData(value.getBytes());
@@ -203,8 +200,8 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
   }
 
   private void addMetaData(List<MetaData> metadata, IptcDirectory iptcDirectory,
-    IptcProperty iptcProperty, String lang, ByteArrayOutputStream forEncodingDetection)
-    throws IOException, UnsupportedEncodingException {
+      IptcProperty iptcProperty, String lang, ByteArrayOutputStream forEncodingDetection)
+      throws IOException {
     byte[] data = getIptcValue(iptcDirectory, iptcProperty.getProperty());
     if (data != null && !ArrayUtil.isEmpty(data)) {
       MetaData meta = new MetaData(data);

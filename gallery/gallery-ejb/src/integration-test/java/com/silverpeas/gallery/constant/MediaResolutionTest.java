@@ -21,15 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.gallery.constant;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.GalleryWarBuilder;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.BasicWarBuilder;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Arquillian.class)
 public class MediaResolutionTest {
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(MediaResolutionTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addClasses(GalleryComponentSettings.class);
+          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+        }).build();
+  }
 
   @Test
   public void fromNameOrLabel() {

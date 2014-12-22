@@ -24,13 +24,13 @@
 package com.silverpeas.gallery.processing;
 
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ImageLoader;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import org.silverpeas.util.ImageLoader;
 
 /**
- *
  * @author ehugonnet
  */
 public class ImageUtility {
@@ -39,7 +39,6 @@ public class ImageUtility {
   }
 
   /**
-   *
    * @param inputBuf
    * @param widthParam
    * @return
@@ -74,14 +73,13 @@ public class ImageUtility {
   }
 
   public static Size getWidthAndHeight(String instanceId, String subDir, String imageName,
-    int baseWidth) throws IOException {
+      int baseWidth) throws IOException {
     String[] directory = new String[]{subDir};
     File image = new File(FileRepositoryManager.getAbsolutePath(instanceId, directory) + imageName);
     BufferedImage inputBuf = ImageLoader.loadImage(image);
     if (inputBuf == null) {
       return new Size(0, 0);
     }
-
     return getWidthAndHeight(inputBuf, baseWidth);
   }
 }

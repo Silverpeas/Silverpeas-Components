@@ -20,19 +20,25 @@
  */
 package com.silverpeas.gallery.image;
 
+import com.silverpeas.gallery.GalleryWarBuilder;
+import com.silverpeas.gallery.media.AbstractMediaMetadataExtractor;
 import com.silverpeas.gallery.media.ExifProperty;
 import com.silverpeas.gallery.media.IptcProperty;
 import com.silverpeas.gallery.media.MediaMetadataExtractor;
 import com.silverpeas.gallery.media.SanselanMediaMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
-import org.silverpeas.util.StringUtil;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.util.StringUtil;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
@@ -42,31 +48,59 @@ import static org.junit.Assert.*;
 /**
  * @author ehugonnet
  */
+@RunWith(Arquillian.class)
 public class SanselanMetadataExtractorTest {
 
-  MediaMetadataExtractor extractor;
-  File koala = getDocumentNamed("/Koala.jpg");
-  File sunset = getDocumentNamed("/Sunset.jpg");
-  File gmt = getDocumentNamed("/w40_DSC_7481.jpg");
-  File dauphins = getDocumentNamed("/Dauphins-100.jpg");
-  File chefs = getDocumentNamed("/31605rc_utf-8.jpg");
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(SanselanMetadataExtractorTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependencies("org.apache.sanselan:sanselan");
+          warBuilder.addClasses(MediaMetadataExtractor.class, SanselanMediaMetadataExtractor.class,
+              AbstractMediaMetadataExtractor.class);
+          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
+          warBuilder.addPackages(true, "com.silverpeas.gallery.media");
+          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+          warBuilder.addAsResource(
+              "org/silverpeas/gallery/settings/metadataSettings_gallery52.properties");
+          warBuilder.addAsResource("org/silverpeas/gallery/settings/metadataSettings.properties");
+          warBuilder.addAsResource("org/silverpeas/gallery/multilang/metadataBundle.properties");
+          warBuilder.addAsResource("maven.properties");
+        }).build();
+  }
+
+  private MediaMetadataExtractor extractor;
+  private File koala;
+  private File sunset;
+  private File gmt;
+  private File dauphins;
+  private File chefs;
 
   @Before
   public void setUp() {
     extractor = new SanselanMediaMetadataExtractor("gallery52");
+    koala = getDocumentNamed("/Koala.jpg");
+    sunset = getDocumentNamed("/Sunset.jpg");
+    gmt = getDocumentNamed("/w40_DSC_7481.jpg");
+    dauphins = getDocumentNamed("/Dauphins-100.jpg");
+    chefs = getDocumentNamed("/31605rc_utf-8.jpg");
   }
 
   @Test
   public void testLoadExtractor() {
     List<IptcProperty> properties = extractor.defineImageIptcProperties(StringUtil.splitString(
-        "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,"
-        + "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,"
-        + "IPTC_30,IPTC_31", ','));
+        "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18," +
+            "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28," +
+            "IPTC_29,IPTC_30,IPTC_31", ','));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties(StringUtil.splitString(
-        "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7", ','));
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(StringUtil
+        .splitString("METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7",
+            ','));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -107,7 +141,7 @@ public class SanselanMetadataExtractorTest {
     for (MetaData metadonnee : metadata) {
       System.out.
           println(metadonnee.getProperty() + " - " + metadonnee.getLabel() + ": " + metadonnee.
-          getValue());
+              getValue());
     }
     assertEquals(10, metadata.size());
     MetaData meta = metadata.get(0);
@@ -181,8 +215,8 @@ public class SanselanMetadataExtractorTest {
     meta = metadata.get(7);
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
-    assertThat(meta.getValue(), is(
-        "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
+    assertThat(meta.getValue(),
+        is("Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
   }
 
   @Test
@@ -277,11 +311,10 @@ public class SanselanMetadataExtractorTest {
         is("Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
   }
 
-  private static File getDocumentNamed(final String name) {
-    final URL documentLocation = MetadataExtractorTest.class.getResource(name);
+  private File getDocumentNamed(final String name) {
     try {
-      return new File(documentLocation.toURI());
-    } catch (URISyntaxException e) {
+      return new File(mavenTargetDirectoryRule.getResourceTestDirFile() + name);
+    } catch (Exception e) {
       return null;
     }
   }

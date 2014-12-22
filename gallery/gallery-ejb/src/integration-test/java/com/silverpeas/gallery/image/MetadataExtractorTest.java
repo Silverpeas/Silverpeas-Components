@@ -1,37 +1,46 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.gallery.image;
 
+import com.silverpeas.gallery.GalleryWarBuilder;
+import com.silverpeas.gallery.media.AbstractMediaMetadataExtractor;
 import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
 import com.silverpeas.gallery.media.ExifProperty;
 import com.silverpeas.gallery.media.IptcProperty;
 import com.silverpeas.gallery.media.MediaMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
-import org.silverpeas.util.StringUtil;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.util.StringUtil;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
@@ -39,34 +48,61 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author ehugonnet
  */
+@RunWith(Arquillian.class)
 public class MetadataExtractorTest {
 
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(MetadataExtractorTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependencies("com.drewnoakes:metadata-extractor");
+          warBuilder.addClasses(MediaMetadataExtractor.class, DrewMediaMetadataExtractor.class,
+              AbstractMediaMetadataExtractor.class);
+          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
+          warBuilder.addPackages(true, "com.silverpeas.gallery.media");
+          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+          warBuilder.addAsResource(
+              "org/silverpeas/gallery/settings/metadataSettings_gallery52.properties");
+          warBuilder.addAsResource("org/silverpeas/gallery/settings/metadataSettings.properties");
+          warBuilder.addAsResource("org/silverpeas/gallery/multilang/metadataBundle.properties");
+          warBuilder.addAsResource("maven.properties");
+        }).build();
+  }
+
   private MediaMetadataExtractor extractor;
-  private final File koala = getDocumentNamed("/Koala.jpg");
-  private final File sunset = getDocumentNamed("/Coucher de soleil.jpg");
-  private final File dauphins = getDocumentNamed("/Dauphins-100.jpg");
-  private final File chefsUtf8 = getDocumentNamed("/31605rc_utf-8.jpg");
-  private final File pingouin = getDocumentNamed("/pingouin.jpg");
+  private File koala;
+  private File sunset;
+  private File dauphins;
+  private File chefsUtf8;
+  private File pingouin;
 
   @Before
   public void setUp() {
     extractor = new DrewMediaMetadataExtractor("gallery52");
+    koala = getDocumentNamed("/Koala.jpg");
+    sunset = getDocumentNamed("/Coucher de soleil.jpg");
+    dauphins = getDocumentNamed("/Dauphins-100.jpg");
+    chefsUtf8 = getDocumentNamed("/31605rc_utf-8.jpg");
+    pingouin = getDocumentNamed("/pingouin.jpg");
   }
 
   @Test
   public void testLoadExtractor() {
     List<IptcProperty> properties = extractor.defineImageIptcProperties(StringUtil.splitString(
-        "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,"
-        + "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,"
-        + "IPTC_30,IPTC_31", ','));
+        "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18," +
+            "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28," +
+            "IPTC_29,IPTC_30,IPTC_31", ','));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties(StringUtil.splitString(
-        "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7", ','));
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(StringUtil
+        .splitString("METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7",
+            ','));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -214,9 +250,10 @@ public class MetadataExtractorTest {
     assertThat(meta.getProperty(), is("632"));
     assertThat(meta.getLabel(), is("Légende"));
     assertThat(meta.getValue(),
-        is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois "
-        + "ont réalisés en direct et fait déguster des plats dont les recettes étaient distribuées "
-        + "aux visiteurs"));
+        is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois " +
+            "ont réalisés en direct et fait déguster des plats dont les recettes étaient " +
+            "distribuées " +
+            "aux visiteurs"));
     meta = metadata.get(4);
     assertThat(meta.getProperty(), is("602"));
     assertThat(meta.getLabel(), is("Ville"));
@@ -243,11 +280,10 @@ public class MetadataExtractorTest {
     assertThat(meta.getValue(), is("113641"));
   }
 
-  private static File getDocumentNamed(final String name) {
-    final URL documentLocation = MetadataExtractorTest.class.getResource(name);
+  private File getDocumentNamed(final String name) {
     try {
-      return new File(documentLocation.toURI());
-    } catch (URISyntaxException e) {
+      return new File(mavenTargetDirectoryRule.getResourceTestDirFile() + name);
+    } catch (Exception e) {
       return null;
     }
   }
