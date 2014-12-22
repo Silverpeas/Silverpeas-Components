@@ -54,6 +54,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>tagcloud</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.drewnoakes</groupId>
       <artifactId>metadata-extractor</artifactId>
     </dependency>

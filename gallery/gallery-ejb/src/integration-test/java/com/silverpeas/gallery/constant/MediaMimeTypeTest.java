@@ -23,7 +23,13 @@
  */
 package com.silverpeas.gallery.constant;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.BasicWarBuilder;
 
 import java.io.File;
 import java.util.HashSet;
@@ -32,11 +38,33 @@ import java.util.Set;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Arquillian.class)
 public class MediaMimeTypeTest {
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(MediaMimeTypeTest.class).testFocusedOn(warBuilder -> {
+      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
+      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
+      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
+      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
+      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:comment");
+      warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
+      warBuilder.addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
+      warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+      warBuilder.addAsResource("org/silverpeas/gallery/multilang/galleryBundle.properties");
+      warBuilder.addAsResource("org/silverpeas/gallery/settings/gallerySettings.properties");
+      warBuilder.addAsResource("org/silverpeas/util/attachment/mime_types.properties");
+      warBuilder.addClasses(GalleryComponentSettings.class);
+      warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
+    }).build();
+  }
 
   @Test
   public void verifyMediaMimeTypes() {
-    Set<MediaMimeType> validTypes = new HashSet<MediaMimeType>();
+    Set<MediaMimeType> validTypes = new HashSet<>();
     validTypes.addAll(MediaMimeType.PHOTOS);
     validTypes.addAll(MediaMimeType.VIDEOS);
     validTypes.addAll(MediaMimeType.SOUNDS);

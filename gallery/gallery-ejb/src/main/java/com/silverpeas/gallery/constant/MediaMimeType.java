@@ -63,7 +63,7 @@ public enum MediaMimeType {
 
   MediaMimeType(String... otherExtensions) {
     mimeType = FileUtil.getMimeType("file." + this.name().toLowerCase());
-    extensions = new ArrayList<String>();
+    extensions = new ArrayList<>();
     extensions.add(name().toLowerCase());
     Collections.addAll(extensions, otherExtensions);
   }
