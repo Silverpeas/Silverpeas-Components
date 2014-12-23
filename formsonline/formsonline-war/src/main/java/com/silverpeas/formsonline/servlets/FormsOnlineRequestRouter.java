@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.formsonline.servlets;
 
 import com.silverpeas.form.DataRecord;
@@ -56,22 +55,18 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   }
 
   /**
-   * Method declaration
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   public FormsOnlineSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FormsOnlineSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param formsOnlineSC The component Session Control, build and initialised.
    * @param request
@@ -86,33 +81,24 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
     try {
       if ("Main".equals(function)) {
-
         /* this area's access is restricted to Administrators */
-        if (!getFlag(formsOnlineSC.getUserRoles()).equals("Administrator")) {
+        if (!"Administrator".equals(getFlag(formsOnlineSC.getUserRoles()))) {
           return getDestination("OutBox", formsOnlineSC, request);
         }
-
         request.setAttribute("formsList", formsOnlineSC.getAllForms());
         formsOnlineSC.setCurrentForm(null);
 
         destination = "formsList.jsp";
-      }
-
-      else if (function.equals("CreateForm")) {
+      } else if ("CreateForm".equals(function)) {
         FormDetail form = new FormDetail();
         form.setCreatorId(formsOnlineSC.getUserId());
-
         formsOnlineSC.setCurrentForm(form);
 
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
-
         destination = "editForm.jsp";
-      }
-
-      else if (function.equals("SaveForm")) {
+      } else if ("SaveForm".equals(function)) {
         FormDetail form = formsOnlineSC.getCurrentForm();
-
         form.setName(request.getParameter("name"));
         form.setDescription(request.getParameter("description"));
         form.setTitle(request.getParameter("title"));
@@ -121,14 +107,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         }
 
         formsOnlineSC.updateCurrentForm();
-
         return getDestination("EditForm", formsOnlineSC, request);
-      }
-
-      else if (function.equals("EditForm")) {
+      } else if ("EditForm".equals(function)) {
         String formId = request.getParameter("formId");
-        FormDetail form = null;
-
+        FormDetail form;
         if (formId != null) {
           form = formsOnlineSC.loadForm(Integer.parseInt(formId));
         } else {
@@ -138,86 +120,62 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         if (form == null) {
           return getDestination("Main", formsOnlineSC, request);
         }
-
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
 
         destination = "editForm.jsp";
-      }
-
-      else if (function.equals("DeleteForm")) {
+      } else if ("DeleteForm".equals(function)) {
         String formId = request.getParameter("formId");
 
         if (formId != null) {
           formsOnlineSC.deleteForm(Integer.parseInt(formId));
         }
-
         return getDestination("Main", formsOnlineSC, request);
-      }
-
-      else if (function.equals("SendersReceivers")) {
+      } else if ("SendersReceivers".equals(function)) {
         try {
-          request.setAttribute("sendersAsUser", formsOnlineSC
-              .getSendersAsUsers());
-          request.setAttribute("sendersAsGroup", formsOnlineSC
-              .getSendersAsGroups());
-          request.setAttribute("receiversAsUser", formsOnlineSC
-              .getReceiversAsUsers());
-          request.setAttribute("receiversAsGroup", formsOnlineSC
-              .getReceiversAsGroups());
+          request.setAttribute("sendersAsUser", formsOnlineSC.getSendersAsUsers());
+          request.setAttribute("sendersAsGroup", formsOnlineSC.getSendersAsGroups());
+          request.setAttribute("receiversAsUser", formsOnlineSC.getReceiversAsUsers());
+          request.setAttribute("receiversAsGroup", formsOnlineSC.getReceiversAsGroups());
           destination = "sendersReceivers.jsp";
         } catch (Exception e) {
-          SilverTrace.warn("formsOnline",
-              "FormsOnlineRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = "
-                  + function, e);
+          SilverTrace.warn("formsOnline", "FormsOnlineRequestRouter.getDestination()",
+              "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-      }
-
-      else if (function.equals("ModifySenders")) {
+      } else if ("ModifySenders".equals(function)) {
         try {
           return formsOnlineSC.initSelectionSenders();
         } catch (Exception e) {
-          SilverTrace.warn("formsOnline",
-              "FormsOnlineRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = "
-                  + function, e);
+          SilverTrace.warn("formsOnline", "FormsOnlineRequestRouter.getDestination()",
+              "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-      }
-
-      else if (function.equals("ModifyReceivers")) {
+      } else if ("ModifyReceivers".equals(function)) {
         try {
           return formsOnlineSC.initSelectionReceivers();
         } catch (Exception e) {
-          SilverTrace.warn("formsOnline",
-              "FormsOnlineRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = "
-                  + function, e);
+          SilverTrace.warn("formsOnline", "FormsOnlineRequestRouter.getDestination()",
+              "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-      }
-
-      else if (function.equals("UpdateSenders")) {
+      } else if ("UpdateSenders".equals(function)) {
         formsOnlineSC.updateSenders();
         return getDestination("SendersReceivers", formsOnlineSC, request);
-      }
-
-      else if (function.equals("UpdateReceivers")) {
+      } else if ("UpdateReceivers".equals(function)) {
         formsOnlineSC.updateReceivers();
         return getDestination("SendersReceivers", formsOnlineSC, request);
-      }
-
-      else if (function.equals("Preview")) {
+      } else if ("Preview".equals(function)) {
         // form object and data fetching
         String xmlFormName = formsOnlineSC.getCurrentForm().getXmlFormName();
         String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
         // PublicationTemplate creation
-        getPublicationTemplateManager().addDynamicPublicationTemplate(
-            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+        getPublicationTemplateManager()
+            .addDynamicPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                xmlFormName);
         PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+            (PublicationTemplateImpl) getPublicationTemplateManager()
+                .getPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                    xmlFormName);
 
         // DataRecord and form creation
         Form formUpdate = pubTemplate.getUpdateForm();
@@ -232,29 +190,23 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute("title", TitleHelper.computeTitle(fake, formsOnlineSC.getCurrentForm()
-            .getTitle()));
+        request.setAttribute("title",
+            TitleHelper.computeTitle(fake, formsOnlineSC.getCurrentForm().getTitle()));
         request.setAttribute("FormContext", getFormContext(formsOnlineSC));
 
         destination = "preview.jsp";
-      }
-
-      else if (function.equals("PublishForm")) {
+      } else if ("PublishForm".equals(function)) {
         formsOnlineSC.publishForm(request.getParameter("formId"));
         return getDestination("Main", formsOnlineSC, request);
-      }
-
-      else if (function.equals("UnpublishForm")) {
+      } else if ("UnpublishForm".equals(function)) {
         formsOnlineSC.unpublishForm(request.getParameter("formId"));
         return getDestination("Main", formsOnlineSC, request);
-      }
-
-      else if (function.equals("OutBox")) {
+      } else if ("OutBox".equals(function)) {
         List<FormDetail> availableForms = formsOnlineSC.getAvailableFormsToSend();
         request.setAttribute("availableForms", availableForms);
 
-        int requestFormId = (request.getParameter("formId") == null) ? -1
-            : Integer.parseInt(request.getParameter("formId"));
+        int requestFormId = (request.getParameter("formId") == null) ? -1 :
+            Integer.parseInt(request.getParameter("formId"));
         int choosenFormId = -1;
         FormDetail choosenForm = null;
 
@@ -270,7 +222,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         if (choosenFormId == -1) {
           if (availableForms.size() > 0) {
-            FormDetail form = (FormDetail) availableForms.get(0);
+            FormDetail form = availableForms.get(0);
             choosenFormId = form.getId();
             choosenForm = form;
           }
@@ -286,22 +238,12 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("formInstances", sentForInstances);
 
         destination = "outbox.jsp";
-      }
-
-      else if (function.equals("InBox")) {
-        // List receivedForInstances = formsOnlineSC.getAvailableFormInstancesReceived();
-        // Iterator itInstances = receivedForInstances.iterator();
-        // Set formIds = new HashSet();
-        // while (itInstances.hasNext()) {
-        // FormInstance instance = (FormInstance) itInstances.next();
-        // formIds.add(String.valueOf(instance.getFormId()));
-        // }
-
+      } else if ("InBox".equals(function)) {
         List<String> formIds = formsOnlineSC.getAvailableFormIdsAsReceiver();
         List<FormDetail> availableForms = formsOnlineSC.getForms(formIds);
 
-        int requestFormId = (request.getParameter("formId") == null) ? -1
-            : Integer.parseInt(request.getParameter("formId"));
+        int requestFormId = (request.getParameter("formId") == null) ? -1 :
+            Integer.parseInt(request.getParameter("formId"));
         int choosenFormId = -1;
         FormDetail choosenForm = null;
 
@@ -335,9 +277,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("availableForms", availableForms);
 
         destination = "inbox.jsp";
-      }
-
-      else if (function.equals("CreateInstance")) {
+      } else if ("CreateInstance".equals(function)) {
         FormDetail form = formsOnlineSC.getChoosenForm();
 
         // form object and name fetching
@@ -346,11 +286,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
         // PublicationTemplate creation
-        getPublicationTemplateManager().addDynamicPublicationTemplate(
-            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+        getPublicationTemplateManager()
+            .addDynamicPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                xmlFormName);
         PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+            (PublicationTemplateImpl) getPublicationTemplateManager()
+                .getPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                    xmlFormName);
 
         // form and DataRecord creation
         Form formUpdate = pubTemplate.getUpdateForm();
@@ -364,9 +306,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("FormContext", getFormContext(formsOnlineSC));
 
         destination = "newFormInstance.jsp";
-      }
-
-      else if (function.equals("SaveNewInstance")) {
+      } else if ("SaveNewInstance".equals(function)) {
         // recuperation des donnees saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
 
@@ -374,16 +314,14 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.saveNewInstance(items);
 
         // Mise a jour du formulaire pour indiquer qu'il a ete utilise
-        FormDetail form = formsOnlineSC.loadForm(formsOnlineSC
-            .getChoosenForm().getId());
+        FormDetail form = formsOnlineSC.loadForm(formsOnlineSC.getChoosenForm().getId());
         if (!form.isAlreadyUsed()) {
           form.setAlreadyUsed(true);
           formsOnlineSC.updateCurrentForm();
         }
 
         return getDestination("OutBox", formsOnlineSC, request);
-      }
-      else if ("ViewFormInstance".equals(function)) {
+      } else if ("ViewFormInstance".equals(function)) {
         String formInstanceId = request.getParameter("formInstanceId");
         FormInstance currentFormInstance =
             formsOnlineSC.loadFormInstance(Integer.parseInt(formInstanceId));
@@ -396,11 +334,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
         // creation du PublicationTemplate
-        getPublicationTemplateManager().addDynamicPublicationTemplate(
-            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+        getPublicationTemplateManager()
+            .addDynamicPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                xmlFormName);
         PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+            (PublicationTemplateImpl) getPublicationTemplateManager()
+                .getPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                    xmlFormName);
 
         // Retrieve Form and DataRecord
         Form formView = pubTemplate.getViewForm();
@@ -425,12 +365,11 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("FormContext", getFormContext(formsOnlineSC));
         request.setAttribute("validationMode", validationMode);
         request.setAttribute("currentFormInstance", currentFormInstance);
-        request.setAttribute("title", TitleHelper.computeTitle(currentFormInstance, formsOnlineSC
-            .getChoosenForm().getTitle()));
+        request.setAttribute("title", TitleHelper
+            .computeTitle(currentFormInstance, formsOnlineSC.getChoosenForm().getTitle()));
         request.setAttribute("backFunction", "OutBox");
         destination = "viewInstance.jsp";
-      }
-      else if ("ValidFormInstance".equals(function)) {
+      } else if ("ValidFormInstance".equals(function)) {
         String formInstanceId = request.getParameter("formInstanceId");
         FormInstance formInstance =
             formsOnlineSC.loadFormInstance(Integer.parseInt(formInstanceId));
@@ -443,11 +382,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
         // creation du PublicationTemplate
-        getPublicationTemplateManager().addDynamicPublicationTemplate(
-            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+        getPublicationTemplateManager()
+            .addDynamicPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                xmlFormName);
         PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+            (PublicationTemplateImpl) getPublicationTemplateManager()
+                .getPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
+                    xmlFormName);
 
         // creation du formulaire et du DataRecord
         Form formView = pubTemplate.getViewForm();
@@ -475,49 +416,41 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             .setAttribute("title", TitleHelper.computeTitle(formInstance, formDetail.getTitle()));
 
         destination = "viewInstance.jsp";
-      }
-
-      else if (function.equals("EffectiveValideForm")) {
+      } else if ("EffectiveValideForm".equals(function)) {
         int formInstanceId = Integer.parseInt(request.getParameter("formInstanceId"));
         String decision = request.getParameter("decision");
         String comment = request.getParameter("comment");
         formsOnlineSC.updateValidationStatus(formInstanceId, decision, comment);
 
         return getDestination("InBox", formsOnlineSC, request);
-      }
-
-      else if (function.equals("ArchiveFormInstances")) {
+      } else if ("ArchiveFormInstances".equals(function)) {
         String[] formInstanceIds = request.getParameterValues("archiveInst");
         if ((formInstanceIds != null) && (formInstanceIds.length > 0)) {
           formsOnlineSC.archiveFormInstances(formInstanceIds);
         }
 
         return getDestination("OutBox", formsOnlineSC, request);
-      }
-
-      else if (function.equals("DeleteFormInstances")) {
+      } else if ("DeleteFormInstances".equals(function)) {
         String[] formInstanceIds = request.getParameterValues("suppInst");
         if ((formInstanceIds != null) && (formInstanceIds.length > 0)) {
           formsOnlineSC.deleteFormInstances(formInstanceIds);
         }
 
         return getDestination("InBox", formsOnlineSC, request);
-      }
-
-      else {
+      } else {
         destination = "welcome.jsp";
       }
       destination = "/formsOnline/jsp/" + destination;
     } catch (Exception e) {
+      SilverTrace.warn("formsOnline", "FormsOnlineRequestRouter.getDestination()",
+          "An error occured when processing function", "function = " + function, e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
     // store user's best profile in request
     request.setAttribute("userBestProfile", getFlag(formsOnlineSC.getUserRoles()));
-
-    SilverTrace.info("formsOnline",
-        "FormsOnlineRequestRouter.getDestination()",
+    SilverTrace.info("formsOnline", "FormsOnlineRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
@@ -543,7 +476,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   }
 
   private PagesContext getFormContext(FormsOnlineSessionController fosc) {
-    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(), fosc
-        .getUserId());
+    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(),
+        fosc.getUserId());
   }
 }

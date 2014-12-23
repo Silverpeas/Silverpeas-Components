@@ -43,6 +43,7 @@ import com.silverpeas.formsonline.model.FormsOnlineRuntimeException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -64,13 +65,13 @@ import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.inject.Inject;
+
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
-  private FormsOnlineDAO dao = new FormsOnlineDAOJdbc();
+  private FormsOnlineDAO dao = ServiceProvider.getService(FormsOnlineDAO.class);
   private FormDetail currentForm;
-  protected Selection m_Selection = null;
-  private SelectionUsersGroups sugSenders = null;
-  private SelectionUsersGroups sugReceivers = null;
+  protected Selection mSelection = null;
   private FormDetail choosenForm;
   private NotificationSender notifSender;
   private ResourceLocator messagesEn =
@@ -80,7 +81,6 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   /**
    * Standard Session Controller Constructeur
-   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -91,7 +91,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         "com.silverpeas.formsonline.multilang.formsOnlineBundle",
         "com.silverpeas.formsonline.settings.formsOnlineIcons",
         "com.silverpeas.formsonline.settings.formsOnlineSettings");
-    m_Selection = getSelection();
+    mSelection = getSelection();
   }
 
   public List<FormDetail> getAllForms() throws FormsOnlineDatabaseException {
@@ -125,61 +125,60 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   // initialisation de Selection pour nav vers SelectionPeas
-  private String initSelection(SelectionUsersGroups sug, String goFunction,
-      String[] userIds, String[] groupIds) {
-    String url = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-        + URLManager.getURL(getSpaceId(), getComponentId());
+  private String initSelection(SelectionUsersGroups sug, String goFunction, String[] userIds,
+      String[] groupIds) {
+    String url = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") +
+        URLManager.getURL(getSpaceId(), getComponentId());
     String goUrl = url + goFunction;
     String cancelUrl = url + "SendersReceivers";
 
-    m_Selection.resetAll();
+    mSelection.resetAll();
 
-    m_Selection.setGoBackURL(goUrl);
-    m_Selection.setCancelURL(cancelUrl);
+    mSelection.setGoBackURL(goUrl);
+    mSelection.setCancelURL(cancelUrl);
 
-    m_Selection.setSelectedElements(userIds);
-    m_Selection.setSelectedSets(groupIds);
+    mSelection.setSelectedElements(userIds);
+    mSelection.setSelectedSets(groupIds);
 
     // bien que le up s'affiche en popup, le mecanisme de fermeture est
     // assure par le composant=> il est donc necessaire d'indiquer
     // a l'UserPanelPeas de ne pas s'occuper de cette fermeture!
-    m_Selection.setHostPath(null);
+    mSelection.setHostPath(null);
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    m_Selection.setHostComponentName(hostComponentName);
-    m_Selection.setHostSpaceName(getSpaceLabel());
-    m_Selection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
+    mSelection.setHostComponentName(hostComponentName);
+    mSelection.setHostSpaceName(getSpaceLabel());
+    mSelection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
     // Add extra params
-    m_Selection.setExtraParams(sug);
+    mSelection.setExtraParams(sug);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
   public String initSelectionSenders() throws FormsOnlineDatabaseException {
-    ArrayList<String> profiles = new ArrayList<String>();
+    ArrayList<String> profiles = new ArrayList<>();
     profiles.add("SenderReceiver");
-    sugSenders = new SelectionUsersGroups();
+    final SelectionUsersGroups sugSenders = new SelectionUsersGroups();
     sugSenders.setComponentId(getComponentId());
     sugSenders.setProfileNames(profiles);
 
-    String[] userIds = (String[]) (dao.getSendersAsUsers(currentForm.getId(), getComponentId())).
+    String[] userIds = (dao.getSendersAsUsers(currentForm.getId(), getComponentId())).
         toArray(new String[0]);
-    String[] groupIds = (String[]) (dao.getSendersAsGroups(currentForm.getId(), getComponentId())).
+    String[] groupIds = (dao.getSendersAsGroups(currentForm.getId(), getComponentId())).
         toArray(new String[0]);
 
     return initSelection(sugSenders, "UpdateSenders", userIds, groupIds);
   }
 
   public String initSelectionReceivers() throws FormsOnlineDatabaseException {
-    ArrayList<String> profiles = new ArrayList<String>();
+    ArrayList<String> profiles = new ArrayList<>();
     profiles.add("SenderReceiver");
-    sugReceivers = new SelectionUsersGroups();
+    final SelectionUsersGroups sugReceivers = new SelectionUsersGroups();
     sugReceivers.setComponentId(getComponentId());
     sugReceivers.setProfileNames(profiles);
 
-    String[] userIds = (String[]) (dao.getReceiversAsUsers(currentForm.getId(), getComponentId())).
+    String[] userIds = (dao.getReceiversAsUsers(currentForm.getId(), getComponentId())).
         toArray(new String[0]);
-    String[] groupIds =
-        (String[]) (dao.getReceiversAsGroups(currentForm.getId(), getComponentId())).
+    String[] groupIds = (dao.getReceiversAsGroups(currentForm.getId(), getComponentId())).
         toArray(new String[0]);
 
     return initSelection(sugReceivers, "UpdateReceivers", userIds, groupIds);
@@ -188,48 +187,50 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   public List<UserDetail> getSendersAsUsers() throws FormsOnlineDatabaseException {
     List<String> userIds = dao.getSendersAsUsers(currentForm.getId(), getComponentId());
     UserDetail[] details = getOrganisationController().
-        getUserDetails(userIds.toArray(new String[0]));
+        getUserDetails(userIds.toArray(new String[userIds.size()]));
     return Arrays.asList(details);
   }
 
   public List<Group> getSendersAsGroups() throws FormsOnlineDatabaseException {
     List<String> groupIds = dao.getSendersAsGroups(currentForm.getId(), getComponentId());
-    Group[] groups = getOrganisationController().getGroups(groupIds.toArray(new String[0]));
+    Group[] groups =
+        getOrganisationController().getGroups(groupIds.toArray(new String[groupIds.size()]));
     return Arrays.asList(groups);
   }
 
   public List<UserDetail> getReceiversAsUsers() throws FormsOnlineDatabaseException {
     List<String> userIds = dao.getReceiversAsUsers(currentForm.getId(), getComponentId());
     UserDetail[] details = getOrganisationController().
-        getUserDetails(userIds.toArray(new String[0]));
+        getUserDetails(userIds.toArray(new String[userIds.size()]));
     return Arrays.asList(details);
   }
 
   public List<Group> getReceiversAsGroups() throws FormsOnlineDatabaseException {
     List<String> groupIds = dao.getReceiversAsGroups(currentForm.getId(), getComponentId());
-    Group[] groups = getOrganisationController().getGroups(groupIds.toArray(new String[0]));
+    Group[] groups =
+        getOrganisationController().getGroups(groupIds.toArray(new String[groupIds.size()]));
     return Arrays.asList(groups);
   }
 
   public void updateSenders() throws FormsOnlineDatabaseException {
-    dao.updateSenders(currentForm.getId(), getComponentId(), m_Selection.getSelectedElements(),
-        m_Selection.getSelectedSets());
+    dao.updateSenders(currentForm.getId(), getComponentId(), mSelection.getSelectedElements(),
+        mSelection.getSelectedSets());
   }
 
   public void updateReceivers() throws FormsOnlineDatabaseException {
-    dao.updateReceivers(currentForm.getId(), getComponentId(), m_Selection.getSelectedElements(),
-        m_Selection.getSelectedSets());
+    dao.updateReceivers(currentForm.getId(), getComponentId(), mSelection.getSelectedElements(),
+        mSelection.getSelectedSets());
   }
 
-  public void publishForm(String formId) throws NumberFormatException,
-      FormsOnlineDatabaseException {
+  public void publishForm(String formId)
+      throws NumberFormatException, FormsOnlineDatabaseException {
     FormDetail form = dao.getForm(getComponentId(), Integer.parseInt(formId));
     form.setState(FormDetail.STATE_PUBLISHED);
     dao.updateForm(form);
   }
 
-  public void unpublishForm(String formId) throws NumberFormatException,
-      FormsOnlineDatabaseException {
+  public void unpublishForm(String formId)
+      throws NumberFormatException, FormsOnlineDatabaseException {
     FormDetail form = dao.getForm(getComponentId(), Integer.parseInt(formId));
     form.setState(FormDetail.STATE_UNPUBLISHED);
     dao.updateForm(form);
@@ -244,7 +245,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   public List<FormInstance> getFormInstances(int choosenFormId)
       throws FormsOnlineDatabaseException {
     if (choosenFormId == -1) {
-      return new ArrayList<FormInstance>();
+      return new ArrayList<>();
     }
 
     return dao.getSentFormInstances(getComponentId(), choosenFormId, getUserId());
@@ -259,8 +260,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public void saveNewInstance(List<FileItem> items)
-      throws FormsOnlineDatabaseException, PublicationTemplateException,
-      FormException {
+      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
     FormInstance instance = new FormInstance();
     instance.setCreatorId(getUserId());
     instance.setFormId(choosenForm.getId());
@@ -273,16 +273,17 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
     // Retrieve data form (with DataRecord object)
-    PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(
-        getComponentId() + ":" + xmlFormShortName);
+    PublicationTemplate pub = getPublicationTemplateManager()
+        .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
     DataRecord data = set.getEmptyRecord();
     data.setId(String.valueOf(instance.getId()));
 
     // Save data form
-    PagesContext aContext = new PagesContext("newInstanceForm", "0", getLanguage(), false,
-        getComponentId(), getUserId());
+    PagesContext aContext =
+        new PagesContext("newInstanceForm", "0", getLanguage(), false, getComponentId(),
+            getUserId());
     aContext.setObjectId(String.valueOf(instance.getId()));
     form.update(items, data, aContext);
     set.save(data);
@@ -303,7 +304,6 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   /**
    * notifyReceivers
-   *
    * @throws FormsOnlineDatabaseException
    */
   private void notifyReceivers(int formId, int formInstanceId) throws FormsOnlineDatabaseException {
@@ -313,16 +313,16 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
     // french notifications
     String subject = messagesFr.getString("formsOnline.msgFormToValid");
-    String messageText = emetteur + " " + messagesFr.getString(
-        "formsOnline.msgUserHasSentAForm") + "  \n \n";
+    String messageText =
+        emetteur + " " + messagesFr.getString("formsOnline.msgUserHasSentAForm") + "  \n \n";
 
     // english notifications
-    String subject_en = messagesEn.getString("formsOnline.msgFormToValid");
-    String messageText_en = emetteur + " " + messagesEn.getString(
-        "formsOnline.msgUserHasSentAForm") + "  \n \n";
+    String subjectEn = messagesEn.getString("formsOnline.msgFormToValid");
+    String messageTextEn =
+        emetteur + " " + messagesEn.getString("formsOnline.msgUserHasSentAForm") + "  \n \n";
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, subject, messageText);
+    NotificationMetaData notifMetaData =
+        new NotificationMetaData(NotificationParameters.NORMAL, subject, messageText);
     notifMetaData.setSender(getUserId());
     List<String> userIds = dao.getReceiversAsUsers(formId, getComponentId());
     for (String user : userIds) {
@@ -333,10 +333,11 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       notifMetaData.addGroupRecipient(new GroupRecipient(group));
     }
     notifMetaData.setSource(getSpaceLabel() + " - " + form.getName());
-    notifMetaData.setLink("/RformsOnline/" + getComponentId()
-        + "/ValidFormInstance?formInstanceId=" + formInstanceId);
+    notifMetaData.setLink(
+        "/RformsOnline/" + getComponentId() + "/ValidFormInstance?formInstanceId=" +
+            formInstanceId);
 
-    notifMetaData.addLanguage("en", subject_en, messageText_en);
+    notifMetaData.addLanguage("en", subjectEn, messageTextEn);
     notifMetaData.addLanguage("fr", subject, messageText);
     try {
       getNotificationSender().notifyUser(notifMetaData);
@@ -344,14 +345,13 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       SilverTrace.error("formManager", "FormManagerSessionController.notifyReceivers()",
           "root.MSG_GEN_PARAM_VALUE", "formInstanceId = " + formInstanceId,
           new FormsOnlineRuntimeException(
-          "com.silverpeas.formsonline.control.FormsOnlineSessionController",
-          SilverpeasRuntimeException.ERROR, ""));
+              "com.silverpeas.formsonline.control.FormsOnlineSessionController",
+              SilverpeasRuntimeException.ERROR, ""));
     }
   }
 
   /**
    * notifySender
-   *
    * @throws FormsOnlineDatabaseException
    */
   private void notifySender(FormInstance formInstance) throws FormsOnlineDatabaseException {
@@ -360,43 +360,44 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
     // Subject
     String subject;
-    String subject_en;
+    String subjectEn;
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
       subject = messagesFr.getString("formsOnline.msgFormValidated");
-      subject_en = messagesEn.getString("formsOnline.msgFormValidated");
+      subjectEn = messagesEn.getString("formsOnline.msgFormValidated");
     } else {
       subject = messagesFr.getString("formsOnline.msgFormRefused");
-      subject_en = messagesEn.getString("formsOnline.msgFormRefused");
+      subjectEn = messagesEn.getString("formsOnline.msgFormRefused");
     }
 
     // sender
     String sender = getUserDetail().getDisplayedName();
 
     // message
-    StringBuffer messageText = new StringBuffer(sender).append(" ");
-    StringBuffer messageText_en = new StringBuffer(sender).append(" ");
+    StringBuilder messageText = new StringBuilder(sender).append(" ");
+    StringBuilder messageTextEn = new StringBuilder(sender).append(" ");
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
       messageText.append(messagesFr.getString("formsOnline.msgHasValidatedYourForm"));
-      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
+      messageTextEn.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
     } else {
       messageText.append(messagesFr.getString("formsOnline.msgHasRefusedYourForm"));
-      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
+      messageTextEn.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
       if (StringUtil.isDefined(formInstance.getComments())) {
         messageText.append(" ").append(messagesFr.getString("formsOnline.notif.comment"))
             .append(formInstance.getComments());
-        messageText_en.append(" ").append(messagesEn.getString("formsOnline.notif.comment"))
+        messageTextEn.append(" ").append(messagesEn.getString("formsOnline.notif.comment"))
             .append(formInstance.getComments());
       }
     }
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, subject, messageText.toString());
+    NotificationMetaData notifMetaData =
+        new NotificationMetaData(NotificationParameters.NORMAL, subject, messageText.toString());
     notifMetaData.setSender(getUserId());
     notifMetaData.addUserRecipient(new UserRecipient(formInstance.getCreatorId()));
     notifMetaData.setSource(getSpaceLabel() + " - " + form.getName());
-    notifMetaData.setLink("/RformsOnline/" + getComponentId()
-        + "/ViewFormInstance?formInstanceId=" + formInstance.getId());
-    notifMetaData.addLanguage("en", subject_en, messageText_en.toString());
+    notifMetaData.setLink(
+        "/RformsOnline/" + getComponentId() + "/ViewFormInstance?formInstanceId=" +
+            formInstance.getId());
+    notifMetaData.addLanguage("en", subjectEn, messageTextEn.toString());
     notifMetaData.addLanguage("fr", subject, messageText.toString());
 
     try {
@@ -405,8 +406,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       SilverTrace.error("formManager", "FormManagerSessionController.notifySender()",
           "root.MSG_GEN_PARAM_VALUE", "formInstanceId = " + formInstance.getId(),
           new FormsOnlineRuntimeException(
-          "com.silverpeas.formsonline.control.FormsOnlineSessionController",
-          SilverpeasRuntimeException.ERROR, ""));
+              "com.silverpeas.formsonline.control.FormsOnlineSessionController",
+              SilverpeasRuntimeException.ERROR, ""));
     }
   }
 
@@ -429,8 +430,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return dao.getForms(formIds);
   }
 
-  public void updateValidationStatus(int formInstanceId, String decision,
-      String comments) throws FormsOnlineDatabaseException {
+  public void updateValidationStatus(int formInstanceId, String decision, String comments)
+      throws FormsOnlineDatabaseException {
     FormInstance instance = loadFormInstance(formInstanceId);
 
     // update state
@@ -457,28 +458,28 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public void archiveFormInstances(String[] formInstanceIds) throws FormsOnlineDatabaseException {
-    for (int i = 0; i < formInstanceIds.length; i++) {
+    for (final String formInstanceId : formInstanceIds) {
       FormInstance instance =
-          dao.getFormInstance(getComponentId(), Integer.parseInt(formInstanceIds[i]));
+          dao.getFormInstance(getComponentId(), Integer.parseInt(formInstanceId));
       instance.setState(FormInstance.STATE_ARCHIVED);
       dao.updateFormInstance(instance);
     }
   }
 
-  public void deleteFormInstances(String[] formInstanceIds) throws FormsOnlineDatabaseException,
-      FormException, PublicationTemplateException {
-    for (int i = 0; i < formInstanceIds.length; i++) {
+  public void deleteFormInstances(String[] formInstanceIds)
+      throws FormsOnlineDatabaseException, FormException, PublicationTemplateException {
+    for (final String formInstanceId : formInstanceIds) {
       // delete form data
       FormInstance instance =
-          dao.getFormInstance(getComponentId(), Integer.parseInt(formInstanceIds[i]));
+          dao.getFormInstance(getComponentId(), Integer.parseInt(formInstanceId));
       FormDetail form = dao.getForm(getComponentId(), instance.getFormId());
       String xmlFormName = form.getXmlFormName();
       String xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-      PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
-          getComponentId() + ":" + xmlFormShortName);
+      PublicationTemplate pubTemplate = getPublicationTemplateManager()
+          .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
       RecordSet set = pubTemplate.getRecordSet();
-      DataRecord data = set.getRecord(formInstanceIds[i]);
+      DataRecord data = set.getRecord(formInstanceId);
       set.delete(data);
 
       // delete instance metadata
@@ -498,7 +499,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       }
     }
   }
-  
+
   /**
    * Gets an instance of PublicationTemplateManager.
    * @return an instance of PublicationTemplateManager.
@@ -506,14 +507,16 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
-  
+
   public List<PublicationTemplate> getTemplates() {
-    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> templates = new ArrayList<>();
     try {
       GlobalContext aContext = new GlobalContext(getSpaceId(), getComponentId());
       templates = getPublicationTemplateManager().getPublicationTemplates(aContext);
     } catch (PublicationTemplateException e) {
-      SilverTrace.error("formManager", "FormsOnlineSessionController.getForms()", "root.CANT_GET_FORMS", e);
+      SilverTrace
+          .error("formManager", "FormsOnlineSessionController.getForms()", "root.CANT_GET_FORMS",
+              e);
     }
     return templates;
   }

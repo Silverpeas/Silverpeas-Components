@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,20 +9,21 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.formsonline.model;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Date;
 
@@ -81,14 +82,14 @@ public class FormDetail {
    * @return the creationDate
    */
   public Date getCreationDate() {
-    return creationDate;
+    return creationDate != null ? (Date) creationDate.clone() : null;
   }
 
   /**
    * @param creationDate the creationDate to set
    */
   public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
+    this.creationDate = (creationDate != null ? (Date) creationDate.clone() : null);
   }
 
   /**
@@ -188,8 +189,8 @@ public class FormDetail {
     if (this.id != other.id) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
-        .equals(other.instanceId)) {
+    if ((this.instanceId == null) ? (other.instanceId != null) :
+        !this.instanceId.equals(other.instanceId)) {
       return false;
     }
     if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
@@ -205,18 +206,21 @@ public class FormDetail {
     if (this.alreadyUsed != other.alreadyUsed) {
       return false;
     }
-    if ((this.xmlFormName == null) ? (other.xmlFormName != null) : !this.xmlFormName
-        .equals(other.xmlFormName)) {
+    if ((this.xmlFormName == null) ? (other.xmlFormName != null) :
+        !this.xmlFormName.equals(other.xmlFormName)) {
       return false;
     }
-    if ((this.description == null) ? (other.description != null) : !this.description
-        .equals(other.description)) {
+    if ((this.description == null) ? (other.description != null) :
+        !this.description.equals(other.description)) {
       return false;
     }
-    if (this.state != other.state) {
-      return false;
-    }
+    return this.state == other.state;
+  }
 
-    return true;
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(7, 17).append(this.id).append(this.xmlFormName).append(this.name)
+        .append(this.description).append(this.title).append(this.creatorId).append(this.instanceId)
+        .append(this.alreadyUsed).append(this.state).toHashCode();
   }
 }

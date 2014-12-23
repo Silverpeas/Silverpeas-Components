@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.formsonline.control;
 
 import com.silverpeas.formsonline.model.FormInstance;
@@ -30,21 +29,17 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 
 import java.util.StringTokenizer;
 
-public class TitleHelper {
+public final class TitleHelper {
 
-  /**
-   * Hide Utility Class Constructor with a private constuctor...
-   */
   private TitleHelper() {
   }
 
   public static String computeTitle(FormInstance instance, String title) {
-    while (title.indexOf("${") != -1) {
+    while (title.contains("${")) {
       int begin = title.indexOf("${");
       int end = title.indexOf('}');
       String keyword = title.substring(begin + 2, end);
-      title =
-          title.substring(0, begin) + computeKeyword(instance, keyword) +
+      title = title.substring(0, begin) + computeKeyword(instance, keyword) +
           title.substring(end + 1, title.length());
     }
     return title;
@@ -60,44 +55,35 @@ public class TitleHelper {
       }
       String fieldName = tokenizer.nextToken();
       UserDetail user = UserDetail.getById(instance.getCreatorId());
-      String value = "";
-
-      if (fieldName.equals("firstName")) {
-        value = user.getFirstName();
+      String value;
+      switch (fieldName) {
+        case "firstName":
+          value = user.getFirstName();
+          break;
+        case "lastName":
+          value = user.getLastName();
+          break;
+        case "fullName":
+          value = user.getDisplayedName();
+          break;
+        case "emailName":
+          value = user.geteMail();
+          break;
+        default:
+          value = "$$" + keyword + "$$";
+          break;
       }
-
-      else if (fieldName.equals("lastName")) {
-        value = user.getLastName();
-      }
-
-      else if (fieldName.equals("fullName")) {
-        value = user.getDisplayedName();
-      }
-
-      else if (fieldName.equals("emailName")) {
-        value = user.geteMail();
-      }
-
-      else {
-        value = "$$" + keyword + "$$";
-      }
-
       return value;
-    }
-
-    else if (tokenizer.countTokens() == 3) {
+    } else if (tokenizer.countTokens() == 3) {
       String firstToken = tokenizer.nextToken();
       String secondToken = tokenizer.nextToken();
-      if ((!firstToken.equals("sender")) || ((!secondToken.equals("attribute")))) {
+      if (!"sender".equals(firstToken) || (!"attribute".equals(secondToken))) {
         return "$$" + keyword + "$$";
       }
-
       UserFull user = UserFull.getById(instance.getCreatorId());
       String propertyName = tokenizer.nextToken();
       return user.getValue(propertyName, "$$" + keyword + "$$");
-    }
-
-    else {
+    } else {
       return "$$" + keyword + "$$";
     }
   }
