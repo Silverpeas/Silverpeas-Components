@@ -57,9 +57,7 @@ import org.silverpeas.components.forum.notification.ForumsMessageValidationUserN
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
@@ -275,17 +273,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public void deleteForum(int forumId) {
     getForumsService().deleteForum(getForumPK(forumId));
-  }
-
-  /**
-   * Indexe un forum a partir de son ID
-   *
-   * @param forumId l'ID du forum dans la datasource
-   * @author frageade
-   * @since 23 Aout 2001
-   */
-  public void indexForum(int forumId) {
-    getForumsService().createIndex(getForumPK(forumId));
   }
 
   // Methodes messages
@@ -556,17 +543,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private void sendMessageNotificationRefused(Message message, String motive) {
     UserNotificationHelper.buildAndSend(
         new ForumsMessageValidationUserNotification(message, getUserId(), motive));
-  }
-
-  /**
-   * Indexe un message a partir de son ID
-   *
-   * @param messageId l'ID du message dans la datasource
-   * @author frageade
-   * @since 23 Aout 2001
-   */
-  public void indexMessage(int messageId) {
-    getForumsService().createIndex(getMessagePK(messageId));
   }
 
   /**

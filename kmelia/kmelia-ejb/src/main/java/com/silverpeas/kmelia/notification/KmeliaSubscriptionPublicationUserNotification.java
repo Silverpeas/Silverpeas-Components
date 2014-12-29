@@ -23,7 +23,7 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
@@ -68,7 +68,7 @@ public class KmeliaSubscriptionPublicationUserNotification
     Collection<String> allUserSubscriberIds = subscriberIdsByTypes.getAllUserIds();
     if (!allUserSubscriberIds.isEmpty()) {
       // Identifying users to be excluded from notifying
-      final OrganisationController orgaController = getOrganisationController();
+      final OrganizationController orgaController = getOrganisationController();
       // Get only subscribers who have sufficient rights to read pubDetail
       final NodeDetail node = getNodeHeader(getNodePK());
       for (final String userId : allUserSubscriberIds) {

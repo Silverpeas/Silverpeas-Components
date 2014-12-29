@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;

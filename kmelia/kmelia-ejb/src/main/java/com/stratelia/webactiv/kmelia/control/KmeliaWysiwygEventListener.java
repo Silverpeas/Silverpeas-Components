@@ -79,7 +79,6 @@ public class KmeliaWysiwygEventListener extends JMSResourceEventListener<Wysiwyg
 
   private boolean isAboutKmeliaPublication(WysiwygContent content) {
     return !content.getContributionId().getLocalId().startsWith("Node") && (
-        content.getContributionId().getComponentInstanceId().startsWith("kmelia") ||
             content.getContributionId().getComponentInstanceId().startsWith("kmax") ||
             content.getContributionId().getComponentInstanceId().startsWith("kmelia") ||
             content.getContributionId().getComponentInstanceId().startsWith("toolbox"));

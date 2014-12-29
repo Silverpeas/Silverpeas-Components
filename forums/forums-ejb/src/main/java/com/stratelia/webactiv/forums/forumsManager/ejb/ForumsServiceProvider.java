@@ -23,44 +23,15 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import javax.inject.Inject;
-
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class ForumsServiceProvider {
-
-  private static final ForumsServiceProvider instance = new ForumsServiceProvider();
-
-  @Inject
-  private ForumsBM forumsBm;
 
   /**
    * @return an instance of {@link com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM} EJB.
    */
   public static ForumsBM getForumsService() {
-    if (getInstance().forumsBm == null) {
-      try {
-        // If not initialize, then the EJB reference is searched by common tools.
-        // By this way, the instance of this EJB is not stored.
-        return EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-      } catch (Exception e) {
-        throw new ForumsRuntimeException("ForumsServiceProvider.getForumsService()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return getInstance().forumsBm;
-  }
-
-  /**
-   * @return a ForumsServiceProvider instance.
-   */
-  protected static ForumsServiceProvider getInstance() {
-    return instance;
+    return ForumsBM.get();
   }
 }

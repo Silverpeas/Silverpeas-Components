@@ -90,7 +90,6 @@ public class AttachmentKmeliaListener extends JMSResourceEventListener<Attachmen
 
   private boolean isAboutKmeliaPublication(AttachmentRef attachment) {
     return !attachment.getForeignId().startsWith("Node") && (
-        attachment.getInstanceId().startsWith("kmelia") ||
             attachment.getInstanceId().startsWith("kmax") ||
             attachment.getInstanceId().startsWith("kmelia") ||
             attachment.getInstanceId().startsWith("toolbox"));

@@ -23,8 +23,6 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;

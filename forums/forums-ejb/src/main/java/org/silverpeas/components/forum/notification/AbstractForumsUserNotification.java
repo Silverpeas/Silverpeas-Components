@@ -26,7 +26,7 @@ package org.silverpeas.components.forum.notification;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier

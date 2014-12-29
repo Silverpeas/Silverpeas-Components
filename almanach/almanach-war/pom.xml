@@ -24,6 +24,10 @@
       <artifactId>javax.servlet.jsp.jstl-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>javax.servlet.jsp.jstl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.components.almanach</groupId>
       <artifactId>almanach-ejb</artifactId>
       <version>${project.version}</version>

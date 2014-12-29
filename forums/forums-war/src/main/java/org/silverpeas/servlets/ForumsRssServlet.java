@@ -26,6 +26,7 @@ package org.silverpeas.servlets;
 import com.silverpeas.peasUtil.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

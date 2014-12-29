@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.forum.subscription;
 
-import com.silverpeas.annotation.Service;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.AbstractResourceSubscriptionService;
@@ -41,9 +40,11 @@ import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvi
     .getForumsService;
 
 /**
+ * As the class is implementing {@link org.silverpeas.initialization.Initialization}, no
+ * annotation appears in order to be taken into account by CDI.<br/>
+ * The service will be taken in charge by initialization treatments.
  * @author Yohann Chastagnier
  */
-@Service
 public class ForumsSubscriptionService extends AbstractResourceSubscriptionService {
 
   @Override

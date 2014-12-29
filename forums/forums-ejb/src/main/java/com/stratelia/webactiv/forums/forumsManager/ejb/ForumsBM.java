@@ -38,6 +38,7 @@ import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Moderator;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * Cette classe est l'interface Remote du Business Manager qui gere les forums
@@ -47,6 +48,10 @@ import com.stratelia.webactiv.node.model.NodePK;
  */
 @Local
 public interface ForumsBM {
+
+  static ForumsBM get() {
+    return ServiceProvider.getService(ForumsBM.class);
+  }
 
   public Forum getForum(ForumPK forumPK);
 

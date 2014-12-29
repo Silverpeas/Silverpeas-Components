@@ -23,23 +23,22 @@
  */
 package com.silverpeas.webpages.notification;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.List;

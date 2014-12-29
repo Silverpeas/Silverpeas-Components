@@ -85,11 +85,11 @@ public class ForumsBMEJB implements ForumsBM {
 
   @EJB
   private TagCloudBm tagcloud;
-  @EJB
+  @Inject
   private RatingService notation;
   @Inject
   private NodeService node;
-  private static final long serialVersionUID = -6809840977338911593L;
+
   private final ForumsContentManager forumsContentManager = new ForumsContentManager();
 
   @Override

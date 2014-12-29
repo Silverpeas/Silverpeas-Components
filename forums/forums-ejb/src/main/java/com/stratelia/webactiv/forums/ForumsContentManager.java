@@ -30,7 +30,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.util.ArrayList;

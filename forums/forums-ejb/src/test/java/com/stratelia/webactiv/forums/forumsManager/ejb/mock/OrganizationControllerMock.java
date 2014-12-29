@@ -24,8 +24,9 @@
 package com.stratelia.webactiv.forums.forumsManager.ejb.mock;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.inject.Named;
 
@@ -35,10 +36,10 @@ import static org.mockito.Mockito.mock;
  * @author Yohann Chastagnier
  */
 @Named("organizationController")
-public class OrganizationControllerMock extends OrganizationController {
+public class OrganizationControllerMock extends DefaultOrganizationController {
   private static final long serialVersionUID = -8307476470533272352L;
 
-  private final OrganizationController mock = mock(OrganizationController.class);
+  private final OrganizationController mock = mock(DefaultOrganizationController.class);
 
   private OrganizationController getMock() {
     return mock;

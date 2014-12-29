@@ -27,7 +27,7 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;

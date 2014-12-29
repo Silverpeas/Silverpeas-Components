@@ -78,14 +78,14 @@
         class="org.silverpeas.core.admin.OrganisationControllerProvider"
         factory-method="getFactory"/> -->
 
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
-        factory-method="getInstance"/>
+  <!-- ych <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"-->
+        <!--factory-method="getInstance"/>-->
 
   <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/> -->
 
-  <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceProvider"
-        factory-method="getFactory"/>
+  <!-- ych <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceProvider"-->
+        <!--factory-method="getFactory"/>-->
 
   <!-- ebo <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceProvider"
         factory-method="getInstance"/> -->
@@ -93,8 +93,8 @@
   <!-- ebo <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
         factory-method="getInstance"/> -->
 
-  <bean id="wywiwygController" class="org.silverpeas.wysiwyg.control.WysiwygController"
-        factory-method="getInstance"/>
+  <!-- ych <bean id="wywiwygController" class="org.silverpeas.wysiwyg.control.WysiwygController"-->
+        <!--factory-method="getInstance"/>-->
 
   <util:list id="entities">
     <value>org.silverpeas.components.suggestionbox.model.SuggestionBox</value>

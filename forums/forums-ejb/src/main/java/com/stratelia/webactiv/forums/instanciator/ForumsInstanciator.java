@@ -32,7 +32,6 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.node.model.NodeDetail;
-import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;
 import java.util.Collection;

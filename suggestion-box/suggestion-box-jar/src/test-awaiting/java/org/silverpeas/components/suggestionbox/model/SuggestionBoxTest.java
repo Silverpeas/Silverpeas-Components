@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.usernotification.builder.UserNotificationBuider;
+import com.silverpeas.usernotification.builder.UserNotificationBuilder;
 import com.silverpeas.usernotification.builder.helper.UserNotificationManager;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.SilverpeasRole;
