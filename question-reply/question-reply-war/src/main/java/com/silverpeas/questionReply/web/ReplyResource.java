@@ -1,22 +1,25 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
- * <p/>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- * <p/>
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection withWriter Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
- * the text describing the FLOSS exception, and it is also available here:
+ * Copyright (C) 2000 - 2014 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- * <p/>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
- * <p/>
- * You should have received a copy of the GNU Affero General Public License along withWriter this
- * program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.web;
 
@@ -24,7 +27,7 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.questionReply.QuestionReplyException;
-import com.silverpeas.questionReply.control.QuestionManagerFactory;
+import com.silverpeas.questionReply.control.QuestionManagerProvider;
 import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.webactiv.SilverpeasRole;
 import java.net.URI;
@@ -75,7 +78,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
       long questionId = Long.parseLong(onQuestionId);
-      List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
+      List<Reply> replies = QuestionManagerProvider.getQuestionManager().getAllReplies(questionId,
           componentId);
       return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
     } catch (Exception ex) {
@@ -88,7 +91,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   @Path("public/question/{questionId}")
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
+      List<Reply> replies = QuestionManagerProvider.getQuestionManager().getQuestionPublicReplies(
           Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
@@ -160,7 +163,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
       QuestionReplyException {
     List<Reply> visibleReplies = new ArrayList<Reply>(replies.size());
-    String authorId = QuestionManagerFactory.getQuestionManager().getQuestion(questionId).
+    String authorId = QuestionManagerProvider.getQuestionManager().getQuestion(questionId).
         getCreatorId();
     SilverpeasRole profile = getUserProfile();
     String userid = getUserDetail().getId();

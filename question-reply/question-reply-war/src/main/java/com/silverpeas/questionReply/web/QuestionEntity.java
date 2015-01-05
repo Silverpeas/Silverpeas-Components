@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,19 +7,19 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.web;
 
@@ -27,10 +27,13 @@ import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.SilverpeasRole;
+
 import static com.stratelia.webactiv.SilverpeasRole.*;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.DateUtil;
+
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -40,7 +43,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author emmanuel.hugonnet@silverpeas.org
  */
 @XmlRootElement
@@ -84,7 +86,7 @@ public class QuestionEntity implements WebEntity {
   private boolean closeable = false;
   @XmlElement(required = true)
   private AuthorEntity creator;
-  
+
   @XmlTransient
   private String language = DisplayI18NHelper.getDefaultLanguage();
 
@@ -97,7 +99,7 @@ public class QuestionEntity implements WebEntity {
     this.categoryId = question.getCategoryId();
     this.title = question.getTitle();
     this.content = question.getContent();
-   try {
+    try {
       this.creationDate = DateUtil.getOutputDate(question.getCreationDate(), lang);
       this.language = lang;
     } catch (ParseException ex) {
@@ -200,16 +202,16 @@ public class QuestionEntity implements WebEntity {
     if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
       return false;
     }
-    if ((this.creatorId == null) ? (other.creatorId != null) : !this.creatorId.equals(
-            other.creatorId)) {
+    if ((this.creatorId == null) ? (other.creatorId != null) :
+        !this.creatorId.equals(other.creatorId)) {
       return false;
     }
-    if ((this.creatorName == null) ? (other.creatorName != null) : !this.creatorName.equals(
-            other.creatorName)) {
+    if ((this.creatorName == null) ? (other.creatorName != null) :
+        !this.creatorName.equals(other.creatorName)) {
       return false;
     }
-    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(
-            other.creationDate)) {
+    if ((this.creationDate == null) ? (other.creationDate != null) :
+        !this.creationDate.equals(other.creationDate)) {
       return false;
     }
     if (this.status != other.status) {
@@ -224,12 +226,12 @@ public class QuestionEntity implements WebEntity {
     if (this.replyNumber != other.replyNumber) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-            other.instanceId)) {
+    if ((this.instanceId == null) ? (other.instanceId != null) :
+        !this.instanceId.equals(other.instanceId)) {
       return false;
     }
-    if ((this.categoryId == null) ? (other.categoryId != null) : !this.categoryId.equals(
-            other.categoryId)) {
+    if ((this.categoryId == null) ? (other.categoryId != null) :
+        !this.categoryId.equals(other.categoryId)) {
       return false;
     }
     return true;
@@ -269,7 +271,8 @@ public class QuestionEntity implements WebEntity {
    * @param lang the language of the current User.
    * @return a list of entities representing each of then one of the specified questions.
    */
-  public static List<QuestionEntity> fromQuestions(final Iterable<Question> questions, final String lang) {
+  public static List<QuestionEntity> fromQuestions(final Iterable<Question> questions,
+      final String lang) {
     List<QuestionEntity> entities = new ArrayList<QuestionEntity>();
     for (Question question : questions) {
       entities.add(fromQuestion(question, lang));
@@ -289,7 +292,7 @@ public class QuestionEntity implements WebEntity {
     try {
       question.setCreationDate(DateUtil.getInputDate(this.creationDate, language));
     } catch (ParseException ex) {
-       question.setCreationDate(this.creationDate);
+      question.setCreationDate(this.creationDate);
     }
     question.setCreatorId(creatorId);
     question.setInstanceId(instanceId);
@@ -325,13 +328,13 @@ public class QuestionEntity implements WebEntity {
   }
 
   boolean isQuestionCloseable(UserDetail userDetail, SilverpeasRole profile) {
-    return publisher != profile && this.getStatus() == Question.WAITING && isQuestionUpdatable(
-            userDetail, profile);
+    return publisher != profile && this.getStatus() == Question.WAITING &&
+        isQuestionUpdatable(userDetail, profile);
   }
 
   boolean isQuestionReplyable(UserDetail userDetail, SilverpeasRole profile) {
-    return publisher != profile && this.getStatus() != Question.CLOSED && isQuestionUpdatable(
-            userDetail, profile);
+    return publisher != profile && this.getStatus() != Question.CLOSED &&
+        isQuestionUpdatable(userDetail, profile);
   }
 
   boolean isQuestionReopenable(SilverpeasRole profile) {
@@ -340,11 +343,11 @@ public class QuestionEntity implements WebEntity {
 
   @Override
   public String toString() {
-    return "QuestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", content="
-            + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate="
-            + creationDate + ", status=" + status + ", publicReplyNumber=" + publicReplyNumber
-            + ", privateReplyNumber=" + privateReplyNumber + ", replyNumber=" + replyNumber
-            + ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", updatable="
-            + updatable + ", reopenable=" + reopenable + '}';
+    return "QuestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", content=" +
+        content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate=" +
+        creationDate + ", status=" + status + ", publicReplyNumber=" + publicReplyNumber +
+        ", privateReplyNumber=" + privateReplyNumber + ", replyNumber=" + replyNumber +
+        ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", updatable=" + updatable +
+        ", reopenable=" + reopenable + '}';
   }
 }

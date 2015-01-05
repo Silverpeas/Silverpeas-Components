@@ -43,7 +43,7 @@
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider" factory-method="getInstance" />
 
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
-  <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerFactory"
+  <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerProvider"
         factory-method="getFactory"/>
 
   <!-- YCH <bean name="personalizationServiceFactory"-->

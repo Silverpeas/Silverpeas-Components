@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,19 +7,19 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.web;
 
@@ -28,8 +28,10 @@ import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.SilverpeasRole;
+
 import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
+
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -42,8 +44,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 /**
- *
  * @author emmanuel.hugonnet@silverpeas.org
  */
 @XmlRootElement
@@ -165,16 +167,16 @@ public class ReplyEntity implements WebEntity {
     if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
       return false;
     }
-    if ((this.creatorId == null) ? (other.creatorId != null) : !this.creatorId.equals(
-            other.creatorId)) {
+    if ((this.creatorId == null) ? (other.creatorId != null) :
+        !this.creatorId.equals(other.creatorId)) {
       return false;
     }
-    if ((this.creatorName == null) ? (other.creatorName != null) : !this.creatorName.equals(
-            other.creatorName)) {
+    if ((this.creatorName == null) ? (other.creatorName != null) :
+        !this.creatorName.equals(other.creatorName)) {
       return false;
     }
-    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(
-            other.creationDate)) {
+    if ((this.creationDate == null) ? (other.creationDate != null) :
+        !this.creationDate.equals(other.creationDate)) {
       return false;
     }
     if (this.publicReply != other.publicReply) {
@@ -211,21 +213,12 @@ public class ReplyEntity implements WebEntity {
   }
 
   /**
-   * Creates several new reply entities from the specified replies.
-   * @param replies the replies to entitify.
-   * @return a list of entities representing each of then one of the specified replies.
-   */
-  public static List<ReplyEntity> fromReplies(final Reply... replies) {
-    return fromReplies(replies);
-  }
-
-  /**
    * Creates several new reply entities from the specified list of replies.
    * @param replies the list of replies to entitify.
    * @return a list of entities representing each of then one of the specified replies.
    */
   public static List<ReplyEntity> fromReplies(final Iterable<Reply> replies, String lang) {
-    List<ReplyEntity> entities = new ArrayList<ReplyEntity>();
+    List<ReplyEntity> entities = new ArrayList<>();
     for (Reply reply : replies) {
       entities.add(fromReply(reply, lang));
     }
@@ -263,13 +256,13 @@ public class ReplyEntity implements WebEntity {
   /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
-   * @param attachmentDetails
+   * @param attachmentDetails a collection of SimpleDocument
    * @return itself.
    */
   public ReplyEntity withAttachments(final Collection<SimpleDocument> attachmentDetails) {
-    if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
-      List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
-      for(SimpleDocument attachment : attachmentDetails) {
+    if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
+      List<AttachmentEntity> entities = new ArrayList<>(attachmentDetails.size());
+      for (SimpleDocument attachment : attachmentDetails) {
         entities.add(AttachmentEntity.fromAttachment(attachment));
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
@@ -290,6 +283,9 @@ public class ReplyEntity implements WebEntity {
 
   @Override
   public String toString() {
-    return "ReplyEntity{" + "id=" + id + ", questionId=" + questionId + ", title=" + title + ", content=" + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" + privateReply + '}';
+    return "ReplyEntity{" + "id=" + id + ", questionId=" + questionId + ", title=" + title +
+        ", content=" + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName +
+        ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" +
+        privateReply + '}';
   }
 }

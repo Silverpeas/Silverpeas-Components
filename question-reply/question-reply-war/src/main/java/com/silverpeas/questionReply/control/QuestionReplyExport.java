@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- *
  * @author ehugonnet
  */
 public class QuestionReplyExport {
@@ -56,12 +55,13 @@ public class QuestionReplyExport {
     this.currentUser = currentUser;
   }
 
-  public void exportQuestion(Question question, StringBuilder sb, QuestionReplySessionController scc)
-      throws QuestionReplyException, ParseException {
+  public void exportQuestion(Question question, StringBuilder sb,
+      QuestionReplySessionController scc) throws QuestionReplyException, ParseException {
     String questionId = question.getPK().getId();
     String qId = "q" + questionId;
     sb.append(
-        "<table class=\"question\" width=\"98%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
+        "<table class=\"question\" width=\"98%\" align=\"center\" border=\"0\" cellpadding=\"0\" " +
+            "cellspacing=\"0\">\n");
     sb.append("<tr>\n");
     sb.append("<td>\n");
     sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
@@ -76,8 +76,8 @@ public class QuestionReplyExport {
     sb.append("<tr>\n");
     sb.append("<td colspan=\"2\">\n");
     sb.append("<span class=\"txtBaseline\">");
-    sb.append(question.readCreatorName()).append(" - ").append(
-        resource.getOutputDate(question.getCreationDate()));
+    sb.append(question.readCreatorName()).append(" - ")
+        .append(resource.getOutputDate(question.getCreationDate()));
     sb.append("</span>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");
@@ -131,15 +131,15 @@ public class QuestionReplyExport {
     sb.append("<br>\n");
     sb.append("<center>\n");
     sb.append(
-        "<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
+        "<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" " +
+            "cellspacing=\"0\">\n");
     sb.append("<tr>\n");
     sb.append("<td nowrap=\"nowrap\">\n");
     sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
     sb.append("<tr>\n");
     sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
-    sb.append(" <span class=\"titreQuestionReponse\">").append(
-        EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append(
-        "</span>\n");
+    sb.append(" <span class=\"titreQuestionReponse\">")
+        .append(EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append("</span>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");
     sb.append("</table>\n");
@@ -162,14 +162,15 @@ public class QuestionReplyExport {
           "root.EX_CANT_GET_ATTACHMENTS", ex);
     }
 
-    if (attachments != null && ! attachments.isEmpty()) {
+    if (attachments != null && !attachments.isEmpty()) {
       // les fichiers joints : création du lien dans la page
       sb.append("<td valign=\"top\" align=\"left\">\n");
       sb.append("<a name=\"attachments\"></a>\n");
       sb.append("<td valign=\"top\" align=\"left\">\n");
       sb.append("<center>\n");
       sb.append(
-          "<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
+          "<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" " +
+              "cellspacing=\"0\">\n");
       sb.append("<tr>\n");
       sb.append("<td nowrap=\"nowrap\">\n");
       sb.append("<table width=\"150\">\n");
@@ -189,7 +190,8 @@ public class QuestionReplyExport {
     sb.append("</table>\n");
     sb.append("<br>\n");
     sb.append("<span class=\"txtBaseline\">");
-    sb.append(resource.getString("questionReply.replyOf")).append(" ").append(reply.readCreatorName());
+    sb.append(resource.getString("questionReply.replyOf")).append(" ")
+        .append(reply.readCreatorName());
     sb.append(" - ").append(resource.getOutputDate(reply.getCreationDate()));
     sb.append("</span>\n");
     sb.append("</td>\n");
@@ -219,11 +221,13 @@ public class QuestionReplyExport {
     sb.append("</tr>\n");
   }
 
-  public boolean  isReplyVisible(Question question, Reply reply, QuestionReplySessionController scc) {
-    return isReplyVisible(question, reply, scc.getUserRole(), scc.getUserId()) ;
+  public boolean isReplyVisible(Question question, Reply reply,
+      QuestionReplySessionController scc) {
+    return isReplyVisible(question, reply, scc.getUserRole(), scc.getUserId());
   }
 
-  public static boolean isReplyVisible(Question question, Reply reply, SilverpeasRole role, String userId) {
+  public static boolean isReplyVisible(Question question, Reply reply, SilverpeasRole role,
+      String userId) {
     boolean isPrivate = reply.getPublicReply() == 0;
     boolean isPublisherQuestion = true;
     if (SilverpeasRole.publisher == role && isPrivate) {

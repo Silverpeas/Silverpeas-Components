@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
@@ -122,12 +125,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   public Collection<Question> getQuestionsByCategory(String categoryId)
       throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getAllQuestionsByCategory(getComponentId(),
-        categoryId);
+    return QuestionManagerProvider.getQuestionManager()
+        .getAllQuestionsByCategory(getComponentId(), categoryId);
   }
 
   public Collection<Question> getAllQuestions() throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getAllQuestions(getComponentId());
+    return QuestionManagerProvider.getQuestionManager().getAllQuestions(getComponentId());
   }
 
   /*
@@ -135,10 +138,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * destinataires met la question en session
    */
   public Question getQuestion(long questionId) throws QuestionReplyException {
-    Question question = QuestionManagerFactory.getQuestionManager().getQuestion(questionId);
+    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(questionId);
     setCurrentQuestion(question);
-    question.writeRecipients(QuestionManagerFactory.getQuestionManager().getQuestionRecipients(
-        questionId));
+    question.writeRecipients(
+        QuestionManagerProvider.getQuestionManager().getQuestionRecipients(questionId));
     question.writeReplies(getRepliesForQuestion(questionId));
     return question;
   }
@@ -177,7 +180,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère une réponse met la réponse en session
    */
   public Reply getReply(long replyId) throws QuestionReplyException {
-    Reply reply = QuestionManagerFactory.getQuestionManager().getReply(replyId);
+    Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
     setCurrentReply(reply);
     return reply;
   }
@@ -215,7 +218,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Store the new question and notify subscribers and experts.
    */
   public long saveNewQuestion() throws QuestionReplyException {
-    long questionId = QuestionManagerFactory.getQuestionManager().createQuestion(newQuestion);
+    long questionId = QuestionManagerProvider.getQuestionManager().createQuestion(newQuestion);
     newQuestion.getPK().setId(String.valueOf(questionId));
     notifyQuestion(newQuestion);
     notifyQuestionFromExpert(newQuestion);
@@ -249,8 +252,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Persist new FAQ inside database and add positions
-   *
-   * @param Positions the JSON position request
    * @return question identifier
    * @throws QuestionReplyException
    */
@@ -265,7 +266,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
 
-    return QuestionManagerFactory.getQuestionManager().createQuestionReply(newQuestion, newReply);
+    return QuestionManagerProvider.getQuestionManager().createQuestionReply(newQuestion, newReply);
   }
 
   /*
@@ -275,7 +276,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     WAPrimaryKey pk = newReply.getPK();
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
-    QuestionManagerFactory.getQuestionManager().createReply(newReply, getCurrentQuestion());
+    QuestionManagerProvider.getQuestionManager().createReply(newReply, getCurrentQuestion());
     getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
     notifyReply(newReply);
   }
@@ -285,18 +286,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     getCurrentQuestion().setTitle(title);
     getCurrentQuestion().setContent(content);
     getCurrentQuestion().setCategoryId(categoryId);
-    QuestionManagerFactory.getQuestionManager().updateQuestion(getCurrentQuestion());
+    QuestionManagerProvider.getQuestionManager().updateQuestion(getCurrentQuestion());
   }
 
-  public void updateCurrentReply(String title, String content)
-      throws QuestionReplyException {
+  public void updateCurrentReply(String title, String content) throws QuestionReplyException {
     Reply reply = getCurrentReply();
     reply.setTitle(title);
     reply.writeWysiwygContent(content);
     WAPrimaryKey pk = reply.getPK();
     pk.setComponentName(getComponentId());
     reply.setPK(pk);
-    QuestionManagerFactory.getQuestionManager().updateReply(reply);
+    QuestionManagerProvider.getQuestionManager().updateReply(reply);
     getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
   }
 
@@ -306,7 +306,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public void deleteQuestions(Collection<Long> questionsIds) throws QuestionReplyException {
     try {
-      QuestionManagerFactory.getQuestionManager().deleteQuestionAndReplies(questionsIds);
+      QuestionManagerProvider.getQuestionManager().deleteQuestionAndReplies(questionsIds);
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException("QuestionReplySessionController.deleteQuestions",
           SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
@@ -355,15 +355,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   private boolean isQuestionClosedWithoutAnyReply(int rest) {
-    return (((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
-        && (getCurrentQuestion().hasClosedStatus());
+    return (((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0)) &&
+        (getCurrentQuestion().hasClosedStatus());
   }
 
   /*
    * Clos une liste de questions
    */
   public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
-    QuestionManagerFactory.getQuestionManager().closeQuestions(questionIds);
+    QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
   }
 
   /*
@@ -373,93 +373,93 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public void closeQuestion(long questionId) throws QuestionReplyException {
     Collection<Long> questionIds = new ArrayList<Long>();
     questionIds.add(questionId);
-    QuestionManagerFactory.getQuestionManager().closeQuestions(questionIds);
+    QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
     Collection<Long> questionIds = new ArrayList<Long>();
     questionIds.add(questionId);
-    QuestionManagerFactory.getQuestionManager().openQuestions(questionIds);
+    QuestionManagerProvider.getQuestionManager().openQuestions(questionIds);
   }
 
   /*
    * Supprime les réponses publiques et retourne le nombre de réponses publiques restantes.
    */
   private int deletePublicReplies(Collection<Long> replyIds) throws QuestionReplyException {
-    QuestionManagerFactory.getQuestionManager().updateRepliesPublicStatus(replyIds,
-        getCurrentQuestion());
+    QuestionManagerProvider.getQuestionManager()
+        .updateRepliesPublicStatus(replyIds, getCurrentQuestion());
     return getCurrentQuestion().getPublicReplyNumber();
   }
 
   /*
    * Supprime les réponses privées =>
-   * QuestionManagerFactory.getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
+   * QuestionManagerProvider.getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
    * réponses privées restantes
    */
   private int deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
-    QuestionManagerFactory.getQuestionManager().updateRepliesPrivateStatus(replyIds,
-        getCurrentQuestion());
+    QuestionManagerProvider.getQuestionManager()
+        .updateRepliesPrivateStatus(replyIds, getCurrentQuestion());
     return getCurrentQuestion().getPrivateReplyNumber();
   }
 
   /*
    * Retourne la liste des questions de l'utilisateur de rôle User i.e. liste des questions avec
-   * réponses publiques => QuestionManagerFactory.getQuestionManager().getPublicQuestions()
+   * réponses publiques => QuestionManagerProvider.getQuestionManager().getPublicQuestions()
    */
   private Collection<Question> getUserQuestions() throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getPublicQuestions(getComponentId());
+    return QuestionManagerProvider.getQuestionManager().getPublicQuestions(getComponentId());
   }
 
   /*
    * Retourne la liste des questions de l'utilisateur de rôle Writer (expert) i.e. liste des
    * questions dont il est le destinataire non close =>
-   * QuestionManagerFactory.getQuestionManager().getReceiveQuestions()
+   * QuestionManagerProvider.getQuestionManager().getReceiveQuestions()
    */
   private Collection<Question> getWriterQuestions() throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getReceiveQuestions(getUserId(),
-        getComponentId());
+    return QuestionManagerProvider.getQuestionManager()
+        .getReceiveQuestions(getUserId(), getComponentId());
   }
 
   /*
    * Retourne la liste des questions de l'utilisateur de rôle Publisher (demandeur) i.e. liste des
    * questions dont il est l'auteur non close ou close avec réponses privées =>
-   * QuestionManagerFactory.getQuestionManager().getSendQuestions()
+   * QuestionManagerProvider.getQuestionManager().getSendQuestions()
    */
   private Collection<Question> getPublisherQuestions() throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getSendQuestions(getUserId(),
-        getComponentId());
+    return QuestionManagerProvider.getQuestionManager()
+        .getSendQuestions(getUserId(), getComponentId());
   }
 
   /*
    * Retourne la liste des questions de l'utilisateur de rôle Admin (animateur) i.e. liste des
    * questions non close ou close avec réponses publiques =>
-   * QuestionManagerFactory.getQuestionManager().getQuestions()
+   * QuestionManagerProvider.getQuestionManager().getQuestions()
    */
   private Collection<Question> getAdminQuestions() throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestions(getComponentId());
+    return QuestionManagerProvider.getQuestionManager().getQuestions(getComponentId());
   }
 
   /*
    * liste les réponses publiques d'une question
    */
   private Collection<Reply> getPublicRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(id,
-        getComponentName());
+    return QuestionManagerProvider.getQuestionManager()
+        .getQuestionPublicReplies(id, getComponentName());
   }
 
   /*
    * liste les réponses privées d'une question
    */
   private Collection<Reply> getPrivateRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestionPrivateReplies(id,
-        getComponentName());
+    return QuestionManagerProvider.getQuestionManager()
+        .getQuestionPrivateReplies(id, getComponentName());
   }
 
   /*
    * liste les réponses à une question
    */
   private Collection<Reply> getAllRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestionReplies(id, getComponentName());
+    return QuestionManagerProvider.getQuestionManager().getQuestionReplies(id, getComponentName());
   }
 
   public final void setUserProfil() {
@@ -479,7 +479,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Redefinition method de abstractComponentSessionController car 4 rôles Return the highest user's
+   * Redefinition method de abstractComponentSessionController car 4 rôles Return the highest
+   * user's
    * role (admin, publisher, writer or user)
    */
   @Override
@@ -498,8 +499,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
           break;
         case writer:
           if (flag != SilverpeasRole.publisher) {
-          flag = SilverpeasRole.writer;
-        }
+            flag = SilverpeasRole.writer;
+          }
           break;
         default:
           break;
@@ -529,11 +530,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public ContainerPositionInterface getSilverContentIdPosition() throws QuestionReplyException {
     try {
-      return containerContext.getSilverContentIdSearchContext(Integer.parseInt(
-          getCurrentQuestionContentId()), getComponentId());
+      return containerContext
+          .getSilverContentIdSearchContext(Integer.parseInt(getCurrentQuestionContentId()),
+              getComponentId());
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessionController.getCurrentQuestionWriters()",
+      throw new QuestionReplyException("QuestionReplySessionController.getCurrentQuestionWriters()",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
     }
   }
@@ -542,13 +543,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     GenericPanel gp = new GenericPanel();
     String webContext = URLManager.getApplicationURL();
     String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
-    String cancelURL = webContext + "/RquestionReply/" + getComponentId()
-        + "/ConsultQuestionQuery?questionId=" + getCurrentQuestion().getPK().getId();
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), webContext
-        + "/RquestionReply/" + getComponentId() + "/Main");
+    String cancelURL =
+        webContext + "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId=" +
+            getCurrentQuestion().getPK().getId();
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
+        webContext + "/RquestionReply/" + getComponentId() + "/Main");
     Pair<String, String> hostPath1 = new Pair<>(getCurrentQuestion().getTitle(),
-        "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
-        + getCurrentQuestion().getPK().getId());
+        "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId=" +
+            getCurrentQuestion().getPK().getId());
     Pair<String, String>[] hostPath = new Pair[]{hostPath1};
 
     gp.resetAll();
@@ -581,13 +583,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
     if (uids != null) {
       for (String uid : uids) {
-        Recipient recipient = new Recipient(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(),
-            uid);
+        Recipient recipient =
+            new Recipient(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(), uid);
         recipients.add(recipient);
       }
     }
     getCurrentQuestion().writeRecipients(recipients);
-    QuestionManagerFactory.getQuestionManager().updateQuestionRecipients(getCurrentQuestion());
+    QuestionManagerProvider.getQuestionManager().updateQuestionRecipients(getCurrentQuestion());
     notifyQuestion(getCurrentQuestion());
   }
 
@@ -613,8 +615,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       // question
       ContainerPositionInterface position = getSilverContentIdPosition();
       if (position != null && !position.isEmpty()) {
-        List<Integer> liste = containerContext.getSilverContentIdByPosition(position,
-            listeInstanceId);
+        List<Integer> liste =
+            containerContext.getSilverContentIdByPosition(position, listeInstanceId);
 
         CardManager cardManager = CardManager.getInstance();
         for (Integer silverContentId : liste) {
@@ -631,8 +633,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         }
       }
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessionController.getCurrentQuestionWriters()",
+      throw new QuestionReplyException("QuestionReplySessionController.getCurrentQuestionWriters()",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
     }
 
@@ -647,9 +648,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private void notifyTemplateQuestion(Question question, Collection<UserRecipient> users)
       throws QuestionReplyException {
-    QuestionNotifier notifier =
-        new QuestionNotifier(getUserDetail(getUserId()), question, new NotificationData(
-            getString("questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - " +
+    QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), question,
+        new NotificationData(getString("questionReply.notification") + getComponentLabel(),
+            getSpaceLabel() + " - " +
                 getComponentLabel(), getComponentLabel(), getComponentId()));
     notifier.sendNotification(users);
   }
@@ -674,8 +675,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private void notifyQuestionFromExpert(Question question) throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
-    String[] usersIds = getOrganisationController()
-        .getUsersIdsByRoleNames(getComponentId(), profils);
+    String[] usersIds =
+        getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
       users.add(new UserRecipient(userId));
@@ -688,14 +689,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @throws QuestionReplyException
    */
   private void notifyReply(Reply reply) throws QuestionReplyException {
-    UserDetail user = getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
+    UserDetail user =
+        getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
     ReplyNotifier notifier =
         new ReplyNotifier(getUserDetail(getUserId()), getCurrentQuestion(), reply,
             new NotificationData(getString("questionReply.notification") + getComponentLabel(),
                 getSpaceLabel() + " - " + getComponentLabel(), getComponentLabel(),
                 getComponentId()));
-    notifier.sendNotification((List<UserRecipient>) Collections.singletonList(
-        new UserRecipient(user)));
+    notifier
+        .sendNotification((List<UserRecipient>) Collections.singletonList(new UserRecipient(user)));
   }
 
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,
@@ -710,8 +712,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     if (currentQuestion != null) {
       try {
         ContentManager contentManager = new ContentManager();
-        contentId = "" + contentManager.getSilverContentId(
-            currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
+        contentId = "" + contentManager
+            .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("questionReply", "QuestionReplySessionController",
             "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
@@ -750,8 +752,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public boolean isReplyVisible(Question question, Reply reply) {
-    return com.silverpeas.questionReply.control.QuestionReplyExport.isReplyVisible(question, reply,
-        getUserRole(), getUserId());
+    return com.silverpeas.questionReply.control.QuestionReplyExport
+        .isReplyVisible(question, reply, getUserRole(), getUserId());
   }
 
   public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
@@ -764,8 +766,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public synchronized void createCategory(Category category)
-      throws QuestionReplyException {
+  public synchronized void createCategory(Category category) throws QuestionReplyException {
     try {
       category.setCreationDate(DateUtil.date2SQLDate(new Date()));
       category.setCreatorId(getUserId());
@@ -787,8 +788,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public synchronized void updateCategory(Category category)
-      throws QuestionReplyException {
+  public synchronized void updateCategory(Category category) throws QuestionReplyException {
     try {
       getNodeService().setDetail(category);
     } catch (Exception e) {
@@ -802,7 +802,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       Collection<Question> questions = getQuestionsByCategory(categoryId);
       for (Question question : questions) {
         question.setCategoryId("");
-        QuestionManagerFactory.getQuestionManager().updateQuestion(question);
+        QuestionManagerProvider.getQuestionManager().updateQuestion(question);
       }
       NodePK nodePk = new NodePK(categoryId, getComponentId());
       getNodeService().removeNode(nodePk);
@@ -812,8 +812,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException,
-      ParseException {
+  public ExportReport export(ResourcesWrapper resource)
+      throws QuestionReplyException, ParseException {
     StringBuilder sb = new StringBuilder("exportFAQ");
     Date date = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
@@ -833,8 +833,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         FileFolderManager.createFolder(fileExportDir);
       } catch (UtilException ex) {
         throw new QuestionReplyException("QuestionReplySessionController.export()",
-            SilverpeasRuntimeException.ERROR,
-            "root.MSG_FOLDER_NOT_CREATE", ex);
+            SilverpeasRuntimeException.ERROR, "root.MSG_FOLDER_NOT_CREATE", ex);
       }
     }
 
@@ -846,13 +845,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       FileFolderManager.createFolder(forFiles);
     } catch (UtilException ex) {
       throw new QuestionReplyException("QuestionReplySessionController.export()",
-          SilverpeasRuntimeException.ERROR,
-          "root.MSG_FOLDER_NOT_CREATE", ex);
+          SilverpeasRuntimeException.ERROR, "root.MSG_FOLDER_NOT_CREATE", ex);
     }
 
     // intégrer la css du disque dans "files"
-    ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.questionReply.settings.questionReplySettings", "");
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
     try {
       String chemin = (settings.getString("mappingDir"));
       if (chemin.startsWith("file:")) {
@@ -860,8 +858,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
       Collection<File> files = FileFolderManager.getAllFile(chemin);
       for (File file : files) {
-        File newFile = new File(dir + File.separator + nameForFiles + File.separator + file
-            .getName());
+        File newFile =
+            new File(dir + File.separator + nameForFiles + File.separator + file.getName());
         FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
       }
     } catch (Exception ex) {
@@ -893,16 +891,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
     } catch (Exception ex) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CAN_CREATE_ZIP", ex);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CAN_CREATE_ZIP", ex);
     }
     // Stockage de la date de fin de l'export dans l'objet rapport
     exportReport.setDateFin(new Date());
     return exportReport;
   }
 
-  public String toHTML(File file, ResourcesWrapper resource) throws QuestionReplyException,
-      ParseException {
+  public String toHTML(File file, ResourcesWrapper resource)
+      throws QuestionReplyException, ParseException {
     String fileName = file.getName();
     StringBuilder sb = new StringBuilder();
 
@@ -957,8 +954,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return sb.toString();
   }
 
-  public String addBody(ResourcesWrapper resource, File file) throws QuestionReplyException,
-      ParseException {
+  public String addBody(ResourcesWrapper resource, File file)
+      throws QuestionReplyException, ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
     Collection<NodeDetail> categories = getAllCategories();
@@ -979,8 +976,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       StringBuilder sb) throws QuestionReplyException, ParseException {
     // titre de la catégorie
     sb.append("<tr>\n");
-    sb.append("<td class=\"titreCateg\" width=\"91%\">").append(category.getName()).append(
-        "</td>\n");
+    sb.append("<td class=\"titreCateg\" width=\"91%\">").append(category.getName())
+        .append("</td>\n");
     sb.append("</tr>\n");
     // contenu de la catégorie
     sb.append("<tr>\n");
@@ -999,7 +996,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Classify the question reply FAQ on the PdC only if the positions parameter is filled
-   *
    * @param questionId the question identifier
    * @param positions the json string positions
    */
@@ -1024,9 +1020,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       if (qiClassification != null && !qiClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
         String questionIdStr = Long.toString(questionId);
-        PdcClassification classification = aPdcClassificationOfContent(questionIdStr, questionDetail
-            .getComponentInstanceId())
-            .withPositions(pdcPositions);
+        PdcClassification classification =
+            aPdcClassificationOfContent(questionIdStr, questionDetail.getComponentInstanceId())
+                .withPositions(pdcPositions);
         if (!classification.isEmpty()) {
           PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
           classification.ofContent(questionIdStr);

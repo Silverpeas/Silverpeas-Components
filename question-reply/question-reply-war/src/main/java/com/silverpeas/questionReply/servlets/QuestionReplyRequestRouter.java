@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.servlets;
 
@@ -49,8 +52,8 @@ import static com.stratelia.webactiv.SilverpeasRole.*;
 /**
  * Router class for SuestionReply component
  */
-public class QuestionReplyRequestRouter extends
-    ComponentRequestRouter<QuestionReplySessionController> {
+public class QuestionReplyRequestRouter
+    extends ComponentRequestRouter<QuestionReplySessionController> {
 
   private static final long serialVersionUID = 442480445762334578L;
 
@@ -65,11 +68,9 @@ public class QuestionReplyRequestRouter extends
   }
 
   /**
-   * Method declaration
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   @Override
   public QuestionReplySessionController createComponentSessionController(
@@ -84,7 +85,8 @@ public class QuestionReplyRequestRouter extends
    * context is null then get the last one from the session controller. So the containerContext is
    * the same in the request and the session.
    */
-  private void resetContainerContext(QuestionReplySessionController scc, HttpServletRequest request) {
+  private void resetContainerContext(QuestionReplySessionController scc,
+      HttpServletRequest request) {
     ContainerContext containerContext = (ContainerContext) request.getAttribute("ContainerContext");
 
     if (containerContext != null) {
@@ -97,12 +99,10 @@ public class QuestionReplyRequestRouter extends
     }
   }
 
-  private void resetReturnURL(QuestionReplySessionController scc,
-      HttpServletRequest request) {
+  private void resetReturnURL(QuestionReplySessionController scc, HttpServletRequest request) {
     String returnURL = request.getParameter("ReturnURL");
     if (StringUtil.isDefined(returnURL)) {
-      SilverTrace.info("questionReply",
-          "QuestionReplyRequestRouter.resetReturnURL()",
+      SilverTrace.info("questionReply", "QuestionReplyRequestRouter.resetReturnURL()",
           "root.MSG_GEN_PARAM_VALUE", "returnURL != null");
       scc.setReturnURL(returnURL);
     } else {
@@ -114,7 +114,6 @@ public class QuestionReplyRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -168,7 +167,7 @@ public class QuestionReplyRequestRouter extends
         if (admin == role || writer == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           if (checkQuestions != null) {
-            List<Long> listToDelete = new ArrayList<Long>(checkQuestions.length);
+            List<Long> listToDelete = new ArrayList<>(checkQuestions.length);
             for (String checkQuestion : checkQuestions) {
               Long questionId = Long.valueOf(checkQuestion);
               listToDelete.add(questionId);
@@ -179,18 +178,18 @@ public class QuestionReplyRequestRouter extends
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("OpenQ")) {
+      } else if ("OpenQ".equals(function)) {
         String questionId = request.getParameter("Id");
         scc.openQuestion(Long.parseLong(questionId));
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("CloseQ")) {
+      } else if ("CloseQ".equals(function)) {
         String questionId = request.getParameter("Id");
         scc.closeQuestion(Long.parseLong(questionId));
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("CloseQuestions")) {
+      } else if ("CloseQuestions".equals(function)) {
         if (admin == role || writer == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
-          List<Long> listToClose = new ArrayList<Long>();
+          List<Long> listToClose = new ArrayList<>();
           if (checkQuestions != null) {
             for (String checkQuestion : checkQuestions) {
               Long questionId = Long.valueOf(checkQuestion);
@@ -202,14 +201,14 @@ public class QuestionReplyRequestRouter extends
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("CloseQuestion")) {
+      } else if ("CloseQuestion".equals(function)) {
         if (admin == role || writer == role) {
           scc.closeQuestion(Long.parseLong(request.getParameter("QuestionId")));
           destination = getDestination("Main", scc, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("ConsultQuestionQuery")) {
+      } else if ("ConsultQuestionQuery".equals(function)) {
         String questionId;
         if (request.getParameter("questionId") != null) {
           questionId = request.getParameter("questionId");
@@ -225,7 +224,7 @@ public class QuestionReplyRequestRouter extends
         scc.setCurrentQuestion(question);
         request.setAttribute("QuestionId", questionId);
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("ConsultQuestion")) {
+      } else if ("ConsultQuestion".equals(function)) {
         scc.setUserProfil();
         flag = scc.getUserProfil();
         request.setAttribute("Flag", flag);
@@ -234,7 +233,7 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("question", question);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = "/questionReply/jsp/consultQuestion.jsp";
-      } else if (function.equals("UpdateQ")) {
+      } else if ("UpdateQ".equals(function)) {
         // mettre à jour la question courante
         String questionId = request.getParameter("QuestionId");
         Question question = scc.getQuestion(Long.parseLong(questionId));
@@ -243,7 +242,7 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("Flag", scc.getUserProfil());
         request.setAttribute("AllCategories", scc.getAllCategories());
         destination = "/questionReply/jsp/updateQ.jsp";
-      } else if (function.equals("UpdateQQuery")) {
+      } else if ("UpdateQQuery".equals(function)) {
         if (admin == role || writer == role) {
           request.setAttribute("question", scc.getCurrentQuestion());
           destination = "/questionReply/jsp/updateQ.jsp";
@@ -253,7 +252,7 @@ public class QuestionReplyRequestRouter extends
       } else if ("DeleteReplies".equals(function)) {
         if (canDeleteReply(role)) {
           String[] checkReplies = request.getParameterValues("checkedReply");
-          List<Long> listToDelete = new ArrayList<Long>();
+          List<Long> listToDelete = new ArrayList<>();
           if (checkReplies != null) {
             for (String checkReply : checkReplies) {
               Long replyId = Long.valueOf(checkReply);
@@ -265,7 +264,7 @@ public class QuestionReplyRequestRouter extends
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("DeleteR")) {
+      } else if ("DeleteR".equals(function)) {
         String questionId = request.getParameter("QuestionId");
         if (StringUtil.isDefined(questionId) && StringUtil.isLong(questionId) &&
             canDeleteReply(role)) {
@@ -274,36 +273,36 @@ public class QuestionReplyRequestRouter extends
           String id = request.getParameter("replyId");
           if (StringUtil.isDefined(id) && StringUtil.isLong(id)) {
             Long replyId = Long.valueOf(id);
-            Collection<Long> replies = new ArrayList<Long>();
+            Collection<Long> replies = new ArrayList<>();
             replies.add(replyId);
             scc.deleteR(replies);
           }
         }
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("EffectiveUpdateQ")) {
+      } else if ("EffectiveUpdateQ".equals(function)) {
         scc.updateCurrentQuestion(request.getParameter("title"), request.getParameter("content"),
             request.getParameter("CategoryId"));
         String questionId = request.getParameter("questionId");
         request.setAttribute("QuestionId", questionId);
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("CreateRQuery")) {
+      } else if ("CreateRQuery".equals(function)) {
         String id = request.getParameter("QuestionId");
         Question question = scc.getQuestion(Long.parseLong(id));
         scc.setCurrentQuestion(question);
         // passer le paramètre pour savoir si on utilise les réponses privées
         Boolean usedPrivateReplies = scc.isPrivateRepliesEnabled();
         request.setAttribute("UsedPrivateReplies", usedPrivateReplies);
-        if ((flag.equals("admin")) || (flag.equals("writer"))) {
+        if (("admin".equals(flag)) || ("writer".equals(flag))) {
           request.setAttribute("reply", scc.getNewReply());
           destination = "/questionReply/jsp/addR.jsp";
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("EffectiveCreateR")) {
+      } else if ("EffectiveCreateR".equals(function)) {
         int publicReply = 1;
         if (StringUtil.isInteger(request.getParameter("publicReply"))) {
           publicReply = Integer.parseInt(request.getParameter("publicReply")); // 0 = private, 1 =
-                                                                               // public
+          // public
         }
         scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
             publicReply, publicReply == 1 ? 0 : 1);
@@ -314,7 +313,7 @@ public class QuestionReplyRequestRouter extends
         }
 
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("UpdateRQuery")) {
+      } else if ("UpdateRQuery".equals(function)) {
         request.setAttribute("reply", scc.getCurrentReply());
         destination = "/questionReply/jsp/updateR.jsp";
       } else if ("UpdateR".equals(function)) {
@@ -333,25 +332,25 @@ public class QuestionReplyRequestRouter extends
         }
 
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("RelaunchQuery")) {
-        if ((flag.equals("admin")) || (flag.equals("publisher"))) {
+      } else if ("RelaunchQuery".equals(function)) {
+        if (("admin".equals(flag)) || ("publisher".equals(flag))) {
           destination = scc.genericWriters();
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("EffectiveRelaunch")) {
-        if ((flag.equals("admin")) || (flag.equals("publisher"))) {
+      } else if ("EffectiveRelaunch".equals(function)) {
+        if (("admin".equals(flag)) || ("publisher".equals(flag))) {
           scc.relaunchRecipients();
           destination = getDestination("ConsultQuestion", scc, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("CreateQueryQR")) {
+      } else if ("CreateQueryQR".equals(function)) {
         request.setAttribute("question", scc.getNewQuestion());
         request.setAttribute("reply", scc.getNewReply());
         request.setAttribute("AllCategories", scc.getAllCategories());
         destination = "/questionReply/jsp/addQR.jsp";
-      } else if (function.equals("EffectiveCreateQR")) {
+      } else if ("EffectiveCreateQR".equals(function)) {
 
         scc.setNewQuestionContent(request.getParameter("title"), request.getParameter("content"),
             request.getParameter("CategoryId"));
@@ -366,7 +365,7 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("QuestionId", id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("CreateQQuery")) {
+      } else if ("CreateQQuery".equals(function)) {
         scc.setUserProfil();
         flag = scc.getUserProfil();
         if ("publisher".equals(flag) || "admin".equals(flag) || "writer".equals(flag)) {
@@ -377,8 +376,8 @@ public class QuestionReplyRequestRouter extends
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("EffectiveCreateQ")) {
-        if (flag.equals("publisher") || flag.equals("admin") || flag.equals("writer")) {
+      } else if ("EffectiveCreateQ".equals(function)) {
+        if ("publisher".equals(flag) || "admin".equals(flag) || "writer".equals(flag)) {
           scc.setNewQuestionContent(request.getParameter("title"), request.getParameter("content"),
               request.getParameter("CategoryId"));
           long questionId = scc.saveNewQuestion();
@@ -390,36 +389,36 @@ public class QuestionReplyRequestRouter extends
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("ViewAttachments")) {
+      } else if ("ViewAttachments".equals(function)) {
         request.setAttribute("CurrentReply", scc.getCurrentReply());
         request.setAttribute("Language", scc.getLanguage());
         destination = "/questionReply/jsp/attachmentManager.jsp";
-      } // gestion des catégories
-      // ----------------------
-      else if (function.equals("ViewCategory")) {
+      } else if ("ViewCategory".equals(function)) {
+        // gestion des catégories
+        // ----------------------
         request.setAttribute("Categories", scc.getAllCategories());
         request.setAttribute("UserId", scc.getUserId());
         destination = getDestination("Main", scc, request);
-      } else if (function.equals("NewCategory")) {
+      } else if ("NewCategory".equals(function)) {
         request.setAttribute("UserName", scc.getUserDetail().getDisplayedName());
         destination = "/questionReply/jsp/categoryManager.jsp";
-      } else if (function.equals("CreateCategory")) {
+      } else if ("CreateCategory".equals(function)) {
         // récupération des paramètres
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
-        NodeDetail node = new NodeDetail("unknown", name, description, null,
-            null, null, "0", "unknown");
+        NodeDetail node =
+            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
         Category category = new Category(node);
         scc.createCategory(category);
 
         destination = getDestination("ViewCategory", scc, request);
-      } else if (function.equals("EditCategory")) {
+      } else if ("EditCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         Category category = scc.getCategory(categoryId);
         request.setAttribute("Category", category);
 
         destination = "/questionReply/jsp/categoryManager.jsp";
-      } else if (function.equals("UpdateCategory")) {
+      } else if ("UpdateCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         Category category = scc.getCategory(categoryId);
         String name = request.getParameter("Name");
@@ -430,7 +429,7 @@ public class QuestionReplyRequestRouter extends
         scc.updateCategory(category);
 
         destination = getDestination("ViewCategory", scc, request);
-      } else if (function.equals("DeleteCategory")) {
+      } else if ("DeleteCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         scc.deleteCategory(categoryId);
 
@@ -448,8 +447,7 @@ public class QuestionReplyRequestRouter extends
           request.setAttribute("QuestionId", id);
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Reply")) {
-          // traitement des réponses, on arrive sur la question contenant la
-          // réponse
+          // traitement des réponses, on arrive sur la question contenant la réponse
           Reply reply = scc.getReply(Long.parseLong(id));
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
@@ -464,8 +462,7 @@ public class QuestionReplyRequestRouter extends
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
 
-          SilverTrace.info("questionReply",
-              "QuestionReplyRequestRouter.getDestination()",
+          SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId +
                   " replyId = " + id);
 
@@ -473,7 +470,7 @@ public class QuestionReplyRequestRouter extends
         } else {
           destination = getDestination("Main", scc, request);
         }
-      } else if (function.equals("Export")) {
+      } else if ("Export".equals(function)) {
         ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
         ExportReport report = scc.export(resource);
         request.setAttribute("ExportReport", report);
@@ -493,8 +490,7 @@ public class QuestionReplyRequestRouter extends
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
-    SilverTrace.info("questionReply",
-        "QuestionReplyRequestRouter.getDestination()",
+    SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "destination " + destination);
     return destination;
   }

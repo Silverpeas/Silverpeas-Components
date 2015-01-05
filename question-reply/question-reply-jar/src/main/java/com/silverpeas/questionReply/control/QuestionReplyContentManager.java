@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
@@ -51,7 +51,8 @@ public class QuestionReplyContentManager implements ContentInterface {
   public QuestionReplyContentManager() {
   }
 
-  /** Find all the SilverContent with the given SilverContentId
+  /**
+   * Find all the SilverContent with the given SilverContentId
    * @param ids
    * @param userId
    * @param peasId
@@ -64,14 +65,12 @@ public class QuestionReplyContentManager implements ContentInterface {
   }
 
   private List<String> makeIdArray(List<Integer> idList) {
-    List<String> ids = new ArrayList<String>(idList.size());
+    List<String> ids = new ArrayList<>(idList.size());
     for (int contentId : idList) {
       try {
         String id = this.contentManager.getInternalContentId(contentId);
         ids.add(id);
-      } catch (ClassCastException ignored) {
-        // ignore unknown item
-      } catch (ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException ignored) {
         // ignore unknown item
       }
     }
@@ -79,13 +78,13 @@ public class QuestionReplyContentManager implements ContentInterface {
   }
 
   private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
-    List<SilverContentInterface> headers = new ArrayList<SilverContentInterface>();
+    List<SilverContentInterface> headers = new ArrayList<>();
     try {
-      Collection<Question> questions = QuestionManagerFactory.getQuestionManager().getQuestionsByIds(
-          new ArrayList<String>(ids));
+      Collection<Question> questions =
+          QuestionManagerProvider.getQuestionManager().getQuestionsByIds(new ArrayList<String>(ids));
       for (Question question : questions) {
-        headers.add(new QuestionHeader(question,
-            instanceId, question.getCreationDate(), question.getCreatorId()));
+        headers.add(new QuestionHeader(question, instanceId, question.getCreationDate(),
+            question.getCreatorId()));
       }
     } catch (QuestionReplyException e) {
       // skip unknown and ill formed id.
@@ -106,21 +105,18 @@ public class QuestionReplyContentManager implements ContentInterface {
 
   /**
    * Add a new content. It is registered to contentManager service
-   *
    * @param con
    * @param question
    * @return the unique silverObjectId which identified the new content
    * @throws ContentManagerException
    */
   public int createSilverContent(Connection con, Question question) throws ContentManagerException {
-    SilverContentVisibility scv = new SilverContentVisibility(
-        isVisible(question));
-    SilverTrace.info("questionReply",
-        "QuestionReplyContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return this.contentManager.addSilverContent(con, question.getPK().getId(),
-        question.getInstanceId(), question.getCreatorId(), scv);
+    SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
+    SilverTrace.info("questionReply", "QuestionReplyContentManager.createSilverContent()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return this.contentManager
+        .addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
+            question.getCreatorId(), scv);
   }
 
   /**
@@ -129,16 +125,14 @@ public class QuestionReplyContentManager implements ContentInterface {
    * @throws ContentManagerException
    */
   public void updateSilverContentVisibility(Question question) throws ContentManagerException {
-    int silverContentId = this.contentManager.getSilverContentId(
-        question.getPK().getId(), question.getPK().getComponentName());
-    SilverContentVisibility scv = new SilverContentVisibility(
-        isVisible(question));
-    SilverTrace.info("questionReply",
-        "QuestionReplyContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    this.contentManager.updateSilverContentVisibilityAttributes(scv,
-        question.getPK().getComponentName(), silverContentId);
+    int silverContentId = this.contentManager
+        .getSilverContentId(question.getPK().getId(), question.getPK().getComponentName());
+    SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
+    SilverTrace.info("questionReply", "QuestionReplyContentManager.updateSilverContentVisibility()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    this.contentManager
+        .updateSilverContentVisibilityAttributes(scv, question.getPK().getComponentName(),
+            silverContentId);
     ClassifyEngine.clearCache();
   }
 

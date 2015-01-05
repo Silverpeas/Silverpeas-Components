@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.questionReply.control;
@@ -47,7 +47,7 @@ public class ExpertPanel extends PanelProvider {
   protected static final int COL_LASTNAME = 0;
   protected static final int COL_FIRSTNAME = 1;
 
-  protected Map<String, UserDetail> allUserDetails = new HashMap<String, UserDetail>();
+  protected Map<String, UserDetail> allUserDetails = new HashMap<>();
 
   public ExpertPanel(String language, Collection<UserDetail> allExperts) {
     initAll(language, allExperts);
@@ -60,8 +60,8 @@ public class ExpertPanel extends PanelProvider {
     this.language = lang;
     ResourceLocator message = GeneralPropertiesManager.getGeneralMultilang(language);
     // Set the resource locator for columns header
-    resourceLocator = new ResourceLocator("com.silverpeas.questionReply.multilang.questionReplyBundle",
-        language);
+    resourceLocator =
+        new ResourceLocator("com.silverpeas.questionReply.multilang.questionReplyBundle", language);
     // Set the Page name
     pageName = resourceLocator.getString("questionReply.experts");
     pageSubTitle = resourceLocator.getString("questionReply.experts");
@@ -84,19 +84,19 @@ public class ExpertPanel extends PanelProvider {
     for (UserDetail user : allUserDetails.values()) {
       boolean keepit = true;
       if (StringUtil.isDefined(filters[FILTER_FIRSTNAME])) {
-        if ((user.getFirstName() == null)
-            || (filters[FILTER_FIRSTNAME].length() > user.getFirstName().length())
-            || (!user.getFirstName().substring(0,
-            filters[FILTER_FIRSTNAME].length()).equalsIgnoreCase(
-            filters[FILTER_FIRSTNAME]))) {
+        if ((user.getFirstName() == null) ||
+            (filters[FILTER_FIRSTNAME].length() > user.getFirstName().length()) ||
+            (!user.getFirstName().substring(0, filters[FILTER_FIRSTNAME].length())
+                .equalsIgnoreCase(filters[FILTER_FIRSTNAME]))) {
           keepit = false;
         }
       }
 
       if (StringUtil.isDefined(filters[FILTER_LASTNAME])) {
-        keepit = !(user.getLastName() == null || filters[FILTER_LASTNAME].length() > user.getLastName().length()
-            || !user.getLastName().substring(0, filters[FILTER_LASTNAME].length()).equalsIgnoreCase(
-            filters[FILTER_LASTNAME]));
+        keepit = !(user.getLastName() == null ||
+            filters[FILTER_LASTNAME].length() > user.getLastName().length() ||
+            !user.getLastName().substring(0, filters[FILTER_LASTNAME].length())
+                .equalsIgnoreCase(filters[FILTER_LASTNAME]));
       }
       if (keepit) {
         currentIds.add(user.getId());
@@ -105,8 +105,10 @@ public class ExpertPanel extends PanelProvider {
     ids = currentIds.toArray(new String[currentIds.size()]);
 
     // Set search tokens values
-    ((PanelSearchEdit) searchTokens[FILTER_FIRSTNAME]).m_Text = getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) searchTokens[FILTER_LASTNAME]).m_Text = getSureString(filters[FILTER_LASTNAME]);
+    ((PanelSearchEdit) searchTokens[FILTER_FIRSTNAME]).m_Text =
+        getSureString(filters[FILTER_FIRSTNAME]);
+    ((PanelSearchEdit) searchTokens[FILTER_LASTNAME]).m_Text =
+        getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }
 
@@ -123,8 +125,8 @@ public class ExpertPanel extends PanelProvider {
 
   public PanelLine getElementInfos(String id) {
     UserDetail theUser = allUserDetails.get(id);
-    SilverTrace.info("questionReply", "ExpertPanel.getElementInfos()",
-        "root.GEN_MSG_PARAM_VALUE", "id=" + id);
+    SilverTrace.info("questionReply", "ExpertPanel.getElementInfos()", "root.GEN_MSG_PARAM_VALUE",
+        "id=" + id);
     String[] theValues = new String[2];
     theValues[COL_LASTNAME] = theUser.getLastName();
     theValues[COL_FIRSTNAME] = theUser.getFirstName();

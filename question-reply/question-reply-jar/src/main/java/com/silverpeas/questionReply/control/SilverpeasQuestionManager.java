@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
@@ -40,13 +43,12 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,27 +58,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Named("questionManager")
+@Singleton
 public class SilverpeasQuestionManager implements QuestionManager {
 
-  private final QuestionIndexer questionIndexer = new QuestionIndexer();
+  @Inject
+  private QuestionIndexer questionIndexer;
   private SilverpeasBeanDAO<Question> questionDao = null;
   private SilverpeasBeanDAO<Reply> replyDao = null;
   private SilverpeasBeanDAO<Recipient> recipientDao = null;
-  private final QuestionReplyContentManager contentManager = new QuestionReplyContentManager();
+  @Inject
+  private QuestionReplyContentManager contentManager;
   @Inject
   private OrganizationController controller;
 
   SilverpeasQuestionManager() {
     try {
-      questionDao = SilverpeasBeanDAOFactory.<Question>getDAO(
-          "com.silverpeas.questionReply.model.Question");
+      questionDao =
+          SilverpeasBeanDAOFactory.<Question>getDAO("com.silverpeas.questionReply.model.Question");
       replyDao = SilverpeasBeanDAOFactory.<Reply>getDAO("com.silverpeas.questionReply.model.Reply");
-      recipientDao = SilverpeasBeanDAOFactory.<Recipient>getDAO(
-          "com.silverpeas.questionReply.model.Recipient");
+      recipientDao = SilverpeasBeanDAOFactory
+          .<Recipient>getDAO("com.silverpeas.questionReply.model.Recipient");
     } catch (PersistenceException ex) {
-      SilverTrace.error("questionReply", "SilverpeasQuestionManager()",
-          "root.EX_RESOURCE_CLOSE_FAILED", ex);
+      SilverTrace
+          .error("questionReply", "SilverpeasQuestionManager", "root.EX_RESOURCE_CLOSE_FAILED", ex);
     }
   }
 
@@ -84,13 +88,16 @@ public class SilverpeasQuestionManager implements QuestionManager {
     return contentManager;
   }
 
-  /*
-   * enregistre une question et ses destinataires (attention les destinataires n'ont pas de
-   * questionId)
+  /**
+   * Create and persist a question with targeted recipient (be careful recipient doesn't have
+   * question identifier set)
+   * @param question the question to create
+   * @return the generated question identifier
+   * @throws QuestionReplyException
    */
   @Override
   public long createQuestion(Question question) throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       Collection<Recipient> recipients = question.readRecipients();
       IdPK pkQ = (IdPK) questionDao.add(con, question);
       question.setPK(pkQ);
@@ -105,13 +112,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       question.setPK(pkQ);
       contentManager.createSilverContent(con, question);
       return idQ;
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.createQuestion", SilverpeasException.ERROR,
-          "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.createQuestion", SilverpeasException.ERROR,
-          "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
-    } catch (ContentManagerException e) {
+    } catch (SQLException | ContentManagerException | PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.createQuestion", SilverpeasException.ERROR,
           "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
     }
@@ -123,10 +124,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   @Override
   public long createReply(Reply reply, Question question) throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       IdPK pkR = (IdPK) replyDao.add(con, reply);
-      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), pkR,
-          reply.getCreatorId(), I18NHelper.defaultLanguage);
+      WysiwygController
+          .createFileAndAttachment(reply.readCurrentWysiwygContent(), pkR, reply.getCreatorId(),
+              I18NHelper.defaultLanguage);
       long idR = pkR.getIdAsLong();
       if (question.hasNewStatus()) {
         question.waitForAnswer();
@@ -136,10 +138,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
           getInstanceId()));
       notifySubscribers(question, reply);
       return idR;
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
-          "questionReply.EX_CREATE_REPLY_FAILED", "", e);
-    } catch (PersistenceException e) {
+    } catch (SQLException | PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
           "questionReply.EX_CREATE_REPLY_FAILED", "", e);
     }
@@ -152,8 +151,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       recipientDao.add(con, recipient);
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.createQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_CREATE_RECIPIENT_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.createQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_CREATE_RECIPIENT_FAILED", "", e);
     }
   }
 
@@ -165,8 +164,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       IdPK pk = new IdPK();
       recipientDao.removeWhere(con, pk, " questionId = " + String.valueOf(questionId));
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.deleteRecipients", SilverpeasException.ERROR,
-          "questionReply.EX_DELETE_RECIPIENTS_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.deleteRecipients",
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_RECIPIENTS_FAILED", "", e);
     }
   }
 
@@ -176,15 +175,15 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
     if (questionIds != null) {
-      try(Connection con = DBUtil.openConnection()) {
+      try (Connection con = DBUtil.openConnection()) {
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
           question.close();
           updateQuestion(con, question);
         }
       } catch (SQLException e) {
-        throw new QuestionReplyException("QuestionManager.closeQuestions", SilverpeasException.ERROR,
-            "questionReply.EX_CLOSE_QUESTIONS_FAILED", "", e);
+        throw new QuestionReplyException("QuestionManager.closeQuestions",
+            SilverpeasException.ERROR, "questionReply.EX_CLOSE_QUESTIONS_FAILED", "", e);
       }
     }
   }
@@ -192,7 +191,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public void openQuestions(Collection<Long> questionIds) throws QuestionReplyException {
     if (questionIds != null) {
-      try(Connection con = DBUtil.openConnection()) {
+      try (Connection con = DBUtil.openConnection()) {
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
           question.waitForAnswer();
@@ -210,7 +209,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   @Override
   public void updateQuestionRecipients(Question question) throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       Collection<Recipient> recipients = question.readRecipients();
       deleteRecipients(con, ((IdPK) question.getPK()).getIdAsLong());
       if (recipients != null) {
@@ -219,10 +218,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
           createRecipient(con, recipient);
         }
       }
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.updateQuestionRecipients",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_RECIPIENTS_FAILED", "", e);
-    } catch (QuestionReplyException e) {
+    } catch (SQLException | QuestionReplyException e) {
       throw new QuestionReplyException("QuestionManager.updateQuestionRecipients",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_RECIPIENTS_FAILED", "", e);
     }
@@ -236,7 +232,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public void updateQuestionRepliesPublicStatus(Collection<Long> questionIds)
       throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       if (questionIds != null) {
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
@@ -254,10 +250,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
           }
         }
       }
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.updateQuestionRepliesPublicStatus",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
-    } catch (QuestionReplyException e) {
+    } catch (SQLException | QuestionReplyException e) {
       throw new QuestionReplyException("QuestionManager.updateQuestionRepliesPublicStatus",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
     }
@@ -270,7 +263,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public void updateQuestionRepliesPrivateStatus(Collection<Long> questionIds)
       throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       if (questionIds != null) {
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
@@ -285,10 +278,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
           }
         }
       }
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.updateQuestionRepliesPrivateStatus",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
-    } catch (QuestionReplyException e) {
+    } catch (SQLException | QuestionReplyException e) {
       throw new QuestionReplyException("QuestionManager.updateQuestionRepliesPrivateStatus",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
     }
@@ -307,7 +297,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public void updateRepliesPublicStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       if (replyIds != null) {
         for (Long idR : replyIds) {
           Reply reply = getReply(idR);
@@ -319,10 +309,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
         }
         updateQuestion(con, question);
       }
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.updateRepliesPublicStatus",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
-    } catch (QuestionReplyException e) {
+    } catch (SQLException | QuestionReplyException e) {
       throw new QuestionReplyException("QuestionManager.updateRepliesPublicStatus",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
     }
@@ -335,7 +322,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public void updateRepliesPrivateStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       if (replyIds != null) {
         for (Long idR : replyIds) {
           Reply reply = getReply(idR);
@@ -347,10 +334,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
         }
         updateQuestion(con, question);
       }
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.updateRepliesPrivateStatus",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
-    } catch (QuestionReplyException e) {
+    } catch (SQLException | QuestionReplyException e) {
       throw new QuestionReplyException("QuestionManager.updateRepliesPrivateStatus",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLYSTATUS_FAILED", "", e);
     }
@@ -376,8 +360,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
         contentManager.updateSilverContentVisibility(question);
       }
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionManager.updateQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_QUESTION_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.updateQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_UPDATE_QUESTION_FAILED", "", e);
     }
   }
 
@@ -402,8 +386,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
         contentManager.updateSilverContentVisibility(question);
       }
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionManager.updateQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_QUESTION_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.updateQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_UPDATE_QUESTION_FAILED", "", e);
     }
   }
 
@@ -423,12 +407,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
       }
       questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
           getInstanceId()));
-    } catch (WysiwygException e) {
-      throw new QuestionReplyException("QuestionManager.updateReply",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.updateReply",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
+    } catch (WysiwygException | PersistenceException e) {
+      throw new QuestionReplyException("QuestionManager.updateReply", SilverpeasException.ERROR,
+          "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
     }
   }
 
@@ -447,15 +428,15 @@ public class SilverpeasQuestionManager implements QuestionManager {
         try {
           updateWysiwygContent(reply);
         } catch (WysiwygException e) {
-          throw new QuestionReplyException("QuestionManager.updateReply",
-              SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
+          throw new QuestionReplyException("QuestionManager.updateReply", SilverpeasException.ERROR,
+              "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
         }
       }
       questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
           getInstanceId()));
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.updateReply",
-          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.updateReply", SilverpeasException.ERROR,
+          "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
     }
   }
 
@@ -474,8 +455,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       pk.setComponentName(peasId);
       contentManager.deleteSilverContent(con, pk);
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionManager.deleteQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.deleteQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
     }
   }
 
@@ -495,12 +476,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
       questionIndexer.deleteIndex(question);
       pk.setComponentName(peasId);
       contentManager.deleteSilverContent(con, pk);
-    } catch (UtilException e) {
-      throw new QuestionReplyException("QuestionManager.deleteQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionManager.deleteQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.deleteQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
     } finally {
       DBUtil.close(con);
     }
@@ -533,13 +511,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
         questionDao.remove(con, pk);
         pk.setComponentName(peasId);
         contentManager.deleteSilverContent(con, pk);
-      } catch (UtilException e) {
+      } catch (Exception e) {
         throw new QuestionReplyException("QuestionManager.deleteQuestionAndReplies",
             SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
-      } catch (Exception e) {
-        throw new QuestionReplyException(
-            "QuestionManager.deleteQuestionAndReplies", SilverpeasException.ERROR,
-            "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
       } finally {
         DBUtil.close(con);
       }
@@ -548,8 +522,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   @Override
-  public List<Reply> getAllReplies(long questionId, String instanceId) throws QuestionReplyException {
-    List<Reply> allReplies = new ArrayList<Reply>();
+  public List<Reply> getAllReplies(long questionId, String instanceId)
+      throws QuestionReplyException {
+    List<Reply> allReplies = new ArrayList<>();
     try {
       Collection<Reply> privateReplies = getQuestionPrivateReplies(questionId, instanceId);
       allReplies.addAll(privateReplies);
@@ -566,16 +541,13 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * supprime une réponse
    */
   private void deleteReply(long replyId) throws QuestionReplyException {
-    try(Connection con = DBUtil.openConnection()) {
+    try (Connection con = DBUtil.openConnection()) {
       IdPK pk = new IdPK();
       pk.setIdAsLong(replyId);
       replyDao.remove(con, pk);
-    } catch (SQLException e) {
-      throw new QuestionReplyException("QuestionManager.deleteReply",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.deleteReply",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
+    } catch (SQLException | PersistenceException e) {
+      throw new QuestionReplyException("QuestionManager.deleteReply", SilverpeasException.ERROR,
+          "questionReply.EX_DELETE_REPLY_FAILED", "", e);
     }
   }
 
@@ -585,8 +557,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private void deleteReply(Connection con, WAPrimaryKey replyId) throws QuestionReplyException {
     try {
       replyDao.remove(con, replyId);
-      WysiwygController.deleteFile(replyId.getInstanceId(), replyId.getId(),
-          I18NHelper.defaultLanguage);
+      WysiwygController
+          .deleteFile(replyId.getInstanceId(), replyId.getId(), I18NHelper.defaultLanguage);
     } catch (PersistenceException e) {
 
       throw new QuestionReplyException("QuestionManager.deleteReply", SilverpeasException.ERROR,
@@ -604,8 +576,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       pk.setIdAsLong(questionId);
       return questionDao.findByPrimaryKey(pk);
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.getQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTION", "", e);
+      throw new QuestionReplyException("QuestionManager.getQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_CANT_GET_QUESTION", "", e);
     }
   }
 
@@ -619,8 +591,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       question.writeReplies(replies);
       return question;
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.getQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTION", "", e);
+      throw new QuestionReplyException("QuestionManager.getQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_CANT_GET_QUESTION", "", e);
     }
   }
 
@@ -636,10 +608,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
     }
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Question>(questionDao.findByWhereClause(pk, where.toString()));
+      return new ArrayList<>(questionDao.findByWhereClause(pk, where.toString()));
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.getQuestions",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTION", "", e);
+      throw new QuestionReplyException("QuestionManager.getQuestions", SilverpeasException.ERROR,
+          "questionReply.EX_CANT_GET_QUESTION", "", e);
     }
   }
 
@@ -647,12 +619,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * recupère la liste des réponses d'une question
    */
   @Override
-  public List<Reply> getQuestionReplies(long questionId, String instanceId) throws
-      QuestionReplyException {
+  public List<Reply> getQuestionReplies(long questionId, String instanceId)
+      throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
-          " questionId = " + String.valueOf(questionId)));
+      List<Reply> replies = new ArrayList<>(
+          replyDao.findByWhereClause(pk, " questionId = " + String.valueOf(questionId)));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
         reply.loadWysiwygContent();
@@ -668,11 +640,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * recupère la liste des réponses publiques d'une question
    */
   @Override
-  public List<Reply> getQuestionPublicReplies(long questionId, String instanceId) throws
-      QuestionReplyException {
+  public List<Reply> getQuestionPublicReplies(long questionId, String instanceId)
+      throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
+      List<Reply> replies = new ArrayList<>(replyDao.findByWhereClause(pk,
           " publicReply = 1 and questionId = " + String.valueOf(questionId)));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
@@ -689,11 +661,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * recupère la liste des réponses privées d'une question
    */
   @Override
-  public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId) throws
-      QuestionReplyException {
+  public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId)
+      throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
+      List<Reply> replies = new ArrayList<>(replyDao.findByWhereClause(pk,
           " privateReply = 1 and questionId = " + String.valueOf(questionId)));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
@@ -713,7 +685,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Recipient> getQuestionRecipients(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Recipient>(recipientDao.findByWhereClause(pk, " questionId = " + String.
+      return new ArrayList<>(recipientDao.findByWhereClause(pk, " questionId = " + String.
           valueOf(questionId)));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionRecipients",
@@ -735,8 +707,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       }
       return reply;
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.getReply",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLY", "", e);
+      throw new QuestionReplyException("QuestionManager.getReply", SilverpeasException.ERROR,
+          "questionReply.EX_CANT_GET_REPLY", "", e);
     }
   }
 
@@ -749,9 +721,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Question>(questionDao.findByWhereClause(pk,
-          " instanceId = '" + instanceId
-          + "' and (status <> 2 or privateReplyNumber > 0) and creatorId = " + userId));
+      return new ArrayList<>(questionDao.findByWhereClause(pk, " instanceId = '" + instanceId +
+          "' and (status <> 2 or privateReplyNumber > 0) and creatorId = " + userId));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getSendQuestions",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "", e);
@@ -767,10 +738,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
       throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Question>(questionDao.findByWhereClause(pk,
-          " instanceId = '" + instanceId
-          + "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
-          + userId + ")"));
+      return new ArrayList<>(questionDao.findByWhereClause(pk, " instanceId = '" + instanceId +
+          "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient " +
+          "where userId = " +
+          userId + ")"));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReceiveQuestions",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "", e);
@@ -784,12 +755,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Question> getQuestions(String instanceId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Question>(questionDao.findByWhereClause(pk,
-          " instanceId = '" + instanceId
-          + "' and  (status <> 2 or publicReplyNumber > 0) order by creationdate desc, id desc"));
+      return new ArrayList<>(questionDao.findByWhereClause(pk, " instanceId = '" + instanceId +
+          "' and  (status <> 2 or publicReplyNumber > 0) order by creationdate desc, id desc"));
     } catch (PersistenceException e) {
-      throw new QuestionReplyException("QuestionManager.getQuestions",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "", e);
+      throw new QuestionReplyException("QuestionManager.getQuestions", SilverpeasException.ERROR,
+          "questionReply.EX_CANT_GET_QUESTIONS", "", e);
     }
   }
 
@@ -799,7 +769,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public List<Question> getAllQuestions(String instanceId) throws QuestionReplyException {
     List<Question> allQuestions = getQuestions(instanceId);
-    List<Question> questions = new ArrayList<Question>(allQuestions.size());
+    List<Question> questions = new ArrayList<>(allQuestions.size());
     for (Question question : allQuestions) {
       Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
       questions.add(fullQuestion);
@@ -811,16 +781,17 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   @Override
-  public List<Question> getAllQuestionsByCategory(String instanceId, String categoryId) throws
-      QuestionReplyException {
+  public List<Question> getAllQuestionsByCategory(String instanceId, String categoryId)
+      throws QuestionReplyException {
     List<Question> allQuestions = getQuestions(instanceId);
-    List<Question> questions = new ArrayList<Question>(allQuestions.size());
+    List<Question> questions = new ArrayList<>(allQuestions.size());
     for (Question question : allQuestions) {
       if (!StringUtil.isDefined(question.getCategoryId()) && !StringUtil.isDefined(categoryId)) {
         // la question est sans catégorie
         Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
         questions.add(fullQuestion);
-      } else if (StringUtil.isDefined(categoryId) && StringUtil.isDefined(question.getCategoryId())) {
+      } else if (StringUtil.isDefined(categoryId) &&
+          StringUtil.isDefined(question.getCategoryId())) {
         if (question.getCategoryId().equals(categoryId)) {
           Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
           questions.add(fullQuestion);
@@ -840,7 +811,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Question> getPublicQuestions(String instanceId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Question>(questionDao.findByWhereClause(pk,
+      return new ArrayList<>(questionDao.findByWhereClause(pk,
           " instanceId = '" + instanceId + "' AND publicReplyNumber > 0 ORDER BY id"));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getPublicQuestions",
@@ -848,8 +819,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
     }
   }
 
-  /*
-   * enregistre une question et une réponse
+  /**
+   * Save and persist question and reply given in parameter
+   * @param question the new question
+   * @param reply the answer linked to the given question
+   * @return the created question identifier
+   * @throws QuestionReplyException
    */
   @Override
   public long createQuestionReply(Question question, Reply reply) throws QuestionReplyException {
@@ -861,18 +836,16 @@ public class SilverpeasQuestionManager implements QuestionManager {
       idQ = pkQ.getIdAsLong();
       reply.setQuestionId(idQ);
       WAPrimaryKey pkR = replyDao.add(con, reply);
-      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), pkR,
-          reply.getCreatorId(), I18NHelper.defaultLanguage);
+      WysiwygController
+          .createFileAndAttachment(reply.readCurrentWysiwygContent(), pkR, reply.getCreatorId(),
+              I18NHelper.defaultLanguage);
       questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       contentManager.createSilverContent(con, updatedQuestion);
       notifySubscribers(question, reply);
-    } catch (UtilException e) {
-      throw new QuestionReplyException("QuestionManager.createQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionManager.createQuestion",
-          SilverpeasException.ERROR, "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
+      throw new QuestionReplyException("QuestionManager.createQuestion", SilverpeasException.ERROR,
+          "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
     } finally {
       DBUtil.close(con);
     }
@@ -885,8 +858,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private int getQuestionRepliesNumber(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      Collection<Reply> replies = replyDao.findByWhereClause(pk, " questionId = " + String.valueOf(
-          questionId));
+      Collection<Reply> replies =
+          replyDao.findByWhereClause(pk, " questionId = " + String.valueOf(questionId));
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionReplies",
@@ -900,8 +873,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private int getQuestionPublicRepliesNumber(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      Collection<Reply> replies = replyDao.findByWhereClause(pk,
-          " publicReply = 1 and questionId = " + String.valueOf(questionId));
+      Collection<Reply> replies = replyDao
+          .findByWhereClause(pk, " publicReply = 1 and questionId = " + String.valueOf(questionId));
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPublicReplies",
@@ -928,28 +901,29 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
     if (WysiwygController.haveGotWysiwyg(reply.getPK().getInstanceId(), reply.getPK().getId(),
         I18NHelper.defaultLanguage)) {
-      WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(),
-          reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId(),
-          I18NHelper.defaultLanguage);
+      WysiwygController
+          .updateFileAndAttachment(reply.readCurrentWysiwygContent(), reply.getPK().getInstanceId(),
+              reply.getPK().getId(), reply.getCreatorId(), I18NHelper.defaultLanguage);
     } else {
-      WysiwygController.createUnindexedFileAndAttachment(reply.readCurrentWysiwygContent(),
-          reply.getPK(), reply.getCreatorId(), I18NHelper.defaultLanguage);
+      WysiwygController
+          .createUnindexedFileAndAttachment(reply.readCurrentWysiwygContent(), reply.getPK(),
+              reply.getCreatorId(), I18NHelper.defaultLanguage);
     }
   }
 
   protected boolean isSortable(String instanceId) {
-    return StringUtil.getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
+    return StringUtil
+        .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }
 
-  void notifySubscribers(Question question, Reply reply) throws
-      QuestionReplyException {
+  void notifySubscribers(Question question, Reply reply) throws QuestionReplyException {
     if (reply.getPublicReply() == 1) {
       UserDetail sender = reply.readAuthor();
       SubscriptionNotifier notifier = new SubscriptionNotifier(sender, question, reply);
       Collection<String> subscribers =
           ResourceSubscriptionProvider.getSubscribersOfComponent(question.getInstanceId())
               .getAllUserIds();
-      Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();
+      Set<UserRecipient> userRecipients = new HashSet<>();
       for (String subscriberId : subscribers) {
         userRecipients.add(new UserRecipient(subscriberId));
       }

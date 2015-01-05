@@ -40,7 +40,7 @@
   </ctx:component-scan>
 
   <bean name="organisationController" id="organisationController" class="com.stratelia.webactiv.beans.admin.DefaultOrganizationController" />
-  <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerFactory"
+  <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerProvider"
         factory-method="getFactory"/>
 
   <!-- YCH <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminServiceProvider"-->
