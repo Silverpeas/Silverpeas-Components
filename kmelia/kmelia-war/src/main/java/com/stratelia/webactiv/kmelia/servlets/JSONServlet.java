@@ -23,38 +23,35 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.util.HashMap;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONObject;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.JSONCodec;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.rmi.RemoteException;
 
 public class JSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-          IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-          IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException {
     SilverTrace.info("kmelia", "JSONServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
     res.setContentType("application/json");
 
@@ -62,102 +59,104 @@ public class JSONServlet extends HttpServlet {
     String componentId = req.getParameter("ComponentId");
     String action = req.getParameter("Action");
 
-    KmeliaSessionController kmeliaSC = (KmeliaSessionController) req.getSession().getAttribute(
-                "Silverpeas_kmelia_" + componentId);
-    if(kmeliaSC == null) {
+    KmeliaSessionController kmeliaSC =
+        (KmeliaSessionController) req.getSession().getAttribute("Silverpeas_kmelia_" + componentId);
+    if (kmeliaSC == null) {
       return;
     }
 
     Writer writer = res.getWriter();
     if ("GetOperations".equals(action)) {
-      JSONObject operations = getOperations(id, kmeliaSC);
-      writer.write(operations.toString());
+      writer.write(getOperations(id, kmeliaSC));
     }
   }
 
-  private JSONObject getOperations(String id, KmeliaSessionController kmeliaSC) throws
-          RemoteException {
-    // getting profile
-    String profile = kmeliaSC.getUserTopicProfile(id);
+  private String getOperations(String id, KmeliaSessionController kmeliaSC) throws RemoteException {
+    return JSONCodec.encodeObject(operations -> {
+      // getting profile
+      String profile = kmeliaSC.getUserTopicProfile(id);
 
-    // getting operations of topic according to profile and current
-    HashMap<String, Boolean> operations = new HashMap<>(10);
+      // getting operations of topic according to profile and current
+      boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
+      boolean isPublisher = SilverpeasRole.publisher.isInRole(profile);
+      boolean isWriter = SilverpeasRole.writer.isInRole(profile);
+      boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
+      boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
+      boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
+      boolean canShowStats = isPublisher || SilverpeasRole.supervisor.isInRole(profile) ||
+          isAdmin && !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
 
-    boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
-    boolean isPublisher = SilverpeasRole.publisher.isInRole(profile);
-    boolean isWriter = SilverpeasRole.writer.isInRole(profile);
-    boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
-    boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
-    boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
-    boolean canShowStats =
-        isPublisher || SilverpeasRole.supervisor.isInRole(profile) || isAdmin &&
-            !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
+      if (isBasket) {
+        boolean binOperationsAllowed = isAdmin || isPublisher || isWriter;
+        operations.put("emptyTrash", binOperationsAllowed);
+        operations.put("exportSelection", binOperationsAllowed);
+        operations.put("copyPublications", binOperationsAllowed);
+        operations.put("cutPublications", binOperationsAllowed);
+        operations.put("deletePublications", binOperationsAllowed);
+      } else {
+        // general operations
+        operations.put("admin", kmeliaSC.isComponentManageable());
+        operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
+        operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && isAdmin);
+        operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
+        operations.put("exporting",
+            kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() &&
+                (isAdmin || kmeliaSC.isExportAllowedToUsers()));
+        operations.put("exportPDF",
+            kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportPdfAllowed() &&
+                (isAdmin || isPublisher));
 
-    if (isBasket) {
-      boolean binOperationsAllowed = isAdmin || isPublisher || isWriter;
-      operations.put("emptyTrash", binOperationsAllowed);
-      operations.put("exportSelection", binOperationsAllowed);
-      operations.put("copyPublications", binOperationsAllowed);
-      operations.put("cutPublications", binOperationsAllowed);
-      operations.put("deletePublications", binOperationsAllowed);
-    } else {
-      // general operations
-      operations.put("admin", kmeliaSC.isComponentManageable());
-      operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
-      operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && isAdmin);
-      operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
-      operations.put("exporting", kmeliaSC.isExportComponentAllowed()
-              && kmeliaSC.isExportZipAllowed() && (isAdmin || kmeliaSC.isExportAllowedToUsers()));
-      operations.put("exportPDF", kmeliaSC.isExportComponentAllowed()
-              && kmeliaSC.isExportPdfAllowed() && (isAdmin || isPublisher));
+        // topic operations
+        operations.put("addTopic", isAdmin);
+        operations.put("updateTopic", !isRoot && isAdmin);
+        operations.put("deleteTopic", !isRoot && isAdmin);
+        operations.put("sortSubTopics", isAdmin);
+        operations.put("copyTopic", !isRoot && isAdmin);
+        operations.put("cutTopic", !isRoot && isAdmin);
+        if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
+          NodeDetail node = kmeliaSC.getNodeHeader(id);
+          operations
+              .put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
+          operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
+        }
+        operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.
+            isWysiwygOnTopicsEnabled()));
+        operations.put("shareTopic", isAdmin && kmeliaSC.isFolderSharingEnabled());
 
-      // topic operations
-      operations.put("addTopic", isAdmin);
-      operations.put("updateTopic", !isRoot && isAdmin);
-      operations.put("deleteTopic", !isRoot && isAdmin);
-      operations.put("sortSubTopics", isAdmin);
-      operations.put("copyTopic", !isRoot && isAdmin);
-      operations.put("cutTopic", !isRoot && isAdmin);
-      if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
-        NodeDetail node = kmeliaSC.getNodeHeader(id);
-        operations.put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
-        operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
+        // publication operations
+        boolean publicationsInTopic = !isRoot ||
+            (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure()));
+        boolean addPublicationAllowed =
+            !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+        boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic;
+
+        operations.put("addPubli", addPublicationAllowed);
+        operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
+        operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
+        operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
+        operations.put("copyPublications", operationsOnSelectionAllowed);
+        operations.put("cutPublications", operationsOnSelectionAllowed);
+        operations.put("paste", addPublicationAllowed);
+
+        operations.put("sortPublications", isAdmin && publicationsInTopic);
+        operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
+            isTopicHaveUpdateChainDescriptor(id));
+
+        operations.put("deletePublications", operationsOnSelectionAllowed);
+
+        operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
+        operations.put("manageSubscriptions", isAdmin);
+        operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+        operations
+            .put("favorites", !isRoot && !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+        if (statisticEnable && isRoot && canShowStats) {
+          operations.put("statistics", true);
+        }
+        operations.put("mylinks", !kmeliaSC.getUserDetail().isAnonymous());
+        operations.put("responsibles", !kmeliaSC.getUserDetail().isAnonymous());
       }
-      operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.
-              isWysiwygOnTopicsEnabled()));
-      operations.put("shareTopic", isAdmin && kmeliaSC.isFolderSharingEnabled());
+      return operations;
+    });
 
-      // publication operations
-      boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0
-              || !kmeliaSC.isTreeStructure()));
-      boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
-      boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic;
-
-      operations.put("addPubli", addPublicationAllowed);
-      operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
-      operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
-      operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
-      operations.put("copyPublications", operationsOnSelectionAllowed);
-      operations.put("cutPublications", operationsOnSelectionAllowed);
-      operations.put("paste", addPublicationAllowed);
-
-      operations.put("sortPublications", isAdmin && publicationsInTopic);
-      operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
-              isTopicHaveUpdateChainDescriptor(id));
-
-      operations.put("deletePublications", operationsOnSelectionAllowed);
-
-      operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
-      operations.put("manageSubscriptions", isAdmin);
-      operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
-      operations.put("favorites", !isRoot && !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
-      if (statisticEnable && isRoot && canShowStats) {
-        operations.put("statistics", true);
-      }
-      operations.put("mylinks", !kmeliaSC.getUserDetail().isAnonymous());
-      operations.put("responsibles", !kmeliaSC.getUserDetail().isAnonymous());
-    }
-
-    return new JSONObject(operations);
   }
 }
