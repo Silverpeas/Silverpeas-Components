@@ -1,28 +1,33 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.model;
 
-import org.silverpeas.util.StringUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.util.StringUtil;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -33,13 +38,17 @@ import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
 @Entity
 @Table(name = "sc_resources_resource")
-public class Resource {
+@NamedQueries({@NamedQuery(name = "resource.findAllResourcesByCategory",
+    query = "SELECT resource FROM Resource resource WHERE resource.category.id = :categoryId"),
+    @NamedQuery(name = "resource.findAllBookableResources",
+        query = "SELECT resource FROM Resource resource WHERE resource.instanceId = :instanceId " +
+            "AND resource.bookable = 1 AND resource.category.bookable = 1"),
+    @NamedQuery(name = "resource.deleteResourcesFromCategory",
+        query = "DELETE Resource resource WHERE resource.category.id = :categoryId")
+})
+public class Resource extends AbstractJpaCustomEntity<Resource, UniqueLongIdentifier> {
+  private static final long serialVersionUID = 3438059589840347315L;
 
-  @Id
-  @TableGenerator(name = "UNIQUE_RESOURCE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "sc_resources_resource",allocationSize=1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_RESOURCE_ID_GEN")
-  private Long id;
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "categoryid", nullable = true, updatable = true)
   private Category category;
@@ -59,20 +68,20 @@ public class Resource {
   private String updaterId;
   @Column
   private String instanceId;
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="resource")
-  private List<ResourceValidator> managers = new ArrayList<ResourceValidator>();
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "resource")
+  private List<ResourceValidator> managers = new ArrayList<>();
   @Transient
   private String status;
 
-  @PrePersist
-  public void beforePersist() {
+  @Override
+  protected void performBeforePersist() {
     Date now = new Date();
     setCreationDate(now);
     setUpdateDate(now);
   }
 
-  @PreUpdate
-  public void beforeUpdate() {
+  @Override
+  public void performBeforeUpdate() {
     setUpdateDate(new Date());
   }
 
@@ -106,7 +115,7 @@ public class Resource {
   }
 
   public void setCreationDate(Date creationDate) {
-     this.creationDate = String.valueOf(creationDate.getTime());
+    this.creationDate = String.valueOf(creationDate.getTime());
   }
 
   public Date getUpdateDate() {
@@ -130,21 +139,17 @@ public class Resource {
     this.description = description;
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(final Long id) {
-    this.id = id;
+  public Long getIdAsLong() {
+    return getNativeId().getId();
   }
 
   public String getIdAsString() {
-    return String.valueOf(id);
+    return getId();
   }
 
   public Long getCategoryId() {
     if (category != null) {
-      return category.getId();
+      return category.getIdAsLong();
     }
     return null;
   }
@@ -191,7 +196,7 @@ public class Resource {
 
   public Resource() {
   }
-  
+
   public void merge(Resource resource) {
     this.bookable = resource.bookable;
     this.category = resource.category;
@@ -206,7 +211,7 @@ public class Resource {
 
   public Resource(Long id, Category category, String name, String description, String createrId,
       String updaterId, String instanceId, boolean bookable) {
-    setId(id);
+    setId(id != null ? Long.toString(id): null);
     this.category = category;
     this.name = name;
     this.description = description;
@@ -253,11 +258,11 @@ public class Resource {
 
   @Override
   public String toString() {
-    return "Resource{" + "id=" + id + ", category= {" + category + "}, name=" + name +
-         ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", description=" +
-         description + ", createrId=" + createrId + ", updaterId=" + updaterId +
-         ", instanceId=" + instanceId + ", bookable=" + bookable + ", managers=" + managers +
-         ", status=" + getStatus() + '}';
+    return "Resource{" + "id=" + getId() + ", category= {" + category + "}, name=" + name +
+        ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", description=" +
+        description + ", createrId=" + createrId + ", updaterId=" + updaterId +
+        ", instanceId=" + instanceId + ", bookable=" + bookable + ", managers=" + managers +
+        ", status=" + getStatus() + '}';
   }
 
   public boolean isValidated() {

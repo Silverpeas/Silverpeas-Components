@@ -60,10 +60,10 @@ public class ReservedResourceEntityMatcher extends BaseMatcher<ReservedResourceE
           .endsWith("/resourceManager/componentName5/reservations/" + reservationId));
       matcher.append(null, actual.getURI());
       matcher.appendSuper(actual.getResourceURI().toString()
-          .endsWith("/resourceManager/componentName5/resources/" + expected.getId()));
+          .endsWith("/resourceManager/componentName5/resources/" + expected.getIdAsLong()));
       matcher.appendSuper(actual.getCategoryURI().toString().endsWith(
-          "/resourceManager/componentName5/resources/categories/" + expected.getCategory().getId()));
-      matcher.append(expected.getId(), actual.getId());
+          "/resourceManager/componentName5/resources/categories/" + expected.getCategory().getIdAsLong()));
+      matcher.append(expected.getIdAsLong(), actual.getId());
       matcher.append(expected.getName(), actual.getName());
       matcher.append(expected.getDescription(), actual.getDescription());
       matcher.append(expected.getStatus(), actual.getStatus());

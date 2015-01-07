@@ -40,7 +40,7 @@
   Long id = null;
   Category category = (Category) request.getAttribute("category");
   if (category != null) {
-    id = category.getId();
+    id = category.getIdAsLong();
     name = category.getName();
     bookable = category.isBookable();
     form = category.getForm();

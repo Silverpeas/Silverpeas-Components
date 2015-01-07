@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,39 +7,41 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceStatus;
+import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
 import org.silverpeas.resourcemanager.repository.ResourceRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.resourcemanager.repository.ResourceValidatorRepository;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * @author ehugonnet
  */
-@Service
+@Singleton
 @Transactional
 public class ReservationService {
 
@@ -52,16 +54,18 @@ public class ReservationService {
   @Inject
   private ResourceRepository resourceRepository;
 
+  @Inject
+  private ResourceValidatorRepository resourceValidatorRepository;
+
   public void createReservation(Reservation reservation, List<Long> resourceIds) {
     reservation.setStatus(ResourceStatus.STATUS_VALIDATE);
     repository.save(reservation);
     for (Long resourceId : resourceIds) {
       ReservedResource reservedResource = new ReservedResource();
-      reservedResource.setResourceId(resourceId);
-      reservedResource.setReservationId(reservation.getId());
-      Resource resource = resourceRepository.findOne(resourceId);
+      reservedResource.setReservedResourceId(Long.toString(resourceId), reservation.getId());
+      Resource resource = resourceRepository.getById(Long.toString(resourceId));
       if (!resource.getManagers().isEmpty()) {
-        if (resourceRepository
+        if (resourceValidatorRepository
             .getResourceValidator(resourceId, Long.parseLong(reservation.getUserId())) == null) {
           reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
         } else {
@@ -78,9 +82,8 @@ public class ReservationService {
 
   public String computeReservationStatus(Reservation reservation) {
     boolean validated = true;
-    String reservationStatus = ResourceStatus.STATUS_FOR_VALIDATION;
     List<ReservedResource> reservedResources = reservedResourceRepository.
-        findAllReservedResourcesForReservation(reservation.getId());
+        findAllReservedResourcesForReservation(reservation.getIdAsLong());
     for (ReservedResource reservedResource : reservedResources) {
       String status = reservedResource.getStatus();
       if (ResourceStatus.STATUS_FOR_VALIDATION.equals(status)) {
@@ -101,12 +104,12 @@ public class ReservationService {
   }
 
   public Reservation getReservation(long id) {
-    return repository.findOne(id);
+    return repository.getById(Long.toString(id));
   }
 
   public void deleteReservation(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForReservation(id);
-    repository.delete(id);
+    repository.deleteById(Long.toString(id));
   }
 
   public List<Reservation> findAllReservations(String instanceId) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,39 +7,42 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.model;
 
+import org.silverpeas.persistence.model.CompositeEntityIdentifier;
+
 import javax.persistence.Embeddable;
-import java.io.Serializable;
 
 /**
- *
  * @author ehugonnet
  */
 @Embeddable
-public class ResourceValidatorPk  implements Serializable{
+public class ResourceValidatorPk implements CompositeEntityIdentifier {
   private static final long serialVersionUID = 5687541398796291824L;
+
+  public static final int RV_RESOURCE_POSITION = 0;
+  public static final int RV_MANAGER_POSITION = 1;
 
   private long resourceId;
   private long managerId;
 
   public ResourceValidatorPk() {
   }
-  
+
   public ResourceValidatorPk(long resourceId, long managerId) {
     this.resourceId = resourceId;
     this.managerId = managerId;
@@ -91,7 +94,17 @@ public class ResourceValidatorPk  implements Serializable{
   public String toString() {
     return "ResourceValidatorPk{" + "resourceId=" + resourceId + ", managerId=" + managerId + '}';
   }
-  
-  
+
+  @Override
+  public ResourceValidatorPk fromString(final String... values) {
+    this.resourceId = Long.parseLong(values[RV_RESOURCE_POSITION]);
+    this.managerId = Long.parseLong(values[RV_MANAGER_POSITION]);
+    return this;
+  }
+
+  @Override
+  public String asString() {
+    return resourceId + COMPOSITE_SEPARATOR + managerId;
+  }
 }
 

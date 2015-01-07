@@ -36,7 +36,7 @@
 <% 
 // Recuperation des details de l'ulisateur
 	Category category = (Category)request.getAttribute("category");
-	Long idcategory = category.getId();
+	Long idcategory = category.getIdAsLong();
 	Resource maResource = (Resource)request.getAttribute("resource");
 	String provenance = (String)request.getAttribute("provenance");
 	// recuperation des parametres du formulaire
@@ -50,7 +50,7 @@
 	String name=maResource.getName();
 	String description= EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
 	boolean bookable=maResource.isBookable();
-	Long resourceId=maResource.getId();
+	Long resourceId=maResource.getIdAsLong();
 	Button cancelButton = null;
 	
 //creation des boutons Annuler

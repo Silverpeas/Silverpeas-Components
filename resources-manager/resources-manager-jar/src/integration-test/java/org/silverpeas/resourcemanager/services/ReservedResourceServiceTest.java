@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,42 +7,36 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.services;
 
-import org.silverpeas.util.DBUtil;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ResourceStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,39 +44,41 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-resource-manager-datasource.xml",
-  "/spring-resource-manager.xml"})
-@Transactional
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
+@RunWith(Arquillian.class)
 public class ReservedResourceServiceTest {
 
   public ReservedResourceServiceTest() {
   }
-  private static ReplacementDataSet dataSet;
-  @Inject
-  private ReservedResourceService service;
-  @Inject
-  @Named("jpaDataSource")
-  private DataSource dataSource;
 
-  @BeforeClass
-  public static void prepareDataset() throws Exception {
-    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet = new ReplacementDataSet(builder.build(ReservedResourceServiceTest.class.getClassLoader().
-        getResourceAsStream(
-        "org/silverpeas/resourcemanager/services/reservations_validation_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule("create-database.sql", "reservations_validation_dataset.xml");
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(ReservedResourceServiceTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:calendar");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-core");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
+          warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+          warBuilder.addPackages(true, "org.silverpeas.resourcemanager");
+        }).build();
   }
+
+  private ReservedResourceService service;
 
   @Before
   public void generalSetUp() throws Exception {
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
+    service = ServiceProvider.getService(ReservedResourceService.class);
   }
 
   /**
@@ -120,21 +116,18 @@ public class ReservedResourceServiceTest {
   @Test
   public void testFindAllReservedResourcesOfReservation() {
     int currentReservationId = 3;
-    List<ReservedResource> result = service.findAllReservedResourcesOfReservation(
-        currentReservationId);
+    List<ReservedResource> result =
+        service.findAllReservedResourcesOfReservation(currentReservationId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
     ReservedResource resource1 = new ReservedResource();
-    resource1.setReservationId(3);
-    resource1.setResourceId(1);
+    resource1.setReservedResourceId("1", "3");
     resource1.setStatus("V");
     ReservedResource resource2 = new ReservedResource();
-    resource2.setReservationId(3);
-    resource2.setResourceId(3);
+    resource2.setReservedResourceId("3", "3");
     resource2.setStatus("test");
     ReservedResource resource3 = new ReservedResource();
-    resource3.setReservationId(3);
-    resource3.setResourceId(2);
+    resource3.setReservedResourceId("2", "3");
     resource3.setStatus("R");
     assertThat(result, containsInAnyOrder(resource1, resource2, resource3));
   }
@@ -148,17 +141,16 @@ public class ReservedResourceServiceTest {
     List<Long> futureReservedResourceIds = Arrays.asList(1L, 2L, 3L, 5L, 8L);
     String startPeriod = "1320134400000";
     String endPeriod = "1320163200000";
-    List<ReservedResource> result = service.findAllReservedResourcesWithProblem(currentReservationId,
-        futureReservedResourceIds, startPeriod, endPeriod);
+    List<ReservedResource> result = service
+        .findAllReservedResourcesWithProblem(currentReservationId, futureReservedResourceIds,
+            startPeriod, endPeriod);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
     ReservedResource resource1 = new ReservedResource();
-    resource1.setReservationId(3);
-    resource1.setResourceId(1);
+    resource1.setReservedResourceId("1", "3");
     resource1.setStatus("V");
     ReservedResource resource2 = new ReservedResource();
-    resource2.setReservationId(3);
-    resource2.setResourceId(3);
+    resource2.setReservedResourceId("3", "3");
     resource2.setStatus("test");
     assertThat(result, containsInAnyOrder(resource1, resource2));
   }

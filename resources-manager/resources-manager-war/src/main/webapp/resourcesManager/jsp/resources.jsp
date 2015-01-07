@@ -56,7 +56,7 @@
 
   while (!listCategory.isEmpty()) {
     Category maCategory = listCategory.get(0);
-    Long categoryIdTemp = maCategory.getId();
+    Long categoryIdTemp = maCategory.getIdAsLong();
     if (categoryIdTemp.equals(idCategory)) {
       categoryName = maCategory.getName();
     }
@@ -109,7 +109,7 @@ function deleteResource(resourceId, name,categoryId) {
 
       String name = myResource.getName();
       boolean bookable = myResource.isBookable();
-      Long resourceId = myResource.getId();
+      Long resourceId = myResource.getIdAsLong();
       arrayLine = arrayPane.addArrayLine();
       if (bookable) {
         reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,36 +7,35 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
- *
  * @author ehugonnet
  */
-@Service
+@Singleton
 @Transactional
 public class ReservedResourceService {
 
@@ -48,7 +47,7 @@ public class ReservedResourceService {
   }
 
   public ReservedResource getReservedResource(long resourceId, long reservationId) {
-    return repository.findOne(new ReservedResourcePk(resourceId, reservationId));
+    return repository.getById(new ReservedResourcePk(resourceId, reservationId).asString());
   }
 
   public void update(ReservedResource resource) {
@@ -61,10 +60,11 @@ public class ReservedResourceService {
 
   public List<ReservedResource> findAllReservedResourcesWithProblem(long currentReservationId,
       List<Long> futureReservedResourceIds, String startPeriod, String endPeriod) {
-    return repository.findAllReservedResourcesWithProblem(currentReservationId,
-        futureReservedResourceIds, startPeriod, endPeriod);
+    return repository
+        .findAllReservedResourcesWithProblem(currentReservationId, futureReservedResourceIds,
+            startPeriod, endPeriod);
   }
-  
+
   public List<ReservedResource> findAllReservedResourcesOfReservation(long currentReservationId) {
     return repository.findAllReservedResourcesOfReservation(currentReservationId);
   }

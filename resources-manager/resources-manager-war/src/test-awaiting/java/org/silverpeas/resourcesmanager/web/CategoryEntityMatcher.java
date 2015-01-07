@@ -55,8 +55,8 @@ public class CategoryEntityMatcher extends BaseMatcher<ResourceCategoryEntity> {
       final ResourceCategoryEntity actual = (ResourceCategoryEntity) item;
       final EqualsBuilder matcher = new EqualsBuilder();
       matcher.appendSuper(actual.getURI().toString()
-          .endsWith("/resourceManager/componentName5/resources/categories/" + expected.getId()));
-      matcher.append(expected.getId(), actual.getId());
+          .endsWith("/resourceManager/componentName5/resources/categories/" + expected.getIdAsLong()));
+      matcher.append(expected.getIdAsLong(), actual.getId());
       matcher.append(expected.getName(), actual.getName());
       matcher.append(expected.getDescription(), actual.getDescription());
       match = matcher.isEquals();

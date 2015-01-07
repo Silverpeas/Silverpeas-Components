@@ -1,39 +1,43 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
 import org.silverpeas.resourcemanager.repository.ResourceRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.resourcemanager.repository.ResourceValidatorRepository;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Singleton
 @Transactional
 public class ResourceService {
 
@@ -43,6 +47,8 @@ public class ResourceService {
   ReservationRepository reservationRepository;
   @Inject
   private ReservedResourceRepository reservedResourceRepository;
+  @Inject
+  private ResourceValidatorRepository resourceValidatorRepository;
 
   public void createResource(Resource resource) {
     repository.saveAndFlush(resource);
@@ -53,16 +59,16 @@ public class ResourceService {
   }
 
   public List<Resource> getResources() {
-    return repository.findAll();
+    return repository.getAll();
   }
 
   public Resource getResource(long id) {
-    return repository.findOne(id);
+    return repository.getById(Long.toString(id));
   }
 
   public void deleteResource(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForResource(id);
-    repository.delete(id);
+    repository.deleteById(Long.toString(id));
   }
 
   public void deleteResourcesFromCategory(Long categoryId) {
@@ -70,7 +76,7 @@ public class ResourceService {
   }
 
   public void addManagers(long resourceId, List<ResourceValidator> managerIds) {
-    Resource resource = repository.findOne(resourceId);
+    Resource resource = repository.getById(Long.toString(resourceId));
     for (ResourceValidator manager : managerIds) {
       manager.setResource(resource);
       resource.getManagers().add(manager);
@@ -79,24 +85,24 @@ public class ResourceService {
   }
 
   public void addManager(ResourceValidator manager) {
-    Resource resource = repository.findOne(manager.getResourceId());
+    Resource resource = repository.getById(Long.toString(manager.getResourceId()));
     resource.getManagers().add(manager);
     repository.saveAndFlush(resource);
   }
 
   public List<ResourceValidator> getManagers(long resourceId) {
-    Resource resource = repository.findOne(resourceId);
-    return new ArrayList<ResourceValidator>(resource.getManagers());
+    Resource resource = repository.getById(Long.toString(resourceId));
+    return new ArrayList<>(resource.getManagers());
   }
 
   public void removeAllManagers(long resourceId) {
-    Resource resource = repository.findOne(resourceId);
+    Resource resource =  repository.getById(Long.toString(resourceId));
     resource.getManagers().clear();
     repository.saveAndFlush(resource);
   }
 
   public void removeManager(ResourceValidator manager) {
-    Resource resource = repository.findOne(manager.getResourceId());
+    Resource resource = repository.getById(Long.toString(manager.getResourceId()));
     resource.getManagers().remove(manager);
     repository.saveAndFlush(resource);
   }
@@ -105,21 +111,22 @@ public class ResourceService {
     return repository.findAllResourcesByCategory(categoryId);
   }
 
-  public List<Resource> listAvailableResources(String instanceId, String startDate, String endDate) {
+  public List<Resource> listAvailableResources(String instanceId, String startDate,
+      String endDate) {
     List<Resource> bookableResources = repository.findAllBookableResources(instanceId);
-    List<Resource> availableBookableResources = new ArrayList<Resource>(bookableResources.size());
+    List<Resource> availableBookableResources = new ArrayList<>(bookableResources.size());
     for (Resource resource : bookableResources) {
       List<Reservation> reservations = reservationRepository.
-          findAllReservationsNotRefusedForResourceInRange(resource.getId(), startDate, endDate);
+          findAllReservationsNotRefusedForResourceInRange(resource.getIdAsLong(), startDate, endDate);
       if (reservations == null || reservations.isEmpty()) {
         availableBookableResources.add(resource);
       }
     }
     return availableBookableResources;
   }
-  
+
   public boolean isManager(Long userId, Long resourceId) {
-    return repository.getResourceValidator(resourceId, userId) != null;
+    return resourceValidatorRepository.getResourceValidator(resourceId, userId) != null;
   }
 
   public List<Resource> listResourcesOfReservation(Long reservationId) {

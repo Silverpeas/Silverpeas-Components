@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,28 +9,24 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.control;
 
-import com.silverpeas.annotation.Service;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.date.Period;
@@ -47,9 +43,13 @@ import org.silverpeas.resourcemanager.services.ResourceService;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ import java.util.Map;
 /**
  * @author
  */
-@Service
+@Singleton
 @Transactional
 public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
@@ -75,7 +75,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   /**
    * Creating a new resource category.
-   * @param category
+   * @param category the category to create
    */
   @Override
   public void createCategory(Category category) {
@@ -103,8 +103,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     // First delete all resources of category
     List<Resource> resources = getResourcesByCategory(id);
     for (Resource resource : resources) {
-      resourceService.deleteResource(resource.getId());
-      deleteIndex(resource.getId(), "Resource", componentId);
+      resourceService.deleteResource(resource.getIdAsLong());
+      deleteIndex(resource.getIdAsLong(), "Resource", componentId);
     }
     // Then delete category itself
     categoryService.deleteCategory(id);
@@ -113,7 +113,6 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   /**
    * @param resource
-   * @return
    */
   @Override
   public void createResource(Resource resource) {
@@ -152,10 +151,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   public void updateReservation(Reservation reservation, List<Long> resourceIds,
       boolean updateDate) {
     List<ReservedResource> reservedResources = reservedResourceService.
-        findAllReservedResourcesOfReservation(reservation.getId());
-    Map<Long, ReservedResource> oldReservedResources =
-        new HashMap<Long, ReservedResource>(reservedResources.
-            size());
+        findAllReservedResourcesOfReservation(reservation.getIdAsLong());
+    Map<Long, ReservedResource> oldReservedResources = new HashMap<>(reservedResources.size());
     for (ReservedResource reservedResource : reservedResources) {
       oldReservedResources.put(reservedResource.getResourceId(), reservedResource);
     }
@@ -168,8 +165,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       if (isCreation || updateDate) {
         if (reservedResource == null) {
           reservedResource = new ReservedResource();
-          reservedResource.setReservationId(reservation.getId());
-          reservedResource.setResourceId(resourceId);
+          reservedResource.setReservedResourceId(Long.toString(resourceId), reservation.getId());
         }
         if (resourceService.isManager(Long.parseLong(reservation.getUserId()), resourceId)) {
           reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
@@ -209,10 +205,10 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   /**
    * Get from the given aimed resources those that are unavailable on the given period.
-   * @param instanceId
-   * @param resources
-   * @param startDate
-   * @param endDate
+   * @param instanceId the current component instance identifier
+   * @param resources the list of resource identifiers
+   * @param startDate the start date
+   * @param endDate the end date
    * @return
    */
   @Override
@@ -224,12 +220,11 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   /**
    * Get from the given aimed resources those that are unavailable on the given period. Resources
    * attached to reservationIdToSkip are excluded (but can still be returned if they are attached
-   * to
-   * another reservation on the given period).
-   * @param instanceId
+   * to another reservation on the given period).
+   * @param instanceId the current component instance identifier
    * @param aimedResourceIds
-   * @param startDate
-   * @param endDate
+   * @param startDate the start date
+   * @param endDate the end date
    * @param reservationIdToSkip
    * @return
    */
@@ -306,7 +301,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   /**
    * Construct the period of search.
-   * @param period
+   * @param period the searched period
    */
   private String[] buildSearchPeriod(Period period) {
     return new String[]{String.valueOf(period.getBeginDate().getTime()),
@@ -378,7 +373,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       pubTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(resource.
           getInstanceId() + ":" + xmlFormShortName);
       RecordSet set = pubTemplate.getRecordSet();
-      set.indexRecord(String.valueOf(resource.getId()), xmlFormName, indexEntry);
+      set.indexRecord(String.valueOf(resource.getIdAsLong()), xmlFormName, indexEntry);
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException("ResourceManagerBmEJB.createIndex_Resource()",
           SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CREATE_INDEX_FAILED", e);
@@ -454,11 +449,11 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   @Override
   public void updateResource(Resource updatedResource, List<Long> managerIds) {
-    Resource resource = getResource(updatedResource.getId());
+    Resource resource = getResource(updatedResource.getIdAsLong());
     resource.merge(updatedResource);
     resource.getManagers().clear();
     for (Long managerId : managerIds) {
-      ResourceValidator validator = new ResourceValidator(resource.getId(), managerId);
+      ResourceValidator validator = new ResourceValidator(resource.getIdAsLong(), managerId);
       if (!resource.getManagers().contains(validator)) {
         resource.getManagers().add(validator);
       }

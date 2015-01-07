@@ -1,43 +1,51 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.model;
 
-import org.silverpeas.util.StringUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.util.StringUtil;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "sc_resources_category")
-public class Category {
+@NamedQueries({@NamedQuery(name = "category.findByInstanceId",
+    query = "SELECT category FROM Category category WHERE category.instanceId = :instanceId")})
+public class Category extends AbstractJpaCustomEntity<Category, UniqueLongIdentifier> {
+  private static final long serialVersionUID = 4947144625712662946L;
 
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "sc_resources_category", allocationSize=1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  private Long id;
   @Column
   private String instanceId;
   @Column
@@ -57,17 +65,15 @@ public class Category {
   @Column
   private String description;
   @OneToMany(mappedBy = "category", orphanRemoval = false)
-  private List<Resource> resources = new ArrayList<Resource>();
+  private List<Resource> resources = new ArrayList<>();
 
-  @PrePersist
-  public void beforePersist() {
+  public void performBeforePersist() {
     Date now = new Date();
     setCreationDate(now);
     setUpdateDate(now);
   }
 
-  @PreUpdate
-  public void beforeUpdate() {
+  public void performBeforeUpdate() {
     setUpdateDate(new Date());
   }
 
@@ -99,16 +105,12 @@ public class Category {
     this.form = form;
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(final Long id) {
-    this.id = id;
+  public Long getIdAsLong() {
+    return getNativeId().getId();
   }
 
   public String getIdAsString() {
-    return String.valueOf(id);
+    return getId();
   }
 
   public String getInstanceId() {
@@ -154,8 +156,7 @@ public class Category {
   }
 
   /**
-   * For tests purpose only.
-   *
+   * For tests purpose only. TODO remove this constructor in V6
    * @param id
    * @param instanceId
    * @param name
@@ -165,9 +166,9 @@ public class Category {
    * @param updaterId
    * @param description
    */
-  public Category(Long id, String instanceId, String name, boolean bookable, String form, String
-      createrId, String updaterId, String description) {
-    setId(id);
+  public Category(Long id, String instanceId, String name, boolean bookable, String form,
+      String createrId, String updaterId, String description) {
+    setId(Long.toString(id));
     this.instanceId = instanceId;
     this.name = name;
     setBookable(bookable);
@@ -252,9 +253,9 @@ public class Category {
 
   @Override
   public String toString() {
-    return "CategoryDetail{" + "id=" + id + ", instanceId=" + instanceId + ", name=" + name
-            + ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", bookable="
-            + bookable + ", form=" + form + ", createrId=" + createrId + ", updaterId=" + updaterId 
-            + ", description=" + description + '}';
+    return "Category{" + "id=" + getId() + ", instanceId=" + instanceId + ", name=" + name +
+        ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", bookable=" + bookable +
+        ", form=" + form + ", createrId=" + createrId + ", updaterId=" + updaterId +
+        ", description=" + description + '}';
   }
 }

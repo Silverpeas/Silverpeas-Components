@@ -1,25 +1,30 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.model;
 
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.StringUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -29,13 +34,59 @@ import java.util.Date;
 
 @Entity
 @Table(name = "sc_resources_reservation")
-public class Reservation implements ResourceStatus {
+@NamedQueries({@NamedQuery(name = "reservation.findAllReservationsInRange",
+    query = "SELECT reservation FROM Reservation reservation " +
+        "WHERE reservation.instanceId = :instanceId " +
+        "AND reservation.beginDate < :endPeriod  AND reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsForUserInRange",
+        query = "SELECT reservation FROM Reservation reservation " +
+            "WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
+            "AND reservation.beginDate < :endPeriod AND reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsForUser",
+        query = "SELECT reservation FROM Reservation reservation " +
+            "WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId"),
+    @NamedQuery(name = "reservation.findAllReservationsForValidation",
+        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+            "JOIN reservedResource.resource.managers manager WHERE reservedResource.status = 'A' " +
+            "AND manager.id.managerId = :managerId AND reservedResource.reservation.instanceId = :instanceId " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsNotRefusedForResourceInRange",
+        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.resource.id = :resourceId AND reservedResource.status != 'R' " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsForCategoryInRange",
+        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.resource.category.id = :categoryId " +
+            "AND reservedResource.reservation.instanceId = :instanceId " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsForUserAndCategoryInRange",
+        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.resource.category.id = :categoryId " +
+            "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource.reservation.userId = :userId " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsForResourceInRange",
+        query ="SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.resource.id = :resourceId " +
+            "AND reservedResource.reservation.instanceId = :instanceId " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservationsForUserAndResourceInRange",
+        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.resource.id = :resourceId " +
+            "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource.reservation.userId = :userId " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod "),
+    @NamedQuery(name = "reservation.findAllReservations",
+        query = "SELECT DISTINCT reservation FROM Reservation reservation WHERE reservation.instanceId = :instanceId")
+})
+public class Reservation extends AbstractJpaCustomEntity<Reservation, UniqueLongIdentifier>
+    implements ResourceStatus {
+  private static final long serialVersionUID = 4901854718854856161L;
 
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  private Long id;
   @Column(name = "evenement", length = 128, nullable = false)
   private String event;
   @Column(length = 20, nullable = false)
@@ -59,15 +110,15 @@ public class Reservation implements ResourceStatus {
   @Transient
   private String userName;
 
-  @PrePersist
-  public void beforePersist() {
+  @Override
+  public void performBeforePersist() {
     Date now = new Date();
     setCreationDate(now);
     setUpdateDate(now);
   }
 
-  @PreUpdate
-  public void beforeUpdate() {
+  @Override
+  public void performBeforeUpdate() {
     setUpdateDate(new Date());
   }
 
@@ -96,16 +147,12 @@ public class Reservation implements ResourceStatus {
     }
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public final void setId(Long id) {
-    this.id = id;
+  public Long getIdAsLong() {
+    return getNativeId().getId();
   }
 
   public String getIdAsString() {
-    return String.valueOf(id);
+    return getId();
   }
 
   public String getInstanceId() {
@@ -214,7 +261,7 @@ public class Reservation implements ResourceStatus {
 
   public Reservation(Long id, String event, Date beginDate, Date endDate, String reason,
       String place, String userId, Date creationDate, Date updateDate, String instanceId) {
-    setId(id);
+    setId(Long.toString(id));
     this.event = event;
     setBeginDate(beginDate);
     setEndDate(endDate);
@@ -229,7 +276,7 @@ public class Reservation implements ResourceStatus {
   public Reservation(Long id, String event, Date beginDate, Date endDate, String reason,
       String place, String userId, Date creationDate, Date updateDate, String instanceId,
       String status) {
-    setId(id);
+    setId(Long.toString(id));
     this.event = event;
     setBeginDate(beginDate);
     setEndDate(endDate);
@@ -244,7 +291,7 @@ public class Reservation implements ResourceStatus {
 
   @Override
   public String toString() {
-    return "Reservation{" + "id=" + id + ", event=" + event + ", beginDate=" + beginDate +
+    return "Reservation{" + "id=" + getId() + ", event=" + event + ", beginDate=" + beginDate +
         ", endDate=" + endDate + ", reason=" + reason + ", place=" + place + ", userId=" +
         userId + ", creationDate=" + creationDate + ", updateDate=" + updateDate +
         ", instanceId=" + instanceId + ", status=" + status + ", userName=" + userName + '}';

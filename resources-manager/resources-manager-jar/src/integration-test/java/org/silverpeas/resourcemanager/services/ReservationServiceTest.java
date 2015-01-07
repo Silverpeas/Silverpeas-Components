@@ -23,29 +23,23 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -58,41 +52,43 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(
-    locations = {"/spring-resource-manager-datasource.xml", "/spring-resource-manager.xml"})
-@Transactional
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
+@RunWith(Arquillian.class)
 public class ReservationServiceTest {
 
   public ReservationServiceTest() {
   }
 
-  private static ReplacementDataSet dataSet;
-  @Inject
-  private ReservationService service;
-  @Inject
-  private ResourceService resourceService;
-  @Inject
-  private ReservedResourceService reservedResourceService;
-  @Inject
-  @Named("jpaDataSource")
-  private DataSource dataSource;
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule("create-database.sql", "reservations_validation_dataset.xml");
 
-  @BeforeClass
-  public static void prepareDataset() throws Exception {
-    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet = new ReplacementDataSet(builder.build(ReservationServiceTest.class.getClassLoader().
-        getResourceAsStream(
-            "org/silverpeas/resourcemanager/services/reservations_validation_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(ReservationServiceTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
+          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:calendar");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-core");
+          warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
+          warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+          warBuilder.addPackages(true, "org.silverpeas.resourcemanager");
+        }).build();
   }
+
+  private ReservationService service;
+  private ResourceService resourceService;
+  private ReservedResourceService reservedResourceService;
 
   @Before
   public void generalSetUp() throws Exception {
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
+    service = ServiceProvider.getService(ReservationService.class);
+    resourceService = ServiceProvider.getService(ResourceService.class);
+    reservedResourceService = ServiceProvider.getService(ReservedResourceService.class);
   }
 
   /**
@@ -100,13 +96,15 @@ public class ReservationServiceTest {
    */
   @Test
   public void testCreateReservation() {
-    String instanceId = "resourcesManager42";
-    Reservation reservation =
-        new Reservation("Test de la Toussaint", new Date(1320134400000L), new Date(1320163200000L),
-            "To test", "at work");
-    reservation.setInstanceId(instanceId);
-    service.createReservation(reservation, Collections.<Long>emptyList());
-    Reservation createdReservation = service.getReservation(reservation.getId());
+    Transaction.performInOne(() -> {
+      String instanceId = "resourcesManager42";
+      Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
+          new Date(1320163200000L), "To test", "at work");
+      reservation.setInstanceId(instanceId);
+      service.createReservation(reservation, Collections.<Long>emptyList());
+      Reservation createdReservation = service.getReservation(reservation.getIdAsLong());
+      return null;
+    });
   }
 
   /**
@@ -120,9 +118,10 @@ public class ReservationServiceTest {
             "To test", "at work");
     reservation.setInstanceId(instanceId);
     service.createReservation(reservation, Arrays.asList(1L, 2L));
-    Reservation createdReservation = service.getReservation(reservation.getId());
+    Reservation createdReservation = service.getReservation(reservation.getIdAsLong());
     assertThat(reservation, is(createdReservation));
-    List<Resource> resources = resourceService.listResourcesOfReservation(reservation.getId());
+    List<Resource> resources =
+        resourceService.listResourcesOfReservation(reservation.getIdAsLong());
     assertThat(resources, is(notNullValue()));
     assertThat(resources, hasSize(2));
   }
@@ -139,13 +138,14 @@ public class ReservationServiceTest {
     reservation.setInstanceId(instanceId);
     reservation.setUserId("5");
     service.createReservation(reservation, Arrays.asList(5L));
-    Reservation createdReservation = service.getReservation(reservation.getId());
+    Reservation createdReservation = service.getReservation(reservation.getIdAsLong());
     assertThat(reservation, is(createdReservation));
-    List<Resource> resources = resourceService.listResourcesOfReservation(reservation.getId());
+    List<Resource> resources =
+        resourceService.listResourcesOfReservation(reservation.getIdAsLong());
     assertThat(resources, is(notNullValue()));
     assertThat(resources, hasSize(1));
     List<ReservedResource> reservedResources =
-        reservedResourceService.findAllReservedResourcesOfReservation(reservation.getId());
+        reservedResourceService.findAllReservedResourcesOfReservation(reservation.getIdAsLong());
     assertThat(reservedResources, is(notNullValue()));
     assertThat(reservedResources, hasSize(1));
     String status = reservedResources.get(0).getStatus();
@@ -165,13 +165,14 @@ public class ReservationServiceTest {
     reservation.setInstanceId(instanceId);
     reservation.setUserId("3");
     service.createReservation(reservation, Arrays.asList(5L));
-    Reservation createdReservation = service.getReservation(reservation.getId());
+    Reservation createdReservation = service.getReservation(reservation.getIdAsLong());
     assertThat(reservation, is(createdReservation));
-    List<Resource> resources = resourceService.listResourcesOfReservation(reservation.getId());
+    List<Resource> resources =
+        resourceService.listResourcesOfReservation(reservation.getIdAsLong());
     assertThat(resources, is(notNullValue()));
     assertThat(resources, hasSize(1));
     List<ReservedResource> reservedResources =
-        reservedResourceService.findAllReservedResourcesOfReservation(reservation.getId());
+        reservedResourceService.findAllReservedResourcesOfReservation(reservation.getIdAsLong());
     assertThat(reservedResources, is(notNullValue()));
     assertThat(reservedResources, hasSize(1));
     String status = reservedResources.get(0).getStatus();
@@ -353,8 +354,7 @@ public class ReservationServiceTest {
     calend.set(Calendar.DAY_OF_MONTH, 10);
     endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
     startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
-    reservations =
-        service.findAllReservationsInRange(instanceId, null, startPeriod, endPeriod);
+    reservations = service.findAllReservationsInRange(instanceId, null, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(3));
 
@@ -398,8 +398,7 @@ public class ReservationServiceTest {
     calend.set(Calendar.DAY_OF_MONTH, 10);
     endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
     startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
-    reservations =
-        service.findAllReservationsInRange(instanceId, userId, startPeriod, endPeriod);
+    reservations = service.findAllReservationsInRange(instanceId, userId, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));
 
@@ -436,8 +435,7 @@ public class ReservationServiceTest {
     calend.set(Calendar.DAY_OF_MONTH, 10);
     endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
     startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
-    reservations =
-        service.findAllReservationsInRange(instanceId, userId, startPeriod, endPeriod);
+    reservations = service.findAllReservationsInRange(instanceId, userId, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(0));
   }

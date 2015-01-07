@@ -75,7 +75,7 @@
       Icon deleteIcon = iconPane1.addIcon();
 
       //recuperation des donnees de la liste
-      Long id = category.getId();
+      Long id = category.getIdAsLong();
       String name = category.getName();
       boolean bookable = category.isBookable();
       String form = category.getForm();

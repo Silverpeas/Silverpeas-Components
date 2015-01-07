@@ -62,7 +62,7 @@
 	Long resourceId = null;
 	
 	if (details != null){
-		resourceId 		= details.getId();
+		resourceId 		= details.getIdAsLong();
 		name 			= details.getName();
 		bookable 		= details.isBookable();
 		description 	= details.getDescription();
@@ -167,7 +167,7 @@ buttonPane.addButton(cancelButton);
 		<TD width="100%">
 		<%for(int i=0;i< list.size();i++){
 			Category category = (Category)list.get(i);
-			Long categoryId = category.getId();
+			Long categoryId = category.getIdAsLong();
 		    String nameCategory = category.getName();
 			if (categoryId.equals(idcategory))
 			{

@@ -167,7 +167,7 @@ function refuseResource(resourceId, resourceName, objectView) {
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
           <td width="100%"><%
           for(Resource maResource : listResourcesofReservation){
-            Long resourceId = maResource.getId();
+            Long resourceId = maResource.getIdAsLong();
             String resourceName = maResource.getName();
             // afficher les icones de validation et refus si la ressource est en etat a valider
             // et si l'utilisateur est le responsable de cette ressource

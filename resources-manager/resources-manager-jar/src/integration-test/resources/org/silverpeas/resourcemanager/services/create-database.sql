@@ -1,8 +1,3 @@
-CREATE TABLE UniqueId (
-	maxId int NOT NULL ,
-	tableName varchar(100) NOT NULL
-);
-
 CREATE TABLE SC_Resources_Category
 (
 	id 				BIGINT 		NOT NULL,

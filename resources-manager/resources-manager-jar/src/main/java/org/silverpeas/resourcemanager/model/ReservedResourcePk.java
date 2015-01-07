@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,33 +7,38 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcemanager.model;
 
+import org.silverpeas.persistence.model.CompositeEntityIdentifier;
+
 import javax.persistence.Embeddable;
-import java.io.Serializable;
 
 /**
- *
  * @author ehugonnet
  */
 @Embeddable
-public class ReservedResourcePk implements Serializable {
+public class ReservedResourcePk implements CompositeEntityIdentifier {
 
   private static final long serialVersionUID = -5550864318148567106L;
+
+  public static final int RR_RESOURCE_POSITION = 0;
+  public static final int RR_RESERVATION_POSITION = 1;
+
+
   private long resourceId;
   private long reservationId;
 
@@ -89,6 +94,19 @@ public class ReservedResourcePk implements Serializable {
 
   @Override
   public String toString() {
-    return "ReservedResourcePk{" + "resourceId=" + resourceId + ", reservationId=" + reservationId + '}';
+    return "ReservedResourcePk{" + "resourceId=" + resourceId + ", reservationId=" + reservationId +
+        '}';
+  }
+
+  @Override
+  public ReservedResourcePk fromString(final String... values) {
+    this.resourceId = Long.parseLong(values[RR_RESOURCE_POSITION]);
+    this.reservationId = Long.parseLong(values[RR_RESERVATION_POSITION]);
+    return this;
+  }
+
+  @Override
+  public String asString() {
+    return resourceId + COMPOSITE_SEPARATOR + reservationId;
   }
 }

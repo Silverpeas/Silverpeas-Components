@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,30 +9,30 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.resourcesmanager.web;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.DateUtil;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,7 +50,6 @@ import static org.silverpeas.resourcesmanager.web.ResourceManagerResourceURIs.*;
 
 /**
  * A REST Web resource giving reservation and resource data.
- *
  * @author Yohann Chastagnier
  */
 @Service
@@ -63,14 +62,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a category. If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
-   *
    * @param categoryId the identifier od the aimed category.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * category.
    */
   @GET
-  @Path(RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/" + RESOURCE_MANAGER_RESOURCES_URI_PART + "/"
-      + RESOURCE_MANAGER_CATEGORIES_URI_PART + "/{categoryId}")
+  @Path(RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/" + RESOURCE_MANAGER_RESOURCES_URI_PART + "/" +
+      RESOURCE_MANAGER_CATEGORIES_URI_PART + "/{categoryId}")
   @Produces(MediaType.APPLICATION_JSON)
   public ResourceCategoryEntity getCategory(@PathParam("categoryId") final long categoryId) {
     try {
@@ -86,14 +84,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a resource. If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
-   *
    * @param resourceId the identifier od the aimed resource.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * resource.
    */
   @GET
-  @Path(RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/" + RESOURCE_MANAGER_RESOURCES_URI_PART
-      + "/{resourceId}")
+  @Path(RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/" + RESOURCE_MANAGER_RESOURCES_URI_PART +
+      "/{resourceId}")
   @Produces(MediaType.APPLICATION_JSON)
   public ResourceEntity getResource(@PathParam("resourceId") final long resourceId) {
     try {
@@ -107,9 +104,9 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
 
   /**
    * Gets the JSON representation of a reservation event. If it doesn't exist, a 404 HTTP code is
-   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
+   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
+   * when
    * processing the request, a 503 HTTP code is returned.
-   *
    * @param reservationId the identifier od the aimed reservation.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * reservation.
@@ -119,7 +116,8 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
   @Produces(MediaType.APPLICATION_JSON)
   public ReservationEntity getReservation(@PathParam("reservationId") final long reservationId) {
     try {
-      Reservation reservation = getResourceManager().getReservation(getComponentId(), reservationId);
+      Reservation reservation =
+          getResourceManager().getReservation(getComponentId(), reservationId);
       return agregateReservedResourceWebEntities(asWebEntity(reservation));
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -132,23 +130,22 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of resources of a reservation. If it doesn't exist, a
    * 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a
    * problem occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param reservationId the identifier od the aimed reservation.
    * @return the response to the HTTP GET request with the JSON representation of list of resources
    * of a reservation.
    */
   @GET
-  @Path(RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{reservationId}/"
-      + RESOURCE_MANAGER_RESOURCES_URI_PART)
+  @Path(RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{reservationId}/" +
+      RESOURCE_MANAGER_RESOURCES_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<ReservedResourceEntity> getResourcesOfReservation(
       @PathParam("reservationId") final long reservationId) {
     try {
-      List<Resource> resources = getResourceManager().getResourcesOfReservation(getComponentId(),
-          reservationId);
+      List<Resource> resources =
+          getResourceManager().getResourcesOfReservation(getComponentId(), reservationId);
       for (Resource resource : resources) {
         resource.setStatus(getResourceManager().
-            getResourceOfReservationStatus(resource.getId(), reservationId));
+            getResourceOfReservationStatus(resource.getIdAsLong(), reservationId));
       }
       return asWebEntities(reservationId, resources);
     } catch (final WebApplicationException ex) {
@@ -162,7 +159,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event. If it doesn't exist, a 404 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -183,7 +179,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event. If it doesn't exist, a 404 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -194,9 +189,9 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    */
   @GET
   @Path(
-      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/"
-      + RESOURCE_MANAGER_RESOURCES_URI_PART + "/" + RESOURCE_MANAGER_CATEGORIES_URI_PART
-      + "/{categoryId}")
+      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/" +
+          RESOURCE_MANAGER_RESOURCES_URI_PART + "/" + RESOURCE_MANAGER_CATEGORIES_URI_PART +
+          "/{categoryId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<ReservationEntity> getReservationsByCategory(
       @PathParam("periodType") final PeriodType periodType, @PathParam("year") final int year,
@@ -209,7 +204,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event. If it doesn't exist, a 404 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -220,8 +214,8 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    */
   @GET
   @Path(
-      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/"
-      + RESOURCE_MANAGER_RESOURCES_URI_PART + "/{resourceId}")
+      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/" +
+          RESOURCE_MANAGER_RESOURCES_URI_PART + "/{resourceId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<ReservationEntity> getReservationsByResource(
       @PathParam("periodType") final PeriodType periodType, @PathParam("year") final int year,
@@ -234,7 +228,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event. If it doesn't exist, a 404 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -257,7 +250,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event. If it doesn't exist, a 404 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -269,9 +261,9 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    */
   @GET
   @Path(
-      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}/"
-      + RESOURCE_MANAGER_RESOURCES_URI_PART + "/" + RESOURCE_MANAGER_CATEGORIES_URI_PART
-      + "/{categoryId}")
+      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}/" +
+          RESOURCE_MANAGER_RESOURCES_URI_PART + "/" + RESOURCE_MANAGER_CATEGORIES_URI_PART +
+          "/{categoryId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<ReservationEntity> getReservationsByCategory(
       @PathParam("periodType") final PeriodType periodType, @PathParam("year") final int year,
@@ -284,7 +276,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event. If it doesn't exist, a 404 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -296,8 +287,8 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    */
   @GET
   @Path(
-      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}/"
-      + RESOURCE_MANAGER_RESOURCES_URI_PART + "/{resourceId}")
+      RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}/" +
+          RESOURCE_MANAGER_RESOURCES_URI_PART + "/{resourceId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<ReservationEntity> getReservationsByResource(
       @PathParam("periodType") final PeriodType periodType, @PathParam("year") final int year,
@@ -310,7 +301,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * Gets the JSON representation of a list of reservation event that has to be validated. If it
    * doesn't exist, a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is
    * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @param periodType the aimed period
    * @param year the aimed year
    * @param month the aimed month
@@ -331,7 +321,7 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
 
       List<Reservation> reservations = getResourceManager()
           .getReservationForValidation(getComponentId(), getUserDetail().getId(),
-          Period.from(dateReference, periodType, getUserPreferences().getLanguage()));
+              Period.from(dateReference, periodType, getUserPreferences().getLanguage()));
 
       return agregateReservedResourceWebEntities(asWebEntities(reservations));
     } catch (final WebApplicationException ex) {
@@ -343,7 +333,6 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
 
   /**
    * Centralization of getting of month reservations of a user.
-   *
    * @param periodType
    * @param year
    * @param month
@@ -382,12 +371,12 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
         // And filtred by a given category
         reservations = getResourceManager()
             .getReservationWithResourcesOfCategory(getComponentId(), userIdAsInteger, period,
-            categoryId);
+                categoryId);
       } else {
 
         // No filters
-        reservations = getResourceManager().getReservationOfUser(getComponentId(), userIdAsInteger,
-            period);
+        reservations =
+            getResourceManager().getReservationOfUser(getComponentId(), userIdAsInteger, period);
       }
 
       // Result as a list of reservation web entity
@@ -401,18 +390,17 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
 
   /**
    * Centralization.
-   *
    * @param reservationEntity
    * @return
    */
-  private ReservationEntity agregateReservedResourceWebEntities(ReservationEntity reservationEntity) {
+  private ReservationEntity agregateReservedResourceWebEntities(
+      ReservationEntity reservationEntity) {
     return reservationEntity
-        .addAll(getResourcesOfReservation(reservationEntity.getReservation().getId()));
+        .addAll(getResourcesOfReservation(reservationEntity.getReservation().getIdAsLong()));
   }
 
   /**
    * Centralization.
-   *
    * @param reservationEntities
    * @return
    */
@@ -420,14 +408,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
       Collection<ReservationEntity> reservationEntities) {
     for (ReservationEntity reservationEntity : reservationEntities) {
       reservationEntity
-          .addAll(getResourcesOfReservation(reservationEntity.getReservation().getId()));
+          .addAll(getResourcesOfReservation(reservationEntity.getReservation().getIdAsLong()));
     }
     return reservationEntities;
   }
 
   /**
    * Compute the reference date.
-   *
    * @param year
    * @param month
    * @param day
