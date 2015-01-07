@@ -47,6 +47,7 @@ import org.apache.commons.io.IOUtils;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
 import org.silverpeas.media.video.VideoThumbnailExtractorProvider;
+import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.util.ImageLoader;
@@ -345,7 +346,7 @@ public class MediaUtil {
 
   public static void setMetaData(final FileHandler fileHandler, final Photo photo)
       throws IOException, MediaMetadataException {
-    setMetaData(fileHandler, photo, I18NHelper.defaultLanguage);
+    setMetaData(fileHandler, photo, MessageManager.getLanguage());
   }
 
   public static void setMetaData(final FileHandler fileHandler, final Photo photo,

@@ -30,9 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 
@@ -98,15 +99,16 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
 
   final void init(String instanceId) {
     try {
-      FileUtil.loadProperties(settings, "org/silverpeas/gallery/settings/metadataSettings_"
-          + instanceId + ".properties");
+      FileUtil.loadProperties(settings,
+          "org/silverpeas/gallery/settings/metadataSettings_" + instanceId + ".properties");
     } catch (Exception e) {
       this.settings = DEFAULT_SETTINGS;
     }
-    this.metaDataBundles = new HashMap<>(I18NHelper.allLanguages.size());
-    for (String lang : I18NHelper.allLanguages.keySet()) {
-      metaDataBundles.put(lang, new ResourceLocator(
-          "org.silverpeas.gallery.multilang.metadataBundle", lang));
+    this.metaDataBundles =
+        new HashMap<String, ResourceLocator>(DisplayI18NHelper.getLanguages().size());
+    for (String lang : DisplayI18NHelper.getLanguages()) {
+      metaDataBundles
+          .put(lang, new ResourceLocator("org.silverpeas.gallery.multilang.metadataBundle", lang));
     }
     String display = settings.getProperty("display");
     Iterable<String> propertyNames = StringUtil.splitString(display, ',');

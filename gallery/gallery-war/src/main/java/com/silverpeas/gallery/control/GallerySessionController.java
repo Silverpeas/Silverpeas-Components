@@ -673,7 +673,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return result;
   }
 
-  public void sendAskMedia(String order) {
+  public void sendAskMedia(String asking) {
     // envoyer une notification au gestionnaire de la médiathèque concernant la
     // demande de média
     // 1. création du message
@@ -687,9 +687,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     String subject = message.getString("gallery.notifAskSubject");
     StringBuilder messageBody = new StringBuilder();
-    messageBody =
-        messageBody.append(user).append(" ").append(message.getString("gallery.notifBodyAsk"))
-            .append("\n").append(order);
+    messageBody = messageBody.append(user).append(" ").append(
+        message.getString("gallery.notifBodyAsk"));
 
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
         subject, messageBody.toString());
@@ -699,11 +698,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           new ResourceLocator(MULTILANG_GALLERY_BUNDLE, language);
       subject = message.getString("gallery.notifAskSubject");
       messageBody = new StringBuilder();
-      messageBody = messageBody.append(user).append(" ").append(
-          message.getString("gallery.notifBodyAsk")).append("\n").append(order);
+      messageBody =
+          messageBody.append(user).append(" ").append(message.getString("gallery.notifBodyAsk"));
       notifMetaData.addLanguage(language, subject, messageBody.toString());
+      notifMetaData.addExtraMessage(asking, language);
 
-      Link link = new Link(url, message.getString("gallery.notifLinkLabel"));
+      Link link = new Link(url, message.getString("gallery.notifApplicationLinkLabel"));
       notifMetaData.setLink(link, language);
     }
 
@@ -963,7 +963,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           message.getString("gallery.orderNotifBodyAsk")).append("\n");
       notifMetaData.addLanguage(language, subject, messageBody.toString());
 
-      Link link = new Link(url, message.getString("gallery.notifLinkLabel"));
+      Link link = new Link(url, message.getString("gallery.notifOrderLinkLabel"));
       notifMetaData.setLink(link, language);
     }
 
@@ -1005,7 +1005,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           message.getString("gallery.orderNotifBodyAskOk")).append("\n");
       notifMetaData.addLanguage(language, subject, messageBody.toString());
 
-      Link link = new Link(url, message.getString("gallery.notifLinkLabel"));
+      Link link = new Link(url, message.getString("gallery.notifOrderLinkLabel"));
       notifMetaData.setLink(link, language);
     }
 

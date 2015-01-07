@@ -363,7 +363,7 @@
       </label>
       <order>15</order>
       <mandatory>true</mandatory>
-      <value>no</value>
+      <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
