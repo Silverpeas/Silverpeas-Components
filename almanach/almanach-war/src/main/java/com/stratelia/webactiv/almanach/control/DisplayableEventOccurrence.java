@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,35 +9,36 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach.control;
-
-import java.util.Collection;
 
 import com.silverpeas.calendar.DateTime;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
-import java.util.ArrayList;
-import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.silverpeas.attachment.model.SimpleDocument;
-import static org.silverpeas.util.StringUtil.*;
+import org.silverpeas.util.JSONCodec;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An occurrence of an event in the time and that can be rendered in a calendar view.
- *
+ * <p>
  * A DisplayableEventOccurrence instance decorates an event occurrence by adding to it rendering
  * information so that the occurrence can be displayed into a calendar view.
  */
@@ -101,41 +102,44 @@ public class DisplayableEventOccurrence extends EventOccurrence {
    * @return a JSON array with the JSON representation of all the specified events.
    */
   public static String toJSON(final List<DisplayableEventOccurrence> events) {
-    JSONArray jsonArray = new JSONArray();
-    for (DisplayableEventOccurrence event : events) {
-      jsonArray.put(event.toJSONObject());
-    }
-    return jsonArray.toString();
+    return JSONCodec.encodeArray(jsonArray -> {
+      for (DisplayableEventOccurrence event : events) {
+        jsonArray.addJSONObject(event.toJSONObject());
+      }
+      return jsonArray;
+    });
   }
 
   /**
-   * Converts this event DTO into a JSON object.
-   * @return a JSON object of this event DTO.
+   * Converts this event DTO into a JSON String representation object.
+   * @return a JSON String representation of this event DTO.
    */
-  protected JSONObject toJSONObject() {
-    EventDetail event = getEventDetail();
-    String startDate = getStartDateTimeInISO();
-    String endDate = getEndDateTimeInISO();
-    String description  = event.getWysiwyg();
-    Collection<SimpleDocument> attachments = event.getAttachments();
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("id", event.getId());
-    jsonObject.put("instanceId", event.getInstanceId());
-    jsonObject.put("title", event.getTitle());
-    jsonObject.put("description", description);
-    jsonObject.put("location", event.getPlace());
-    jsonObject.put("hasAttachments", attachments != null && !attachments.isEmpty());
-    jsonObject.put("start", startDate);
-    jsonObject.put("end", endDate);
-    jsonObject.put("className", new JSONArray(getCSSClasses()));
-    jsonObject.put("allDay", isAllDay());
-    jsonObject.put("startTimeDefined", isStartTimeDefined());
-    jsonObject.put("endTimeDefined", isEndTimeDefined());
-    jsonObject.put("priority", event.isPriority());
-    if (isDefined(event.getEventUrl())) {
-      jsonObject.put("eventURL", event.getEventUrl());
-    }
-    return jsonObject;
+  protected Function<JSONCodec.JSONObject, JSONCodec.JSONObject> toJSONObject() {
+    return (jsonObject -> {
+      EventDetail event = getEventDetail();
+      String startDate = getStartDateTimeInISO();
+      String endDate = getEndDateTimeInISO();
+      String description = event.getWysiwyg();
+      Collection<SimpleDocument> attachments = event.getAttachments();
+      jsonObject.put("id", event.getId());
+      jsonObject.put("instanceId", event.getInstanceId());
+      jsonObject.put("title", event.getTitle());
+      jsonObject.put("description", description);
+      jsonObject.put("location", event.getPlace());
+      jsonObject.put("hasAttachments", attachments != null && !attachments.isEmpty());
+      jsonObject.put("start", startDate);
+      jsonObject.put("end", endDate);
+
+      jsonObject.put("className", (a -> a.addJSONArray(getCSSClasses())));
+      jsonObject.put("allDay", isAllDay());
+      jsonObject.put("startTimeDefined", isStartTimeDefined());
+      jsonObject.put("endTimeDefined", isEndTimeDefined());
+      jsonObject.put("priority", event.isPriority());
+      if (isDefined(event.getEventUrl())) {
+        jsonObject.put("eventURL", event.getEventUrl());
+      }
+      return jsonObject;
+    });
   }
 
   private DisplayableEventOccurrence(final EventOccurrence occurrence) {
