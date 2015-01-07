@@ -104,6 +104,7 @@
   <title></title>
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
+  <view:includePlugin name="datepicker"/>
   <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <%
     if (formUpdate != null) {

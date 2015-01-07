@@ -493,48 +493,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
-  // Remplacement des appels au FileServer par le nom de fichier simple
-  private String replaceFileServerWithLocal(String message, String server) {
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
-    String retour = replacePermalinkWithServer(message, server);
-    while (retour.contains("/FileServer/")) {
-      int place = retour.indexOf("/FileServer/");
-      String debut = retour.substring(0, place);
-      int srcPlace = debut.lastIndexOf("\"");
-      debut = debut.substring(0, srcPlace + 1);
-      String suite =
-          retour.substring(place + "/FileServer/".length(), retour.length());
-      int finNom = suite.indexOf('?');
-      String nomFichier = "cid:" + suite.substring(0, finNom);
-      nomFichier = nomFichier.replace('_', ' ');
-      int finURL = suite.indexOf('\"');
-      suite = suite.substring(finURL, suite.length());
-      retour = debut + nomFichier + suite;
-    }
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
-    return retour;
-  }
-
-  /**
-   * Replace /silverpeas/xxx by http(s)://server:port/silverpeas/xxx (Only in notifyExternals case)
-   *
-   * @param message
-   * @param server: http(s)://server:port
-   * @return codeHtml
-   */
-  private String replacePermalinkWithServer(String message, String server) {
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
-    String urlContext = URLManager.getApplicationURL();
-    String retour = message.replaceAll("\"".toLowerCase() + urlContext + "/",
-        "\"" + server + urlContext + "/");
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
-    return retour;
-  }
-
   public boolean isPdcUsed() {
     String parameterValue = getComponentParameterValue("usepdc");
     return "yes".equals(parameterValue.toLowerCase());

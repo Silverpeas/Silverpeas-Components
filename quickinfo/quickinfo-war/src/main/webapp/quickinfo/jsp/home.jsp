@@ -178,7 +178,7 @@ function unsubscribe() {
     	<c:forEach items="${listOfNews}" var="news">
 		<li>
 			<c:if test="${not empty news.thumbnail}">
-			  <view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="100x"/>
+			  <view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="200x"/>
 			</c:if>
 			<h3 class="news-title"><a href="View?Id=${news.id}">${news.title}</a></h3>
 			<p class="news-teasing"><view:encodeHtmlParagraph string="${news.description}"/></p>

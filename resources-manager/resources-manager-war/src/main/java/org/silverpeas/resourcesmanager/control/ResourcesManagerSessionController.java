@@ -335,7 +335,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
           subject = message.getString("resourcesManager.notifSubject");
           messageBody = new StringBuilder();
           messageBody = messageBody.append(user).append(" ").append(message.getString(
-              "resourcesManager.notifBody")).append(" '").append(resource.getName()).append("'");
+              "resourcesManager.notifBody")).append(" '").append(resource.getName()).append("'.");
           notifMetaData.addLanguage(language, subject, messageBody.toString());
 
           Link link = new Link(url, message.getString("resourcesManager.notifReservationLinkLabel"));
@@ -601,14 +601,13 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   private String getMessageBodyRefusedReservation(ResourceLocator message, Resource resource, Reservation reservation, String motive) {
-    StringBuilder messageBody = new StringBuilder(512);
+    StringBuilder messageBody = new StringBuilder();
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(" '");
     messageBody.append(resource.getName()).append("' ");
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '");
     messageBody.append(reservation.getEvent()).append("' ");
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseEnd"));
-    messageBody.append(message.getString("resourcesManager.notifBodyRefuseMotive")).append(" ");
-    messageBody.append(motive);
+    messageBody.append(message.getString("resourcesManager.notifBodyRefuseMotive"));
     return messageBody.toString();
   }
 
@@ -632,11 +631,14 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         subject, getMessageBodyRefusedReservation(message, resource, reservation, motive));
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+      message =
+          new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+              language);
       subject = message.getString("resourcesManager.notifSubjectRefuse");
 
       notifMetaData.addLanguage(language, subject,
           getMessageBodyRefusedReservation(message, resource, reservation, motive));
+      notifMetaData.addExtraMessage(motive, language);
 
       Link link = new Link(url, message.getString("resourcesManager.notifReservationLinkLabel"));
       notifMetaData.setLink(link, language);

@@ -1,7 +1,10 @@
-$userName$, le publieur de la réponse suivante vous demande d'en prendre connaissance  : 
-
-Question : $QuestionDetail.title$
-$QuestionDetail.content$
-
-Réponse : $ReplyDetail.title$
+Le publieur <b>$userName$</b>, vous demande de prendre connaissance de la réponse suivante :
+<div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;"><b>$ReplyDetail.title$</b>
 $replyContent$
+</div>
+
+La question était :
+<div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;"><b>$QuestionDetail.title$</b>
+$QuestionDetail.content$
+</div>
+
