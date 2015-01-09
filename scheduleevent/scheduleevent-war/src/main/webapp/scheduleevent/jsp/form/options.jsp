@@ -97,7 +97,7 @@
 				<c:forEach var="currentDate" items="${currentScheduleEvent.optionalDateIndexes}" varStatus="lineInfo">
 					<li>
 						<fmt:formatDate pattern="${gmlDateFormat}" value="${currentDate.date}" />
-						<a href="javascript: deleteDate(${currentDate.indexFormat})">
+						<a href="javascript: deleteDate('${currentDate.indexFormat}')">
 							<img alt="${deleteScheduleEventDateAlt}" src="${deleteScheduleEventDate}" />
 						</a>
 					</li>
