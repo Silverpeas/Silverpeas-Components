@@ -10,8 +10,8 @@
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
-<%@ page import="com.stratelia.webactiv.kmelia.model.TopicDetail, com.stratelia.webactiv.util.node.model.NodeDetail, java.util.Collection, java.util.Iterator, com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.kmelia.model.TopicDetail, com.stratelia.webactiv.node.model.NodeDetail, java.util.Collection, java.util.Iterator, com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

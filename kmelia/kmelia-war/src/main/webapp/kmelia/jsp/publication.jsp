@@ -232,7 +232,7 @@
 %>
 
 <c:set var="publication" value="<%=pubDetail%>"/>
-<jsp:useBean id="publication" type="com.stratelia.webactiv.util.publication.model.PublicationDetail"/>
+<jsp:useBean id="publication" type="com.stratelia.webactiv.publication.model.PublicationDetail"/>
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
