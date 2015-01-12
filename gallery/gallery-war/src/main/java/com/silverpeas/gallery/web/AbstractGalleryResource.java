@@ -271,9 +271,9 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   
   /**
    * Centralization of getting video media thumbnail.
-   * @param expectedMediaType
-   * @param mediaId
-   * @param thumbnailId
+   * @param expectedMediaType the expected media type
+   * @param mediaId the media identifier
+   * @param thumbnailId the thumbnail identifier
    * @return
    */
   protected Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
@@ -402,8 +402,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Gets Gallery EJB.
-   * @return
+   * @return gallery media service layer
    */
   protected GalleryBm getMediaService() {
     return MediaServiceProvider.getMediaService();
