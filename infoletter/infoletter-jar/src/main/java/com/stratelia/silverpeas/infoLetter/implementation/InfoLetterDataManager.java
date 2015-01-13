@@ -79,8 +79,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Class declaration
@@ -329,9 +331,9 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Recuperation de la liste des emails externes
   @Override
-  public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK) {
+  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
     Connection con = openConnection();
-    List<String> retour = new ArrayList<String>();
+    Set<String> retour = new LinkedHashSet<String>();
     Statement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -340,7 +342,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
       selectQuery += " and letter = " + letterPK.getId() + " ";
       SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.getExternalsSuscribers()",
+          "InfoLetterDataManager.getEmailsExternalsSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
@@ -360,7 +362,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Sauvegarde de la liste des emails externes
-  public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails) {
+  public void setEmailsExternalsSuscribers(WAPrimaryKey letterPK, Set<String> emails) {
     Connection con = openConnection();
     Statement stmt = null;
     try {
@@ -369,7 +371,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       query += " where instanceId = '" + letter.getInstanceId() + "' ";
       query += " and letter = " + letterPK.getId() + " ";
       SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.setExternalsSuscribers()",
+          "InfoLetterDataManager.setEmailsExternalsSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "query = " + query);
       stmt = con.createStatement();
       stmt.executeUpdate(query);
@@ -525,8 +527,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
   
   @Override
-  public List<String> notifyExternals(InfoLetterPublicationPdC ilp, String server, String mimeMultipart, 
-      List<String> listEmailDest, String subject, String emailFrom) {
+  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server, String mimeMultipart,
+      Set<String> listEmailDest, String subject, String emailFrom) {
     // Retrieve SMTP server information
     String host = getSmtpHost();
     boolean isSmtpAuthentication = isSmtpAuthentication();
@@ -535,7 +537,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     String smtpPwd = getSmtpPwd();
     boolean isSmtpDebug = isSmtpDebug();
 
-    List<String> emailErrors = new ArrayList<String>();
+    Set<String> emailErrors = new LinkedHashSet<String>();
 
     if (listEmailDest.size() > 0) {
       // create some properties and get the default Session
@@ -546,11 +548,11 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       Session session = Session.getInstance(props, null);
       session.setDebug(isSmtpDebug); // print on the console all SMTP messages.
 
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
           "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
           "root.MSG_GEN_PARAM_VALUE", "from = " + emailFrom);
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
           "root.MSG_GEN_PARAM_VALUE", "host= " + host);
 
       try {
@@ -577,7 +579,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
             msg.setRecipients(Message.RecipientType.TO, address);
             // add Transport Listener to the transport connection.
             if (isSmtpAuthentication) {
-              SilverTrace.info("infoLetter", "InfoLetterDataManager.notifyExternals()",
+              SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
                   "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort + " m_User="
                   + smtpUser);
               transport.connect(host, smtpPort, smtpUser, smtpPwd);
@@ -587,7 +589,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
             }
             transport.sendMessage(msg, address);
           } catch (Exception ex) {
-            SilverTrace.error("infoLetter", "InfoLetterDataManager.notifyExternals()",
+            SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
                 "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
                 "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
                 SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
@@ -597,7 +599,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
               try {
                 transport.close();
               } catch (Exception e) {
-                SilverTrace.error("infoLetter", "InfoLetterDataManager.notifyExternals()",
+                SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
                     "root.EX_IGNORED", "ClosingTransport", e);
               }
             }

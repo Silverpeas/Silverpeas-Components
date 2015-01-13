@@ -58,7 +58,7 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires définissent les abonnés et paramètre le Plan de Classement.</message>
+        <message lang="fr">Les gestionnaires définissent les abonnés et paramètrent le Plan de Classement.</message>
         <message lang="en">Administrators define suscribers and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
@@ -102,9 +102,45 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les newsletter créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="fr">Les newsletters créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Newsletters created here are classified on the classification scheme.</message>
         <message lang="de">Informations Briefe können auf dem KP klassifiziert werden</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>sendNewsletter</name>
+      <label>
+        <message lang="fr">Abonnés internes</message>
+        <message lang="en">Internal users</message>
+        <message lang="de">interne Benutzer</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Envoi par notification</message>
+            <message lang="en">Shipping by notifification</message>
+            <message lang="de">Das Versenden durch notifification</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Envoi par mail</message>
+            <message lang="en">Send by email</message>
+            <message lang="de">Email schicken</message>
+          </name>
+          <value>1</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Mode d'envoi des newsletters aux abonnés internes</message>
+        <message lang="en">How to send newsletters to internal subscribers</message>
+        <message lang="de">Wie Newslettern an internen Teilnehmer senden</message>
       </help>
     </parameter>
   </parameters>
