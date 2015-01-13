@@ -29,9 +29,9 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>infoLetter</name>
   <label>
-    <message lang="fr">Lettre informative</message>
-    <message lang="en">Information letter</message>
-    <message lang="de">Informations Brief</message>
+    <message lang="fr">Lettre d'information</message>
+    <message lang="en">Newsletter</message>
+    <message lang="de">Newsletter</message>
   </label>
   <description>
     <message lang="fr">Cette application permet l’envoi d’une newsletter à des 

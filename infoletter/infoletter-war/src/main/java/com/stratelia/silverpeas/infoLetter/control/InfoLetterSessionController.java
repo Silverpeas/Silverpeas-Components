@@ -349,7 +349,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @param ilp
    * @param server
    * @param emails
-   * @return
+   * @return tab of dest emails in error
    */
   public String[] sendLetterByMail(InfoLetterPublicationPdC ilp, String server, Set<String> emails) {
     Set<String> emailErrors = new LinkedHashSet<String>();
@@ -624,6 +624,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     boolean exportOk = true;
     File fileOutput =
         new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
+
+    if(fileOutput.exists()) {//delete the existing file and recreate new one
+      FileUtils.forceDelete(fileOutput);
+      fileOutput =
+          new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
+    }
     try {
       Set<String> emails = getEmailsExternalsSuscribers(getCurrentLetter().getPK());
 
