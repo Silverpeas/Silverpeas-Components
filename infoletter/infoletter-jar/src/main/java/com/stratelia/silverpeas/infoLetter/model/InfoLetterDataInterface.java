@@ -24,11 +24,8 @@
 package com.stratelia.silverpeas.infoLetter.model;
 
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import com.silverpeas.subscribe.constant.SubscriberType;
+import java.util.Set;
 
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
@@ -134,14 +131,14 @@ public interface InfoLetterDataInterface {
   public void setInternalSuscribers(String componentId, UserDetail[] users, Group[] groups);
 
   // Recuperation de la liste des emails externes
-  public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK);
+  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK);
 
   /**
    * Save external subscriber emails address 
    * @param letterPK the letter primary key
    * @param emails the list of external emails to save
    */
-  public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails);
+  public void setEmailsExternalsSuscribers(WAPrimaryKey letterPK, Set<String> emails);
 
   // abonnement ou desabonnement d'un utilisateur interne
   public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);
@@ -162,7 +159,7 @@ public interface InfoLetterDataInterface {
   public int getSilverObjectId(String pubId, String componentId);
   
   /**
-   * Notify externals emails about the information letter
+   * Send letter by mail
    *
    *
    * @param ilp the information letter
@@ -173,6 +170,6 @@ public interface InfoLetterDataInterface {
    * @param emailFrom
    * @return list of emails in error
    */
-  public List<String> notifyExternals(InfoLetterPublicationPdC ilp, String server, String mimeMultipart, 
-      List<String> listEmailDest, String subject, String emailFrom);
+  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server, String mimeMultipart,
+      Set<String> listEmailDest, String subject, String emailFrom);
 }

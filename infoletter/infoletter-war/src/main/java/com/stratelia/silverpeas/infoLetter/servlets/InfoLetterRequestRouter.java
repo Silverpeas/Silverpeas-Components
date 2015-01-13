@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.HttpRequest;
@@ -363,10 +364,11 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           ilp.setParutionDate(DateUtil.date2SQLDate(new java.util.Date()));
           infoLetterSC.updateInfoLetterPublication(ilp);
           infoLetterSC.createIndex(ilp);
-          infoLetterSC.notifySuscribers(ilp);
           String server = request.getRequestURL().substring(0,
               request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
-          emailErrors = infoLetterSC.notifyExternals(ilp, server);
+          infoLetterSC.notifyInternalSuscribers(ilp, server);
+
+          emailErrors = infoLetterSC.sendByMailToExternalSubscribers(ilp, server);
         }
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
         request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
@@ -462,7 +464,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("Emails")) {
         InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-        List<String> listEmails = infoLetterSC.getExternalsSuscribers(defaultLetter.getPK());
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
 
         request.setAttribute("listEmails", listEmails);
         destination = "emailsManager.jsp";
@@ -479,7 +481,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         if (emails != null) {
           infoLetterSC.deleteExternalsSuscribers(defaultLetter.getPK(), emails);
         }
-        List<String> listEmails = infoLetterSC.getExternalsSuscribers(defaultLetter.getPK());
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
 
         request.setAttribute("listEmails", listEmails);
         destination = "emailsManager.jsp";
@@ -487,7 +489,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
 
         infoLetterSC.deleteAllExternalsSuscribers(defaultLetter.getPK());
-        List<String> listEmails = infoLetterSC.getExternalsSuscribers(defaultLetter.getPK());
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
 
         request.setAttribute("listEmails", listEmails);
         destination = "emailsManager.jsp";
@@ -498,7 +500,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
 
         infoLetterSC.addExternalsSuscribers(defaultLetter.getPK(), newmails);
-        List<String> listEmails = infoLetterSC.getExternalsSuscribers(defaultLetter.getPK());
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
 
         request.setAttribute("listEmails", listEmails);
         destination = "emailsManager.jsp";
