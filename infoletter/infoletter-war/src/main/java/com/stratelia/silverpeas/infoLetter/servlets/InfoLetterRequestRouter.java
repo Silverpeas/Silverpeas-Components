@@ -542,7 +542,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         boolean exportOk = infoLetterSC.exportCsvEmails();
         request.setAttribute("ExportOk", Boolean.toString(exportOk));
         if (exportOk) {
-          request.setAttribute("EmailCsvName", getCurrentLetter(infoLetterSC).getName()
+          request.setAttribute("EmailCsvName", infoLetterSC.getComponentId()
               + InfoLetterSessionController.EXPORT_CSV_NAME);
         }
         destination = "exportEmailsCsv.jsp";
