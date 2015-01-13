@@ -65,6 +65,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.Set"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%
