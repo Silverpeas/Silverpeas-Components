@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
+import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class QuestionReplyContentManager implements ContentInterface {
 
-  ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
+  ContentManager contentManager = ContentManagerProvider.getContentManager();
 
   public QuestionReplyContentManager() {
   }

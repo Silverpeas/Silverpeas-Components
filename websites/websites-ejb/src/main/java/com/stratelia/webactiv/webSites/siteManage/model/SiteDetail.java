@@ -29,7 +29,7 @@ import java.util.Date;
 
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
+import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -175,7 +175,7 @@ public class SiteDetail extends PublicationDetail {
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
+      ContentManager contentManager = ContentManagerProvider.getContentManager();
       try {
         int objectId = contentManager.getSilverContentId(this.getId(), this.getInstanceId());
         if (objectId >= 0) {
