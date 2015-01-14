@@ -168,7 +168,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     try {
       InfoLetter letter = getInfoLetter(letterPK);
       String whereClause = "instanceId = '" + letter.getInstanceId() + "' AND letterId = "
-          + letterPK.getId();
+          + letterPK.getId() + " ORDER BY id desc";
       return new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(
           letterPK, whereClause));
     } catch (PersistenceException pe) {
