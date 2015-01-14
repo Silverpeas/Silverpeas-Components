@@ -86,6 +86,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -709,5 +710,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       return "1".equalsIgnoreCase(getComponentParameterValue("sendNewsletter"));
     }
     return false;
+  }
+
+  /**
+   * save wysiwyg content of the newsletter
+   * @param content
+   * @param ilp
+   */
+  public void updateContentInfoLetterPublication(String content, InfoLetterPublicationPdC ilp) {
+    // Update the Wysiwyg if exists, create one otherwise
+    if (isDefined(ilp._getContent())) {
+      WysiwygController.updateFileAndAttachment(content,
+          getComponentId(), ilp.getId(), getUserId(), getLanguage());
+    }
   }
 }
