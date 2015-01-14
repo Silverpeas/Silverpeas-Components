@@ -1082,24 +1082,6 @@
       </help>
     </parameter>
     <parameter>
-      <name>isNewsManage</name>
-      <label>
-        <message lang="fr">Actualités déléguées</message>
-        <message lang="en">Delegated news</message>
-        <message lang="de">Dezentralisierte Nachrichten</message>
-      </label>
-      <order>46</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Permet de gérer les actualités soumises à validation dans l'application Actualités déléguées.</message>
-        <message lang="en">Activates the news manage option. The news are valided in the application Delegated news.</message>
-        <message lang="de">Diese Funktion erlaubt es Nachrichten zu verwalten die die Valiedierung in der Nachrichtenkomponente unterliegen, </message>
-      </help>
-    </parameter>
-    <parameter>
       <name>publicationSort</name>
       <label>
         <message lang="fr">Ordre des publications</message>

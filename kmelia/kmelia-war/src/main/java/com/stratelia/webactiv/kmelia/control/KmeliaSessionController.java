@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +28,6 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.delegatednews.model.DelegatedNews;
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
@@ -3304,45 +3301,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       SilverTrace.error("kmelia", "KmeliaSessionController.getForms()", "root.CANT_GET_FORMS", e);
     }
     return templates;
-  }
-
-  /**
-   * Is news manage
-   * @return boolean
-   */
-  public boolean isNewsManage() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("isNewsManage"));
-  }
-
-  /**
-   * Récupère une actualité déléguée dans le composant delegatednews correspondant à la publication
-   * passée en paramètre
-   * @param pubId : l'id de la publication de Theme Tracker
-   * @return DelegatedNews : l'objet correspondant à l'actualité déléguée dans le composant
-   * delegatednews ou null si elle n'existe pas
-   */
-  public DelegatedNews getDelegatedNews(String pubId) {
-
-    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
-    DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(Integer.parseInt(pubId));
-    return delegatedNews;
-  }
-
-  /**
-   * Ajout d'une actualité déléguée dans le composant delegatednews
-   * @return String : pubId
-   */
-  public String addDelegatedNews() {
-    // ajoute l'actualité déléguée dans le composant delegatednews
-    KmeliaPublication kmeliaPublication = getSessionPublication();
-    String pubId = kmeliaPublication.getId();
-    PublicationDetail pubDetail = kmeliaPublication.getDetail();
-    String contributorId = pubDetail.getUpdaterId();
-    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
-    delegatedNewsService
-        .submitNews(pubId, pubDetail, contributorId, pubDetail.getVisibilityPeriod(), getUserId());
-
-    return pubId;
   }
 
   @Override

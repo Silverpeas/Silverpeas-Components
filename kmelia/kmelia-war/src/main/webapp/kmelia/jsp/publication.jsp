@@ -47,7 +47,6 @@
 <%@ page import="com.silverpeas.form.*"%>
 <%@page import="org.silverpeas.importExport.versioning.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 <%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
 <%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
@@ -83,13 +82,7 @@
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean validatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   int searchScope = (Integer) request.getAttribute("SearchScope");
-  boolean isNewsManage = (Boolean) request.getAttribute("NewsManage");
-  DelegatedNews delegatedNews = null;
   boolean isBasket = false;
-  if (isNewsManage) {
-    delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
-    isBasket = (Boolean) request.getAttribute("IsBasket");
-  }
   String indexIt = "0";
   if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
     indexIt = "1";
@@ -187,19 +180,6 @@
     kmeliaScc.setSessionOwner(isOwner && validatorsOK);
   }
 
-  if (isNewsManage && !kmaxMode && !toolboxMode && isOwner && delegatedNews != null) {
-    if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
-      screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
-          "kmelia.DelegatedNewsToValidate") + "</div>";
-    } else if (DelegatedNews.NEWS_VALID.equals(delegatedNews.getStatus())) {
-      screenMessage = "<div class=\"inlineMessage-ok\">" + resources.getString(
-          "kmelia.DelegatedNewsValid") + "</div>";
-    } else if (DelegatedNews.NEWS_REFUSED.equals(delegatedNews.getStatus())) {
-      screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString(
-          "kmelia.DelegatedNewsRefused") + "</div>";
-    }
-  }
-  
   if (SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
     String selectUserLab = resources.getString("kmelia.SelectValidator");
     String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
@@ -446,10 +426,6 @@
           postNewLink(name, url, description);
         }
 
-        function suggestDelegatedNews() {
-          location.href= "<%=routerUrl%>SuggestDelegatedNews";
-        }
-        
         function pubShare() {
           var sharingObject = {
               componentId: "<%=contextComponentId%>",
@@ -544,11 +520,6 @@
             operationPane.addLine();
             operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend()");
           }
-        }
-
-        if (isNewsManage && isOwner && pubDetail.isValid() && delegatedNews == null && !isBasket) {
-          operationPane.addLine();
-          operationPane.addOperation("#", resources.getString("kmelia.DelegatedNewsSuggest"), "javaScript:suggestDelegatedNews()");
         }
 
         out.println(window.printBefore());

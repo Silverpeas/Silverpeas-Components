@@ -1406,11 +1406,6 @@ public class KmeliaBmEJB implements KmeliaBm {
         sendSubscriptionsNotification(pubDetail, NotifAction.UPDATE, false);
       }
 
-      boolean isNewsManage = getBooleanValue(getOrganisationController()
-          .getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
-      if (isNewsManage) {
-        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, pubDetail);
-      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updatePublication()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", e);
@@ -1759,12 +1754,6 @@ public class KmeliaBmEJB implements KmeliaBm {
       updateSilverContentVisibility(pubPK, false);
 
       unIndexExternalElementsOfPublication(pubPK);
-
-      boolean isNewsManage = getBooleanValue(getOrganisationController()
-          .getComponentParameterValue(pubPK.getInstanceId(), "isNewsManage"));
-      if (isNewsManage) {
-        notifier.notifyEventOn(ResourceEvent.Type.DELETION, pubDetail);
-      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.sendPublicationToBasket()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DENVOYER_LA_PUBLICATION_A_LA_CORBEILLE", e);
@@ -2868,12 +2857,6 @@ public class KmeliaBmEJB implements KmeliaBm {
         updateSilverContentVisibility(pubDetail);
         unIndexExternalElementsOfPublication(pubDetail.getPK());
         removeAllTodosForPublication(pubPK);
-
-        boolean isNewsManage = getBooleanValue(getOrganisationController()
-            .getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
-        if (isNewsManage) {
-          notifier.notifyEventOn(ResourceEvent.Type.DELETION, pubDetail);
-        }
       }
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()", "root.MSG_GEN_PARAM_VALUE",
           "new status = " + pubDetail.getStatus());

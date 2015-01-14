@@ -1,43 +1,38 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ImageUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -46,17 +41,9 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublicationComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.util.viewGenerator.html.ImageTag;
-import org.silverpeas.util.viewGenerator.html.UserNameGenerator;
-import org.silverpeas.util.viewGenerator.html.board.Board;
-import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 import org.apache.commons.io.FilenameUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -64,6 +51,21 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.rating.web.RaterRatingEntity;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ImageUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.ImageTag;
+import org.silverpeas.util.viewGenerator.html.UserNameGenerator;
+import org.silverpeas.util.viewGenerator.html.board.Board;
+import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 import org.silverpeas.viewer.ViewerProvider;
 
 import javax.servlet.ServletException;
@@ -301,7 +303,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         resources.getSetting("fileStorageShowExtraInfoPub", false);
     fragmentSettings.showTopicPathNameinSearchResult =
         resources.getSetting("showTopicPathNameinSearchResult", true);
-    fragmentSettings.showDelegatedNewsInfo = kmeliaScc.isNewsManage() && !user.isInRole(profile);
     fragmentSettings.toSearch = toSearch;
     fragmentSettings.rateable = kmeliaScc.isPublicationRatingAllowed();
 
@@ -661,22 +662,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               "starsize=\"small\" " +
               "raterrating=\"raterRatingEntity_" + raterRatingEntity.getContributionId() +
               "\"></div>");
-    }
-
-    //Gestion actualités décentralisées
-    if (fragmentSettings.showDelegatedNewsInfo) {
-      DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());
-      if (delegatedNews != null) {
-        out.write("<span class=\"actualite\"><nobr>");
-        if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
-          out.write(" (" + resources.getString("kmelia.DelegatedNewsToValidate") + ")");
-        } else if (DelegatedNews.NEWS_VALID.equals(delegatedNews.getStatus())) {
-          out.write(" (" + resources.getString("kmelia.DelegatedNewsValid") + ")");
-        } else if (DelegatedNews.NEWS_REFUSED.equals(delegatedNews.getStatus())) {
-          out.write(" (" + resources.getString("kmelia.DelegatedNewsRefused") + ")");
-        }
-        out.write("</nobr></span>");
-      }
     }
 
     out.write("</div>");
