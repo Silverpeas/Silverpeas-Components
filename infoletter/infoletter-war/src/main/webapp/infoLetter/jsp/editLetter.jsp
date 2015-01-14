@@ -27,48 +27,57 @@
 
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
+<%
+  String parution = (String) request.getAttribute("parution");
+  String parutionTitle = (String) request.getAttribute("parutionTitle");
+  String parutionContent = (String) request.getAttribute("parutionContent");
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
+  <view:looknfeel/>
+  <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-	function goHeaders (){
+	function goHeaders() {
 		document.headerParution.submit();
 	}
 
-  function goEditContent (){
-    document.editParution.submit();
+  function goView() {
+    document.viewParution.submit();
   }
-	
-	function goFiles (){
-		document.attachedFiles.submit();
-	}
-	
-	function sendLetterToManager (){
-		$.progressMessage();
-		document.headerParution.action = "SendLetterToManager";
-		document.headerParution.submit();
-	}
+
+  function goFiles() {
+    document.attachedFiles.submit();
+  }
+
+  function saveContentData() {
+    document.contentForm.submit();
+  }
+
+  $(document).ready(function() {
+    <view:wysiwyg replace="Content" language="<%=resource.getLanguage() %>" width="95%" height="500" toolbar="infoLetter"
+                  spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=componentId%>" componentName="<%=componentLabel%>"
+                browseInfo="<%=parutionTitle%>" objectId="<%=parution%>" />
+  });
 </script>
 </head>
 <body>
 <%
-String parutionTitle = (String) request.getAttribute("parutionTitle");
-String parution = (String) request.getAttribute("parution");
 
-	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));	
-
-	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");	
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
 
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
-  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:goEditContent()",false);
-  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",true);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
 
   out.println(tabbedPane.print());
@@ -76,18 +85,42 @@ String parution = (String) request.getAttribute("parution");
 	out.println(frame.printBefore());	
 	
 %>
-<view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" />
-<form name="headerParution" action="ParutionHeaders" method="post">			
+<form name="contentForm" action="SaveContent" method="post">
+  <input type="hidden" name="parution" value="<%= parution %>"/>
+
+  <div class="field" id="contentArea">
+    <div class="champs">
+      <div class="container-wysiwyg wysiwyg-fileStorage">
+
+        <viewTags:displayToolBarWysiwyg
+            editorName="Content"
+            componentId="<%=componentId%>"
+            objectId="<%=parution%>" />
+      </div>
+
+      <textarea rows="5" cols="10" name="Content" id="Content"><%=parutionContent%></textarea>
+    </div>
+  </div>
+</form>
+
+<br/>
+<%
+  ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=saveContentData()", false));
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=goView()", false));
+  out.println(buttonPane.print());
+%>
+
+<form name="headerParution" action="ParutionHeaders" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
   <input type="hidden" name="ReturnUrl" value="Preview"/>
 </form>
-<form name="editParution" action="EditContent" method="post">
+<form name="viewParution" action="Preview" method="post">
   <input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="attachedFiles" action="FilesEdit" method="post">			
+<form name="attachedFiles" action="FilesEdit" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());

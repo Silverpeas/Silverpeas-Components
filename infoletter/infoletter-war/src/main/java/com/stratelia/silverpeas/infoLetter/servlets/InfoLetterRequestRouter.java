@@ -240,15 +240,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
           request.setAttribute("parution", parution);
           request.setAttribute("parutionTitle", ilp.getTitle());
-          request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-          request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-          request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-          request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-          request.setAttribute("BrowseInfo", "Editeur de parution");
-          request.setAttribute("ObjectId", parution);
-          request.setAttribute("Language", infoLetterSC.getLanguage());
-          request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
-              + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
           destination = "previewLetter.jsp";
         } else {
           destination = setMainContext(infoLetterSC, request);
@@ -269,35 +260,28 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           request.setAttribute("parution", parution);
           request.setAttribute("url", url);
           request.setAttribute("parutionTitle", ilp.getTitle());
-          request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-          request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-          request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-          request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-          request.setAttribute("BrowseInfo", "Editeur de parution");
-          request.setAttribute("ObjectId", parution);
-          request.setAttribute("Language", infoLetterSC.getLanguage());
-          request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
-              + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
           destination = "attachedFiles.jsp";
         } else {
           destination = setMainContext(infoLetterSC, request);
         }
-      } else if (function.startsWith("Edit")) {
+      } else if (function.startsWith("EditContent")) {
         String parution = param(request, "parution");
-        request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-        request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-        request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-        request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-        request.setAttribute("BrowseInfo", "Editeur de parution");
-        request.setAttribute("ObjectId", parution);
-        request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
-            + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
+        if (StringUtil.isDefined(parution)) {
+          IdPK publiPK = new IdPK();
+          publiPK.setId(parution);
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
+          request.setAttribute("parution", parution);
+          request.setAttribute("parutionTitle", ilp.getTitle());
+          request.setAttribute("parutionContent", ilp._getContent());
+          destination = "editLetter.jsp";
+        } else {
+          destination = setMainContext(infoLetterSC, request);
+        }
       } else if (function.startsWith("ParutionHeaders")) {
         String parution = param(request, "parution");
         String title = "";
         String description = "";
+        String browsBarPath = infoLetterSC.getString("infoLetter.newLetterHeader");
 
         if (!"".equals(parution)) {
           IdPK publiPK = new IdPK();
@@ -305,25 +289,19 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
           title = ilp.getTitle();
           description = ilp.getDescription();
+          browsBarPath = title;
         }
         request.setAttribute("parution", parution);
         request.setAttribute("title", title);
         request.setAttribute("description", description);
-        request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-        request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-        request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-        request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-        request.setAttribute("BrowseInfo", "Editeur de parution");
-        request.setAttribute("ObjectId", parution);
-        request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
-            + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
+        request.setAttribute("browseBarPath", browsBarPath);
 
         destination = "headerLetter.jsp";
       } else if (function.startsWith("UpdateTemplateFromHeaders")) {
         String parution = param(request, "parution");
         String title = "";
         String description = "";
+        String browsBarPath = infoLetterSC.getString("infoLetter.newLetterHeader");
 
         if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
@@ -333,6 +311,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
           title = ilp.getTitle();
           description = ilp.getDescription();
+          browsBarPath = title;
 
           // Mise a jour du template
           infoLetterSC.updateTemplate(ilp);
@@ -340,15 +319,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("parution", parution);
         request.setAttribute("title", title);
         request.setAttribute("description", description);
-        request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-        request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-        request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-        request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-        request.setAttribute("BrowseInfo", "Editeur de parution");
-        request.setAttribute("ObjectId", parution);
-        request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
-            + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
+        request.setAttribute("browseBarPath", browsBarPath);
 
         destination = "headerLetter.jsp";
       } else if (function.startsWith("ValidateParution")) {
@@ -370,10 +341,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
           emailErrors = infoLetterSC.sendByMailToExternalSubscribers(ilp, server);
         }
-        request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-        request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-        request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-        request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
         request.setAttribute("EmailErrors", emailErrors);
         destination = "infoLetterSended.jsp";
       } else if (function.startsWith("ChangeParutionHeaders")) {
@@ -385,6 +352,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
         if (parution.isEmpty()) {
           InfoLetterPublicationPdC ilp = new InfoLetterPublicationPdC();
+          ilp.setInstanceId(infoLetterSC.getComponentId());
           ilp.setTitle(title);
           ilp.setDescription(description);
           ilp.setPublicationState(InfoLetterPublication.PUBLICATION_EN_REDACTION);
@@ -408,15 +376,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("parution", parution);
         request.setAttribute("title", title);
         request.setAttribute("description", description);
-        request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-        request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-        request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-        request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-        request.setAttribute("BrowseInfo", "Editeur de parution");
-        request.setAttribute("ObjectId", parution);
-        request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
-            + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
+        request.setAttribute("browseBarPath", title);
 
         destination = "headerLetter.jsp";
       } else if (function.startsWith("DeletePublications")) {
@@ -558,15 +518,26 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
               .indexOf(URLManager.getApplicationURL()));
           emailErrors = infoLetterSC.notifyManagers(ilp, server);
         }
-        request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-        request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-        request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-        request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
         request.setAttribute("EmailErrors", emailErrors);
         request.setAttribute("ReturnUrl", request.getParameter("ReturnUrl") + "?parution="
             + parution);
 
         destination = "infoLetterSended.jsp";
+      } else if (function.startsWith("SaveContent")) {
+        String parution = param(request, "parution");
+        String content = param(request, "Content");
+        if (StringUtil.isDefined(parution)) {
+          IdPK publiPK = new IdPK();
+          publiPK.setId(parution);
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
+          infoLetterSC.updateContentInfoLetterPublication(content, ilp);
+          request.setAttribute("parution", parution);
+          request.setAttribute("parutionTitle", ilp.getTitle());
+
+          destination = "previewLetter.jsp";
+        } else {
+          destination = setMainContext(infoLetterSC, request);
+        }
       } else {
         destination = function;
       }

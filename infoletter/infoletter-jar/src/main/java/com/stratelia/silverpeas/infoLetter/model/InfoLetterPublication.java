@@ -23,9 +23,11 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
   private static final long serialVersionUID = 2579802983989822400L;
@@ -54,6 +56,8 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
   /** id de la lettre */
   private int letterId;
 
+  private String content;
+
   // Constructeurs
 
   /**
@@ -71,21 +75,21 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
   }
 
   /**
-   * Constructeur a 6 parametres
+   * Constructeur à 7 parametres
    * @param WAPrimaryKey pk
+   * @param instanceId
    * @param String title
    * @param String description
    * @param String parutionDate
    * @param int publicationState
    * @param String letterId
-   * @author frageade
-   * @since February 2002
    */
-  public InfoLetterPublication(WAPrimaryKey pk, String title,
+  public InfoLetterPublication(WAPrimaryKey pk, String instanceId, String title,
       String description, String parutionDate, int publicationState,
       int letterId) {
     super();
     setPK(pk);
+    this.instanceId = instanceId;
     this.title = title;
     this.description = description;
     this.parutionDate = parutionDate;
@@ -167,5 +171,13 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
 
   public boolean _isValid() {
     return (publicationState == PUBLICATION_VALIDEE);
+  }
+
+  public String _getContent() {
+    if (this.content == null) {
+      this.content = WysiwygController
+          .load(getInstanceId(), getPK().getId(), I18NHelper.defaultLanguage);
+    }
+    return this.content;
   }
 }
