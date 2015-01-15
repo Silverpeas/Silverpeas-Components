@@ -30,7 +30,7 @@ public class ScheduleEventComparator implements Comparator<ScheduleEvent> {
 
   @Override
   public int compare(ScheduleEvent se1, ScheduleEvent se2) {
-    return se1.getTitle().compareTo(se2.getTitle());
+    return se2.getCreationDate().compareTo(se1.getCreationDate());
   }
 
 }
