@@ -25,7 +25,6 @@ package com.silverpeas.blog.access;
 
 import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.AccessController;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.core.admin.OrganizationController;
@@ -36,19 +35,19 @@ import javax.inject.Singleton;
 /**
  * A controller of write access on a blog. It controls the user can access the blog and have enough
  * privileges to contribute in the blog.
- * <p/>
+ * <p>
  * With right accesses, a user can create/modify/delete a post.
  * @author mmoquillon
  */
 @Singleton
-@BlogPostWriteAccessControl
-public class BlogPostWriteAccessController extends AbstractAccessController<String> {
+public class BlogPostWriteAccessController extends AbstractAccessController<String>
+    implements BlogPostWriteAccessControl {
 
   @Inject
   private OrganizationController organisationController;
 
   @Inject
-  private @ComponentAccessControl AccessController<String> componentAccessController;
+  private ComponentAccessControl componentAccessController;
 
   /**
    * Hidden constructor.

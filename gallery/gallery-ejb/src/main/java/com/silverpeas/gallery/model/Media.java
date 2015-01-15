@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,7 +44,6 @@ import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.StringUtil;
 
-import javax.enterprise.util.AnnotationLiteral;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
@@ -248,7 +247,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
+        .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
         (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getGreatestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getGreatestUserRole(user)
