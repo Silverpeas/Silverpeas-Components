@@ -114,7 +114,7 @@ function axisUpdate() {
         document.managerForm.AxisName.value = document.axisManagerForm.Name.value;
         document.managerForm.AxisDescription.value = document.axisManagerForm.Description.value;
         document.managerForm.AxisId.value = document.axisManagerForm.Id.value;
-        <% if (I18NHelper.isI18N)  { %>
+        <% if (I18NHelper.isI18nContentActivated)  { %>
         	document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
         <% } %>
         if (document.getElementById('TranslationRemoveIt'))  { 
@@ -212,7 +212,7 @@ function positionUpdate() {
       document.managerForm.PositionName.value = document.axisManagerForm.Name.value;
       document.managerForm.PositionDescription.value = document.axisManagerForm.Description.value;
       document.managerForm.PositionId.value = document.axisManagerForm.Id.value;
-      <% if (I18NHelper.isI18N)  { %>
+      <% if (I18NHelper.isI18nContentActivated)  { %>
       	document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
       <% } %>
       if (document.getElementById('TranslationRemoveIt'))  { 

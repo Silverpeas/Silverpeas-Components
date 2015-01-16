@@ -610,7 +610,7 @@
 				</div>
 				<% } %>
 
-				<% if (I18NHelper.isI18N) { %>
+				<% if (I18NHelper.isI18nContentActivated) { %>
 				<div class="field" id="languageArea">
 					<label for="language" class="txtlibform"><%=resources.getString("GML.language")%></label>
 					<div class="champs">

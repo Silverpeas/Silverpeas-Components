@@ -162,7 +162,7 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
-params["i18n"] = <%=I18NHelper.isI18N%>;
+params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
 params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
 var searchInProgress = <%=searchContext != null%>;
@@ -971,7 +971,7 @@ $(document).ready(
         });
       }
     });
-	
+
 	$.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
