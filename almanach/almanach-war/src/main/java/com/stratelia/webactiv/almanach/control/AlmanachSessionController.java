@@ -31,6 +31,7 @@ import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -60,6 +61,7 @@ import org.silverpeas.date.PeriodType;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.Link;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -735,8 +737,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
 
     // création des notifications
-    ResourceLocator message = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", DisplayI18NHelper.
-        getDefaultLanguage());
+    ResourceLocator message =
+        new ResourceLocator("org.silverpeas.almanach.multilang.almanach", DisplayI18NHelper.
+            getDefaultLanguage());
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(eventDetail, htmlPath, message, senderName);
     NotificationMetaData notifMetaData = new NotificationMetaData(

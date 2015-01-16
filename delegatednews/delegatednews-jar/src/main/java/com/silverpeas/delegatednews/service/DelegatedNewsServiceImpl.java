@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.Link;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;

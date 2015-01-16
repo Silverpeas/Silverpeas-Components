@@ -20,16 +20,6 @@
  */
 package com.silverpeas.formsonline.control;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import com.silverpeas.ui.DisplayI18NHelper;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.GlobalContext;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -38,14 +28,12 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.formsonline.model.FormDetail;
 import com.silverpeas.formsonline.model.FormInstance;
 import com.silverpeas.formsonline.model.FormsOnlineDAO;
-import com.silverpeas.formsonline.model.FormsOnlineDAOJdbc;
 import com.silverpeas.formsonline.model.FormsOnlineDatabaseException;
 import com.silverpeas.formsonline.model.FormsOnlineRuntimeException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -59,15 +47,23 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 

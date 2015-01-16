@@ -23,19 +23,18 @@
  */
 package com.silverpeas.gallery.media;
 
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 
 public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExtractor {
 

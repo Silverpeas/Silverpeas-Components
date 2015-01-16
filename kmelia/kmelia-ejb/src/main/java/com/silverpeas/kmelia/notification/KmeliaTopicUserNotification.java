@@ -23,8 +23,7 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -32,13 +31,13 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.template.SilverpeasTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * @author Yohann Chastagnier
@@ -65,7 +64,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
       }
     } catch (final Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.topicCreationAlert()",
-          ERROR,
+          SilverpeasRuntimeException.ERROR,
           "kmelia.EX_IMPOSSIBLE_DALERTER_POUR_MANIPULATION_THEME", e);
     }
   }

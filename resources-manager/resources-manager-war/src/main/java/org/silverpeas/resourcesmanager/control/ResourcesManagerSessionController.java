@@ -25,7 +25,6 @@ package org.silverpeas.resourcesmanager.control;
 
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -48,6 +47,11 @@ import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

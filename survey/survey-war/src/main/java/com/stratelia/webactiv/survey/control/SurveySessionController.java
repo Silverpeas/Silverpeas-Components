@@ -85,7 +85,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.silverpeas.util.Link;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
