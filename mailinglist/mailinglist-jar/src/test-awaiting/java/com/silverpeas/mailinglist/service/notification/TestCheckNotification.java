@@ -48,6 +48,9 @@ import static org.junit.Assert.*;
 
 public class TestCheckNotification extends AbstractMailingListTest {
 
+  private static final String TECHNICAL_CONTENT =
+      "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
+
   private NotificationHelper notificationHelper;
 
   @Before
@@ -147,7 +150,7 @@ public class TestCheckNotification extends AbstractMailingListTest {
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
           "lisa.simpson@silverpeas.com".equals(recipient));
-      assertEquals(message.getSummary(), data.getMessage());
+      assertEquals(message.getSummary() + TECHNICAL_CONTENT, data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(

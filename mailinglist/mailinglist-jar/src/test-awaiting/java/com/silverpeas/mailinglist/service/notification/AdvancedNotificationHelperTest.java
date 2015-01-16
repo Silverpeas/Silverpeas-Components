@@ -55,6 +55,9 @@ import static org.junit.Assert.assertThat;
 
 public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
 
+  private static final String TECHNICAL_CONTENT =
+      "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
+
   private static final String textEmailContent =
       "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
@@ -104,7 +107,7 @@ public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
           "bart.simpson@silverpeas.com"));
       String notificationMessage = "<html><head/><body>p><b>Message [" + message.getTitle()
           + "] :</b></p><p>" + message.getSummary() + " ...<br/><a href=\"/Rmailinglist/100/"
-          + "message/700\">Cliquer ici</a></p></body></html>";
+          + "message/700\">Cliquer ici</a></p></body></html>" + TECHNICAL_CONTENT;
       assertThat(data.getMessage(), is(notificationMessage));
       String url = (String) data.getTargetParam().get("URL");
       assertThat(url, is(notNullValue()));

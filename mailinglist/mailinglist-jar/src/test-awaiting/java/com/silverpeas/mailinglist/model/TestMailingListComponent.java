@@ -29,11 +29,6 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import org.silverpeas.util.JNDINames;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import javax.jms.TextMessage;
-import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -43,10 +38,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 
+import javax.jms.TextMessage;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class TestMailingListComponent extends AbstractMailingListTest {
+
+  private static final String TECHNICAL_CONTENT =
+      "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
 
   private MailingListComponent component = new MailingListComponent("100");
   private static final String textEmailContent =
@@ -121,7 +125,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
       assertTrue("Erreur destinataire " + recipient,
           "homer.simpson@silverpeas.com".equals(recipient) || "marge.simpson@silverpeas.com"
           .equals(recipient) || "bart.simpson@silverpeas.com".equals(recipient));
-      assertEquals(message.getSummary(), data.getMessage());
+      assertEquals(message.getSummary() + TECHNICAL_CONTENT, data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals("http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
@@ -162,7 +166,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
       assertTrue("Erreur destinataire " + recipient,
           "bart.simpson@silverpeas.com".equals(recipient) || "homer.simpson@silverpeas.com"
           .equals(recipient) || "marge.simpson@silverpeas.com".equals(recipient));
-      assertEquals(message.getSummary(), data.getMessage());
+      assertEquals(message.getSummary() + TECHNICAL_CONTENT, data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
@@ -220,7 +224,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
           recipient) || "homer.simpson@silverpeas.com".equals(recipient)
           || "lisa.simpson@silverpeas.com".equals(recipient) || "maggie.simpson@silverpeas.com"
           .equals(recipient));
-      assertEquals(message.getSummary(), data.getMessage());
+      assertEquals(message.getSummary() + TECHNICAL_CONTENT, data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(

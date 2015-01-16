@@ -54,6 +54,9 @@ import static org.junit.Assert.assertThat;
 
 public class TestNotificationHelper extends AbstractMailingListTest {
 
+  private static final String TECHNICAL_CONTENT =
+      "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
+
   private static final String textEmailContent =
       "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
@@ -100,7 +103,7 @@ public class TestNotificationHelper extends AbstractMailingListTest {
           "homer.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
           "lisa.simpson@silverpeas.com", "maggie.simpson@silverpeas.com",
           "bart.simpson@silverpeas.com"));
-      assertThat(data.getMessage(), is(message.getSummary()));
+      assertThat(data.getMessage(), is(message.getSummary() + TECHNICAL_CONTENT));
       String url = (String) data.getTargetParam().get("URL");
       assertThat(url, is(notNullValue()));
       assertThat(url, is("http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
