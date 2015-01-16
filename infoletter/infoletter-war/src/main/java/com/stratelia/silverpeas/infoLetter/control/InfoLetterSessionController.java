@@ -20,7 +20,6 @@
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -69,6 +68,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.Link;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.xml.bind.JAXBException;
@@ -291,16 +291,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         }
         template.setAttribute("infoLetterDesc", desc);
         template.setAttribute("senderName", getUserDetail().getDisplayedName());
-        template.setAttribute("silverpeasURL", url);
 
         ResourceLocator localizedMessage = new ResourceLocator(
             "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
         notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject",
             getString("infoLetter.emailSubject")) + ilp.getName(), "");
+
+        Link link = new Link(url, localizedMessage.getString("infoLetter.notifLinkLabel"));
+        notifMetaData.setLink(link, lang);
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      notifMetaData.setLink(url);
+      notifMetaData.displayReceiversInFooter();
 
       // Internal subscribers
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =

@@ -34,9 +34,12 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.Link;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +70,6 @@ public class ReplyNotifier extends Notifier {
   }
 
   /**
-   * @param question the current question-reply question
    * @param users list of users to notify
    * @throws QuestionReplyException
    */
@@ -92,10 +94,13 @@ public class ReplyNotifier extends Notifier {
         templates.put(language, template);
         notifMetaData.addLanguage(language, message.getString("questionReply.notification", "")
                 + componentLabel, "");
+
+        Link link = new Link(question._getPermalink(), message.getString("questionReply.notifLinkLabel"));
+        notifMetaData.setLink(link, language);
       }
       notifMetaData.setSender(sender.getId());
       notifMetaData.addUserRecipients(users);
-      notifMetaData.setLink(question._getPermalink());
+
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",

@@ -82,7 +82,6 @@
 <c:set var="internalMedia" value="${media.internalMedia}"/>
 
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
-<view:includePlugin name="datepicker"/>
 <script type="text/javascript">
 
   // Form validation

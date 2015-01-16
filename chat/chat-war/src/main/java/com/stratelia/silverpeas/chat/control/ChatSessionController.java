@@ -20,6 +20,7 @@
  */
 package com.stratelia.silverpeas.chat.control;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import jChatBox.Chat.Chatroom;
 import jChatBox.Chat.ChatroomManager;
 
@@ -43,6 +44,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.Link;
 
 public class ChatSessionController extends AbstractComponentSessionController {
   // utilisation de userPanel/ userpanelPeas
@@ -210,33 +212,25 @@ public class ChatSessionController extends AbstractComponentSessionController {
     String roomName = chatroom.getParams().getName();
 
     ResourceLocator message = new ResourceLocator(
-        "org.silverpeas.chat.multilang.chatBundle", "fr");
-    ResourceLocator message_en = new ResourceLocator(
-        "org.silverpeas.chat.multilang.chatBundle", "en");
-
+        "org.silverpeas.chat.multilang.chatBundle", DisplayI18NHelper.
+        getDefaultLanguage());
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(message, senderName, roomName);
-
-    // english notifications
-    String subject_en = getNotificationSubject(message_en);
-    String body_en = getNotificationBody(message_en, senderName, roomName);
-
-    NotificationMetaData notification_message = new NotificationMetaData(
+    NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, body);
-    notification_message.addLanguage("en", subject_en, body_en);
 
-    // German notifications
-    ResourceLocator message_de = new ResourceLocator(
-        "org.silverpeas.chat.multilang.chatBundle", "de");
-    if (message_de != null) {
-      String subject_de = getNotificationSubject(message_de);
-      String body_de = getNotificationBody(message_de, senderName, roomName);
-      notification_message.addLanguage("de", subject_de, body_de);
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator(
+          "org.silverpeas.chat.multilang.chatBundle", language);
+      subject = getNotificationSubject(message);
+      body = getNotificationBody(message, senderName, roomName);
+      notifMetaData.addLanguage(language, subject, body);
+
+      Link link = new Link(url, message.getString("chat.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
     }
-
-    notification_message.setLink(url);
-    notification_message.setSender(this.currentUser.getId());
-    return notification_message;
+    notifMetaData.setSender(this.currentUser.getId());
+    return notifMetaData;
   }
 
   private String getNotificationSubject(ResourceLocator message) {

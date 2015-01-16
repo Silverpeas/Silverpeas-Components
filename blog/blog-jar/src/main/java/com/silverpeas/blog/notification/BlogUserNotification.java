@@ -72,12 +72,6 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
     } else if ("update".equals(type)) {
       fileName = "blogNotificationSubscriptionUpdate";
       action = NotifAction.UPDATE;
-    } else if ("commentCreate".equals(type)) {
-      fileName = "blogNotificationSubscriptionCommentCreate";
-      action = NotifAction.CREATE;
-    } else if ("commentUpdate".equals(type)) {
-      fileName = "blogNotificationSubscriptionCommentUpdate";
-      action = NotifAction.UPDATE;
     } else {
       fileName = "blogNotification";
       action = NotifAction.REPORT;
@@ -111,6 +105,12 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   }
 
   @Override
+  protected void perform(final PostDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
@@ -130,7 +130,6 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
     }
     template.setAttribute("blogCategorie", categorieName);
     template.setAttribute("senderName", (userDetail != null ? userDetail.getDisplayedName() : ""));
-    template.setAttribute("silverpeasURL", getNotificationMetaData().getLink());
   }
 
   @Override
@@ -161,6 +160,11 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
 
   @Override
   protected String getMultilangPropertyFile() {
-    return "com.silverpeas.blog.multilang.blogBundle";
+    return "org.silverpeas.blog.multilang.blogBundle";
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "blog.notifPostLinkLabel";
   }
 }

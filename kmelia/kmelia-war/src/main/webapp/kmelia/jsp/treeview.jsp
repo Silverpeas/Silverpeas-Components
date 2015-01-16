@@ -82,7 +82,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <head>
   <title></title>
   <view:looknfeel/>
-  <link href="styleSheets/splitter.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.jstree.js"></script>
@@ -162,7 +161,7 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
-params["i18n"] = <%=I18NHelper.isI18N%>;
+params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
 params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
 var searchInProgress = <%=searchContext != null%>;
@@ -971,7 +970,7 @@ $(document).ready(
         });
       }
     });
-	
+
 	$.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',

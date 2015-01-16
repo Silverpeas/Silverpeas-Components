@@ -44,6 +44,12 @@ public abstract class AbstractForumsForumUserNotification
   }
 
   @Override
+  protected void perform(final ForumDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected void performTemplateData(final String language, final ForumDetail resource,
       final SilverpeasTemplate template) {
     getNotificationMetaData()
@@ -61,5 +67,10 @@ public abstract class AbstractForumsForumUserNotification
   @Override
   protected String getComponentInstanceId() {
     return getResource().getInstanceId();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "forums.notifForumLinkLabel";
   }
 }

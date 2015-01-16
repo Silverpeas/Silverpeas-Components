@@ -131,4 +131,9 @@ public class SurveyUserNotification extends AbstractTemplateUserNotificationBuil
   protected String getMultilangPropertyFile() {
     return "org.silverpeas.survey.multilang.surveyBundle";
   }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "survey.notifSurveyLinkLabel";
+  }
 }

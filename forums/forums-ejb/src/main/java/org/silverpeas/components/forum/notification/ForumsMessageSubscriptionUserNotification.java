@@ -56,6 +56,12 @@ public class ForumsMessageSubscriptionUserNotification extends AbstractForumsMes
   }
 
   @Override
+  protected void perform(final Message resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return getNotificationBundleKeyPrefix() + "subject.new";
   }
