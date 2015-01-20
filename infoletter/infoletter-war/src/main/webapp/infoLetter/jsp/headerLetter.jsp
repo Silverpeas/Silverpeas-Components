@@ -47,9 +47,9 @@ String parution = (String) request.getAttribute("parution");
 %>
 <script type="text/javascript" src='<c:url value="/util/javaScript/checkForm.js" />' ></script>
 <script type="text/javascript">
-function call_wysiwyg () {
-	document.toWysiwyg.submit();
-}
+  function goEditContent (){
+    document.editParution.submit();
+  }
 
 function goValidate () {
 	if (window.confirm('<fmt:message key="infoLetter.sendLetter" />')) {
@@ -67,6 +67,7 @@ function goFiles (){
 }
 
 function goTemplate (){
+  $.progressMessage();
 	document.template.submit();
 }
 
@@ -74,6 +75,7 @@ function submitForm() {
   if (isCorrectForm()) {
     <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;
     document.changeParutionHeaders.action = "ChangeParutionHeaders";
+    $.progressMessage();
     document.changeParutionHeaders.submit();
   }
 }
@@ -131,7 +133,8 @@ function sendLetterToManager (){
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + resource.getString("infoLetter.newLetterHeader"));
+	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper
+      .javaStringToHtmlString((String) request.getAttribute("browseBarPath")) );
 
 
 // Impossible de valider une parution non creee
@@ -157,7 +160,7 @@ if ("".equals(parution)) {
   tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",false);
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",false);
 } else {
-  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:goEditContent();",false);
   tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
 }
@@ -199,16 +202,6 @@ out.println(frame.printBefore());
 </fieldset>
 
 </form>
-<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
-    <input type="hidden" name="SpaceId" value='<c:out value="${requestScope.SpaceId}" />' />
-    <input type="hidden" name="SpaceName" value='<c:out value="${requestScope.SpaceName}" />' />
-    <input type="hidden" name="ComponentId" value='<c:out value="${requestScope.ComponentId}" />' />
-    <input type="hidden" name="ComponentName" value='<c:out value="${requestScope.ComponentName}" />' />
-    <input type="hidden" name="BrowseInfo" value='<c:out value="${requestScope.BrowseInfo}" />' />
-    <input type="hidden" name="ObjectId" value='<c:out value="${requestScope.ObjectId}" />'/>
-    <input type="hidden" name="Language" value='<c:out value="${requestScope.Language}" />' />
-    <input type="hidden" name="ReturnUrl" value='<c:out value="${requestScope.ReturnUrl}" />' />
-</form>
 <c:if test="${empty parution}">
   <view:pdcNewContentClassification componentId="<%=ils.getComponentId()%>" />
 </c:if>
@@ -228,6 +221,9 @@ out.println(frame.printBefore());
 %>
 <form name="validateParution" action="ValidateParution" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
+</form>
+<form name="editParution" action="EditContent" method="post">
+  <input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <form name="viewParution" action="Preview" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>

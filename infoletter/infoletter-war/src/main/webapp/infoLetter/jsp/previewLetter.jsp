@@ -34,13 +34,13 @@
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-	function call_wysiwyg (){
-		document.toWysiwyg.submit();
-	}
-	
 	function goHeaders (){
 		document.headerParution.submit();
 	}
+
+  function goEditContent (){
+    document.editParution.submit();
+  }
 	
 	function goFiles (){
 		document.attachedFiles.submit();
@@ -67,7 +67,7 @@ String parution = (String) request.getAttribute("parution");
 	//Instanciation du cadre avec le view generator
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
-  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:goEditContent()",false);
   tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
 
@@ -81,18 +81,11 @@ String parution = (String) request.getAttribute("parution");
 	<input type="hidden" name="parution" value="<%= parution %>"/>
   <input type="hidden" name="ReturnUrl" value="Preview"/>
 </form>
+<form name="editParution" action="EditContent" method="post">
+  <input type="hidden" name="parution" value="<%= parution %>"/>
+</form>
 <form name="attachedFiles" action="FilesEdit" method="post">			
 	<input type="hidden" name="parution" value="<%= parution %>"/>
-</form>
-<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
-    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
-    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
-    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
-    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
-    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
-    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
-    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
 
 <%
