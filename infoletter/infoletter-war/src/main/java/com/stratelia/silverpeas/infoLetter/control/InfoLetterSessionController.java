@@ -42,6 +42,7 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -85,6 +86,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -268,65 +270,90 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
-  // Notification des abonnes internes
-  public void notifySuscribers(InfoLetterPublicationPdC ilp) {
-    NotificationSender ns = new NotificationSender(getComponentId());
-    String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
+  /**
+   * Notify the newsletter to internal subscribers
+   *
+   * @param ilp the infoletter to send
+   * @param server
+   */
+  public void notifyInternalSuscribers(InfoLetterPublicationPdC ilp, String server) {
 
-    try {
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates,
-          "infoLetterNotification");
+    // Internal subscribers
+    SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+        dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
 
-      String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
-      for (String lang : DisplayI18NHelper.getLanguages()) {
-        SilverpeasTemplate template = getNotificationMessageTemplate();
-        templates.put(lang, template);
-        template.setAttribute("infoLetter", ilp);
-        template.setAttribute("infoLetterTitle", ilp.getName(lang));
-        String desc = ilp.getDescription(lang);
-        if ("".equals(desc)) {
-          desc = null;
+      //Send the newsletter by Mail to internal subscribers
+    if(isNewsLetterSendByMail()) {
+
+      Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
+      sendLetterByMail(ilp, server, internalSubscribersEmails);
+
+    } else {
+      //Send the newsletter via notification
+
+      NotificationSender ns = new NotificationSender(getComponentId());
+      String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
+
+      try {
+        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+        NotificationMetaData notifMetaData =
+            new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates,
+                "infoLetterNotification");
+
+        String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
+        for (String lang : DisplayI18NHelper.getLanguages()) {
+          SilverpeasTemplate template = getNotificationMessageTemplate();
+          templates.put(lang, template);
+          template.setAttribute("infoLetter", ilp);
+          template.setAttribute("infoLetterTitle", ilp.getName(lang));
+          String desc = ilp.getDescription(lang);
+          if ("".equals(desc)) {
+            desc = null;
+          }
+          template.setAttribute("infoLetterDesc", desc);
+          template.setAttribute("senderName", getUserDetail().getDisplayedName());
+
+          ResourceLocator localizedMessage = new ResourceLocator(
+              "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
+          notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject",
+              getString("infoLetter.emailSubject")) + ilp.getName(), "");
+
+          Link link = new Link(url, localizedMessage.getString("infoLetter.notifLinkLabel"));
+          notifMetaData.setLink(link, lang);
         }
-        template.setAttribute("infoLetterDesc", desc);
-        template.setAttribute("senderName", getUserDetail().getDisplayedName());
+        notifMetaData.setSender(getUserId());
+        notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+        notifMetaData.displayReceiversInFooter();
 
-        ResourceLocator localizedMessage = new ResourceLocator(
-            "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
-        notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject",
-            getString("infoLetter.emailSubject")) + ilp.getName(), "");
+        // Internal subscribers
+        for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
+          notifMetaData.addUserRecipient(new UserRecipient(userId));
+        }
+        for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
+          notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
+        }
 
-        Link link = new Link(url, localizedMessage.getString("infoLetter.notifLinkLabel"));
-        notifMetaData.setLink(link, lang);
+        ns.notifyUser(notifMetaData);
+
+      } catch (NotificationManagerException e) {
+        throw new InfoLetterException(
+            "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+            SilverpeasRuntimeException.ERROR, e.getMessage(), e);
       }
-      notifMetaData.setSender(getUserId());
-      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      notifMetaData.displayReceiversInFooter();
-
-      // Internal subscribers
-      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
-      for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
-        notifMetaData.addUserRecipient(new UserRecipient(userId));
-      }
-      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
-        notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
-      }
-
-      ns.notifyUser(notifMetaData);
-
-    } catch (com.stratelia.silverpeas.notificationManager.NotificationManagerException e) {
-      throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
     }
   }
-  
-  
-  // Notification des abonnes externes
-  public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server, List<String> emails) {
-    List<String> emailErrors = new ArrayList<String>();
+
+
+  /**
+   * Send letter by mail
+   *
+   * @param ilp
+   * @param server
+   * @param emails
+   * @return tab of dest emails in error
+   */
+  public String[] sendLetterByMail(InfoLetterPublicationPdC ilp, String server, Set<String> emails) {
+    Set<String> emailErrors = new LinkedHashSet<String>();
 
     if (emails.size() > 0) {
       // create the Multipart and its parts to it
@@ -339,20 +366,27 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       String emailFrom = getUserDetail().geteMail();
       
       ilp.setInstanceId(getComponentId());
-      emailErrors = dataInterface.notifyExternals(ilp, server, mimeMultipart, emails, subject, emailFrom);
+      emailErrors = dataInterface.sendLetterByMail(ilp, server, mimeMultipart, emails, subject,
+          emailFrom);
 
     }
     return emailErrors.toArray(new String[emailErrors.size()]);
   }
 
-  // Notification des abonnes externes
-  public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server) {
+  /**
+   * Send letter by mail to external subscribers
+   *
+   * @param ilp
+   * @param server
+   * @return tab of emails in error
+   */
+  public String[] sendByMailToExternalSubscribers(InfoLetterPublicationPdC ilp, String server) {
     IdPK letterPK = new IdPK(String.valueOf(ilp.getLetterId()));
 
     // Recuperation de la liste de emails
-    List<String> extmails = getExternalsSuscribers(letterPK);
+    Set<String> extmails = getEmailsExternalsSuscribers(letterPK);
 
-    return notifyExternals(ilp, server, extmails);
+    return sendLetterByMail(ilp, server, extmails);
   }
 
   /**
@@ -364,20 +398,20 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   public String[] notifyManagers(InfoLetterPublicationPdC ilp, String server) {
     // Recuperation de la liste de emails
-    List<String> extmails = getEmailsManagers();
+    Set<String> extmails = getEmailsManagers();
 
-    return notifyExternals(ilp, server, extmails);
+    return sendLetterByMail(ilp, server, extmails);
   }
 
   // Recuperation de la liste des emails externes
-  public List<String> getExternalsSuscribers(WAPrimaryKey letterPK) {
-    return new ArrayList<String>(dataInterface.getExternalsSuscribers(letterPK));
+  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
+    return dataInterface.getEmailsExternalsSuscribers(letterPK);
   }
 
   // Ajouter des emails externes
   public void addExternalsSuscribers(WAPrimaryKey letterPK, String newmails) {
     StringTokenizer st = new StringTokenizer(newmails);
-    List<String> emails = getExternalsSuscribers(letterPK);
+    Set<String> emails = getEmailsExternalsSuscribers(letterPK);
     while (st.hasMoreTokens()) {
       String mail = st.nextToken().trim();
       if (mail.indexOf('@') > -1) { // Current address contains arobase
@@ -386,17 +420,17 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         }
       }
     }
-    dataInterface.setExternalsSuscribers(letterPK, emails);
+    dataInterface.setEmailsExternalsSuscribers(letterPK, emails);
   }
 
   // Supprimer des emails externes
   public void deleteExternalsSuscribers(WAPrimaryKey letterPK, String[] mails) {
     if (mails != null) {
-      List<String> curExternalEmails = getExternalsSuscribers(letterPK);
+      Set<String> curExternalEmails = getEmailsExternalsSuscribers(letterPK);
       for (String email : mails) {
         curExternalEmails.remove(email);
       }
-      dataInterface.setExternalsSuscribers(letterPK, curExternalEmails);
+      dataInterface.setEmailsExternalsSuscribers(letterPK, curExternalEmails);
     }
   }
 
@@ -406,9 +440,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @param letterPK
    */
   public void deleteAllExternalsSuscribers(WAPrimaryKey letterPK) {
-    List<String> externalEmails = getExternalsSuscribers(letterPK);
+    Set<String> externalEmails = getEmailsExternalsSuscribers(letterPK);
     externalEmails.clear();
-    dataInterface.setExternalsSuscribers(letterPK, externalEmails);
+    dataInterface.setEmailsExternalsSuscribers(letterPK, externalEmails);
   }
 
   // Abonnement d'un utilisateur
@@ -570,19 +604,14 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     }
 
     // pas d'erreur, on importe les emails
-    List<String> emails = new ArrayList<String>();
+    Set<String> emails = new LinkedHashSet<String>();
     for (final Variant[] csvValue : csvValues) {
       // Email
       email = csvValue[0].getValueString();
       emails.add(email);
     }
-    
-    // suppression des doublons de la liste tout en gardant l'ordre
-    Set<String> setEmails = new LinkedHashSet<String>(emails);
-    emails.clear();
-    emails.addAll(setEmails);
-    
-    dataInterface.setExternalsSuscribers(this.getCurrentLetter().getPK(), emails);
+
+    dataInterface.setEmailsExternalsSuscribers(this.getCurrentLetter().getPK(), emails);
   }
 
   /**
@@ -596,8 +625,14 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     boolean exportOk = true;
     File fileOutput =
         new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
+
+    if(fileOutput.exists()) {//delete the existing file and recreate new one
+      FileUtils.forceDelete(fileOutput);
+      fileOutput =
+          new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
+    }
     try {
-      List<String> emails = getExternalsSuscribers(getCurrentLetter().getPK());
+      Set<String> emails = getEmailsExternalsSuscribers(getCurrentLetter().getPK());
 
       CSVWriter csvWriter = new CSVWriter(getLanguage());
       csvWriter.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat", "User", ";");
@@ -617,10 +652,10 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /**
    * Get emails of component Manager
    *
-   * @return Vector of emails
+   * @return Set of emails
    */
-  private List<String> getEmailsManagers() {
-    List<String> emails = new ArrayList<String>();
+  private Set<String> getEmailsManagers() {
+    Set<String> emails = new LinkedHashSet<String>();
     List<String> roles = new ArrayList<String>();
     roles.add("admin");
     String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
@@ -633,5 +668,60 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       }
     }
     return emails;
+  }
+
+  /**
+   * Get emails of internal subscribers
+   *
+   * @return Set of emails
+   */
+  private Set<String> getEmailsInternalSubscribers(SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes) {
+    Set<String> emails = new LinkedHashSet<String>();
+
+    for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
+      String email = getUserDetail(userId).geteMail();
+      if (StringUtil.isDefined(email)) {
+        emails.add(email);
+      }
+    }
+
+    for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
+      UserDetail[] tabUsers = getOrganisationController().getAllUsersOfGroup(groupId);
+      if (tabUsers != null) {
+        for (UserDetail userDetail : tabUsers) {
+          String email = userDetail.geteMail();
+          if (StringUtil.isDefined(email)) {
+            emails.add(email);
+          }
+        }
+      }
+    }
+
+    return emails;
+  }
+
+  /**
+   * return true if Newsletter is send by mail to internal users
+   * @return boolean
+   */
+  public boolean isNewsLetterSendByMail() {
+    String parameterSendNewsLetter = getComponentParameterValue("sendNewsletter");
+    if(StringUtil.isDefined(parameterSendNewsLetter)) {
+      return "1".equalsIgnoreCase(getComponentParameterValue("sendNewsletter"));
+    }
+    return false;
+  }
+
+  /**
+   * save wysiwyg content of the newsletter
+   * @param content
+   * @param ilp
+   */
+  public void updateContentInfoLetterPublication(String content, InfoLetterPublicationPdC ilp) {
+    // Update the Wysiwyg if exists, create one otherwise
+    if (isDefined(ilp._getContent())) {
+      WysiwygController.updateFileAndAttachment(content,
+          getComponentId(), ilp.getId(), getUserId(), getLanguage());
+    }
   }
 }

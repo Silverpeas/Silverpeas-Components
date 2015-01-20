@@ -99,8 +99,7 @@
 <view:areaOfOperationOfCreation/>
 <%
 	// Recuperation de la liste des emails
-	List<String> emails = (List<String>) request.getAttribute("listEmails");
-	int i=0;
+	Set<String> emails = (Set<String>) request.getAttribute("listEmails");
 	ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Emails", request, session);
 		
 	ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
@@ -108,23 +107,20 @@
 
 	arrayPane.addArrayColumn(resource.getString("GML.eMail"));
 	ArrayColumn arrayColumn = arrayPane.addArrayColumn(resource.getString("GML.operation"));
-	arrayColumn.setSortable(false);		
-	if (emails.size()>0) {
-		for (i = 0; i < emails.size(); i++) {		
-					String email = (String) emails.get(i);
-					ArrayLine arrayLine = arrayPane.addArrayLine();
-						
-					IconPane iconPane1 = gef.getIconPane();
-					Icon debIcon = iconPane1.addIcon();
-					debIcon.setProperties(resource.getIcon("infoLetter.pictoMail"), "");
-					arrayLine.addArrayCellIconPane(iconPane1);	
-							
-													
-					arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(email));
-							
-					arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"mails\" value=\"" + email + "\">");
-		}
-	}			
+	arrayColumn.setSortable(false);
+  for (String email : emails) {
+    ArrayLine arrayLine = arrayPane.addArrayLine();
+
+    IconPane iconPane1 = gef.getIconPane();
+    Icon debIcon = iconPane1.addIcon();
+    debIcon.setProperties(resource.getIcon("infoLetter.pictoMail"), "");
+    arrayLine.addArrayCellIconPane(iconPane1);
+
+
+    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(email));
+
+    arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"mails\" value=\"" + email + "\">");
+  }
 	out.println(arrayPane.print());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());

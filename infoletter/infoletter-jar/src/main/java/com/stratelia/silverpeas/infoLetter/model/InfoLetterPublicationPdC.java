@@ -65,25 +65,24 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
    * @since February 2002
    */
   public InfoLetterPublicationPdC(InfoLetterPublication ilp) {
-    super(ilp.getPK(), ilp.getTitle(), ilp.getDescription(), ilp
+    super(ilp.getPK(), ilp.getInstanceId(), ilp.getTitle(), ilp.getDescription(), ilp
         .getParutionDate(), ilp.getPublicationState(), ilp.getLetterId());
   }
 
   /**
-   * Constructeur a 6 parametres
+   * Constructeur à 7 parametres
    * @param WAPrimaryKey pk
+   * @param instanceId
    * @param String title
    * @param String description
    * @param String parutionDate
    * @param int publicationState
    * @param String letterId
-   * @author frageade
-   * @since February 2002
    */
-  public InfoLetterPublicationPdC(WAPrimaryKey pk, String title,
+  public InfoLetterPublicationPdC(WAPrimaryKey pk, String instanceId, String title,
       String description, String parutionDate, int publicationState,
       int letterId) {
-    super(pk, title, description, parutionDate, publicationState, letterId);
+    super(pk, instanceId, title, description, parutionDate, publicationState, letterId);
   }
 
   /**
