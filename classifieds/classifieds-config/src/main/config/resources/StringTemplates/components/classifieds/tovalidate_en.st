@@ -1,5 +1,4 @@
-The ad <b>$classified.title$</b> is available online.
-If the content of this announcement does not suit you, you can deny it.
+The ad <b>$classified.title$</b> has to be validated.
 
 $if(notification_receiver_users)$
 This message has been sent

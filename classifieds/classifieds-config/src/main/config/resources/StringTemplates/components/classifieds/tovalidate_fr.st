@@ -1,5 +1,4 @@
-La petite annonce <b>$classified.title$</b> est accessible en ligne.
-Si le contenu de cette annonce ne vous convient pas, vous pouvez refuser sa mise en ligne.
+La petite annonce <b>$classified.title$</b> doit être validée.
 
 $if(notification_receiver_users)$
 Ce message a été envoyé

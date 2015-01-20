@@ -354,22 +354,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       boolean notify = false;
       if (isUpdate) {
         classified.setUpdateDate(new Date());
-        // That's a real update
-        if (isDraftEnabled()) {
-          if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
-            notify = true;
-          }
-        }
         
         if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
             ClassifiedDetail.VALID)) {
           classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+          notify = true;
         }
 
         // special case : status is UNPUBLISHED, user requested classified republication
         if (classified.getStatus().equals(ClassifiedDetail.UNPUBLISHED)) {
           if (!isAdmin && isValidationEnabled()) {
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+            notify = true;
           } else {
             classified.setStatus(ClassifiedDetail.VALID);
           }
