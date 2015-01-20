@@ -386,6 +386,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     // Recuperation de la liste de emails
     Set<String> extmails = getEmailsExternalsSuscribers(letterPK);
 
+    // Removing potential already sent emails
+    if(isNewsLetterSendByMail()) {
+      // Internal subscribers
+      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
+      Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
+      extmails.removeAll(internalSubscribersEmails);
+    }
+
     return sendLetterByMail(ilp, server, extmails);
   }
 
@@ -675,25 +684,14 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    *
    * @return Set of emails
    */
-  private Set<String> getEmailsInternalSubscribers(SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes) {
+  private Set<String> getEmailsInternalSubscribers(
+      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes) {
     Set<String> emails = new LinkedHashSet<String>();
 
-    for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
+    for (String userId : subscriberIdsByTypes.getAllUserIds()) {
       String email = getUserDetail(userId).geteMail();
       if (StringUtil.isDefined(email)) {
         emails.add(email);
-      }
-    }
-
-    for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
-      UserDetail[] tabUsers = getOrganisationController().getAllUsersOfGroup(groupId);
-      if (tabUsers != null) {
-        for (UserDetail userDetail : tabUsers) {
-          String email = userDetail.geteMail();
-          if (StringUtil.isDefined(email)) {
-            emails.add(email);
-          }
-        }
       }
     }
 
@@ -705,11 +703,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @return boolean
    */
   public boolean isNewsLetterSendByMail() {
-    String parameterSendNewsLetter = getComponentParameterValue("sendNewsletter");
-    if(StringUtil.isDefined(parameterSendNewsLetter)) {
-      return "1".equalsIgnoreCase(getComponentParameterValue("sendNewsletter"));
-    }
-    return false;
+    return StringUtil.getBooleanValue(getComponentParameterValue("sendNewsletter"));
   }
 
   /**
@@ -719,9 +713,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   public void updateContentInfoLetterPublication(String content, InfoLetterPublicationPdC ilp) {
     // Update the Wysiwyg if exists, create one otherwise
-    if (isDefined(ilp._getContent())) {
-      WysiwygController.updateFileAndAttachment(content,
-          getComponentId(), ilp.getId(), getUserId(), getLanguage());
-    }
+    WysiwygController.updateFileAndAttachment(content, getComponentId(), ilp.getId(), getUserId(),
+        I18NHelper.defaultLanguage);
   }
 }

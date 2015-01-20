@@ -67,6 +67,7 @@ function goFiles (){
 }
 
 function goTemplate (){
+  $.progressMessage();
 	document.template.submit();
 }
 
@@ -74,6 +75,7 @@ function submitForm() {
   if (isCorrectForm()) {
     <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;
     document.changeParutionHeaders.action = "ChangeParutionHeaders";
+    $.progressMessage();
     document.changeParutionHeaders.submit();
   }
 }
@@ -131,7 +133,8 @@ function sendLetterToManager (){
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + (String) request.getAttribute("browseBarPath") );
+	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper
+      .javaStringToHtmlString((String) request.getAttribute("browseBarPath")) );
 
 
 // Impossible de valider une parution non creee
