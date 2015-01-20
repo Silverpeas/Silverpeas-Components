@@ -86,7 +86,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration

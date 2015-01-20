@@ -23,10 +23,10 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
@@ -76,13 +76,13 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
 
   /**
    * Constructeur à 7 parametres
-   * @param WAPrimaryKey pk
+   * @param pk
    * @param instanceId
-   * @param String title
-   * @param String description
-   * @param String parutionDate
-   * @param int publicationState
-   * @param String letterId
+   * @param title
+   * @param description
+   * @param parutionDate
+   * @param publicationState
+   * @param letterId
    */
   public InfoLetterPublication(WAPrimaryKey pk, String instanceId, String title,
       String description, String parutionDate, int publicationState,
