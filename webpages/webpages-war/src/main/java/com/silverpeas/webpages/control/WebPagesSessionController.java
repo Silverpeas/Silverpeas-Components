@@ -185,11 +185,13 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pubTemplate = getXMLTemplate();
 
       RecordSet recordSet = pubTemplate.getRecordSet();
-      DataRecord data = recordSet.getRecord("0", getLanguage());
+      //TODO Default language
+      DataRecord data = recordSet.getRecord("0");
       if (data == null) {
         data = recordSet.getEmptyRecord();
         data.setId("0");
-        data.setLanguage(getLanguage());
+        //TODO Default language
+        //data.setLanguage(getLanguage());
       }
 
       return data;
@@ -205,7 +207,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pubTemplate = getXMLTemplate();
 
       RecordSet recordSet = pubTemplate.getRecordSet();
-      data = recordSet.getRecord("0", getLanguage());
+      data = recordSet.getRecord("0");
       return data != null;
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.isXMLContentDefined()",
