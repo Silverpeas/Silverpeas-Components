@@ -173,11 +173,10 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pubTemplate = getXMLTemplate();
 
       RecordSet recordSet = pubTemplate.getRecordSet();
-      DataRecord data = recordSet.getRecord("0", getLanguage());
+      DataRecord data = recordSet.getRecord("0");
       if (data == null) {
         data = recordSet.getEmptyRecord();
         data.setId("0");
-        data.setLanguage(getLanguage());
       }
 
       return data;
@@ -193,7 +192,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pubTemplate = getXMLTemplate();
 
       RecordSet recordSet = pubTemplate.getRecordSet();
-      data = recordSet.getRecord("0", getLanguage());
+      data = recordSet.getRecord("0");
       return data != null;
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.isXMLContentDefined()",
@@ -230,11 +229,10 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pub = getXMLTemplate();
       set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
-      DataRecord data = set.getRecord("0", getLanguage());
+      DataRecord data = set.getRecord("0");
       if (data == null) {
         data = set.getEmptyRecord();
         data.setId("0");
-        data.setLanguage(getLanguage());
       }
 
       PagesContext context = new PagesContext("useless", "0", getLanguage(), false, getComponentId(),
