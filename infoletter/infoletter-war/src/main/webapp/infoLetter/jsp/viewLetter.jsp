@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -49,7 +50,7 @@ function goFiles (){
 <view:frame>
 	<table width="100%">
 		<tr><td width="80%">
-		<view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" />
+		<view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>" />
 		</td>
 		<td valign="top">
 			<%
