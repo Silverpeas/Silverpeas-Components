@@ -58,6 +58,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.mail.engine.SmtpConfiguration;
 
 /**
  * Utility class to send notifications.
