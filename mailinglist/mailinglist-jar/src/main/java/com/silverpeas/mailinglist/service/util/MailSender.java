@@ -37,7 +37,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
-import com.silverpeas.mailinglist.service.notification.SmtpConfiguration;
+import org.silverpeas.mail.engine.SmtpConfiguration;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**

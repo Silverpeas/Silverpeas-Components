@@ -54,7 +54,7 @@
     <property name="externalThread" value="true" />
   </bean>
 
-  <bean id="smtpConfiguration" class="com.silverpeas.mailinglist.service.notification.SmtpConfiguration">
+  <bean id="smtpConfiguration" class="org.silverpeas.mail.engine.SmtpConfiguration">
     <property name="server" value="${SMTPServer}" />
     <property name="port" value="${SMTPPort}" />
     <property name="username" value="${SMTPUser}" />
