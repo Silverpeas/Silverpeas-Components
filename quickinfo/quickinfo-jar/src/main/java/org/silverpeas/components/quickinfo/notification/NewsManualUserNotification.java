@@ -38,8 +38,7 @@ public class NewsManualUserNotification extends AbstractNewsUserNotification {
   }
   
   @Override
-  protected UserDetail getSenderDetail() {
-    return sender;
+  protected String getSender() {
+    return sender.getId();
   }
-
 }
