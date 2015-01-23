@@ -46,44 +46,31 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.mail.MailSending;
 import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.silverpeas.wysiwyg.control.result.MailContentProcess;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
+
+import static org.silverpeas.mail.MailAddress.eMail;
 
 /**
  * Class declaration
@@ -94,12 +81,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Statiques
   private final static String TableExternalEmails = "SC_IL_ExtSus";
-  
-  /**
-   * the tuning parameters
-   */
-  private static final ResourceLocator smtpSettings = new ResourceLocator(
-      "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
   
   // Membres
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
@@ -363,7 +344,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Sauvegarde de la liste des emails externes
-  public void setEmailsExternalsSuscribers(WAPrimaryKey letterPK, Set<String> emails) {
+  @Override
+  public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails) {
     Connection con = openConnection();
     Statement stmt = null;
     try {
@@ -448,30 +430,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
     return con;
   }
-  
-  private String getSmtpHost() {
-    return smtpSettings.getString("SMTPServer");
-  }
-
-  private boolean isSmtpAuthentication() {
-    return smtpSettings.getBoolean("SMTPAuthentication", false);
-  }
-
-  private boolean isSmtpDebug() {
-    return smtpSettings.getBoolean("SMTPDebug", false);
-  }
-
-  private int getSmtpPort() {
-    return Integer.parseInt(smtpSettings.getString("SMTPPort"));
-  }
-
-  private String getSmtpUser() {
-    return smtpSettings.getString("SMTPUser");
-  }
-
-  private String getSmtpPwd() {
-    return smtpSettings.getString("SMTPPwd");
-  }
 
   private Multipart attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
       throws MessagingException {
@@ -529,82 +487,40 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
   
   @Override
-  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server, String mimeMultipart,
-      Set<String> listEmailDest, String subject, String emailFrom) {
-    // Retrieve SMTP server information
-    String host = getSmtpHost();
-    boolean isSmtpAuthentication = isSmtpAuthentication();
-    int smtpPort = getSmtpPort();
-    String smtpUser = getSmtpUser();
-    String smtpPwd = getSmtpPwd();
-    boolean isSmtpDebug = isSmtpDebug();
+  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
+      String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom) {
 
     Set<String> emailErrors = new LinkedHashSet<String>();
 
     if (listEmailDest.size() > 0) {
-      // create some properties and get the default Session
-      Properties props = System.getProperties();
-      props.put("mail.smtp.host", host);
-      props.put("mail.smtp.auth", String.valueOf(isSmtpAuthentication));
-
-      Session session = Session.getInstance(props, null);
-      session.setDebug(isSmtpDebug); // print on the console all SMTP messages.
-
       SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
           "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
       SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
           "root.MSG_GEN_PARAM_VALUE", "from = " + emailFrom);
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-          "root.MSG_GEN_PARAM_VALUE", "host= " + host);
 
       try {
-        // create a message
-        MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(emailFrom));
-        msg.setSubject(subject, CharEncoding.UTF_8);
-        
         // create the Multipart and its parts to it
         Multipart mp = createContentMessageMail(ilp, mimeMultipart);
 
-        // add the Multipart to the message
-        msg.setContent(mp);
-        // set the Date: header
-        msg.setSentDate(new Date());
-        
-        // create a Transport connection (TCP)
-        Transport transport = session.getTransport("smtp");
-
-        InternetAddress[] address = new InternetAddress[1];
-        for (String email : listEmailDest) {
+        for (String receiverEmail : listEmailDest) {
           try {
-            address[0] = new InternetAddress(email);
-            msg.setRecipients(Message.RecipientType.TO, address);
-            // add Transport Listener to the transport connection.
-            if (isSmtpAuthentication) {
-              SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort + " m_User="
-                  + smtpUser);
-              transport.connect(host, smtpPort, smtpUser, smtpPwd);
-              msg.saveChanges();
-            } else {
-              transport.connect();
-            }
-            transport.sendMessage(msg, address);
+            // Verifying the email
+            new InternetAddress(receiverEmail);
+
+            // Prepare the mail
+            MailSending mail =
+                MailSending.from(eMail(emailFrom)).to(eMail(receiverEmail)).withSubject(subject)
+                    .withContent(mp);
+
+            // Sending the mail
+            mail.send();
+
           } catch (Exception ex) {
             SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-                "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
+                "root.MSG_GEN_PARAM_VALUE", "Email = " + receiverEmail, new InfoLetterException(
                 "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
                 SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
-            emailErrors.add(email);
-          } finally {
-            if (transport != null) {
-              try {
-                transport.close();
-              } catch (Exception e) {
-                SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-                    "root.EX_IGNORED", "ClosingTransport", e);
-              }
-            }
+            emailErrors.add(receiverEmail);
           }
         }
       } catch (Exception e) {
