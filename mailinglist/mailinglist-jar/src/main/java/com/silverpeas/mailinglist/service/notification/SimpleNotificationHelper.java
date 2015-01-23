@@ -27,8 +27,7 @@ import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.mailinglist.service.util.MailSender;
-import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -39,13 +38,11 @@ import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.mail.MailSending;
+import org.silverpeas.mail.ReceiverMailAddressSet;
+import org.silverpeas.mail.engine.SmtpConfiguration;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -53,12 +50,17 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.mail.engine.SmtpConfiguration;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.silverpeas.mail.MailAddress.eMail;
+import static org.silverpeas.mail.MailContent.of;
 
 /**
  * Utility class to send notifications.
@@ -67,6 +69,8 @@ import org.silverpeas.mail.engine.SmtpConfiguration;
  * @version $revision$
  */
 public class SimpleNotificationHelper implements NotificationHelper {
+
+  public static final int BATCH_SIZE = 10;
 
   private NotificationSender notificationSender;
   private NotificationFormatter notificationFormatter;
@@ -102,7 +106,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
       Collection<String> userIds, Collection<String> groupIds, boolean moderate)
       throws NotificationManagerException {
     String defaultTitle = notificationFormatter.formatTitle(message, list.getName(),
-        I18NHelper.defaultLanguage, moderate);
+        DisplayI18NHelper.getDefaultLanguage(), moderate);
     NotificationMetaData metadata = new NotificationMetaData();
     metadata.setAnswerAllowed(false);
     metadata.setDate(message.getSentDate());
@@ -110,7 +114,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
     metadata.setSender(list.getSubscribedAddress());
     metadata.setComponentId(message.getComponentId());
     String link = notificationFormatter.prepareUrl(message, moderate);
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+    for (String lang : DisplayI18NHelper.getLanguages()) {
       String title = notificationFormatter.formatTitle(message, list.getName(), lang, moderate);
       String content = notificationFormatter.formatMessage(message, lang, moderate);
       metadata.addLanguage(lang, title, content);
@@ -153,16 +157,16 @@ public class SimpleNotificationHelper implements NotificationHelper {
    * @throws AddressException
    * @throws MessagingException
    */
-  public void notifyExternals(Message message, MailingList list)
-      throws AddressException, MessagingException {
+  public void notifyExternals(Message message, MailingList list) throws MessagingException {
+
     SilverTrace.debug("mailingList", this.getClass().getName(),
         "mailinglist.notification.external.start");
-    MimeMessage mail = new MimeMessage(session);
-    mail.setFrom(new InternetAddress(list.getSubscribedAddress()));
-    mail.setSubject(notificationFormatter.formatTitle(message, list.getName(),
-        I18NHelper.defaultLanguage, false));
-    mail.setHeader("Precedence", "list");
-    mail.setHeader("List-ID", list.getSubscribedAddress());
+
+    MailSending mail = MailSending.from(eMail(list.getSubscribedAddress()));
+    String subject = notificationFormatter
+        .formatTitle(message, list.getName(), DisplayI18NHelper.getDefaultLanguage(), false);
+    mail.withSubject(subject);
+
     if (!message.getAttachments().isEmpty()) {
       Multipart multiPart = new MimeMultipart();
       for (Attachment attachment : message.getAttachments()) {
@@ -175,22 +179,29 @@ public class SimpleNotificationHelper implements NotificationHelper {
       MimeBodyPart body = new MimeBodyPart();
       body.setContent(message.getBody(), message.getContentType());
       multiPart.addBodyPart(body);
-      mail.setContent(multiPart);
+      mail.withContent(multiPart);
     } else {
-      mail.setContent(message.getBody(), message.getContentType());
+      mail.withContent(of(message.getBody()).withContentType(message.getContentType()));
     }
     SilverTrace.debug("mailingList", this.getClass().getName(),
-        "mailinglist.notification.external.mail", mail.getSubject());
+        "mailinglist.notification.external.mail", subject);
     sendMail(mail, list.getExternalSubscribers());
   }
 
-  protected void sendMail(MimeMessage mail,
-      Collection<ExternalUser> externalUsers) throws MessagingException {
-    MailSender sender = new MailSender(session, mail, smtpConfig, externalUsers);
+  protected void sendMail(MailSending mail, Collection<ExternalUser> externalUsers)
+      throws MessagingException {
+    ReceiverMailAddressSet receivers =
+        ReceiverMailAddressSet.ofRecipientType(ReceiverMailAddressSet.MailRecipientType.BCC)
+            .withReceiversBatchSizeOf(BATCH_SIZE);
+    for (ExternalUser externalUser : externalUsers) {
+      receivers.add(eMail(externalUser.getEmail()));
+    }
+    mail.to(receivers);
+
     if (isExternalThread()) {
-      new Thread(sender).start();
+      mail.send();
     } else {
-      sender.run();
+      mail.sendSynchronously();
     }
   }
 
@@ -248,9 +259,8 @@ public class SimpleNotificationHelper implements NotificationHelper {
   public Set<String> getGroupIds(MailingList list) {
     int size = list.getGroupSubscribers().size();
     Set<String> result = new HashSet<String>(size);
-    Iterator<InternalGroupSubscriber> iter = list.getGroupSubscribers().iterator();
-    while (iter.hasNext()) {
-      result.add((iter.next()).getExternalId());
+    for (final InternalGroupSubscriber internalGroupSubscriber : list.getGroupSubscribers()) {
+      result.add((internalGroupSubscriber).getExternalId());
     }
     return result;
   }
@@ -294,7 +304,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
 
   @Override
   public void notify(Message message, MailingList list)
-      throws NotificationManagerException, AddressException, MessagingException {
+      throws NotificationManagerException, MessagingException {
     if (list.isNotify() || list.isModerated()) {
       if (message.isModerated()) {
         if (list.isModerated() && !list.isNotify()) {
