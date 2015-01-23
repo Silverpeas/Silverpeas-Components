@@ -138,7 +138,7 @@ public interface InfoLetterDataInterface {
    * @param letterPK the letter primary key
    * @param emails the list of external emails to save
    */
-  public void setEmailsExternalsSuscribers(WAPrimaryKey letterPK, Set<String> emails);
+  public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails);
 
   // abonnement ou desabonnement d'un utilisateur interne
   public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);

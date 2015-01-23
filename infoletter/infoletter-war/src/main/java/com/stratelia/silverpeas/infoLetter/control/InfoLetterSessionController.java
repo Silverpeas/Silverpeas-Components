@@ -86,7 +86,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -429,7 +428,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         }
       }
     }
-    dataInterface.setEmailsExternalsSuscribers(letterPK, emails);
+    dataInterface.setEmailsExternalsSubscribers(letterPK, emails);
   }
 
   // Supprimer des emails externes
@@ -439,7 +438,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       for (String email : mails) {
         curExternalEmails.remove(email);
       }
-      dataInterface.setEmailsExternalsSuscribers(letterPK, curExternalEmails);
+      dataInterface.setEmailsExternalsSubscribers(letterPK, curExternalEmails);
     }
   }
 
@@ -451,7 +450,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void deleteAllExternalsSuscribers(WAPrimaryKey letterPK) {
     Set<String> externalEmails = getEmailsExternalsSuscribers(letterPK);
     externalEmails.clear();
-    dataInterface.setEmailsExternalsSuscribers(letterPK, externalEmails);
+    dataInterface.setEmailsExternalsSubscribers(letterPK, externalEmails);
   }
 
   // Abonnement d'un utilisateur
@@ -620,7 +619,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       emails.add(email);
     }
 
-    dataInterface.setEmailsExternalsSuscribers(this.getCurrentLetter().getPK(), emails);
+    dataInterface.setEmailsExternalsSubscribers(this.getCurrentLetter().getPK(), emails);
   }
 
   /**
