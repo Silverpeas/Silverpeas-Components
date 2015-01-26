@@ -66,9 +66,9 @@
   <groupsOfParameters>
     <groupOfParameters>
       <label>
-        <message lang="fr">SSO client</message>
-        <message lang="en">Client SSO</message>
-        <message lang="de">Client SSO</message>
+        <message lang="fr">Client SSO</message>
+        <message lang="en">SSO client</message>
+        <message lang="de">SSO client</message>
       </label>
       <description>
         <message lang="fr">Ces paramètres permettent une authentification automatique sur le site cible. Les informations de connexion sont demandées une fois, stockées dans Silverpeas puis utilisées à chaque accès afin que l'utilisateur n'ait pas besoin de les resaisir.</message>
@@ -91,7 +91,7 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Activation du SSO Client</message>
+            <message lang="fr">Activation du client SSO</message>
             <message lang="en">Automatic authentication on the target site</message>
             <message lang="de">Aktivieren Sie den SSO Client</message>
           </help>
@@ -165,7 +165,7 @@
           <type>select</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut Method à passer au formulaire de soumission de l'application SSO Client.</message>
+            <message lang="fr">Attribut Method à passer au formulaire de soumission de l'application SSO cliente.</message>
             <message lang="en">Method used by the form to submit data to the target site.</message>
             <message lang="de">Methode die von dem Formular verwendet wird, um Daten zum SSO Client zu übermitteln</message>
           </help>
@@ -184,7 +184,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente. </message>
             <message lang="en">Name of the first extra parameter for the target site authentication form.</message>
             <message lang="de">Name des ersten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
           </help>
@@ -203,7 +203,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Value of the first extra parameter</message>
             <message lang="de">Wert des ersten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -222,7 +222,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'applicationSSO Client.</message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Name of the second extra parameter for the target site authentication form.</message>
             <message lang="de">Name des zweiten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
           </help>
@@ -241,7 +241,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client. </message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Value of the second extra parameter</message>
             <message lang="de">Wert des zweiten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -260,7 +260,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Name of the third extra parameter for the target site authentication form.</message>
             <message lang="de">Name des dritten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
           </help>
@@ -279,7 +279,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Value of the third extra parameter</message>
             <message lang="de">Wert des dritten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -298,7 +298,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Name of the fourth extra parameter for the target site authentication form.</message>
             <message lang="de">Name des vierten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
           </help>
@@ -317,7 +317,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Value of the fourth extra parameter</message>
             <message lang="de">Wert des vierten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -336,7 +336,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente. </message>
             <message lang="en">Name of the fifth extra parameter for the target site authentication form.</message>
             <message lang="de">Name des fünften zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
           </help>
@@ -355,7 +355,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
             <message lang="en">Value of the fifth extra parameter</message>
             <message lang="de">Wert des fünften zusätzlichen Parameter für den SSO Client</message>
           </help>

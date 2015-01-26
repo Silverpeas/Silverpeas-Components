@@ -231,7 +231,7 @@
           <value>2</value>
         </option>
       </options>
-      <type>radio</type>
+      <type>select</type>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Visibilité du champ Description</message>
