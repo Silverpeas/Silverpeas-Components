@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.survey.servlets;
@@ -77,7 +77,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         return profile;
       }
     }
-    
+
     return flag;
   }
 
@@ -95,7 +95,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param surveySC The component Session Control, build and initialized.
    * @param request
@@ -105,8 +104,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   @Override
   public String getDestination(String function, SurveySessionController surveySC,
       HttpRequest request) {
-    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination",
-        "Survey.MSG_ENTRY_METHOD");
+    SilverTrace
+        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination", "Survey.MSG_ENTRY_METHOD");
 
     String flag = getFlag(surveySC.getUserRoles());
     String rootDest = "/survey/jsp/";
@@ -114,15 +113,17 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       surveySC.setParticipationMultipleAllowedForUser(true);
     }
 
-    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "surveyId=" + surveySC.getSessionSurveyId());
-    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "surveyId=" + request.getParameter("SurveyId"));
+    SilverTrace
+        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+            "surveyId=" + surveySC.getSessionSurveyId());
+    SilverTrace
+        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+            "surveyId=" + request.getParameter("SurveyId"));
 
     surveySC.setPollingStationMode(false);
-    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "getComponentRootName() = " + surveySC.getComponentRootName());
+    SilverTrace
+        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+            "getComponentRootName() = " + surveySC.getComponentRootName());
     if ("pollingStation".equals(surveySC.getComponentRootName())) {
       surveySC.setPollingStationMode(true);
     }
@@ -139,18 +140,19 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       // the flag is the best user's profile
       destination = rootDest + "surveyList.jsp?Profile=" + flag;
     } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
-      if (flag.equals(SilverpeasRole.admin.toString()) || flag.equals(SilverpeasRole.publisher.toString())) {
+      if (flag.equals(SilverpeasRole.admin.toString()) ||
+          flag.equals(SilverpeasRole.publisher.toString())) {
         surveySC.sendNewSurveyAction(request);
         destination = rootDest + "surveyCreator.jsp";
       } else {
         profileError = true;
       }
-    } else if (function.equals("UpdateSurvey")) {
+    } else if ("UpdateSurvey".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
       destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
-    } else if (function.equals("ViewListResult")) {
+    } else if ("ViewListResult".equals(function)) {
       String answerId = request.getParameter("AnswerId");
-      Collection<String> users = new ArrayList<String>();
+      Collection<String> users = new ArrayList<>();
       try {
         users = surveySC.getUsersByAnswer(answerId);
       } catch (Exception e) {
@@ -160,9 +162,9 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       request.setAttribute("Users", users);
       request.setAttribute("Survey", surveySC.getSessionSurvey());
       destination = rootDest + "answerResult.jsp";
-    } else if (function.equals("ViewAllUsers")) {
+    } else if ("ViewAllUsers".equals(function)) {
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
-      Collection<String> users = new ArrayList<String>();
+      Collection<String> users = new ArrayList<>();
       try {
         users = surveySC.getUsersBySurvey(survey.getId());
       } catch (Exception e) {
@@ -172,10 +174,10 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       request.setAttribute("Users", users);
       request.setAttribute("Survey", survey);
       destination = rootDest + "answerResult.jsp";
-    } else if (function.equals("UserResult")) {
+    } else if ("UserResult".equals(function)) {
       String userId = request.getParameter("UserId");
       String userName = request.getParameter("UserName");
-      Collection<String> result = new ArrayList<String>();
+      Collection<String> result = new ArrayList<>();
       try {
         result = surveySC.getResultByUser(userId);
       } catch (Exception e) {
@@ -195,10 +197,11 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(id);
       request.setAttribute("ListDocument", listDocument);
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
-    } else if (function.equals("ToAlertUser")) {
-      SilverTrace.debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "function = " + function + " spaceId=" +
-              surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
+    } else if ("ToAlertUser".equals(function)) {
+      SilverTrace
+          .debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+              "function = " + function + " spaceId=" +
+                  surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
       String surveyId = request.getParameter("SurveyId");
       try {
         destination = surveySC.initAlertUser(surveyId);
@@ -207,10 +210,11 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
             "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
       }
 
-      SilverTrace.debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "function = " + function + "=> destination=" +
-              destination);
-    } else if (function.equals("ExportCSV")) {
+      SilverTrace
+          .debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+              "function = " + function + "=> destination=" +
+                  destination);
+    } else if ("ExportCSV".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
       String csvFilename = surveySC.exportSurveyCSV(surveyId);
 
@@ -222,7 +226,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         file = null;
       }
       destination = rootDest + "downloadCSV.jsp";
-    } else if (function.equals("copy")) {
+    } else if ("copy".equals(function)) {
       String surveyId = request.getParameter("Id");
       try {
         surveySC.copySurvey(surveyId);
@@ -230,8 +234,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_CLIPBOARD_COPY_FAILED", "function = " + function, e);
       }
-      destination =
-          URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp?message=REFRESHCLIPBOARD";
+      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+          "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if (function.startsWith("paste")) {
       try {
         surveySC.paste();
@@ -242,8 +246,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
     } else if ("QuestionsUpdate".equals(function) || "questionsUpdate.jsp".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
-      
-      if("QuestionsUpdate".equals(function)) {
+
+      if ("QuestionsUpdate".equals(function)) {
         try {
           // vérouiller l'enquête
           surveySC.closeSurvey(surveyId);
@@ -254,15 +258,16 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
               "Survey.EX_PROBLEM_TO_CLOSE_SURVEY", "function = " + function, e);
         }
       }
-      
+
       // Retrieve current action
       surveySC.questionsUpdateBusinessModel(request);
 
       request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
       request.setAttribute("Questions", surveySC.getSessionQuestions());
       request.setAttribute("Profile", flag);
-      destination = rootDest + "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId;
-    } else if ("questionCreatorBis.jsp".equals(function) || "manageQuestions.jsp".equals(function)) {
+      destination = rootDest + "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId=" + surveyId;
+    } else if ("questionCreatorBis.jsp".equals(function) ||
+        "manageQuestions.jsp".equals(function)) {
       request.setAttribute("Gallery", surveySC.getGalleries());
       request.setAttribute("QuestionStyles", surveySC.getListQuestionStyle());
       request.setAttribute("Profile", flag);
@@ -270,7 +275,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       request.setAttribute("Questions", surveySC.getSessionQuestions());
       request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
       destination = rootDest + view;
-    } else if (function.equals("PublishResult")) {
+    } else if ("PublishResult".equals(function)) {
       // récupération des paramètres
       List<FileItem> items = request.getFileItems();
 
@@ -278,50 +283,58 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       String checkedViewD = FileUploadUtil.getParameter(items, "checkedViewD");
       String notification = FileUploadUtil.getParameter(items, "notification");
       String destinationUser = FileUploadUtil.getParameter(items, "destination");
-      String idSynthesisFile = FileUploadUtil.getParameter(items, "idSynthesisFile"); 
-      String removeSynthesisFile = FileUploadUtil.getParameter(items, "removeSynthesisFile");  //yes | no 
-      FileItem fileSynthesis = FileUploadUtil.getFile(items, "synthesisNewFile"); 
-      if(idSynthesisFile == null && fileSynthesis != null && StringUtil.isDefined(fileSynthesis.getName())) {//Create Document
+      String idSynthesisFile = FileUploadUtil.getParameter(items, "idSynthesisFile");
+      String removeSynthesisFile =
+          FileUploadUtil.getParameter(items, "removeSynthesisFile");  //yes | no
+      FileItem fileSynthesis = FileUploadUtil.getFile(items, "synthesisNewFile");
+      if (idSynthesisFile == null && fileSynthesis != null &&
+          StringUtil.isDefined(fileSynthesis.getName())) {//Create Document
         try {
           surveySC.saveSynthesisFile(fileSynthesis);
         } catch (SurveyException e) {
           SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-              "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function+", saveSynthesisFile", e);
+              "Survey.EX_PROBLEM_TO_UPDATE_SURVEY",
+              "function = " + function + ", saveSynthesisFile", e);
         }
-      } else if(idSynthesisFile != null && fileSynthesis != null && StringUtil.isDefined(fileSynthesis.getName())) {//Update Document
+      } else if (idSynthesisFile != null && fileSynthesis != null &&
+          StringUtil.isDefined(fileSynthesis.getName())) {//Update Document
         try {
           surveySC.updateSynthesisFile(fileSynthesis, idSynthesisFile);
         } catch (SurveyException e) {
           SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-              "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function+", updateSynthesisFile", e);
+              "Survey.EX_PROBLEM_TO_UPDATE_SURVEY",
+              "function = " + function + ", updateSynthesisFile", e);
         }
-      } else if(idSynthesisFile != null && fileSynthesis != null && ! StringUtil.isDefined(fileSynthesis.getName()) && "yes".equals(removeSynthesisFile)) {//Delete Document
+      } else if (idSynthesisFile != null && fileSynthesis != null &&
+          !StringUtil.isDefined(fileSynthesis.getName()) &&
+          "yes".equals(removeSynthesisFile)) {//Delete Document
         surveySC.removeSynthesisFile(idSynthesisFile);
-      } 
+      }
 
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
       String surveyId = survey.getId();
       QuestionContainerHeader surveyHeader = survey.getHeader();
-      
+
       if (checkedViewC == null && checkedViewD == null) {
         surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
-      } else if(checkedViewC != null && checkedViewD != null && "on".equals(checkedViewC) && "on".equals(checkedViewD)) {//C && D
+      } else if (checkedViewC != null && checkedViewD != null && "on".equals(checkedViewC) &&
+          "on".equals(checkedViewD)) {//C && D
         surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
       } else {//C || D
-        if(checkedViewC != null && "on".equals(checkedViewC)) {
+        if (checkedViewC != null && "on".equals(checkedViewC)) {
           surveyHeader.setResultView(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS);
-        } else if(checkedViewD != null && "on".equals(checkedViewD)) {
+        } else if (checkedViewD != null && "on".equals(checkedViewD)) {
           surveyHeader.setResultView(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS);
         }
-      } 
+      }
       try {
         surveySC.updateSurveyHeader(surveyHeader, surveyId);
       } catch (Exception e) {
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function, e);
       }
-      
-      if("1".equals(notification)) {
+
+      if ("1".equals(notification)) {
         //notifier uniquement les utilisateurs ayant participé
         try {
           surveySC.initAlertResultParticipants(survey);
@@ -329,7 +342,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
           SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
               "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
         }
-      } else if("2".equals(notification)) {
+      } else if ("2".equals(notification)) {
         //notifier tous les utilisateurs qui pouvaient participer
         try {
           surveySC.initAlertResultUsers(survey);
@@ -346,7 +359,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       String surveyId = request.getParameter("SurveyId");
       request.setAttribute("Profile", flag);
       List<SimpleDocument> listDocument = null;
-      if(surveyId != null) {
+      if (surveyId != null) {
         listDocument = surveySC.getAllSynthesisFile(surveyId);
       }
       request.setAttribute("ListDocument", listDocument);
@@ -357,8 +370,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     }
 
     if (profileError) {
-      String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
-      destination = sessionTimeout;
+      destination = GeneralPropertiesManager.getString("sessionTimeout");
     }
     return destination;
   }
@@ -375,8 +387,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     if (surveyId != null) {
       Cookie[] cookies = request.getCookies();
       String cookieName = SurveySessionController.COOKIE_NAME + surveyId;
-      for (int i = 0; i < cookies.length; i++) {
-        Cookie currentCookie = cookies[i];
+      for (Cookie currentCookie : cookies) {
         if (currentCookie.getName().equals(cookieName)) {
           surveySC.hasAlreadyParticipated(true);
           break;

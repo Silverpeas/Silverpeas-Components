@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.survey.notification;
 
@@ -38,7 +38,8 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
  * The centralization of the construction of the survey notifications
  * @author Cécile Bonin
  */
-public class SurveyUserNotification extends AbstractTemplateUserNotificationBuilder<QuestionContainerDetail> {
+public class SurveyUserNotification
+    extends AbstractTemplateUserNotificationBuilder<QuestionContainerDetail> {
 
   private final String componentInstanceId;
   private final String pathToSurvey;
@@ -47,17 +48,18 @@ public class SurveyUserNotification extends AbstractTemplateUserNotificationBuil
   private final Collection<String> userIdsToNotify;
   private final String fileName;
   private final NotifAction action;
-  
 
-  public SurveyUserNotification(final String componentInstanceId, final QuestionContainerDetail surveyDetail,
-      final String pathToSurvey, final UserDetail userDetail, final UserDetail[] participants) {
+
+  public SurveyUserNotification(final String componentInstanceId,
+      final QuestionContainerDetail surveyDetail, final String pathToSurvey,
+      final UserDetail userDetail, final UserDetail[] participants) {
     super(surveyDetail, null, null);
     this.componentInstanceId = componentInstanceId;
     this.pathToSurvey = pathToSurvey;
     this.userDetail = userDetail;
     this.senderId = userDetail.getId();
-    Collection<String> userIds = new ArrayList<String>();
-    for(UserDetail participant : participants) {
+    Collection<String> userIds = new ArrayList<>();
+    for (UserDetail participant : participants) {
       userIds.add(participant.getId());
     }
     this.userIdsToNotify = userIds;
@@ -88,9 +90,12 @@ public class SurveyUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected void performTemplateData(final String language, final QuestionContainerDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("UserDetail", this.userDetail);
-    template.setAttribute("userName", (this.userDetail != null ? this.userDetail.getDisplayedName() : ""));
+    template.setAttribute("userName",
+        (this.userDetail != null ? this.userDetail.getDisplayedName() : ""));
     template.setAttribute("SurveyDetail", resource);
     template.setAttribute("surveyName", resource.getHeader().getName());
     String surveyDesc = resource.getHeader().getDescription();
@@ -102,7 +107,8 @@ public class SurveyUserNotification extends AbstractTemplateUserNotificationBuil
   }
 
   @Override
-  protected void performNotificationResource(final String language, final QuestionContainerDetail resource,
+  protected void performNotificationResource(final String language,
+      final QuestionContainerDetail resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getHeader().getName());
   }
