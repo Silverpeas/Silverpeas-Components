@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.kmelia.workflowextensions;
 
@@ -84,7 +87,6 @@ public class SendInKmelia extends ExternalActionImpl {
 
   private String targetId = "unknown";
   private String topicId = "unknown";
-  private String pubTitle = "unknown";
   private String pubDesc = null;
   private String role = "unknown";
   private String xmlFormName = null;
@@ -93,7 +95,7 @@ public class SendInKmelia extends ExternalActionImpl {
   private boolean addPDFHistoryFirst = true;
   private String pdfHistoryName = null;
   private String userId = null;
-  private final String ADMIN_ID = "0";
+  private static final String ADMIN_ID = "0";
 
   public SendInKmelia() {
   }
@@ -106,24 +108,21 @@ public class SendInKmelia extends ExternalActionImpl {
     if (parameter != null && StringUtil.isDefined(parameter.getValue())) {
       String explorerFieldName = parameter.getValue();
       // getting place to create publication from explorer field
-      ExplorerField explorer = null;
       try {
-        explorer = (ExplorerField) getProcessInstance().getField(explorerFieldName);
+        ExplorerField explorer = (ExplorerField) getProcessInstance().getField(explorerFieldName);
+        ForeignPK pk = (ForeignPK) explorer.getObjectValue();
+        targetId = pk.getInstanceId();
+        topicId = pk.getId();
       } catch (WorkflowException e1) {
         SilverTrace.error("processManager", "SendInKmelia.execute", "err.CANT_GET_TOPIC", e1);
       }
-      ForeignPK pk = (ForeignPK) explorer.getObjectValue();
-
-      targetId = pk.getInstanceId();
-      topicId = pk.getId();
     } else {
       targetId = getTriggerParameter("targetComponentId").getValue();
       Parameter paramTopicPath = getTriggerParameter("targetFolderPath");
       if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
         try {
-          String path =
-              DataRecordUtil.applySubstitution(paramTopicPath.getValue(), getProcessInstance()
-                  .getAllDataRecord(role, "fr"), "fr");
+          String path = DataRecordUtil.applySubstitution(paramTopicPath.getValue(),
+              getProcessInstance().getAllDataRecord(role, "fr"), "fr");
           topicId = getNodeId(path);
         } catch (WorkflowException e) {
           SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
@@ -133,7 +132,7 @@ public class SendInKmelia extends ExternalActionImpl {
         topicId = getTriggerParameter("targetTopicId").getValue();
       }
     }
-    pubTitle = getTriggerParameter("pubTitle").getValue();
+    final String pubTitle = getTriggerParameter("pubTitle").getValue();
     Parameter paramDescription = getTriggerParameter("pubDescription");
     if (paramDescription != null && StringUtil.isDefined(paramDescription.getValue())) {
       pubDesc = paramDescription.getValue();
@@ -163,9 +162,8 @@ public class SendInKmelia extends ExternalActionImpl {
     String pubName = getProcessInstance().getTitle(getRole(), getLanguage());
     if (StringUtil.isDefined(pubTitle)) {
       try {
-        pubName =
-            DataRecordUtil.applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(role,
-            "fr"), "fr");
+        pubName = DataRecordUtil
+            .applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(role, "fr"), "fr");
       } catch (WorkflowException e) {
         SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
       }
@@ -173,9 +171,8 @@ public class SendInKmelia extends ExternalActionImpl {
     String desc = "";
     if (StringUtil.isDefined(pubDesc)) {
       try {
-        desc =
-            DataRecordUtil.applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role,
-            "fr"), "fr");
+        desc = DataRecordUtil
+            .applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role, "fr"), "fr");
       } catch (WorkflowException e) {
         SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
       }
@@ -189,8 +186,8 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     KmeliaBm kmelia = getKmeliaBm();
-    String pubId = kmelia.createPublicationIntoTopic(pubDetail, new NodePK(getTopicId(),
-        getTargetId()));
+    String pubId =
+        kmelia.createPublicationIntoTopic(pubDetail, new NodePK(getTopicId(), getTargetId()));
     pubPK.setId(pubId);
 
     // 2 - Attach history as pdf file
@@ -223,22 +220,23 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  public void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {    
+  public void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {
     // Get the current instance
     UpdatableProcessInstance currentProcessInstance =
         (UpdatableProcessInstance) getProcessInstance();
     try {
       // register xmlForm of publication
-      PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(
-          targetId + ":" + xmlFormName, xmlFormName + ".xml");
-      
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-          .getInstance().getPublicationTemplate(targetId + ":" + xmlFormName);
+      PublicationTemplateManager.getInstance()
+          .addDynamicPublicationTemplate(targetId + ":" + xmlFormName, xmlFormName + ".xml");
+
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+              .getPublicationTemplate(targetId + ":" + xmlFormName);
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (String fieldName : record.getFieldNames()) {
-        SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "Process fieldName =" +
-            fieldName);
+        SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields",
+            "Process fieldName =" + fieldName);
         Object fieldValue = null;
         try {
           Field fieldOfFolder = currentProcessInstance.getField(fieldName);
@@ -249,8 +247,9 @@ public class SendInKmelia extends ExternalActionImpl {
             fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
           }
         } catch (WorkflowException e) {
-          SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" +
-              fieldName + " with value " + fieldValue, e);
+          SilverTrace
+              .debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" + fieldName,
+                  e);
         }
         SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" +
             fieldName + " with value " + fieldValue);
@@ -259,38 +258,33 @@ public class SendInKmelia extends ExternalActionImpl {
       // Update
       pubTemplate.getRecordSet().save(record);
 
-    } catch (PublicationTemplateException e) {
-      SilverTrace.error("workflowEngine",
-          "SendInKmelia.populateFields()",
-          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
-    } catch (FormException e) {
-      SilverTrace.error("workflowEngine",
-          "SendInKmelia.populateFields()",
+    } catch (PublicationTemplateException | FormException e) {
+      SilverTrace.error("workflowEngine", "SendInKmelia.populateFields()",
           "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
     }
   }
-  
+
   private String copyFormFile(ForeignPK fromPK, ForeignPK toPK, String attachmentId) {
-    SimpleDocument attachment = null;
+    SimpleDocument attachment;
     if (StringUtil.isDefined(attachmentId)) {
       AttachmentService service = AttachmentServiceProvider.getAttachmentService();
       // Retrieve attachment detail to copy
-      attachment =
-          service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
+      attachment = service
+          .searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
       if (attachment != null) {
-        SimpleDocumentPK copyPK = copyFile(attachment, toPK);
+        SimpleDocumentPK copyPK = copyFile(attachment, toPK, DocumentType.attachment);
         return copyPK.getId();
       }
     }
     return null;
   }
-  
+
   private Map<String, String> copyFiles(ForeignPK fromPK, ForeignPK toPK, DocumentType fromType,
       DocumentType toType) {
-    Map<String, String> fileIds = new HashMap<String, String>();
+    Map<String, String> fileIds = new HashMap<>();
     try {
       List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService().
-            listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
+          listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
       for (SimpleDocument origin : origins) {
         SimpleDocumentPK copyPk = copyFile(origin, toPK, toType);
         fileIds.put(origin.getId(), copyPk.getId());
@@ -301,18 +295,14 @@ public class SendInKmelia extends ExternalActionImpl {
     }
     return fileIds;
   }
-  
-  private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK) {
-    return copyFile(file, toPK); 
-  }
-  
+
   private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK, DocumentType type) {
     if (type != null) {
       file.setDocumentType(type);
     }
     return AttachmentServiceProvider.getAttachmentService().copyDocument(file, toPK);
   }
-  
+
   private byte[] generatePDF(ProcessInstance instance) {
     com.lowagie.text.Document document = new com.lowagie.text.Document();
 
@@ -346,12 +336,12 @@ public class SendInKmelia extends ExternalActionImpl {
     try {
       String activity = "";
       if (step.getResolvedState() != null) {
-        State resolvedState = step.getProcessInstance().getProcessModel().getState(
-            step.getResolvedState());
+        State resolvedState =
+            step.getProcessInstance().getProcessModel().getState(step.getResolvedState());
         activity = resolvedState.getLabel(getRole(), getLanguage());
       }
 
-      String sAction = null;
+      String sAction;
       try {
         if ("#question#".equals(step.getAction())) {
           sAction = getString("processManager.question");
@@ -402,8 +392,8 @@ public class SendInKmelia extends ExternalActionImpl {
         // TODO
         form = null;
       } else {
-        form = getProcessInstance().getProcessModel().getPresentationForm(step.getAction(),
-            getRole(), getLanguage());
+        form = getProcessInstance().getProcessModel()
+            .getPresentationForm(step.getAction(), getRole(), getLanguage());
       }
 
       XmlForm xmlForm = (XmlForm) form;
@@ -429,14 +419,13 @@ public class SendInKmelia extends ExternalActionImpl {
 
             // wysiwyg field
             if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
-              String file = WysiwygFCKFieldDisplayer.getFile(componentId,
-                  getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
+              String file = WysiwygFCKFieldDisplayer
+                  .getFile(componentId, getProcessInstance().getInstanceId(),
+                      fieldTemplate.getFieldName(), getLanguage());
 
               // Extract the text content of the html code
               Source source = new Source(new FileInputStream(file));
-              if (source != null) {
-                fieldValue = source.getTextExtractor().toString();
-              }
+              fieldValue = source.getTextExtractor().toString();
             } // Field file type
             else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
                 isDefined(field.getValue())) {
@@ -471,7 +460,8 @@ public class SendInKmelia extends ExternalActionImpl {
         document.add(tableContent);
       }
     } catch (Exception e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
+      SilverTrace
+          .error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
     }
   }
 
@@ -514,7 +504,6 @@ public class SendInKmelia extends ExternalActionImpl {
 
   /**
    * Get actor if exist, admin otherwise
-   *
    * @return UserDetail
    */
   private UserDetail getBestUserDetail() {
@@ -548,8 +537,8 @@ public class SendInKmelia extends ExternalActionImpl {
         existingNode =
             getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
       } catch (Exception e) {
-        SilverTrace.info("workflowEngine", "SendInKmelia.getNodeId()",
-            "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" +
+        SilverTrace.info("workflowEngine", "SendInKmelia.getNodeId()", "root.MSG_GEN_PARAM_VALUE",
+            "node named '" + name + "' in path '" +
                 explicitPath + "' does not exist");
       }
       if (existingNode != null) {
@@ -562,13 +551,14 @@ public class SendInKmelia extends ExternalActionImpl {
         newNode.setNodePK(new NodePK("unknown", targetId));
         newNode.setFatherPK(new NodePK(parentId, targetId));
         newNode.setCreatorId(userId);
-        NodePK newNodePK = null;
+        NodePK newNodePK;
         try {
           newNodePK = getNodeBm().createNode(newNode);
         } catch (Exception e) {
-          SilverTrace.error("workflowEngine", "SendInKmelia.getNodeId()",
-              "root.MSG_GEN_PARAM_VALUE", "Can't create node named '" + name + "' in path '" +
-                  explicitPath + "'", e);
+          SilverTrace
+              .error("workflowEngine", "SendInKmelia.getNodeId()", "root.MSG_GEN_PARAM_VALUE",
+                  "Can't create node named '" + name + "' in path '" +
+                      explicitPath + "'", e);
           return "-1";
         }
         parentId = newNodePK.getId();
