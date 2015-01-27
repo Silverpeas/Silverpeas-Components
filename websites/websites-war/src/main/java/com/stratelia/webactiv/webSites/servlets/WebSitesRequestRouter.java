@@ -212,8 +212,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         String nameSite = request.getParameter("nameSite");
         String id = request.getParameter("id");
 
-        destination = "http://" + getMachine(request) + URLManager.getApplicationURL()
-            + "/wysiwyg/jsp/htmlEditor.jsp?";
+        destination = "/wysiwyg/jsp/htmlEditor.jsp?";
         destination += "SpaceId=" + scc.getSpaceId();
 
         destination += "&SpaceName=" + URLEncoder.encode(scc.getSpaceLabel(), "UTF-8");
