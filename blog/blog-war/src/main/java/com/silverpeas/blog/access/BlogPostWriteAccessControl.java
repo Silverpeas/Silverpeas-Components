@@ -21,12 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.blog.access;
 
 import com.silverpeas.accesscontrol.AccessController;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This interface extends access controller for Post resource in writing mode.
  * @author: Yohann Chastagnier
  */
-public interface BlogPostWriteAccessControl extends AccessController<String> {}
+public interface BlogPostWriteAccessControl extends AccessController<String> {
+  static BlogPostWriteAccessControl get() {
+    return ServiceProvider.getService(BlogPostWriteAccessControl.class);
+  }
+}

@@ -1,26 +1,29 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.blog.control;
 
-import com.silverpeas.blog.access.BlogPostWriteAccessController;
+import com.silverpeas.blog.access.BlogPostWriteAccessControl;
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
@@ -64,7 +67,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
-import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
@@ -81,19 +83,17 @@ import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfCon
 
 public final class BlogSessionController extends AbstractComponentSessionController {
 
-  private Calendar currentBeginDate = Calendar.getInstance(); // format = yyyy/MM/ddd
-  private Calendar currentEndDate = Calendar.getInstance(); // format = yyyy/MM/ddd
+  private Calendar currentBeginDate = Calendar.getInstance();
+  private Calendar currentEndDate = Calendar.getInstance();
   private String serverURL = null;
   private WallPaper wallPaper = null;
   private StyleSheet styleSheet = null;
   private static final String FORBIDEN_ACCESS_MSG = "blog.error.access";
 
-  @Inject
-  private BlogPostWriteAccessController accessController;
+  private BlogPostWriteAccessControl accessController = BlogPostWriteAccessControl.get();
 
   /**
    * Standard Session Controller Constructeur
-   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -205,13 +205,14 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       return getBlogService().createPost(newPost);
     } else {
       List<PdcPosition> pdcPositions = classification.getPdcPositions();
-      PdcClassification withClassification = aPdcClassificationOfContent("unknown",
-          getComponentId()).withPositions(pdcPositions);
+      PdcClassification withClassification =
+          aPdcClassificationOfContent("unknown", getComponentId()).withPositions(pdcPositions);
       return getBlogService().createPost(newPost, withClassification);
     }
   }
 
-  public synchronized void updatePost(String postId, String title, String content, String categoryId, Date dateEvent) {
+  public synchronized void updatePost(String postId, String title, String content,
+      String categoryId, Date dateEvent) {
     checkWriteAccessOnBlogPost();
     PostDetail post = getPost(postId);
 
@@ -237,11 +238,12 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     getBlogService().draftOutPost(post);
 
   }
-  
-  public synchronized void updatePostAndDraftOut(String postId, String title, String content, String categoryId, Date dateEvent) {
+
+  public synchronized void updatePostAndDraftOut(String postId, String title, String content,
+      String categoryId, Date dateEvent) {
     //update post
     updatePost(postId, title, content, categoryId, dateEvent);
-    
+
     //draft out poste
     draftOutPost(postId);
   }
@@ -250,39 +252,27 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     AlertUser sel = getAlertUser();
     // Initialisation de AlertUser
     sel.resetAll();
-    sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
-    sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
-    // param permettant de filtrer les users ayant acces
-    // au composant)
-    Pair<String, String> hostComponentName =
-        new Pair<>(getComponentLabel(), null); // set nom du
-    // composant pour
-    // browsebar
-    // (PairObject(nom_composant,
-    // lien_vers_composant))
-    // NB : seul le 1er
-    // element est
-    // actuellement
-    // utilisé
-    // (alertUserPeas est
-    // toujours présenté
-    // en popup => pas de
-    // lien sur nom du
-    // composant)
+    // set nom de l'espace pour browsebar
+    sel.setHostSpaceName(getSpaceLabel());
+    // set id du composant pour appel selectionPeas (extra param permettant de filtrer les users
+    // ayant acces au composant)
+    sel.setHostComponentId(getComponentId());
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null); // set nom du
+    // composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
+    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en
+    // popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("blog", "BlogSessionController.initAlertUser()", "root.MSG_GEN_PARAM_VALUE",
         "name = " + hostComponentName + " componentId=" + getComponentId());
-    sel.setNotificationMetaData(getAlertNotificationMetaData(postId)); // set NotificationMetaData
-    // contenant les informations
-    // à notifier
-    // fin initialisation de AlertUser
-    // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    // set NotificationMetaData contenant les informations à notifier fin initialisation de
+    // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    sel.setNotificationMetaData(getAlertNotificationMetaData(postId));
     return AlertUser.getAlertUserURL();
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String postId) {
-    return UserNotificationHelper.build(new BlogUserNotification(getComponentId(), getPost(postId),
-        getUserDetail()));
+    return UserNotificationHelper
+        .build(new BlogUserNotification(getComponentId(), getPost(postId), getUserDetail()));
   }
 
   public synchronized void deletePost(String postId) {
@@ -297,9 +287,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public Collection<Comment> getAllComments(String postId) {
-    CommentPK foreign_pk = new CommentPK(postId, null, getComponentId());
-    return getCommentService()
-        .getAllCommentsOnPublication(PostDetail.getResourceType(), foreign_pk);
+    CommentPK foreignPk = new CommentPK(postId, null, getComponentId());
+    return getCommentService().getAllCommentsOnPublication(PostDetail.getResourceType(), foreignPk);
   }
 
   public Comment getComment(String commentId) {
@@ -342,8 +331,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public Collection<PostDetail> getResultSearch(String word) {
-    SilverTrace.info("blog", "BlogSessionController.getResultSearch()",
-        "root.MSG_GEN_PARAM_VALUE", "word =" + word);
+    SilverTrace.info("blog", "BlogSessionController.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
+        "word =" + word);
     return getBlogService().getResultSearch(word, getUserId(), getSpaceId(), getComponentId());
   }
 
@@ -368,7 +357,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   @Override
   public String getRSSUrl() {
     if (isUseRss()) {
-      return super.getRSSUrl().replaceAll("&", "&amp;"); //replace to remove when all composants will be XHTML compliant
+      return super.getRSSUrl()
+          .replaceAll("&", "&amp;"); //replace to remove when all composants will be XHTML compliant
     }
     return null;
   }
@@ -383,7 +373,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Gets a DefaultCommentService instance.
-   *
    * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
@@ -395,7 +384,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   private BlogService getBlogService() {
-    return BlogServiceFactory.getFactory().getBlogService();
+    return BlogServiceFactory.getBlogService();
   }
 
   public void setCurrentBeginDate(String beginDate) {
@@ -452,16 +441,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Converts the list of Delegated News into its JSON representation.
-   *
    * @return a JSON representation of the list of Delegated News (as string)
    * @throws JAXBException
    */
-  public String getListNodeJSON(Collection<NodeDetail> listNode)
-      throws JAXBException {
-    List<NodeEntity> listNodeEntity = new ArrayList<NodeEntity>();
+  public String getListNodeJSON(Collection<NodeDetail> listNode) throws JAXBException {
+    List<NodeEntity> listNodeEntity = new ArrayList<>();
     for (NodeDetail node : listNode) {
-      NodeEntity nodeEntity =
-          NodeEntity.fromNodeDetail(node, node.getNodePK().getId());
+      NodeEntity nodeEntity = NodeEntity.fromNodeDetail(node, node.getNodePK().getId());
       listNodeEntity.add(nodeEntity);
     }
     return listAsJSON(listNodeEntity);
@@ -469,21 +455,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Converts the list of Delegated News Entity into its JSON representation.
-   *
-   * @param listNodeEntity
+   * @param listNodeEntity list of NodeEntity
    * @return a JSON representation of the list of Delegated News Entity (as string)
    * @throws BlogRuntimeException
    */
-  private String listAsJSON(List<NodeEntity> listNodeEntity)
-      throws BlogRuntimeException {
-    NodeEntity[] entities =
-        listNodeEntity.toArray(new NodeEntity[listNodeEntity.size()]);
+  private String listAsJSON(List<NodeEntity> listNodeEntity) throws BlogRuntimeException {
+    NodeEntity[] entities = listNodeEntity.toArray(new NodeEntity[listNodeEntity.size()]);
     try {
       return JSONCodec.encode(entities);
     } catch (EncodingException ex) {
       throw new BlogRuntimeException("BlogSessionController.listAsJSON()",
-          SilverpeasRuntimeException.ERROR,
-          "root.EX_NO_MESSAGE", ex);
+          SilverpeasRuntimeException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
   }
 
@@ -497,16 +479,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
-      files = new ArrayList<File>();
+      files = new ArrayList<>();
     }
 
     for (File file : files) {
-      if ("banner.gif".equals(file.getName()) || "banner.jpg".equals(file.getName())
-          || "banner.png".equals(file.getName())) {
+      if ("banner.gif".equals(file.getName()) || "banner.jpg".equals(file.getName()) ||
+          "banner.png".equals(file.getName())) {
         this.wallPaper = new WallPaper();
         this.wallPaper.setName(file.getName());
-        this.wallPaper.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(),
-            file.getName(), FileUtil.getMimeType(file.getName()), ""));
+        this.wallPaper.setUrl(FileServerUtils
+            .getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
+                FileUtil.getMimeType(file.getName()), ""));
         this.wallPaper.setSize(FileRepositoryManager.formatFileSize(file.length()));
         break;
       }
@@ -515,7 +498,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Get the wallpaper object.
-   *
    * @return the wallpaper object
    */
   public WallPaper getWallPaper() {
@@ -524,7 +506,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Save the banner file.
-   *
    * @throws BlogRuntimeException
    */
   public void saveWallPaperFile(FileItem fileItemWallPaper) throws BlogRuntimeException {
@@ -537,8 +518,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
         equalsIgnoreCase(extension)) {
       throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
-          SilverpeasRuntimeException.ERROR,
-          "blog.EX_EXTENSION_WALLPAPER");
+          SilverpeasRuntimeException.ERROR, "blog.EX_EXTENSION_WALLPAPER");
     }
 
     //path to create the file
@@ -557,13 +537,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       //save the information
       this.wallPaper = new WallPaper();
       this.wallPaper.setName(nameFile);
-      this.wallPaper.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile,
-          FileUtil.getMimeType(nameFile), ""));
+      this.wallPaper.setUrl(FileServerUtils
+          .getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile),
+              ""));
       this.wallPaper.setSize(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
     } catch (Exception ex) {
       throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
-          SilverpeasRuntimeException.ERROR,
-          "blog.EX_CREATE_WALLPAPER", ex);
+          SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_WALLPAPER", ex);
     }
   }
 
@@ -573,17 +553,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public void removeWallPaperFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
     File banner = new File(path + File.separator + "banner.gif");
-    if (banner != null && banner.exists()) {
+    if (banner.exists()) {
       banner.delete();
     }
 
     banner = new File(path + File.separator + "banner.jpg");
-    if (banner != null && banner.exists()) {
+    if (banner.exists()) {
       banner.delete();
     }
 
     banner = new File(path + File.separator + "banner.png");
-    if (banner != null && banner.exists()) {
+    if (banner.exists()) {
       banner.delete();
     }
 
@@ -600,21 +580,23 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
-      files = new ArrayList<File>();
+      files = new ArrayList<>();
     }
 
     for (File file : files) {
       if ("styles.css".equals(file.getName())) {
         this.styleSheet = new StyleSheet();
         this.styleSheet.setName(file.getName());
-        this.styleSheet.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(),
-            file.getName(), FileUtil.getMimeType(file.getName()), ""));
+        this.styleSheet.setUrl(FileServerUtils
+            .getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
+                FileUtil.getMimeType(file.getName()), ""));
         this.styleSheet.setSize(FileRepositoryManager.formatFileSize(file.length()));
         try {
           this.styleSheet.setContent(FileUtils.readFileToString(file, "UTF-8"));
         } catch (IOException e) {
-          SilverTrace.warn("blog", "BlogSessionController.setStyleSheet()",
-              "blog.EX_DISPLAY_STYLESHEET", e);
+          SilverTrace
+              .warn("blog", "BlogSessionController.setStyleSheet()", "blog.EX_DISPLAY_STYLESHEET",
+                  e);
           this.styleSheet.setContent(null);
         }
         break;
@@ -624,7 +606,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Get the style sheet object.
-   *
    * @return style sheet object
    */
   public StyleSheet getStyleSheet() {
@@ -633,7 +614,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Save the stylesheet file.
-   *
    * @throws BlogRuntimeException
    */
   public void saveStyleSheetFile(FileItem fileItemStyleSheet) throws BlogRuntimeException {
@@ -641,8 +621,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     String extension = FileRepositoryManager.getFileExtension(fileItemStyleSheet.getName());
     if (!"css".equalsIgnoreCase(extension)) {
       throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
-          SilverpeasRuntimeException.ERROR,
-          "blog.EX_EXTENSION_STYLESHEET");
+          SilverpeasRuntimeException.ERROR, "blog.EX_EXTENSION_STYLESHEET");
     }
 
     //path to create the file
@@ -661,8 +640,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       //save the information
       this.styleSheet = new StyleSheet();
       this.styleSheet.setName(nameFile);
-      this.styleSheet.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile,
-          FileUtil.getMimeType(nameFile), ""));
+      this.styleSheet.setUrl(FileServerUtils
+          .getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile),
+              ""));
       this.styleSheet.setSize(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
       try {
         this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
@@ -674,8 +654,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
     } catch (Exception ex) {
       throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
-          SilverpeasRuntimeException.ERROR,
-          "blog.EX_CREATE_STYLESHEET", ex);
+          SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_STYLESHEET", ex);
     }
   }
 
@@ -685,7 +664,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public void removeStyleSheetFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
     File styles = new File(path + File.separator + "styles.css");
-    if (styles != null && styles.exists()) {
+    if (styles.exists()) {
       styles.delete();
     }
 

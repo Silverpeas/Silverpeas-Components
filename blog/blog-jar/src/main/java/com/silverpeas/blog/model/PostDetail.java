@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.blog.model;
 
 import com.silverpeas.SilverpeasContent;
@@ -32,7 +33,6 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.enterprise.util.AnnotationLiteral;
 import java.util.Date;
 
 public final class PostDetail implements SilverpeasContent {
@@ -45,7 +45,7 @@ public final class PostDetail implements SilverpeasContent {
   private int nbComments;
   private String creatorName;
   private Date dateEvent;
-  
+
   private static final String TYPE = PublicationDetail.TYPE;
 
   public PostDetail(PublicationDetail publication, String categoryId) {
@@ -53,22 +53,20 @@ public final class PostDetail implements SilverpeasContent {
     setCategoryId(categoryId);
   }
 
-  public PostDetail(PublicationDetail publication, String categoryId,
-      Date dateEvent) {
+  public PostDetail(PublicationDetail publication, String categoryId, Date dateEvent) {
     setPublication(publication);
     setCategoryId(categoryId);
     setDateEvent(dateEvent);
   }
 
-  public PostDetail(PublicationDetail publication, Category category,
-      int nbComments) {
+  public PostDetail(PublicationDetail publication, Category category, int nbComments) {
     setPublication(publication);
     setCategory(category);
     setNbComments(nbComments);
   }
 
-  public PostDetail(PublicationDetail publication, Category category,
-      int nbComments, Date dateEvent) {
+  public PostDetail(PublicationDetail publication, Category category, int nbComments,
+      Date dateEvent) {
     setPublication(publication);
     setCategory(category);
     setNbComments(nbComments);
@@ -77,7 +75,9 @@ public final class PostDetail implements SilverpeasContent {
 
   public String getContent() {
     if (this.content == null) {
-      this.content = WysiwygController.load(getPublication().getPK().getComponentName(), getPublication().getPK().getId(), getPublication().getLanguage());
+      this.content = WysiwygController
+          .load(getPublication().getPK().getComponentName(), getPublication().getPK().getId(),
+              getPublication().getLanguage());
     }
     return this.content;
   }
@@ -135,9 +135,9 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks())
-      return URLManager.getApplicationURL() + "/Post/"
-          + publication.getPK().getId();
+    if (URLManager.displayUniversalLinks()) {
+      return URLManager.getApplicationURL() + "/Post/" + publication.getPK().getId();
+    }
 
     return null;
   }
@@ -166,6 +166,7 @@ public final class PostDetail implements SilverpeasContent {
   public String getTitle() {
     return publication.getTitle();
   }
+
   @Override
   public String getDescription() {
     return publication.getDescription();
@@ -178,7 +179,7 @@ public final class PostDetail implements SilverpeasContent {
 
   /**
    * Is the specified user can access this post?
-   * <p/>
+   * <p>
    * A user can access a post if it has enough rights to access the blog instance in
    * which is managed this post.
    * @param user a user in Silverpeas.
@@ -186,8 +187,8 @@ public final class PostDetail implements SilverpeasContent {
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

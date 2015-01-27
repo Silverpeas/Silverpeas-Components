@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,28 +9,31 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.blog.model;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 
 public class Archive implements Serializable {
 
-  private static final long serialVersionUID = 1L;
 
+  private static final long serialVersionUID = 4544879927036554371L;
   private String name;
-  private String monthId; // between 0 and 11
+  // month identifier between 0 and 11
+  private String monthId;
   private String year;
   private String beginDate;
   private String endDate;
@@ -87,10 +90,17 @@ public class Archive implements Serializable {
 
   @Override
   public boolean equals(Object arg0) {
-    if (arg0 == null || !(arg0 instanceof Archive))
+    if (!(arg0 instanceof Archive)) {
       return false;
+    }
     Archive archive = (Archive) arg0;
     return archive.getYear().equals(this.getYear()) &&
         archive.getMonthId().equals(this.getMonthId());
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(3, 37).append(this.name).append(this.year).append(this.monthId)
+        .append(this.beginDate).append(this.endDate).toHashCode();
   }
 }

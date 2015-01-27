@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.blog.servlets;
 
@@ -34,19 +37,21 @@ import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.util.viewGenerator.html.monthCalendar.Event;
+
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 6711772954612207110L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -58,12 +63,9 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
   }
 
   /**
-   * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   @Override
   public BlogSessionController createComponentSessionController(
@@ -88,8 +90,6 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param blogSC The component Session Control, build and initialised.
    * @param request
@@ -97,8 +97,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, BlogSessionController blogSC,
-      HttpRequest request) {
+  public String getDestination(String function, BlogSessionController blogSC, HttpRequest request) {
     String destination = "";
     SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "User=" + blogSC.getUserId() + " Function=" + function);
@@ -131,20 +130,20 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
-      } else if (function.equals("NewPost")) {
+      } else if ("NewPost".equals(function)) {
         //save a new post untitled, in draft mode
         String title = blogSC.getString("blog.postUntitled");
         String categoryId = "";
         Date dateEvent = new Date();
         PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
         String postId = blogSC.createPost(title, categoryId, dateEvent, classification);
-        
+
         PostDetail post = blogSC.getPost(postId);
         request.setAttribute("Post", post);
         request.setAttribute("AllCategories", blogSC.getAllCategories());
 
         destination = rootDest + "postManager.jsp";
-      } else if (function.equals("EditPost")) {
+      } else if ("EditPost".equals(function)) {
         blogSC.checkWriteAccessOnBlogPost();
         String postId = request.getParameter("PostId");
         if (!StringUtil.isDefined(postId)) {
@@ -169,21 +168,21 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
           dateEvent = new Date();
         }
 
-        if(function.equals("UpdatePost")) {
+        if ("UpdatePost".equals(function)) {
           // save post
           blogSC.updatePost(postId, title, content, categoryId, dateEvent);
-        } else if (function.equals("UpdatePostAndDraftOut")) {
+        } else if ("UpdatePostAndDraftOut".equals(function)) {
           // save and draft out the post
           blogSC.updatePostAndDraftOut(postId, title, content, categoryId, dateEvent);
         }
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);
-      } else if (function.equals("DeletePost")) {
+      } else if ("DeletePost".equals(function)) {
         String postId = request.getParameter("PostId");
         blogSC.deletePost(postId);
 
         destination = getDestination("Main", blogSC, request);
-      } else if (function.equals("ViewPost")) {
+      } else if ("ViewPost".equals(function)) {
         // visualisation d'un billet avec les commentaires
         String postId = request.getParameter("PostId");
         if (!StringUtil.isDefined(postId)) {
@@ -200,7 +199,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
         destination = rootDest + "viewPost.jsp";
-      } else if (function.equals("PostByCategory")) {
+      } else if ("PostByCategory".equals(function)) {
         // récupération des paramètres
         String categoryId = request.getParameter("CategoryId");
         if (!StringUtil.isDefined(categoryId)) {
@@ -219,7 +218,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
-      } else if (function.equals("PostByArchive")) {
+      } else if ("PostByArchive".equals(function)) {
         // récupération des paramètres
         String beginDate = request.getParameter("BeginDate");
         if (!StringUtil.isDefined(beginDate)) {
@@ -241,7 +240,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
-      } else if (function.equals("PostByDay")) {
+      } else if ("PostByDay".equals(function)) {
         // récupération des paramètres
         String day = request.getParameter("Day");
         String date = DateUtil.date2SQLDate(day, blogSC.getLanguage());
@@ -260,37 +259,37 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
-      } else if (function.equals("PreviousMonth")) {
+      } else if ("PreviousMonth".equals(function)) {
         // modifier les dates de début et de fin de mois
         blogSC.previousMonth();
         // mettre les dates dans la request
         request.setAttribute("BeginDate", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("EndDate", blogSC.getCurrentEndDateAsString());
         destination = getDestination("PostByArchive", blogSC, request);
-      } else if (function.equals("NextMonth")) {
+      } else if ("NextMonth".equals(function)) {
         // modifier les dates de début et de fin de mois
         blogSC.nextMonth();
         // mettre les dates dans la request
         request.setAttribute("BeginDate", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("EndDate", blogSC.getCurrentEndDateAsString());
         destination = getDestination("PostByArchive", blogSC, request);
-      } else if (function.equals("ViewCategory")) {
+      } else if ("ViewCategory".equals(function)) {
         Collection<NodeDetail> listCategorie = blogSC.getAllCategories();
         request.setAttribute("Categories", listCategorie);
         String listNodeJSON = blogSC.getListNodeJSON(listCategorie);
         request.setAttribute("ListCategoryJSON", listNodeJSON);
         destination = rootDest + "viewCategory.jsp";
-      } else if (function.equals("CreateCategory")) {
+      } else if ("CreateCategory".equals(function)) {
         // récupération des paramètres
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
-        NodeDetail node = new NodeDetail("unknown", name, description, null, null, null, "0",
-            "unknown");
+        NodeDetail node =
+            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
         Category category = new Category(node);
         blogSC.createCategory(category);
 
         destination = getDestination("ViewCategory", blogSC, request);
-      } else if (function.equals("UpdateCategory")) {
+      } else if ("UpdateCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         Category category = blogSC.getCategory(categoryId);
         category.setName(request.getParameter("Name"));
@@ -298,20 +297,20 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         blogSC.updateCategory(category);
 
         destination = getDestination("ViewCategory", blogSC, request);
-      } else if (function.equals("DeleteCategory")) {
+      } else if ("DeleteCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         blogSC.deleteCategory(categoryId);
 
         destination = getDestination("ViewCategory", blogSC, request);
-      } else if (function.equals("ToAlertUser")) {
+      } else if ("ToAlertUser".equals(function)) {
         String postId = request.getParameter("PostId");
         try {
           destination = blogSC.initAlertUser(postId);
         } catch (Exception e) {
-          SilverTrace.warn("blog", "BlogRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
+          SilverTrace.warn("blog", "BlogRequestRouter.getDestination()", "root.EX_USERPANEL_FAILED",
+              "function = " + function, e);
         }
-      } else if (function.equals("Search")) {
+      } else if ("Search".equals(function)) {
         String wordSearch = request.getParameter("WordSearch");
         SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
             "word =" + wordSearch);
@@ -332,13 +331,13 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
             "Type=" + type);
 
-        if (type.equals("Publication")) {
+        if ("Publication".equals(type)) {
           // traitement des billets
-          SilverTrace.info("blog", "BlogRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "Id=" + id);
+          SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+              "Id=" + id);
           request.setAttribute("PostId", id);
           destination = getDestination("ViewPost", blogSC, request);
-        } else if (type.equals("Node") || type.equals("Topic")) {
+        } else if ("Node".equals(type) || "Topic".equals(type)) {
           // traitement des catégories
           request.setAttribute("CategoryId", id);
           destination = getDestination("PostByCategory", blogSC, request);
@@ -354,49 +353,53 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Posts", blogSC.lastValidPosts());
         // appel de la page de portlet
         destination = rootDest + "portlet.jsp";
-      } else if (function.equals("AddSubscription")) {
+      } else if ("AddSubscription".equals(function)) {
         // ajout aux abonnements
         blogSC.addUserSubscription();
         destination = getDestination("Main", blogSC, request);
-      } else if (function.equals("RemoveSubscription")) {
+      } else if ("RemoveSubscription".equals(function)) {
         // ajout aux abonnements
         blogSC.removeUserSubscription();
         destination = getDestination("Main", blogSC, request);
-      } else if (function.equals("UpdateFooter")) {
+      } else if ("UpdateFooter".equals(function)) {
         // mise à jour du pied de page
         request.setAttribute("SpaceId", blogSC.getSpaceId());
-        request.setAttribute("SpaceName", URLEncoder.encode(blogSC.getSpaceLabel(),
-            CharEncoding.UTF_8));
+        request.setAttribute("SpaceName",
+            URLEncoder.encode(blogSC.getSpaceLabel(), CharEncoding.UTF_8));
         request.setAttribute("ComponentId", blogSC.getComponentId());
-        request.setAttribute("ComponentName", URLEncoder.encode(blogSC.getComponentLabel(),
-            CharEncoding.UTF_8));
+        request.setAttribute("ComponentName",
+            URLEncoder.encode(blogSC.getComponentLabel(), CharEncoding.UTF_8));
         request.setAttribute("ObjectId", blogSC.getComponentId());
         request.setAttribute("Language", blogSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL()
-            + URLManager.getURL("blog", "useless", blogSC.getComponentId()) + "Main");
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() +
+            URLManager.getURL("blog", "useless", blogSC.getComponentId()) + "Main");
         request.setAttribute("UserId", blogSC.getUserId());
         request.setAttribute("IndexIt", "false");
         destination = "/wysiwyg/jsp/htmlEditor.jsp";
-      } else if (function.equals("DraftOutPost")) {
+      } else if ("DraftOutPost".equals(function)) {
         // sortir du mode brouillon
         String postId = request.getParameter("PostId");
         blogSC.draftOutPost(postId);
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);
-      } else if (function.equals("Customize")) {
+      } else if ("Customize".equals(function)) {
         String removeWallPaperFile = request.getParameter("removeWallPaperFile");
         String removeStyleSheetFile = request.getParameter("removeStyleSheetFile");
         FileItem fileWallPaper = request.getFile("wallPaper");
         FileItem fileStyleSheet = request.getFile("styleSheet");
 
-        if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {//Update
+        if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {
+          //Update
           blogSC.saveWallPaperFile(fileWallPaper);
-        } else if ("yes".equals(removeWallPaperFile)) {//Remove
+        } else if ("yes".equals(removeWallPaperFile)) {
+          //Remove
           blogSC.removeWallPaperFile();
         }
-        if (fileStyleSheet != null && StringUtil.isDefined(fileStyleSheet.getName())) {//Update
+        if (fileStyleSheet != null && StringUtil.isDefined(fileStyleSheet.getName())) {
+          //Update
           blogSC.saveStyleSheetFile(fileStyleSheet);
-        } else if ("yes".equals(removeStyleSheetFile)) {//Remove
+        } else if ("yes".equals(removeStyleSheetFile)) {
+          //Remove
           blogSC.removeStyleSheetFile();
         }
 
@@ -415,7 +418,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
   }
 
   private Collection<Event> getEvents(BlogSessionController blogSC, Collection<PostDetail> posts) {
-    Collection<Event> events = new ArrayList<Event>();
+    Collection<Event> events = new ArrayList<>();
     Date dateEvent;
     for (PostDetail post : posts) {
       // chercher la date de l'évènement
@@ -425,8 +428,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } catch (RemoteException e) {
         dateEvent = post.getPublication().getCreationDate();
       }
-      Event event
-          = new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
+      Event event =
+          new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
               dateEvent, dateEvent, null, 0);
       events.add(event);
     }
