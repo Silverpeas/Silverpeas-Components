@@ -156,11 +156,7 @@ if (StringUtil.isDefined(parution)) {
   tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"#",true);
 
 // Impossible d'aller sur le WYSIWYG tant que les headers n'ont pas ete valides
-if ("".equals(parution)) {
-  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",false);
-  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",false);
-  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",false);
-} else {
+if (!"".equals(parution)) {
   tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:goEditContent();",false);
   tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);

@@ -61,6 +61,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.result.MailContentProcess;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -503,7 +504,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     // Load and transform WYSIWYG content for mailing
     String wysiwygContent =
         WysiwygController.load(foreignKey.getInstanceId(), foreignKey.getId(), null);
-    WysiwygContentTransformer.MailResult wysiwygMailTransformResult =
+    MailContentProcess.MailResult wysiwygMailTransformResult =
         WysiwygContentTransformer.on(wysiwygContent).toMailContent();
 
     // Prepare Mail parts
