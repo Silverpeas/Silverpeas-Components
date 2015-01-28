@@ -20,6 +20,20 @@
  */
 package com.silverpeas.scheduleevent.control;
 
+import static com.silverpeas.export.ExportDescriptor.withWriter;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.NotifierUtil;
+
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
@@ -56,17 +70,6 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.apache.commons.io.FileUtils;
-
-import static com.silverpeas.export.ExportDescriptor.withWriter;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
 
@@ -379,6 +382,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   public Response makeReponseFor(ScheduleEvent scheduleEvent, String dateId) {
     // TODO: Can add checks for dateId, scheduleEvent integrity
+    NotifierUtil.addSuccess(getString("scheduleevent.form.confirmMessage"));
     Response result = new Response();
     result.setScheduleEvent(scheduleEvent);
     result.setUserId(Integer.parseInt(getUserId()));
