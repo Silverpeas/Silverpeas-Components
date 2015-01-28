@@ -50,7 +50,7 @@ import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
             "SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource " +
                 "WHERE reservedResource.reservation.id != :reservationIdToSkip AND " +
                 "reservedResource.status != 'R'" +
-                "AND reservedResource.resource.id IN :aimedResourceIds " +
+                "AND reservedResource.resource.id.id IN :aimedResourceIds " +
                 "AND reservedResource.reservation.beginDate < :endPeriod " +
                 "AND reservedResource.reservation.endDate > :startPeriod "),
     @NamedQuery(name = "reservedResource.findAllReservedResourcesWithProblem",

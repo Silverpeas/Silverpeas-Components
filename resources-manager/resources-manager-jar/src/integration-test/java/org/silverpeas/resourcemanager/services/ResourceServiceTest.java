@@ -409,4 +409,27 @@ public class ResourceServiceTest {
         new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
             "5", "5", "resourcesManager42", true)));
   }
+
+
+  /**
+   * Test of findAllReservedResources method, of class ResourceService.
+   */
+  @Test
+  public void testFindAllReservedResources() {
+    long reservationIdToSkip = -1;
+    String startDate = String.valueOf(1320134400000L - 7200000L);
+    String endDate = String.valueOf(1320163200000L + 7200000L);
+    List<Long> futureReservedResourceIds = Arrays.asList(1L, 2L, 3L, 5L, 8L);
+    List<Resource> result = service
+        .findAllReservedResources(reservationIdToSkip, futureReservedResourceIds, startDate,
+            endDate);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    assertThat(result, contains(
+        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
+            "5", "5", "resourcesManager42", true),
+        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
+            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
+  }
+
 }

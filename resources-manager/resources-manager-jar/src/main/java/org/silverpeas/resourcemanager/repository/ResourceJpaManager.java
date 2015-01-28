@@ -57,8 +57,8 @@ public class ResourceJpaManager extends JpaBasicEntityManager<Resource, UniqueLo
   @Override
   public List<Resource> findAllReservedResources(final Long reservationIdToSkip,
       final List<Long> aimedResourceIds, final String startPeriod, final String endPeriod) {
-    return listFromNamedQuery("reservedResource.findAllReservedResources",
-        newNamedParameters().add("reservationIdToSkip", reservationIdToSkip)
+    return listFromNamedQuery("reservedResource.findAllReservedResources", newNamedParameters()
+            .add("reservationIdToSkip", UniqueLongIdentifier.from(reservationIdToSkip))
             .add("aimedResourceIds", aimedResourceIds).add("startPeriod", startPeriod)
             .add("endPeriod", endPeriod));
   }
