@@ -659,8 +659,8 @@ public class MediaDAO {
             "union (select lastUpdateDate AS dateinformation, mediaId , " +
             "'update' as type from SC_Gallery_Media where lastUpdatedBy = ? and lastUpdateDate <>" +
             " createDate and lastUpdateDate >= ? and lastUpdateDate <= ? ) order by " +
-            "dateinformation desc, mediaId desc", userId, period.getBeginDate(),
-        period.getEndDate(), userId, period.getBeginDate(), period.getEndDate()).execute(row -> {
+            "dateinformation desc, mediaId desc", userId, period.getBeginDatable(),
+        period.getEndDatable(), userId, period.getBeginDatable(), period.getEndDatable()).execute(row -> {
       Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
           .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
       MediaWithStatus withStatus =
@@ -683,14 +683,14 @@ public class MediaDAO {
     JdbcSqlQuery query = create("(select createDate as dateinformation, mediaId, 'new' as type");
     query.addSqlPart("from SC_Gallery_Media where createdBy").in(userIds);
     query.and("instanceId").in(availableComponents);
-    query.and("createDate >= ? and createDate <= ?)", period.getBeginDate(),
-        period.getEndDate());
+    query.and("createDate >= ? and createDate <= ?)", period.getBeginDatable(),
+        period.getEndDatable());
     query.addSqlPart("union (select lastUpdateDate as dateinformation, mediaId, 'update' as type");
     query.addSqlPart("from SC_Gallery_Media where lastUpdatedBy").in(userIds);
     query.and("instanceId").in(availableComponents);
     query.and("lastUpdateDate <> createDate");
-    query.and("lastUpdateDate >= ? and lastUpdateDate <= ?)", period.getBeginDate(),
-        period.getEndDate());
+    query.and("lastUpdateDate >= ? and lastUpdateDate <= ?)", period.getBeginDatable(),
+        period.getEndDatable());
     query.addSqlPart("order by dateinformation desc, mediaId desc");
 
     return query.execute(row -> {

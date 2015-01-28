@@ -242,6 +242,15 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return CONTRIBUTION_TYPE;
   }
 
+  /**
+   * The type of this resource
+   *
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return CONTRIBUTION_TYPE;
+  }
+
   @Override
   public boolean canBeAccessedBy(UserDetail user) {
     return OrganizationControllerProvider.getOrganisationController()
