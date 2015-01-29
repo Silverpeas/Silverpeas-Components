@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -275,7 +275,7 @@ public class MediaDAO {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<>(streamings.keySet()));
       String queryBase =
-          "select S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S.mediaId";
+          "S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S.mediaId";
       for (Collection<String> mediaIds : idGroups) {
         createSelect(queryBase).in(mediaIds).execute(row -> {
           String mediaId = row.getString(1);
@@ -473,7 +473,6 @@ public class MediaDAO {
       streamingSave.addInsertParam("mediaId", streaming.getId());
     } else {
       streamingSave = createUpdateFor("SC_Gallery_Streaming");
-      streamingSave.addSqlPart("update SC_Gallery_Streaming set ");
     }
     streamingSave.addSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
     streamingSave.addSaveParam("provider", streaming.getProvider(), isInsert);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,7 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.sun.jersey.api.view.Viewable;
+import org.jboss.resteasy.plugins.providers.html.View;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -204,7 +204,8 @@ public class GalleryResource extends AbstractGalleryResource {
 
   /**
    * Gets the provider data of a streamin from its url. If it doesn't exist, a 404 HTTP code is
-   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
+   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
+   * when
    * processing the request, a 503 HTTP code is returned.
    * @param url the url of the streaming
    * @return the response to the HTTP GET request content of the asked streaming.
@@ -221,12 +222,12 @@ public class GalleryResource extends AbstractGalleryResource {
       switch (streamingProvider) {
         case youtube:
           entity = YoutubeDataEntity.fromOembed(
-              getJSonFromUrl("http://www.youtube.com/oembed?url=" + url + "&format=json"));
+              getOembedEntityFromUrl("http://www.youtube.com/oembed?url=" + url + "&format=json"));
           break;
         case vimeo:
-          entity = VimeoDataEntity.fromOembed(
-              getJSonFromUrl("http://vimeo.com/api/oembed.json?url=" + "http://vimeo.com/" +
-                  streamingProvider.extractStreamingId(url)));
+          entity = VimeoDataEntity.fromOembed(getOembedEntityFromUrl("http://vimeo.com/api/oembed" +
+              ".json?url=http://vimeo.com/" +
+              streamingProvider.extractStreamingId(url)));
           break;
       }
       checkNotFoundStatus(entity);
@@ -244,7 +245,8 @@ public class GalleryResource extends AbstractGalleryResource {
   }
 
   /**
-   * Gets the embed centent of a video. If it doesn't exist, a 404 HTTP code is returned. If the user
+   * Gets the embed centent of a video. If it doesn't exist, a 404 HTTP code is returned. If the
+   * user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    * @param videoId the identifier of the video
@@ -252,12 +254,13 @@ public class GalleryResource extends AbstractGalleryResource {
    */
   @GET
   @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_EMBED_PART)
-  public Viewable getVideoEmbed(@PathParam("videoId") final String videoId) {
+  public View getVideoEmbed(@PathParam("videoId") final String videoId) {
     return getMediaEmbed(Video, videoId, MediaResolution.ORIGINAL);
   }
 
   /**
-   * Gets the embed content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the user
+   * Gets the embed content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the
+   * user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    * @param soundId the identifier of the sound
@@ -265,7 +268,7 @@ public class GalleryResource extends AbstractGalleryResource {
    */
   @GET
   @Path(GALLERY_SOUNDS_PART + "/{soundId}/" + GALLERY_MEDIA_EMBED_PART)
-  public Viewable getSoundEmbed(@PathParam("soundId") final String soundId) {
+  public View getSoundEmbed(@PathParam("soundId") final String soundId) {
     return getMediaEmbed(Sound, soundId, MediaResolution.ORIGINAL);
   }
 }

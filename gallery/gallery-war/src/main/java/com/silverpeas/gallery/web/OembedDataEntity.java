@@ -24,85 +24,54 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import com.silverpeas.web.WebEntity;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.web.MediaDefinitionEntity;
-import org.silverpeas.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
 
 /**
- * This entity ensures that all streaming data are formatted in a single way whatever the
- * streaming provider.
- * @author Yohann Chastagnier
+ * @author ebonnet
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class StreamingProviderDataEntity implements WebEntity {
-  private static final long serialVersionUID = 4017230238128160967L;
+public class OembedDataEntity {
 
-  @XmlElement(defaultValue = "")
-  private URI uri;
-
-  @XmlElement
+  @XmlElement(name = "provider_name")
   private StreamingProvider provider;
 
   @XmlElement
   private String title;
 
-  @XmlElement
+  @XmlElement(name = "author_name")
   private String author;
 
   @XmlElement
-  private String formattedDurationHMS;
+  private String html;
 
   @XmlElement
-  private MediaDefinitionEntity definition =
-      MediaDefinitionEntity.createFrom(Definition.fromZero());
+  private String width;
 
   @XmlElement
-  private String embedHtml;
+  private String height;
 
-  public StreamingProviderDataEntity withURI(final URI uri) {
-    this.uri = uri;
-    return this;
-  }
+  @XmlElement
+  private String duration;
+
+  @XmlElement
+  private String version;
 
   /**
-   * Constructor from OembedDataEntity ({@literal http://oembed.com}).
+   * Constructor
    * @param streamingProvider the Silverpeas provider identifier.
-   * @param oembedData the oembed data as JSON format.
    */
-  protected StreamingProviderDataEntity(StreamingProvider streamingProvider,
-      final OembedDataEntity oembedData) {
+  protected OembedDataEntity(StreamingProvider streamingProvider) {
     this.provider = streamingProvider;
-    this.title = oembedData.getTitle();
-    this.author = oembedData.getAuthor();
-    this.embedHtml = oembedData.getHtml();
-    // The width and height supplied are those of the video and not those of the streaming player.
-    String width = oembedData.getWidth();
-    String height = oembedData.getHeight();
-    if (StringUtil.isInteger(width) && StringUtil.isInteger(height)) {
-      setDefinition(MediaDefinitionEntity
-          .createFrom(Definition.of(Integer.valueOf(width), Integer.valueOf(height))));
-    }
   }
 
-  @SuppressWarnings("UnusedDeclaration")
-  protected StreamingProviderDataEntity() {
-  }
-
-  @Override
-  public URI getURI() {
-    return uri;
-  }
-
-  public void setUri(final URI uri) {
-    this.uri = uri;
+  protected OembedDataEntity() {
   }
 
   public StreamingProvider getProvider() {
@@ -129,27 +98,48 @@ public class StreamingProviderDataEntity implements WebEntity {
     this.author = author;
   }
 
-  public String getFormattedDurationHMS() {
-    return formattedDurationHMS;
-  }
-
-  public void setFormattedDurationHMS(final String formattedDurationHMS) {
-    this.formattedDurationHMS = formattedDurationHMS;
-  }
-
   public MediaDefinitionEntity getDefinition() {
-    return definition;
+    return MediaDefinitionEntity
+        .createFrom(Definition.of(Integer.valueOf(getWidth()), Integer.valueOf(getHeight())));
   }
 
-  public void setDefinition(final MediaDefinitionEntity definition) {
-    this.definition = definition;
+  public String getHtml() {
+    return html;
   }
 
-  public String getEmbedHtml() {
-    return embedHtml;
+  public void setHtml(final String html) {
+    this.html = html;
   }
 
-  public void setEmbedHtml(final String embedHtml) {
-    this.embedHtml = embedHtml;
+  public String getWidth() {
+    return width;
+  }
+
+  public void setWidth(final String width) {
+    this.width = width;
+  }
+
+  public String getHeight() {
+    return height;
+  }
+
+  public void setHeight(final String height) {
+    this.height = height;
+  }
+
+  public String getDuration() {
+    return duration;
+  }
+
+  public void setDuration(final String duration) {
+    this.duration = duration;
+  }
+
+  public String getVersion() {
+    return version;
+  }
+
+  public void setVersion(final String version) {
+    this.version = version;
   }
 }

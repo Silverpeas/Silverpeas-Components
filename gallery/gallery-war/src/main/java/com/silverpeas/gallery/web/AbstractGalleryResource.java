@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,7 @@ package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.MediaServiceProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -34,18 +35,17 @@ import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.sun.jersey.api.view.Viewable;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.ThumbnailPeriod;
+import org.silverpeas.util.JSONCodec;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -134,7 +134,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting of media data.
-   * @param expectedMediaType
+   * @param expectedMediaType expected media type
    * @param albumId the identifier of the album in which the media must exist
    * @param mediaId the identifier of the expected media
    * @return
@@ -165,9 +165,9 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting of media content.
-   * @param expectedMediaType
-   * @param mediaId
-   * @param requestedMediaResolution
+   * @param expectedMediaType expected media type
+   * @param mediaId the media identifier
+   * @param requestedMediaResolution requested media resolution
    * @return
    */
   protected Response getMediaContent(final MediaType expectedMediaType, final String mediaId,
@@ -207,8 +207,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
         }
       }).header("Content-Type", ((InternalMedia) media).getFileMimeType().getMimeType())
           .header("Content-Length", file.length())
-          .header("Content-Disposition", "inline; filename=\"" + file.getName() + "\"")
-          .build();
+          .header("Content-Disposition", "inline; filename=\"" + file.getName() + "\"").build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -218,12 +217,11 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting of media embed.
-   * @param expectedMediaType
-   * @param mediaId
-   * @param requestedMediaResolution
-   * @return
+   * @param expectedMediaType expected media type
+   * @param mediaId the media identifier
+   * @param requestedMediaResolution requested media resolution
    */
-  protected Viewable getMediaEmbed(final MediaType expectedMediaType, final String mediaId,
+  protected View getMediaEmbed(final MediaType expectedMediaType, final String mediaId,
       final MediaResolution requestedMediaResolution) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -260,21 +258,20 @@ public abstract class AbstractGalleryResource extends RESTWebService {
           .setAttribute("backgroundColor", getHttpServletRequest().getParameter("backgroundColor"));
       getHttpServletRequest()
           .setAttribute("autoPlay", getHttpServletRequest().getParameter("autoPlay"));
-
-      return new Viewable("/gallery/jsp/embed.jsp", null);
+      return new View("/gallery/jsp/embed.jsp");
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-  
+
   /**
    * Centralization of getting video media thumbnail.
    * @param expectedMediaType the expected media type
    * @param mediaId the media identifier
    * @param thumbnailId the thumbnail identifier
-   * @return
+   * @return video media thumbnail
    */
   protected Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
       final String thumbnailId) {
@@ -283,11 +280,10 @@ public abstract class AbstractGalleryResource extends RESTWebService {
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Verifying the physical file exists
-      final SilverpeasFile thumbFile =
-          SilverpeasFileProvider.getFile(FileUtils
-              .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
-                  media.getWorkspaceSubFolderName(),
-                  ThumbnailPeriod.fromIndex(thumbnailId).getFilename()).getPath());
+      final SilverpeasFile thumbFile = SilverpeasFileProvider.getFile(FileUtils
+          .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
+              media.getWorkspaceSubFolderName(),
+              ThumbnailPeriod.fromIndex(thumbnailId).getFilename()).getPath());
       if (!thumbFile.exists()) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
@@ -317,18 +313,15 @@ public abstract class AbstractGalleryResource extends RESTWebService {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-  
+
   /**
    * Indicates if the current user is a privileged one.
-   * @return
+   * @return true if user has privileged
    */
   protected boolean isUserPrivileged() {
     Collection<SilverpeasRole> userRoles = getUserRoles();
     return EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
-        SilverpeasRole.privilegedUser)
-        .stream()
-        .filter(role -> userRoles.contains(role))
-        .findFirst()
+        SilverpeasRole.privilegedUser).stream().filter(role -> userRoles.contains(role)).findFirst()
         .isPresent();
   }
 
@@ -365,17 +358,17 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization
-   * @param media
-   * @return
+   * @param media the media to check access
+   * @return true if user has media access
    */
   protected boolean hasUserMediaAccess(Media media) {
     return media.canBeAccessedBy(getUserDetail());
   }
 
   /**
-   * Verifying that the authenticated user is authorized to view the given photo.
+   * Verifying that the authenticated user is authorized to view the given media.
    * @param media
-   * @return
+   * @throws javax.ws.rs.WebApplicationException if user is not authorized to view the media
    */
   protected void verifyUserMediaAccess(Media media) {
     if (!hasUserMediaAccess(media)) {
@@ -384,16 +377,15 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Checking if the authenticated user is authorized to view all photos.
-   * @return
+   * @return if the authenticated user is authorized to view all photos.
    */
   protected boolean isViewAllPhotoAuthorized() {
     return getUserRoles().contains(SilverpeasRole.admin);
   }
 
   /**
-   * Verifying that the given photo is included in the given album.
-   * @return
+   * @throws javax.ws.rs.WebApplicationException if the given media is not included in the given
+   * album.
    */
   protected void verifyMediaIsInAlbum(Media media, AlbumDetail album) {
     if (!album.getMedia().contains(media)) {
@@ -409,11 +401,19 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Perform an Http Get
-   * @param url
-   * @return a {@link JSONObject}
+   * Perform an Http Get on url given in parameter
+   * @param url the url
+   * @return a {@link String}
    */
-  protected JSONObject getJSonFromUrl(String url) {
+  protected OembedDataEntity getOembedEntityFromUrl(String url) {
+    try {
+      return JSONCodec.decode(getJSONStringFromUrl(url), OembedDataEntity.class);
+    } catch (Exception e) {
+      throw new WebApplicationException(e);
+    }
+  }
+
+  private String getJSONStringFromUrl(String url) throws Exception {
     GetMethod httpGet = new GetMethod(url);
     httpGet.setRequestHeader("User-Agent", getHttpRequest().getHeader("User-Agent"));
     httpGet.addRequestHeader("Accept", "application/json");
@@ -423,7 +423,11 @@ public abstract class AbstractGalleryResource extends RESTWebService {
       if (statusCode != HttpStatus.SC_OK) {
         throw new WebApplicationException(statusCode);
       }
-      return new JSONObject(new JSONTokener(httpGet.getResponseBodyAsString()));
+      String jsonResponse = httpGet.getResponseBodyAsString();
+      for (StreamingProvider provider : StreamingProvider.values()) {
+        jsonResponse = jsonResponse.replaceAll("(?i)" + provider.name(), provider.name());
+      }
+      return jsonResponse;
     } catch (WebApplicationException wae) {
       throw wae;
     } catch (Exception e) {
@@ -431,5 +435,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     } finally {
       httpGet.releaseConnection();
     }
+
   }
 }

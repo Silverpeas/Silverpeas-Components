@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import org.json.JSONObject;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,17 +39,18 @@ public class YoutubeDataEntity extends StreamingProviderDataEntity {
 
   /**
    * Creates a youtube provider data entity from specified OEmbed data.
-   * @param oembedYoutubeData the oembed data ({@literal http://oembed.com}) as JSON format.
+   * @param oembedYoutubeData the oembed data entity ({@literal http://oembed.com}) construct from
+   * JSON format.
    * @return the entity representing the specified streaming.
    */
-  public static YoutubeDataEntity fromOembed(final JSONObject oembedYoutubeData) {
+  public static YoutubeDataEntity fromOembed(final OembedDataEntity oembedYoutubeData) {
     return new YoutubeDataEntity(oembedYoutubeData);
   }
 
   /**
    * Default hidden constructor.
    */
-  private YoutubeDataEntity(final JSONObject oembedYoutubeData) {
+  private YoutubeDataEntity(final OembedDataEntity oembedYoutubeData) {
     super(StreamingProvider.youtube, oembedYoutubeData);
   }
 
