@@ -23,7 +23,6 @@
  */
 package com.silverpeas.kmelia.workflowextensions;
 
-import au.id.jericho.lib.html.Source;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
@@ -61,6 +60,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import net.htmlparser.jericho.Source;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
