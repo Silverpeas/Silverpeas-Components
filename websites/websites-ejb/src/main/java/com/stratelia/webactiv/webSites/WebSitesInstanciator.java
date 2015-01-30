@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.webSites;
 
@@ -46,17 +46,19 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
  */
 public class WebSitesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
-  private static ResourceLocator uploadSettings = new ResourceLocator(
-      "com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+  private static ResourceLocator uploadSettings =
+      new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
 
-  /** Creates new WebSiteInstanciator */
+  /**
+   * WebSiteInstanciator constructor
+   */
   public WebSitesInstanciator() {
     super("com.stratelia.webactiv.webSites");
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.info("websites", "WebSitesInstanciator.create()",
         "webSites.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
         "space : " + spaceId + "component : " + componentId);
@@ -77,8 +79,8 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.info("websites", "WebSitesInstanciator.delete()", "webSites.MSG_DELETE_WITH_SPACE",
         "spaceId : " + spaceId);
     setDeleteQueries();
@@ -104,52 +106,36 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
    * @param componentId (String) the instance id of the Silverpeas component website.
    * @param suffixName (String) the suffixe of a website table
    */
-  private void deleteDataOfInstance(Connection con, String componentId, String suffixName) throws
-      InstanciationException {
-    Statement stmt = null;
+  private void deleteDataOfInstance(Connection con, String componentId, String suffixName)
+      throws InstanciationException {
     String deleteQuery = getDeleteQuery(componentId, suffixName);
-    try {
-      stmt = con.createStatement();
+    try (Statement stmt = con.createStatement()) {
       stmt.executeUpdate(deleteQuery);
     } catch (SQLException se) {
-      InstanciationException ie = new InstanciationException(
-          "WebSitesInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
-          "root.DELETING_DATA_OF_INSTANCE_FAILED",
+      throw new InstanciationException("WebSitesInstanciator.deleteDataOfInstance()",
+          SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED",
           "componentId = " + componentId + " deleteQuery = " + deleteQuery, se);
-      throw ie;
-    } finally {
-      try {
-        stmt.close();
-      } catch (SQLException err_closeStatement) {
-        throw new InstanciationException("WebSitesInstanciator.deleteDataOfInstance()",
-            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = " +
-                componentId + " deleteQuery = " + deleteQuery, err_closeStatement);
-      }
     }
-
   }
 
-  private void insertSpecialNode(Connection con, String componentId, String userId) throws
-      InstanciationException {
+  private void insertSpecialNode(Connection con, String componentId, String userId)
+      throws InstanciationException {
     String insertQuery = getInsertQuery(componentId, "Accueil");
     String creationDate = DateUtil.today2SQLDate();
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(insertQuery);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("WebSitesInstanciator.insertSpecialNode()",
-          SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED", " insertQuery = " +
-              insertQuery, se);
+          SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
+          " insertQuery = " + insertQuery, se);
     }
   }
 
-  private void createAttachmentsAndImagesDirectory(String spaceId, String componentId) throws
-      java.lang.Exception {
+  private void createAttachmentsAndImagesDirectory(String spaceId, String componentId)
+      throws java.lang.Exception {
     SilverTrace.info("websites", "WebSitesInstanciator.createAttachmentsAndImagesDirectory()",
         "webSites.MSG_CREATE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT",
         "space : " + spaceId + "component : " + componentId);
@@ -164,8 +150,8 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
     }
   }
 
-  private void deleteAttachmentsAndImagesDirectory(String spaceId, String componentId) throws
-      java.lang.Exception {
+  private void deleteAttachmentsAndImagesDirectory(String spaceId, String componentId)
+      throws java.lang.Exception {
     SilverTrace.info("websites", "WebSitesInstanciator.deleteAttachmentsAndImagesDirectory()",
         "webSites.MSG_DELETE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT", "space : " + spaceId +
             "component : " + componentId);

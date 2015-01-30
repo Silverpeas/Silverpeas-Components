@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.websites</groupId>
   <artifactId>websites-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB websites</name>
 
   <dependencies>

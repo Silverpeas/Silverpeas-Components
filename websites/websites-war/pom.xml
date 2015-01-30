@@ -36,7 +36,6 @@
     <dependency>
       <groupId>org.silverpeas.components.websites</groupId>
       <artifactId>websites-ejb</artifactId>
-      <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

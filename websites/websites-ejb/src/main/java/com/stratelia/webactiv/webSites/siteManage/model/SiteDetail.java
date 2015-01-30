@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,20 +9,19 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.webSites.siteManage.model;
-
 
 import java.text.ParseException;
 import java.util.Date;
@@ -34,26 +33,25 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
-//CBO : UPDATE
-//public class SiteDetail extends AbstractI18NBean implements Serializable, SilverContentInterface
 public class SiteDetail extends PublicationDetail {
   private static final long serialVersionUID = 1435448496246944796L;
-  /*-------------- Attributs ------------------*/
   private SitePK sitePk = new SitePK("", "");
-  private int type; /*
-                     * page interne creee (0) ou externe (1) ou page interne uploadee (2)
-                     */
-  private int state; /* site non publie (0) ou publie (1) */
+  /**
+   * page interne creee (0) ou externe (1) ou page interne uploadee (2)
+   */
+  private int type;
+  /** site non publie (0) ou publie (1) */
+  private int state;
   private int popup = 1;
-
   private String silverObjectId;
-  public static final String SITETYPE = "Website";
   private String positions;
+
+  public static final String SITETYPE = "Website";
 
   /**
    * SiteDetail default constructor
    * @param idSite
-   * @param applicationId TODO
+   * @param applicationId
    * @param name
    * @param description
    * @param page
@@ -63,8 +61,8 @@ public class SiteDetail extends PublicationDetail {
    * @param state
    * @param popup
    */
-  public SiteDetail(String idSite, String applicationId, String name, String description, String page,
-      int type, String creatorId, String date, int state, int popup) {
+  public SiteDetail(String idSite, String applicationId, String name, String description,
+      String page, int type, String creatorId, String date, int state, int popup) {
     super("X", name, description, null, null, null, creatorId, Integer.toString(type), idSite, "",
         page);
     if (date != null) {
@@ -80,7 +78,6 @@ public class SiteDetail extends PublicationDetail {
     init(sitePK, type, state, popup);
   }
 
-  /*-------------- Methodes des attributs ------------------*/
   // sitePk
   public SitePK getSitePK() {
     return sitePk;
@@ -149,9 +146,9 @@ public class SiteDetail extends PublicationDetail {
    */
   @Override
   public String toString() {
-    return sitePk.getId() + "|" + this.getName() + "|" + this.getDescription()
-        + "|" + this.getContent() + "|" + "|" + type + "|"
-        + this.getCreatorId() + "|" + this.getCreationDate() + "|" + state;
+    return sitePk.getId() + "|" + this.getName() + "|" + this.getDescription() + "|" +
+        this.getContent() + "|" + "|" + type + "|" + this.getCreatorId() + "|" +
+        this.getCreationDate() + "|" + state;
   }
 
   public int getPopup() {

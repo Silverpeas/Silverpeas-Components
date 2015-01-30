@@ -1,28 +1,32 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.webSites.siteManage.util;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
 import com.stratelia.webactiv.webSites.control.WebSitesException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,30 +38,23 @@ import java.util.zip.ZipFile;
 
 /**
  * Unzip a file.
- *
- * @author costin@dnt.ro
- * @author <a href="mailto:stefan.bodewig@megabit.net">Stefan Bodewig</a>
  */
 public class Expand {
 
-  private File dest; // req
-  private File source; // req
+  private File dest;
+  private File source;
 
   /**
    * Do the work.
-   *
-   * @exception IOException Thrown in unrecoverable error.
+   * @throws WebSitesException Thrown in unrecoverable error.
    */
-  // XXX move it to util or tools
   public void execute() throws WebSitesException {
     if (source == null) {
-      throw new WebSitesException("Expand.execute()",
-          SilverpeasException.ERROR,
+      throw new WebSitesException("Expand.execute()", SilverpeasException.ERROR,
           "webSites.EXE_SOURCE_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
     if (dest == null) {
-      throw new WebSitesException("Expand.execute()",
-          SilverpeasException.ERROR,
+      throw new WebSitesException("Expand.execute()", SilverpeasException.ERROR,
           "webSites.EXE_DESTINATION_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
     expandFile(source, dest);
@@ -104,14 +101,13 @@ public class Expand {
           }
 
         } catch (FileNotFoundException ex) {
-          SilverTrace.warn("webSites", "Expand.expandFile()",
-              "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
+          SilverTrace.warn("webSites", "Expand.expandFile()", "root.EX_FILE_NOT_FOUND",
+              "file = " + f.getPath(), ex);
         }
       }
     } catch (IOException ioe) {
-      SilverTrace.warn("webSites", "Expand.expandFile()",
-          "webSites.EXE_ERROR_WHILE_EXPANDING_FILE", "sourceFile = "
-          + srcF.getPath(), ioe);
+      SilverTrace.warn("webSites", "Expand.expandFile()", "webSites.EXE_ERROR_WHILE_EXPANDING_FILE",
+          "sourceFile = " + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
@@ -126,7 +122,6 @@ public class Expand {
 
   /**
    * Set the destination directory. File will be unzipped into the destination directory.
-   *
    * @param d Path to the directory.
    */
   public void setDest(File d) {
@@ -135,7 +130,6 @@ public class Expand {
 
   /**
    * Set the path to zip-file.
-   *
    * @param s Path to zip-file.
    */
   public void setSrc(File s) {
