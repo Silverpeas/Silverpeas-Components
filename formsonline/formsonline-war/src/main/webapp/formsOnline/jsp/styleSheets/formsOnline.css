@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2015 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 fieldset {
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -10,4 +33,449 @@ fieldset {
   font-size: 10pt;
   font-weight: bold;
   color: #607090;
+}
+
+.formsOnline-title {
+  color: #333333;
+  font-size: 130%;
+  font-weight: 100;
+  margin: 0 0 1em;
+  padding: 0;
+}
+
+.formsOnline-description {
+  border-left: 6px solid #E4E4E4;
+  color: #666666;
+  padding: 8px;
+  max-height: 90px;
+  overflow: hidden;
+  margin-bottom: 1em;
+}
+
+.formsOnline-description {
+  margin-bottom: 1em;
+}
+
+.silverpeas-toggle .formsOnline-description {
+  margin-bottom: 0em;
+}
+
+.silverpeas-toggle a.toggle {
+  margin-bottom: 1em;
+}
+
+#all-formsOnline {
+  clear: left;
+}
+
+.txt-no-content {
+  color: #575757;
+  font-style: italic;
+  font-size: 90%;
+}
+
+.formsOnline-description > ul:first-child, .formsOnline-description > p:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+
+#all-formsOnline .secteur-container .header {
+  height: 30px;
+  padding-top: 8px;
+  position: relative;
+}
+
+#all-formsOnline .secteur-container .more,
+#my-formsOnline .more {
+  float: right;
+}
+
+#my-formsOnline .more {
+  text-decoration:underline;
+  margin:0.5em 0;
+}
+
+#all-formsOnline .secteur-container .date {
+  font-size: 100%;
+}
+
+#all-formsOnline .secteur-container li > a {
+  padding-right: 70px;
+  display:block
+}
+#all-formsOnline.lecteur-view .secteur-container li > a {
+  padding-right: 0;
+}
+
+#all-formsOnline .secteur-container ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+#all-formsOnline .secteur-container .header h3,
+.formsOnline-waitMyAction-title,
+.my-formsOnline-title {
+  padding: 0;
+  margin: 2em 0 0.5em;
+  font-size: 130%;
+  font-weight: 100;
+  line-height: 90%;
+}
+
+#my-formsOnline .secteur-container:first-child .header h3{
+  margin-top:8px;
+}
+
+#all-formsOnline .secteur-container .header h3 {
+  margin: 0em 0 1em;
+}
+
+.formsOnline-waitMyAction-title {
+  margin:8px 0 1em;
+}
+.formsOnline-waitMyAction-title strong {
+  color: #1c94d4;
+}
+
+.my-formsOnline-title strong{
+  display: block;
+  font-size: 90%;
+  font-weight: 100;
+  color: #1c94d4;
+}
+
+#my-formsOnline-refused .my-formsOnline-title ,
+#my-formsOnline-validate .my-formsOnline-title {
+  font-size:130%
+}
+
+#my-formsOnline-refused .my-formsOnline-title{
+  color:#CE6F6F;
+}
+
+#my-formsOnline-validate .my-formsOnline-title{
+  color:#7eb73b;
+}
+
+#my-formsOnline-validate .my-formsOnline-title strong {
+  color:#7eb73b;
+  display:inline;
+  font-size:100%;
+}
+
+#my-formsOnline-refused .my-formsOnline-title strong {
+  color:#CE6F6F;
+  display:inline;
+  font-size:100%;
+}
+
+#all-formsOnline .secteur-container li a:hover,
+#my-formsOnline a:hover{
+  color: #1c94d4;
+}
+
+
+#all-formsOnline .secteur-container li {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  padding: 1%;
+  margin: 0 0 1em 0;
+  position: relative;
+}
+
+
+
+#all-formsOnline .secteur-container .date {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+}
+
+
+.my-formsOnline-title {
+  font-size: 117%;
+  line-height: 100%;
+}
+
+.my-formsOnline-title strong {
+  font-size: 111%;
+}
+
+.formsOnline .principalContent .inlineMessage {
+  margin: 0;
+}
+
+/********* LISTING COMPLET ***************/
+#formsOnlineList {
+  margin: 1em 0
+}
+
+#all-formsOnline .secteur-container .date {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+}
+
+#all-formsOnline {
+  width: 48%;
+}
+
+#my-formsOnline {
+  width: 45%;
+  float: right;
+  padding-left: 3%;
+  margin-right: 2%;
+  padding-top: 0;
+  border-left: 1px solid #ccc;
+}
+
+#my-formsOnline #menubar-creation-actions {
+  margin: 1em 0;
+}
+
+
+@media screen and (max-width: 800px) {
+  #my-formsOnline,
+  #all-formsOnline	 {
+    width:95%;
+    margin-left:0;
+    padding-left:0;
+    margin-right:0;
+    padding-right:0;
+    float:none;
+
+    border-left: 0px solid #ccc;
+  }
+}
+@media screen and (min-width: 1300px) {
+
+  #my-formsOnline {
+    width: 45%;
+    float: right;
+    padding-left: 3%;
+    margin-right: 2%;
+    padding-top: 0;
+    border-left: 1px solid #ccc;
+  }
+
+  #my-formsOnline #menubar-creation-actions {
+    margin: 1em 0;
+  }
+
+  /*** lecteur view *****/
+  #all-formsOnline.lecteur-view {
+    width: 63%;
+    float: none;
+    padding-right: 0;
+    border: 0;
+    position: relative;
+  }
+
+  #my-formsOnline.lecteur-view{
+    width:30%;
+  }
+
+  #all-formsOnline.lecteur-view  .secteur-container li {
+    width: 46%;
+    float:left;
+    margin-bottom:1em;
+    margin-right:1em;
+    height:3em;
+    overflow:hidden;
+  }
+
+  #all-formsOnline.lecteur-view  .secteur-container li:nth-child(2n){
+    margin-right:0;
+  }
+
+  .lecteur-view #all-formsOnline .secteur-container{
+    width: 46%;
+    float: left;
+    clear: left;
+    padding-right: 4%;
+    border-right: 1px solid #ccc;
+  }
+
+
+  /*** END lecteur view *****/
+
+}
+
+
+#all-formsOnline #menubar-creation-actions {
+  margin:1em 2% 1em 0
+}
+
+#all-formsOnline ul li  span {
+  display:block;
+}
+
+#all-formsOnline ul li .operation {
+  position:absolute;
+  top:10px;
+  right:10px;
+}
+
+#all-formsOnline .form-title {
+  font-size:130%;
+}
+
+#all-formsOnline .form-description {
+  color:#87888a;
+  font-size:90%;
+}
+
+#my-formsOnline ul{
+  margin:0;
+  padding:0;
+  list-style-type:none;
+}
+
+.formsOnline-waitMyAction ul li:first-child{
+  border-top:1px solid #ccc;
+}
+
+#my-formsOnline ul li{
+  line-height:25px;
+  height:25px;
+}
+
+.formsOnline-waitMyAction ul li {
+  border-bottom:1px solid #ccc;
+}
+
+.formsOnline-waitMyAction ul li.read a,
+.formsOnline-waitMyAction ul li a:visited{
+  color:#888;
+}
+
+#my-formsOnline ul li > a > span {
+  display:block;
+  float:left;
+  height:25px;
+  overflow:hidden;
+}
+
+.formsOnline-waitMyAction .form-title{
+  width:55%;
+}
+.formsOnline-waitMyAction .ask-form-author{
+  width:27%;
+}
+.formsOnline-waitMyAction .ask-form-date{
+  width:18%;
+}
+
+#my-formsOnline-wait .form-title{
+  width:62%;
+}
+#my-formsOnline-wait .ask-form-date{
+  width:20%;
+}
+#my-formsOnline-wait .form-statut{
+  width:18%;
+}
+
+.my-formsOnline .form-title{
+  width:80%;
+}
+.my-formsOnline .ask-form-date{
+  width:20%;
+}
+
+#header-OnlineForm {
+	min-height:75px;
+}
+#header-OnlineForm .title {
+	width:100%;
+	font-weight:100;
+	padding:0;
+	margin:0;
+}
+
+#ask-by {
+	width:30%;
+	max-width:400px;
+	float:right;
+	border:1px solid #CCC;
+	width:300px;
+	padding:0.5em;
+	line-height:175%;
+}
+
+#ask-by .profilPhoto {
+	float:right;
+	position:relative;
+	height:auto;
+	right:auto;
+	top:auto;
+	width:auto;
+}
+
+#header-OnlineForm .commentaires,
+#header-OnlineForm #ask-statut.inlineMessage{
+	margin:1em 340px 1em 0;
+}
+
+#header-OnlineForm .commentaires .oneComment .author {
+	white-space:nowrap;
+}
+
+#header-OnlineForm .commentaires .oneComment {
+  margin:45px 0 0 10px;
+	padding-left:50px;
+	padding-right:25px;
+	width:auto;
+	display:inline-block;
+	text-align:left;
+}
+
+.read-form .forms {
+	clear:both;
+}
+
+
+.read-form .buttonPane {
+	margin-top:1em;
+}
+
+#templateForm.field, #titleForm.field, #descriptionForm.field , #list-senders .field, #list-receivers .field{
+	width:98%;
+}
+
+.field textarea {
+	width:90%;
+}
+
+#templateForm select {
+	width:45%
+}
+
+#view-form {
+    background-color: #f4f4f4;
+    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    color: #4c4c4c;
+    font-size: 100%;
+    padding: 5px 10px;
+    width: auto;
+	display:inline-block;
+	margin-top:5px;
+}
+
+#view-form  span {
+	background:transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 0 0 no-repeat;
+	display: inline-block;
+    line-height: 16px;
+    padding-left: 23px;
+}
+
+#informationForm legend {
+  background: url("/silverpeas/util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0px transparent;
 }

@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.formsonline.control.FormsOnlineSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -25,72 +26,84 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="check.jsp" %>
-
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat" %>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.util.List"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
+<c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+
+<fmt:setLocale value="${lang}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:set var="form" value="${requestScope['currentForm']}"/>
+<c:set var="templates" value="${requestScope['availableTemplates']}"/>
+<c:set var="m_listGroupSenders" value="${form.sendersAsGroups}"/>
+<c:set var="m_listUserSenders" value="${form.sendersAsUsers}"/>
+<c:set var="m_listGroupReceivers" value="${form.receiversAsGroups}"/>
+<c:set var="m_listUserReceivers" value="${form.receiversAsUsers}"/>
+
+<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
+<c:url var="iconMandatory" value="/util/icons/mandatoryField.gif"/>
+<c:url var="jsCheckForm" value="/util/javaScript/checkForm.js"/>
+
+<fmt:message key="formsOnline.senders" var="labelSenders"/>
+<fmt:message key="formsOnline.receivers" var="labelReceivers"/>
+<fmt:message key="GML.mandatory" var="labelMandatory"/>
+
+<c:set var="id_ListSenders" value="<%=FormsOnlineSessionController.userPanelSendersPrefix%>"/>
+<c:set var="id_ListReceivers" value="<%=FormsOnlineSessionController.userPanelReceiversPrefix%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
+<script type="text/javascript" src="${jsCheckForm}"></script>
 <script type="text/javascript">
 
 function isCorrectForm() {
-     var errorMsg = "";
-     var errorNb = 0;
+  var errorMsg = "";
+  var errorNb = 0;
 
-     var name = stripInitialWhitespace(document.creationForm.name.value);
-     var description = stripInitialWhitespace(document.creationForm.description.value);
-	 var templateSelectedIndex = document.creationForm.template.selectedIndex;
-     var title = stripInitialWhitespace(document.creationForm.title.value);
+  var description = stripInitialWhitespace(document.creationForm.description.value);
+	var templateSelectedIndex = document.creationForm.template.selectedIndex;
+  var title = stripInitialWhitespace(document.creationForm.title.value);
 
-     if (isWhitespace(name)) {
-           errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-     }
+  if (isWhitespace(title)) {
+    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="GML.title"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+    errorNb++;
+  }
 
-     if (isWhitespace(description)) {
-         errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.description")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-         errorNb++;
-   	 }
+  if (templateSelectedIndex < 1) {
+     errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="formsOnline.Template"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+     errorNb++;
+  }
 
-     if (templateSelectedIndex < 1) {
-         errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("formsOnline.Template")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-         errorNb++;
-     }
+  if (isWhitespace(description)) {
+    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="GML.description"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+    errorNb++;
+  }
 
-     if (isWhitespace(title)) {
-         errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.title")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-         errorNb++;
-     }
-
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb) {
+    case 0 :
+        result = true;
+        break;
+    case 1 :
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+    default :
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+  }
+  return result;
 }
 
 function valider() {
@@ -98,94 +111,102 @@ function valider() {
 		document.creationForm.submit();
 	}
 }
+
+function viewForm() {
+  var xml = $("#templates").val();
+  SP_openWindow("Preview?Form="+xml);
+}
+
+function showHidePreviewButton() {
+  var xml = $("#templates").val();
+  if (xml.length > 0) {
+    $("#view-form").show();
+  } else {
+    $("#view-form").hide();
+  }
+}
+
+$(document).ready(function() {
+
+  showHidePreviewButton();
+
+  $("#templates").change(function() {
+    showHidePreviewButton();
+  });
+});
 </script>
 
 </head>
 <body>
-
-<%
-	DateFormat formatter = new SimpleDateFormat(resource.getString("GML.dateFormat"));
-    FormDetail form = (FormDetail) request.getAttribute("currentForm");
-	List templates = (List) request.getAttribute("availableTemplates");
-
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
-    tabbedPane.addTab(resource.getString("formsOnline.Form"), "EditForm", true,1);
-	if (form.getId() != -1) {
-	    tabbedPane.addTab(resource.getString("formsOnline.SendersReceivers"), "SendersReceivers", false,1);
-	    tabbedPane.addTab(resource.getString("formsOnline.Preview"), "Preview", false,1);
-	}
-
-  org.silverpeas.core.admin.OrganizationController controller =
-      OrganizationControllerProvider.getOrganisationController();
-  UserDetail userDetail = controller.getUserDetail(form.getCreatorId());
-%>
-
-	<%=window.printBefore()%>
-	<%=tabbedPane.print()%>
-	<%=frame.printBefore()%>
-	<%=board.printBefore()%>
+<view:window>
 
 	<form name="creationForm" action="SaveForm" method="post">
-	<table class="intfdcolor4" width="100%" cellspacing="0" cellpadding="5" border="0">
-	<tr>
-		<td ><span class="txtlibform"><%=resource.getString("formsOnline.Template")%>  : </span></td>
-		<td >
-           	<select size="1" name="template" <%=(form.getId() != -1) ? "disabled" : "" %>>
-			<option value="">---------------------</option>
-			<%
-			Iterator it = templates.iterator();
-			while (it.hasNext()) {
-				PublicationTemplate template = (PublicationTemplate) it.next();
-				boolean selected = (form.getXmlFormName() != null) && (form.getXmlFormName().equals(template.getFileName()));
-				%>
-				<option <%=(selected) ? "selected":""%> value="<%=template.getFileName()%>"><%=template.getName()%></option>
-				<%
-			}
-			%>
-			</select>
-		</td>
-	</tr>
-  	<tr>
-		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.name")%> : </span></td>
-        <td colspan="4"><span class="txtlibform"><input type="text" size="40" maxlength="40" name="name" value="<%=form.getName()%>"/></span></td>
-	</tr>
-  	<tr>
-		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.description")%> : </span></td>
-        <td colspan="4"><span class="txtlibform"><input type="text" size="80" maxlength="80" name="description" value="<%=form.getDescription()%>"/></span></td>
-	</tr>
-  	<tr>
-		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.date")%> : </span></td>
-        <td colspan="4"><span class="txtlibform"><%=formatter.format(form.getCreationDate())%></span></td>
-	</tr>
-   	<tr>
-		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.publisher")%> : </span></td>
-        <td colspan="4"><span class="txtlibform"><view:username userId="<%=userDetail.getId()%>" /></span></td>
-	</tr>
-  	<tr>
-		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.title")%> : </span></td>
-        <td colspan="4"><span class="txtlibform"><input type="text" size="80" maxlength="200" name="title" value="<%=form.getTitle()%>"/></span></td>
-	</tr>
-	</table>
-	</form>
 
-	<%=board.printAfter()%>
-    <%=frame.printAfter()%>
-  	<%=window.printAfter()%>
-<%
-    ButtonPane buttonPane = gef.getButtonPane();
-    Button validerButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=valider();", false);
-    buttonPane.addButton(validerButton);
+    <fieldset id="informationForm" class="skinFieldset">
+      <legend><fmt:message key="GML.bloc.information.principals"/></legend>
+      <div class="fields">
+        <div class="field" id="titleForm">
+          <label for="title" class="txtlibform"><fmt:message key="GML.title"/></label>
+          <div class="champs">
+            <input type="text" id="title" name="title" size="60" maxlength="200" value="${form.title}">
+            &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" /> </div>
+        </div>
+        <div class="field" id="templateForm">
+          <label for="template" class="txtlibform"><fmt:message key="formsOnline.Template"/></label>
+          <div class="champs">
+            <c:choose>
+              <c:when test="${form.id != -1}">
+                <select name="template" id="templates" size="1" disabled="disabled">
+              </c:when>
+              <c:otherwise>
+                <select name="template" id="templates" size="1">
+              </c:otherwise>
+            </c:choose>
+              <option value="">---------------------</option>
+              <c:forEach items="${templates}" var="template">
+                <c:choose>
+                  <c:when test="${not empty form.xmlFormName && form.xmlFormName == template.fileName}">
+                    <option selected="selected" value="${template.fileName}">${template.name}</option>
+                  </c:when>
+                  <c:otherwise>
+                    <option value="${template.fileName}">${template.name}</option>
+                  </c:otherwise>
+                </c:choose>
+              </c:forEach>
+            </select>
+            &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" /> <br />
+            <a class="button" id="view-form" href="#" onclick="viewForm();return false;"><span><fmt:message key="formsOnline.Preview"/></span></a> </div>
+        </div>
+        <div class="field" id="descriptionForm">
+          <label for="description" class="txtlibform"><fmt:message key="GML.description"/></label>
+          <div class="champs">
+            <textarea rows="4" cols="65" name="description" id="description">${form.description}</textarea>
+            &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" />
+          </div>
+        </div>
+      </div>
+    </fieldset>
 
-    Button annulerButton = gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
-    buttonPane.addButton(annulerButton);
-    buttonPane.setHorizontalPosition();
-%>
-    <center>
-    <%=buttonPane.print()%>
-    </center>
+    <div class="table">
+      <div class="cell">
+        <viewTags:displayListOfUsersAndGroups users="${m_listUserSenders}" groups="${m_listGroupSenders}" label="${labelSenders}" id="${id_ListSenders}" updateCallback="ModifySenders"/>
+      </div>
+      <div class="cell">
+        <viewTags:displayListOfUsersAndGroups users="${m_listUserReceivers}" groups="${m_listGroupReceivers}" label="${labelReceivers}" id="${id_ListReceivers}" updateCallback="ModifyReceivers"/>
+      </div>
+    </div>
+    <div class="legend"> <img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}"> : ${labelMandatory}</div>
+
+  </form>
+
+  <view:buttonPane>
+    <fmt:message var="buttonValidate" key="GML.validate"/>
+    <fmt:message var="buttonCancel" key="GML.cancel"/>
+    <view:button label="${buttonValidate}" action="javascript:valider();" />
+    <view:button label="${buttonCancel}" action="Main" />
+  </view:buttonPane>
+
+</view:window>
 
 </body>
 </html>

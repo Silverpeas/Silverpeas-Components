@@ -105,8 +105,7 @@ public class FormsOnlineDAOJdbcTest {
     String instanceId = "formsOnline100";
     int formId = 1000;
     FormDetail expResult = getFormDetailExpectedResult();
-
-    FormDetail result = dao.getForm(instanceId, formId);
+    FormDetail result = dao.getForm(new FormPK(formId, instanceId));
     assertEquals(expResult.equals(result), true);
   }
 
@@ -147,7 +146,7 @@ public class FormsOnlineDAOJdbcTest {
     // TODO remove following lines
     // Need to create another connection because the last one was closed inside updateForm method
 //    dao = new FormsOnlineDAOJdbcMock(dataSource.getConnection());
-    FormDetail updatedForm = dao.getForm(curForm.getInstanceId(), curForm.getId());
+    FormDetail updatedForm = dao.getForm(curForm.getPK());
     assertEquals(curForm.equals(updatedForm), true);
   }
 
