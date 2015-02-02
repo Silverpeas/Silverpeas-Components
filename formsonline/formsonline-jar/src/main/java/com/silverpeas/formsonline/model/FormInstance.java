@@ -24,16 +24,21 @@
 
 package com.silverpeas.formsonline.model;
 
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.form.Form;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import javax.persistence.Transient;
 import java.util.Date;
 
-public class FormInstance {
+public class FormInstance implements SilverpeasContent {
   public final static int STATE_UNREAD = 1;
   public final static int STATE_READ = 2;
   public final static int STATE_VALIDATED = 3;
   public final static int STATE_REFUSED = 4;
   public final static int STATE_ARCHIVED = 5;
 
-  private int id = -1;
+  private String id;
   private int formId = -1;;
   private int state = -1;;
   private String creatorId = null;
@@ -43,18 +48,39 @@ public class FormInstance {
   private String comments = "";
   private String instanceId = null;
 
-  /**
-   * @return the id
-   */
-  public int getId() {
+  @Transient
+  protected FormDetail form;
+
+  @Transient
+  private boolean validationEnabled = false;
+
+  @Transient
+  private Form formWithData;
+
+  @Override
+  public String getId() {
     return id;
+  }
+
+  public int getIdAsInt() {
+    return Integer.parseInt(getId());
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return instanceId;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return "";
   }
 
   /**
    * @param id the id to set
    */
   public void setId(int id) {
-    this.id = id;
+    this.id = Integer.toString(id);
   }
 
   /**
@@ -104,6 +130,26 @@ public class FormInstance {
    */
   public Date getCreationDate() {
     return creationDate;
+  }
+
+  @Override
+  public String getTitle() {
+    return null;
+  }
+
+  @Override
+  public String getDescription() {
+    return null;
+  }
+
+  @Override
+  public String getContributionType() {
+    return null;
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    return false;
   }
 
   /**
@@ -156,16 +202,65 @@ public class FormInstance {
   }
 
   /**
-   * @return the instanceId
-   */
-  public String getInstanceId() {
-    return instanceId;
-  }
-
-  /**
    * @param instanceId the instanceId to set
    */
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
+  }
+
+  public FormDetail getForm() {
+    return form;
+  }
+
+  public void setForm(final FormDetail form) {
+    this.form = form;
+  }
+
+  public boolean isRead() {
+    return getState() == STATE_READ;
+  }
+
+  public boolean isValidated() {
+    return getState() == STATE_VALIDATED;
+  }
+
+  public boolean isDenied() {
+    return getState() == STATE_REFUSED;
+  }
+
+  public boolean isArchived() {
+    return getState() == STATE_ARCHIVED;
+  }
+
+  public boolean isCanBeValidated() {
+    return !isValidated() && !isDenied() && !isArchived();
+  }
+
+  public UserDetail getCreator() {
+    return UserDetail.getById(getCreatorId());
+  }
+
+  public UserDetail getValidator() {
+    return UserDetail.getById(getValidatorId());
+  }
+
+  public FormPK getFormPK() {
+    return new FormPK(Integer.toString(getFormId()), getComponentInstanceId());
+  }
+
+  public boolean isValidationEnabled() {
+    return validationEnabled;
+  }
+
+  public void setValidationEnabled(final boolean validationEnabled) {
+    this.validationEnabled = validationEnabled;
+  }
+
+  public Form getFormWithData() {
+    return formWithData;
+  }
+
+  public void setFormWithData(final Form formWithData) {
+    this.formWithData = formWithData;
   }
 }

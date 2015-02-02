@@ -25,119 +25,89 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="checkKmelia.jsp" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
 
 <%
 List<ProfileInst>		profiles = (List<ProfileInst>) request.getAttribute("Profiles");
 NodeDetail 	node			= (NodeDetail) request.getAttribute("NodeDetail");
 ProfileInst currentProfile 	= (ProfileInst) request.getAttribute("CurrentProfile");
 List<Group> 		groups 			= (List<Group>) request.getAttribute("Groups");
-List<String> 		users 			= (List<String>) request.getAttribute("Users");
+List<UserDetail> 		users 			= (List<UserDetail>) request.getAttribute("Users");
 
-String		rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
-
+String rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
 String explainRightsDependsOn = resources.getString("kmelia.RightsDependsOn"+rightsDependsOn);
-
 String linkedPathString = (String) request.getAttribute("Path");
-
 String nodeId = node.getNodePK().getId();
+
+String updateCallback = "";
+if ("ThisTopic".equals(rightsDependsOn)) {
+  updateCallback = "TopicProfileSelection?Role="+currentProfile.getName()+"&NodeId="+nodeId;
+}
 %>
 <html>
 <head>
 <view:looknfeel/>
+<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
 <script type="text/javascript">
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
-
-function goToOperationInUserPanel(action) {
-	url = action;
-	windowName = "userPanelWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	userPanelWindow = SP_openUserPanel(url, windowName, windowParams);
-}  
+function backToFolder() {
+  location.href="ToUpdateTopic?Id=<%=nodeId%>";
+}
 </script>
 </head>
 <body>
 <%
     Window window = gef.getWindow();
-    Frame frame = gef.getFrame();
-    Board board = gef.getBoard();
     OperationPane operationPane = window.getOperationPane();
     
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
     browseBar.setPath(linkedPathString);
-    
-    if (rightsDependsOn.equals("ThisTopic")) {
-    	operationPane.addOperation(resources.getIcon("kmelia.userManage"),resources.getString("GML.modify"),"javaScript:onClick=goToOperationInUserPanel('TopicProfileSelection?Role="+currentProfile.getName()+"&NodeId="+nodeId+"')");
-    }
-	
-	if (rightsDependsOn.equals("ThisTopic") && (!groups.isEmpty() || !users.isEmpty())) { 
-		operationPane.addOperation(resources.getIcon("kmelia.usersGroupsDelete"),resources.getString("GML.delete"), "TopicProfileRemove?Role="+currentProfile.getName()+"&Id="+currentProfile.getId()+"&NodeId="+nodeId);
-	}
 	
 	out.println(window.printBefore());
     
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resources.getString("Theme"), "ToUpdateTopic?Id="+nodeId, false);
+	tabbedPane.addTab(resources.getString("Theme"), "javascript:backToFolder()", false);
 	
     for (ProfileInst theProfile : profiles) {
     	tabbedPane.addTab(resources.getString("kmelia.Role"+theProfile.getName()), "ViewTopicProfiles?Id="+theProfile.getId()+"&Role="+theProfile.getName()+"&NodeId="+nodeId, theProfile.getName().equals(currentProfile.getName()));
     }
 
     out.println(tabbedPane.print());
-    out.println(frame.printBefore());
-	out.println(board.printBefore());
 %>
-	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<tr>
-			<td colspan="2" align="center">
-				<div class="inlineMessage"><%=explainRightsDependsOn%></div>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resources.getIcon("kmelia.1px")%>"></td>
-		</tr>
-		<tr>
-			<td align="center" class="txttitrecol"><%=resources.getString("GML.type")%></td>
-			<td align="center" class="txttitrecol"><%=resources.getString("GML.name")%></td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resources.getIcon("kmelia.1px")%>"></td>
-		</tr>
-		
-		<%
-		// La boucle sur les groupes 
-		for (Group group : groups) {
-		%>
-			<tr>
-			<% if (group.isSynchronized()) {  %>
-				<td align="center"><img src="<%=resources.getIcon("kmelia.scheduledGroup")%>"/></td>
-			<% } else { %>
-				<td align="center"><img src="<%=resources.getIcon("kmelia.group")%>"/></td>
-			<% } %>
-			<td align="center"><%=group.getName() %></td>
-			</tr>
-		<% } %>
-		
-		<% for (String user : users) { %>
-			<tr>
-				<td align="center"><img src="<%=resources.getIcon("kmelia.user")%>"/></td>
-				<td align="center"><%out.println(user);%></td>
-			</tr>
-		<% } %>				
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resources.getIcon("kmelia.1px")%>"/></TD>
-		</tr>
-	</table>
+<view:frame>
+  <div class="inlineMessage"><%=explainRightsDependsOn%></div>
+
+  <form name="roleList" action="TopicProfileSetUsersAndGroups" method="post">
+    <input type="hidden" name="Role" value="<%=currentProfile.getName()%>"/>
+    <input type="hidden" name="NodeId" value="<%=nodeId%>"/>
+    <fmt:message var="listLabel" key="GML.selection"/>
+    <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>" id="roleItems" label="${listLabel}" updateCallback="<%=updateCallback%>" />
+  </form>
+  <view:buttonPane>
+    <% if (StringUtil.isDefined(updateCallback)) { %>
+    <fmt:message var="buttonOK" key="GML.validate"/>
+    <fmt:message var="buttonCancel" key="GML.cancel"/>
+    <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
+    <view:button label="${buttonCancel}" action="javascript:backToFolder()"/>
+    <% } %>
+  </view:buttonPane>
+</view:frame>
 <%
-	out.println(board.printAfter());
-    out.println(frame.printAfter());
-    out.println(window.printAfter()); 
+    out.println(window.printAfter());
 %>
 </body>
 </html>

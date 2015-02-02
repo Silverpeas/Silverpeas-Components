@@ -24,206 +24,97 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.silverpeas.formsonline.model.FormInstance"%>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 
-<%!
-	String iconsPath 			= GeneralPropertiesManager.getString("ApplicationURL");
-	String iconArchived			= iconsPath+"/util/icons/tofile.gif";
-	String iconDelete			= iconsPath+"/util/icons/formManager_to_del.gif";
-%>
-<%
-	String 					filteredState 	= request.getParameter("filteredState");
-	DateFormat 				formatter 		= new SimpleDateFormat(resource.getString("GML.dateFormat"));
-    List 					availableForms 	= (List) request.getAttribute("availableForms");
-	FormDetail 				choosenForm 	= (FormDetail) request.getAttribute("choosenForm");
-	List					formInstances	= (List) request.getAttribute("formInstances");
-	String 					userBestProfile = (String) request.getAttribute("userBestProfile");
-	OrganisationController controller		= new OrganizationController();
-	UserDetail 				userDetail 		= (choosenForm == null) ? null : controller.getUserDetail(choosenForm.getCreatorId());
+<fmt:setLocale value="${lang}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-	filteredState = (filteredState == null) ? "" : filteredState;
-%>
+<c:set var="requests" value="${requestScope['Requests']}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel/>
-
 	<script type="text/javascript">
-	    function removeForm() {
-	         if (window.confirm("<%=resource.getString("formsOnline.deleteFormConfirm")%>")) {
-	            document.deleteForm.submit();
-	         }
-	    }
-
-	    function filterOnState(stateValue) {
-	    	document.refreshForm.filteredState.value = stateValue;
-	    	document.refreshForm.submit();
-	    }
-
-	    function changeForm(newFormId) {
-	    	document.refreshForm.formId.value = newFormId;
-	    	document.refreshForm.submit();
-	    }
+    function removeRequests() {
+      if (window.confirm("<fmt:message key="formsOnline.requests.action.delete.confirm"/>")) {
+        document.deleteForm.submit();
+      }
+    }
 	</script>
 </head>
-
 <body>
-
-<form name="refreshForm" action="InBox" >
-	<input type="hidden" name="filteredState" value="<%=filteredState%>"/>
-	<input type="hidden" name="formId" value="<%=(choosenForm==null) ? "" : String.valueOf(choosenForm.getId())%>"/>
+<fmt:message var="browseBarAll" key="formsOnline.requests.all.breadcrumb"/>
+<view:browseBar extraInformations="${browseBarAll}"/>
+<view:operationPane>
+  <fmt:message var="deleteReq" key="formsOnline.removeFormInstance"/>
+  <view:operationOfCreation action="javascript:removeRequests()" icon="" altText="${deleteReq}"/>
+</view:operationPane>
+<view:window>
+<form name="deleteForm" action="DeleteRequests">
+  <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="20">
+    <fmt:message var="colStatus" key="GML.status"/>
+    <fmt:message var="colDate" key="formsOnline.sendDate"/>
+    <fmt:message var="colSender" key="formsOnline.sender"/>
+    <fmt:message var="colForm" key="formsOnline.Form"/>
+    <fmt:message var="colValidator" key="formsOnline.receiver"/>
+    <fmt:message var="colOp" key="GML.operations"/>
+    <view:arrayColumn title="${colStatus}"/>
+    <view:arrayColumn title="${colDate}"/>
+    <view:arrayColumn title="${colForm}"/>
+    <view:arrayColumn title="${colSender}"/>
+    <view:arrayColumn title="${colValidator}"/>
+    <view:arrayColumn title="${colOp}"/>
+    <c:forEach items="${requests.all}" var="request">
+    <view:arrayLine>
+      <c:choose>
+        <c:when test="${request.read}">
+          <fmt:message var="statusRead" key="formsOnline.stateRead"/>
+          <view:arrayCellText text="${statusRead}"/>
+        </c:when>
+        <c:when test="${request.validated}">
+          <fmt:message var="statusValidated" key="formsOnline.stateValidated"/>
+          <view:arrayCellText text="${statusValidated}"/>
+        </c:when>
+        <c:when test="${request.denied}">
+          <fmt:message var="statusDenied" key="formsOnline.stateRefused"/>
+          <view:arrayCellText text="${statusDenied}"/>
+        </c:when>
+        <c:when test="${request.archived}">
+          <fmt:message var="statusArchived" key="formsOnline.stateArchived"/>
+          <view:arrayCellText text="${statusArchived}"/>
+        </c:when>
+        <c:otherwise>
+          <fmt:message var="statusUnread" key="formsOnline.stateUnread"/>
+          <view:arrayCellText text="${statusUnread}"/>
+        </c:otherwise>
+      </c:choose>
+      <c:set var="creationDate" value="${silfn:formatDate(request.creationDate, lang)}"/>
+      <view:arrayCellText text="<!-- ${request.creationDate} -->${creationDate}"/>
+      <view:arrayCellText text="<a href=\"ViewRequest?Id=${request.id}&Origin=InBox\">${request.form.title}</a>"/>
+      <view:arrayCellText text="${request.creator.displayedName}"/>
+      <view:arrayCellText text="${request.validator.displayedName}"/>
+      <c:set var="checkbox"><input type="checkbox" name="Id" value="${request.id}"/></c:set>
+        <c:choose>
+          <c:when test="${request.archived}">
+            <view:arrayCellText text="${checkbox}"/>
+          </c:when>
+          <c:otherwise>
+            <view:arrayCellText text=""/>
+          </c:otherwise>
+        </c:choose>
+    </view:arrayLine>
+    </c:forEach>
+  </view:arrayPane>
 </form>
-
-<form name="deleteForm" action="DeleteFormInstances" >
-
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
-    if ( (userBestProfile != null) && (userBestProfile.equals("Administrator")) ) {
-	    tabbedPane.addTab(resource.getString("formsOnline.formsList"), "Main", false,1);
-    }
-    tabbedPane.addTab(resource.getString("formsOnline.outbox"), "OutBox", false,1);
-    tabbedPane.addTab(resource.getString("formsOnline.inbox"), "InBox", true,1);
-
-    if (choosenForm != null) {
-		operationPane.addOperation(iconDelete,resource.getString("formsOnline.removeFormInstance"), "javascript:removeForm()");
-	}
-%>
-
-	<%=window.printBefore()%>
-	<%=tabbedPane.print()%>
-	<%=frame.printBefore()%>
-	<%=board.printBefore()%>
-
-	<%
-	if ( (availableForms != null) && (availableForms.size()>0) )
-	{
-	%>
-
-	<table class="intfdcolor4" width="100%" cellspacing="0" cellpadding="5" border="0">
-		<tr>
-			<td>
-				<span class="txtlibform"><%=resource.getString("formsOnline.Template")%> : </span>
-			</td>
-            <td>
-            	<select size="1" name="modele" OnChange="changeForm(this.value)">
-    			<%
-				Iterator it = availableForms.iterator();
-				while (it.hasNext()) {
-					FormDetail form = (FormDetail) it.next();
-					boolean selected = ( choosenForm.getId() == form.getId() );
-					%>
-					<option <%=(selected) ? "selected":""%> value="<%=form.getId()%>"><%=form.getName()%></option>
-					<%
-				}
-				%>
-				</select>
-			</td>
-		</tr>
-	  	<tr>
-			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.description")%> : </span></td>
-	        <td colspan="4"><span class="txtlibform"><%=choosenForm.getDescription()%></span></td>
-		</tr>
-<!--  	<tr>
-			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.date")%> : </span></td>
-	        <td colspan="4"><span class="txtlibform"><%=formatter.format(choosenForm.getCreationDate())%></span></td>
-		</tr>
-	   	<tr>
-			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.publisher")%> : </span></td>
-	        <td colspan="4"><span class="txtlibform"><%=userDetail.getDisplayedName()%></span></td>
-		</tr>
- -->
-	</table>
-	<%
-	}
-	else {
-	%>
-	<%=resource.getString("formsOnline.noAvailableFormReceived") %>
-    <%
-    }
-    %>
-    <%=board.printAfter()%>
-    <br/>
-
-<%
-if ( choosenForm != null )
-{
-	ArrayPane arrayPane = gef.getArrayPane("myForms", "InBox?filteredState="+filteredState+"&formId="+choosenForm.getId(), request, session);
-	arrayPane.setSortable(true);
-	arrayPane.setVisibleLineNumber(10);
-	ArrayColumn column = arrayPane.addArrayColumn(resource.getString("formsOnline.sendDate"));
-	column.setSortable(false);
-	arrayPane.addArrayColumn(resource.getString("formsOnline.sender"));
-	arrayPane.addArrayColumn(resource.getString("GML.status"));
-	arrayPane.addArrayColumn("&nbsp;");
-
-	Iterator itInstances = formInstances.iterator();
-    while (itInstances.hasNext()) {
-	    FormInstance instance = (FormInstance) itInstances.next();
-	    UserDetail sender = controller.getUserDetail(instance.getCreatorId());
-
-	    ArrayLine arrayLine = arrayPane.addArrayLine();
-	    arrayLine.addArrayCellLink(formatter.format(instance.getCreationDate()), "ValidFormInstance?formInstanceId="+instance.getId());
-	    arrayLine.addArrayCellText(sender.getDisplayedName());
-
-	    switch (instance.getState() ) {
-	    	case FormInstance.STATE_READ:
-	    		arrayLine.addArrayCellText(resource.getString("formsOnline.stateRead"));
-	    		break;
-
-	    	case FormInstance.STATE_VALIDATED:
-	    		arrayLine.addArrayCellText(resource.getString("formsOnline.stateValidated"));
-	    		break;
-
-	    	case FormInstance.STATE_REFUSED:
-	    		arrayLine.addArrayCellText(resource.getString("formsOnline.stateRefused"));
-	    		break;
-
-	    	case FormInstance.STATE_ARCHIVED:
-	    		arrayLine.addArrayCellText(resource.getString("formsOnline.stateArchived"));
-	    		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"suppInst\" value=\""+instance.getId()+"\">");
-	    		break;
-
-	    	default:
-	    		arrayLine.addArrayCellText(resource.getString("formsOnline.stateUnread"));
-	    		break;
-	    }
-    }
-    %>
-    <div align="right" style="padding-right: 10px; padding-bottom: 10px;">
-	    <b><%=resource.getString("formsOnline.filterOnState")%> : </b>
-	    <select name="stateFilter" onchange="filterOnState(this.value)">
-	    	<option value=""><%=resource.getString("formsOnline.noFilter")%></option>
-	    	<option <%=(String.valueOf(FormInstance.STATE_UNREAD).equals(filteredState)) ? "selected" : ""%> value="<%=FormInstance.STATE_UNREAD %>"><%=resource.getString("formsOnline.stateUnread")%></option>
-	    	<option <%=(String.valueOf(FormInstance.STATE_READ).equals(filteredState)) ? "selected" : ""%> value="<%=FormInstance.STATE_READ %>"><%=resource.getString("formsOnline.stateRead")%></option>
-	    	<option <%=(String.valueOf(FormInstance.STATE_VALIDATED).equals(filteredState)) ? "selected" : ""%> value="<%=FormInstance.STATE_VALIDATED %>"><%=resource.getString("formsOnline.stateValidated")%></option>
-	    	<option <%=(String.valueOf(FormInstance.STATE_REFUSED).equals(filteredState)) ? "selected" : ""%> value="<%=FormInstance.STATE_REFUSED %>"><%=resource.getString("formsOnline.stateRefused")%></option>
-	    	<option <%=(String.valueOf(FormInstance.STATE_ARCHIVED).equals(filteredState)) ? "selected" : ""%> value="<%=FormInstance.STATE_ARCHIVED %>"><%=resource.getString("formsOnline.stateArchived")%></option>
-	    </select>
-	</div>
-    <%=arrayPane.print()%>
-    <%
-}
-%>
-
-    <%=frame.printAfter()%>
-    <%=window.printAfter()%>
-</form>
+</view:window>
 </body>
 </html>

@@ -1493,8 +1493,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("TopicProfileSelection")) {
         String role = request.getParameter("Role");
         String nodeId = request.getParameter("NodeId");
+        String[] userIds =
+            StringUtil.split(request.getParameter("UserPanelCurrentUserIds"), ',');
+        String[] groupIds =
+            StringUtil.split(request.getParameter("UserPanelCurrentGroupIds"), ',');
         try {
-          kmelia.initUserPanelForTopicProfile(role, nodeId);
+          kmelia.initUserPanelForTopicProfile(role, nodeId, groupIds, userIds);
         } catch (Exception e) {
           SilverTrace.warn("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
@@ -1503,15 +1507,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("TopicProfileSetUsersAndGroups")) {
         String role = request.getParameter("Role");
         String nodeId = request.getParameter("NodeId");
+        String[] userIds =
+            StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
+        String[] groupIds =
+            StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
 
-        kmelia.updateTopicRole(role, nodeId);
-
-        request.setAttribute("urlToReload", "ViewTopicProfiles?Role=" + role + "&NodeId=" + nodeId);
-        destination = rootDestination + "closeWindow.jsp";
-      } else if (function.equals("TopicProfileRemove")) {
-        String profileId = request.getParameter("Id");
-
-        kmelia.deleteTopicRole(profileId);
+        kmelia.updateTopicRole(role, nodeId, groupIds, userIds);
 
         destination = getDestination("ViewTopicProfiles", kmelia, request);
       } else if (function.equals("CloseWindow")) {

@@ -25,18 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
@@ -44,9 +33,6 @@
 <%
 	Form formUpdate    		= (Form) request.getAttribute("Form");
 	DataRecord data    		= (DataRecord) request.getAttribute("Data"); 
-	String xmlFormName 		= (String) request.getAttribute("XMLFormName");
-	String title = (String) request.getAttribute("title");
-	String titleClassName 	= resource.getSetting("titleClassName");
 
 	// context creation
 	PagesContext context = (PagesContext) request.getAttribute("FormContext");
@@ -62,32 +48,16 @@
 <view:looknfeel/>
 <% formUpdate.displayScripts(out, context); %>
 </head>
-
 <body class="yui-skin-sam">
-
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-    
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
-    tabbedPane.addTab(resource.getString("formsOnline.Form"), "Main", false,1);  
-    tabbedPane.addTab(resource.getString("formsOnline.SendersReceivers"), "SendersReceivers", false,1);
-    tabbedPane.addTab(resource.getString("formsOnline.Preview"), "Preview", true,1);
-%>	
-
-	<%=window.printBefore()%>
-	<%=tabbedPane.print()%>
-	<%=frame.printBefore()%>
-
+<view:window popup="true" browseBarVisible="false">
+<view:frame>
 	<form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data">
-	<span class="<%=titleClassName%>"><%=title%></span>
-	<% 
+	<%
 	formUpdate.display(out, context, data); 
 	%>
 	</form>
 	
-    <%=frame.printAfter()%>
-  	<%=window.printAfter()%>  
-
+</view:frame>
+</view:window>
 </body>
 </html>

@@ -37,11 +37,10 @@ public interface FormsOnlineDAO {
 
   /**
    * Load forms from database with given instance Id and form id
-   * @param instanceId the instance id
-   * @param formId the form id
+   * @param pk the form primary key
    * @return a FormDetail object
    */
-  public FormDetail getForm(String instanceId, int formId) throws FormsOnlineDatabaseException;
+  public FormDetail getForm(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Save new form in database
@@ -61,74 +60,64 @@ public interface FormsOnlineDAO {
 
   /**
    * Delete Form from database
-   * @param formPK the pk of form to be deleted
+   * @param pk the pk of form to be deleted
    * @return the deleted FormDetail
    * @throws FormsOnlineDatabaseException
    */
-  public FormDetail deleteForm(String instanceId, int formId) throws FormsOnlineDatabaseException;
+  public FormDetail deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Update form senders list.
-   * @param id the form id
-   * @param componentId the component instanceId
+   * @param pk the form primary key
    * @param newUserSenderIds the new sender list as user ids
    * @param newGroupSenderIds the new sender list as group ids
    * @throws FormsOnlineDatabaseException
    */
-  public void updateSenders(int id, String componentId,
-      String[] newUserSenderIds, String[] newGroupSenderIds) throws FormsOnlineDatabaseException;
+  public void updateSenders(FormPK pk, String[] newUserSenderIds, String[] newGroupSenderIds)
+      throws FormsOnlineDatabaseException;
 
   /**
    * Update form receivers list.
-   * @param id the form id
-   * @param componentId the component instanceId
+   * @param pk the form primary key
    * @param newUserReceiverIds the new receivers list as user ids
    * @param newGroupReceiverIds the new receivers list as group ids
    * @throws FormsOnlineDatabaseException
    */
-  public void updateReceivers(int id, String componentId,
-      String[] newUserReceiverIds, String[] newGroupReceiverIds)
+  public void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds)
       throws FormsOnlineDatabaseException;
 
   /**
    * Get the form's senders list where users has been declared directly.
-   * @param id the form id
-   * @param componentId the component instance id
+   * @param pk the form primary key
    * @return user ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getSendersAsUsers(int id, String componentId)
+  public List<String> getSendersAsUsers(FormPK pk)
       throws FormsOnlineDatabaseException;
 
   /**
    * Get the form's senders list where groups has been declared directly.
-   * @param id the form id
-   * @param componentId the component instance id
+   * @param pk the form primary key
    * @return group ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getSendersAsGroups(int id, String componentId)
-      throws FormsOnlineDatabaseException;
+  public List<String> getSendersAsGroups(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Get the form's receivers list where users has been declared directly.
-   * @param id the form id
-   * @param componentId the component instance id
+   * @param pk the form primary key
    * @return user ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getReceiversAsUsers(int id, String componentId)
-      throws FormsOnlineDatabaseException;
+  public List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Get the form's receivers list where groups has been declared directly.
-   * @param id the form id
-   * @param componentId the component instance id
+   * @param pk the form primary key
    * @return group ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getReceiversAsGroups(int id, String componentId)
-      throws FormsOnlineDatabaseException;
+  public List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Get the form available to be sent for given user or given groups
@@ -144,25 +133,24 @@ public interface FormsOnlineDAO {
   /**
    * Get all form instances that have been sent by given user (excepted the ones that have been
    * archived.
-   * @param componentId the component instance id
-   * @param formId the form id
+   * @param pk the form primary key
    * @param userId the user id
    * @return a list of FormInstance objects
    * @throws FormsOnlineDatabaseException
    */
-  public List<FormInstance> getSentFormInstances(String componentId, int formId, String userId)
+  public List<FormInstance> getSentFormInstances(FormPK pk, String userId)
       throws FormsOnlineDatabaseException;
 
   /**
-   * Get all form instances received by that have been sent by given user (excepted the ones that
-   * have been archived.
-   * @param componentId the component instance id
-   * @param formId the form id
+   * Get all requests associated to given form.
+   * @param pk the form primary key
+   * @param allRequests
    * @param userId the user id
-   * @return a list of FormInstance objects
+   * @return if allRequests is false only requests to validate and requests validated by given
+   * user are returned. If true, all requests (validated or not) are returned.
    * @throws FormsOnlineDatabaseException
    */
-  public List<FormInstance> getReceivedFormInstances(String instanceId, String userId, int formId)
+  public List<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId)
       throws FormsOnlineDatabaseException;
 
   public List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
@@ -170,12 +158,11 @@ public interface FormsOnlineDAO {
 
   public FormInstance createInstance(FormInstance instance) throws FormsOnlineDatabaseException;
 
-  public FormInstance getFormInstance(String componentId, int formInstanceId)
-      throws FormsOnlineDatabaseException;
+  public FormInstance getRequest(RequestPK pk) throws FormsOnlineDatabaseException;
 
   public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineDatabaseException;
 
-  public void updateFormInstance(FormInstance instance) throws FormsOnlineDatabaseException;
+  public void updateRequest(FormInstance instance) throws FormsOnlineDatabaseException;
 
-  public void deleteFormInstance(String componentId, int id) throws FormsOnlineDatabaseException;
+  public void deleteRequest(RequestPK pk) throws FormsOnlineDatabaseException;
 }
