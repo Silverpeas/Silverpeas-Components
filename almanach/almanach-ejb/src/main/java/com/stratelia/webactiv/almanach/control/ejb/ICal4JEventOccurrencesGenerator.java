@@ -28,12 +28,12 @@ import com.silverpeas.calendar.Date;
 import com.stratelia.webactiv.almanach.control.ExceptionDatesGenerator;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
-import org.silverpeas.util.ResourceLocator;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,10 +41,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static org.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 import static org.silverpeas.util.DateUtil.extractHour;
 import static org.silverpeas.util.DateUtil.extractMinutes;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A generator of event occurrences built on the iCal4J library.

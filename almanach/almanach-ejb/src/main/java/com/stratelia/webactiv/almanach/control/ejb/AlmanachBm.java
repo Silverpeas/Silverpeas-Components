@@ -29,11 +29,16 @@ import net.fortuna.ical4j.model.Calendar;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.date.Period;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
 
 public interface AlmanachBm {
+
+  static AlmanachBm get() {
+    return ServiceProvider.getService(AlmanachBm.class);
+  }
 
   /**
    * Gets the event occurrences that occur in the specified period and that are defined in the
