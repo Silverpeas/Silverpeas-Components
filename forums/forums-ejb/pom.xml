@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.forums</groupId>
   <artifactId>forums-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB forums</name>
 
   <dependencies>

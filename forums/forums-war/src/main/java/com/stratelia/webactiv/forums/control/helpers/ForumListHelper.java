@@ -1,41 +1,43 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.rating.web.RaterRatingEntity;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.Date;
 
 /**
- *
  * @author ehugonnet
  */
 public class ForumListHelper {
@@ -48,9 +50,8 @@ public class ForumListHelper {
     String base = "";
 
     if (forumId != 0) {
-      result = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">"
-          + EncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId))
-          + "</a>";
+      result = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">" +
+          EncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId)) + "</a>";
       loop = true;
     }
 
@@ -61,8 +62,8 @@ public class ForumListHelper {
         loop = false;
       } else {
         String parentName = fsc.getForumName(forumParent);
-        String line = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumParent) + "\">"
-            + EncodeHelper.javaStringToHtmlString(parentName) + "</a> &gt; ";
+        String line = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumParent) + "\">" +
+            EncodeHelper.javaStringToHtmlString(parentName) + "</a> &gt; ";
         result = line + result;
         currentId = forumParent;
       }
@@ -100,7 +101,8 @@ public class ForumListHelper {
       if (!fsc.isExternal() || !reader) {
         // rechercher si l'utilisateur a des messages non lus sur ce forum
         boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
-        out.print("<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
+        out.print(
+            "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
       }
 
       // Icone de deploiement
@@ -135,11 +137,10 @@ public class ForumListHelper {
       out.println("</span></td>");
 
       // 5ème colonne : dernier message
-      out.print(
-          "<td nowrap=\"nowrap\" class=\"ArrayCell\" ><span class=\"txtnote\">");
+      out.print("<td nowrap=\"nowrap\" class=\"ArrayCell\" ><span class=\"txtnote\">");
       if (lastMessageDate != null) {
-        out.print("<a href=\"" + ActionUrl.getUrl(
-            "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
+        out.print("<a href=\"" +
+            ActionUrl.getUrl("viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
         out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
         out.print("<br/>");
         out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
@@ -160,7 +161,7 @@ public class ForumListHelper {
           raterRatingEntity.getContributionId() +
           "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
           "\"></div>");
-      
+
       // 7ème colonne : abonnement
       boolean isSubscriber = fsc.isForumSubscriber(forumId);
       out.print("<td class=\"ArrayCell\" style=\"text-align: center\" title=\"" + resources.
@@ -173,9 +174,9 @@ public class ForumListHelper {
           out.print("disabled ");
         }
       }
-      out.print("onclick=\"javascript:" + (isSubscriber ? "unsubscribeOneForum"
-          : "subscribeOneForum") + "(" + forum.getId() + "," + forum.getParentId()
-          + ");\"/></div></span></td>");
+      out.print(
+          "onclick=\"javascript:" + (isSubscriber ? "unsubscribeOneForum" : "subscribeOneForum") +
+              "(" + forum.getId() + "," + forum.getParentId() + ");\"/></div></span></td>");
 
       // 8ème colonne : boutons d'admin
       if (admin || moderator) {
@@ -184,31 +185,31 @@ public class ForumListHelper {
         // icone de modification
         out.print("<a href=\"");
         out.print(ActionUrl.getUrl("editForumInfo", call, 2, forumId, currentPage));
-        out.println("\"><img src=\"" + ForumHelper.IMAGE_UPDATE
-            + "\" border=\"0\" align=\"middle\" alt=\""
-            + resources.getString("editForum") + "\" title=\""
-            + resources.getString("editForum") + "\"/></a>");
+        out.println("\"><img src=\"" + ForumHelper.IMAGE_UPDATE +
+            "\" border=\"0\" align=\"middle\" alt=\"" + resources.getString("editForum") +
+            "\" title=\"" + resources.getString("editForum") + "\"/></a>");
         out.print("&nbsp;");
         // icone de suppression
         out.print("<a href=\"javascript:confirmDeleteForum('" + forumId + "');\">");
-        out.print("<img src=\"" + ForumHelper.IMAGE_DELETE
-            + "\" border=\"0\" align=\"middle\" alt=\""
-            + resources.getString("deleteForum") + "\" title=\""
-            + resources.getString("deleteForum") + "\"/></a>");
+        out.print(
+            "<img src=\"" + ForumHelper.IMAGE_DELETE + "\" border=\"0\" align=\"middle\" alt=\"" +
+                resources.getString("deleteForum") + "\" title=\"" +
+                resources.getString("deleteForum") + "\"/></a>");
         out.print("&nbsp;");
         // icone de verrouillage
         out.print("<a href=\"");
-        out.print(ActionUrl.getUrl((currentPage > 0 ? "viewForum" : "main"), call,
-            (forumActive ? 5 : 6), forumId, currentPage));
+        out.print(ActionUrl
+            .getUrl((currentPage > 0 ? "viewForum" : "main"), call, (forumActive ? 5 : 6), forumId,
+                currentPage));
         out.print("\">");
         if (forumActive) {
-          out.print("<img src=\"" + ForumHelper.IMAGE_UNLOCK
-              + "\" border=\"0\" align=\"middle\" alt=\"");
+          out.print(
+              "<img src=\"" + ForumHelper.IMAGE_UNLOCK + "\" border=\"0\" align=\"middle\" alt=\"");
           out.print(resources.getString("lockForum"));
           out.print("\" title=\"" + resources.getString("lockForum") + "\"/>");
         } else {
-          out.print("<img src=\"" + ForumHelper.IMAGE_LOCK
-              + "\" border=\"0\" align=\"middle\" alt=\"");
+          out.print(
+              "<img src=\"" + ForumHelper.IMAGE_LOCK + "\" border=\"0\" align=\"middle\" alt=\"");
           out.print(resources.getString("unlockForum"));
           out.print("\" title=\"" + resources.getString("unlockForum") + "\"/>");
         }
@@ -218,8 +219,9 @@ public class ForumListHelper {
       }
       out.println("</tr>");
     } catch (IOException ioe) {
-      SilverTrace.info(
-          "forums", "JSPforumsListManager.displayForumLine()", "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPforumsListManager.displayForumLine()", "root.EX_NO_MESSAGE", null,
+              ioe);
     }
   }
 
@@ -243,20 +245,21 @@ public class ForumListHelper {
           out.print("<td class=\"titreCateg\" align=\"center\" nowrap>");
           if (categoryId != null) {
             out.print("<a href=\"EditCategory?CategoryId=" + categoryId + "\">");
-            out.print("<img src=\"" + ForumHelper.IMAGE_UPDATE
-                + "\" border=\"0\" align=\"middle\" alt=\""
-                + resources.getString("forums.editCategory") + "\" title=\""
-                + resources.getString("forums.editCategory") + "\"/></a>");
+            out.print("<img src=\"" + ForumHelper.IMAGE_UPDATE +
+                "\" border=\"0\" align=\"middle\" alt=\"" +
+                resources.getString("forums.editCategory") + "\" title=\"" +
+                resources.getString("forums.editCategory") + "\"/></a>");
             out.print("&nbsp;&nbsp;");
-            out.print("<a href=\"javascript:confirmDeleteCategory('"
-                + String.valueOf(categoryId) + "');\">");
-            out.print("<img src=\"" + ForumHelper.IMAGE_DELETE
-                + "\" border=\"0\" align=\"middle\" alt=\""
-                + resources.getString("forums.deleteCategory") + "\" title=\""
-                + resources.getString("forums.deleteCategory") + "\"/></a>");
+            out.print("<a href=\"javascript:confirmDeleteCategory('" + String.valueOf(categoryId) +
+                "');\">");
+            out.print("<img src=\"" + ForumHelper.IMAGE_DELETE +
+                "\" border=\"0\" align=\"middle\" alt=\"" +
+                resources.getString("forums.deleteCategory") + "\" title=\"" +
+                resources.getString("forums.deleteCategory") + "\"/></a>");
             out.print("&nbsp;");
             out.print(
-                "<img src=\"icons/1px.gif\" width=\"15\" height=\"15\" border=\"0\" align=\"middle\"/>");
+                "<img src=\"icons/1px.gif\" width=\"15\" height=\"15\" border=\"0\" " +
+                    "align=\"middle\"/>");
           }
           out.println("</td>");
         }
@@ -266,8 +269,9 @@ public class ForumListHelper {
             currentForumId, 0, fsc, isSubscriberByInheritance);
       }
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPforumsListManager.displayForumsList()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPforumsListManager.displayForumsList()", "root.EX_NO_MESSAGE", null,
+              ioe);
     }
   }
 

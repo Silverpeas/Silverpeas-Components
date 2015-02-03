@@ -1,23 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.servlets;
 
@@ -128,22 +130,22 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         destination = ROOT_DEST + "editMessage.jsp";
       } else if (function.startsWith("modifyMessage")) {
         destination = ROOT_DEST + "modifyMessage.jsp";
-      } else if (function.equals("ValidateMessage")) {
+      } else if ("ValidateMessage".equals(function)) {
         String messageId = request.getParameter("params");
         forumsSC.validateMessage(Integer.parseInt(messageId));
         destination = getDestination("viewMessage", forumsSC, request);
-      } else if (function.equals("RefuseMessage")) {
+      } else if ("RefuseMessage".equals(function)) {
         String messageId = request.getParameter("params");
         String motive = request.getParameter("Motive");
         forumsSC.refuseMessage(Integer.parseInt(messageId), motive);
         destination = getDestination("viewMessage", forumsSC, request);
       } // gestion des catégories
       // ----------------------
-      else if (function.equals("ViewCategory")) {
+      else if ("ViewCategory".equals(function)) {
         destination = ROOT_DEST + "main.jsp";
       } else if (function.equals("NewCategory")) {
         destination = ROOT_DEST + "categoryManager.jsp";
-      } else if (function.equals("CreateCategory")) {
+      } else if ("CreateCategory".equals(function)) {
         // récupération des paramètres
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
@@ -152,14 +154,14 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         forumsSC.createCategory(category);
 
         destination = getDestination("ViewCategory", forumsSC, request);
-      } else if (function.equals("EditCategory")) {
+      } else if ("EditCategory".equals(function)) {
         // récupération des paramètres
         String categoryId = request.getParameter("CategoryId");
         NodeDetail category = forumsSC.getCategory(categoryId);
         request.setAttribute("Category", category);
 
         destination = ROOT_DEST + "categoryManager.jsp";
-      } else if (function.equals("UpdateCategory")) {
+      } else if ("UpdateCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         NodeDetail category = forumsSC.getCategory(categoryId);
         String name = request.getParameter("Name");
@@ -169,7 +171,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         forumsSC.updateCategory(category);
 
         destination = getDestination("ViewCategory", forumsSC, request);
-      } else if (function.equals("DeleteCategory")) {
+      } else if ("DeleteCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         SilverTrace.debug("forums", "ForumsRequestRouter", "root.MSG_GEN_PARAM_VALUE",
             "categoryId = " + categoryId);
@@ -200,8 +202,8 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
    * Prepares data to view a forum and computes the right destination.
    * @param request
    * @param forumsSC
-   * @param forumId
-   * @return
+   * @param forumId the forum identifier
+   * @return destination page
    */
   private String displayForum(HttpServletRequest request, ForumsSessionController forumsSC,
       int forumId) {
@@ -218,7 +220,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
       request.setAttribute("nbChildrens", forumsSC.getForumSonsNb(currentForumId));
       destinationPage = "viewForum.jsp";
     }
-    
+
     return ROOT_DEST + destinationPage + "?forumId=" + currentForumId;
   }
 }

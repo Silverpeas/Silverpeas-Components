@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,30 +9,30 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
@@ -207,8 +207,8 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
-              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
-                  fsc.getUserDetail());
+              Collection<UploadedFile> uploadedFiles =
+                  FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
               int messageId =
                   fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
                       forumKeywords, uploadedFiles);
@@ -254,28 +254,28 @@ public class ForumActionHelper {
           }
           case UNSUBSCRIBE_FORUM: {
             Forum forum = fsc.unsubscribeForum(params);
-            NotifierUtil.addSuccess(resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
+            NotifierUtil.addSuccess(
+                resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
             break;
           }
           case SUBSCRIBE_FORUM: {
             Forum forum = fsc.subscribeForum(params);
-            NotifierUtil.addSuccess(resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
+            NotifierUtil.addSuccess(
+                resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
             break;
           }
           case UNSUBSCRIBE_THREAD: {
             Message message = fsc.unsubscribeMessage(params);
             String bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                 "forums.message.unsubscribe.success";
-            NotifierUtil
-                .addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
+            NotifierUtil.addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case SUBSCRIBE_THREAD: {
             Message message = fsc.subscribeMessage(params);
             String bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                 "forums.message.subscribe.success";
-            NotifierUtil
-                .addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
+            NotifierUtil.addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case UPDATE_MESSAGE: {

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,30 +9,30 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.rating.web.RaterRatingEntity;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.web.RequestHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
@@ -91,8 +91,9 @@ public class ForumHelper {
       }
       out.print("\"");
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.addBodyOnload()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPmessagesListManager.addBodyOnload()", "root.EX_NO_MESSAGE", null,
+              ioe);
     }
   }
 
@@ -102,8 +103,9 @@ public class ForumHelper {
         out.print("resizeFrame();");
       }
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.addJsResizeFrameCall()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPmessagesListManager.addJsResizeFrameCall()", "root.EX_NO_MESSAGE",
+              null, ioe);
     }
   }
 
@@ -172,8 +174,8 @@ public class ForumHelper {
         if (fsc.isDisplayAllMessages() && !view) {
           out.print("javascript:scrollMessage('" + messageId + "')");
         } else {
-          out.print(ActionUrl.getUrl(
-              "viewMessage", call, 1, messageId, forumId, !simpleMode, false));
+          out.print(
+              ActionUrl.getUrl("viewMessage", call, 1, messageId, forumId, !simpleMode, false));
         }
         out.print("\">");
         out.print("<span class=\"message_" + message.getStatus() + "\"><b>");
@@ -211,8 +213,9 @@ public class ForumHelper {
             lastMessageUser = (String) lastMessage[2];
           }
           if (lastMessageDate != null) {
-            out.print("<a href=\"" + ActionUrl.getUrl(
-                "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
+            out.print("<a href=\"" +
+                ActionUrl.getUrl("viewMessage", call, 1, lastMessageId, forumId, true, false) +
+                "\">");
             out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
             out.print("<br/>");
             out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
@@ -259,33 +262,32 @@ public class ForumHelper {
         if (messageParent == 0 && (admin || moderator)) {
           out.print("<a href=\"");
           out.print(ActionUrl.getUrl("editMessage", call, 3, messageId, forumId));
-          out.print("\"><img src=" + IMAGE_MOVE + " align=\"middle\" border=\"0\" alt=\""
-              + resource.getString("moveMessage") + "\" title=\""
-              + resource.getString("moveMessage") + "\"></a>");
+          out.print("\"><img src=" + IMAGE_MOVE + " align=\"middle\" border=\"0\" alt=\"" +
+              resource.getString("moveMessage") + "\" title=\"" +
+              resource.getString("moveMessage") + "\"></a>");
           out.print("&nbsp;");
         }
 
         if (!view) {
           out.print("<a href=\"javascript:editMessage(" + messageId + ")\">");
-          out.print("<img src=" + IMAGE_UPDATE + " align=\"middle\" border=\"0\" alt=\""
-              + resource.getString("editMessage") + "\" title=\""
-              + resource.getString("editMessage") + "\"></a>");
+          out.print("<img src=" + IMAGE_UPDATE + " align=\"middle\" border=\"0\" alt=\"" +
+              resource.getString("editMessage") + "\" title=\"" +
+              resource.getString("editMessage") + "\"></a>");
           out.print("&nbsp;");
         }
-        out.print(
-            "<a href=\"javascript:deleteMessage(" + messageId + ", " + messageParent +
+        out.print("<a href=\"javascript:deleteMessage(" + messageId + ", " + messageParent +
                 ", false)\">");
-        out.print("<img src=" + IMAGE_DELETE + " align=\"middle\" border=\"0\" alt=\""
-            + resource.getString("deleteMessage") + "\" title=\""
-            + resource.getString("deleteMessage") + "\"></a>");
+        out.print("<img src=" + IMAGE_DELETE + " align=\"middle\" border=\"0\" alt=\"" +
+            resource.getString("deleteMessage") + "\" title=\"" +
+            resource.getString("deleteMessage") + "\"></a>");
 
         if (!simpleMode) {
           out.print("&nbsp;");
           out.print("<a href=\"");
           out.print(ActionUrl.getUrl("editMessageKeywords", call, -1, messageId, forumId));
-          out.print("\"><img src=" + IMAGE_WORD + " align=\"middle\" border=\"0\" alt=\""
-              + resource.getString("editMessageKeywords") + "\" title=\""
-              + resource.getString("editMessageKeywords") + "\"></a>");
+          out.print("\"><img src=" + IMAGE_WORD + " align=\"middle\" border=\"0\" alt=\"" +
+              resource.getString("editMessageKeywords") + "\" title=\"" +
+              resource.getString("editMessageKeywords") + "\"></a>");
         }
 
         out.println("</td>");
@@ -293,9 +295,9 @@ public class ForumHelper {
 
       out.println("  </tr>");
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.displayMessageLine()",
-          "root.EX_NO_MESSAGE",
-          null, ioe);
+      SilverTrace
+          .info("forums", "JSPmessagesListManager.displayMessageLine()", "root.EX_NO_MESSAGE", null,
+              ioe);
     }
   }
 
@@ -313,12 +315,13 @@ public class ForumHelper {
         if (admin || moderator) {
           colspan++;
         }
-        out.println("<tr><td colspan=\"" + colspan + "\" align=center><span class=\"txtnote\">"
-            + resource.getString("noMessages") + "</span></td></tr>");
+        out.println("<tr><td colspan=\"" + colspan + "\" align=center><span class=\"txtnote\">" +
+            resource.getString("noMessages") + "</span></td></tr>");
       }
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.displayMessagesList()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPmessagesListManager.displayMessagesList()", "root.EX_NO_MESSAGE",
+              null, ioe);
     }
   }
 
@@ -336,9 +339,9 @@ public class ForumHelper {
       Message[] messages = fsc.getMessagesList(currentForumId);
       int messagesCount = messages.length;
       if (messagesCount > 0) {
-        out
-            .println(
-            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"principal-message\">");
+        out.println(
+            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" " +
+                "class=\"principal-message\">");
 
         displayOneMessage(messages, out, resource, userId, admin, moderator, reader, view,
             messageId, 0, simpleMode, call, fsc, resources, isSubscriberByInheritance);
@@ -355,16 +358,18 @@ public class ForumHelper {
           out.println("</div>");
         }
       } else {
-        out
-            .println(
-            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"contourintfdcolor\">");
-        out.println("<tr><td align=\"center\"><span class=\"txtnav\">"
-            + resource.getString("noMessages") + "</span></td></tr>");
+        out.println(
+            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" " +
+                "class=\"contourintfdcolor\">");
+        out.println(
+            "<tr><td align=\"center\"><span class=\"txtnav\">" + resource.getString("noMessages") +
+                "</span></td></tr>");
         out.println("</table>");
       }
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.displaySingleMessageList()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPmessagesListManager.displaySingleMessageList()", "root.EX_NO_MESSAGE",
+              null, ioe);
     } catch (Exception e) {
       try {
         out.println("ERROR");

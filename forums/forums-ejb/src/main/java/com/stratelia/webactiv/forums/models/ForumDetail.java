@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.forums.models;
 
 import com.silverpeas.SilverpeasContent;
@@ -41,7 +40,6 @@ import java.util.Date;
 /**
  * This object contains the description of a forum
  * @author Marc Guillemin
- * @version 1.0
  */
 public class ForumDetail extends AbstractBean
     implements SilverContentInterface, Serializable, SilverpeasContent {

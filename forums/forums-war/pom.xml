@@ -36,7 +36,6 @@
     <dependency>
       <groupId>org.silverpeas.components.forums</groupId>
       <artifactId>forums-ejb</artifactId>
-      <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

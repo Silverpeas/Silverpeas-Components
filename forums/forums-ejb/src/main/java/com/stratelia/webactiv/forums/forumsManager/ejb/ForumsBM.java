@@ -1,35 +1,30 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Local;
-
-import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
@@ -40,13 +35,14 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.ServiceProvider;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 /**
- * Cette classe est l'interface Remote du Business Manager qui gere les forums
- *
+ * Forums service layer interface
  * @author frageade
- * @since September 2000
  */
-@Local
 public interface ForumsBM {
 
   static ForumsBM get() {
@@ -66,10 +62,8 @@ public interface ForumsBM {
   public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs);
 
   /**
-   *
    * @param forumPK forum primary key
    * @return a ForumDetail from the forum primary key identifier
-   * @
    */
   public ForumDetail getForumDetail(ForumPK forumPK);
 
@@ -129,8 +123,8 @@ public interface ForumsBM {
       Date messageCreationdate, int messageForum, int messageParent, String messageText,
       String keywords, String status);
 
-  public void updateMessage(MessagePK messagePK, String title, String message,
-      String userId, String status);
+  public void updateMessage(MessagePK messagePK, String title, String message, String userId,
+      String status);
 
   public void updateMessageKeywords(MessagePK messagePK, String keywords);
 
