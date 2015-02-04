@@ -21,33 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.delegatednews;
+package com.silverpeas.delegatednews.dao;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.delegatednews.model.DelegatedNews;
+import org.silverpeas.persistence.model.identifier.ExternalIntegerIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 
-import java.sql.Connection;
+import java.util.List;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+public interface DelegatedNewsRepository
+    extends BasicEntityRepository<DelegatedNews, ExternalIntegerIdentifier> {
 
-public class DelegatedNewsInstanciator implements ComponentsInstanciatorIntf {
+  List<DelegatedNews> findByStatus(String status);
 
-  public DelegatedNewsInstanciator() {
-  }
-
-  @Override
-  public void create(Connection con, String spaceId, String componentId, String userId)
-      throws InstanciationException {
-    SilverTrace
-        .info("delegatednews", "DelegatedNewsInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-            "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-  }
-
-  @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId)
-      throws InstanciationException {
-    SilverTrace
-        .info("delegatednews", "DelegatedNewsInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-            "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-  }
+  List<DelegatedNews> findAllOrderedNews();
 }

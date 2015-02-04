@@ -21,33 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.delegatednews;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
+package com.silverpeas.delegatednews.dao;
 
-import java.sql.Connection;
+import com.silverpeas.delegatednews.model.DelegatedNews;
+import org.silverpeas.persistence.model.identifier.ExternalIntegerIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.List;
 
-public class DelegatedNewsInstanciator implements ComponentsInstanciatorIntf {
+/**
+ * @author ebonnet
+ */
+public class DelegatedNewsJpaManager
+    extends JpaBasicEntityManager<DelegatedNews, ExternalIntegerIdentifier>
+    implements DelegatedNewsRepository {
 
-  public DelegatedNewsInstanciator() {
+  @Override
+  public List<DelegatedNews> findByStatus(final String status) {
+    return listFromNamedQuery("delegatednews.findByStatus",
+        newNamedParameters().add("status", status));
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId)
-      throws InstanciationException {
-    SilverTrace
-        .info("delegatednews", "DelegatedNewsInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-            "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-  }
-
-  @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId)
-      throws InstanciationException {
-    SilverTrace
-        .info("delegatednews", "DelegatedNewsInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-            "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+  public List<DelegatedNews> findAllOrderedNews() {
+    return listFromNamedQuery("delegatednews.findAllOrderedNews", newNamedParameters());
   }
 }

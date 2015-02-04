@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2009 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.delegatednews.control;
 
 import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
@@ -36,7 +35,6 @@ import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.exception.EncodingException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,14 +50,12 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
    */
   public DelegatedNewsSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle",
         "org.silverpeas.delegatednews.settings.DelegatedNewsIcons");
-
     service = ServicesFactory.getDelegatedNewsService();
   }
 
@@ -84,7 +80,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Est-ce qu'une instanceId fait partie d'un tableau ?
+   * Is component instance available
    * @return boolean : true si l'instanceId passsée en paramètre appartient au tableau passé en
    * paramètre 2
    */
@@ -107,7 +103,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * @return List<DelegatedNews> : liste d'actualités déléguées
    */
   public List<DelegatedNews> getAllAvailDelegatedNews() {
-    List<DelegatedNews> listResult = new ArrayList<DelegatedNews>();
+    List<DelegatedNews> listResult = new ArrayList<>();
     String[] allowedComponentIds = this.getUserAvailComponentIds();
 
     List<DelegatedNews> list = service.getAllDelegatedNews();
@@ -121,15 +117,17 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Valide l'actualité déléguée passée en paramètre
+   * Validate delegated news identified by pubId
+   * @param pubId the delegated news identifier to validate
    */
   public void validateDelegatedNews(int pubId) {
-    // valide l'actualité
     service.validateDelegatedNews(pubId, getUserId());
   }
 
   /**
-   * Refuse l'actualité déléguée passée en paramètre
+   * Refuse delegated news identified by pubId
+   * @param pubId the delegated news identifer to refuse
+   * @param refuseReasonText the reason why delegated news has been refused
    */
   public void refuseDelegatedNews(int pubId, String refuseReasonText) {
     // refuse l'actualité
@@ -146,11 +144,11 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   /**
    * Converts the list of Delegated News into its JSON representation.
    * @return a JSON representation of the list of Delegated News (as string)
-   * @throws JAXBException
+   * @throws DelegatedNewsRuntimeException
    */
   public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews)
-      throws JAXBException {
-    List<DelegatedNewsEntity> listDelegatedNewsEntity = new ArrayList<DelegatedNewsEntity>();
+      throws DelegatedNewsRuntimeException {
+    List<DelegatedNewsEntity> listDelegatedNewsEntity = new ArrayList<>();
     for (DelegatedNews delegatedNews : listDelegatedNews) {
       DelegatedNewsEntity delegatedNewsEntity =
           DelegatedNewsEntity.fromDelegatedNews(delegatedNews);
@@ -161,7 +159,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
 
   /**
    * Converts the list of Delegated News Entity into its JSON representation.
-   * @param listDelegatedNewsEntity
+   * @param listDelegatedNewsEntity the list of delegated news to convert into JSON representation
    * @return a JSON representation of the list of Delegated News Entity (as string)
    * @throws DelegatedNewsRuntimeException
    */
@@ -173,8 +171,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
       return JSONCodec.encode(entities);
     } catch (EncodingException ex) {
       throw new DelegatedNewsRuntimeException("DelegatedNewsSessionController.listAsJSON()",
-          SilverpeasRuntimeException.ERROR,
-          "root.EX_NO_MESSAGE", ex);
+          SilverpeasRuntimeException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
   }
 }

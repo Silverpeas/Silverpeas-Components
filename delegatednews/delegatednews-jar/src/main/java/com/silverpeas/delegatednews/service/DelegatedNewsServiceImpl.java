@@ -1,28 +1,30 @@
-/**
- * Copyright (C) 2000 - 2009 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.delegatednews.service;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.delegatednews.dao.DelegatedNewsDao;
+import com.silverpeas.delegatednews.dao.DelegatedNewsRepository;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -41,29 +43,27 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Singleton
 @Transactional
 public class DelegatedNewsServiceImpl implements DelegatedNewsService {
 
   @Inject
-  private DelegatedNewsDao dao;
+  private DelegatedNewsRepository dao;
   @Inject
   private OrganizationController organizationController;
 
   /**
-   * Ajout d'une actualité déléguée
+   * Add new delegated news
    */
   @Override
   public void submitNews(String id, SilverpeasContent news, String lastUpdaterId, Period visibilityPeriod, String userId) {
@@ -85,24 +85,21 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public DelegatedNews getDelegatedNews(int pubId) {
-    return dao.findOne(Integer.valueOf(pubId));
+    return dao.getById(Integer.toString(pubId));
   }
 
   /**
-   * Récupère toutes les actualités déléguées inter Theme Tracker
-   * @return List<DelegatedNews> : liste d'actualités déléguées
+   * Retrieve all delegated news from Theme Tracker applications
+   * @return List<DelegatedNews> : list of delegated news
    */
   @Override
   public List<DelegatedNews> getAllDelegatedNews() {
-    Sort sort =
-        new Sort(new Order(Direction.ASC, "newsOrder"), new Order(Direction.ASC, "beginDate"),
-            new Order(Direction.ASC, "pubId"));
-    return dao.findAll(sort);
+    return dao.findAllOrderedNews();
   }
 
   /**
-   * Récupère toutes les actualités déléguées valides inter Theme Tracker
-   * @return List<DelegatedNews> : liste d'actualités déléguées
+   * Retrieve all valid delegated news
+   * @return List<DelegatedNews> : list of valid delegated news
    */
   @Override
   public List<DelegatedNews> getAllValidDelegatedNews() {
@@ -114,7 +111,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public void validateDelegatedNews(int pubId, String validatorId) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
     if (delegatedNews != null) {
       delegatedNews.setStatus(DelegatedNews.NEWS_VALID);
       delegatedNews.setValidatorId(validatorId);
@@ -130,7 +127,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
     if (delegatedNews != null) {
       delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
       delegatedNews.setValidatorId(validatorId);
@@ -146,7 +143,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
     if (delegatedNews != null) {
       delegatedNews.setBeginDate(dateHourBegin);
       delegatedNews.setEndDate(dateHourEnd);
@@ -245,7 +242,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           Link link = new Link(url, localizedMessage.getString("delegatednews.notifLinkLabel"));
           notifMetaData.setLink(link, lang);
         }
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         roles.add("admin");
         String[] editors = getOrganisationController().getUsersIdsByRoleNames(
             delegatednewsInstanceId, roles);
@@ -264,11 +261,15 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   }
 
   /**
-   * Met à jour l'actualité déléguée passée en paramètre
+   * Update delegated news identified by id
+   * @param id delegated news identifier
+   * @param news the news content
+   * @param updaterId updater identifier
+   * @param visibilityPeriod the visibility period to update
    */
   @Override
   public void updateDelegatedNews(String id, SilverpeasContent news, String updaterId, Period visibilityPeriod) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(id));
+    DelegatedNews delegatedNews = dao.getById(id);
     if (delegatedNews != null) {
       delegatedNews.setInstanceId(news.getComponentInstanceId());
       delegatedNews.setStatus(DelegatedNews.NEWS_TO_VALIDATE);
@@ -284,11 +285,12 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   }
 
   /**
-   * Supprime l'actualité déléguée passée en paramètre
+   * Delete delegated news identified by pubId
+   * @param pubId the delegated news identifier to delete
    */
   @Override
   public void deleteDelegatedNews(int pubId) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
     if (delegatedNews != null) {
       dao.delete(delegatedNews);
     }
@@ -306,7 +308,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
             "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
       } else {
         PublicationDetail publication = news.getPublicationDetail();
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+        Map<String, SilverpeasTemplate> templates = new HashMap<>();
         ResourceLocator message = new ResourceLocator(
             "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
@@ -394,8 +396,8 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
     delegatedNews.setNewsOrder(newsOrder);
-    return (DelegatedNews) dao.saveAndFlush(delegatedNews);
+    return dao.saveAndFlush(delegatedNews);
   }
 }

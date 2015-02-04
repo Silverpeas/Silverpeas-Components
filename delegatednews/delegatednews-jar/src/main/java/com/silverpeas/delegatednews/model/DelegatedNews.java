@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2009 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.delegatednews.model;
@@ -28,107 +28,128 @@ import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.persistence.model.identifier.ExternalIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "sc_delegatednews_news")
-public class DelegatedNews implements java.io.Serializable {
-	
-	private static final long serialVersionUID = 9192830552642027995L;
+@AttributeOverride(name = "id", column = @Column(name = "pubId", columnDefinition = "int"))
+@NamedQueries({
+    @NamedQuery(name = "delegatednews.findByStatus", query = "SELECT dn FROM DelegatedNews dn " +
+        "WHERE dn.status = :status " +
+        "AND (" + "(dn.beginDate is null AND dn.endDate is null) " +
+        "OR " +
+        "(dn.beginDate is null AND dn.endDate is not null AND CURRENT_TIMESTAMP <= dn.endDate) " +
+        "OR " +
+        "(dn.beginDate is not null AND dn.endDate is null AND CURRENT_TIMESTAMP >= dn.beginDate) " +
+        "OR " +
+        "(dn.beginDate is not null AND dn.endDate is not null AND CURRENT_TIMESTAMP >= dn" +
+        ".beginDate AND CURRENT_TIMESTAMP <= dn.endDate) " + ")" + "ORDER BY dn.newsOrder ASC"),
+    @NamedQuery(name = "delegatednews.findAllOrderedNews", query =
+        "SELECT dn FROM DelegatedNews dn " +
+            "ORDER BY dn.newsOrder ASC, dn.beginDate ASC, dn.id.id ASC")})
+public class DelegatedNews extends AbstractJpaCustomEntity<DelegatedNews, ExternalIntegerIdentifier>
+    implements Serializable {
+  //TODO replace UniqueIntegerIdentifier with ExternalIntegerIdentifier (to create)
+  // demander demain ce qu'il en est de l'identifiant de la table sc_delegatednews_news.
 
-	@Id
-	private int pubId;
-	@Column(name = "instanceId")
-	private String instanceId;
-	@Column(name = "status")
-	private String status;
-	@Column(name = "contributorId")
-	private String contributorId;
-	@Column(name = "validatorId")
-	private String validatorId;
-	@Column(name = "validationDate", columnDefinition = "TIMESTAMP")
+  private static final long serialVersionUID = 9192830552642027995L;
+
+  @Column(name = "instanceId")
+  private String instanceId;
+  @Column(name = "status")
+  private String status;
+  @Column(name = "contributorId")
+  private String contributorId;
+  @Column(name = "validatorId")
+  private String validatorId;
+  @Column(name = "validationDate", columnDefinition = "TIMESTAMP")
   private Date validationDate;
-	@Column(name = "beginDate", columnDefinition = "TIMESTAMP")
-	private Date beginDate;
-	@Column(name = "endDate", columnDefinition = "TIMESTAMP")
-	private Date endDate;
-	@Column(name = "newsOrder")
+  @Column(name = "beginDate", columnDefinition = "TIMESTAMP")
+  private Date beginDate;
+  @Column(name = "endDate", columnDefinition = "TIMESTAMP")
+  private Date endDate;
+  @Column(name = "newsOrder")
   private int newsOrder = 0;
-	
-	public static final String NEWS_TO_VALIDATE = "ToValidate";
-	public static final String NEWS_VALID = "Valid";
-	public static final String NEWS_REFUSED = "Refused";
-	  
-	public DelegatedNews() {
-    
-	}
 
-	public DelegatedNews(int pubId, String instanceId, 
-			String contributorId, Date validationDate, Date beginDate, Date endDate) {
-		super();
-		this.pubId = pubId;
-		this.instanceId = instanceId;
-		this.status = NEWS_TO_VALIDATE;
-		this.contributorId = contributorId;
-		if(validationDate != null) {
-		  this.validationDate = new Date(validationDate.getTime());
-		}
-		if(beginDate != null) {
-		  this.beginDate = new Date(beginDate.getTime());
-		}
-		if(endDate != null) {
-		  this.endDate = new Date(endDate.getTime());
-		}
-	}
+  public static final String NEWS_TO_VALIDATE = "ToValidate";
+  public static final String NEWS_VALID = "Valid";
+  public static final String NEWS_REFUSED = "Refused";
 
-	public int getPubId() {
-		return pubId;
-	}
+  public DelegatedNews() {
 
-	public void setPubId(int pubId) {
-		this.pubId = pubId;
-	}
+  }
 
-	public String getInstanceId() {
-		return instanceId;
-	}
+  public DelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate,
+      Date beginDate, Date endDate) {
+    super();
+    setId(Integer.toString(pubId));
+    this.instanceId = instanceId;
+    this.status = NEWS_TO_VALIDATE;
+    this.contributorId = contributorId;
+    if (validationDate != null) {
+      this.validationDate = new Date(validationDate.getTime());
+    }
+    if (beginDate != null) {
+      this.beginDate = new Date(beginDate.getTime());
+    }
+    if (endDate != null) {
+      this.endDate = new Date(endDate.getTime());
+    }
+  }
 
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+  public int getPubId() {
+    return Integer.parseInt(getId());
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  public void setPubId(int pubId) {
+    setId(Integer.toString(pubId));
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-	public String getContributorId() {
-		return contributorId;
-	}
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
 
-	public void setContributorId(String contributorId) {
-		this.contributorId = contributorId;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public String getValidatorId() {
-		return validatorId;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public void setValidatorId(String validatorId) {
-		this.validatorId = validatorId;
-	}
-	
-	public Date getValidationDate() {
+  public String getContributorId() {
+    return contributorId;
+  }
+
+  public void setContributorId(String contributorId) {
+    this.contributorId = contributorId;
+  }
+
+  public String getValidatorId() {
+    return validatorId;
+  }
+
+  public void setValidatorId(String validatorId) {
+    this.validatorId = validatorId;
+  }
+
+  public Date getValidationDate() {
     return validationDate;
   }
 
@@ -136,122 +157,122 @@ public class DelegatedNews implements java.io.Serializable {
     this.validationDate = validationDate;
   }
 
-	public Date getBeginDate() {
-		return beginDate;
-	}
+  public Date getBeginDate() {
+    return beginDate;
+  }
 
-	public void setBeginDate(Date beginDate) {
-		this.beginDate = beginDate;
-	}
+  public void setBeginDate(Date beginDate) {
+    this.beginDate = beginDate;
+  }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+  public Date getEndDate() {
+    return endDate;
+  }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-	
-	public int getNewsOrder() {
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+
+  public int getNewsOrder() {
     return newsOrder;
   }
 
   public void setNewsOrder(int newsOrder) {
     this.newsOrder = newsOrder;
   }
-  
+
   public boolean isValidated() {
     return DelegatedNews.NEWS_VALID.equals(getStatus());
   }
-  
+
   public boolean isDenied() {
     return DelegatedNews.NEWS_REFUSED.equals(getStatus());
   }
-  
+
   public boolean isWaitingForValidation() {
     return DelegatedNews.NEWS_TO_VALIDATE.equals(getStatus());
   }
-	
-	public PublicationDetail getPublicationDetail() {
-	  try {
+
+  public PublicationDetail getPublicationDetail() {
+    try {
       PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
-      PublicationPK pubPk = new PublicationPK(Integer.toString(this.pubId), this.instanceId);
+      PublicationPK pubPk = new PublicationPK(getId(), this.instanceId);
       return publicationService.getDetail(pubPk);
     } catch (Exception e) {
       throw new PublicationRuntimeException("DelegatedNews.getPublicationDetail()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "pubId = "+this.pubId, e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "pubId = " + getId(),
+          e);
     }
   }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-	    if (getClass() != obj.getClass()) {
-	      return false;
-	    }
-	    final DelegatedNews other = (DelegatedNews) obj;
-	    if (this.pubId != other.pubId) {
-	        return false;
-	      }
-	    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(other.instanceId)) {
-	    	return false;
-	    }
-	    if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
-	    	return false;
-	    }
-	    if ((this.contributorId == null) ? (other.contributorId != null) : !this.contributorId.equals(other.contributorId)) {
-	    	return false;
-	    }
-	    if ((this.validatorId == null) ? (other.validatorId != null) : !this.validatorId.equals(other.validatorId)) {
-	    	return false;
-	    }
-	    if ((this.validationDate == null) ? (other.validationDate != null) : !this.validationDate.equals(other.validationDate)) {
-        return false;
-      }
-	    if ((this.beginDate == null) ? (other.beginDate != null) : !this.beginDate.equals(other.beginDate)) {
-	    	return false;
-	    }
-	    if ((this.endDate == null) ? (other.endDate != null) : !this.endDate.equals(other.endDate)) {
-	    	return false;
-	    }
-	    if ((this.newsOrder == -1) ? (other.newsOrder != -1) : this.newsOrder != other.newsOrder) {
-        return false;
-      }
-	    return true;
-	  }
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final DelegatedNews other = (DelegatedNews) obj;
+    if (this.getPubId() != other.getPubId()) {
+      return false;
+    }
+    if ((this.instanceId == null) ? (other.instanceId != null) :
+        !this.instanceId.equals(other.instanceId)) {
+      return false;
+    }
+    if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
+      return false;
+    }
+    if ((this.contributorId == null) ? (other.contributorId != null) :
+        !this.contributorId.equals(other.contributorId)) {
+      return false;
+    }
+    if ((this.validatorId == null) ? (other.validatorId != null) :
+        !this.validatorId.equals(other.validatorId)) {
+      return false;
+    }
+    if ((this.validationDate == null) ? (other.validationDate != null) :
+        !this.validationDate.equals(other.validationDate)) {
+      return false;
+    }
+    if ((this.beginDate == null) ? (other.beginDate != null) :
+        !this.beginDate.equals(other.beginDate)) {
+      return false;
+    }
+    if ((this.endDate == null) ? (other.endDate != null) : !this.endDate.equals(other.endDate)) {
+      return false;
+    }
+    if ((this.newsOrder == -1) ? (other.newsOrder != -1) : this.newsOrder != other.newsOrder) {
+      return false;
+    }
+    return true;
+  }
 
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + pubId;
-		result = prime * result
-        + ((instanceId == null) ? 0 : instanceId.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result
-        + ((contributorId == null) ? 0 : contributorId.hashCode());
-		result = prime * result
-        + ((validatorId == null) ? 0 : validatorId.hashCode());
-		result = prime * result
-        + ((validationDate == null) ? 0 : validationDate.hashCode());
-		result = prime * result
-				+ ((beginDate == null) ? 0 : beginDate.hashCode());
-		result = prime * result 
-		    + ((endDate == null) ? 0 : endDate.hashCode());
-		result = prime * result + newsOrder;
-		return result;
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + getPubId();
+    result = prime * result + ((instanceId == null) ? 0 : instanceId.hashCode());
+    result = prime * result + ((status == null) ? 0 : status.hashCode());
+    result = prime * result + ((contributorId == null) ? 0 : contributorId.hashCode());
+    result = prime * result + ((validatorId == null) ? 0 : validatorId.hashCode());
+    result = prime * result + ((validationDate == null) ? 0 : validationDate.hashCode());
+    result = prime * result + ((beginDate == null) ? 0 : beginDate.hashCode());
+    result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+    result = prime * result + newsOrder;
+    return result;
+  }
 
 
-	  @Override
-	  public String toString() {
-		  return "DelegatedNews {" + "pubId=" + pubId + ", instanceId=" + instanceId + ", status="
-	        + status + ", contributorId=" + contributorId + ", validatorId="
-	        + validatorId + ", validationDate=" + validationDate + ", beginDate=" + beginDate +
-	        ", endDate=" + endDate + ", newsOrder=" + newsOrder +'}';
+  @Override
+  public String toString() {
+    return "DelegatedNews {" + "pubId=" + getPubId() + ", instanceId=" + instanceId + ", status=" +
+        status + ", contributorId=" + contributorId + ", validatorId=" + validatorId +
+        ", validationDate=" + validationDate + ", beginDate=" + beginDate +
+        ", endDate=" + endDate + ", newsOrder=" + newsOrder + '}';
   }
 
 }

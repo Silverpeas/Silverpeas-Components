@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.delegatednews.web;
 
@@ -38,10 +38,11 @@ import java.net.URI;
 import java.util.Date;
 
 /**
- * The delegated news entity is a delegated news object that is exposed in the web as an entity (web entity).
+ * The delegated news entity is a delegated news object that is exposed in the web as an entity (web
+ * entity).
  * As such, it publishes only some of its attributes
- * It represents a delegated news in Silverpeas plus some additional information such as the URI for
- * accessing it.
+ * It represents a delegated news in Silverpeas plus some additional information such as the URI
+ * for accessing it.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -169,10 +170,10 @@ public class DelegatedNewsEntity implements WebEntity {
     OrganizationController organizationController =
         OrganizationControllerProvider.getOrganisationController();
     UserDetail user = organizationController.getUserDetail(delegatednews.getContributorId());
-    this.contributor =  UserProfileEntity.fromUser(user);
-    if(delegatednews.getValidatorId() != null) {
+    this.contributor = UserProfileEntity.fromUser(user);
+    if (delegatednews.getValidatorId() != null) {
       user = organizationController.getUserDetail(delegatednews.getValidatorId());
-      if(user != null) {
+      if (user != null) {
         this.validator = UserProfileEntity.fromUser(user);
       }
     }
@@ -194,10 +195,13 @@ public class DelegatedNewsEntity implements WebEntity {
     if (this.pubId != -1 && other.getPubId() != -1) {
       return this.pubId == other.getPubId();
     } else {
-      return this.instanceId.equals(other.getInstanceId()) && this.status.equals(other.getStatus())
-          && this.contributor.equals(other.getContributor()) && this.validator.equals(other.getValidator())
-          && this.validationDate.equals(other.getValidationDate()) && this.beginDate.equals(other.getBeginDate())
-          && this.endDate.equals(other.getEndDate()) && this.newsOrder == other.getNewsOrder();
+      return this.instanceId.equals(other.getInstanceId()) &&
+          this.status.equals(other.getStatus()) &&
+          this.contributor.equals(other.getContributor()) &&
+          this.validator.equals(other.getValidator()) &&
+          this.validationDate.equals(other.getValidationDate()) &&
+          this.beginDate.equals(other.getBeginDate()) && this.endDate.equals(other.getEndDate()) &&
+          this.newsOrder == other.getNewsOrder();
     }
   }
 
