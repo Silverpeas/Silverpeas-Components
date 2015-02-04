@@ -71,6 +71,8 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
   protected String getFileName() {
     if ("create".equals(type)) {
       return "new";
+    }else if("callagain".equals(type)){
+      return "callagain";
     }
     return "";
   }
