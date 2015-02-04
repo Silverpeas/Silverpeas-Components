@@ -23,8 +23,8 @@
  */
 package com.silverpeas.delegatednews.service;
 
-public class ServicesFactory {
-  private ServicesFactory() {
+public class DelegatedNewsServicesProvider {
+  private DelegatedNewsServicesProvider() {
   }
 
   public static DelegatedNewsService getDelegatedNewsService() {
