@@ -26,8 +26,6 @@ package com.silverpeas.mailinglist.service.notification;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -36,6 +34,8 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
@@ -88,7 +88,7 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
   public void notifyInternals(Message message, MailingList list,
           Collection<String> userIds, Collection<String> groupIds, boolean moderate)
           throws NotificationManagerException {
-    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+    Map<String, SilverpeasTemplate> templates = new HashMap<>();
     String subject = getNotificationFormatter().formatTitle(message, list.getName(),
         DisplayI18NHelper.getDefaultLanguage(), moderate);
     String templateFileName = MESSAGE_TEMPLATE_FILE;
@@ -120,13 +120,7 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
       if (moderate) {
         createTask(message, subject, userIds);
       }
-    } catch (CalendarRuntimeException e) {
-      throw new NotificationManagerException("NotificationHelperImpl",
-              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
-    } catch (RemoteException e) {
-      throw new NotificationManagerException("NotificationHelperImpl",
-              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
-    } catch (UnsupportedEncodingException e) {
+    } catch (CalendarRuntimeException | UnsupportedEncodingException | RemoteException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
               SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }

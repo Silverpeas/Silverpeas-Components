@@ -49,7 +49,15 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.mail.MailSending;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.silverpeas.wysiwyg.control.result.MailContentProcess;
@@ -135,7 +143,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   public List<InfoLetter> getInfoLetters(String instanceId) {
     String whereClause = "instanceId = '" + instanceId + "'";
     try {
-      return new ArrayList<InfoLetter>(infoLetterDAO.findByWhereClause(new IdPK(),
+      return new ArrayList<>(infoLetterDAO.findByWhereClause(new IdPK(),
           whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
@@ -151,7 +159,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       InfoLetter letter = getInfoLetter(letterPK);
       String whereClause = "instanceId = '" + letter.getInstanceId() + "' AND letterId = "
           + letterPK.getId() + " ORDER BY id desc";
-      return new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(
+      return new ArrayList<>(infoLetterPublicationDAO.findByWhereClause(
           letterPK, whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
@@ -287,7 +295,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
     // Initializing necessary subscriptions
     Collection<Subscription> subscriptions =
-        new ArrayList<Subscription>(users.length + groups.length);
+        new ArrayList<>(users.length + groups.length);
     for (UserDetail user : users) {
       subscriptions.add(
           new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()), componentId));
@@ -315,7 +323,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   @Override
   public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
     Connection con = openConnection();
-    Set<String> retour = new LinkedHashSet<String>();
+    Set<String> retour = new LinkedHashSet<>();
     Statement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -490,7 +498,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
       String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom) {
 
-    Set<String> emailErrors = new LinkedHashSet<String>();
+    Set<String> emailErrors = new LinkedHashSet<>();
 
     if (listEmailDest.size() > 0) {
       SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",

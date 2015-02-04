@@ -37,11 +37,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.mail.engine.SmtpConfiguration;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -53,8 +53,12 @@ import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.mail.engine.SmtpConfiguration;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.silverpeas.mail.MailAddress.eMail;
 import static org.silverpeas.mail.MailContent.of;
@@ -137,13 +141,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
       if (moderate) {
         createTask(message, defaultTitle, userIds);
       }
-    } catch (CalendarRuntimeException e) {
-      throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
-    } catch (RemoteException e) {
-      throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
-    } catch (UnsupportedEncodingException e) {
+    } catch (CalendarRuntimeException | UnsupportedEncodingException | RemoteException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
           SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
@@ -238,7 +236,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
 
   public Set<String> getModeratorsIds(MailingList list) {
     int size = list.getModerators().size();
-    Set<String> result = new HashSet<String>(size);
+    Set<String> result = new HashSet<>(size);
     for (InternalUser user : list.getModerators()) {
       result.add(user.getId());
     }
@@ -247,7 +245,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
 
   public Set<String> getUsersIds(MailingList list) {
     int size = list.getInternalSubscribers().size();
-    Set<String> result = new HashSet<String>(size);
+    Set<String> result = new HashSet<>(size);
     for (InternalUserSubscriber subscriber : list.getInternalSubscribers()) {
       result.add(subscriber.getExternalId());
     }
@@ -256,7 +254,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
 
   public Set<String> getGroupIds(MailingList list) {
     int size = list.getGroupSubscribers().size();
-    Set<String> result = new HashSet<String>(size);
+    Set<String> result = new HashSet<>(size);
     for (final InternalGroupSubscriber internalGroupSubscriber : list.getGroupSubscribers()) {
       result.add((internalGroupSubscriber).getExternalId());
     }

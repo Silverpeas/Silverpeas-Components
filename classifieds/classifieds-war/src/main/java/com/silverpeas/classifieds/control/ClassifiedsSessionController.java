@@ -37,31 +37,27 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -96,7 +92,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     
     // affectation du formulaire
     String xmlFormName = getXMLFormName();
-    String xmlFormShortName = null;
+    String xmlFormShortName;
     if (StringUtil.isDefined(xmlFormName)) {
       xmlFormShortName =
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -135,8 +131,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return classified : ClassifiedDetail
    */
   public ClassifiedDetail getClassified(String classifiedId) {
-    ClassifiedDetail classified = new ClassifiedDetail();
-    classified = getClassifiedService().getContentById(classifiedId);
+    ClassifiedDetail classified = getClassifiedService().getContentById(classifiedId);
     classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
     classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
     if (StringUtil.isDefined(classified.getValidatorId())) {
@@ -171,7 +166,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   
   public List<ClassifiedDetail> getClassifieds(QueryDescription query, int nb) {
     List<ClassifiedDetail> classifieds = getClassifieds(query);
-    List<ClassifiedDetail> result = new ArrayList<ClassifiedDetail>();
+    List<ClassifiedDetail> result = new ArrayList<>();
     for (int i = 0; i < nb && i < classifieds.size(); i++) {
       ClassifiedDetail classified = classifieds.get(i);
       enrichClassified(classified);
@@ -214,9 +209,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of ClassifiedDetail
    */
   public Collection<ClassifiedDetail> getClassifiedsToValidate() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getClassifiedsToValidate(getComponentId());
-    return classifieds;
+    return getClassifiedService().getClassifiedsToValidate(getComponentId());
   }
 
   /**
@@ -445,7 +438,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a Hashtable of <String, String>
    */
   private Map<String, String> createListField(String listName) {
-    Map<String, String> fields = Collections.synchronizedMap(new HashMap<String, String>());
+    Map<String, String> fields = Collections.synchronizedMap(new HashMap<>());
     if (StringUtil.isDefined(listName)) {
       // création de la hashtable (key,value)
       try {
@@ -468,9 +461,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of Subscribe
    */
   public Collection<Subscribe> getSubscribesByUser() {
-    Collection<Subscribe> subscribes = new ArrayList<Subscribe>();
     try {
-      subscribes = getClassifiedService().getSubscribesByUser(getComponentId(), getUserId());
+      Collection<Subscribe> subscribes =
+          getClassifiedService().getSubscribesByUser(getComponentId(), getUserId());
 
       if (fields1 == null) {
         fields1 = createListField(getSearchFields1());
@@ -484,11 +477,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         subscribe.setFieldName1(fields1.get(subscribe.getField1()));
         subscribe.setFieldName2(fields2.get(subscribe.getField2()));
       }
+
+      return subscribes;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.getSubscribesByUser()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return subscribes;
   }
 
   public void setCurrentPage(int currentPage) {
@@ -639,7 +633,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
-    SimpleDocument classifiedImage = null;
+    SimpleDocument classifiedImage;
     try {
       SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
       classifiedImage = AttachmentServiceProvider.getAttachmentService().searchDocumentById(sdPK, null);
@@ -681,7 +675,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param imageId : String
    */
   public void deleteClassifiedImage(String imageId) {
-    SimpleDocument classifiedImage = null;
+    SimpleDocument classifiedImage;
     try {
       SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
       classifiedImage = AttachmentServiceProvider.getAttachmentService().searchDocumentById(sdPK, null);
