@@ -30,6 +30,7 @@ import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddDateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackwardRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCallAgainRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCancelRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmUsersRequestHandler;
@@ -50,6 +51,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import org.silverpeas.servlet.HttpRequest;
 
 public class ScheduleEventRequestRouter extends
@@ -104,6 +106,8 @@ public class ScheduleEventRequestRouter extends
         new ScheduleEventConfirmUsersRequestHandler(false);
     ScheduleEventExportRequestHandler exportRequestHandler =
         new ScheduleEventExportRequestHandler("exportIcalPopup.jsp");
+    ScheduleEventCallAgainRequestHandler callAgainRequestHandler =
+        new ScheduleEventCallAgainRequestHandler("detail.jsp");
 
     deleteRequestHandler.setForwardRequestHandler(mainRequestHandler);
     modifyStateRequestHandler.setForwardRequestHandler(mainRequestHandler);
@@ -129,7 +133,8 @@ public class ScheduleEventRequestRouter extends
     confirmRequestHandler.setForwardRequestHandler(mainRequestHandler);
 
     validResponseRequestHandler.setForwardRequestHandler(detailRequestHandler);
-    
+
+    callAgainRequestHandler.setDetailHandler(detailRequestHandler);
 
     actions.put("Main", mainRequestHandler);
     actions.put("Detail", detailRequestHandler);
@@ -157,6 +162,7 @@ public class ScheduleEventRequestRouter extends
     actions.put("ConfirmUsers", confirmUsersRequestHandler);
     actions.put("ConfirmModifyUsers", modifyUsersRequestHandler);
     actions.put("Confirm", confirmRequestHandler);
+    actions.put("CallAgain", callAgainRequestHandler);
   };
 
   /**
@@ -182,7 +188,6 @@ public class ScheduleEventRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scheduleeventSC The component Session Control, build and initialised.
    * @param request
