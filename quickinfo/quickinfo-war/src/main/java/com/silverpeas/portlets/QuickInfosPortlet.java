@@ -40,20 +40,20 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {
-  
+
   public final static String PARAM_DISPLAY = "displayMode";
 
   @Override
-  public void doView(RenderRequest request, RenderResponse response) throws PortletException,
-      IOException {
+  public void doView(RenderRequest request, RenderResponse response)
+      throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
-    
+    MainSessionController mainSessionCtrl = (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
+            PortletSession.APPLICATION_SCOPE);
+
     QuickInfoService service = QuickInfoServiceFactory.getQuickInfoService();
-    
-    request.setAttribute("QuickInfos", service.getPlatformNews(m_MainSessionCtrl.getUserId()));
+
+    request.setAttribute("QuickInfos", service.getPlatformNews(mainSessionCtrl.getUserId()));
 
     include(request, response, "portlet.jsp");
   }
@@ -82,14 +82,14 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
       throw new NullPointerException("null or empty page name");
     }
     try {
-      PortletRequestDispatcher dispatcher = getPortletContext()
-          .getRequestDispatcher("/portlets/jsp/quickInfos/" + pageName);
+      PortletRequestDispatcher dispatcher =
+          getPortletContext().getRequestDispatcher("/portlets/jsp/quickInfos/" + pageName);
       dispatcher.include(request, response);
     } catch (IOException ioe) {
       throw new PortletException(ioe);
     }
   }
-  
+
   /*
    * Process Action.
    */
@@ -106,8 +106,8 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
   /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
+  private void processEditCancelAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
@@ -117,7 +117,7 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
    */
   private void processEditFinishedAction(ActionRequest request, ActionResponse response)
       throws PortletException {
-    
+
     String displayMode = request.getParameter(PARAM_DISPLAY);
 
     try {

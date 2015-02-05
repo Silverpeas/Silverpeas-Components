@@ -1,30 +1,33 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.components.quickinfo.model;
 
 import com.silverpeas.ApplicationService;
-import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.ServicesFactory;
+import com.silverpeas.delegatednews.service.DelegatedNewsServiceProvider;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -47,7 +50,6 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
@@ -65,7 +67,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -76,8 +78,7 @@ import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
-@Service
-@Named("quickInfoService")
+@Singleton
 public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News> {
 
   @Inject
@@ -86,8 +87,6 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   @Inject
   private CommentService commentService;
 
-  private UserAuthenticationListener userAuthenticationListener;
-
   @Override
   public News getContentById(String contentId) {
     return getNews(contentId);
@@ -95,10 +94,11 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
 
   @Override
   public List<News> getVisibleNews(String componentId) {
-    SilverTrace.info("quickinfo", "DefaultQuickInfoService.getVisibleNews()",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
+    SilverTrace
+        .info("quickinfo", "DefaultQuickInfoService.getVisibleNews()", "root.MSG_GEN_ENTER_METHOD",
+            "componentId = " + componentId);
     List<News> quickinfos = getAllNews(componentId);
-    List<News> result = new ArrayList<News>();
+    List<News> result = new ArrayList<>();
     for (News news : quickinfos) {
       if (news.isVisible() && !news.isDraft()) {
         result.add(news);
@@ -137,8 +137,8 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
   private void setDelegatedNews(News news, PublicationDetail publication) {
-    news.setDelegatedNews(getDelegatedNewsService().getDelegatedNews(
-        Integer.parseInt(publication.getId())));
+    news.setDelegatedNews(
+        getDelegatedNewsService().getDelegatedNews(Integer.parseInt(publication.getId())));
   }
 
   @Override
@@ -235,12 +235,15 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     try {
       new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
     } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "DefaultQuickInfoService.publish()", "root.ContentManagerException", e);
+      SilverTrace
+          .error("quickinfo", "DefaultQuickInfoService.publish()", "root.ContentManagerException",
+              e);
     }
 
     if (news.isVisible()) {
       // Sending notifications to subscribers
-      UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+      UserNotificationHelper
+          .buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
     }
   }
 
@@ -256,8 +259,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     final PublicationDetail publication = news.getPublication();
 
     // saving WYSIWYG content
-    WysiwygController.save(news.getContent(), news.getComponentInstanceId(),
-        news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
+    WysiwygController
+        .save(news.getContent(), news.getComponentInstanceId(), news.getPublicationId(),
+            publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
 
     // Updating the publication
     if (news.isDraft()) {
@@ -281,8 +285,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     try {
       new QuickInfoContentManager().updateSilverContentVisibility(publication, !news.isDraft());
     } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "DefaultQuickInfoService.update()",
-          "root.ContentManagerException", e);
+      SilverTrace
+          .error("quickinfo", "DefaultQuickInfoService.update()", "root.ContentManagerException",
+              e);
     }
 
     // Classifying new content onto taxonomy
@@ -298,8 +303,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     }
 
     if (isDelegatedNewsActivated(news.getComponentInstanceId())) {
-      getDelegatedNewsService().updateDelegatedNews(publication.getId(), news,
-          publication.getUpdaterId(), news.getVisibilityPeriod());
+      getDelegatedNewsService()
+          .updateDelegatedNews(publication.getId(), news, publication.getUpdaterId(),
+              news.getVisibilityPeriod());
     }
   }
 
@@ -313,11 +319,12 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     getPublicationService().removePublication(foreignPK);
 
     // De-reffering contribution in taxonomy
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       new QuickInfoContentManager().deleteSilverContent(connection, foreignPK);
-    } catch (ContentManagerException|SQLException e) {
-      SilverTrace.error("quickinfo", "DefaultQuickInfoService.removeNews",
-          e.getClass().getSimpleName(), e);
+    } catch (ContentManagerException | SQLException e) {
+      SilverTrace
+          .error("quickinfo", "DefaultQuickInfoService.removeNews", e.getClass().getSimpleName(),
+              e);
     }
 
 
@@ -348,19 +355,19 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     Transaction.performInOne(new Transaction.Process<Long>() {
       @Override
       public Long execute() {
-        return Long.valueOf(newsRepository.deleteById(id));
+        return newsRepository.deleteById(id);
       }
     });
   }
 
   @Override
   public List<News> getPlatformNews(String userId) {
-    SilverTrace.info("quickinfo", "DefaultQuickInfoService.getPlatformNews()",
-        "root.MSG_GEN_PARAM_VALUE", "Enter Get All Quick Info : User=" + userId);
-    List<News> result = new ArrayList<News>();
-    CompoSpace[] compoSpaces =
-        OrganizationControllerProvider.getOrganisationController().getCompoForUser(userId,
-            QuickInfoComponentSettings.COMPONENT_NAME);
+    SilverTrace
+        .info("quickinfo", "DefaultQuickInfoService.getPlatformNews()", "root.MSG_GEN_PARAM_VALUE",
+            "Enter Get All Quick Info : User=" + userId);
+    List<News> result = new ArrayList<>();
+    CompoSpace[] compoSpaces = OrganizationControllerProvider.getOrganisationController()
+        .getCompoForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
     for (CompoSpace compoSpace : compoSpaces) {
       String componentId = compoSpace.getComponentId();
       try {
@@ -376,7 +383,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   @Override
   public List<News> getNewsForTicker(String userId) {
     List<News> allNews = getPlatformNews(userId);
-    List<News> forTicker = new ArrayList<News>();
+    List<News> forTicker = new ArrayList<>();
     for (News news : allNews) {
       if (news.isTicker()) {
         forTicker.add(news);
@@ -388,7 +395,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   @Override
   public List<News> getUnreadBlockingNews(String userId) {
     List<News> allNews = getPlatformNews(userId);
-    List<News> result = new ArrayList<News>();
+    List<News> result = new ArrayList<>();
     for (News news : allNews) {
       if (news.isMandatory() && !getStatisticService().isRead(news, userId)) {
         result.add(news);
@@ -399,8 +406,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
 
   public void submitNewsOnHomepage(String id, String userId) {
     News news = getNews(id);
-    getDelegatedNewsService().submitNews(news.getPublicationId(), news, news.getUpdaterId(),
-        news.getVisibilityPeriod(), userId);
+    getDelegatedNewsService()
+        .submitNews(news.getPublicationId(), news, news.getUpdaterId(), news.getVisibilityPeriod(),
+            userId);
   }
 
   private List<News> sortByDateDesc(List<News> listOfNews) {
@@ -416,18 +424,16 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
 
   /**
    * Classify the info letter publication on the PdC only if the positions parameter is filled
-   *
    * @param publi the quickInfo PublicationDetail to classify
    * @param pdcPositions the string json positions
    */
   private void classifyQuickInfo(PublicationDetail publi, List<PdcPosition> pdcPositions) {
     if (pdcPositions != null && !pdcPositions.isEmpty()) {
       String qiId = publi.getPK().getId();
-      PdcClassification classification = aPdcClassificationOfContent(qiId,
-            publi.getInstanceId()).withPositions(pdcPositions);
+      PdcClassification classification =
+          aPdcClassificationOfContent(qiId, publi.getInstanceId()).withPositions(pdcPositions);
       if (!classification.isEmpty()) {
-        PdcClassificationService service =
-              PdcServiceProvider.getPdcClassificationService();
+        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
         classification.ofContent(qiId);
         service.classifyContent(publi, classification);
       }
@@ -439,13 +445,12 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
   private DelegatedNewsService getDelegatedNewsService() {
-    return ServicesFactory.getDelegatedNewsService();
+    return DelegatedNewsServiceProvider.getDelegatedNewsService();
   }
 
   private boolean isDelegatedNewsActivated(String componentId) {
-    String paramValue =
-        OrganizationControllerProvider.getOrganisationController().getComponentParameterValue(
-            componentId, QuickInfoComponentSettings.PARAM_DELEGATED);
+    String paramValue = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentId, QuickInfoComponentSettings.PARAM_DELEGATED);
     return StringUtil.getBooleanValue(paramValue);
   }
 

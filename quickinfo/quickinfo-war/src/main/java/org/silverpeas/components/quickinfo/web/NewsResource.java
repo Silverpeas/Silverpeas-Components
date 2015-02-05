@@ -44,7 +44,7 @@ public class NewsResource extends RESTWebService {
   @Path("ticker")
   @Produces(MediaType.APPLICATION_JSON)
   public List<NewsEntity> getTickerNews() {
-    List<NewsEntity> entities = new ArrayList<NewsEntity>();
+    List<NewsEntity> entities = new ArrayList<>();
     
     List<News> newsForTicker = getService().getNewsForTicker(getUserDetail().getId());
     for (News news : newsForTicker) {

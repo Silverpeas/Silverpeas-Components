@@ -57,7 +57,6 @@ import static org.silverpeas.cache.service.CacheServiceProvider
 
 /**
  * @author squere
- * @version
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
@@ -66,20 +65,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   /**
    * Creates new QuickInfoSessionController
-   *
    * @param mainSessionCtrl
    * @param componentContext
    */
   public QuickInfoSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-        QuickInfoComponentSettings.MESSAGES_PATH, QuickInfoComponentSettings.ICONS_PATH,
-        QuickInfoComponentSettings.SETTINGS_PATH);
+    super(mainSessionCtrl, componentContext, QuickInfoComponentSettings.MESSAGES_PATH,
+        QuickInfoComponentSettings.ICONS_PATH, QuickInfoComponentSettings.SETTINGS_PATH);
   }
 
   private PublicationService getPublicationService() {
     if (publicationService == null) {
-        publicationService = ServiceProvider.getService(PublicationService.class);
+      publicationService = ServiceProvider.getService(PublicationService.class);
     }
     return publicationService;
   }
@@ -255,9 +252,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     Boolean subscriber = null;
     if (!getUserDetail().isAccessGuest()) {
       SubscriptionService subscriptionService = SubscriptionServiceProvider.getSubscribeService();
-      boolean isUserSubscribed = subscriptionService.existsSubscription(
-          new ComponentSubscription(getUserId(), getComponentId()));
-      subscriber = Boolean.valueOf(isUserSubscribed);
+      subscriber = subscriptionService
+          .existsSubscription(new ComponentSubscription(getUserId(), getComponentId()));
     }
     return subscriber;
   }
@@ -271,8 +267,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     sel.setHostComponentId(getComponentId());
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
-    sel.setNotificationMetaData(UserNotificationHelper.build(new NewsManualUserNotification(
-        getNews(newsId, false), getUserDetail())));
+    sel.setNotificationMetaData(UserNotificationHelper
+        .build(new NewsManualUserNotification(getNews(newsId, false), getUserDetail())));
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
@@ -287,7 +283,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   /**
    * Classify the info letter publication on the PdC only if the positions parameter is filled
-   *
    * @param positions the string json positions
    */
   private List<PdcPosition> getPositionsFromJSON(String positions) {

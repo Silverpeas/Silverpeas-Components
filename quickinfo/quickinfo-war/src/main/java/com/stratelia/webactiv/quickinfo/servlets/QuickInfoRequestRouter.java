@@ -20,33 +20,28 @@
  */
 package com.stratelia.webactiv.quickinfo.servlets;
 
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.CreateException;
-
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.date.Period;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.wysiwyg.WysiwygException;
-
-import com.silverpeas.thumbnail.control.ThumbnailController;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
-import org.silverpeas.util.DateUtil;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -66,8 +61,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param quickInfo The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -77,7 +70,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   @Override
   public String getDestination(String function, QuickInfoSessionController quickInfo,
       HttpRequest request) {
-    String destination = null;
+    String destination;
     SilverpeasRole flag = quickInfo.getHighestSilverpeasUserRole();
     if (flag == null) {
       return null;
@@ -130,7 +123,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/news.jsp";
         if (StringUtil.isDefined(anchor)) {
-          destination += "#"+anchor;
+          destination += "#" + anchor;
         }
       } else if ("ViewOnly".equals(function)) {
         String id = request.getParameter("Id");
@@ -163,7 +156,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         destination = getDestination("Main", quickInfo, request);
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
-        News news = null;
+        News news;
         if (StringUtil.isInteger(id)) {
           // from a search result
           news = quickInfo.getNewsByForeignId(id);
@@ -193,8 +186,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
-    SilverTrace.info("quickinfo", "QuickInfoRequestRooter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "destination" + destination);
+    SilverTrace
+        .info("quickinfo", "QuickInfoRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+            "destination" + destination);
     return destination;
   }
 
@@ -202,24 +196,21 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     return role.isGreaterThanOrEquals(SilverpeasRole.publisher);
   }
 
-  private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news, HttpRequest request) {
+  private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news,
+      HttpRequest request) {
     request.setAttribute("info", news);
     request.setAttribute("ThumbnailSettings", quickInfo.getThumbnailSettings());
   }
 
   /**
    * This method retrieve all the request parameters before creating or updating a quick info
-   *
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
-   * @param action a string representation of an action
+   * @param publish true if publish action, false otherwise.
    * @throws Exception
-   * @throws RemoteException
-   * @throws CreateException
-   * @throws WysiwygException
    */
-  private String saveQuickInfo(QuickInfoSessionController quickInfo,
-      HttpRequest request, boolean publish) throws Exception {
+  private String saveQuickInfo(QuickInfoSessionController quickInfo, HttpRequest request,
+      boolean publish) throws Exception {
 
     List<FileItem> items = request.getFileItems();
     News news = requestToNews(items, quickInfo.getLanguage());
@@ -233,9 +224,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String id = news.getId();
 
     // process thumbnail first to be stored in index when publication is updated
-    ThumbnailController.processThumbnail(
-        new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
-        PublicationDetail.getResourceType(), items);
+    ThumbnailController
+        .processThumbnail(new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
+            PublicationDetail.getResourceType(), items);
 
     quickInfo.update(id, news, positions, publish);
 
@@ -293,13 +284,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
 
   private String getFlag(String[] profiles) {
     String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
+    for (final String profile : profiles) {
       // if admin, return it, we won't find a better profile
-      if ("admin".equals(profiles[i])) {
-        return profiles[i];
+      if ("admin".equals(profile)) {
+        return profile;
       }
-      if ("publisher".equals(profiles[i])) {
-        flag = profiles[i];
+      if ("publisher".equals(profile)) {
+        flag = profile;
       }
     }
     return flag;

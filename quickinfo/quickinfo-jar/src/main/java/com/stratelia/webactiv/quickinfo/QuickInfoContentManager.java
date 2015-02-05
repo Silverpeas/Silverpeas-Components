@@ -1,23 +1,27 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.quickinfo;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -34,18 +38,16 @@ import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class QuickInfoContentManager implements ContentInterface {
 
   private ContentManager contentManager;
-  private PublicationService currentPublicationService;
+  private PublicationService publicationService;
   public final static String CONTENT_ICON = "quickinfoSmall.gif";
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   *
    * @param ids list of silverContentId to retrieve
    * @param componentId the id of the instance
    * @param sUserId the id of the user who wants to retrieve silverContent
@@ -53,10 +55,10 @@ public class QuickInfoContentManager implements ContentInterface {
    * @return a List of SilverContent
    */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids,
-      String componentId, String sUserId, List<String> alContentUserRoles) {
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String componentId,
+      String sUserId, List<String> alContentUserRoles) {
     if (getContentManager() == null) {
-      return new ArrayList<SilverContentInterface>();
+      return new ArrayList<>();
     }
     return getHeaders(makePKArray(ids, componentId));
   }
@@ -73,40 +75,39 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   *
    * @param con a Connection
    * @param pubDetail the content to register
    * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
-  public int createSilverContent(Connection con, PublicationDetail pubDetail,
-      String userId, boolean isVisible) throws ContentManagerException {
-    SilverTrace.info("quickinfo",
-        "QuickInfoContentManager.createSilverContent()",
+  public int createSilverContent(Connection con, PublicationDetail pubDetail, String userId,
+      boolean isVisible) throws ContentManagerException {
+    SilverTrace.info("quickinfo", "QuickInfoContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", String.valueOf(pubDetail));
-    SilverContentVisibility scv = new SilverContentVisibility(pubDetail
-        .getBeginDate(), pubDetail.getEndDate(), isVisible);
-    return getContentManager().addSilverContent(con, pubDetail.getPK().getId(),
-        pubDetail.getPK().getComponentName(), userId, scv);
+    SilverContentVisibility scv =
+        new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
+    return getContentManager()
+        .addSilverContent(con, pubDetail.getPK().getId(), pubDetail.getPK().getComponentName(),
+            userId, scv);
   }
 
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
-   *
    * @param pubDetail the content
    */
-  public void updateSilverContentVisibility(PublicationDetail pubDetail,
-      boolean isVisible) throws ContentManagerException {
-    int silverContentId = getContentManager().getSilverContentId(
-        pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
+  public void updateSilverContentVisibility(PublicationDetail pubDetail, boolean isVisible)
+      throws ContentManagerException {
+    int silverContentId = getContentManager()
+        .getSilverContentId(pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
     if (silverContentId != -1) {
       SilverContentVisibility scv =
           new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
       SilverTrace.info("quickinfo", "QuickInfoContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", String.valueOf(scv));
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          pubDetail.getPK().getComponentName(), silverContentId);
+      getContentManager()
+          .updateSilverContentVisibilityAttributes(scv, pubDetail.getPK().getComponentName(),
+              silverContentId);
       ClassifyEngine.clearCache();
     } else {
       createSilverContent(null, pubDetail, pubDetail.getCreatorId(), isVisible);
@@ -115,7 +116,6 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
-   *
    * @param con a Connection
    * @param pubPK the identifiant of the content to unregister
    */
@@ -131,27 +131,20 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of publicationPK according to a list of silverContentId
-   *
    * @param idList a list of silverContentId
-   * @param peasId the id of the instance
+   * @param componentId the id of the instance
    * @return a list of publicationPK
    */
-  private List<PublicationPK> makePKArray(List<Integer> idList, String peasId) {
-    List<PublicationPK> pks = new ArrayList<PublicationPK>();
-    PublicationPK pubPK = null;
-    Iterator<Integer> iter = idList.iterator();
-    String id = null;
+  private List<PublicationPK> makePKArray(List<Integer> idList, String componentId) {
+    List<PublicationPK> pks = new ArrayList<>();
     // for each silverContentId, we get the corresponding publicationId
-    while (iter.hasNext()) {
-      int contentId = iter.next().intValue();
+    for (Integer contentId : idList) {
       try {
-        id = getContentManager().getInternalContentId(contentId);
-        pubPK = new PublicationPK(id, "useless", peasId);
+        String id = getContentManager().getInternalContentId(contentId);
+        PublicationPK pubPK = new PublicationPK(id, "useless", componentId);
         pks.add(pubPK);
-      } catch (ClassCastException ignored) {
-        ;// ignore unknown item
-      } catch (ContentManagerException ignored) {
-        ;// ignore unknown item
+      } catch (ClassCastException | ContentManagerException ignored) {
+        // ignore unknown item
       }
     }
     return pks;
@@ -159,14 +152,13 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   *
    * @param pubPKs a list of publicationPK
    * @return a list of publicationDetail
    */
   private List getHeaders(List<PublicationPK> pubPKs) {
-    List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>(
-        getPublicationService().getPublications(pubPKs));
-    List<PublicationDetail> headers = new ArrayList<PublicationDetail>(publicationDetails.size());
+    List<PublicationDetail> publicationDetails =
+        new ArrayList<>(getPublicationService().getPublications(pubPKs));
+    List<PublicationDetail> headers = new ArrayList<>(publicationDetails.size());
     for (PublicationDetail pubDetail : publicationDetails) {
       pubDetail.setIconUrl(CONTENT_ICON);
       headers.add(pubDetail);
@@ -175,10 +167,10 @@ public class QuickInfoContentManager implements ContentInterface {
   }
 
   private PublicationService getPublicationService() {
-    if (currentPublicationService == null) {
-        currentPublicationService = ServiceProvider.getService(PublicationService.class);
+    if (publicationService == null) {
+      publicationService = ServiceProvider.getService(PublicationService.class);
     }
-    return currentPublicationService;
+    return publicationService;
   }
 
   private ContentManager getContentManager() {

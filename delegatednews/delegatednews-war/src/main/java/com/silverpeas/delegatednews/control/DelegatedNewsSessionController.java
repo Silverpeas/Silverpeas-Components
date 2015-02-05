@@ -26,7 +26,7 @@ package com.silverpeas.delegatednews.control;
 import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.DelegatedNewsServicesProvider;
+import com.silverpeas.delegatednews.service.DelegatedNewsServiceProvider;
 import com.silverpeas.delegatednews.web.DelegatedNewsEntity;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -56,7 +56,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle",
         "org.silverpeas.delegatednews.settings.DelegatedNewsIcons");
-    service = DelegatedNewsServicesProvider.getDelegatedNewsService();
+    service = DelegatedNewsServiceProvider.getDelegatedNewsService();
   }
 
   public boolean isUser() {
