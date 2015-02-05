@@ -25,12 +25,14 @@ package com.silverpeas.scheduleevent.notification;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
+import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -40,12 +42,14 @@ import com.stratelia.webactiv.util.DateUtil;
 /**
  * @author Yohann Chastagnier
  */
-public class ScheduleEventUserNotification extends AbstractTemplateUserNotificationBuilder<ScheduleEvent> {
+public class ScheduleEventUserCallAgainNotification extends
+    AbstractTemplateUserNotificationBuilder<ScheduleEvent> {
 
   private final UserDetail senderUserDetail;
   private final String type;
 
-  public ScheduleEventUserNotification(final ScheduleEvent resource, final UserDetail senderUserDetail,
+  public ScheduleEventUserCallAgainNotification(final ScheduleEvent resource,
+      final UserDetail senderUserDetail,
       final String type) {
     super(resource, null, null);
     this.senderUserDetail = senderUserDetail;
@@ -69,8 +73,8 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
 
   @Override
   protected String getFileName() {
-    if ("create".equals(type)) {
-      return "new";
+    if ("callagain".equals(type)) {
+      return "callagain";
     }
     return "";
   }
@@ -80,7 +84,16 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
     final Set<Contributor> contributors = getResource().getContributors();
     final List<String> userIds = new ArrayList<String>(contributors.size());
     for (final Contributor contributor : contributors) {
-      userIds.add(Integer.toString(contributor.getUserId()));
+      int userId = contributor.getUserId();
+      Iterator<Response> responses = getResource().getResponses().iterator();
+      boolean found = false;
+      while (responses.hasNext() && !found) {
+        Response response = responses.next();
+        found = response.getUserId() == userId;
+      }
+      if (!found) {
+        userIds.add(Integer.toString(userId));
+      }
     }
     return userIds;
   }
@@ -88,11 +101,9 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
   @Override
   protected void performTemplateData(final String language, final ScheduleEvent resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData().addLanguage(language,
+        getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("eventName", resource.getTitle());
-    template.setAttribute("eventDescription", resource.getDescription());
-    template.setAttribute("eventCreationDate", DateUtil.getOutputDate(resource.getCreationDate(), language));
-    template.setAttribute("event", resource);
     template.setAttribute("senderName", senderUserDetail.getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
   }

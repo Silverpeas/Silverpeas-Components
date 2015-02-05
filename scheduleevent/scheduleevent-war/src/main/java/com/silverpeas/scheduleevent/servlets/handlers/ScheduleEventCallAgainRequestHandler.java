@@ -9,17 +9,17 @@ import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 public class ScheduleEventCallAgainRequestHandler implements ScheduleEventRequestHandler {
 
   private String jspDestination;
-  
+
   private ScheduleEventDetailRequestHandler detailHandler;
 
   public ScheduleEventCallAgainRequestHandler(String jspDestination) {
     this.jspDestination = jspDestination;
   }
-  
+
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-    scheduleeventSC.sendSubscriptionsNotification("callagain");
+    scheduleeventSC.sendCallAgainNotification("callagain");
     NotifierUtil.addSuccess(scheduleeventSC.getString("scheduleevent.callagain.ok"));
     return detailHandler.getDestination(function, scheduleeventSC, request);
   }
