@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quickinfo.model;
 
-public class QuickInfoServiceFactory {
+public class QuickInfoServiceProvider {
 
   /**
    * Gets a {@link QuickInfoService} instance.

@@ -7,7 +7,7 @@ import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -82,7 +82,7 @@ public class NewsResource extends RESTWebService {
   }
   
   private QuickInfoService getService() {
-    return QuickInfoServiceFactory.getQuickInfoService();
+    return QuickInfoServiceProvider.getQuickInfoService();
   }
 
 }

@@ -63,9 +63,9 @@ import java.util.List;
 @Entity
 @Table(name = "sc_quickinfo_news")
 @NamedQueries({@NamedQuery(name = "newsFromComponentInstance",
-    query = "from News n where n.componentInstanceId = :componentInstanceId " +
-        "order by n.publishDate DESC"), @NamedQuery(name = "newsByForeignId",
-    query = "from News n where n.publicationId = :foreignId")})
+    query = "SELECT n FROM News n WHERE n.componentInstanceId = :componentInstanceId " +
+        "ORDER BY n.publishDate DESC"), @NamedQuery(name = "newsByForeignId",
+    query = "SELECT n FROM News n WHERE n.publicationId = :foreignId")})
 public class News extends AbstractJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
 
   public static final String CONTRIBUTION_TYPE = "News";

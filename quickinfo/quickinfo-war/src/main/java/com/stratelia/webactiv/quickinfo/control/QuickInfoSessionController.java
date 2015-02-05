@@ -40,7 +40,7 @@ import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
 import org.silverpeas.util.DateUtil;
@@ -165,7 +165,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   private QuickInfoService getService() {
-    return QuickInfoServiceFactory.getQuickInfoService();
+    return QuickInfoServiceProvider.getQuickInfoService();
   }
 
   /**

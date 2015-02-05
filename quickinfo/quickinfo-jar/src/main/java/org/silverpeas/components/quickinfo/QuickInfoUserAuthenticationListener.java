@@ -33,7 +33,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 
 public class QuickInfoUserAuthenticationListener implements UserAuthenticationListener {
 
@@ -56,7 +56,7 @@ public class QuickInfoUserAuthenticationListener implements UserAuthenticationLi
   }
 
   private QuickInfoService getService() {
-    return QuickInfoServiceFactory.getQuickInfoService();
+    return QuickInfoServiceProvider.getQuickInfoService();
   }
 
 }

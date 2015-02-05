@@ -34,7 +34,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -51,7 +51,7 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
             PortletSession.APPLICATION_SCOPE);
 
-    QuickInfoService service = QuickInfoServiceFactory.getQuickInfoService();
+    QuickInfoService service = QuickInfoServiceProvider.getQuickInfoService();
 
     request.setAttribute("QuickInfos", service.getPlatformNews(mainSessionCtrl.getUserId()));
 
