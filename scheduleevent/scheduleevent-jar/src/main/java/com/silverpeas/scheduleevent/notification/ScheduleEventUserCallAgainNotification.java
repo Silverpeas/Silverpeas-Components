@@ -47,13 +47,15 @@ public class ScheduleEventUserCallAgainNotification extends
 
   private final UserDetail senderUserDetail;
   private final String type;
+  private String message;
 
   public ScheduleEventUserCallAgainNotification(final ScheduleEvent resource,
-      final UserDetail senderUserDetail,
+      String message, final UserDetail senderUserDetail,
       final String type) {
     super(resource, null, null);
     this.senderUserDetail = senderUserDetail;
     this.type = type;
+    this.message = message;
   }
 
   @Override
@@ -106,6 +108,7 @@ public class ScheduleEventUserCallAgainNotification extends
     template.setAttribute("eventName", resource.getTitle());
     template.setAttribute("senderName", senderUserDetail.getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
+    template.setAttribute("message", message);
   }
 
   @Override

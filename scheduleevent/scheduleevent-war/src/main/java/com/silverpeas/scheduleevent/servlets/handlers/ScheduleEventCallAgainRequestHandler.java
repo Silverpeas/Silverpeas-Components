@@ -19,7 +19,8 @@ public class ScheduleEventCallAgainRequestHandler implements ScheduleEventReques
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-    scheduleeventSC.sendCallAgainNotification("callagain");
+    String message = request.getParameter("message_content");
+    scheduleeventSC.sendCallAgainNotification("callagain", message);
     NotifierUtil.addSuccess(scheduleeventSC.getString("scheduleevent.callagain.ok"));
     return detailHandler.getDestination(function, scheduleeventSC, request);
   }

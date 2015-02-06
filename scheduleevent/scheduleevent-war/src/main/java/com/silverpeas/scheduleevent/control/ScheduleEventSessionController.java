@@ -297,11 +297,11 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
   }
 
-  public void sendCallAgainNotification(final String type) {
+  public void sendCallAgainNotification(final String type, String message) {
     try {
 
       UserNotificationHelper
-          .buildAndSend(new ScheduleEventUserCallAgainNotification(currentScheduleEvent,
+          .buildAndSend(new ScheduleEventUserCallAgainNotification(currentScheduleEvent, message,
               getUserDetail(),
               type));
 
