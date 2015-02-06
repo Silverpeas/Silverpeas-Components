@@ -54,7 +54,8 @@
               var label = isApproving ? jQuery('#validationApproveLabel').html() :
                   jQuery('#validationRefuseLabel').html();
               var result = true;
-              if (!isApproving && isWhitespace(jQuery('#suggestionValidationComment').val())) {
+              var validationComment = jQuery('#suggestionValidationComment').val() || '';
+              if (!isApproving && validationComment.isNotDefined()) {
                 notyError(jQuery('#commentMandatoryErrorMessageMsg').html().replace('@name@',
                     label));
                 result = false;
