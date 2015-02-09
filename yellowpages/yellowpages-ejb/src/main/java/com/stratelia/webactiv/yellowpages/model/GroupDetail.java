@@ -25,6 +25,7 @@ package com.stratelia.webactiv.yellowpages.model;
 
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class GroupDetail extends Group implements java.io.Serializable {
   private static final long serialVersionUID = 1L;
 
   private int totalUsers = 0;
-  private List<UserDetail> users = new ArrayList<UserDetail>();
-  private List<GroupDetail> subGroups = new ArrayList<GroupDetail>();
+  private List<UserDetail> users = new ArrayList<>();
+  private List<GroupDetail> subGroups = new ArrayList<>();
 
   public GroupDetail(Group group) {
     super(group);
@@ -49,13 +50,11 @@ public class GroupDetail extends Group implements java.io.Serializable {
   }
 
   public void addSubGroups(Group[] groups) {
-    Group group;
-    for (int g = 0; g < groups.length; g++) {
-      group = groups[g];
+    for (final Group group : groups) {
       addSubGroup(new GroupDetail(group));
     }
   }
-  
+
   @Override
   public List<GroupDetail> getSubGroups() {
     return subGroups;
@@ -69,8 +68,9 @@ public class GroupDetail extends Group implements java.io.Serializable {
   public boolean equals(Object o) {
     if (o instanceof GroupDetail) {
       GroupDetail anotherGroup = (GroupDetail) o;
-      if (this.getId() != null)
+      if (this.getId() != null) {
         return this.getId().equals(anotherGroup.getId());
+      }
     }
     return false;
   }

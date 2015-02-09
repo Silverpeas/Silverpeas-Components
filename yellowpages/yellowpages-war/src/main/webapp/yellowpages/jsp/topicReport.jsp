@@ -1,4 +1,4 @@
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%!
 String displayPath(YellowpagesSessionController Scc, Collection path, boolean linked, int beforeAfter) {
       String linkedPathString = new String();

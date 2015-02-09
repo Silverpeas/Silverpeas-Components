@@ -121,7 +121,7 @@ public class DisplayContactsHelper {
       ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out) throws
       IOException {
 
-    ArrayPane arrayPane = null;
+    ArrayPane arrayPane;
     if (id != null) {
       arrayPane = gef.getArrayPane("tableau1", "GoTo?Id=" + id, request, session);
       arrayPane.setVisibleLineNumber(yellowpagesScc.getNbContactPerPage());

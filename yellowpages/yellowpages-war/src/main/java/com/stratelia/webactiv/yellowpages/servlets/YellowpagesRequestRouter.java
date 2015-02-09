@@ -72,8 +72,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Control, build and initialised.
    * @param request
@@ -100,19 +98,19 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         scc.setPortletMode(false);
         scc.resetCurrentTypeSearchCriteria();
         destination = getDestination("GoTo", scc, request);
-      } else if (function.equals("GoTo")) {
+      } else if ("GoTo".equals(function)) {
         String id = request.getParameter("Id");
         String action = request.getParameter("Action");
 
         TopicDetail currentTopic;
         Collection<ContactFatherDetail> contacts;
-        if (id == null || (id != null && !id.startsWith("group_"))) {
+        if (id == null || (!id.startsWith("group_"))) {
           String rootId = "0";
           if (id == null) {
             currentTopic = scc.getCurrentTopic();
             if (currentTopic != null) {
               id = currentTopic.getNodePK().getId();
-              if (id.equals("1")) {
+              if ("1".equals(id)) {
                 id = rootId;
                 currentTopic = scc.getTopic(id);
                 scc.setCurrentTopic(currentTopic);
@@ -129,13 +127,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
             currentTopic = scc.getTopic(id);
             scc.setCurrentTopic(currentTopic);
 
-            if (id.equals("0") && action == null) {// racine : affiche les
-              // contacts courants
+            if ("0".equals(id) && action == null) {
+              // racine : affiche les contacts courants
               contacts = scc.getCurrentContacts();
               request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
-              request.setAttribute("SearchCriteria", scc
-                  .getCurrentSearchCriteria());
-            } else {// réinitialise la liste
+              request.setAttribute("SearchCriteria", scc.getCurrentSearchCriteria());
+            } else {
+              // réinitialise la liste
               contacts = scc.getAllContactDetails(currentTopic.getNodePK());
               scc.resetCurrentTypeSearchCriteria();
             }
@@ -143,8 +141,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
           request.setAttribute("CurrentTopic", currentTopic);
 
         } else {
-          id = id.substring(id.indexOf("_") + 1, id.length()); // remove
-          // "group_"
+          id = id.substring(id.indexOf("_") + 1, id.length());
+          // remove "group_"
           GroupDetail group = scc.getGroup(id);
 
           request.setAttribute("Group", group);
@@ -158,8 +156,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
         scc.setCurrentContacts(contacts);
 
-        destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile="
-            + flag;
+        destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile=" + flag;
       } else if (function.startsWith("portlet")) {
         scc.setPortletMode(true);
         destination = getDestination("GoTo", scc, request);
@@ -168,23 +165,21 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else if (function.startsWith("topicManager")) {
         scc.clearGroupPath();
         destination = "/yellowpages/jsp/topicManager.jsp?Profile=" + flag;
-      } else if (function.equals("GoToGroup")) {
+      } else if ("GoToGroup".equals(function)) {
         String id = request.getParameter("Id");
-        id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
-
+        id = id.substring(id.indexOf("_") + 1, id.length());
+        // remove "group_"
         GroupDetail group = scc.getGroup(id);
-
         request.setAttribute("Group", group);
         request.setAttribute("GroupPath", scc.getGroupPath());
         destination = "/yellowpages/jsp/groupManager.jsp";
-      } else if (function.equals("RemoveGroup")) {
+      } else if ("RemoveGroup".equals(function)) {
         String id = request.getParameter("ToDeleteId");
-        id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
-
+        id = id.substring(id.indexOf("_") + 1, id.length());
+        // remove "group_"
         scc.removeGroup(id);
-
         destination = getDestination("topicManager", scc, request);
-      } else if (function.equals("ViewUserFull")) {
+      } else if ("ViewUserFull".equals(function)) {
         String id = request.getParameter("Id");
 
         UserFull theUser = scc.getOrganisationController().getUserFull(id);
@@ -197,27 +192,25 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
 
-        if (type.equals("Contact")) { // un contact peut-être dans plusieurs
+        if ("Contact".equals(type)) { // un contact peut-être dans plusieurs
           // noeuds de l'annuaire
           TopicDetail currentTopic = scc.getTopic("0");
           scc.setCurrentTopic(currentTopic);
 
           ContactDetail contactDetail = scc.getContactDetail(id);
 
-          List<ContactDetail> listContact = new ArrayList<ContactDetail>();
+          List<ContactDetail> listContact = new ArrayList<>();
           listContact.add(contactDetail);
 
-          request.setAttribute("Contacts", scc.getListContactFather(
-              listContact, true));
+          request.setAttribute("Contacts", scc.getListContactFather(listContact, true));
           request.setAttribute("CurrentTopic", currentTopic);
           request.setAttribute("PortletMode", scc.isPortletMode());
 
-          destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
-              + flag;
-        } else if (type.equals("Node")) {
+          destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile=" + flag;
+        } else if ("Node".equals(type)) {
           destination = getDestination("GoTo", scc, request);
         }
-      } else if (function.equals("Search")) {
+      } else if ("Search".equals(function)) {
         TopicDetail currentTopic = scc.getTopic("0");
         scc.setCurrentTopic(currentTopic);
 
@@ -239,8 +232,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         request.setAttribute("TypeSearch", typeSearch);
         request.setAttribute("SearchCriteria", searchCriteria);
 
-        destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
-            + flag;
+        destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile=" + flag;
       } else if ("ToAddFolder".equals(function)) {
 
         setAvailableForms(request, scc);
@@ -284,7 +276,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String id = request.getParameter("ToDeleteId");
         scc.deleteTopic(id);
         destination = getDestination("topicManager", scc, request);
-      } else if (function.equals("PrintList")) {
+      } else if ("PrintList".equals(function)) {
         Collection<ContactFatherDetail> contacts = scc.getCurrentContacts();
         TopicDetail currentTopic = scc.getCurrentTopic();
 
@@ -297,7 +289,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         destination = manageContact(function, request, scc);
       } else if (function.startsWith("http")) {
         destination = function;
-      } else if (function.equals("selectUser")) {
+      } else if ("selectUser".equals(function)) {
         // initialisation du userPanel avec les participants
         destination = scc.initUserPanel();
       } else if (function.startsWith("saveUser")) {
@@ -305,34 +297,34 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         scc.setContactUserSelected();
         request.setAttribute("Profile", flag);
         destination = manageContact("ContactNewFromUser", request, scc);
-      } else if (function.equals("ToChooseGroup")) {
+      } else if ("ToChooseGroup".equals(function)) {
         destination = scc.initGroupPanel();
-      } else if (function.equals("AddGroup")) {
+      } else if ("AddGroup".equals(function)) {
         // retour du userPanel
         scc.setGroupSelected();
         destination = getDestination("topicManager", scc, request);
-      } else if (function.equals("ModelUsed")) {
+      } else if ("ModelUsed".equals(function)) {
         request.setAttribute("XMLForms", scc.getForms());
 
         Collection<String> modelUsed = scc.getModelUsed();
         request.setAttribute("ModelUsed", modelUsed);
 
         destination = rootDestination + "modelUsedList.jsp";
-      } else if (function.equals("DeleteContact")) {
+      } else if ("DeleteContact".equals(function)) {
         // Delete contact
         String contactId = request.getParameter("ContactId");
         scc.deleteContact(contactId);
 
         // Back to topic
         destination = getDestination("topicManager", scc, request);
-      } else if (function.equals("SelectModel")) {
+      } else if ("SelectModel".equals(function)) {
         Object o = request.getParameterValues("modelChoice");
         if (o != null) {
           String[] models = (String[]) o;
           scc.addModelUsed(models);
         }
         destination = getDestination("topicManager", scc, request);
-      } else if (function.equals("DeleteBasketContent")) {
+      } else if ("DeleteBasketContent".equals(function)) {
         scc.deleteBasketContent();
         // Back to topic
         destination = getDestination("topicManager", scc, request);
@@ -356,19 +348,18 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else {
         destination = "/yellowpages/jsp/" + function;
       }
-    } catch (Exception exce_all) {
-      request.setAttribute("javax.servlet.jsp.jspException", exce_all);
+    } catch (Exception ex) {
+      request.setAttribute("javax.servlet.jsp.jspException", ex);
       return "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("yellowpages",
-        "YellowpagesRequestRooter.getDestination()",
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
   }
 
   private void setAvailableForms(HttpServletRequest request, YellowpagesSessionController ysc) {
-    List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
-    List<String> usedTemplates = new ArrayList<String>(ysc.getModelUsed());
+    List<PublicationTemplate> listTemplates = new ArrayList<>();
+    List<String> usedTemplates = new ArrayList<>(ysc.getModelUsed());
 
     List<PublicationTemplate> allTemplates = ysc.getForms();
     for (PublicationTemplate xmlForm : allTemplates) {
@@ -395,7 +386,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       ysc.setCurrentContact(contact);
       request.setAttribute("Contact", contact);
       request.setAttribute("TopicId", topicId);
-      
+
       setPageContext(contactId, request, ysc);
 
       return "/yellowpages/jsp/contact.jsp";
@@ -403,9 +394,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       // case of contacts displayed in global directory
       String contactId = request.getParameter("Id");
       CompleteContact contact = ysc.getCompleteContact(contactId);
-      
+
       setPageContext(contactId, request, ysc);
-      
+
       request.setAttribute("Contact", contact);
       request.setAttribute("ExternalView", true);
       return "/yellowpages/jsp/contact.jsp";
@@ -434,7 +425,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       }
       ysc.setCurrentContact(contact);
       request.setAttribute("Contact", contact);
-      
+
       setPageContext(contactId, request, ysc);
 
       return "/yellowpages/jsp/contactManager.jsp";
@@ -453,9 +444,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         // create a new contact
         contactId = ysc.createContact(fullContact);
       }
-      
+
       ysc.setCurrentContact(ysc.getCompleteContact(contactId));
-      
+
       return getDestination("topicManager", ysc, request);
     } else if ("ContactSetFolders".equals(function)) {
       String listeTopics = request.getParameter("ListeTopics");
@@ -479,15 +470,15 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
     String fax = FileUploadUtil.getParameter(items, "Fax");
     String userId = FileUploadUtil.getParameter(items, "UserId");
 
-    ContactDetail contact = new ContactDetail("X", firstName, lastName, email, phone, fax, null,
-        null, null);
+    ContactDetail contact =
+        new ContactDetail("X", firstName, lastName, email, phone, fax, null, null, null);
     if (StringUtil.isDefined(userId)) {
       contact.setUserId(userId);
     }
 
     return contact;
   }
-  
+
   private void setPageContext(String contactId, HttpServletRequest request,
       YellowpagesSessionController ysc) {
     PagesContext context =

@@ -72,7 +72,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 
 <%@ include file="checkYellowpages.jsp" %>
-<%@ include file="topicReport.jsp.inc" %>
+<%@ include file="topicReport.jsp" %>
 
 <% 
 GroupDetail group 		= (GroupDetail) request.getAttribute("Group");

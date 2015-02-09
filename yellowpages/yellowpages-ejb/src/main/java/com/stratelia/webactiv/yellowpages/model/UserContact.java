@@ -28,11 +28,9 @@ import com.stratelia.webactiv.contact.model.ContactDetail;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic
- * 
  * @author Nicolas Eysseric
- * @version 1.0
  */
-public class UserContact extends Object implements java.io.Serializable {
+public class UserContact implements java.io.Serializable {
 
   private static final long serialVersionUID = 7209945723910986590L;
 
@@ -44,8 +42,6 @@ public class UserContact extends Object implements java.io.Serializable {
 
   /**
    * Construct an empty TopicDetail
-   * 
-   * @since 1.0
    */
   public UserContact() {
     init(null, null);
@@ -53,8 +49,6 @@ public class UserContact extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
-   * @since 1.0
    */
   public UserContact(UserDetail owner, ContactDetail contactDetail) {
     init(owner, contactDetail);
@@ -62,8 +56,6 @@ public class UserContact extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
-   * @since 1.0
    */
   private void init(UserDetail owner, ContactDetail contactDetail) {
     this.owner = owner;
@@ -71,10 +63,8 @@ public class UserContact extends Object implements java.io.Serializable {
   }
 
   /**
-   * Get the path
-   * 
-   * @return the path
-   * @since 1.0
+   * Get the owner
+   * @return the owner
    */
   public UserDetail getOwner() {
     return this.owner;
@@ -82,34 +72,27 @@ public class UserContact extends Object implements java.io.Serializable {
 
   /**
    * Get the Topic nodePK
-   * 
    * @return the Topic nodePK
    * @see com.stratelia.webactiv.node.model.NodePK
-   * @since 1.0
    */
   public ContactDetail getContact() {
     return this.contactDetail;
   }
 
   /**
-   * Set the path
-   * 
-   * @param path
-   *          a NodeDetail Collection
-   * @since 1.0
+   * Set the owner
+   * @param ud the user detail to set
    */
   public void setOwner(UserDetail ud) {
     this.owner = ud;
   }
 
   /**
-   * Set the detail of this topic
-   * 
-   * @param nd
-   *          the topic NodeDetail
+   * Set the contact
+   * @param contact the contact to set
    * @since 1.0
    */
-  public void setContact(ContactDetail pub) {
-    this.contactDetail = pub;
+  public void setContact(ContactDetail contact) {
+    this.contactDetail = contact;
   }
 }

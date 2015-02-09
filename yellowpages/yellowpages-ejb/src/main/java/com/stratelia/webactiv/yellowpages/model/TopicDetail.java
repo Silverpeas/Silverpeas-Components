@@ -30,24 +30,29 @@ import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class TopicDetail extends Object implements java.io.Serializable {
+public class TopicDetail implements java.io.Serializable {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
-  /** A NodeDetail collection representing the path from leaf to root */
+  /**
+   * A NodeDetail collection representing the path from leaf to root
+   */
   private Collection<NodeDetail> path;
 
-  /** the informations of the Topic are in this object */
+  /**
+   * the informations of the Topic are in this object
+   */
   private NodeDetail nodeDetail;
 
-  /** A NodeDetail collection representing the path from leaf to root */
+  /**
+   * A NodeDetail collection representing the path from leaf to root
+   */
   private Collection<UserContact> contactDetails;
 
   /**
@@ -58,8 +63,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Construct an empty TopicDetail
-   * 
-   * @since 1.0
    */
   public TopicDetail() {
     init(null, null, null, null);
@@ -67,8 +70,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
-   * @since 1.0
    */
   public TopicDetail(Collection<NodeDetail> path, NodeDetail nodeDetail,
       Collection<UserContact> contactDetails, Collection<Integer> nbContactByTopic) {
@@ -77,8 +78,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
-   * @since 1.0
    */
   private void init(Collection<NodeDetail> path, NodeDetail nodeDetail,
       Collection<UserContact> contactDetails, Collection<Integer> nbContactByTopic) {
@@ -90,9 +89,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get the path
-   * 
    * @return the path
-   * @since 1.0
    */
   public Collection<NodeDetail> getPath() {
     return this.path;
@@ -100,10 +97,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get the Topic nodePK
-   * 
    * @return the Topic nodePK
    * @see com.stratelia.webactiv.node.model.NodePK
-   * @since 1.0
    */
   public NodePK getNodePK() {
     return this.nodeDetail.getNodePK();
@@ -111,10 +106,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get the detail of this topic
-   * 
    * @return the detail of this topic
    * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @since 1.0
    */
   public NodeDetail getNodeDetail() {
     return this.nodeDetail;
@@ -122,12 +115,10 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get a ContactDetail collection containing all the contacts in this topic
-   * 
    * @return a ContactDetail collection containing all the contacts in this
-   *         topic
+   * topic
    * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @see java.util.Collection
-   * @since 1.0
    */
   public Collection<UserContact> getContactDetails() {
     return this.contactDetails;
@@ -135,11 +126,9 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get a int collection containing the number of contacts of each sub topics
-   * 
    * @return a int collection containing the number of contacts of each sub
-   *         topics
+   * topics
    * @see java.util.Collection
-   * @since 1.0
    */
   public Collection<Integer> getNbContactByTopic() {
     return this.nbContactByTopic;
@@ -147,10 +136,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the path
-   * 
-   * @param path
-   *          a NodeDetail Collection
-   * @since 1.0
+   * @param path a NodeDetail Collection
    */
   public void setPath(Collection<NodeDetail> path) {
     this.path = path;
@@ -158,10 +144,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the detail of this topic
-   * 
-   * @param nd
-   *          the topic NodeDetail
-   * @since 1.0
+   * @param nd the topic NodeDetail
    */
   public void setNodeDetail(NodeDetail nd) {
     this.nodeDetail = nd;
@@ -169,10 +152,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the contact details of each contact containing in this topic
-   * 
-   * @param pd
-   *          a ContactDetail Collection
-   * @since 1.0
+   * @param pd a ContactDetail Collection
    */
   public void setContactDetails(Collection<UserContact> pd) {
     this.contactDetails = pd;
@@ -180,10 +160,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the number of contacts in each sub topics
-   * 
-   * @param nbContactByTopic
-   *          a int Collection
-   * @since 1.0
+   * @param nbContactByTopic a int Collection
    */
   public void setNbContactByTopic(Collection<Integer> nbContactByTopic) {
     this.nbContactByTopic = nbContactByTopic;

@@ -26,30 +26,29 @@ package com.stratelia.webactiv.yellowpages;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class YellowpagesException extends SilverpeasException {
-  
+
   private static final long serialVersionUID = -871064868796293299L;
 
   /**
    * --------------------------------------------------------------------------
    * constructors constructors
    */
-  public YellowpagesException(String callingClass, int errorLevel,
-      String message) {
+  public YellowpagesException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public YellowpagesException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public YellowpagesException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public YellowpagesException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public YellowpagesException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public YellowpagesException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public YellowpagesException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

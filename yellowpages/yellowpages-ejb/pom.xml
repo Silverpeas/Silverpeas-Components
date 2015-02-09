@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.yellowpages</groupId>
   <artifactId>yellowpages-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB yellowpages</name>
 
   <dependencies>

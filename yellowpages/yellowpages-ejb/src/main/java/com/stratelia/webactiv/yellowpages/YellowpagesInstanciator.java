@@ -25,6 +25,7 @@ package com.stratelia.webactiv.yellowpages;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -38,19 +39,22 @@ import org.silverpeas.util.DateUtil;
 
 public class YellowpagesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
-  /** Creates new YellowpagesInstanciator */
+  /**
+   * Creates new YellowpagesInstanciator
+   */
   public YellowpagesInstanciator() {
     super("com.stratelia.webactiv.yellowpages");
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     try {
-      SilverTrace.info("yellowpages", "YellowpagesInstanciator.create()",
-          "root.MSG_GEN_ENTER_METHOD");
-      SilverTrace.info("yellowpages", "YellowpagesInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
-          "spaceId = " + spaceId + " , componentId = " + componentId);
+      SilverTrace
+          .info("yellowpages", "YellowpagesInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
+      SilverTrace
+          .info("yellowpages", "YellowpagesInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
+              "spaceId = " + spaceId + " , componentId = " + componentId);
 
       ContactInstanciator pub = new ContactInstanciator("com.stratelia.webactiv.yellowpages");
       pub.create(con, spaceId, componentId, userId);
@@ -62,14 +66,14 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
       throw new InstanciationException("YellowpagesInstanciator.create()",
           InstanciationException.ERROR, "root.CREATING_DATA_DIRECTORY_FAILED", e);
     }
-    SilverTrace.info("yellowpages", "YellowpagesInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("yellowpages", "YellowpagesInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-    SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
         "spaceId = " + spaceId + " , componentId = " + componentId);
     ContactInstanciator pub = new ContactInstanciator("com.stratelia.webactiv.yellowpages");
@@ -79,49 +83,41 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
     SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void insertSpecialNode(Connection con, String componentId, String userId) throws
-      InstanciationException {
+  private void insertSpecialNode(Connection con, String componentId, String userId)
+      throws InstanciationException {
     String insertQuery = getInsertQuery(componentId, "ACCUEIL");
     String creationDate = DateUtil.date2SQLDate(new Date());
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(insertQuery);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("YellowpagesInstanciator.insertSpecialNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "insertQuery = " + insertQuery, se);
     }
     insertQuery = getInsertQuery(componentId, "Basket");
-    try {
-      prepStmt = con.prepareStatement(insertQuery);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("YellowpagesInstanciator.insertSpecialNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "insertQuery = " + insertQuery, se);
     }
     insertQuery = getInsertQuery(componentId, "DZ");
-    try {
-      prepStmt = con.prepareStatement(insertQuery);
+    try (PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
       prepStmt.setString(1, creationDate);
       prepStmt.setString(2, userId);
       prepStmt.setString(3, componentId);
       prepStmt.executeUpdate();
-      prepStmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("YellowpagesInstanciator.insertSpecialNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "insertQuery = " + insertQuery, se);
     }
-
   }
 }
