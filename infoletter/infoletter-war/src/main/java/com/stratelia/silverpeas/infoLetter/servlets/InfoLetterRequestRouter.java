@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.servlets;
 
@@ -32,15 +35,16 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.DateUtil;
+
 import java.util.List;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSessionController> {
@@ -48,12 +52,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   private static final long serialVersionUID = 5722456216811272025L;
 
   /**
-   * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   @Override
   public InfoLetterSessionController createComponentSessionController(
@@ -71,11 +72,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   }
 
   /**
-   * Method declaration
-   *
    * @param infoLetterSC
    * @param request
-   * @see
    */
   private void setGlobalInfo(InfoLetterSessionController infoLetterSC, HttpServletRequest request) {
     String language = infoLetterSC.getLanguage();
@@ -92,17 +90,15 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       request.setAttribute("isPdcUsed", "no");
     }
     request.setAttribute("language", language);
-    request.setAttribute("browseContext", new String[]{infoLetterSC.getSpaceLabel(),
-      infoLetterSC.getComponentLabel(), infoLetterSC.getSpaceId(), infoLetterSC.getComponentId(),
-      infoLetterSC.getComponentUrl()});
+    request.setAttribute("browseContext",
+        new String[]{infoLetterSC.getSpaceLabel(), infoLetterSC.getComponentLabel(),
+            infoLetterSC.getSpaceId(), infoLetterSC.getComponentId(),
+            infoLetterSC.getComponentUrl()});
   }
 
   /**
-   * Method declaration
-   *
    * @param infoLetterSC
    * @return
-   * @see
    */
   private InfoLetter getCurrentLetter(InfoLetterSessionController infoLetterSC) {
     List<InfoLetter> listLettres = infoLetterSC.getInfoLetters();
@@ -110,20 +106,18 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   }
 
   /**
-   * Method declaration
-   *
    * @param infoLetterSC
    * @param request
    * @return
-   * @see
    */
-  private String setMainContext(InfoLetterSessionController infoLetterSC, HttpServletRequest request) {
+  private String setMainContext(InfoLetterSessionController infoLetterSC,
+      HttpServletRequest request) {
     String destination = "listLetterUser.jsp";
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
     InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-    List<InfoLetterPublication> listParutions = infoLetterSC.getInfoLetterPublications(defaultLetter
-        .getPK());
+    List<InfoLetterPublication> listParutions =
+        infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
     String letterName = defaultLetter.getName();
     boolean showHeader = true;
 
@@ -138,8 +132,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     if (letterFrequence == null) {
       letterFrequence = "";
     }
-    if (StringUtil.isDefined(infoLetterSC.getSettings().getString("showHeader")) && StringUtil
-        .getBooleanValue(infoLetterSC.getSettings().getString("showHeader"))) {
+    if (StringUtil.isDefined(infoLetterSC.getSettings().getString("showHeader")) &&
+        StringUtil.getBooleanValue(infoLetterSC.getSettings().getString("showHeader"))) {
       showHeader = false;
     }
     request.setAttribute("letterName", letterName);
@@ -165,8 +159,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param infoLetterSC The component Session Control, build and initialised.
    * @param request
@@ -174,13 +166,13 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      InfoLetterSessionController infoLetterSC, HttpRequest request) {
+  public String getDestination(String function, InfoLetterSessionController infoLetterSC,
+      HttpRequest request) {
     String destination;
 
-    SilverTrace.info("infoLetter", "infoLetterRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + infoLetterSC.getUserId()
-        + " Function=" + function);
+    SilverTrace
+        .info("infoLetter", "infoLetterRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+            "User=" + infoLetterSC.getUserId() + " Function=" + function);
 
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
@@ -205,8 +197,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
       } else if (function.startsWith("portlet")) {
         InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-        List<InfoLetterPublication> listParutions = infoLetterSC.getInfoLetterPublications(
-            defaultLetter.getPK());
+        List<InfoLetterPublication> listParutions =
+            infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
         String letterName = defaultLetter.getName();
         if (letterName == null) {
           letterName = "";
@@ -502,8 +494,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         boolean exportOk = infoLetterSC.exportCsvEmails();
         request.setAttribute("ExportOk", Boolean.toString(exportOk));
         if (exportOk) {
-          request.setAttribute("EmailCsvName", infoLetterSC.getComponentId()
-              + InfoLetterSessionController.EXPORT_CSV_NAME);
+          request.setAttribute("EmailCsvName",
+              infoLetterSC.getComponentId() + InfoLetterSessionController.EXPORT_CSV_NAME);
         }
         destination = "exportEmailsCsv.jsp";
       } else if (function.startsWith("SendLetterToManager")) {
@@ -514,13 +506,13 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
 
-          String server = request.getRequestURL().substring(0, request.getRequestURL().toString()
-              .indexOf(URLManager.getApplicationURL()));
+          String server = request.getRequestURL().substring(0,
+              request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
           emailErrors = infoLetterSC.notifyManagers(ilp, server);
         }
         request.setAttribute("EmailErrors", emailErrors);
-        request.setAttribute("ReturnUrl", request.getParameter("ReturnUrl") + "?parution="
-            + parution);
+        request
+            .setAttribute("ReturnUrl", request.getParameter("ReturnUrl") + "?parution=" + parution);
 
         destination = "infoLetterSended.jsp";
       } else if (function.startsWith("SaveContent")) {
@@ -549,18 +541,17 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("infoLetter", "infoLetterRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+    SilverTrace
+        .info("infoLetter", "infoLetterRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+            "Destination=" + destination);
     return destination;
   }
 
   /* getFlag */
+
   /**
-   * Method declaration
-   *
    * @param profiles
    * @return
-   * @see
    */
   private String getFlag(String[] profiles) {
     String flag = "user";
@@ -577,13 +568,11 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   }
 
   /* recuperation de parametre non nul */
+
   /**
-   * Method declaration
-   *
    * @param request
    * @param name
    * @return
-   * @see
    */
   private String param(HttpServletRequest request, String name) {
     String retour = request.getParameter(name);

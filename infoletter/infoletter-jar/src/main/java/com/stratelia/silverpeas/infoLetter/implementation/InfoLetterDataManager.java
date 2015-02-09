@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.implementation;
 
@@ -64,6 +64,7 @@ import org.silverpeas.wysiwyg.control.result.MailContentProcess;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
@@ -82,26 +83,23 @@ import static org.silverpeas.mail.MailAddress.eMail;
 
 /**
  * Class declaration
- *
  * @author
  */
+@Singleton
 public class InfoLetterDataManager implements InfoLetterDataInterface {
 
-  // Statiques
-  private final static String TableExternalEmails = "SC_IL_ExtSus";
-  
-  // Membres
+  private static final String TABLE_EXTERNAL_EMAILS = "SC_IL_ExtSus";
+
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
   private InfoLetterContentManager infoLetterContentManager;
 
-  // Constructeur
   public InfoLetterDataManager() {
     try {
-      infoLetterDAO = SilverpeasBeanDAOFactory.getDAO(
-          "com.stratelia.silverpeas.infoLetter.model.InfoLetter");
-      infoLetterPublicationDAO = SilverpeasBeanDAOFactory.getDAO(
-          "com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication");
+      infoLetterDAO =
+          SilverpeasBeanDAOFactory.getDAO("com.stratelia.silverpeas.infoLetter.model.InfoLetter");
+      infoLetterPublicationDAO = SilverpeasBeanDAOFactory
+          .getDAO("com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication");
       infoLetterContentManager = new InfoLetterContentManager();
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
@@ -113,7 +111,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   /**
    * Implementation of InfoLetterDataInterface interface
    */
-  // Creation d'une lettre d'information
   @Override
   public void createInfoLetter(InfoLetter il) {
     try {
@@ -126,7 +123,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Mise a jour d'une lettre d'information
   @Override
   public void updateInfoLetter(InfoLetter ie) {
     try {
@@ -138,13 +134,11 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Recuperation de la liste des lettres
   @Override
   public List<InfoLetter> getInfoLetters(String instanceId) {
     String whereClause = "instanceId = '" + instanceId + "'";
     try {
-      return new ArrayList<>(infoLetterDAO.findByWhereClause(new IdPK(),
-          whereClause));
+      return new ArrayList<>(infoLetterDAO.findByWhereClause(new IdPK(), whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
@@ -152,15 +146,14 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Recuperation de la liste des publications
   @Override
   public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK) {
     try {
       InfoLetter letter = getInfoLetter(letterPK);
-      String whereClause = "instanceId = '" + letter.getInstanceId() + "' AND letterId = "
-          + letterPK.getId() + " ORDER BY id desc";
-      return new ArrayList<>(infoLetterPublicationDAO.findByWhereClause(
-          letterPK, whereClause));
+      String whereClause =
+          "instanceId = '" + letter.getInstanceId() + "' AND letterId = " + letterPK.getId() +
+              " ORDER BY id desc";
+      return new ArrayList<>(infoLetterPublicationDAO.findByWhereClause(letterPK, whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
@@ -168,7 +161,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Creation d'une publication
   @Override
   public void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId) {
     SilverTrace.info("infoLetter", "InfoLetterDataManager.createInfoLetterPublication()",
@@ -189,12 +181,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface#deleteInfoLetterPublication
-   * (org.silverpeas.util.WAPrimaryKey, java.lang.String)
-   */
   @Override
   public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId) {
     Connection con = openConnection();
@@ -210,7 +196,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Mise a jour d'une publication
   @Override
   public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp) {
     try {
@@ -223,7 +208,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Recuperation d'une lettre par sa clef
   @Override
   public InfoLetter getInfoLetter(WAPrimaryKey letterPK) {
     InfoLetter retour;
@@ -237,7 +221,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     return retour;
   }
 
-  // Recuperation d'une publication par sa clef
   @Override
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
     InfoLetterPublicationPdC retour;
@@ -251,7 +234,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     return retour;
   }
 
-  // Creation de la lettre par defaut a l'instanciation
   @Override
   public InfoLetter createDefaultLetter(String componentId) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
@@ -274,8 +256,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
         IdPK publiPK = new IdPK();
         publiPK.setId(pubId);
         InfoLetterPublicationPdC infoLetter = getInfoLetterPublication(publiPK);
-        silverObjectId = infoLetterContentManager.createSilverContent(null, infoLetter,
-            infoLetter.getCreatorId());
+        silverObjectId = infoLetterContentManager
+            .createSilverContent(null, infoLetter, infoLetter.getCreatorId());
       }
       return silverObjectId;
     } catch (Exception e) {
@@ -294,8 +276,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       final Group[] groups) {
 
     // Initializing necessary subscriptions
-    Collection<Subscription> subscriptions =
-        new ArrayList<>(users.length + groups.length);
+    Collection<Subscription> subscriptions = new ArrayList<>(users.length + groups.length);
     for (UserDetail user : users) {
       subscriptions.add(
           new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()), componentId));
@@ -312,80 +293,67 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     subscriptionsToDelete.removeAll(subscriptions);
 
     // Deleting
-    SubscriptionServiceProvider.getSubscribeService()
-        .unsubscribe(subscriptionsToDelete);
+    SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscriptionsToDelete);
 
     // Creating subscriptions (nothing is registered for subscriptions that already exist)
     SubscriptionServiceProvider.getSubscribeService().subscribe(subscriptions);
   }
 
-  // Recuperation de la liste des emails externes
   @Override
   public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
-    Connection con = openConnection();
     Set<String> retour = new LinkedHashSet<>();
-    Statement selectStmt = null;
-    ResultSet rs = null;
-    try {
+    try (Connection con = openConnection()) {
       InfoLetter letter = getInfoLetter(letterPK);
-      String selectQuery = "SELECT * FROM " + TableExternalEmails;
+      String selectQuery = "SELECT * FROM " + TABLE_EXTERNAL_EMAILS;
       selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
       selectQuery += " and letter = " + letterPK.getId() + " ";
-      SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.getEmailsExternalsSuscribers()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.getEmailsExternalsSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
-      selectStmt = con.createStatement();
-      rs = selectStmt.executeQuery(selectQuery);
-      while (rs.next()) {
-        retour.add(rs.getString("email"));
+      try (Statement selectStmt = con.createStatement()) {
+        try (ResultSet rs = selectStmt.executeQuery(selectQuery)) {
+          while (rs.next()) {
+            retour.add(rs.getString("email"));
+          }
+        }
       }
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, selectStmt);
-      DBUtil.close(con);
     }
-
     return retour;
   }
 
-  // Sauvegarde de la liste des emails externes
   @Override
   public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails) {
-    Connection con = openConnection();
-    Statement stmt = null;
-    try {
+    try (Connection con = openConnection()) {
       InfoLetter letter = getInfoLetter(letterPK);
-      String query = "DELETE FROM " + TableExternalEmails;
+      String query = "DELETE FROM " + TABLE_EXTERNAL_EMAILS;
       query += " where instanceId = '" + letter.getInstanceId() + "' ";
       query += " and letter = " + letterPK.getId() + " ";
-      SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.setEmailsExternalsSuscribers()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.setEmailsExternalsSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "query = " + query);
-      stmt = con.createStatement();
-      stmt.executeUpdate(query);
+      try (Statement stmt = con.createStatement()) {
+        stmt.executeUpdate(query);
+      }
       if (emails.size() > 0) {
         for (String email : emails) {
-          query = "INSERT INTO " + TableExternalEmails + "(letter, email, instanceId)";
-          query += " values (" + letterPK.getId() + ", '" + email + "', '"
-              + letter.getInstanceId() + "')";
-          stmt = con.createStatement();
-          stmt.executeUpdate(query);
+          query = "INSERT INTO " + TABLE_EXTERNAL_EMAILS + "(letter, email, instanceId)";
+          query +=
+              " values (" + letterPK.getId() + ", '" + email + "', '" + letter.getInstanceId() +
+                  "')";
+          try (Statement stmt = con.createStatement()) {
+            stmt.executeUpdate(query);
+          }
         }
       }
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
           SilverpeasRuntimeException.FATAL, e.getMessage());
-    } finally {
-      DBUtil.close(stmt);
-      DBUtil.close(con);
     }
   }
 
-  // abonnement ou desabonnement d'un utilisateur interne
   @Override
   public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing) {
     Subscription subscription =
@@ -397,14 +365,12 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // test d'abonnement d'un utilisateur interne
   @Override
   public boolean isUserSuscribed(String userId, String componentId) {
     return SubscriptionServiceProvider.getSubscribeService().existsSubscription(
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId));
   }
 
-  // initialisation du template
   @Override
   public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId) {
     try {
@@ -421,11 +387,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   /**
    * open connection
-   *
    * @return Connection
    * @throws InfoLetterException
-   * @author frageade
-   * @since 26 Fevrier 2002
    */
   @Override
   public Connection openConnection() throws InfoLetterException {
@@ -483,7 +446,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
     // Then all the referenced media content
     wysiwygMailTransformResult.applyOn(multipart);
-    
+
     // Finally explicit attached files
     List<SimpleDocument> listAttachedFilesFromTab =
         AttachmentServiceProvider.getAttachmentService().
@@ -493,7 +456,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     // The completed multipart mail to send
     return multipart;
   }
-  
+
   @Override
   public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
       String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom) {
@@ -526,8 +489,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           } catch (Exception ex) {
             SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
                 "root.MSG_GEN_PARAM_VALUE", "Email = " + receiverEmail, new InfoLetterException(
-                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-                SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
+                    "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                    SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
             emailErrors.add(receiverEmail);
           }
         }

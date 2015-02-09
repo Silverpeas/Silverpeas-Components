@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.infoLetter.model;
 
 import com.silverpeas.SilverpeasContent;
@@ -30,60 +31,40 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.Date;
 import java.util.Iterator;
 
 /**
  * @author lbertin
- * @since February 2002
  */
-public class InfoLetterPublicationPdC extends InfoLetterPublication implements
-    SilverContentInterface, SilverpeasContent {
+public class InfoLetterPublicationPdC extends InfoLetterPublication
+    implements SilverContentInterface, SilverpeasContent {
   private static final long serialVersionUID = -2174573301215680444L;
-  /** icone d'une publication */
+  /**
+   * icone d'une publication
+   */
   private String iconUrl = "infoLetterSmall.gif";
   private static final String TYPE = "publication";
-  
+
   private static final InfoLetterContentManager contentMgr = new InfoLetterContentManager();
   private String silverObjectId;
   private String positions;
 
   /**
-   * Constructeur sans parametres
-   * @author frageade
-   * @since February 2002
+   * Default constructor
    */
   public InfoLetterPublicationPdC() {
     super();
   }
 
   /**
-   * Constructeur pour convertir une InfoLetterPublication en InfoLetterPublicationPdc
+   * Constructor from InfoLetterPublication
    * @param ilp InfoLetterPublication
-   * @author lbertin
-   * @since February 2002
    */
   public InfoLetterPublicationPdC(InfoLetterPublication ilp) {
-    super(ilp.getPK(), ilp.getInstanceId(), ilp.getTitle(), ilp.getDescription(), ilp
-        .getParutionDate(), ilp.getPublicationState(), ilp.getLetterId());
-  }
-
-  /**
-   * Constructeur à 7 parametres
-   * @param pk
-   * @param instanceId
-   * @param title
-   * @param description
-   * @param parutionDate
-   * @param publicationState
-   * @param letterId
-   */
-  public InfoLetterPublicationPdC(WAPrimaryKey pk, String instanceId, String title,
-      String description, String parutionDate, int publicationState,
-      int letterId) {
-    super(pk, instanceId, title, description, parutionDate, publicationState, letterId);
+    super(ilp.getPK(), ilp.getInstanceId(), ilp.getTitle(), ilp.getDescription(),
+        ilp.getParutionDate(), ilp.getPublicationState(), ilp.getLetterId());
   }
 
   /**
@@ -99,10 +80,6 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
   public void setPositions(String positions) {
     this.positions = positions;
   }
-
-  /**
-   * methods to be implemented by SilverContentInterface
-   */
 
   public String getName() {
     return getTitle();
@@ -144,10 +121,6 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
     return null;
   }
 
-  /**
-   * Method which implements SilverpeasContent
-   */
-
   @Override
   public String getComponentInstanceId() {
     return getInstanceId();
@@ -161,7 +134,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
         this.silverObjectId = String.valueOf(objectId);
       }
     }
-    return this.silverObjectId;    
+    return this.silverObjectId;
   }
 
   @Override
@@ -182,7 +155,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
 
   /**
    * Is the specified user can access this information letter?
-   * <p/>
+   * <p>
    * A user can access an information letter if it has enough rights to access the InfoLetter
    * instance in which is managed this letter.
    * @param user a user in Silverpeas.
@@ -190,8 +163,8 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter;
 
@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
-import com.stratelia.silverpeas.infoLetter.control.ServiceFactory;
+import com.stratelia.silverpeas.infoLetter.control.InfoLetterServiceProvider;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -48,31 +48,28 @@ public class InfoLetterContentManager implements ContentInterface {
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
+   * @param sComponentId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String sComponentId,
       String userId, List<String> userRoles) {
     if (getContentManager() == null) {
-      return new ArrayList<SilverContentInterface>();
+      return new ArrayList<>();
     }
-    return getHeaders(makePKArray(ids), peasId);
+    return getHeaders(makePKArray(ids), sComponentId);
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
-    SilverTrace.info("infoletter",
-        "InfoLetterContentManager.getSilverObjectId()",
+    SilverTrace.info("infoletter", "InfoLetterContentManager.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
     try {
       return getContentManager().getSilverContentId(pubId, peasId);
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterContentManager.getSilverObjectId()",
-          SilverpeasException.ERROR,
-          "infoletter.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new InfoLetterException("InfoLetterContentManager.getSilverObjectId()",
+          SilverpeasException.ERROR, "infoletter.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
   }
 
@@ -83,14 +80,13 @@ public class InfoLetterContentManager implements ContentInterface {
    * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
-  public int createSilverContent(Connection con,
-      InfoLetterPublicationPdC ilPub, String userId)
+  public int createSilverContent(Connection con, InfoLetterPublicationPdC ilPub, String userId)
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
     SilverTrace.info("infoletter", "InfoLetterContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
-    return getContentManager().addSilverContent(con, ilPub.getId(), ilPub.getInstanceId(), userId,
-        scv);
+    return getContentManager()
+        .addSilverContent(con, ilPub.getId(), ilPub.getInstanceId(), userId, scv);
   }
 
   /**
@@ -100,16 +96,16 @@ public class InfoLetterContentManager implements ContentInterface {
    */
   public void updateSilverContentVisibility(InfoLetterPublicationPdC ilPub)
       throws ContentManagerException {
-    int silverContentId = getContentManager().getSilverContentId(ilPub.getId(),
-        ilPub.getInstanceId());
+    int silverContentId =
+        getContentManager().getSilverContentId(ilPub.getId(), ilPub.getInstanceId());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
     SilverTrace.info("infoletter", "InfoLetterContentManager.updateSilverContentVisibility()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
     if (silverContentId == -1) {
       createSilverContent(null, ilPub, ilPub.getCreatorId());
     } else {
-      getContentManager().updateSilverContentVisibilityAttributes(scv, ilPub.getInstanceId(),
-          silverContentId);
+      getContentManager()
+          .updateSilverContentVisibilityAttributes(scv, ilPub.getInstanceId(), silverContentId);
       ClassifyEngine.clearCache();
     }
 
@@ -119,10 +115,11 @@ public class InfoLetterContentManager implements ContentInterface {
    * delete a content. It is registered to contentManager service
    * @param con a Connection
    * @param pubId the identifiant of the content to unregister
-   * @param componentId the identifiant of the component instance where the content to unregister is
+   * @param componentId the identifiant of the component instance where the content to unregister
+   * is
    */
-  public void deleteSilverContent(Connection con, String pubId,
-      String componentId) throws ContentManagerException {
+  public void deleteSilverContent(Connection con, String pubId, String componentId)
+      throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pubId, componentId);
     if (contentId != -1) {
       SilverTrace.info("infoletter", "InfoLetterContentManager.deleteSilverContent()",
@@ -141,20 +138,13 @@ public class InfoLetterContentManager implements ContentInterface {
    * @return a list of ids
    */
   private List<String> makePKArray(List<Integer> idList) {
-    Iterator<Integer> iter = idList.iterator();
-    String id = null;
-    List<String> pks = new ArrayList<String>();
-
-    // for each silverContentId, we get the corresponding
-    // infoLetterPublicationId
-    while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+    List<String> pks = new ArrayList<>();
+    // for each silverContentId, we get the corresponding infoLetterPublicationId
+    for (Integer contentId : idList) {
       try {
-        id = getContentManager().getInternalContentId(contentId);
+        String id = getContentManager().getInternalContentId(contentId);
         pks.add(id);
-      } catch (ClassCastException ignored) {
-        // ignore unknown item
-      } catch (ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException ignored) {
         // ignore unknown item
       }
     }
@@ -164,26 +154,19 @@ public class InfoLetterContentManager implements ContentInterface {
   /**
    * return a list of silverContent according to a list of publicationPK
    * @param ids a list of publicationPK
-   * @param peasId the id of the instance
+   * @param componentId the id of the instance
    * @return a list of publicationDetail
    */
-  private List getHeaders(List<String> ids, String peasId) {
-    Iterator<String> iter = ids.iterator();
-    List<InfoLetterPublicationPdC> headers = new ArrayList<InfoLetterPublicationPdC>();
-    InfoLetterPublicationPdC ilPub = null;
-    String pubId = null;
-    IdPK pubPK = null;
-
-    while (iter.hasNext()) {
-      pubId = iter.next();
-      pubPK = new IdPK();
+  private List getHeaders(List<String> ids, String componentId) {
+    List<InfoLetterPublicationPdC> headers = new ArrayList<>();
+    for (String pubId : ids) {
+      IdPK pubPK = new IdPK();
       pubPK.setId(pubId);
 
-      ilPub = getDataInterface().getInfoLetterPublication(pubPK);
-      ilPub.setInstanceId(peasId);
+      InfoLetterPublicationPdC ilPub = getDataInterface().getInfoLetterPublication(pubPK);
+      ilPub.setInstanceId(componentId);
       headers.add(ilPub);
     }
-
     return headers;
   }
 
@@ -192,8 +175,8 @@ public class InfoLetterContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("infoletter", "InfoLetterContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverTrace
+            .fatal("infoletter", "InfoLetterContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return contentManager;
@@ -201,7 +184,7 @@ public class InfoLetterContentManager implements ContentInterface {
 
   private InfoLetterDataInterface getDataInterface() {
     if (dataInterface == null) {
-      dataInterface = ServiceFactory.getInfoLetterData();
+      dataInterface = InfoLetterServiceProvider.getInfoLetterData();
     }
     return dataInterface;
   }

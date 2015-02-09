@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
@@ -43,13 +43,8 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   /** InfoLetter frequency */
   private String periode;
 
-
-  // Constructeurs
-
   /**
-   * Constructeur sans parametres
-   * @author frageade
-   * @since February 2002
+   * Default constructor
    */
   public InfoLetter() {
     super();
@@ -60,16 +55,11 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   }
 
   /**
-   * Constructeur a 8 parametres
-   * @param WAPrimaryKey pk
-   * @param String name
-   * @param String description
-   * @param String periode
-   * @param Vector internalSuscribers
-   * @param Vector externalSuscribers
-   * @param Vector publications
-   * @author frageade
-   * @since February 2002
+   * @param pk the info letter identifier
+   * @param name the name
+   * @param instanceId the component instance identifier
+   * @param description the description
+   * @param periode the frequency
    */
   public InfoLetter(WAPrimaryKey pk, String instanceId, String name, String description,
       String periode) {
@@ -122,7 +112,7 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   }
 
   public int compareTo(InfoLetter obj) {
-    if (!(obj instanceof InfoLetter)) {
+    if (obj == null) {
       return 0;
     }
     return (String.valueOf(getPK().getId())).compareTo(String.valueOf(obj.getPK().getId()));
