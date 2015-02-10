@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
@@ -68,17 +68,15 @@ public class PdcSearchUserWrapper
     SilverTrace.info("pdcPeas", "PdcSearchUserWrapper.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
     try {
-      if (function.equals("Open")) {
+      if ("Open".equals(function)) {
         pdcSearchUserWrapperScc.setFormName(request.getParameter("formName"));
         pdcSearchUserWrapperScc.setElementId(request.getParameter("elementId"));
         pdcSearchUserWrapperScc.setElementName(request
             .getParameter("elementName"));
         pdcSearchUserWrapperScc.setSelectedUserIds(request
             .getParameter("selectedUsers"));
-        pdcSearchUserWrapperScc.initPdcSearchUser(); // selection par défaut
-        // d'éléments
-        // return
-        // "/RpdcSearch/jsp/ToSearchToSelect?ComponentName=expertLocator&ReturnURL=/RpdcSearchUserWrapper/jsp/Close";
+        // selection par défaut d'éléments
+        pdcSearchUserWrapperScc.initPdcSearchUser();
         return "/RpdcSearch/jsp/ToSearchToSelect?ComponentName=whitePages&ReturnURL=/RpdcSearchUserWrapper/jsp/Close";
       } else if (function.equals("Close")) {
         pdcSearchUserWrapperScc.getUserSelection();
@@ -92,16 +90,13 @@ public class PdcSearchUserWrapper
         if (users != null) {
           StringBuffer ids = new StringBuffer("");
           StringBuffer names = new StringBuffer("");
-          String userCardId = null;
-          String userId = null;
           CardManager cardM = CardManager.getInstance();
-          Card card = null;
 
           for (GlobalSilverContent gsc : users) {
-            userCardId = gsc.getId();
+            String userCardId = gsc.getId();
 
-            card = cardM.getCard(new Long(userCardId).longValue());
-            userId = card.getUserId();
+            Card card = cardM.getCard(Long.parseLong(userCardId));
+            String userId = card.getUserId();
 
             ids.append(userCardId);
             ids.append("-");

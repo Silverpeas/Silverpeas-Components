@@ -39,7 +39,7 @@
   <context:component-scan base-package="com.silverpeas.whitePages"/>
 
   <bean id="whitePagesServicesFactory" name="whitePagesServicesFactory"
-        class="com.silverpeas.whitePages.service.ServicesFactory"
+        class="com.silverpeas.whitePages.service.WhitePageServiceProvider"
         factory-method="getFactory" />
 
   <import resource="spring-jpa.xml"/>

@@ -21,19 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.whitePages.service;
 
-package com.silverpeas.whitePages.dao;
+public class WhitePageServiceProvider {
 
-import java.util.Set;
+  private WhitePageServiceProvider() {
+  }
 
-import com.silverpeas.whitePages.model.SearchField;
+  public static WhitePagesService getWhitePagesService() {
+    return WhitePagesService.get();
+  }
 
-public interface SearchFieldDao {
-
-  public String createSearchField(SearchField searchField);
-  
-  public void deleteSearchFieldsFor(String instanceId);
-  
-  public Set<SearchField> getSearchFields(String instanceId);
-
+  public static MixedSearchService getMixedSearchService() {
+    return MixedSearchService.get();
+  }
 }

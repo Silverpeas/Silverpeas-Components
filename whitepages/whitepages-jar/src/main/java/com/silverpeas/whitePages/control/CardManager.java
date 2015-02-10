@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.whitePages.control;
 
@@ -48,6 +51,7 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -55,6 +59,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -84,13 +89,13 @@ public class CardManager {
 
     Connection con = null;
     try {
-      SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.whitePages.model.Card");
+      SilverpeasBeanDAO dao =
+          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
 
       card.setCreationDate(DateUtil.date2SQLDate(new Date()));
-      card.setCreatorId(new Integer(creatorId).intValue());
+      card.setCreatorId(Integer.parseInt(creatorId));
 
       WAPrimaryKey pk = dao.add(con, card);
       id = Long.parseLong(pk.getId());
@@ -126,8 +131,8 @@ public class CardManager {
         con = DBUtil.openConnection();
         con.setAutoCommit(false);
 
-        SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory
-            .getDAO("com.silverpeas.whitePages.model.Card");
+        SilverpeasBeanDAO dao =
+            SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
 
         IdPK pk = new IdPK();
         String peasId = null;
@@ -137,14 +142,13 @@ public class CardManager {
 
           // le premier element donne l'id de l'instance.
           if (peasId == null) {
-            Card card = getCard(new Long(pk.getId()).longValue());
+            Card card = getCard(Long.parseLong(pk.getId()));
             if (card == null) {
               continue;
             } else {
               peasId = card.getInstanceId();
             }
           }
-
           dao.remove(con, pk);
 
           // suppression de la reference par le content maneger.
@@ -163,7 +167,7 @@ public class CardManager {
   }
 
   public Card getCard(long id) throws WhitePagesException {
-    Card result = null;
+    Card result;
     IdPK pk = new IdPK();
     try {
       SilverpeasBeanDAO dao =
@@ -171,8 +175,8 @@ public class CardManager {
       pk.setIdAsLong(id);
       result = (Card) dao.findByPrimaryKey(pk);
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getCard",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_CARD", "", e);
+      throw new WhitePagesException("CardManager.getCard", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_CARD", "", e);
     }
     return result;
   }
@@ -180,15 +184,15 @@ public class CardManager {
   @SuppressWarnings("unchecked")
   public Collection<Card> getCards(String instanceId) throws WhitePagesException {
     String where = " instanceId = '" + instanceId + "'";
-    Collection<Card> cards = new ArrayList<Card>();
+    Collection<Card> cards;
     try {
       IdPK pk = new IdPK();
       SilverpeasBeanDAO dao =
           SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
       cards = dao.findByWhereClause(pk, where);
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getCards",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException("CardManager.getCards", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_CARDS", "", e);
     }
     return cards;
   }
@@ -204,32 +208,31 @@ public class CardManager {
       where.append(" id = ").append(ids.get(sizeOfIds - 1));
     }
 
-    Collection<Card> cards = new ArrayList<Card>();
+    Collection<Card> cards;
     try {
       IdPK pk = new IdPK();
       SilverpeasBeanDAO dao =
           SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
       cards = dao.findByWhereClause(pk, where.toString());
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getCards",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException("CardManager.getCards", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_CARDS", "", e);
     }
     return cards;
   }
 
   @SuppressWarnings("unchecked")
-  public Collection<Card> getVisibleCards(String instanceId)
-      throws WhitePagesException {
+  public Collection<Card> getVisibleCards(String instanceId) throws WhitePagesException {
     String where = " instanceId = '" + instanceId + "' and hideStatus = 0";
-    Collection<Card> cards = new ArrayList<Card>();
+    Collection<Card> cards;
     try {
       IdPK pk = new IdPK();
       SilverpeasBeanDAO dao =
           SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
       cards = dao.findByWhereClause(pk, where);
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getVisibleCards",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException("CardManager.getVisibleCards", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_CARDS", "", e);
     }
     return cards;
   }
@@ -251,13 +254,13 @@ public class CardManager {
       }
 
     }
-    return new ArrayList<WhitePagesCard>();
+    return new ArrayList<>();
   }
 
   public Collection<WhitePagesCard> getHomeUserCards(String userId, Collection<String> instanceIds,
       String instanceId) throws WhitePagesException {
-    String where = " userId = '" + userId + "' and ((instanceId = '"
-        + instanceId + "') or (hideStatus = 0";
+    String where =
+        " userId = '" + userId + "' and ((instanceId = '" + instanceId + "') or (hideStatus = 0";
     if (instanceIds != null && !instanceIds.isEmpty()) {
       Iterator<String> it = instanceIds.iterator();
       if (it.hasNext()) {
@@ -272,13 +275,13 @@ public class CardManager {
       }
 
     }
-    return new ArrayList<WhitePagesCard>();
+    return new ArrayList<>();
   }
-  
+
   @SuppressWarnings("unchecked")
   private Collection<WhitePagesCard> getWhitePagesCards(String whereClause)
       throws WhitePagesException {
-    Collection<WhitePagesCard> wpcards = new ArrayList<WhitePagesCard>();
+    Collection<WhitePagesCard> wpcards = new ArrayList<>();
     try {
       IdPK pk = new IdPK();
       SilverpeasBeanDAO dao =
@@ -286,26 +289,24 @@ public class CardManager {
       Collection<Card> cards = dao.findByWhereClause(pk, whereClause);
       if (cards != null) {
         for (Card card : cards) {
-          wpcards.add(new WhitePagesCard(Long.parseLong(card.getPK().getId()), card
-              .getInstanceId()));
+          wpcards
+              .add(new WhitePagesCard(Long.parseLong(card.getPK().getId()), card.getInstanceId()));
         }
       }
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getWhitePagesCards",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_USERCARDS",
-          "", e);
+      throw new WhitePagesException("CardManager.getWhitePagesCards", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_USERCARDS", "", e);
     }
     return wpcards;
   }
 
-  public void setHideStatus(Collection<String> ids, int status)
-      throws WhitePagesException {
+  public void setHideStatus(Collection<String> ids, int status) throws WhitePagesException {
     if (ids != null) {
       try {
         SilverpeasBeanDAO dao =
             SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
         for (String sId : ids) {
-          long id = new Long(sId).longValue();
+          long id = Long.parseLong(sId);
           IdPK pk = new IdPK();
           pk.setIdAsLong(id);
           Card card = (Card) dao.findByPrimaryKey(pk);
@@ -316,9 +317,8 @@ public class CardManager {
           getWhitePagesContentManager().updateSilverContentVisibility(card);
         }
       } catch (Exception e) {
-        throw new WhitePagesException("CardManager.setHideStatus",
-            SilverpeasException.ERROR, "whitePages.EX_UPDATE_CARDS_FAILED", "",
-            e);
+        throw new WhitePagesException("CardManager.setHideStatus", SilverpeasException.ERROR,
+            "whitePages.EX_UPDATE_CARDS_FAILED", "", e);
       }
     }
   }
@@ -329,7 +329,7 @@ public class CardManager {
         SilverpeasBeanDAO dao =
             SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
         for (String sId : ids) {
-          long id = new Long(sId).longValue();
+          long id = Long.parseLong(sId);
           IdPK pk = new IdPK();
           pk.setIdAsLong(id);
           Card card = (Card) dao.findByPrimaryKey(pk);
@@ -346,18 +346,15 @@ public class CardManager {
           getWhitePagesContentManager().updateSilverContentVisibility(card);
         }
       } catch (Exception e) {
-        throw new WhitePagesException("CardManager.reverseHide",
-            SilverpeasException.ERROR, "whitePages.EX_UPDATE_CARDS_FAILED", "",
-            e);
+        throw new WhitePagesException("CardManager.reverseHide", SilverpeasException.ERROR,
+            "whitePages.EX_UPDATE_CARDS_FAILED", "", e);
       }
     }
   }
 
   @SuppressWarnings("unchecked")
-  public boolean existCard(String userId, String instanceId)
-      throws WhitePagesException {
-    String where = " instanceId = '" + instanceId + "' and userId = '" + userId
-        + "'";
+  public boolean existCard(String userId, String instanceId) throws WhitePagesException {
+    String where = " instanceId = '" + instanceId + "' and userId = '" + userId + "'";
     boolean exist = false;
     try {
       IdPK pk = new IdPK();
@@ -368,8 +365,8 @@ public class CardManager {
         exist = true;
       }
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.existCard",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException("CardManager.existCard", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_CARDS", "", e);
     }
     return exist;
   }
@@ -377,8 +374,7 @@ public class CardManager {
   public boolean isPublicationClassifiedOnPDC(Card card)
       throws ContentManagerException, PdcException {
     ContentManager aContentManager = new ContentManager();
-    int contentId = aContentManager.getSilverContentId(card.getPK().getId(),
-        card.getInstanceId());
+    int contentId = aContentManager.getSilverContentId(card.getPK().getId(), card.getInstanceId());
     PdcManager pdcManager = new GlobalPdcManager();
 
     List<ClassifyPosition> positions = pdcManager.getPositions(contentId, card.getInstanceId());
@@ -387,17 +383,14 @@ public class CardManager {
 
   /**
    * Get card for a user and instance.
-   *
    * @param userId user id
    * @param instanceId instance id
    * @return the card, null if not found
    * @throws WhitePagesException
    */
   @SuppressWarnings("unchecked")
-  public Card getUserCard(String userId, String instanceId)
-      throws WhitePagesException {
-    String where = " instanceId = '" + instanceId + "' and userId = '" + userId
-        + "'";
+  public Card getUserCard(String userId, String instanceId) throws WhitePagesException {
+    String where = " instanceId = '" + instanceId + "' and userId = '" + userId + "'";
     Card card = null;
     try {
       IdPK pk = new IdPK();
@@ -408,8 +401,8 @@ public class CardManager {
         card = cards.iterator().next();
       }
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getUserCard",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException("CardManager.getUserCard", SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_CARDS", "", e);
     }
     return card;
   }
@@ -425,8 +418,7 @@ public class CardManager {
     String userMail = extractUserMail(card);
     // String userInfo = extractUserInfo(card);
 
-    FullIndexEntry indexEntry = new FullIndexEntry(card.getInstanceId(),
-        "card", pk.getId());
+    FullIndexEntry indexEntry = new FullIndexEntry(card.getInstanceId(), "card", pk.getId());
     indexEntry.setTitle(userName);
     indexEntry.setKeyWords(userName);
     indexEntry.setPreView(userMail);
@@ -435,22 +427,20 @@ public class CardManager {
     // indexEntry.addTextContent(userInfo);
 
     try {
-      PublicationTemplate pub = PublicationTemplateManager.getInstance()
-          .getPublicationTemplate(card.getInstanceId());
+      PublicationTemplate pub =
+          PublicationTemplateManager.getInstance().getPublicationTemplate(card.getInstanceId());
 
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), "", indexEntry);
     } catch (Exception e) {
-      SilverTrace.error("whitePages", "CardManager.indexCard",
-          "whitePages.EX_CANT_INDEX_CARD", e);
+      SilverTrace.error("whitePages", "CardManager.indexCard", "whitePages.EX_CANT_INDEX_CARD", e);
     }
 
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
   private void deleteIndex(WAPrimaryKey pk) {
-    IndexEngineProxy.removeIndexEntry(new IndexEntryPK(pk.getComponentName(),
-        "card", pk.getId()));
+    IndexEngineProxy.removeIndexEntry(new IndexEntryPK(pk.getComponentName(), "card", pk.getId()));
   }
 
   private String extractUserName(Card card) {
@@ -481,7 +471,6 @@ public class CardManager {
 
     UserRecord user = card.readUserRecord();
     Field f;
-
     if (user != null) {
       try {
         f = user.getField("Mail");
@@ -497,13 +486,12 @@ public class CardManager {
     try {
       con.rollback();
     } catch (Exception e1) {
-      throw new WhitePagesException("CardManager.create",
-          SilverpeasException.ERROR, "whitePages.EX_CREATE_CARD_FAILED",
-          "Error in rollback", e1);
+      throw new WhitePagesException("CardManager.create", SilverpeasException.ERROR,
+          "whitePages.EX_CREATE_CARD_FAILED", "Error in rollback", e1);
     }
 
-    throw new WhitePagesException("CardManager.create",
-        SilverpeasException.ERROR, "whitePages.EX_CREATE_CARD_FAILED", "", e);
+    throw new WhitePagesException("CardManager.create", SilverpeasException.ERROR,
+        "whitePages.EX_CREATE_CARD_FAILED", "", e);
   }
 
   private void closeConnection(Connection con) throws WhitePagesException {
@@ -511,9 +499,8 @@ public class CardManager {
       try {
         con.close();
       } catch (SQLException e) {
-        throw new WhitePagesException("CardManager.create",
-            SilverpeasException.ERROR, "whitePages.EX_CREATE_CARD_FAILED", "",
-            e);
+        throw new WhitePagesException("CardManager.create", SilverpeasException.ERROR,
+            "whitePages.EX_CREATE_CARD_FAILED", "", e);
       }
     }
   }

@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.whitePages.record;
 
@@ -81,28 +84,27 @@ public class UserRecord implements DataRecord {
 
   /**
    * Returns the named field.
-   *
-   * @throw FormException when the fieldName is unknown.
+   * @throws FormException when the fieldName is unknown.
    */
   @Override
   public Field getField(String fieldName) throws FormException {
     TextFieldImpl text = new TextFieldImpl();
 
-    if (fieldName.equals("Id")) {
+    if ("Id".equals(fieldName)) {
       text.setStringValue(user.getId());
-    } else if (fieldName.equals("SpecificId")) {
+    } else if ("SpecificId".equals(fieldName)) {
       text.setStringValue(user.getSpecificId());
-    } else if (fieldName.equals("DomainId")) {
+    } else if ("DomainId".equals(fieldName)) {
       text.setStringValue(user.getDomainId());
-    } else if (fieldName.equals("Login")) {
+    } else if ("Login".equals(fieldName)) {
       text.setStringValue(user.getLogin());
-    } else if (fieldName.equals("FirstName")) {
+    } else if ("FirstName".equals(fieldName)) {
       text.setStringValue(user.getFirstName());
-    } else if (fieldName.equals("LastName")) {
+    } else if ("LastName".equals(fieldName)) {
       text.setStringValue(user.getLastName());
-    } else if (fieldName.equals("Mail")) {
+    } else if ("Mail".equals(fieldName)) {
       text.setStringValue(user.geteMail());
-    } else if (fieldName.equals("AccessLevel")) {
+    } else if ("AccessLevel".equals(fieldName)) {
       text.setStringValue(user.getAccessLevel().code());
     } else if (fieldName.startsWith("DC.")) {
       String specificDetail = fieldName.substring(fieldName.indexOf(".") + 1);
@@ -110,10 +112,9 @@ public class UserRecord implements DataRecord {
         text.setStringValue(((UserFull) user).getValue(specificDetail));
       }
     }
-
     return text;
   }
-  
+
   @Override
   public Field getField(String fieldName, int occurrence) {
     return null;
@@ -121,8 +122,7 @@ public class UserRecord implements DataRecord {
 
   /**
    * Returns the field at the index position in the record.
-   *
-   * @throw FormException when the fieldIndex is unknown.
+   * @throws FormException when the fieldIndex is unknown.
    */
   @Override
   public Field getField(int fieldIndex) throws FormException {

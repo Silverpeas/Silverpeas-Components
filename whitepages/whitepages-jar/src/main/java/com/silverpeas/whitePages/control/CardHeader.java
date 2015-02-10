@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.Field;
@@ -48,8 +47,8 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
   private String instanceId;
   private String date;
   private String creatorId;
-  private final static ResourceLocator whitePagesIcons = new ResourceLocator(
-      "com.silverpeas.whitePages.settings.whitePagesIcons", "");
+  private final static ResourceLocator whitePagesIcons =
+      new ResourceLocator("com.silverpeas.whitePages.settings.whitePagesIcons", "");
 
   public void init(long id, Card card) {
     this.id = id;
@@ -57,9 +56,9 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     String label = null;
     try {
       UserRecord user = getUserRecord(card);
-      if (user == null)
+      if (user == null) {
         label = "user(" + id + ")";
-      else {
+      } else {
         /*
          * Label value.
          */
@@ -86,7 +85,7 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
   }
 
   private String buildMailLink(String instanceId, String cardId) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     buffer.append("<a href=\"");
     buffer.append(URLManager.getApplicationURL());
@@ -105,8 +104,7 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     init(id, card);
   }
 
-  public CardHeader(long id, Card card, String instanceId, String date,
-      String creatorId) {
+  public CardHeader(long id, Card card, String instanceId, String date, String creatorId) {
     this.instanceId = instanceId;
     this.date = date;
     this.creatorId = creatorId;
@@ -121,35 +119,34 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     try {
       UserTemplate templateUser = getUserTemplate(card.getInstanceId());
       card.writeUserRecord(templateUser.getRecord(card.getUserId()));
-      UserRecord user = card.readUserRecord();
-
-      return user;
+      return card.readUserRecord();
     } catch (Exception e) {
       return null;
     }
   }
 
   static private UserTemplate getUserTemplate(String instanceId) {
-    UserTemplate template = (UserTemplate) templates.get(instanceId);
+    UserTemplate template = templates.get(instanceId);
 
     if (template == null) {
-      ResourceLocator templateSettings = new ResourceLocator(
-          "com.silverpeas.whitePages.settings.template", "");
+      ResourceLocator templateSettings =
+          new ResourceLocator("com.silverpeas.whitePages.settings.template", "");
       String templateDir = templateSettings.getString("templateDir");
       String userTemplate = getParam("userTemplate", instanceId);
-      template = new UserTemplate(templateDir.replace('\\', '/') + "/"
-          + userTemplate.replace('\\', '/'), "");
-
+      template =
+          new UserTemplate(templateDir.replace('\\', '/') + "/" + userTemplate.replace('\\', '/'),
+              "");
       templates.put(instanceId, template);
     }
     return template;
   }
 
   static private String getParam(String paramName, String instanceId) {
-    return AdministrationServiceProvider.getAdminService().getComponentParameterValue(instanceId, paramName);
+    return AdministrationServiceProvider.getAdminService()
+        .getComponentParameterValue(instanceId, paramName);
   }
 
-  static Map<String, UserTemplate> templates = new HashMap<String, UserTemplate>();
+  static Map<String, UserTemplate> templates = new HashMap<>();
 
   public String getId() {
     return (new Long(id)).toString();
@@ -183,7 +180,8 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     if (other instanceof CardHeader) {
       CardHeader otherCard = (CardHeader) other;
       return this.getName().compareTo(otherCard.getName());
-    } else
+    } else {
       return 1;
+    }
   }
 }

@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.whitePages.record;
 
@@ -44,8 +47,7 @@ public class UserTemplate implements RecordTemplate {
    * A UserTemplate is built from a fileName and a language : use addFieldTemplate for each field.
    */
   public UserTemplate(String fileName, String language) {
-    label = new ResourceLocator(
-        "com.silverpeas.whitePages.multilang.whitePagesBundle", language);
+    label = new ResourceLocator("com.silverpeas.whitePages.multilang.whitePagesBundle", language);
     try {
       this.viewForm = new HtmlForm(this);
     } catch (FormException e) {
@@ -97,8 +99,7 @@ public class UserTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate of the named field.
-   *
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -118,8 +119,7 @@ public class UserTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
-   *
-   * @throw FormException if the field name is unknown.
+   * @throws FormException if the field name is unknown.
    */
   @Override
   public int getFieldIndex(String fieldName) throws FormException {
