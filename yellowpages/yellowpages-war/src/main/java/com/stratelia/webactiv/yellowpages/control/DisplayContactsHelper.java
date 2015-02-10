@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.yellowpages.control;
 
@@ -51,9 +51,9 @@ public class DisplayContactsHelper {
   public static void displayContactsAdmin(String contactCard,
       YellowpagesSessionController yellowpagesScc, String profile, Collection<UserContact> contacts,
       boolean subtopicsExist, String contactDeleteIcon, GraphicElementFactory gef,
-      ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out) throws
-      IOException {
-    int indexLastNameColumn = 1;    
+      ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out)
+      throws IOException {
+    int indexLastNameColumn = 1;
 
     ArrayPane arrayPane = gef.getArrayPane("tableau1", "topicManager.jsp", request, session);
     if (!"no".equalsIgnoreCase(resources.getSetting("showContactIcon"))) {
@@ -90,8 +90,8 @@ public class DisplayContactsHelper {
       ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getFirstName()));
       ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getEmail()));
       if (resources.getSetting("columns").contains("phone")) {
-        ArrayCellText phoneCell = ligne1.addArrayCellText(
-            EncodeHelper.javaStringToHtmlString(contact.getPhone()));
+        ArrayCellText phoneCell =
+            ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getPhone()));
         phoneCell.setNoWrap(true);
       }
       if (resources.getSetting("columns").contains("fax")) {
@@ -99,8 +99,8 @@ public class DisplayContactsHelper {
       }
 
       UserDetail ownerDetail = userContact.getOwner();
-      if ((profile.equals("admin")) || ((ownerDetail != null) && (yellowpagesScc.getUserId().equals(
-          ownerDetail.getId())))) {
+      if ((profile.equals("admin")) ||
+          ((ownerDetail != null) && (yellowpagesScc.getUserId().equals(ownerDetail.getId())))) {
         IconPane iconPane = gef.getIconPane();
         Icon deleteIcon = iconPane.addIcon();
         deleteIcon.setProperties(contactDeleteIcon, resources.getString("ContactSupprimer"),
@@ -117,9 +117,9 @@ public class DisplayContactsHelper {
   }
 
   public static void displayContactsUser(YellowpagesSessionController yellowpagesScc,
-      Collection<ContactFatherDetail> contacts, String id, String componentLabel, GraphicElementFactory gef,
-      ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out) throws
-      IOException {
+      Collection<ContactFatherDetail> contacts, String id, String componentLabel,
+      GraphicElementFactory gef, ServletRequest request, HttpSession session,
+      ResourcesWrapper resources, JspWriter out) throws IOException {
 
     ArrayPane arrayPane;
     if (id != null) {
@@ -156,7 +156,8 @@ public class DisplayContactsHelper {
         link = "javaScript:goToUser('" + contact.getUserId() + "');";
       } else {
         icon = resources.getIcon("yellowpages.contact");
-        link = "javascript:onClick=contactGoToUserInTopic('" + contact.getPK().getId() + "','" + fatherId + "')";
+        link = "javascript:onClick=contactGoToUserInTopic('" + contact.getPK().getId() + "','" +
+            fatherId + "')";
       }
       IconPane iconPane = gef.getIconPane();
       Icon carte = iconPane.addIcon();
@@ -168,7 +169,8 @@ public class DisplayContactsHelper {
           String property = nameColumn.substring(7);
           // rechercher la valeur dans UserFull
           if (userFull != null) {
-            ligne.addArrayCellText(EncodeHelper.javaStringToHtmlString(userFull.getValue(property)));
+            ligne
+                .addArrayCellText(EncodeHelper.javaStringToHtmlString(userFull.getValue(property)));
           }
         } else {
           String value;
