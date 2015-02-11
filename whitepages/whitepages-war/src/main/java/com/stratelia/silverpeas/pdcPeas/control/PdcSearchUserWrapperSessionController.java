@@ -37,14 +37,13 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
  */
 public class PdcSearchUserWrapperSessionController extends AbstractComponentSessionController {
 
-  private Pdc m_pdc = null;
+  private Pdc pdc = null;
 
   public Pdc getPdc() {
-    if (m_pdc == null) {
-      m_pdc = new Pdc();
+    if (pdc == null) {
+      pdc = new Pdc();
     }
-
-    return m_pdc;
+    return pdc;
   }
 
   /**

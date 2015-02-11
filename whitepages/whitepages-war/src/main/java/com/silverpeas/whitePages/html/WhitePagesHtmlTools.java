@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.html;
 
 import java.util.List;
@@ -33,35 +32,41 @@ import com.stratelia.silverpeas.pdc.model.Value;
 
 public class WhitePagesHtmlTools {
 
-public static String generateHtmlForPdc(List<SearchAxis> axis, String language, HttpServletRequest request) { 
-  StringBuilder result = new StringBuilder("");
-  for (SearchAxis searchAxis : axis) {
-    result.append("<div>");
+  /**
+   * Hide constructor
+   */
+  private WhitePagesHtmlTools() {
+  }
+
+  public static String generateHtmlForPdc(List<SearchAxis> axis, String language,
+      HttpServletRequest request) {
+    StringBuilder result = new StringBuilder("");
+    for (SearchAxis searchAxis : axis) {
+      result.append("<div>");
       int axisId = searchAxis.getAxisId();
-      String    valueInContext    = request.getAttribute("Axis" + String.valueOf(axisId)) != null ? (String)request.getAttribute("Axis" + String.valueOf(axisId)) : null;
-      String    increment     = "";
-      String    selected      = "";
+      String valueInContext = request.getAttribute("Axis" + String.valueOf(axisId)) != null ?
+          (String) request.getAttribute("Axis" + String.valueOf(axisId)) : null;
+      String increment = "";
+      String selected = "";
       String axisName = searchAxis.getAxisName();
-      StringBuilder buffer = new StringBuilder("<select name=\"Axis"+axisId+"\" size=\"1\">");
+      StringBuilder buffer = new StringBuilder("<select name=\"Axis" + axisId + "\" size=\"1\">");
       buffer.append("<option value=\"\"></option>");
       List<Value> values = searchAxis.getValues();
       for (Value value : values) {
-        for (int inc=0; inc<value.getLevelNumber(); inc++)
-        {
+        for (int inc = 0; inc < value.getLevelNumber(); inc++) {
           increment += "&nbsp;&nbsp;&nbsp;&nbsp;";
         }
-        
-        if (value.getFullPath().equals(valueInContext))
-        {
+
+        if (value.getFullPath().equals(valueInContext)) {
           selected = " selected";
         }
-        
+
         buffer.append("<option value=\"").append(value.getFullPath()).append("\"").append(selected)
             .append(">").append(increment).append(value.getName(language));
         buffer.append("</option>");
-        
-        increment   = "";
-        selected  = "";
+
+        increment = "";
+        selected = "";
       }
       buffer.append("</select>");
       result.append("<label class=\"txtlibform\" for=\"Axis");
@@ -69,10 +74,10 @@ public static String generateHtmlForPdc(List<SearchAxis> axis, String language, 
       result.append("\">");
       result.append(axisName);
       result.append("</label>");
-      result.append(buffer.toString()); 
-      result.append("</div>");  
+      result.append(buffer.toString());
+      result.append("</div>");
     }
-  return result.toString();
-}
+    return result.toString();
+  }
 
 }

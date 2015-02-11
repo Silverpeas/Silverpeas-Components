@@ -53,7 +53,7 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
   public void init(long id, Card card) {
     this.id = id;
 
-    String label = null;
+    String label;
     try {
       UserRecord user = getUserRecord(card);
       if (user == null) {

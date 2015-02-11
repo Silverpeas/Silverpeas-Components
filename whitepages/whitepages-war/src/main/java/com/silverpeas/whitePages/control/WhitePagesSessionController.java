@@ -109,7 +109,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private ContainerContext containerContext;
   private Card notifiedUserCard;
   private PdcManager pdcManager = null;
-  private static DomainDriverManager m_DDManager = new DomainDriverManager();
+  private static DomainDriverManager mDDManager = new DomainDriverManager();
 
   public boolean isAdmin() {
     return "admin".equals(getUserRoleLevel());
@@ -609,15 +609,15 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Appel UserPannel pour set des users selectionnable (4 [] vides) :
    */
   public String initUserPanel() {
-    String m_context =
+    String mContext =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName =
-        new Pair<>(getComponentLabel(), m_context + "/RwhitePages/" + getComponentId() + "/Main");
+        new Pair<>(getComponentLabel(), mContext + "/RwhitePages/" + getComponentId() + "/Main");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] =
         new Pair<>(getString("whitePages.usersList"), "/RwhitePages/" + getComponentId() + "/Main");
-    String hostUrl = m_context + "/RwhitePages/" + getComponentId() + "/createIdentity";
+    String hostUrl = mContext + "/RwhitePages/" + getComponentId() + "/createIdentity";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -908,17 +908,17 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public List<SearchField> getLdapAttributesList() throws Exception {
     Map<String, String> properties = getDomainProperties();
     List<SearchField> fields = new ArrayList<>();
-    for (String property : properties.keySet()) {
+    for (Map.Entry<String, String> prop : properties.entrySet()) {
       SearchField field = new SearchField();
-      field.setFieldId(SearchFieldsType.LDAP.getLabelType() + property);
-      field.setLabel(properties.get(property));
+      field.setFieldId(SearchFieldsType.LDAP.getLabelType() + prop.getKey());
+      field.setLabel(prop.getValue());
       fields.add(field);
     }
     return fields;
   }
 
   private Map<String, String> getDomainProperties() throws Exception {
-    return m_DDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
+    return mDDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
   }
 
   public void confirmFieldsChoice(String[] fields) throws UtilException {

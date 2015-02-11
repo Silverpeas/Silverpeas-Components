@@ -21,14 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.service;
 
 import com.silverpeas.whitePages.model.SearchField;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class SearchFieldComparator implements Comparator<SearchField> {
+public class SearchFieldComparator implements Comparator<SearchField>, Serializable {
+
+  private static final long serialVersionUID = 1587075059484681296L;
 
   public int compare(SearchField o1, SearchField o2) {
     return o1.getFieldId().compareTo(o2.getFieldId()) ;

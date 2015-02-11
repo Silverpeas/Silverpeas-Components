@@ -79,7 +79,7 @@ public class CardManager {
     return contentManager;
   }
 
-  static public CardManager getInstance() {
+  public static CardManager getInstance() {
     return instance;
   }
 
@@ -239,18 +239,18 @@ public class CardManager {
 
   public Collection<WhitePagesCard> getUserCards(String userId, Collection<String> instanceIds)
       throws WhitePagesException {
-    String where = " userId = '" + userId + "' and hideStatus = 0";
+    StringBuilder where = new StringBuilder(" userId = '" + userId + "' and hideStatus = 0");
     if (instanceIds != null) {
       Iterator<String> it = instanceIds.iterator();
       if (it.hasNext()) {
-        where += " and instanceId IN (";
+        where.append(" and instanceId IN (");
         String id = it.next();
-        where += "'" + id + "'";
+        where.append("'").append(id).append("'");
         for (String appId : instanceIds) {
-          where += ", '" + appId + "'";
+          where.append(", '").append(appId).append("'");
         }
-        where += ")";
-        return getWhitePagesCards(where);
+        where.append(")");
+        return getWhitePagesCards(where.toString());
       }
 
     }
@@ -259,19 +259,19 @@ public class CardManager {
 
   public Collection<WhitePagesCard> getHomeUserCards(String userId, Collection<String> instanceIds,
       String instanceId) throws WhitePagesException {
-    String where =
-        " userId = '" + userId + "' and ((instanceId = '" + instanceId + "') or (hideStatus = 0";
+    StringBuilder where = new StringBuilder(
+        " userId = '" + userId + "' and ((instanceId = '" + instanceId + "') or (hideStatus = 0");
     if (instanceIds != null && !instanceIds.isEmpty()) {
       Iterator<String> it = instanceIds.iterator();
       if (it.hasNext()) {
-        where += " and instanceId IN (";
+        where.append(" and instanceId IN (");
         String id = it.next();
-        where += "'" + id + "'";
+        where.append("'").append(id).append("'");
         for (String appId : instanceIds) {
-          where += ", '" + appId + "'";
+          where.append(", '").append(appId).append("'");
         }
-        where += ")))";
-        return getWhitePagesCards(where);
+        where.append(")))");
+        return getWhitePagesCards(where.toString());
       }
 
     }

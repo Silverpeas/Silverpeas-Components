@@ -103,15 +103,13 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     if (xmlFields != null && !xmlFields.isEmpty() && xmlTemplate != null) {
       Map<String, String> newXmlQuery = new HashMap<>();
 
-      Set<String> keys = xmlFields.keySet();
-      for (final String key : keys) {
-        String value = xmlFields.get(key);
+      for (Map.Entry<String, String> entry : xmlFields.entrySet()) {
+        String value = entry.getValue();
         value = value.trim().replaceAll("##", " AND ");
-        newXmlQuery.put(xmlTemplate + "$$" + key, value);
-
+        newXmlQuery.put(xmlTemplate + "$$" + entry.getKey(), value);
         SilverTrace
             .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-                "newXmlQuery.put(" + xmlTemplate + "$$" + key + "," + value + ")");
+                "newXmlQuery.put(" + xmlTemplate + "$$" + entry.getKey() + "," + value + ")");
       }
 
       query.setXmlQuery(newXmlQuery);

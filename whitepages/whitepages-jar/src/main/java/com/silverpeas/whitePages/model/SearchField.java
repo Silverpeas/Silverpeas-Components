@@ -90,11 +90,7 @@ public class SearchField implements Serializable {
   }
 
   public boolean equals(SearchField obj) {
-    if (instanceId.equals(obj.getInstanceId()) && fieldId.equals(obj.getFieldId())) {
-      return true;
-    } else {
-      return false;
-    }
+    return instanceId.equals(obj.getInstanceId()) && fieldId.equals(obj.getFieldId());
   }
 
   public void setLabel(String label) {

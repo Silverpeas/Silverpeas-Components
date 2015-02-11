@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 
 public class UserTemplate implements RecordTemplate {
 
-  private static ResourceLocator label = null;
+  private ResourceLocator label = null;
   private HtmlForm viewForm;
 
   /**
@@ -110,8 +110,6 @@ public class UserTemplate implements RecordTemplate {
       fieldTemplate.setLabel(label.getString(fieldName));
       fieldTemplate.setDisplayerName("simpletext");
       fieldTemplate.setReadOnly(true);
-    } else {
-      // pb car on n'a pas de UserDetail pour recuperer le nom
     }
 
     return fieldTemplate;

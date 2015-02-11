@@ -75,6 +75,9 @@ public class WhitePagesCard implements Comparable {
 
   @Override
   public boolean equals(Object theOther) {
+    if (!(theOther instanceof WhitePagesCard)) {
+      return false;
+    }
     if (theOther.getClass() != getClass()) {
       return false;
     }

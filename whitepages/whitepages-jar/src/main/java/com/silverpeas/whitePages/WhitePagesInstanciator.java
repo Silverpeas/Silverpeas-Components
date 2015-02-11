@@ -81,23 +81,13 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
    */
   private void deleteDataOfInstance(Connection con, String componentId, String suffixName) throws
       InstanciationException {
-    Statement stmt = null;
     String deleteQuery = getDeleteQuery(componentId, suffixName);
-    try {
-      stmt = con.createStatement();
+    try (Statement stmt = con.createStatement()) {
       stmt.executeUpdate(deleteQuery);
       stmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("WhitePagesInstanciator.deleteDataOfInstance()",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
-    } finally {
-      try {
-        stmt.close();
-      } catch (SQLException err_closeStatement) {
-        SilverTrace.error("whitePages", "WhitePagesInstanciator.deleteDataOfInstance()",
-            "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
-      }
     }
-
   }
 }
