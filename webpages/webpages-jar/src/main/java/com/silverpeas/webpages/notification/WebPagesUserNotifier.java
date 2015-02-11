@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.webpages.notification;
 
@@ -56,7 +56,6 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   /**
    * Builds and sends a webpages notification. A warning message is logged when an exception is
    * catched.
-   *
    * @param resource
    * @param userId
    */
@@ -71,7 +70,6 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   /**
    * Default constructor
-   *
    * @param resource
    */
   public WebPagesUserNotifier(final NodePK resource, final String userId) {
@@ -89,13 +87,6 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
             .indexBySubscriberType();
   }
 
-  /*
-     * (non-Javadoc)
-     * @see
-     * com.silverpeas.notification.builder
-     * .AbstractTemplateUserNotificationBuilder#performTemplateData
-     * (java.lang.String, java.lang.Object, org.silverpeas.util.template.SilverpeasTemplate)
-     */
   @Override
   protected void performTemplateData(final String language, final NodePK resource,
       final SilverpeasTemplate template) {
@@ -107,12 +98,6 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
         getUserDetail(userId).getDisplayedName());
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#
-   * performNotificationResource(java.lang.String, java.lang.Object,
-   * com.silverpeas.notification.model.NotificationResourceData)
-   */
   @Override
   protected void performNotificationResource(final String language, final NodePK resource,
       final NotificationResourceData notificationResourceData) {
@@ -128,7 +113,6 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   /**
    * Builds the specific location
-   *
    * @return the specific location
    */
   private String buildResourceLocation() {
@@ -147,80 +131,41 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     return sb.toString();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractResourceUserNotificationBuilder#getResourceURL(
-   * java.lang.Object)
-   */
   @Override
   protected String getResourceURL(final NodePK resource) {
     return URLManager.getURL(null, null, resource.getInstanceId()) + "Main";
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getAction()
-   */
   @Override
   protected NotifAction getAction() {
     return NotifAction.UPDATE;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getMultilangPropertyFile()
-   */
   @Override
   protected String getMultilangPropertyFile() {
     return "com.silverpeas.webpages.multilang.webPagesBundle";
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#getBundleSubjectKey
-   * ()
-   */
   @Override
   protected String getBundleSubjectKey() {
     return "webPages.subscription";
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#getTemplatePath()
-   */
   @Override
   protected String getTemplatePath() {
     return "webpages";
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getComponentInstanceId()
-   */
   @Override
   protected String getComponentInstanceId() {
     return getResource().getInstanceId();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getSender()
-   */
   @Override
   protected String getSender() {
     return userId;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getUserIdsToNotify()
-   */
   @Override
   protected Collection<String> getUserIdsToNotify() {
     return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
