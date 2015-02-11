@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
@@ -109,6 +111,7 @@ public class ScheduleEventUserCallAgainNotification extends
     template.setAttribute("senderName", senderUserDetail.getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
     template.setAttribute("message", message);
+    template.setAttribute("hasmessage", StringUtils.isNotBlank(message));
   }
 
   @Override

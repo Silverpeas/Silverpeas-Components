@@ -71,43 +71,10 @@
 		        console.log("Call again query");
 		      }
 		      
-		      if (isCorrectForm()) {
-		        document.callAgainForm.submit();
-		        return true;
-		      } else {
-		        return false;
-		      }
+		      document.callAgainForm.submit();
 		    }
 		  });
 		
-	}
-	
-	function isCorrectForm() {
-	  var errorMsg = "";
-	  var errorNb = 0;
-	  var msg = $("#message_content").val().trim();
-
-	  if (msg == "") {
-	    errorMsg+="  - '<fmt:message key="scheduleevent.callagain.message"/>'  <fmt:message key="GML.MustBeFilled"/>\n";
-	    errorNb++;
-	  }
-
-	  switch(errorNb) {
-	      case 0 :
-	          result = true;
-	          break;
-	      case 1 :
-	          errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-	          window.alert(errorMsg);
-	          result = false;
-	          break;
-	      default :
-	          errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-	          window.alert(errorMsg);
-	          result = false;
-	          break;
-	  }
-	  return result;
 	}
 	
 	function valid() {
