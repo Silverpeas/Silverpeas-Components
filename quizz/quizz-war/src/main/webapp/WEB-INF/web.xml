@@ -44,7 +44,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>GoToQuizz</servlet-name>
-    <url-pattern>/Survey/*</url-pattern>
+    <url-pattern>/Quizz/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

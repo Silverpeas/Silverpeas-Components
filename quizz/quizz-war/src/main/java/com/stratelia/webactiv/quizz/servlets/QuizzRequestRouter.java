@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.quizz.servlets;
@@ -53,11 +53,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   public QuizzSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -67,11 +65,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param quizzSC  The component Session Control, build and initialised.
-   * @param request  The entering request. The request rooter need it to get parameters
+   * @param quizzSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
   public String getDestination(String function, QuizzSessionController quizzSC,
@@ -100,14 +96,14 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         }
       } else if (function.startsWith("quizzCreator")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
-          
+
           quizzSC.createTemporaryQuizz(request);
-          
+
           destination = "quizzCreator.jsp";
         } else {
           profileError = true;
         }
-      } else if (function.equals("ExportCSV")) {
+      } else if ("ExportCSV".equals(function)) {
         String quizzId = request.getParameter("QuizzId");
         String csvFilename = quizzSC.exportQuizzCSV(quizzId);
 
@@ -116,10 +112,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
           request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
           request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-          file = null;
         }
         destination = "downloadCSV.jsp";
-      } else if (function.equals("copy")) {
+      } else if ("copy".equals(function)) {
         String quizzId = request.getParameter("Id");
         try {
           quizzSC.copySurvey(quizzId);
@@ -127,8 +122,8 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
-            + "Idle.jsp?message=REFRESHCLIPBOARD";
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+            "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
         try {
           quizzSC.paste();
@@ -140,15 +135,13 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
-        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "",
-            "id = " + id);
+        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "", "id = " + id);
 
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
         } else {
           if (quizzSC.isParticipationAllowed(id)) {
-            destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
-                + id;
+            destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId=" + id;
           } else {
             destination = "quizzResultUser.jsp";
           }
@@ -158,8 +151,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       }
 
       if (profileError) {
-        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
-        destination = sessionTimeout;
+        destination = GeneralPropertiesManager.getString("sessionTimeout");
       } else {
         destination = "/quizz/jsp/" + destination;
       }

@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.quizz.control;
 
@@ -39,7 +42,6 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerSelection;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.quizz.QuizzException;
-import com.stratelia.webactiv.score.control.ScoreService;
 import com.stratelia.webactiv.score.model.ScoreDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -51,7 +53,7 @@ import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.DecodingException;
 
-import javax.inject.Inject;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -67,10 +69,9 @@ import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfCon
 
 public final class QuizzSessionController extends AbstractComponentSessionController {
 
-  @Inject
-  private QuestionContainerService questionContainerService;
+  private QuestionContainerService questionContainerService =
+      QuestionContainerService.getInstance();
   private ResourceLocator settings = null;
-  private ScoreService scoreService = null;
   private int nbTopScores = 0;
   private boolean isAllowedTopScores = false;
   private List<PdcPosition> positions = null;
@@ -78,8 +79,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   /**
    * Creates new sessionClientController
    */
-  public QuizzSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
+  public QuizzSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.quizz.multilang.quizz");
     String nbTop = getSettings().getString("nbTopScores");
     String isAllowedTop = getSettings().getString("isAllowedTopScores");
@@ -109,20 +109,15 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @return
-   * @see
    */
   @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
       try {
-        String langue = getLanguage();
-        settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", langue);
+        settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", getLanguage());
       } catch (Exception e) {
-        if (settings == null) {
-          settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", "fr");
-        }
+        settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", "fr");
       }
     }
     return settings;
@@ -130,67 +125,58 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @return
    * @throws QuizzException
    */
   public Collection<QuestionContainerHeader> getUserQuizzList() throws QuizzException {
     try {
-      QuestionContainerPK questionContainerPK = new QuestionContainerPK(null,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK questionContainerPK =
+          new QuestionContainerPK(null, getSpaceId(), getComponentId());
 
-      return questionContainerService.getOpenedQuestionContainersAndUserScores(
-          questionContainerPK, getUserId());
+      return questionContainerService
+          .getOpenedQuestionContainersAndUserScores(questionContainerPK, getUserId());
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getUserQuizzList",
-          QuizzException.WARNING, "Quizz.EX_PROBLEM_TO_OBTAIN_LIST_QUIZZ", e);
+      throw new QuizzException("QuizzSessionController.getUserQuizzList", QuizzException.WARNING,
+          "Quizz.EX_PROBLEM_TO_OBTAIN_LIST_QUIZZ", e);
     }
   }
 
   /**
-   * Method declaration
-   *
    * @return
    * @throws QuizzException
    */
   public Collection<QuestionContainerHeader> getAdminQuizzList() throws QuizzException {
     try {
-      QuestionContainerPK questionContainerPK = new QuestionContainerPK(null,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK questionContainerPK =
+          new QuestionContainerPK(null, getSpaceId(), getComponentId());
 
-      return questionContainerService
-          .getNotClosedQuestionContainers(questionContainerPK);
+      return questionContainerService.getNotClosedQuestionContainers(questionContainerPK);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getUserQuizzList",
-          QuizzException.WARNING, "Quizz.EX_PROBLEM_TO_OBTAIN_LIST_QUIZZ", e);
+      throw new QuizzException("QuizzSessionController.getUserQuizzList", QuizzException.WARNING,
+          "Quizz.EX_PROBLEM_TO_OBTAIN_LIST_QUIZZ", e);
     }
   }
 
   /**
-   * Method declaration
-   *
-   * @param id
-   * @return
+   * @param id the quizz identifier
+   * @return the question container detail of the quizz identified by given parameter
    * @throws QuizzException
    */
-  public QuestionContainerDetail getQuizzDetail(String id)
-      throws QuizzException {
+  public QuestionContainerDetail getQuizzDetail(String id) throws QuizzException {
     try {
-      QuestionContainerPK questionContainerPK = new QuestionContainerPK(id,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK questionContainerPK =
+          new QuestionContainerPK(id, getSpaceId(), getComponentId());
 
-      return questionContainerService.getQuestionContainer(questionContainerPK,
-          getUserId());
+      return questionContainerService.getQuestionContainer(questionContainerPK, getUserId());
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getUserQuizzList",
-          QuizzException.WARNING, "Quizz.EX_PROBLEM_TO_OBTAIN_QUIZZ", e);
+      throw new QuizzException("QuizzSessionController.getUserQuizzList", QuizzException.WARNING,
+          "Quizz.EX_PROBLEM_TO_OBTAIN_QUIZZ", e);
     }
   }
 
   /**
    * Method declaration
-   *
-   * @param quizzDetail
+   * @param quizzDetail the question container detail to create
    * @throws QuizzException
    */
   public void createQuizz(QuestionContainerDetail quizzDetail) throws QuizzException {
@@ -198,16 +184,16 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     try {
       qcPK = questionContainerService.createQuestionContainer(qcPK, quizzDetail, getUserId());
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.createQuizz",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_CREATE", e);
+      throw new QuizzException("QuizzSessionController.createQuizz", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_TO_CREATE", e);
     }
     // persist positions after quiz creation
     classifyContent(quizzDetail, qcPK);
   }
 
   /**
-   * @param quizzDetail
-   * @param componentId
+   * @param quizzDetail the question container detail to create
+   * @param componentId the component instance identifier
    * @throws QuizzException
    */
   public void createQuizz(QuestionContainerDetail quizzDetail, String componentId)
@@ -224,9 +210,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * this method classify content only when new quiz is created Check if a position has been defined
-   * in header form then persist it
-   *
+   * this method classify content only when new quiz is created Check if a position has been
+   * defined in header form then persist it
    * @param quizDetail the current quiz QuestionContainerDetail
    * @param qcPK the QuestionContainerPK with content identifier
    */
@@ -234,11 +219,10 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     List<PdcPosition> thePositions = this.getPositions();
     if (thePositions != null && !thePositions.isEmpty()) {
       PdcClassification classification =
-          aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId()).withPositions(
-          this.getPositions());
+          aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId())
+              .withPositions(this.getPositions());
       if (!classification.isEmpty()) {
-        PdcClassificationService service =
-            PdcServiceProvider.getPdcClassificationService();
+        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
         classification.ofContent(qcPK.getId());
         service.classifyContent(quizDetail, classification);
       }
@@ -247,14 +231,11 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
-   * @param reply
+   * @param quizzId the quizz identifier
+   * @param reply the reply to record
    * @throws QuizzException
-   * @see
    */
-  public void recordReply(String quizzId, Map<String, List<String>> reply)
-      throws QuizzException {
+  public void recordReply(String quizzId, Map<String, List<String>> reply) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       questionContainerService.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
@@ -266,8 +247,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @return
    * @throws QuizzException
    */
@@ -282,9 +262,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Method declaration
-   *
-   * @param quizzId
+   * Close the quizz identified by parameter
+   * @param quizzId the quizz identifier to close
    * @throws QuizzException
    */
   public void closeQuizz(String quizzId) throws QuizzException {
@@ -300,9 +279,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
-   * @return
+   * @param quizzId the quizz identifier
+   * @return the number of voters
    * @throws QuizzException
    */
   public int getNbVoters(String quizzId) throws QuizzException {
@@ -317,8 +295,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @return
    * @throws QuizzException
    */
@@ -334,7 +311,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @return
    * @throws QuizzException
    */
@@ -350,7 +326,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @return
    * @throws QuizzException
    */
@@ -366,8 +341,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @return
    * @throws QuizzException
    */
@@ -383,8 +357,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @return
    * @throws QuizzException
    */
@@ -400,8 +373,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @return
    * @throws QuizzException
    */
@@ -419,20 +391,19 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
-   * @param userId
+   * @param quizzId the quizz identifier
+   * @param userId the user identifier
    * @param participationId
    * @return
    * @throws QuizzException
    */
   public QuestionContainerDetail getQuestionContainerByParticipationId(String quizzId,
       String userId, int participationId) throws QuizzException {
-    QuestionContainerDetail questionContainerDetail = null;
+    QuestionContainerDetail questionContainerDetail;
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     try {
-      questionContainerDetail =
-          questionContainerService.getQuestionContainerByParticipationId(qcPK, userId, participationId);
+      questionContainerDetail = questionContainerService
+          .getQuestionContainerByParticipationId(qcPK, userId, participationId);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getQuestionContainerByParticipationId",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_OBTAIN_QUIZZ", e);
@@ -442,20 +413,18 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @param participationId
    * @return
    * @throws QuizzException
    */
-  public QuestionContainerDetail getQuestionContainerForCurrentUserByParticipationId(
-      String quizzId, int participationId) throws QuizzException {
-    QuestionContainerDetail questionContainerDetail = null;
+  public QuestionContainerDetail getQuestionContainerForCurrentUserByParticipationId(String quizzId,
+      int participationId) throws QuizzException {
+    QuestionContainerDetail questionContainerDetail;
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     try {
-      questionContainerDetail =
-          questionContainerService.getQuestionContainerByParticipationId(qcPK, getUserId(),
-          participationId);
+      questionContainerDetail = questionContainerService
+          .getQuestionContainerByParticipationId(qcPK, getUserId(), participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getQuestionContainerForCurrentUserByParticipationId",
@@ -466,13 +435,13 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
-   * @param userId
-   * @return
+   * @param quizzId the quizz identifier
+   * @param userId the user identifier
+   * @return the number of particippations of the quizz
    * @throws QuizzException
    */
-  public int getUserNbParticipationsByFatherId(String quizzId, String userId) throws QuizzException {
+  public int getUserNbParticipationsByFatherId(String quizzId, String userId)
+      throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     int nbPart = 0;
     try {
@@ -486,21 +455,19 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
-   * @param userId
+   * @param quizzId the quizz identifier
+   * @param userId the user identifier
    * @param participationId
-   * @throws QuizzException
    * @return
+   * @throws QuizzException
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(String quizzId, String userId,
       int participationId) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-    ScoreDetail scoreDetail = null;
+    ScoreDetail scoreDetail;
     try {
-      scoreDetail =
-          questionContainerService.getUserScoreByFatherIdAndParticipationId(qcPK, userId,
-          participationId);
+      scoreDetail = questionContainerService
+          .getUserScoreByFatherIdAndParticipationId(qcPK, userId, participationId);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserScoreByFatherIdAndParticipationId",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_OBTAIN_SCORE", e);
@@ -510,20 +477,18 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @param participationId
-   * @throws QuizzException
    * @return
+   * @throws QuizzException
    */
   public ScoreDetail getCurrentUserScoreByFatherIdAndParticipationId(String quizzId,
       int participationId) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-    ScoreDetail scoreDetail = null;
+    ScoreDetail scoreDetail;
     try {
-      scoreDetail =
-          questionContainerService.getUserScoreByFatherIdAndParticipationId(qcPK, getUserId(),
-          participationId);
+      scoreDetail = questionContainerService
+          .getUserScoreByFatherIdAndParticipationId(qcPK, getUserId(), participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getCurrentUserScoreByFatherIdAndParticipationId",
@@ -534,7 +499,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @param scoreDetail
    * @throws QuizzException
    */
@@ -550,9 +514,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @param quizzHeader
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @throws QuizzException
    */
   public void updateQuizzHeader(QuestionContainerHeader quizzHeader, String quizzId)
@@ -569,9 +532,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Method declaration
-   *
    * @param questions
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @throws QuizzException
    */
   public void updateQuestions(Collection<Question> questions, String quizzId)
@@ -594,7 +556,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       if ("yes".equalsIgnoreCase(
           orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
         if (galleries == null) {
-          galleries = new ArrayList<ComponentInstLight>();
+          galleries = new ArrayList<>();
         }
         ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
         galleries.add(gallery);
@@ -610,17 +572,17 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
-    getClipboardObjects().add((ClipboardSelection) questionContainerSelect);
+    getClipboardObjects().add(questionContainerSelect);
   }
 
   public void paste() throws Exception {
     Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
     for (ClipboardSelection clipObject : clipObjects) {
       if (clipObject != null) {
-        if (clipObject.isDataFlavorSupported(
-            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject.getTransferData(
-              QuestionContainerSelection.QuestionContainerDetailFlavor);
+        if (clipObject
+            .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject
+              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteQuizz(quizz);
         }
       }
@@ -637,9 +599,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       componentId = getComponentId();
     }
     Collection<Question> questions = quizz.getQuestions();
-    Iterator<Question> itQ = questions.iterator();
-    while (itQ.hasNext()) {
-      Question question = itQ.next();
+    for (final Question question : questions) {
       Collection<Answer> answers = question.getAnswers();
       Iterator<Answer> itA = answers.iterator();
       int attachmentSuffix = 0;
@@ -656,7 +616,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
           String type =
               physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
-              new Long(new Date().getTime()).toString() + attachmentSuffix + "." + type;
+              Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
           SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
               "newPhysicalName = " + newPhysicalName + " answer = " + answer.getLabel());
           attachmentSuffix = attachmentSuffix + 1;
@@ -668,7 +628,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
                 absolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
             SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                " same component : from = " + dir + physicalName + " to = " + dir + newPhysicalName);
+                " same component : from = " + dir + physicalName + " to = " + dir +
+                    newPhysicalName);
           } else {
             // in other component
             String fromAbsolutePath =
@@ -680,8 +641,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
                 toAbsolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(fromDir + physicalName, toDir + newPhysicalName);
             SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                " other component : from = " + fromDir + physicalName + " to = " + toDir
-                + newPhysicalName);
+                " other component : from = " + fromDir + physicalName + " to = " + toDir +
+                    newPhysicalName);
           }
           // update answer
           answer.setImage(newPhysicalName);
@@ -711,8 +672,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       quizz = getQuizzDetail(quizzId);
       return questionContainerService.exportCSV(quizz, true);
     } catch (Exception e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId="
-          + quizzId, e);
+      SilverTrace
+          .error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId=" + quizzId, e);
     }
     return null;
   }
@@ -723,22 +684,11 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     return nbParticipations < quizz.getHeader().getNbMaxParticipations();
   }
 
-  @Override
-  public void close() {
-    if (questionContainerService != null) {
-      questionContainerService = null;
-    }
-    if (scoreService != null) {
-      scoreService = null;
-    }
-  }
-
   /**
    * @param request
    * @throws ParseException
    */
-  public void createTemporaryQuizz(HttpServletRequest request)
-      throws ParseException {
+  public void createTemporaryQuizz(HttpServletRequest request) throws ParseException {
     String action = request.getParameter("Action");
     if ("SendNewQuizz".equals(action)) {
       String title = request.getParameter("title");
@@ -759,9 +709,9 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
       QuestionContainerHeader questionContainerHeader =
           new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
-          endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
-          Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS,
-          QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
+              endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
+              Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS,
+              QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
       HttpSession session = request.getSession();
       QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
       questionContainerDetail.setHeader(questionContainerHeader);
@@ -774,7 +724,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   /**
    * Set new survey positions (axis classification) from JSON string
-   *
    * @param positions: the JSON string positions
    */
   public void setQuizPositionsFromJSON(String positions) {
