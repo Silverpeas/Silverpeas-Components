@@ -20,12 +20,16 @@
   ~ If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<migration module="webSites">
+<migration module="gallery">
 
-  <current version="004">
+  <current version="006">
     <script name="create_table.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
-    <script name="init.sql" type="sql"/>
+    <script name="create_index.sql" type="sql"/>
   </current>
+
+  <upgrade fromVersion="005">
+    <script name="create_table.sql" type="sql"/>
+  </upgrade>
 
 </migration>
