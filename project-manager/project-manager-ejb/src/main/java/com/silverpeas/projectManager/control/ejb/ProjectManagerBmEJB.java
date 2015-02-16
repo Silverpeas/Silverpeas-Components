@@ -48,18 +48,20 @@ import org.silverpeas.util.Link;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-@Stateless(name = "ProjectManager", description = "Stateless session bean to manage a project.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+/**
+ * CDI bean to manage the projectManager application
+ */
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
 public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Inject

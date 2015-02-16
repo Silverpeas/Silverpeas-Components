@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,8 +44,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 
 import org.apache.commons.lang3.CharEncoding;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.silverpeas.util.JSONCodec;
 
 public class AjaxProjectManagerServlet extends HttpServlet {
 
@@ -166,42 +166,56 @@ public class AjaxProjectManagerServlet extends HttpServlet {
       } else if (ACTION_LOAD_TASK.equals(action)) {
         String taskId = req.getParameter("TaskId");
         List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("success", true);
-        jsonResult.put("componentId", projectManagerSC.getComponentId());
-        JSONArray taskArray = new JSONArray();
-        for (TaskDetail curTask : tasks) {
-          JSONObject jsonElt = new JSONObject();
-          jsonElt.put("id", curTask.getId());
-          jsonElt.put("status", curTask.getStatut());
-          // level is not used : need to use another element
-          jsonElt.put("level", curTask.getLevel());
-          jsonElt.put("containsSubTask", curTask.getEstDecomposee());
-          jsonElt.put("name", curTask.getNom());
-          jsonElt.put("manager", curTask.getResponsableFullName());
-          jsonElt.put("startDate", DateUtil.formatDate(curTask.getDateDebut(), "yyyyMMdd"));
-          jsonElt.put("endDate", DateUtil.formatDate(curTask.getDateFin(), "yyyyMMdd"));
-          float conso = curTask.getConsomme();
-          if (conso != 0) {
-            jsonElt.put("percentage", (conso / (conso + curTask.getRaf())) * 100);
-          } else {
-            jsonElt.put("percentage", conso);
-          }
-          taskArray.put(jsonElt);
-        }
-        jsonResult.put("tasks", taskArray);
-        isJsonResult = true;
-        output = jsonResult.toString();
+        List<String> jsonTasks = new ArrayList<String>();
+        output = JSONCodec.encodeObject(jsonResult -> {
+          jsonResult.put("success", true);
+          jsonResult.put("componentId", projectManagerSC.getComponentId());
+
+          String listTask = JSONCodec.encodeArray(taskArray -> {
+
+            for (TaskDetail curTask : tasks) {
+              String jsonTask = JSONCodec.encodeObject(jsonElt -> {
+                jsonElt.put("id", curTask.getId());
+                jsonElt.put("status", curTask.getStatut());
+                // level is not used : need to use another element
+                jsonElt.put("level", curTask.getLevel());
+                jsonElt.put("containsSubTask", curTask.getEstDecomposee());
+                jsonElt.put("name", curTask.getNom());
+                jsonElt.put("manager", curTask.getResponsableFullName());
+                jsonElt.put("startDate", DateUtil.formatDate(curTask.getDateDebut(), "yyyyMMdd"));
+                jsonElt.put("endDate", DateUtil.formatDate(curTask.getDateFin(), "yyyyMMdd"));
+                float conso = curTask.getConsomme();
+                if (conso != 0) {
+                  jsonElt.put("percentage", (conso / (conso + curTask.getRaf())) * 100);
+                } else {
+                  jsonElt.put("percentage", conso);
+                }
+                return jsonElt;
+              });
+              jsonTasks.add(jsonTask);
+            }
+            taskArray.addJSONArray(jsonTasks);
+            return taskArray;
+          });
+
+          jsonResult.put("tasks", listTask);
+          return jsonResult;
+        });
       } else if (ACTION_COLLAPSE_TASK.equals(action)) {
         String taskId = req.getParameter("TaskId");
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("success", true);
-        jsonResult.put("componentId", projectManagerSC.getComponentId());
-        JSONArray taskArray = new JSONArray();
-        buildJSonTasksId(projectManagerSC, taskId, taskArray);
-        jsonResult.put("tasks", taskArray);
         isJsonResult = true;
-        output = jsonResult.toString();
+        output = JSONCodec.encodeObject(jsonResult -> {
+          jsonResult.put("success", true);
+          jsonResult.put("componentId", projectManagerSC.getComponentId());
+
+          String listTask = JSONCodec.encodeArray(taskArray -> {
+            buildJSonTasksId(projectManagerSC, taskId, taskArray);
+            return taskArray;
+          });
+
+          jsonResult.put("tasks", listTask);
+          return jsonResult;
+        });
       }
       SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
           "output = " + output);
@@ -228,18 +242,22 @@ public class AjaxProjectManagerServlet extends HttpServlet {
    * @param projectManagerSC the project manager session controller
    * @param taskId the current task identifier we need to have task childs
    * @param taskArray the JSONArray
-   * @throws RemoteException
    */
   private void buildJSonTasksId(ProjectManagerSessionController projectManagerSC, String taskId,
-      JSONArray taskArray) throws RemoteException {
+      JSONCodec.JSONArray taskArray) {
     List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);
+    List<String> jsonTasks = new ArrayList<String>();
     for (TaskDetail curTask : tasks) {
-      JSONObject jsonElt = new JSONObject();
-      jsonElt.put("id", curTask.getId());
-      taskArray.put(jsonElt);
+      String jsonTask = JSONCodec.encodeObject(jsonElt -> {
+        jsonElt.put("id", curTask.getId());
+        return jsonElt;
+      });
+      jsonTasks.add(jsonTask);
+
       if (curTask.getEstDecomposee() == 1) {
         this.buildJSonTasksId(projectManagerSC, Integer.toString(curTask.getId()), taskArray);
       }
     }
+    taskArray.addJSONArray(jsonTasks);
   }
 }

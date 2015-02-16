@@ -30,11 +30,14 @@ import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.inject.Inject;
+
 public class ProjectManagerStatistics implements ComponentStatisticsInterface {
+
+  @Inject
+  private ProjectManagerBm projectManagerBm = null;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
@@ -52,13 +55,10 @@ public class ProjectManagerStatistics implements ComponentStatisticsInterface {
   }
 
   private ProjectManagerBm getProjectManagerBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME,
-          ProjectManagerBm.class);
-    } catch (Exception e) {
-      throw new ProjectManagerRuntimeException(
-          "ProjectManagerSessionController.getProjectManagerBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    if (projectManagerBm == null) {
+      throw new ProjectManagerRuntimeException("projectManager", SilverpeasRuntimeException.ERROR,
+          "ProjectManagerStatistics.getProjectManagerBm()", "CDI bootstrap error");
     }
+    return projectManagerBm;
   }
 }

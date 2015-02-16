@@ -32,9 +32,7 @@ import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -638,12 +636,10 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private ProjectManagerBm getProjectManagerBm() {
     if (projectManagerBm == null) {
       try {
-        projectManagerBm = EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME, ProjectManagerBm.class);
+        projectManagerBm = ProjectManagerBm.get();
       } catch (Exception e) {
-        throw new ProjectManagerRuntimeException(
-            "ProjectManagerSessionController.getProjectManagerBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new ProjectManagerRuntimeException("projectManager", SilverpeasRuntimeException.ERROR,
+            "ProjectManagerSessionController.getProjectManagerBm()", "IoC error cannot retrieve AlmanachBm from container", e);
       }
     }
     return projectManagerBm;

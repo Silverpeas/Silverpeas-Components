@@ -23,14 +23,16 @@ package com.silverpeas.projectManager.control.ejb;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Local;
-
 import com.silverpeas.projectManager.model.Filtre;
 import com.silverpeas.projectManager.model.HolidayDetail;
 import com.silverpeas.projectManager.model.TaskDetail;
+import org.silverpeas.util.ServiceProvider;
 
-@Local
 public interface ProjectManagerBm {
+
+  static ProjectManagerBm get() {
+    return ServiceProvider.getService(ProjectManagerBm.class);
+  }
 
   public List<TaskDetail> getProjects(String instanceId);
 

@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.project-manager</groupId>
   <artifactId>project-manager-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB project-manager</name>
 
   <dependencies>
