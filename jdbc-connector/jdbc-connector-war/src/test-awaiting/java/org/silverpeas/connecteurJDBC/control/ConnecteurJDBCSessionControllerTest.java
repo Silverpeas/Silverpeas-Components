@@ -58,7 +58,7 @@ public class ConnecteurJDBCSessionControllerTest {
     List<ConnecteurJDBCConnectionInfoDetail> connecteurs =
         new ArrayList<ConnecteurJDBCConnectionInfoDetail>();
     when(ejb.getConnectionList(any(ConnecteurJDBCConnectionInfoPK.class))).thenReturn(connecteurs);
-    ((MockableConnecteurJDBCService) ConnecteurJDBCServiceFactory.getConnecteurJDBCService())
+    ((MockableConnecteurJDBCService) ConnecteurJDBCServiceProvider.getConnecteurJDBCService())
         .setRealService(ejb);
     return new ConnecteurJDBCSessionController(controller, context);
   }
@@ -74,7 +74,7 @@ public class ConnecteurJDBCSessionControllerTest {
     List<ConnecteurJDBCConnectionInfoDetail> connecteurs = Collections.singletonList(detail);
     when(ejb.getConnectionList(any(ConnecteurJDBCConnectionInfoPK.class))).thenReturn(
         connecteurs);
-    ((MockableConnecteurJDBCService) ConnecteurJDBCServiceFactory.getConnecteurJDBCService())
+    ((MockableConnecteurJDBCService) ConnecteurJDBCServiceProvider.getConnecteurJDBCService())
         .setRealService(ejb);
 
     return new ConnecteurJDBCSessionController(controller, context);

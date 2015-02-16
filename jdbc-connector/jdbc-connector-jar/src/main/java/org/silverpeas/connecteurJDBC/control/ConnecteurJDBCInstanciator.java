@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.connecteurJDBC.control;
 
@@ -37,7 +37,6 @@ import java.sql.Statement;
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
  * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  * @author Eric BURGEL
- * @version 1.0
  */
 public class ConnecteurJDBCInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -74,28 +73,15 @@ public class ConnecteurJDBCInstanciator extends SQLRequest implements Components
    */
   private void deleteDataOfInstance(Connection con, String componentId, String suffixName) throws
       InstanciationException {
-    Statement stmt = null;
     String deleteQuery = getDeleteQuery(componentId, suffixName);
-    try {
-      stmt = con.createStatement();
+    try (Statement stmt = con.createStatement()){
       stmt.executeUpdate(deleteQuery);
-      stmt.close();
     } catch (SQLException se) {
       InstanciationException ie = new InstanciationException(
           "connecteurJDBCInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
           "connecteurJDBC.EX_DELETE_DATA_OF_INSTANCE_FAIL", "componentId : "
           + componentId + "delete query = " + deleteQuery, se);
       throw ie;
-    } finally {
-      try {
-        stmt.close();
-      } catch (SQLException err_closeStatement) {
-        InstanciationException ie = new InstanciationException(
-            "connecteurJDBCInstanciator.deleteDataOfInstance()",
-            SilverpeasException.ERROR, "connecteurJDBC.EX_CLOSE_STATEMENT_FAIL", "componentId : "
-            + componentId + "delete query = " + deleteQuery, err_closeStatement);
-        throw ie;
-      }
     }
 
   }
