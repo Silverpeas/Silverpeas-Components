@@ -67,8 +67,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private Filtre filtre = null;
   private List<Integer> unfoldTasks = new ArrayList<Integer>();
   private Calendar calendar = null;
-  public static int WORKING_DAY = 0;
-  public static int HOLIDAY_DAY = 1;
+  private static final int WORKING_DAY = 0;
+  private static final int HOLIDAY_DAY = 1;
 
   public ProjectManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -187,8 +187,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<TaskDetail> getPotentialPreviousTasks(boolean onCreation) {
-    int motherId = getCurrentProject().getId(); // par défaut, on est au niveau
-    // du projet
+    int motherId = getCurrentProject().getId(); // par défaut, on est au niveau du projet
     if (getCurrentTask() != null) {
       // On est au niveau d'une tache
       if (onCreation) {

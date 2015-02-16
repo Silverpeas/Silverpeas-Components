@@ -47,8 +47,6 @@ import org.silverpeas.util.exception.UtilException;
  */
 public class ProjectManagerCalendarDAO {
 
-  // the date format used in database to represent a date
-  private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
   private final static String PROJECTMANAGER_CALENDAR_TABLENAME = "SC_ProjectManager_Calendar";
 
   public static void addHolidayDate(Connection con, HolidayDetail holiday)
@@ -195,18 +193,21 @@ public class ProjectManagerCalendarDAO {
   }
 
   public static String date2DBDate(Date date) {
-    String dbDate = formatter.format(date);
-    return dbDate;
+    // the date format used in database to represent a date
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+    return formatter.format(date);
   }
 
   private static Date dbDate2Date(String dbDate, String fieldName)
       throws SQLException {
     Date date = null;
     try {
+      // the date format used in database to represent a date
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
       date = formatter.parse(dbDate);
     } catch (ParseException e) {
       throw new SQLException("ProjectManagerCalendarDAO : dbDate2Date(" + fieldName +
-          ") : format unknown " + e.toString());
+          ") : format unknown " + e.toString(), e);
     }
     return date;
   }

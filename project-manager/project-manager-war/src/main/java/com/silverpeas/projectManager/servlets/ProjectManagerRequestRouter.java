@@ -139,7 +139,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         projectManagerSC.setFiltreActif(function.equals("FilterShow"));
         destination = getDestination("Main", projectManagerSC, request);
       } else if ("ToFilterTasks".equals(function)) {
-        Filtre filtre = new Filtre(request);
+        Filtre filtre = new Filtre();
         filtre.setActionFrom(request.getParameter("TaskFrom"));
         filtre.setActionTo(request.getParameter("TaskTo"));
         filtre.setActionNom(request.getParameter("TaskNom"));

@@ -39,12 +39,12 @@ import java.util.List;
  */
 public class TaskDetail implements Serializable {
   private static final long serialVersionUID = -1211845237822053494L;
-  public final static int IN_PROGRESS = 0;
-  public final static int STOPPED = 1;
-  public final static int CANCELLED = 2;
-  public final static int COMPLETE = 3;
-  public final static int IN_ALERT = 4;
-  public final static int NOT_STARTED = 5;
+  public static final int IN_PROGRESS = 0;
+  public static final int STOPPED = 1;
+  public static final int CANCELLED = 2;
+  public static final int COMPLETE = 3;
+  public static final int IN_ALERT = 4;
+  public static final int NOT_STARTED = 5;
   private static final String TYPE = "Task";
   private int id;
   private int mereId = -1;

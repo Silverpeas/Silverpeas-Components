@@ -34,56 +34,56 @@ public interface ProjectManagerBm {
     return ServiceProvider.getService(ProjectManagerBm.class);
   }
 
-  public List<TaskDetail> getProjects(String instanceId);
+  List<TaskDetail> getProjects(String instanceId);
 
-  public int addTask(TaskDetail task);
+  int addTask(TaskDetail task);
 
-  public void removeTask(int id, String instanceId);
+  void removeTask(int id, String instanceId);
 
-  public void updateTask(TaskDetail task, String userId);
+  void updateTask(TaskDetail task, String userId);
 
-  public void calculateAllTasksDates(String instanceId, int projectId, String userId);
+  void calculateAllTasksDates(String instanceId, int projectId, String userId);
 
-  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId);
+  List<TaskDetail> getTasksByMotherId(String instanceId, int motherId);
 
-  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre);
+  List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre);
 
-  public List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
+  List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
       Filtre filtre);
 
-  public List<TaskDetail> getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
+  List<TaskDetail> getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
       int previousId);
 
-  public List<TaskDetail> getAllTasks(String instanceId, Filtre filtre);
+  List<TaskDetail> getAllTasks(String instanceId, Filtre filtre);
 
-  public TaskDetail getTask(int id);
+  TaskDetail getTask(int id);
 
-  public TaskDetail getTaskByTodoId(String todoId);
+  TaskDetail getTaskByTodoId(String todoId);
 
-  public TaskDetail getMostDistantTask(String instanceId, int taskId);
+  TaskDetail getMostDistantTask(String instanceId, int taskId);
 
   // Gestion des jours non travailles
-  public boolean isHolidayDate(HolidayDetail date);
+  boolean isHolidayDate(HolidayDetail date);
 
-  public List<Date> getHolidayDates(String instanceId);
+  List<Date> getHolidayDates(String instanceId);
 
-  public List<Date> getHolidayDates(String instanceId, Date beginDate, Date endDate);
+  List<Date> getHolidayDates(String instanceId, Date beginDate, Date endDate);
 
-  public void addHolidayDate(HolidayDetail holiday);
+  void addHolidayDate(HolidayDetail holiday);
 
-  public void addHolidayDates(List<HolidayDetail> holidayDates);
+  void addHolidayDates(List<HolidayDetail> holidayDates);
 
-  public void removeHolidayDate(HolidayDetail holiday);
+  void removeHolidayDate(HolidayDetail holiday);
 
-  public void removeHolidayDates(List<HolidayDetail> holidayDates);
+  void removeHolidayDates(List<HolidayDetail> holidayDates);
 
-  public Date processEndDate(TaskDetail task);
+  Date processEndDate(TaskDetail task);
 
-  public Date processEndDate(float charge, String instanceId, Date dateDebut);
+  Date processEndDate(float charge, String instanceId, Date dateDebut);
 
-  public void index(String instanceId);
+  void index(String instanceId);
 
-  public int getOccupationByUser(String userId, Date dateDeb, Date dateFin);
+  int getOccupationByUser(String userId, Date dateDeb, Date dateFin);
 
-  public int getOccupationByUser(String userId, Date dateDeb, Date dateFin, int excludedTaskId);
+  int getOccupationByUser(String userId, Date dateDeb, Date dateFin, int excludedTaskId);
 }

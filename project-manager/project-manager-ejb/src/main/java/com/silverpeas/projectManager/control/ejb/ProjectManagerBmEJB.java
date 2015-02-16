@@ -298,7 +298,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     }
   }
 
-  private void removeTask(Connection con, int id, String instanceId) throws Exception {
+  private void removeTask(Connection con, int id, String instanceId) throws SQLException {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTask(Connection)",
         "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
     // suppression de la tâche en BdD
@@ -338,168 +338,18 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
       // - soit des sous tâches (sans précédence) de la tâche modifiée - niveau
       // N-1
 
-      // on commence par récupérer les tâches suivantes
-      List<TaskDetail> nextTasks = ProjectManagerDAO.getNextTasks(con, task.getId());
+      //traitement des tâches suivantes
+      updateNextTasks(task, userId, con, endDate, holidays, calendar);
 
-      // détecte les tâches qui doivent être décalées
-      TaskDetail linkedTask = null;
-      TaskDetail motherTask = null;
-      float charge = 0;
-      Calendar calendar2 = Calendar.getInstance();
-      boolean updateMother = false;
-
-      for (int t = 0; t < nextTasks.size(); t++) {
-        boolean isModifBeginDate = false;
-        boolean isModifEndDate = false;
-
-        linkedTask = nextTasks.get(t);
-
-        Date beginDateLinked = linkedTask.getDateDebut();
-        Date saveBeginDate = beginDateLinked;
-
-        // vérifie si la date de début n'est pas
-        // un jour travaillé
-        calendar.setTime(beginDateLinked);
-        while (holidays.contains(beginDateLinked)) {
-          calendar.add(Calendar.DATE, 1);
-          beginDateLinked = calendar.getTime();
-          linkedTask.setDateDebut(beginDateLinked);
-        }
-
-        Date endDateLinked = linkedTask.getDateFin();
-        Date saveEndDate = endDateLinked;
-
-        if (endDate.equals(endDateLinked) || endDate.after(endDateLinked)) {
-          // La date de fin de la tâche précédente est supérieure ou égale à la
-          // tâche liéée
-          // cette tâche doit être décalée
-
-          // calcul de la nouvelle date de début (= date fin + 1)
-          beginDateLinked = getBeginDate(calendar, endDate, holidays);
-          linkedTask.setDateDebut(beginDateLinked);
-        }
-
-        // calcul de la nouvelle date de fin (date début + charge)
-        endDateLinked = processEndDate(linkedTask, calendar, holidays);
-        linkedTask.setDateFin(endDateLinked);
-
-        // regarder si les dates sont modifiées
-        if (!beginDateLinked.equals(saveBeginDate)) {
-          isModifBeginDate = true;
-        }
-        if (!endDateLinked.equals(saveEndDate)) {
-          isModifBeginDate = true;
-        }
-
-        // si on est dans un cas de modif de date, faire la mise à jour
-        // seulement si les dates changent
-        if (isModifBeginDate || isModifEndDate) {
-          updateTask(linkedTask, userId);
-        }
-
-        // on traite maintenant la tâche mère de la tache liée
-        motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
-        if (motherTask.getMereId() != -1) {// c'est une tache, pas le projet
-          updateMother = false;
-          endDateLinked = linkedTask.getDateFin();
-
-          // vérifie si la date de fin n'est pas
-          // un jour travaillé
-          calendar.setTime(motherTask.getDateFin());
-          while (holidays.contains(motherTask.getDateFin())) {
-            calendar.add(Calendar.DATE, 1);
-            motherTask.setDateFin(calendar.getTime());
-            updateMother = true;
-          }
-
-          if (endDateLinked.after(motherTask.getDateFin())) {
-            // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être décalée
-            // nouvelle date de fin de la mère = date fin fille
-            motherTask.setDateFin(endDateLinked);
-            updateMother = true;
-          }
-
-          if (updateMother) {
-            // recalcule la charge
-            calendar.setTime(motherTask.getDateDebut());
-            calendar2.setTime(motherTask.getDateFin());
-            charge = 0;
-            while (true) {
-              if (calendar.before(calendar2) || calendar.equals(calendar2)) {
-                charge++;
-              } else {
-                break;
-              }
-              calendar.add(Calendar.DATE, 1);
-            }
-
-            // recalcul les charges de la tache mère
-            motherTask.setCharge(charge);
-
-            // modification de la tâche mère en BdD
-            ProjectManagerDAO.updateTask(con, motherTask);
-          }
-        }
-      }
-
-      // on traite maintenant les sous tâches
-      List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, task.
-          getInstanceId(), task.getId(), -1);
-
-
-      // détecte les tâches qui doivent être décalées
-      TaskDetail subTask = null;
-      for (int t = 0; t < subTasks.size(); t++) {
-        boolean isModifBeginDate = false;
-        boolean isModifEndDate = false;
-
-        subTask = subTasks.get(t);
-
-        Date beginDateSub = subTask.getDateDebut();
-        Date saveBeginDate = beginDateSub;
-
-        // vérifie si la date de début n'est pas un jour travaillé
-        calendar.setTime(beginDateSub);
-        while (holidays.contains(beginDateSub)) {
-          calendar.add(Calendar.DATE, 1);
-          beginDateSub = calendar.getTime();
-          subTask.setDateDebut(beginDateSub);
-        }
-
-        if (beginDate.after(beginDateSub)) {
-          // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être décalée
-          // nouvelle date de début = date début mère
-          beginDateSub = beginDate;
-          subTask.setDateDebut(beginDate);
-        }
-
-        Date endDateSub = subTask.getDateFin();
-        Date saveEndDate = endDateSub;
-
-        // calcul la date de fin
-        endDateSub = processEndDate(subTask, calendar, holidays);
-        subTask.setDateFin(endDateSub);
-
-        // regarder si les dates sont modifiées
-        if (!beginDateSub.equals(saveBeginDate)) {
-          isModifBeginDate = true;
-        }
-        if (!endDateSub.equals(saveEndDate)) {
-          isModifBeginDate = true;
-        }
-
-        // si on est dans un cas de modif de date, faire la mise à jour
-        // seulement si les dates changent
-        if (isModifBeginDate || isModifEndDate) {
-          updateTask(subTask, userId);
-        }
-      }
+      //traitement des sous-tâches
+      updateSubTasks(task, userId, con, beginDate, holidays, calendar);
 
       // modification de la tâche en BdD
       if (task.getAvancement() == 100) {
         task.setStatut(TaskDetail.COMPLETE);
       }
       ProjectManagerDAO.updateTask(con, task);
+
       // modification de sa tache mère s'il en existe une
       updateChargesMotherTask(con, task);
       // modification de la tache associée
@@ -519,6 +369,170 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     }
   }
 
+  private void updateSubTasks(final TaskDetail task, final String userId, final Connection con,
+      final Date beginDate, final List<Date> holidays, final Calendar calendar)
+      throws SQLException {
+    // on traite maintenant les sous tâches
+    List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, task.
+        getInstanceId(), task.getId(), -1);
+
+
+    // détecte les tâches qui doivent être décalées
+    TaskDetail subTask = null;
+    for (int t = 0; t < subTasks.size(); t++) {
+      boolean isModifBeginDate = false;
+      boolean isModifEndDate = false;
+
+      subTask = subTasks.get(t);
+
+      Date beginDateSub = subTask.getDateDebut();
+      Date saveBeginDate = beginDateSub;
+
+      // vérifie si la date de début n'est pas un jour travaillé
+      calendar.setTime(beginDateSub);
+      while (holidays.contains(beginDateSub)) {
+        calendar.add(Calendar.DATE, 1);
+        beginDateSub = calendar.getTime();
+        subTask.setDateDebut(beginDateSub);
+      }
+
+      if (beginDate.after(beginDateSub)) {
+        // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être décalée
+        // nouvelle date de début = date début mère
+        beginDateSub = beginDate;
+        subTask.setDateDebut(beginDate);
+      }
+
+      Date endDateSub = subTask.getDateFin();
+      Date saveEndDate = endDateSub;
+
+      // calcul la date de fin
+      endDateSub = processEndDate(subTask, calendar, holidays);
+      subTask.setDateFin(endDateSub);
+
+      // regarder si les dates sont modifiées
+      if (!beginDateSub.equals(saveBeginDate)) {
+        isModifBeginDate = true;
+      }
+      if (!endDateSub.equals(saveEndDate)) {
+        isModifBeginDate = true;
+      }
+
+      // si on est dans un cas de modif de date, faire la mise à jour
+      // seulement si les dates changent
+      if (isModifBeginDate || isModifEndDate) {
+        updateTask(subTask, userId);
+      }
+    }
+  }
+
+  private void updateNextTasks(final TaskDetail task, final String userId, final Connection con,
+      final Date endDate, final List<Date> holidays, final Calendar calendar) throws SQLException {
+    // on commence par récupérer les tâches suivantes
+    List<TaskDetail> nextTasks = ProjectManagerDAO.getNextTasks(con, task.getId());
+
+    // détecte les tâches qui doivent être décalées
+    TaskDetail linkedTask = null;
+    TaskDetail motherTask = null;
+    float charge = 0;
+    Calendar calendar2 = Calendar.getInstance();
+    boolean updateMother = false;
+
+    for (int t = 0; t < nextTasks.size(); t++) {
+      boolean isModifBeginDate = false;
+      boolean isModifEndDate = false;
+
+      linkedTask = nextTasks.get(t);
+
+      Date beginDateLinked = linkedTask.getDateDebut();
+      Date saveBeginDate = beginDateLinked;
+
+      // vérifie si la date de début n'est pas
+      // un jour travaillé
+      calendar.setTime(beginDateLinked);
+      while (holidays.contains(beginDateLinked)) {
+        calendar.add(Calendar.DATE, 1);
+        beginDateLinked = calendar.getTime();
+        linkedTask.setDateDebut(beginDateLinked);
+      }
+
+      Date endDateLinked = linkedTask.getDateFin();
+      Date saveEndDate = endDateLinked;
+
+      if (endDate.equals(endDateLinked) || endDate.after(endDateLinked)) {
+        // La date de fin de la tâche précédente est supérieure ou égale à la
+        // tâche liéée
+        // cette tâche doit être décalée
+
+        // calcul de la nouvelle date de début (= date fin + 1)
+        beginDateLinked = getBeginDate(calendar, endDate, holidays);
+        linkedTask.setDateDebut(beginDateLinked);
+      }
+
+      // calcul de la nouvelle date de fin (date début + charge)
+      endDateLinked = processEndDate(linkedTask, calendar, holidays);
+      linkedTask.setDateFin(endDateLinked);
+
+      // regarder si les dates sont modifiées
+      if (!beginDateLinked.equals(saveBeginDate)) {
+        isModifBeginDate = true;
+      }
+      if (!endDateLinked.equals(saveEndDate)) {
+        isModifBeginDate = true;
+      }
+
+      // si on est dans un cas de modif de date, faire la mise à jour
+      // seulement si les dates changent
+      if (isModifBeginDate || isModifEndDate) {
+        updateTask(linkedTask, userId);
+      }
+
+      // on traite maintenant la tâche mère de la tache liée
+      motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
+      if (motherTask.getMereId() != -1) { // c'est une tache, pas le projet
+        updateMother = false;
+        endDateLinked = linkedTask.getDateFin();
+
+        // vérifie si la date de fin n'est pas
+        // un jour travaillé
+        calendar.setTime(motherTask.getDateFin());
+        while (holidays.contains(motherTask.getDateFin())) {
+          calendar.add(Calendar.DATE, 1);
+          motherTask.setDateFin(calendar.getTime());
+          updateMother = true;
+        }
+
+        if (endDateLinked.after(motherTask.getDateFin())) {
+          // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être décalée
+          // nouvelle date de fin de la mère = date fin fille
+          motherTask.setDateFin(endDateLinked);
+          updateMother = true;
+        }
+
+        if (updateMother) {
+          // recalcule la charge
+          calendar.setTime(motherTask.getDateDebut());
+          calendar2.setTime(motherTask.getDateFin());
+          charge = 0;
+          while (true) {
+            if (calendar.before(calendar2) || calendar.equals(calendar2)) {
+              charge++;
+            } else {
+              break;
+            }
+            calendar.add(Calendar.DATE, 1);
+          }
+
+          // recalcul les charges de la tache mère
+          motherTask.setCharge(charge);
+
+          // modification de la tâche mère en BdD
+          ProjectManagerDAO.updateTask(con, motherTask);
+        }
+      }
+    }
+  }
+
   private String getNotificationSubject(final ResourceLocator message, boolean onCreation) {
     String subject;
     if (onCreation) {
@@ -530,7 +544,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   }
 
   private String getNotificationBody(final ResourceLocator message, boolean onCreation, String taskName) {
-    StringBuilder body = new StringBuilder(128);
+    StringBuilder body = new StringBuilder();
     if (onCreation) {
       body.append(message.getString("projectManager.NewTaskNamed")).append(
           " '" + taskName + "' ").append(
@@ -695,7 +709,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
       // la tache est une sous-tache -> on recalcule les montants de charges de
       // la tache mère
       TaskDetail motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
-      if (motherTask != null && motherTask.getMereId() != -1) {// c'est une
+      if (motherTask != null && motherTask.getMereId() != -1) { // c'est une
         // tache, pas le
         // projet
         List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherId(con, motherTask

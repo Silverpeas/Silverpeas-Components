@@ -63,7 +63,7 @@ public class Filtre implements Serializable {
   private String responsableName = null;
   private String visibleMOA = null;
 
-  public Filtre(HttpServletRequest request) {
+  public Filtre() {
   }
 
   /**
@@ -214,42 +214,42 @@ public class Filtre implements Serializable {
   }
 
   /**
-   * @param string
+   * @param date
    */
   public void setDateDebutFrom(Date date) {
     dateDebutFrom = date;
   }
 
   /**
-   * @param string
+   * @param date
    */
   public void setDateDebutTo(Date date) {
     dateDebutTo = date;
   }
 
   /**
-   * @param string
+   * @param date
    */
   public void setDateFinFrom(Date date) {
     dateFinFrom = date;
   }
 
   /**
-   * @param string
+   * @param date
    */
   public void setDateFinTo(Date date) {
     dateFinTo = date;
   }
 
   /**
-   * @param string
+   * @param date
    */
   public void setDatePVFrom(Date date) {
     datePVFrom = date;
   }
 
   /**
-   * @param string
+   * @param date
    */
   public void setDatePVTo(Date date) {
     datePVTo = date;

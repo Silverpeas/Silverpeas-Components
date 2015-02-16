@@ -40,8 +40,7 @@ public class ProjectManagerStatistics implements ComponentStatisticsInterface {
   private ProjectManagerBm projectManagerBm = null;
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<TaskDetail> tasks = getProjectManagerBm().getAllTasks(componentId, null);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(tasks.size());
     for (TaskDetail task : tasks) {

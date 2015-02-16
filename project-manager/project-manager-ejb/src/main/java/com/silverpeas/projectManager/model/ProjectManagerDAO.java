@@ -50,14 +50,12 @@ import org.silverpeas.util.exception.UtilException;
  */
 public class ProjectManagerDAO {
 
-  // the date format used in database to represent a date
-  private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-  private final static String PROJECTMANAGER_TASKS_TABLENAME = "sc_projectmanager_tasks";
-  private final static String PROJECTMANAGER_RESOURCES_TABLENAME = "sc_projectmanager_resources";
+  private static final String PROJECTMANAGER_TASKS_TABLENAME = "sc_projectmanager_tasks";
+  private static final String PROJECTMANAGER_RESOURCES_TABLENAME = "sc_projectmanager_resources";
 
   private static int getChrono(Connection con, String instanceId)
       throws SQLException {
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("SELECT MAX(chrono) FROM ").append(PROJECTMANAGER_TASKS_TABLENAME).append(
         " WHERE instanceId = ? ");
 
@@ -82,6 +80,8 @@ public class ProjectManagerDAO {
       throws SQLException {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.addTask()",
         "root.MSG_GEN_ENTER_METHOD", task.toString());
+
+    //insertStatement query
     StringBuilder insertStatement = new StringBuilder();
     insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_TASKS_TABLENAME);
     insertStatement
@@ -90,6 +90,25 @@ public class ProjectManagerDAO {
     insertStatement.append("codeprojet, descriptionprojet, estdecomposee, instanceid, path, ");
     insertStatement.append("previousid) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ");
     insertStatement.append("? , ? , ? , ?, ?, ? , ? , ? )");
+
+    //execute the query
+    int id = executeQueryAddTask(con, task, insertStatement);
+
+    // insertion des resources
+    if (task.getResources() != null) {
+      Collection<TaskResourceDetail> tasks = task.getResources();
+      for (TaskResourceDetail resource : tasks) {
+        resource.setTaskId(id);
+        resource.setInstanceId(task.getInstanceId());
+        addResource(con, resource);
+      }
+    }
+    return id;
+  }
+
+  private static int executeQueryAddTask(Connection con, TaskDetail task, StringBuilder insertStatement)
+      throws SQLException {
+
     PreparedStatement prepStmt = null;
     int id = -1;
     try {
@@ -126,16 +145,6 @@ public class ProjectManagerDAO {
       prepStmt.setInt(20, task.getPreviousTaskId());
 
       prepStmt.executeUpdate();
-
-      // insertion des resources
-      if (task.getResources() != null) {
-        Collection<TaskResourceDetail> tasks = task.getResources();
-        for (TaskResourceDetail resource : tasks) {
-          resource.setTaskId(id);
-          resource.setInstanceId(task.getInstanceId());
-          addResource(con, resource);
-        }
-      }
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -172,7 +181,7 @@ public class ProjectManagerDAO {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.updateAction()",
         "root.MSG_GEN_ENTER_METHOD", task.toString());
 
-    StringBuilder updateQuery = new StringBuilder(128);
+    StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("UPDATE ").append(PROJECTMANAGER_TASKS_TABLENAME);
     updateQuery.append(" SET nom = ? , description = ? , responsableId = ? , charge = ? , ");
     updateQuery.append("consomme = ? , raf = ? , avancement = ? , statut = ? , dateDebut = ? , ");
@@ -221,7 +230,7 @@ public class ProjectManagerDAO {
 
   public static void deleteAllResources(Connection con, int taskId,
       String instanceId) throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
+    StringBuilder deleteStatement = new StringBuilder();
     deleteStatement.append("delete from ").append(
         PROJECTMANAGER_RESOURCES_TABLENAME).append(
         " where taskId = ? and instanceId = ? ");
@@ -243,7 +252,7 @@ public class ProjectManagerDAO {
         "ProjectManagerDAO.actionEstDecomposee()", "root.MSG_GEN_ENTER_METHOD",
         "id = " + id + ", estDecomposee = " + estDecomposee);
 
-    StringBuilder updateQuery = new StringBuilder(128);
+    StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("update ").append(PROJECTMANAGER_TASKS_TABLENAME);
     updateQuery.append(" set estDecomposee = ? ");
     updateQuery.append(" where id = ? ");
@@ -262,7 +271,7 @@ public class ProjectManagerDAO {
   }
 
   public static void removeTask(Connection con, int id) throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
+    StringBuilder deleteStatement = new StringBuilder();
     deleteStatement.append("delete from ").append(
         PROJECTMANAGER_TASKS_TABLENAME).append(" where id = ? ");
     PreparedStatement stmt = null;
@@ -283,7 +292,7 @@ public class ProjectManagerDAO {
 
   public static TaskDetail getTask(Connection con, int id) throws SQLException {
     TaskDetail task = null;
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where id = ? ");
@@ -309,7 +318,7 @@ public class ProjectManagerDAO {
   public static List<TaskResourceDetail> getResources(Connection con, int taskId,
       String instanceId) throws SQLException {
     List<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("SELECT id, taskId, resourceId, charge, instanceId FROM ");
     query.append(PROJECTMANAGER_RESOURCES_TABLENAME);
     query.append(" WHERE taskId = ? AND instanceId = ? ");
@@ -338,7 +347,7 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getAllTasks(Connection con, String instanceId,
       Filtre filtre) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" WHERE instanceId = ? ");
     if (filtre != null) {
@@ -371,7 +380,7 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getTasks(Connection con, int actionId, Filtre filtre,
       String instanceId) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" WHERE mereId = ? AND instanceId = ? ");
     if (filtre != null) {
@@ -404,7 +413,7 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getNextTasks(Connection con, int taskId)
       throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" WHERE previousId = ? ORDER BY dateDebut ASC");
 
@@ -428,7 +437,7 @@ public class ProjectManagerDAO {
 
   public static TaskDetail getMostDistantTask(Connection con,
       String instanceId, int taskId) throws SQLException {
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where mereId = ? ");
@@ -460,7 +469,7 @@ public class ProjectManagerDAO {
    */
   public static List<TaskDetail> getTree(Connection con, int actionId) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where path like '%/").append(actionId).append("/%' ");
@@ -486,7 +495,7 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getTasksByMotherId(Connection con, String instanceId,
       int motherId, Filtre filtre) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where instanceId = ? ");
@@ -526,7 +535,7 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getTasksNotCancelledByMotherId(Connection con,
       String instanceId, int motherId, Filtre filtre) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where instanceId = ? ");
@@ -575,7 +584,7 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getTasksByMotherIdAndPreviousId(Connection con,
       String instanceId, int motherId, int previousId) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder(128);
+    StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where mereId = ? ");
@@ -817,10 +826,12 @@ public class ProjectManagerDAO {
       throws SQLException {
     Date date = null;
     try {
+      // the date format used in database to represent a date
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
       date = formatter.parse(dbDate);
     } catch (ParseException e) {
       throw new SQLException("ProjectManagerDAO : dbDate2Date(" + fieldName
-          + ") : format unknown " + e.toString());
+          + ") : format unknown " + e.toString(), e);
     }
     return date;
   }

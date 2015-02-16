@@ -47,7 +47,7 @@ public class ProjectManagerIndexer implements ComponentIndexation {
   private ProjectManagerBm projectManagerBm;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(ComponentInst componentInst) {
     projectManagerBm.index(componentInst.getId());
   }
 }

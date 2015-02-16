@@ -38,9 +38,9 @@ import java.sql.PreparedStatement;
  */
 public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
 
-  private final static String PROJECTMANAGER_DELETE_COMPONENT_TASKS =
+  private static final String PROJECTMANAGER_DELETE_COMPONENT_TASKS =
       "DELETE FROM SC_ProjectManager_Tasks WHERE instanceId = ? ";
-  private final static String PROJECTMANAGER_DELETE_COMPONENT_CALENDAR =
+  private static final String PROJECTMANAGER_DELETE_COMPONENT_CALENDAR =
       "DELETE FROM SC_ProjectManager_Calendar WHERE instanceId = ? ";
 
   public ProjectManagerInstanciator() {
