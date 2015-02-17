@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,46 +9,51 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.components.organizationchart.model;
 
 import java.util.Map;
 
 public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
- 
+
   private int id;
   private int parentId;
-  private String name;// =cn
-  private String fonction; // =titre
-  private String description;// =tooltip
-  private String service;// ou
-  private String silverpeasAccount; // sAMAccountName
+  // =cn
+  private String name;
+  // =titre
+  private String fonction;
+  // =tooltip
+  private String description;
+  // ou
+  private String service;
+  // sAMAccountName
+  private String silverpeasAccount;
   private String firstName;
   private String lastName;
   private Map<String, String> detail;
 
-  private boolean visibleOnCenter = false; // visible on the top central unit
+  // visible on the top central unit
+  private boolean visibleOnCenter = false;
   private OrganizationalRole visibleCenterRole = null;
-  private boolean visibleOnRight = false; // visible on the right unit (units organizational chart
-                                          // only)
+  // visible on the right unit (units organizational chart only)
+  private boolean visibleOnRight = false;
   private OrganizationalRole visibleRightRole = null;
-  private boolean visibleOnLeft = false; // visible on the right unit (units organizational chart
-                                         // only)
+  // visible on the right unit (units organizational chart only)
+  private boolean visibleOnLeft = false;
   private OrganizationalRole visibleLeftRole = null;
-  private PersonCategory visibleCategory = null; // visible category name (detailled organizational
-                                                 // chart only)
+  // visible category name (detailled organizational chart only)
+  private PersonCategory visibleCategory = null;
 
   public OrganizationalPerson(int id, int parentId, String name, String fonction,
       String description, String service, String silverpeasAccount) {
@@ -59,10 +64,11 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
     this.description = description;
     this.service = service;
     this.setSilverpeasAccount(silverpeasAccount);
-    this.parentId = -1;// root par défaut
+    // root par défaut
+    this.parentId = -1;
   }
 
-  public String toString() {// pour debug
+  public String toString() {
     return "cn = " + this.name + ", service = " + this.service + ", fonction = " + this.fonction;
   }
 
@@ -188,7 +194,7 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
     if (compare != 0) {
       return compare;
     } else {
-      return firstName.compareToIgnoreCase(other.getFirstName()); 
+      return firstName.compareToIgnoreCase(other.getFirstName());
     }
   }
 

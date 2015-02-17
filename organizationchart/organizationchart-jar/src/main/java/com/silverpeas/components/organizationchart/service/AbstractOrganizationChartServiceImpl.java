@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,30 +9,29 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.components.organizationchart.service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
 import org.silverpeas.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class AbstractOrganizationChartServiceImpl {
 
@@ -47,10 +46,10 @@ public class AbstractOrganizationChartServiceImpl {
    */
   protected void defineUnitChartRoles(OrganizationalPerson person, String function,
       OrganizationChartConfiguration config) {
-  
+
     // Priority to avoid conflicted syntaxes : right, left and then central
     boolean roleDefined = false;
-  
+
     // right
     for (OrganizationalRole role : config.getUnitsChartRightLabel()) {
       if (isFunctionMatchingRole(function, role)) {
@@ -60,7 +59,7 @@ public class AbstractOrganizationChartServiceImpl {
         break;
       }
     }
-  
+
     // left
     if (!roleDefined) {
       for (OrganizationalRole role : config.getUnitsChartLeftLabel()) {
@@ -72,7 +71,7 @@ public class AbstractOrganizationChartServiceImpl {
         }
       }
     }
-  
+
     // central
     if (!roleDefined) {
       for (OrganizationalRole role : config.getUnitsChartCentralLabel()) {
@@ -87,15 +86,15 @@ public class AbstractOrganizationChartServiceImpl {
 
   /**
    * Determine if person has a specific Role in organization person Chart.
-   * @param person person
+   * @param pers the oraganizational person
    * @param function person's function
    */
   protected void defineDetailledChartRoles(OrganizationalPerson pers, String function,
       OrganizationChartConfiguration config) {
-  
+
     // Priority to avoid conflicted syntaxes : central then categories
     boolean roleDefined = false;
-  
+
     // central
     for (OrganizationalRole role : config.getPersonnsChartCentralLabel()) {
       if (isFunctionMatchingRole(function, role)) {
@@ -105,7 +104,7 @@ public class AbstractOrganizationChartServiceImpl {
         break;
       }
     }
-  
+
     // categories
     if (!roleDefined) {
       int order = 0;
@@ -118,7 +117,7 @@ public class AbstractOrganizationChartServiceImpl {
         order++;
       }
     }
-  
+
     if (!roleDefined) {
       pers.setVisibleCategory(new PersonCategory("Personnel"));
     }
@@ -131,13 +130,12 @@ public class AbstractOrganizationChartServiceImpl {
    * @return true if function is matching given role
    */
   private boolean isFunctionMatchingRole(String function, OrganizationalRole role) {
-    return ((role != null)
-        && StringUtil.isDefined(role.getLdapKey()) && function.toLowerCase().indexOf(
-        role.getLdapKey().toLowerCase()) != -1);
+    return ((role != null) && StringUtil.isDefined(role.getLdapKey()) &&
+        function.toLowerCase().contains(role.getLdapKey().toLowerCase()));
   }
-  
+
   protected List<OrganizationalPerson> getMainActors(List<OrganizationalPerson> users) {
-    List<OrganizationalPerson> mainActors = new ArrayList<OrganizationalPerson>();
+    List<OrganizationalPerson> mainActors = new ArrayList<>();
     for (OrganizationalPerson person : users) {
       if (person.isVisibleOnCenter()) {
         mainActors.add(person);
@@ -152,8 +150,8 @@ public class AbstractOrganizationChartServiceImpl {
    * @return a Set of PersonCategory
    */
   protected Set<PersonCategory> getCategories(List<OrganizationalPerson> personList) {
-    Set<PersonCategory> categories = new TreeSet<PersonCategory>();
-  
+    Set<PersonCategory> categories = new TreeSet<>();
+
     for (OrganizationalPerson person : personList) {
       // if person is a key Actor of organizationUnit, it will appear in main Cell, so ignore that
       // actor's category
@@ -161,7 +159,7 @@ public class AbstractOrganizationChartServiceImpl {
         categories.add(person.getVisibleCategory());
       }
     }
-  
+
     return categories;
   }
 

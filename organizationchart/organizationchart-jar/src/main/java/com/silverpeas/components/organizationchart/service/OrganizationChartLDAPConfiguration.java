@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,54 +9,55 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.components.organizationchart.service;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.naming.Context;
 
 import org.silverpeas.util.StringUtil;
 
 public class OrganizationChartLDAPConfiguration extends OrganizationChartConfiguration {
-  Hashtable<String, String> env = null;
+  private Map<String, String> env = null;
 
   private String ldapClassPerson = null;
   private String ldapClassUnit = null;
-  private String ldapAttAccount = null; // champ ldap de l'identifiant de compte Silverpeas
+  // champ ldap de l'identifiant de compte Silverpeas
+  private String ldapAttAccount = null;
   private String ldapAttCSSClass = null;
 
   private String ldapAttActif = null;
   private String domainId = null;
 
   public OrganizationChartLDAPConfiguration() {
-    this.env = new Hashtable<String, String>();
+    this.env = new Hashtable<>();
     env.put(Context.REFERRAL, "ignore");
   }
 
   /**
    * @return the env
    */
-  public Hashtable<String, String> getEnv() {
+  public Map<String, String> getEnv() {
     return env;
   }
 
   /**
    * @param env the env to set
    */
-  public void setEnv(Hashtable<String, String> env) {
+  public void setEnv(Map<String, String> env) {
     this.env = env;
   }
 
@@ -172,5 +173,5 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   public String getLdapAttCSSClass() {
     return ldapAttCSSClass;
   }
-  
+
 }

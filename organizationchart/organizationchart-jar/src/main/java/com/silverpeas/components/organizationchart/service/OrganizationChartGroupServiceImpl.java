@@ -1,25 +1,39 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.components.organizationchart.service;
+
+import com.silverpeas.components.organizationchart.model.OrganizationalChart;
+import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
+import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
+import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
+import com.silverpeas.components.organizationchart.model.PersonCategory;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,22 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.naming.NamingException;
-
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
-import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import com.silverpeas.components.organizationchart.model.PersonCategory;
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChartServiceImpl
     implements OrganizationChartService {
@@ -93,7 +91,7 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
   private List<OrganizationalPerson> getMembers(String groupId, String[] userIds,
       OrganizationalChartType type) {
 
-    List<OrganizationalPerson> personList = new ArrayList<OrganizationalPerson>(userIds.length);
+    List<OrganizationalPerson> personList = new ArrayList<>(userIds.length);
 
     for (String userId : userIds) {
       personList.add(loadOrganizationalPerson(userId, type));
@@ -109,12 +107,12 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
     String userDescription = user.getValue(config.getAttDesc());
     String userService = user.getValue(config.getAttUnit());
 
-    OrganizationalPerson person = new OrganizationalPerson(Integer.parseInt(id), -1, user
-        .getDisplayedName(), userFunction,
-        userDescription, userService, null);
+    OrganizationalPerson person =
+        new OrganizationalPerson(Integer.parseInt(id), -1, user.getDisplayedName(), userFunction,
+            userDescription, userService, null);
 
     // Determines attributes to be returned
-    Map<String, String> attributesToReturn = null;
+    Map<String, String> attributesToReturn;
     switch (type) {
       case TYPE_UNITCHART:
         attributesToReturn = config.getUnitsChartOthersInfosKeys();
@@ -124,7 +122,7 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
         attributesToReturn = config.getPersonnsChartOthersInfosKeys();
     }
 
-    Map<String, String> details = new HashMap<String, String>();
+    Map<String, String> details = new HashMap<>();
     for (Entry<String, String> attribute : attributesToReturn.entrySet()) {
       details.put(attribute.getValue(), user.getValue(attribute.getKey()));
     }
@@ -150,16 +148,14 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
 
   /**
    * Get sub organization units of a given OU.
-   *
-   * @param rootOu rootOu
+   * @param group the silverpeas group
    * @return a List of OrganizationalUnit objects.
-   * @throws NamingException
    */
   private List<OrganizationalUnit> getSubOrganizationUnits(Group group) {
     List<? extends Group> subgroups = group.getSubGroups();
     SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()",
         "root.MSG_GEN_PARAM_VALUE", "services retrieved !");
-    List<OrganizationalUnit> units = new ArrayList<OrganizationalUnit>(subgroups.size());
+    List<OrganizationalUnit> units = new ArrayList<>(subgroups.size());
     for (Group subgroup : subgroups) {
       OrganizationalUnit unit = new OrganizationalUnit(subgroup.getName(), subgroup.getId());
       unit.setParentName(group.getName());

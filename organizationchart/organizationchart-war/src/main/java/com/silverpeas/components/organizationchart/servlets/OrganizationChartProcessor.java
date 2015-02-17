@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.components.organizationchart.servlets;
@@ -84,7 +84,7 @@ public class OrganizationChartProcessor {
     ChartUnitVO chart = new ChartUnitVO();
 
     OrganizationBox rootOrganization = new OrganizationBox();
-    List<UserVO> mainActors = new ArrayList<UserVO>();
+    List<UserVO> mainActors = new ArrayList<>();
     mainActors.add(new UserVO("Laurent Morel", "l.morel", "Directeur"));
     mainActors.add(new UserVO("Dupond Jean", "j.dupond", "Directeur associé"));
     rootOrganization.setName("DGS");
@@ -97,7 +97,7 @@ public class OrganizationChartProcessor {
 
     CategoryBox leftRole = new CategoryBox();
     leftRole.setName("Secrétaire");
-    List<UserVO> letusers = new ArrayList<UserVO>();
+    List<UserVO> letusers = new ArrayList<>();
     letusers.add(new UserVO("Murielle Dus", "m.duc", null));
     letusers.add(new UserVO("Camille Bet", "c.bet", null));
     leftRole.setUsers(letusers);
@@ -105,15 +105,15 @@ public class OrganizationChartProcessor {
 
     CategoryBox rightRole = new CategoryBox();
     rightRole.setName("Adjoints");
-    List<UserVO> rightusers = new ArrayList<UserVO>();
+    List<UserVO> rightusers = new ArrayList<>();
     rightusers.add(new UserVO("Jeanne Calment", "m.duc", null));
     rightusers.add(new UserVO("Pierre Le Bon", "p.lebon", null));
     rightRole.setUsers(rightusers);
     chart.setRightRole(rightRole);
 
-    List<OrganizationBox> subOrganizations = new ArrayList<OrganizationBox>();
+    List<OrganizationBox> subOrganizations = new ArrayList<>();
     OrganizationBox firstOrganization = new OrganizationBox();
-    List<UserVO> mainActors1 = new ArrayList<UserVO>();
+    List<UserVO> mainActors1 = new ArrayList<>();
     mainActors1.add(new UserVO("Laurent1 Morel", "l.morel1", "Directeur1"));
     mainActors1.add(new UserVO("Dupond1 Jean", "j.dupond1", "Directeur associé1"));
     firstOrganization.setName("Elus");
@@ -139,7 +139,7 @@ public class OrganizationChartProcessor {
     ChartPersonnVO chart = new ChartPersonnVO();
 
     OrganizationBox rootOrganization = new OrganizationBox();
-    List<UserVO> mainActors = new ArrayList<UserVO>();
+    List<UserVO> mainActors = new ArrayList<>();
     mainActors.add(new UserVO("Laurent Morel", "l.morel", "Directeur"));
     mainActors.add(new UserVO("Dupond Jean", "j.dupond", "Directeur associé"));
     rootOrganization.setName("DGS");
@@ -150,19 +150,19 @@ public class OrganizationChartProcessor {
 
     CategoryBox category1 = new CategoryBox();
     category1.setName("Secrétaire");
-    List<UserVO> letusers = new ArrayList<UserVO>();
+    List<UserVO> letusers = new ArrayList<>();
     letusers.add(new UserVO("Murielle Dus", "m.duc", null));
     letusers.add(new UserVO("Camille Bet", "c.bet", null));
     category1.setUsers(letusers);
 
     CategoryBox category2 = new CategoryBox();
     category2.setName("Adjoints");
-    List<UserVO> rightusers = new ArrayList<UserVO>();
+    List<UserVO> rightusers = new ArrayList<>();
     rightusers.add(new UserVO("Jeanne Calment", "m.duc", null));
     rightusers.add(new UserVO("Pierre Le Bon", "p.lebon", null));
     category2.setUsers(rightusers);
 
-    List<CategoryBox> categories = new ArrayList<CategoryBox>();
+    List<CategoryBox> categories = new ArrayList<>();
     categories.add(category1);
     categories.add(category2);
     chart.setCategories(categories);

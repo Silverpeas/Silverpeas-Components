@@ -21,29 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.components.organizationchart.model;
+package com.silverpeas.components.organizationchart.service;
 
-/**
- * @author ludovic
- */
-public enum OrganizationalChartType {
-  TYPE_UNITCHART(0), TYPE_PERSONNCHART(1);
+import org.silverpeas.util.ServiceProvider;
 
-  private int id = -1;
+public class OrganizationChartServicesProvider {
 
-  private OrganizationalChartType(int id) {
-    this.id = id;
+  public static OrganizationChartService getOrganizationChartLDAPService(
+      OrganizationChartLDAPConfiguration config) {
+    OrganizationChartService service =
+        ServiceProvider.getService(OrganizationChartLdapServiceImpl.class);
+    service.configure(config);
+    return service;
   }
 
-  public static OrganizationalChartType fromString(String idAsString) {
-    if ("1".equals(idAsString)) {
-      return TYPE_PERSONNCHART;
-    } else {
-      return TYPE_UNITCHART;
-    }
-  }
-
-  public int getId() {
-    return id;
+  public static OrganizationChartService getOrganizationChartGroupService(
+      OrganizationChartConfiguration config) {
+    OrganizationChartService service =
+        ServiceProvider.getService(OrganizationChartGroupServiceImpl.class);
+    service.configure(config);
+    return service;
   }
 }

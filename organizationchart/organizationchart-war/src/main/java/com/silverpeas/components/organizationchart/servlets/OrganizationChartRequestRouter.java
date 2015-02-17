@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.components.organizationchart.servlets;
 
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
@@ -32,7 +31,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
 
-public class OrganizationChartRequestRouter extends ComponentRequestRouter<OrganizationChartSessionController> {
+public class OrganizationChartRequestRouter
+    extends ComponentRequestRouter<OrganizationChartSessionController> {
 
   private static final long serialVersionUID = 972108274467271631L;
 
@@ -61,7 +61,6 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param orgaSC The component Session Control, build and initialised.
    * @param request
@@ -84,7 +83,8 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
         destination = OrganizationChartProcessor.processOrganizationChart(request, orgaSC);
       } else if (function.startsWith("Details")) {
         destination = OrganizationChartProcessor.processSilverpeasUser(request, orgaSC);
-      } else {// affichage de l'organigramme
+      } else {
+      // affichage de l'organigramme
         destination = OrganizationChartProcessor.processOrganizationChart(request, orgaSC);
       }
     } catch (Exception e) {

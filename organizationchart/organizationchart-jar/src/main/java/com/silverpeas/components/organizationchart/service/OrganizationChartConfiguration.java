@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,34 +9,35 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.components.organizationchart.service;
+
+import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.components.organizationchart.model.OrganizationalRole;
-
 public class OrganizationChartConfiguration {
 
   private String root = null;
-  
+
   private String attUnit = null;
   private String attName = null;
-  private String attTitle = null; // champ LDAP du titre
-  private String attDesc = null; // champ ldap de la description
+  // champ LDAP du titre
+  private String attTitle = null;
+  // champ ldap de la description
+  private String attDesc = null;
 
   private List<OrganizationalRole> unitsChartCentralLabel = null;
   private List<OrganizationalRole> unitsChartRightLabel = null;
@@ -58,12 +59,12 @@ public class OrganizationChartConfiguration {
   }
 
   /**
-   * @param ldapRoot the ldapRoot to set
+   * @param root the ldapRoot to set
    */
   public void setRoot(String root) {
     this.root = root;
   }
-  
+
   /**
    * @return the ldapAttUnit
    */
@@ -72,7 +73,7 @@ public class OrganizationChartConfiguration {
   }
 
   /**
-   * @param ldapAttUnit the ldapAttUnit to set
+   * @param attUnit the ldapAttUnit to set
    */
   public void setAttUnit(String attUnit) {
     this.attUnit = attUnit;
@@ -86,7 +87,7 @@ public class OrganizationChartConfiguration {
   }
 
   /**
-   * @param ldapAttName the ldapAttName to set
+   * @param attName the ldap attName to set
    */
   public void setAttName(String attName) {
     this.attName = attName;
@@ -100,7 +101,7 @@ public class OrganizationChartConfiguration {
   }
 
   /**
-   * @param ldapAttTitle the ldapAttTitle to set
+   * @param attTitle the ldap AttTitle to set
    */
   public void setAttTitle(String attTitle) {
     this.attTitle = attTitle;
@@ -114,7 +115,7 @@ public class OrganizationChartConfiguration {
   }
 
   /**
-   * @param ldapAttDesc the ldapAttDesc to set
+   * @param attDesc the ldap AttDesc to set
    */
   public void setAttDesc(String attDesc) {
     this.attDesc = attDesc;
@@ -186,7 +187,8 @@ public class OrganizationChartConfiguration {
   /**
    * @param personnsChartCategoriesLabel the personnsChartCategoriesLabel to set
    */
-  public void setPersonnsChartCategoriesLabel(List<OrganizationalRole> personnsChartCategoriesLabel) {
+  public void setPersonnsChartCategoriesLabel(
+      List<OrganizationalRole> personnsChartCategoriesLabel) {
     this.personnsChartCategoriesLabel = personnsChartCategoriesLabel;
   }
 
@@ -217,5 +219,5 @@ public class OrganizationChartConfiguration {
   public void setPersonnsChartOthersInfosKeys(Map<String, String> personnsChartOthersInfosKeys) {
     this.personnsChartOthersInfosKeys = personnsChartOthersInfosKeys;
   }
-  
+
 }
