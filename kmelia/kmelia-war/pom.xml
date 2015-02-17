@@ -50,7 +50,7 @@
       <groupId>org.silverpeas.components.kmelia</groupId>
       <artifactId>kmelia-ejb</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.lowagie</groupId>

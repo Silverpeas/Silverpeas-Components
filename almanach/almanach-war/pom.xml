@@ -31,7 +31,7 @@
       <groupId>org.silverpeas.components.almanach</groupId>
       <artifactId>almanach-ejb</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>

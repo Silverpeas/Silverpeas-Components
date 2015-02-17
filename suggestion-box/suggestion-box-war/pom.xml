@@ -44,7 +44,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>suggestion-box-jar</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>

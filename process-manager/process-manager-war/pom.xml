@@ -37,7 +37,7 @@
       <groupId>org.silverpeas.components.process-manager</groupId>
       <artifactId>process-manager-ejb</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>

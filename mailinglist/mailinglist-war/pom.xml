@@ -17,7 +17,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>mailinglist-jar</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

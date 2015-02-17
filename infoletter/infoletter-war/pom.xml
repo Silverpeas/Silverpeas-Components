@@ -31,7 +31,7 @@
       <groupId>org.silverpeas.components.infoletter</groupId>
       <artifactId>infoletter-jar</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

@@ -37,7 +37,7 @@
       <groupId>org.silverpeas.components.rssaggregator</groupId>
       <artifactId>rssaggregator-jar</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

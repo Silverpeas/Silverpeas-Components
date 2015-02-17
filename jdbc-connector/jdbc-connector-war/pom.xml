@@ -43,7 +43,7 @@
       <groupId>org.silverpeas.components.jdbc-connector</groupId>
       <artifactId>jdbc-connector-jar</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
