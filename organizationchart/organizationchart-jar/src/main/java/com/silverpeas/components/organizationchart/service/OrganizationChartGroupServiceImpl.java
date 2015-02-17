@@ -35,6 +35,7 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+@Singleton
 public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChartServiceImpl
     implements OrganizationChartService {
 

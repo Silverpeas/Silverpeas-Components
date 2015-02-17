@@ -32,6 +32,7 @@ import com.silverpeas.components.organizationchart.model.PersonCategory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Singleton;
 import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -52,6 +53,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+@Singleton
 public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartServiceImpl
     implements OrganizationChartService {
 
