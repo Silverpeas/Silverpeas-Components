@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,18 +9,19 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.silvercrawler.statistic;
 
 import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
@@ -48,34 +49,18 @@ public class Statistic {
 
   private static Connection getConnection() {
     Connection con;
-    // initialisation de la connexion
     try {
       con = DBUtil.openConnection();
     } catch (SQLException e) {
-      // traitement des exceptions
       throw new SilverCrawlerRuntimeException("Statistic.getConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
   }
 
-  private static void freeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        throw new SilverCrawlerRuntimeException("Statistic.freeConnection()",
-            SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-      }
-    }
-  }
-
   public static void addStat(String userId, File path, String componentId, String objectType) {
     SilverTrace.info("silverCrawler", "Statistic.addStat()", "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      con = getConnection();
+    try (Connection con = getConnection()) {
       // ajout dans les stats de l'objet
       HistoryDAO
           .add(con, historyTableName, userId, path.getAbsolutePath(), componentId, objectType);
@@ -87,8 +72,6 @@ public class Statistic {
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException("Statistic.addstat()",
           SilverpeasRuntimeException.ERROR, "silverCrawler.CANNOT_ADD_STAT", e);
-    } finally {
-      freeConnection(con);
     }
   }
 
@@ -122,7 +105,7 @@ public class Statistic {
     Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-    Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
+    Collection<HistoryByUser> statByUser = new ArrayList<>();
 
     for (final HistoryDetail historyObject : list) {
       // rechercher si le user est déjà enregistré
@@ -149,69 +132,46 @@ public class Statistic {
       }
     }
 
-    SilverTrace.info("silverCrawler", "Statistic.getHistoryByObject()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("silverCrawler", "Statistic.getHistoryByObject()", "root.MSG_GEN_EXIT_METHOD");
     return statByUser;
   }
 
   public static Collection<HistoryDetail> getHistoryByAction(String path, String componentId) {
-    SilverTrace.info("silverCrawler", "Statistic.getHistoryByAction",
-        "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      con = getConnection();
-      Collection<HistoryDetail> result = HistoryDAO.getHistoryDetailByObject(con,
-          historyTableName, path, componentId);
-
+    SilverTrace.info("silverCrawler", "Statistic.getHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
+    try (Connection con = getConnection()) {
+      Collection<HistoryDetail> result =
+          HistoryDAO.getHistoryDetailByObject(con, historyTableName, path, componentId);
       return result;
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException("Statistic.getHistoryByAction()",
           SilverpeasRuntimeException.ERROR,
           "silverCrawler.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
-    } finally {
-      freeConnection(con);
     }
   }
 
-  public static Collection<HistoryDetail> getHistoryByObjectAndUser(String path,
-      String userId, String componentId) {
+  public static Collection<HistoryDetail> getHistoryByObjectAndUser(String path, String userId,
+      String componentId) {
     SilverTrace.info("silverCrawler", "Statistic.getHistoryByObjectAndUser()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      con = getConnection();
-      Collection<HistoryDetail> result = HistoryDAO.getHistoryDetailByObjectAndUser(con,
-          historyTableName, path, userId, componentId);
-
+    try (Connection con = getConnection()) {
+      Collection<HistoryDetail> result = HistoryDAO
+          .getHistoryDetailByObjectAndUser(con, historyTableName, path, userId, componentId);
       return result;
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException(
-          "Statistic.getHistoryByObjectAndUser()",
+      throw new SilverCrawlerRuntimeException("Statistic.getHistoryByObjectAndUser()",
           SilverpeasRuntimeException.ERROR,
           "silverCrawler.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
-    } finally {
-      freeConnection(con);
     }
   }
 
   public static void deleteHistoryByObject(String path, String componentId) {
-    SilverTrace.info("silverCrawler", "Statistic.deleteHistoryByObject",
-        "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      con = getConnection();
-      HistoryDAO
-          .deleteHistoryByObject(con, historyTableName, path, componentId);
+    SilverTrace
+        .info("silverCrawler", "Statistic.deleteHistoryByObject", "root.MSG_GEN_ENTER_METHOD");
+    try (Connection con = getConnection()) {
+      HistoryDAO.deleteHistoryByObject(con, historyTableName, path, componentId);
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException(
-          "Statistic.deleteHistoryByObject()",
-          SilverpeasRuntimeException.ERROR,
-          "silverCrawler.CANNOT_DELETE_HISTORY_STATISTICS", e);
-    } finally {
-      freeConnection(con);
+      throw new SilverCrawlerRuntimeException("Statistic.deleteHistoryByObject()",
+          SilverpeasRuntimeException.ERROR, "silverCrawler.CANNOT_DELETE_HISTORY_STATISTICS", e);
     }
   }
 

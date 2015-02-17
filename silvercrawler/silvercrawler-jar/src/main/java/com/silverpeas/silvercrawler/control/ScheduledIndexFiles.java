@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,18 +9,19 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.silvercrawler.control;
 
 import com.silverpeas.scheduler.Scheduler;
@@ -42,12 +43,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ScheduledIndexFiles
-    implements SchedulerEventListener {
+public class ScheduledIndexFiles implements SchedulerEventListener {
 
   public static final String SILVERCRAWLERENGINE_JOB_NAME = "SilverCrawlerEngineJob";
-  private ResourceLocator resources = new ResourceLocator(
-      "com.silverpeas.silvercrawler.settings.silverCrawlerSettings", "");
+  private ResourceLocator resources =
+      new ResourceLocator("com.silverpeas.silvercrawler.settings.silverCrawlerSettings", "");
 
   public void initialize() {
     try {
@@ -71,17 +71,14 @@ public class ScheduledIndexFiles
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
       String[] instanceIds = orga.getCompoId("silverCrawler");
       for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
-        ComponentInst instance = orga.getComponentInst("silverCrawler"
-            + instanceIds[i]);
+        ComponentInst instance = orga.getComponentInst("silverCrawler" + instanceIds[i]);
         boolean periodicIndex = "yes".equals(instance.getParameterValue("periodicIndex"));
         if (periodicIndex) {
-          RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null,
-              instance.getId());
+          RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null, instance.getId());
 
-          List<String> profiles = new ArrayList<String>();
+          List<String> profiles = new ArrayList<>();
           profiles.add("admin");
-          String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(),
-              profiles);
+          String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(), profiles);
 
           String adminId = "0";
           if (adminIds != null && adminIds.length > 0) {
@@ -94,13 +91,11 @@ public class ScheduledIndexFiles
             pathRepository += File.separator;
           }
           Date dateIndex = new Date();
-          repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(),
-              adminId, "add");
+          repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(), adminId, "add");
         }
       }
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException(
-          "ScheduledIndexFiles.doScheduledIndex()",
+      throw new SilverCrawlerRuntimeException("ScheduledIndexFiles.doScheduledIndex()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
@@ -110,23 +105,20 @@ public class ScheduledIndexFiles
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("silverCrawler",
-        "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
+    SilverTrace.debug("silverCrawler", "ScheduledIndexFiles.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledIndex();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("silverCrawler",
-        "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+    SilverTrace.debug("silverCrawler", "ScheduledIndexFiles.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("silverCrawler",
-        "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverTrace.error("silverCrawler", "ScheduledIndexFiles.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

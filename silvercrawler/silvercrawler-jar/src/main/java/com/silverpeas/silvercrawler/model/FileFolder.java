@@ -1,23 +1,27 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.silvercrawler.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -33,25 +37,23 @@ import org.silverpeas.search.indexEngine.IndexFileManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
  * @author
  */
-public class FileFolder extends Object implements java.io.Serializable {
+public class FileFolder implements java.io.Serializable {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 7637795486882013995L;
   /**
    * A File collection representing files in folder
    */
-  private ArrayList<FileDetail> files;
+  private List<FileDetail> files;
   /**
    * A File collection representing folders in folder
    */
-  private ArrayList<FileDetail> folders;
+  private List<FileDetail> folders;
   /**
    * folder name
    */
@@ -71,8 +73,8 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Constructor declaration
+   * @param rootPath
    * @param path
-   * @see
    */
   public FileFolder(String rootPath, String path) {
     this(rootPath, path, false, "");
@@ -84,8 +86,8 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   public FileFolder(String rootPath, String path, boolean isAdmin, String componentId) {
     this.path = path;
-    files = new ArrayList<FileDetail>(0);
-    folders = new ArrayList<FileDetail>(0);
+    files = new ArrayList<>(0);
+    folders = new ArrayList<>(0);
 
     try {
       SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
@@ -163,36 +165,28 @@ public class FileFolder extends Object implements java.io.Serializable {
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public Collection<FileDetail> getFiles() {
     return files;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public Collection<FileDetail> getFolders() {
     return folders;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public String getPath() {
     return path;
