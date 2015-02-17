@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,20 +9,35 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.rssAgregator.control;
 
+import com.silverpeas.rssAgregator.model.RSSItem;
+import com.silverpeas.rssAgregator.model.RssAgregatorException;
+import com.silverpeas.rssAgregator.model.SPChannel;
+import com.silverpeas.rssAgregator.model.SPChannelPK;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import de.nava.informa.core.ParseException;
+import de.nava.informa.impl.basic.Channel;
+import de.nava.informa.impl.basic.ChannelBuilder;
+import de.nava.informa.impl.basic.Item;
+import de.nava.informa.parsers.FeedParser;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,24 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import com.silverpeas.rssAgregator.model.RSSItem;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.SilverpeasException;
-
-import de.nava.informa.core.ParseException;
-import de.nava.informa.impl.basic.Channel;
-import de.nava.informa.impl.basic.ChannelBuilder;
-import de.nava.informa.impl.basic.Item;
-import de.nava.informa.parsers.FeedParser;
-
-@Named("rssService")
+@Singleton
 public class RSSServiceImpl implements RSSService {
 
   @Inject

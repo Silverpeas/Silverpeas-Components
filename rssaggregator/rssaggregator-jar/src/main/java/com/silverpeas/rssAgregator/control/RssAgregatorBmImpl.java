@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,24 +9,19 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.rssAgregator.control;
-
-import java.util.List;
-
-import javax.inject.Named;
 
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
@@ -37,10 +32,13 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Singleton;
+import java.util.List;
+
 /**
  * @author neysseri
  */
-@Named("rssAgregatorBm")
+@Singleton
 public class RssAgregatorBmImpl implements RssAgregatorBm {
 
   private static SilverpeasBeanDAO<SPChannel> rssDAO;
@@ -48,11 +46,6 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
   public RssAgregatorBmImpl() {
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#addChannel(com.silverpeas
-   * .rssAgregator.model.SPChannel)
-   */
   public SPChannel addChannel(SPChannel channel) throws RssAgregatorException {
     try {
       WAPrimaryKey pk = getDAO().add(channel);
@@ -64,11 +57,6 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     return channel;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#deleteChannel(com.silverpeas
-   * .rssAgregator.model.SPChannelPK)
-   */
   public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException {
     try {
       getDAO().remove(channelPK);
@@ -78,12 +66,8 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannels(java.lang .String)
-   */
   public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException {
-    List<SPChannel> channels = null;
+    List<SPChannel> channels;
     try {
       SPChannelPK pk = new SPChannelPK("useless", instanceId);
       channels = (List<SPChannel>) getDAO().findByWhereClause(pk,
@@ -105,11 +89,6 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#updateChannel(com.silverpeas
-   * .rssAgregator.model.SPChannel)
-   */
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
     try {
       getDAO().update(channel);
@@ -131,16 +110,11 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     return rssDAO;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannel(com.silverpeas
-   * .rssAgregator.model.SPChannelPK)
-   */
   public SPChannel getChannel(SPChannelPK channelPK)
       throws RssAgregatorException {
-    SPChannel channel = null;
+    SPChannel channel;
     try {
-      channel = (SPChannel) getDAO().findByPrimaryKey(channelPK);
+      channel = getDAO().findByPrimaryKey(channelPK);
     } catch (PersistenceException pe) {
       throw new RssAgregatorException("RssAgregatorBmImpl.getChannel()",
           SilverpeasException.ERROR, "rssAgregator.GETTING_CHANNEL_FAILED", pe);

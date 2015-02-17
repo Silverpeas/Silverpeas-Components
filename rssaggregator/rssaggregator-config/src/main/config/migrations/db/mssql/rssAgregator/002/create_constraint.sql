@@ -1,0 +1,5 @@
+ALTER TABLE SC_Rss_Channels WITH NOCHECK ADD
+CONSTRAINT PK_Rss_Channels PRIMARY KEY CLUSTERED
+  (
+    id
+  );

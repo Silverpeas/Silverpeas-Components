@@ -37,7 +37,7 @@
 
   <ctx:component-scan base-package="com.silverpeas.rssAgregator"/>
 
-  <bean id="rssServiceFactory" class="com.silverpeas.rssAgregator.control.RSSServiceFactory" factory-method="getFactory"/>
+  <bean id="rssServiceFactory" class="com.silverpeas.rssAgregator.control.RSSServiceProvider" factory-method="getFactory"/>
   <bean id="rssBm" name="rssBm" class="com.silverpeas.rssAgregator.control.RssAgregatorBmImpl" />
   <!--<bean id="rssService" class="com.silverpeas.rssAgregator.control.RSSServiceImpl"/>-->
 </beans>
