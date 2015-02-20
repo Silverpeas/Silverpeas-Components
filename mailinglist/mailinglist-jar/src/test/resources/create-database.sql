@@ -97,32 +97,6 @@ CREATE TABLE Personalization (
   menuDisplay varchar(50) DEFAULT 'DEFAULT'
 );
 
-CREATE TABLE calendarToDo (
-	id int NOT NULL ,
-	name varchar(2000) NOT NULL ,
-	description varchar(4000) NULL ,
-	delegatorId varchar(100) NOT NULL ,
-	startDay varchar(50) NULL ,
-	endDay varchar(50) NULL ,
-	startHour varchar(50) NULL ,
-	endHour varchar(50) NULL ,
-	classification varchar(20) NULL ,
-	priority int NULL ,
-	lastModification varchar(50) NULL ,
-	percentCompleted int NULL ,
-	completedDay varchar(20) NULL ,
-	duration int NULL ,
-	componentId varchar(100) NULL ,
-	spaceId varchar(100) NULL ,
-	externalId varchar(100) NULL
-);
-
-CREATE TABLE calendarToDoAttendee (
-	todoId int NOT NULL ,
-	userId varchar(100) NOT NULL ,
-	participationStatus varchar(50) NULL
-);
-
 CREATE TABLE ST_AccessLevel
 (
     id   char(1)       NOT NULL,
@@ -389,18 +363,6 @@ ALTER TABLE Personalization  ADD
 		id
 	);
 
-ALTER TABLE calendarToDo  ADD
-	CONSTRAINT PK_calendarToDo PRIMARY KEY
-	(
-		id
-	);
-
-ALTER TABLE calendarToDoAttendee  ADD
-	CONSTRAINT PK_calendarToDoAttendee PRIMARY KEY
-	(
-		todoId, userId
-	);
-
 ALTER TABLE ST_AccessLevel  ADD CONSTRAINT PK_AccessLevel PRIMARY KEY (id);
 ALTER TABLE ST_AccessLevel ADD CONSTRAINT UN_AccessLevel_1 UNIQUE (name);
 
@@ -574,3 +536,4 @@ ALTER TABLE ST_NotifAddress ADD	CONSTRAINT FK_NotifAddress_2 FOREIGN KEY(userId)
 ALTER TABLE ST_NotifSended ADD CONSTRAINT PK_NotifSended PRIMARY KEY(notifId);
 
 ALTER TABLE ST_NotifSendedReceiver ADD CONSTRAINT PK_NotifSendedReceiver PRIMARY KEY(notifId, userId);
+
