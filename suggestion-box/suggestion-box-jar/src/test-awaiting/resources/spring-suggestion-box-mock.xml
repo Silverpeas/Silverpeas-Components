@@ -71,7 +71,7 @@
         class="org.silverpeas.components.suggestionbox.repository.SuggestionJPAManager"/>
 
   <bean id="suggestionBoxServiceFactory"
-        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
+        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceProvider"
         factory-method="getFactory"/>
 
   <!-- ebo <bean id="organisationControllerFactory"

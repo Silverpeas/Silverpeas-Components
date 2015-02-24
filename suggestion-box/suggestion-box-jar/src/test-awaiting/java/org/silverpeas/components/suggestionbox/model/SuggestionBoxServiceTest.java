@@ -82,7 +82,7 @@ public class SuggestionBoxServiceTest {
   public void setUp() {
     context = new ClassPathXmlApplicationContext("/spring-suggestion-box-mock.xml",
         "/spring-suggestion-box-embedded-datasource.xml");
-    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
+    SuggestionBoxServiceProvider serviceFactory = SuggestionBoxServiceProvider.getFactory();
     service = serviceFactory.getSuggestionBoxService();
     assertThat(service, notNullValue());
   }

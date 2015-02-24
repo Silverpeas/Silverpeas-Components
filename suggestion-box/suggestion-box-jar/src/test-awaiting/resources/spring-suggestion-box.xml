@@ -45,7 +45,7 @@
         class="org.silverpeas.components.suggestionbox.mock.WysiwygManagerMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory"
-        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
+        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceProvider"
         factory-method="getFactory"/>
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>

@@ -28,7 +28,6 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -39,6 +38,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.util.PaginationList;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -71,6 +71,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Inject
   private CommentService commentService;
 
+  @Inject
+  private SuggestionBoxWebServiceProvider suggestionBoxWebServiceProvider;
+
   /**
    * Gets the JSON representation of an suggestion.
    * If it doesn't exist, a 404 HTTP code is returned.
@@ -87,7 +90,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public SuggestionEntity execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        return getWebServiceProvider().asWebEntity(suggestion);
+        return suggestionBoxWebServiceProvider.asWebEntity(suggestion);
       }
     }).execute();
   }
@@ -104,7 +107,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public Void execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        getWebServiceProvider().deleteSuggestion(getSuggestionBox(), suggestion, getUserDetail());
+        suggestionBoxWebServiceProvider.deleteSuggestion(getSuggestionBox(), suggestion,
+            getUserDetail());
         return null;
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
@@ -125,7 +129,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public SuggestionEntity execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        return getWebServiceProvider()
+        return suggestionBoxWebServiceProvider
             .publishSuggestion(getSuggestionBox(), suggestion, getUserDetail());
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
@@ -146,7 +150,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return getWebServiceProvider()
+        return suggestionBoxWebServiceProvider
             .getSuggestionsInDraftFor(getSuggestionBox(), getUserDetail());
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
@@ -167,7 +171,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return getWebServiceProvider()
+        return suggestionBoxWebServiceProvider
             .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUserDetail());
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
@@ -187,7 +191,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return getWebServiceProvider().getSuggestionsInPendingValidation(getSuggestionBox());
+        return suggestionBoxWebServiceProvider.getSuggestionsInPendingValidation(
+            getSuggestionBox());
       }
     }).lowestAccessRole(SilverpeasRole.publisher).execute();
   }
@@ -226,7 +231,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
           if (QUERY_ORDER_BY.COMMENT_COUNT_DESC.equals(orderBy)) {
             commentJoinData = JOIN_DATA_APPLY.COMMENT;
           }
-          List<SuggestionEntity> suggestions = getWebServiceProvider().
+          List<SuggestionEntity> suggestions = suggestionBoxWebServiceProvider.
               getSuggestionsByCriteria(getSuggestionBox(),
                   SuggestionCriteria.from(getSuggestionBox())
                   .createdBy(author)
@@ -240,9 +245,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
           }
           return suggestions;
         } else if (author != null) {
-          return getWebServiceProvider().getPublishedSuggestionsFor(getSuggestionBox(), author);
+          return suggestionBoxWebServiceProvider.getPublishedSuggestionsFor(getSuggestionBox(),
+              author);
         }
-        return getWebServiceProvider().getPublishedSuggestions(getSuggestionBox());
+        return suggestionBoxWebServiceProvider.getPublishedSuggestions(getSuggestionBox());
       }
     }).execute();
   }
@@ -272,10 +278,6 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       commentEntities.add(SuggestionCommentEntity.fromComment(comment).onSuggestion(suggestion));
     }
     return commentEntities;
-  }
-
-  private SuggestionBoxWebServiceProvider getWebServiceProvider() {
-    return SuggestionBoxWebServiceProvider.getWebServiceProvider();
   }
 
   private PaginationPage fromPage(String page) {

@@ -28,6 +28,7 @@ import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 
+import javax.enterprise.inject.Vetoed;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import java.util.List;
  * Class that permits to set suggestion search criteria for suggestion box application.
  * @author: Yohann Chastagnier
  */
+@Vetoed
 public class SuggestionCriteria {
 
   public enum JOIN_DATA_APPLY {

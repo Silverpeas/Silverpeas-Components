@@ -28,7 +28,7 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider;
+import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.Transaction;
@@ -73,8 +73,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * the asked suggestion.
    */
   public static final Suggestion getById(String identifier) {
-    Suggestion suggestion =
-        SuggestionRepositoryProvider.getSuggestionRepository().getById(identifier);
+    Suggestion suggestion = SuggestionRepository.get().getById(identifier);
     return (suggestion == null ? Suggestion.NONE:suggestion);
   }
 
@@ -224,8 +223,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
     Transaction.performInOne(new Transaction.Process<Void>() {
       @Override
       public Void execute() {
-        SuggestionRepositoryProvider.getSuggestionRepository().
-            save(OperationContext.fromUser(getLastUpdater()), suggestion);
+        SuggestionRepository.get().save(OperationContext.fromUser(getLastUpdater()), suggestion);
         return null;
       }
     });
@@ -299,8 +297,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   }
 
   private SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
-    return serviceFactory.getSuggestionBoxService();
+    return SuggestionBoxService.get();
   }
 
   @Override

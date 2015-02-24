@@ -45,6 +45,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentControl
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
+import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.notification
@@ -52,6 +53,7 @@ import org.silverpeas.components.suggestionbox.notification
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -64,7 +66,10 @@ import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
     .getUserNotificationDisplayLiveTimeForLongMessage;
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+    .checkAdminAccessOrUserIsCreator;
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+    .checkAdminAccessOrUserIsModerator;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
@@ -204,6 +209,10 @@ public class SuggestionBoxWebController extends
     super.beforeRequestProcessing(context);
     context.getRequest().setAttribute("webServiceProvider", getWebServiceProvider());
     context.getRequest().setAttribute("currentSuggestionBox", context.getSuggestionBox());
+  }
+
+  private SuggestionBoxWebServiceProvider getWebServiceProvider() {
+    return ServiceProvider.getService(SuggestionBoxWebServiceProvider.class);
   }
 
   /**

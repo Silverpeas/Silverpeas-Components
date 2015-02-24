@@ -159,7 +159,6 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   }
 
   private static SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
-    return serviceFactory.getSuggestionBoxService();
+    return SuggestionBoxService.get();
   }
 }

@@ -1,8 +1,6 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,13 +10,15 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ForeignPK;
 
+import javax.enterprise.inject.Vetoed;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -32,6 +32,7 @@ import static org.silverpeas.contribution.ContributionStatus.*;
  * belongs always to a given suggestion box.
  * @author mmoquillon
  */
+@Vetoed
 public class SuggestionCollection implements Collection<Suggestion> {
 
   private SuggestionBox suggestionBox;
@@ -432,6 +433,6 @@ public class SuggestionCollection implements Collection<Suggestion> {
   }
 
   private SuggestionRepository getSuggestionRepository() {
-    return SuggestionRepositoryProvider.getSuggestionRepository();
+    return SuggestionRepository.get();
   }
 }

@@ -28,7 +28,6 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
 
 import java.sql.Connection;
 
@@ -76,7 +75,6 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
   }
 
   private SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
-    return serviceFactory.getSuggestionBoxService();
+    return SuggestionBoxService.get();
   }
 }

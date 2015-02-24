@@ -34,7 +34,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("SuggestionBoxComponentIndexation")
 public class SuggestionBoxIndexer implements ComponentIndexation {
 
   @Inject

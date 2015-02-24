@@ -37,6 +37,6 @@
         class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory"
-        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
+        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceProvider"
         factory-method="getFactory"/>
 </beans>

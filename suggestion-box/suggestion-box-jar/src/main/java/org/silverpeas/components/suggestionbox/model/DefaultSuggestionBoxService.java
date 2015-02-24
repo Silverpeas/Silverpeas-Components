@@ -35,17 +35,17 @@ import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.util.ResourceLocator;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface and of the
  * {@link com.silverpeas.ApplicationService} interface.
  * @author mmoquillon
  */
-@Named("suggestionBoxService")
+@Singleton
 public class DefaultSuggestionBoxService
     implements SuggestionBoxService, ApplicationService<Suggestion> {
 
@@ -54,18 +54,6 @@ public class DefaultSuggestionBoxService
 
   @Inject
   private CommentService commentService;
-
-  /**
-   * Gets an instance of a SuggestionBoxService.
-   * <p/>
-   * This method is a convenient one. It uses the {@link SuggestionBoxServiceFactory} to produce an
-   * instance that it returns directly.
-   * @return a SuggestionBoxService instance.
-   */
-  public static SuggestionBoxService getInstance() {
-    SuggestionBoxServiceFactory factory = SuggestionBoxServiceFactory.getFactory();
-    return factory.getSuggestionBoxService();
-  }
 
   @Override
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {

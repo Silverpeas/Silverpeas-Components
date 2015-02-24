@@ -5,6 +5,7 @@ import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * The JPA manager dedicated to manage Suggestion instances. This class is to be used only
@@ -13,6 +14,6 @@ import javax.inject.Named;
  * persisted into several data sources.
  * @author mmoquillon
  */
-@Named
+@Singleton
 public class SuggestionJPAManager extends SilverpeasJpaEntityManager<Suggestion, UuidIdentifier> {
 }

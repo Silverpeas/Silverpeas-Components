@@ -25,6 +25,7 @@ package org.silverpeas.components.suggestionbox.model;
 
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +42,14 @@ import java.util.List;
  * @author mmoquillon
  */
 public interface SuggestionBoxService {
+
+  /**
+   * Gets an object of this interface. The default implementation is used.
+   * @return a SuggestionBoxService object.
+   */
+  public static SuggestionBoxService get() {
+    return ServiceProvider.getService(SuggestionBoxService.class);
+  }
 
   /**
    * @param componentInstanceId the identifier of a suggestion box instance.

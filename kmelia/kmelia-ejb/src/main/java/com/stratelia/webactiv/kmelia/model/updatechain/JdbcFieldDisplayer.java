@@ -227,12 +227,12 @@ public class JdbcFieldDisplayer {
     try {
       Class.forName(driverName);
     } catch (ClassNotFoundException e) {
-      throw new FormException("JdbcField.connectJdbc", "form.EX_CANT_FIND_DRIVER_JDBC", e);
+      throw new FormException("JdbcField.connect", "form.EX_CANT_FIND_DRIVER_JDBC", e);
     }
     try {
       result = DriverManager.getConnection(url, login, password);
     } catch (SQLException e) {
-      throw new FormException("JdbcField.connectJdbc", "form.EX_CANT_CONNECT_JDBC", e);
+      throw new FormException("JdbcField.connect", "form.EX_CANT_CONNECT_JDBC", e);
     }
 
     return result;

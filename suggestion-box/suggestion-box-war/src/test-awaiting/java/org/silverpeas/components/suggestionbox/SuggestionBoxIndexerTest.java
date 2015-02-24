@@ -31,7 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
+import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceProvider;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -79,7 +79,7 @@ public class SuggestionBoxIndexerTest {
   }
 
   private SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
+    SuggestionBoxServiceProvider serviceFactory = SuggestionBoxServiceProvider.getFactory();
     SuggestionBoxServiceMockWrapper mockWrapper =
         (SuggestionBoxServiceMockWrapper) serviceFactory.getSuggestionBoxService();
     return mockWrapper.getMock();

@@ -37,10 +37,12 @@ import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -51,9 +53,13 @@ import java.util.Map;
  * suggestion associated to suggestion boxes.
  * @author Yohann Chastagnier
  */
-@Named
+@Singleton
 public class SuggestionRepository implements
     SilverpeasEntityRepository<Suggestion, UuidIdentifier> {
+
+  public static SuggestionRepository get() {
+    return ServiceProvider.getService(SuggestionRepository.class);
+  }
 
   @Inject
   private CommentService commentService;

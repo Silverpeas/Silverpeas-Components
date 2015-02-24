@@ -27,18 +27,24 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * This entity suggestionRepository provides all necessary methods in order to handle the
  * persistence of suggestion boxes, whatever the data sources used underlying.
  * @author Yohann Chastagnier
  */
-@Named
+@Singleton
 public class SuggestionBoxRepository
     extends SilverpeasJpaEntityManager<SuggestionBox, UuidIdentifier> {
+
+  public static SuggestionBoxRepository get() {
+    return ServiceProvider.getService(SuggestionBoxRepository.class);
+  }
 
   @Inject
   private SuggestionRepository suggestionRepository;

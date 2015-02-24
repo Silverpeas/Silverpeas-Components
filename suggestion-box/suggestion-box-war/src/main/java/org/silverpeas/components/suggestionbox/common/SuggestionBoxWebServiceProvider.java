@@ -41,6 +41,7 @@ import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.PaginationList;
 
+import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.text.MessageFormat;
@@ -60,18 +61,13 @@ import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
 /**
  * @author: Yohann Chastagnier
  */
+@Singleton
 public class SuggestionBoxWebServiceProvider {
 
   /**
    * Multilang
    */
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
-  private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER =
-      new SuggestionBoxWebServiceProvider();
-
-  public static SuggestionBoxWebServiceProvider getWebServiceProvider() {
-    return SUGGESTION_BOX_WEB_SERVICE_PROVIDER;
-  }
 
   private SuggestionBoxWebServiceProvider() {
   }
