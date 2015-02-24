@@ -1,38 +1,42 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.util;
 
-import java.io.IOException;
-import java.io.Reader;
-
+import javax.enterprise.inject.Alternative;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * HTML parser, used to extract text form the HTML.
- *
  * @author Emmanuel Hugonnet
+ * @deprecated use {@link com.silverpeas.mailinglist.service.util.neko.NekoHtmlCleaner} instead
  */
+@Alternative
 public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlCleaner {
 
   private StringBuilder texte = new StringBuilder(1024);
@@ -50,7 +54,6 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
 
   /**
    * Constructor.
-   *
    * @param maxSize the maximum size of the extracted text.
    */
   public Html2Text(int maxSize) {
@@ -72,17 +75,14 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
       register = false;
       inScript++;
     }
-    if (HTML.Tag.META.equals(t) || HTML.Tag.OPTION.equals(t)
-        || HTML.Tag.LINK.equals(t)) {
+    if (HTML.Tag.META.equals(t) || HTML.Tag.OPTION.equals(t) || HTML.Tag.LINK.equals(t)) {
       register = false;
     }
-    if (HTML.Tag.I.equals(t) || HTML.Tag.B.equals(t) || HTML.Tag.BIG.equals(t)
-        || HTML.Tag.CENTER.equals(t) || HTML.Tag.FONT.equals(t)
-        || HTML.Tag.SMALL.equals(t) || HTML.Tag.SPAN.equals(t)
-        || HTML.Tag.U.equals(t) || HTML.Tag.H1.equals(t)
-        || HTML.Tag.H2.equals(t) || HTML.Tag.H3.equals(t)
-        || HTML.Tag.H4.equals(t) || HTML.Tag.H5.equals(t)
-        || HTML.Tag.H6.equals(t)) {
+    if (HTML.Tag.I.equals(t) || HTML.Tag.B.equals(t) || HTML.Tag.BIG.equals(t) ||
+        HTML.Tag.CENTER.equals(t) || HTML.Tag.FONT.equals(t) || HTML.Tag.SMALL.equals(t) ||
+        HTML.Tag.SPAN.equals(t) || HTML.Tag.U.equals(t) || HTML.Tag.H1.equals(t) ||
+        HTML.Tag.H2.equals(t) || HTML.Tag.H3.equals(t) || HTML.Tag.H4.equals(t) ||
+        HTML.Tag.H5.equals(t) || HTML.Tag.H6.equals(t)) {
       isFormatTag = true;
     }
   }
@@ -101,17 +101,14 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
         inScript = 0;
       }
     }
-    if (HTML.Tag.META.equals(t) || HTML.Tag.OPTION.equals(t)
-        || HTML.Tag.LINK.equals(t)) {
+    if (HTML.Tag.META.equals(t) || HTML.Tag.OPTION.equals(t) || HTML.Tag.LINK.equals(t)) {
       register = true;
     }
-    if (HTML.Tag.I.equals(t) || HTML.Tag.B.equals(t) || HTML.Tag.BIG.equals(t)
-        || HTML.Tag.CENTER.equals(t) || HTML.Tag.FONT.equals(t)
-        || HTML.Tag.SMALL.equals(t) || HTML.Tag.SPAN.equals(t)
-        || HTML.Tag.U.equals(t) || HTML.Tag.H1.equals(t)
-        || HTML.Tag.H2.equals(t) || HTML.Tag.H3.equals(t)
-        || HTML.Tag.H4.equals(t) || HTML.Tag.H5.equals(t)
-        || HTML.Tag.H6.equals(t)) {
+    if (HTML.Tag.I.equals(t) || HTML.Tag.B.equals(t) || HTML.Tag.BIG.equals(t) ||
+        HTML.Tag.CENTER.equals(t) || HTML.Tag.FONT.equals(t) || HTML.Tag.SMALL.equals(t) ||
+        HTML.Tag.SPAN.equals(t) || HTML.Tag.U.equals(t) || HTML.Tag.H1.equals(t) ||
+        HTML.Tag.H2.equals(t) || HTML.Tag.H3.equals(t) || HTML.Tag.H4.equals(t) ||
+        HTML.Tag.H5.equals(t) || HTML.Tag.H6.equals(t)) {
       isFormatTag = false;
     }
   }
@@ -126,13 +123,13 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
   @Override
   public void handleText(char[] text, int pos) {
     if (register && inScript <= 0 && !hasError && texte.length() <= maxSize) {
-      for (int i = 0; i < text.length; i++) {
-        if (Character.isLetterOrDigit(text[i])) {
-          texte.append(text[i]);
-        } else if (Character.isSpaceChar(text[i])) {
+      for (final char aText : text) {
+        if (Character.isLetterOrDigit(aText)) {
+          texte.append(aText);
+        } else if (Character.isSpaceChar(aText)) {
           texte.append(' ');
         } else {
-          texte.append(text[i]);
+          texte.append(aText);
         }
       }
       if (!isFormatTag && !Character.isSpaceChar(text[text.length - 1])) {

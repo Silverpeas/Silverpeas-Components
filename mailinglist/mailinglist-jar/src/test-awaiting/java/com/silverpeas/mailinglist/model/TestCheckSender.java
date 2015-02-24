@@ -21,7 +21,7 @@
 package com.silverpeas.mailinglist.model;
 
 import com.silverpeas.mailinglist.AbstractMailingListTest;
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class TestCheckSender extends AbstractMailingListTest {
   @Test
   public void testArchivageNotModeratedOpen() {
     String email = "maggie.simpson@silverpeas.com";
-    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList(
+    MailingList list = MailingListServicesProvider.getFactory().getMailingListService().findMailingList(
         ArchivageNotModeratedOpen_ID);
     assertNotNull(list);
     assertFalse(list.isModerated());
@@ -92,7 +92,7 @@ public class TestCheckSender extends AbstractMailingListTest {
   public void testArchivageNotModeratedClosed() {
     String email = "lisa.simpson@silverpeas.com";
     String spammer = "joe.theplumber@spam.com";
-    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList(
+    MailingList list = MailingListServicesProvider.getFactory().getMailingListService().findMailingList(
         ArchivageNotModeratedClosed_ID);
     assertNotNull(list);
     assertFalse(list.isModerated());

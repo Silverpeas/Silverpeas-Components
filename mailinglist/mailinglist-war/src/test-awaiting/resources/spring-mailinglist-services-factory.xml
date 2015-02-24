@@ -38,8 +38,8 @@
     <property name="elementsPerPage" value="10" />
   </bean>
 
-  <bean id="servicesFactory" name="servicesFactory"
-        class="com.silverpeas.mailinglist.service.ServicesFactory"
+  <bean id="mailingListServicesProvider" name="mailingListServicesProvider"
+        class="com.silverpeas.mailinglist.service.MailingListServicesProvider"
         factory-method="getFactory" />
 
   <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />

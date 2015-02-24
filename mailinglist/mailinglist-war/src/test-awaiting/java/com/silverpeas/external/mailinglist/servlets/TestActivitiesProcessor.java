@@ -21,7 +21,7 @@
 package com.silverpeas.external.mailinglist.servlets;
 
 import com.silverpeas.mailinglist.AbstractMailingListTest;
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
@@ -44,7 +44,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessActivities() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("GET");
@@ -55,10 +56,10 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     request.setRequestURI("/silverpeas/RmailingList/mailinglist45/Main");
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
-    MailingList list = servicesFactory.getMailingListService().findMailingList(
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList(
         "mailinglist45");
     assertNotNull(list);
-    MailingListActivity mailingListActivity = servicesFactory.getMessageService().getActivity(list);
+    MailingListActivity mailingListActivity = mailingListServicesProvider.getMessageService().getActivity(list);
     assertNotNull(mailingListActivity);
     String url = ActivitiesProcessor.processActivities(rest, request, "7");
     MailingListActivity activity = (MailingListActivity) request.getAttribute(
@@ -89,7 +90,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessMailingList() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("GET");
@@ -100,21 +102,21 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     request.setRequestURI("/silverpeas/Rmailinglist/mailinglist45/list/mailinglist45");
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailingList45");
-    MailingList list = servicesFactory.getMailingListService().findMailingList(
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList(
         "mailinglist45");
     assertNotNull(list);
-    MailingListActivity mailingListActivity = servicesFactory.getMessageService().getActivity(list);
+    MailingListActivity mailingListActivity = mailingListServicesProvider.getMessageService().getActivity(list);
     assertNotNull(mailingListActivity);
     String url = MailingListProcessor.processMailingList(rest, request);
     assertEquals(10,
-        servicesFactory.getMessageService().listDisplayableMessages(list, -1,
+        mailingListServicesProvider.getMessageService().listDisplayableMessages(list, -1,
         -1, 0, new OrderBy("sentDate", true)).size());
     List messages = (List) request.getAttribute(MailingListRoutage.MESSAGES_LIST_ATT);
     assertFalse(messages.isEmpty());
     assertEquals(10, messages.size());
     Integer nbPages = (Integer) request.getAttribute(MailingListRoutage.NB_PAGE_ATT);
     assertNotNull(nbPages);
-    int pages = servicesFactory.getMessageService().getNumberOfPagesForDisplayableMessages(list);
+    int pages = mailingListServicesProvider.getMessageService().getNumberOfPagesForDisplayableMessages(list);
     assertEquals(2, pages);
     assertNotNull(url);
     assertEquals("/mailingList/jsp/list.jsp", url);
@@ -122,7 +124,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessModeration() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("GET");
@@ -133,20 +136,20 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     request.setRequestURI("/silverpeas/Rmailinglist/mailinglist45/moderationList/mailinglist45");
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailingList45");
-    MailingList list = servicesFactory.getMailingListService().findMailingList(
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList(
         "mailinglist45");
     assertNotNull(list);
-    MailingListActivity mailingListActivity = servicesFactory.getMessageService().getActivity(list);
+    MailingListActivity mailingListActivity = mailingListServicesProvider.getMessageService().getActivity(list);
     assertNotNull(mailingListActivity);
     String url = ModerationProcessor.processModeration(rest, request);
-    assertEquals(2, servicesFactory.getMessageService().listUnmoderatedeMessages(list, 0,
+    assertEquals(2, mailingListServicesProvider.getMessageService().listUnmoderatedeMessages(list, 0,
         new OrderBy("sentDate", true)).size());
     List messages = (List) request.getAttribute(MailingListRoutage.MESSAGES_LIST_ATT);
     assertFalse(messages.isEmpty());
     assertEquals(2, messages.size());
     Integer nbPages = (Integer) request.getAttribute(MailingListRoutage.NB_PAGE_ATT);
     assertNotNull(nbPages);
-    int pages = servicesFactory.getMessageService().getNumberOfPagesForUnmoderatedMessages(list);
+    int pages = mailingListServicesProvider.getMessageService().getNumberOfPagesForUnmoderatedMessages(list);
     assertEquals(1, pages);
     assertEquals(1, nbPages.intValue());
     assertEquals("/mailingList/jsp/moderation.jsp", url);
@@ -154,7 +157,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessMessageDelete() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("POST");
@@ -171,8 +175,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailingList45");
     assertEquals(RestRequest.DELETE, rest.getAction());
     MessageProcessor.processMessage(rest, request);
-    assertNotNull(servicesFactory.getMessageService().getMessage("1"));
-    assertNotNull(servicesFactory.getMessageService().getMessage("2"));
+    assertNotNull(mailingListServicesProvider.getMessageService().getMessage("1"));
+    assertNotNull(mailingListServicesProvider.getMessageService().getMessage("2"));
 
     request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
@@ -189,8 +193,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
     String url = MessageProcessor.processMessage(rest, request);
-    assertNull(servicesFactory.getMessageService().getMessage("1"));
-    assertNull(servicesFactory.getMessageService().getMessage("2"));
+    assertNull(mailingListServicesProvider.getMessageService().getMessage("1"));
+    assertNull(mailingListServicesProvider.getMessageService().getMessage("2"));
     assertNotNull(url);
     assertEquals(
         "http://localhost:8000/silverpeas/Rmailinglist/mailinglist45/list/mailinglist45",
@@ -202,8 +206,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
     url = MessageProcessor.processMessage(rest, request);
-    assertNull(servicesFactory.getMessageService().getMessage("1"));
-    assertNull(servicesFactory.getMessageService().getMessage("2"));
+    assertNull(mailingListServicesProvider.getMessageService().getMessage("1"));
+    assertNull(mailingListServicesProvider.getMessageService().getMessage("2"));
     assertNotNull(url);
     assertEquals(
         "http://localhost:8000/silverpeas/Rmailinglist/mailinglist45/list/mailinglist45",
@@ -216,8 +220,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
     url = MessageProcessor.processMessage(rest, request);
-    assertNull(servicesFactory.getMessageService().getMessage("1"));
-    assertNull(servicesFactory.getMessageService().getMessage("2"));
+    assertNull(mailingListServicesProvider.getMessageService().getMessage("1"));
+    assertNull(mailingListServicesProvider.getMessageService().getMessage("2"));
     assertNotNull(url);
     assertEquals(
         "http://localhost:8000/silverpeas/Rmailinglist/mailinglist45/moderationList/mailinglist45",
@@ -226,7 +230,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessMessageModerate() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("POST");
@@ -243,8 +248,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailingList45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
     MessageProcessor.processMessage(rest, request);
-    assertFalse(servicesFactory.getMessageService().getMessage("12").isModerated());
-    assertFalse(servicesFactory.getMessageService().getMessage("13").isModerated());
+    assertFalse(mailingListServicesProvider.getMessageService().getMessage("12").isModerated());
+    assertFalse(mailingListServicesProvider.getMessageService().getMessage("13").isModerated());
 
     request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
@@ -261,8 +266,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
     String url = MessageProcessor.processMessage(rest, request);
-    assertTrue(servicesFactory.getMessageService().getMessage("12").isModerated());
-    assertTrue(servicesFactory.getMessageService().getMessage("13").isModerated());
+    assertTrue(mailingListServicesProvider.getMessageService().getMessage("12").isModerated());
+    assertTrue(mailingListServicesProvider.getMessageService().getMessage("13").isModerated());
     assertNotNull(url);
     assertEquals(
         "http://localhost:8000/silverpeas/Rmailinglist/mailinglist45/moderationList/mailinglist45",
@@ -271,7 +276,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessMessageSingleModerate() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("POST");
@@ -288,8 +294,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailingList45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
     MessageProcessor.processMessage(rest, request);
-    assertFalse(servicesFactory.getMessageService().getMessage("12").isModerated());
-    assertFalse(servicesFactory.getMessageService().getMessage("13").isModerated());
+    assertFalse(mailingListServicesProvider.getMessageService().getMessage("12").isModerated());
+    assertFalse(mailingListServicesProvider.getMessageService().getMessage("13").isModerated());
 
     request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
@@ -306,22 +312,23 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
     String url = MessageProcessor.processMessage(rest, request);
-    assertTrue(servicesFactory.getMessageService().getMessage("12").isModerated());
-    assertFalse(servicesFactory.getMessageService().getMessage("13").isModerated());
+    assertTrue(mailingListServicesProvider.getMessageService().getMessage("12").isModerated());
+    assertFalse(mailingListServicesProvider.getMessageService().getMessage("13").isModerated());
     assertNotNull(url);
     /*
      * assertEquals(
      * "http://localhost:8000/silverpeas/Rmailinglist/mailinglist45/moderationList/mailinglist45",
      * url);
      */
-    assertEquals(servicesFactory.getMessageService().getMessage("12"),
+    assertEquals(mailingListServicesProvider.getMessageService().getMessage("12"),
         request.getAttribute(MailingListRoutage.MESSAGE_ATT));
     assertEquals("/mailingList/jsp/message.jsp", url);
   }
 
   @Test
   public void testProcessMessage() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("GET");
@@ -337,7 +344,7 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.FIND, rest.getAction());
     String url = MessageProcessor.processMessage(rest, request);
-    assertEquals(servicesFactory.getMessageService().getMessage("1"),
+    assertEquals(mailingListServicesProvider.getMessageService().getMessage("1"),
         request.getAttribute(MailingListRoutage.MESSAGE_ATT));
     assertEquals("/mailingList/jsp/message.jsp", url);
   }
@@ -377,7 +384,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessUsersDelete() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("POST");
@@ -389,7 +397,7 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
         Boolean.FALSE);
     request.setPathInfo("/Rmailinglist/mailinglist45/users/delete");
     request.setRequestURI("/silverpeas/RmailingList/mailinglist45/users/delete");
-    MailingList mailingList = servicesFactory.getMailingListService().findMailingList(
+    MailingList mailingList = mailingListServicesProvider.getMailingListService().findMailingList(
         "mailinglist45");
     assertNotNull(mailingList);
     ExternalUser tempUser = new ExternalUser();
@@ -422,7 +430,8 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
 
   @Test
   public void testProcessUsersUpdate() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setRemoteHost("localhost");
     request.setMethod("POST");
@@ -434,7 +443,7 @@ public class TestActivitiesProcessor extends AbstractMailingListTest {
         Boolean.FALSE);
     request.setPathInfo("/Rmailinglist/mailinglist45/users");
     request.setRequestURI("/silverpeas/RmailingList/mailinglist45/users");
-    MailingList mailingList = servicesFactory.getMailingListService().findMailingList(
+    MailingList mailingList = mailingListServicesProvider.getMailingListService().findMailingList(
         "mailinglist45");
     assertNotNull(mailingList);
     ExternalUser tempUser = new ExternalUser();

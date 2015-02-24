@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,39 +9,19 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.job;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.mail.FetchProfile;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Flags.Flag;
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import com.silverpeas.mailinglist.service.event.MessageEvent;
 import com.silverpeas.mailinglist.service.event.MessageListener;
@@ -50,14 +30,38 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.mail.engine.SmtpConfiguration;
+import org.silverpeas.util.ResourceLocator;
 
-public class MessageChecker
-    implements SchedulerEventListener {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.mail.FetchProfile;
+import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+@Singleton
+public class MessageChecker implements SchedulerEventListener {
 
   public static final String IMAP_PROTOCOL = "imap";
   public static final String IMAP_SSL_PROTOCOL = "imaps";
   public static final String POP3_PROTOCOL = "pop3";
   private Map<String, MessageListener> listeners;
+  @Inject
   private MailProcessor processor;
   private String mailServer;
   private String login;
@@ -66,50 +70,44 @@ public class MessageChecker
   private int port;
   private boolean leaveOnServer;
   private Session mailSession;
+  @Inject
   private MailingListService mailingListService;
+
 
   public MailingListService getMailingListService() {
     return mailingListService;
-  }
-
-  public void setMailingListService(MailingListService mailingListService) {
-    this.mailingListService = mailingListService;
   }
 
   public Session getMailSession() {
     return mailSession;
   }
 
-  public void setMailSession(Session mailSession) {
-    this.mailSession = mailSession;
-  }
-
+  /**
+   * Default constructor
+   */
   public MessageChecker() {
-    this.listeners = new HashMap<String, MessageListener>(10);
+    this.listeners = new HashMap<>(10);
+    SmtpConfiguration smtpConfig = SmtpConfiguration.fromDefaultSettings();
+    ResourceLocator notifConfig = new ResourceLocator("org/silverpeas/mailinglist/notification");
+    protocol = notifConfig.getString("mail.server.protocol");
+    mailServer = notifConfig.getString("mail.server.host");
+    login = notifConfig.getString("mail.server.login");
+    password = notifConfig.getString("mail.server.password");
+    port = notifConfig.getInteger("mail.server.port", smtpConfig.getPort());
+    leaveOnServer = notifConfig.getBoolean("mail.server.leave", true);
+    mailSession = Session.getInstance(new Properties());
   }
 
   public String getLogin() {
     return login;
   }
 
-  public void setLogin(String login) {
-    this.login = login;
-  }
-
   public String getPassword() {
     return password;
   }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
   public String getMailServer() {
     return mailServer;
-  }
-
-  public void setMailServer(String mailServer) {
-    this.mailServer = mailServer;
   }
 
   public boolean isLeaveOnServer() {
@@ -117,10 +115,6 @@ public class MessageChecker
       this.leaveOnServer = false;
     }
     return leaveOnServer;
-  }
-
-  public void setLeaveOnServer(boolean leaveOnServer) {
-    this.leaveOnServer = leaveOnServer;
   }
 
   public int getPort() {
@@ -146,9 +140,8 @@ public class MessageChecker
   }
 
   public void setProtocol(String protocol) {
-    if (POP3_PROTOCOL.equalsIgnoreCase(protocol)
-        || IMAP_PROTOCOL.equalsIgnoreCase(protocol)
-        || IMAP_SSL_PROTOCOL.equalsIgnoreCase(protocol)) {
+    if (POP3_PROTOCOL.equalsIgnoreCase(protocol) || IMAP_PROTOCOL.equalsIgnoreCase(protocol) ||
+        IMAP_SSL_PROTOCOL.equalsIgnoreCase(protocol)) {
       this.protocol = protocol.toLowerCase();
     } else {
       this.protocol = POP3_PROTOCOL;
@@ -191,10 +184,10 @@ public class MessageChecker
         profile.add(FetchProfile.Item.FLAGS);
         inbox.fetch(msgs, profile);
       }
-      Map<MessageListener, MessageEvent> eventsMap = new HashMap<MessageListener, MessageEvent>();
-      for (int msgNum = 0; msgNum < msgs.length; msgNum++) {
+      Map<MessageListener, MessageEvent> eventsMap = new HashMap<>();
+      for (final Message msg : msgs) {
         try {
-          MimeMessage message = (MimeMessage) msgs[msgNum];
+          MimeMessage message = (MimeMessage) msg;
           if (isImap()) {
             if (!message.isSet(Flag.SEEN) && !message.isSet(Flag.DELETED)) {
               message = new MimeMessage(message);
@@ -205,30 +198,26 @@ public class MessageChecker
           }
 
           if (isLeaveOnServer() && inbox.getMode() == Folder.READ_WRITE) {
-            msgs[msgNum].setFlag(Flag.SEEN, true);
+            msg.setFlag(Flag.SEEN, true);
           } else {
-            msgs[msgNum].setFlag(Flag.DELETED, true);
+            msg.setFlag(Flag.DELETED, true);
           }
         } catch (MessagingException mex) {
-          SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-              "mail.processing.error", mex);
+          SilverTrace
+              .error("mailingList", "MessageChecker.checkNewMessages", "mail.processing.error",
+                  mex);
         } catch (IOException ioex) {
-          SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-              "mail.io.error", ioex);
+          SilverTrace
+              .error("mailingList", "MessageChecker.checkNewMessages", "mail.io.error", ioex);
         }
       }
-      Iterator<Map.Entry<MessageListener, MessageEvent>> iter = eventsMap.entrySet().iterator();
-      while (iter.hasNext()) {
-        Map.Entry<MessageListener, MessageEvent> entry = iter.next();
+      for (final Map.Entry<MessageListener, MessageEvent> entry : eventsMap.entrySet()) {
         MessageListener mailingList = entry.getKey();
         mailingList.onMessage(entry.getValue());
       }
-    } catch (MessagingException mex) {
-      SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-          "mail.processing.error", mex);
     } catch (Exception mex) {
-      SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-          "mail.processing.error", mex);
+      SilverTrace
+          .error("mailingList", "MessageChecker.checkNewMessages", "mail.processing.error", mex);
     } finally {
       // -- Close down nicely --
       try {
@@ -239,8 +228,8 @@ public class MessageChecker
           mailAccount.close();
         }
       } catch (Exception ex2) {
-        SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-            "mail.processing.error", ex2);
+        SilverTrace
+            .error("mailingList", "MessageChecker.checkNewMessages", "mail.processing.error", ex2);
       }
     }
 
@@ -255,18 +244,15 @@ public class MessageChecker
    * @throws IOException
    */
   void processEmail(MimeMessage mail, Map<MessageListener, MessageEvent> eventsMap,
-      Map<String, MessageListener> listenersByEmail) throws MessagingException,
-      IOException {
+      Map<String, MessageListener> listenersByEmail) throws MessagingException, IOException {
     BetterMimeMessage email = new BetterMimeMessage(mail);
     if (email.isBounced() || email.isSpam()) {
       return;
     }
     Set<String> allRecipients = getAllRecipients(mail);
     Set<MessageListener> mailingLists = getRecipientMailingLists(allRecipients, listenersByEmail);
-    Iterator<MessageListener> iter = mailingLists.iterator();
-    while (iter.hasNext()) {
+    for (final MessageListener mailingList : mailingLists) {
       MessageEvent event;
-      MessageListener mailingList = iter.next();
       if (!eventsMap.containsKey(mailingList)) {
         event = new MessageEvent();
         eventsMap.put(mailingList, event);
@@ -285,23 +271,23 @@ public class MessageChecker
    * @see javax.mail.internet.InternetAddress
    */
   Set<String> getAllRecipients(MimeMessage mail) throws MessagingException {
-    Set<String> allRecipients = new HashSet<String>(10);
+    Set<String> allRecipients = new HashSet<>(10);
     InternetAddress[] addresses = (InternetAddress[]) mail.getRecipients(RecipientType.TO);
     if (addresses != null) {
-      for (int i = 0; i < addresses.length; i++) {
-        allRecipients.add(addresses[i].getAddress());
+      for (final InternetAddress address : addresses) {
+        allRecipients.add(address.getAddress());
       }
     }
     addresses = (InternetAddress[]) mail.getRecipients(RecipientType.BCC);
     if (addresses != null) {
-      for (int i = 0; i < addresses.length; i++) {
-        allRecipients.add(addresses[i].getAddress());
+      for (final InternetAddress address : addresses) {
+        allRecipients.add(address.getAddress());
       }
     }
     addresses = (InternetAddress[]) mail.getRecipients(RecipientType.CC);
     if (addresses != null) {
-      for (int i = 0; i < addresses.length; i++) {
-        allRecipients.add(addresses[i].getAddress());
+      for (final InternetAddress address : addresses) {
+        allRecipients.add(address.getAddress());
       }
     }
     return allRecipients;
@@ -314,10 +300,8 @@ public class MessageChecker
    */
   Set<MessageListener> getRecipientMailingLists(Collection<String> recipients,
       Map<String, MessageListener> listenersByEmail) {
-    Set<MessageListener> mailingLists = new HashSet<MessageListener>(recipients.size());
-    Iterator<String> recipientIter = recipients.iterator();
-    while (recipientIter.hasNext()) {
-      String email = recipientIter.next();
+    Set<MessageListener> mailingLists = new HashSet<>(recipients.size());
+    for (final String email : recipients) {
       MessageListener mailingList = listenersByEmail.get(email.toLowerCase());
       if (mailingList != null) {
         mailingLists.add(mailingList);
@@ -331,11 +315,8 @@ public class MessageChecker
    * @return a map of subscribed email addresses and their corresponding listeners.
    */
   public synchronized Map<String, MessageListener> prepareListeners() {
-    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(
-        this.listeners.size());
-    Iterator<MessageListener> listenerIter = this.listeners.values().iterator();
-    while (listenerIter.hasNext()) {
-      MessageListener listener = listenerIter.next();
+    Map<String, MessageListener> listenersByEmail = new HashMap<>(this.listeners.size());
+    for (final MessageListener listener : this.listeners.values()) {
       MailingList list = mailingListService.findMailingList(listener.getComponentId());
       if (list != null && list.getSubscribedAddress() != null) {
         listenersByEmail.put(list.getSubscribedAddress().toLowerCase(), listener);
@@ -356,17 +337,12 @@ public class MessageChecker
     return processor;
   }
 
-  public void setMailProcessor(MailProcessor processor) {
-    this.processor = processor;
-  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((login == null) ? 0 : login.hashCode());
-    result = prime * result
-        + ((mailServer == null) ? 0 : mailServer.hashCode());
+    result = prime * result + ((mailServer == null) ? 0 : mailServer.hashCode());
     result = prime * result + ((password == null) ? 0 : password.hashCode());
     result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
     return result;
@@ -416,25 +392,22 @@ public class MessageChecker
   }
 
   protected boolean isImap() {
-    return IMAP_PROTOCOL.equalsIgnoreCase(getProtocol())
-        || IMAP_SSL_PROTOCOL.equalsIgnoreCase(getProtocol());
+    return IMAP_PROTOCOL.equalsIgnoreCase(getProtocol()) ||
+        IMAP_SSL_PROTOCOL.equalsIgnoreCase(getProtocol());
   }
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     final String jobName = anEvent.getJobExecutionContext().getJobName();
     if (this.listeners != null && !this.listeners.isEmpty()) {
-      SilverTrace.info("mailingList",
-          "MessageChecker.handleSchedulerEvent", "The job '"
-          + jobName + "' executing ....");
+      SilverTrace.info("mailingList", "MessageChecker.handleSchedulerEvent",
+          "The job '" + jobName + "' executing ....");
       this.checkNewMessages(new Date());
-      SilverTrace.info("mailingList",
-          "MessageChecker.handleSchedulerEvent", "The job '"
-          + jobName + "' done!!");
+      SilverTrace.info("mailingList", "MessageChecker.handleSchedulerEvent",
+          "The job '" + jobName + "' done!!");
     } else {
-      SilverTrace.info("mailingList",
-          "MessageChecker.handleSchedulerEvent", "The job '"
-          + jobName + "' has no listeners ....");
+      SilverTrace.info("mailingList", "MessageChecker.handleSchedulerEvent",
+          "The job '" + jobName + "' has no listeners ....");
     }
   }
 
@@ -447,7 +420,6 @@ public class MessageChecker
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("mailingList", "MessageChecker.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName()
-        + "' was not successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

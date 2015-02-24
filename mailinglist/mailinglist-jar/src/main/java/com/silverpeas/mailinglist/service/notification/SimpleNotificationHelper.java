@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.notification;
 
@@ -49,7 +52,6 @@ import javax.activation.FileDataSource;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
@@ -65,21 +67,21 @@ import static org.silverpeas.mail.MailContent.of;
 
 /**
  * Utility class to send notifications.
- *
  * @author Emmanuel Hugonnet
- * @version $revision$
  */
 public class SimpleNotificationHelper implements NotificationHelper {
 
   public static final int BATCH_SIZE = 10;
 
+  @Inject
   private NotificationSender notificationSender;
+  @Inject
   private NotificationFormatter notificationFormatter;
-  private Session session;
-  private SmtpConfiguration smtpConfig;
+  private SmtpConfiguration smtpConfig = SmtpConfiguration.fromDefaultSettings();
   private boolean externalThread = true;
   @Inject
   private SilverpeasCalendar calendarBm;
+  @Inject
   private OrganizationController controller;
 
   public void notifyModerators(Message message, MailingList list)
@@ -88,8 +90,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
     notifyInternals(message, list, userIds, null, true);
   }
 
-  public void notifyUsers(Message message, MailingList list)
-      throws NotificationManagerException {
+  public void notifyUsers(Message message, MailingList list) throws NotificationManagerException {
     Set<String> userIds = getUsersIds(list);
     Set<String> groupIds = getGroupIds(list);
     notifyInternals(message, list, userIds, groupIds, false);
@@ -104,11 +105,10 @@ public class SimpleNotificationHelper implements NotificationHelper {
     notifyInternals(message, list, userIds, groupIds, false);
   }
 
-  public void notifyInternals(Message message, MailingList list,
-      Collection<String> userIds, Collection<String> groupIds, boolean moderate)
-      throws NotificationManagerException {
-    String defaultTitle = notificationFormatter.formatTitle(message, list.getName(),
-        DisplayI18NHelper.getDefaultLanguage(), moderate);
+  public void notifyInternals(Message message, MailingList list, Collection<String> userIds,
+      Collection<String> groupIds, boolean moderate) throws NotificationManagerException {
+    String defaultTitle = notificationFormatter
+        .formatTitle(message, list.getName(), DisplayI18NHelper.getDefaultLanguage(), moderate);
     NotificationMetaData metadata = new NotificationMetaData();
     metadata.setAnswerAllowed(false);
     metadata.setDate(message.getSentDate());
@@ -142,8 +142,8 @@ public class SimpleNotificationHelper implements NotificationHelper {
         createTask(message, defaultTitle, userIds);
       }
     } catch (CalendarRuntimeException | UnsupportedEncodingException | RemoteException e) {
-      throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+      throw new NotificationManagerException("NotificationHelperImpl", SilverpeasException.ERROR,
+          "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
   }
 
@@ -155,8 +155,8 @@ public class SimpleNotificationHelper implements NotificationHelper {
    */
   public void notifyExternals(Message message, MailingList list) throws MessagingException {
 
-    SilverTrace.debug("mailingList", this.getClass().getName(),
-        "mailinglist.notification.external.start");
+    SilverTrace
+        .debug("mailingList", this.getClass().getName(), "mailinglist.notification.external.start");
 
     MailSending mail = MailSending.from(eMail(list.getSubscribedAddress()));
     String subject = notificationFormatter
@@ -179,8 +179,9 @@ public class SimpleNotificationHelper implements NotificationHelper {
     } else {
       mail.withContent(of(message.getBody()).withContentType(message.getContentType()));
     }
-    SilverTrace.debug("mailingList", this.getClass().getName(),
-        "mailinglist.notification.external.mail", subject);
+    SilverTrace
+        .debug("mailingList", this.getClass().getName(), "mailinglist.notification.external.mail",
+            subject);
     sendMail(mail, list.getExternalSubscribers());
   }
 
@@ -213,17 +214,8 @@ public class SimpleNotificationHelper implements NotificationHelper {
     return notificationFormatter;
   }
 
-  public void setNotificationFormatter(
-      NotificationFormatter notificationFormatter) {
+  public void setNotificationFormatter(NotificationFormatter notificationFormatter) {
     this.notificationFormatter = notificationFormatter;
-  }
-
-  public Session getSession() {
-    return session;
-  }
-
-  public void setSession(Session session) {
-    this.session = session;
   }
 
   public boolean isExternalThread() {
@@ -277,9 +269,8 @@ public class SimpleNotificationHelper implements NotificationHelper {
     this.smtpConfig = smtpConfig;
   }
 
-  protected void createTask(Message message, String title,
-      Collection<String> userIds) throws RemoteException, CalendarRuntimeException,
-      UnsupportedEncodingException {
+  protected void createTask(Message message, String title, Collection<String> userIds)
+      throws RemoteException, CalendarRuntimeException, UnsupportedEncodingException {
     ToDoHeader todo = new ToDoHeader();
     todo.setDelegatorId(message.getComponentId());
     todo.setComponentId(message.getComponentId());
@@ -311,7 +302,4 @@ public class SimpleNotificationHelper implements NotificationHelper {
     }
   }
 
-  public void setOrganisationController(OrganizationController controller) {
-    this.controller = controller;
-  }
 }

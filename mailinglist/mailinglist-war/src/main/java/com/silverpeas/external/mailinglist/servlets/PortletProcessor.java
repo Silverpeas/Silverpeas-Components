@@ -1,57 +1,57 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.external.mailinglist.servlets;
 
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 public class PortletProcessor implements MailingListRoutage {
 
-  public static String processActivities(RestRequest rest,
-      HttpServletRequest request, String userId) {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+  public static String processActivities(RestRequest rest, HttpServletRequest request,
+      String userId) {
     switch (rest.getAction()) {
       case RestRequest.DELETE:
       case RestRequest.UPDATE:
       case RestRequest.FIND:
       default:
-        MailingList list = servicesFactory.getMailingListService()
+        MailingList list = MailingListServicesProvider.getMailingListService()
             .findMailingList(rest.getComponentId());
-        MailingListActivity mailingListActivity = servicesFactory
-            .getMessageService().getActivity(list);
+        MailingListActivity mailingListActivity =
+            MailingListServicesProvider.getMessageService().getActivity(list);
         Map years = new HashMap(10);
-        Iterator iter = mailingListActivity.getActivities().iterator();
-        while (iter.hasNext()) {
-          Activity activity = (Activity) iter.next();
+        for (final Activity activity : mailingListActivity.getActivities()) {
           Map month = (Map) years.get("" + activity.getYear());
           if (month == null) {
             month = new HashMap(12);
@@ -75,11 +75,9 @@ public class PortletProcessor implements MailingListRoutage {
   }
 
   private static boolean isSubscriber(MailingList list, String userId) {
-    Collection subscribers = list.getInternalSubscribers();
+    Collection<InternalUserSubscriber> subscribers = list.getInternalSubscribers();
     if (subscribers != null && !subscribers.isEmpty()) {
-      Iterator iter = subscribers.iterator();
-      while (iter.hasNext()) {
-        InternalUserSubscriber user = (InternalUserSubscriber) iter.next();
+      for (final InternalUserSubscriber user : subscribers) {
         if (userId.equals(user.getExternalId())) {
           return true;
         }

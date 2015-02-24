@@ -50,19 +50,19 @@ public class TestServiceFactory {
 
   @Test
   public void testGetMessageService() {
-    MessageService service = ServicesFactory.getFactory().getMessageService();
+    MessageService service = MailingListServicesProvider.getFactory().getMessageService();
     assertThat(service, is(notNullValue()));
   }
 
   @Test
   public void testGetMailingListService() {
-    MailingListService service = ServicesFactory.getFactory().getMailingListService();
+    MailingListService service = MailingListServicesProvider.getFactory().getMailingListService();
     assertThat(service, is(notNullValue()));
   }
 
   @Test
   public void testGetMessageChecker() {
-    MessageChecker checker = ServicesFactory.getFactory().getMessageChecker();
+    MessageChecker checker = MailingListServicesProvider.getFactory().getMessageChecker();
     assertThat(checker, is(notNullValue()));
   }
 }

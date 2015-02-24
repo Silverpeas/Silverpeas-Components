@@ -22,7 +22,7 @@ package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
@@ -79,10 +79,11 @@ public class TestNotificationHelper extends AbstractMailingListTest {
 
   @Test
   public void testNotifyInternals() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
-    Message message = servicesFactory.getMessageService().getMessage("700");
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
+    Message message = mailingListServicesProvider.getMessageService().getMessage("700");
     assertThat(message, is(notNullValue()));
-    MailingList list = servicesFactory.getMailingListService().findMailingList("100");
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList("100");
     assertThat(list, is(notNullValue()));
     assertThat(list.getModerators(), is(notNullValue()));
     assertThat(list.getModerators().size(), is(3));
@@ -119,11 +120,12 @@ public class TestNotificationHelper extends AbstractMailingListTest {
 
   @Test
   public void testNotifyExternals() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
-    Message message = servicesFactory.getMessageService().getMessage("700");
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
+    Message message = mailingListServicesProvider.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
     assertThat(message, is(notNullValue()));
-    MailingList list = servicesFactory.getMailingListService().findMailingList("100");
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList("100");
     assertThat(list, is(notNullValue()));
     assertThat(list.getExternalSubscribers(), is(notNullValue()));
     assertThat(list.getExternalSubscribers().size(), is(12));
@@ -238,7 +240,7 @@ public class TestNotificationHelper extends AbstractMailingListTest {
 
   @Test
   public void testGetUsersIds() {
-    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("100");
+    MailingList list = MailingListServicesProvider.getFactory().getMailingListService().findMailingList("100");
     list.setModerated(false);
     Collection<String> userIds = notificationHelper.getUsersIds(list);
     assertThat(userIds.size(), is(2));
@@ -255,7 +257,7 @@ public class TestNotificationHelper extends AbstractMailingListTest {
 
   @Test
   public void testGetModeratorsIds() {
-    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("100");
+    MailingList list = MailingListServicesProvider.getFactory().getMailingListService().findMailingList("100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
     assertThat(userIds.size(), is(3));
     for (String userId : userIds) {

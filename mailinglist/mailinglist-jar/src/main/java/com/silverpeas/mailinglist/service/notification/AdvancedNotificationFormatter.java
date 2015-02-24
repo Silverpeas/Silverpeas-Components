@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,47 +9,54 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.util.ResourceLocator;
+
+import javax.enterprise.inject.Default;
+import javax.inject.Singleton;
 import java.util.Properties;
 
 /**
- *
  * @author ehugonnet
  */
+@Singleton
+@Default
 public class AdvancedNotificationFormatter extends AbstractNotificationFormatter {
 
   private static final Properties templateConfiguration = new Properties();
   public static final String TITLE_KEY = "mailinglist.notification.template.title";
-  public static final String TITLE_MODERATION_KEY = "mailinglist.notification.template.moderation.title";
+  public static final String TITLE_MODERATION_KEY =
+      "mailinglist.notification.template.moderation.title";
 
 
   public static final String MODERATION_TEMPLATE_FILE = "mailinglistModerationMessage";
   public static final String SIMPLE_TEMPLATE_FILE = "mailinglistSimpleMessage";
 
   static {
-    ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.mailinglist.settings.mailinglistSettings", "");
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings.getString("customersTemplatePath"));
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.mailinglist.settings.mailinglistSettings", "");
+    templateConfiguration
+        .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
+        settings.getString("customersTemplatePath"));
   }
 
   public SilverpeasTemplate getTemplate(Message message, String mailingListName, boolean moderate) {
@@ -66,9 +73,11 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
   }
 
   @Override
-  public String formatTitle(Message message, String mailingListName, String lang, boolean moderate) {
+  public String formatTitle(Message message, String mailingListName, String lang,
+      boolean moderate) {
     SilverpeasTemplate template = getTemplate(message, mailingListName, moderate);
-    ResourceLocator resources = new ResourceLocator("com.silverpeas.mailinglist.multilang.mailinglistBundle", lang);
+    ResourceLocator resources =
+        new ResourceLocator("com.silverpeas.mailinglist.multilang.mailinglistBundle", lang);
     if (moderate) {
       return template.applyStringTemplate(resources.getString(TITLE_MODERATION_KEY));
     }
@@ -79,11 +88,11 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
   public String formatMessage(Message message, String lang, boolean moderate) {
     SilverpeasTemplate template = getTemplate(message, "", moderate);
     String currentLanguage = I18NHelper.defaultLanguage;
-    if(StringUtil.isDefined(lang)) {
+    if (StringUtil.isDefined(lang)) {
       currentLanguage = lang;
     }
     String templateFileName = SIMPLE_TEMPLATE_FILE + '_' + currentLanguage;
-    if(moderate) {
+    if (moderate) {
       templateFileName = MODERATION_TEMPLATE_FILE + '_' + currentLanguage;
     }
     return template.applyFileTemplate(templateFileName);

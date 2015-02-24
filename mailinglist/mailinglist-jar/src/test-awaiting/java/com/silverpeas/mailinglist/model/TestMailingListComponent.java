@@ -22,7 +22,7 @@ package com.silverpeas.mailinglist.model;
 
 import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.event.MessageEvent;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
@@ -106,7 +106,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
 
   @Test
   public void testOnMessage() throws Exception {
-    Message message = ServicesFactory.getFactory().getMessageService().getMessage("700");
+    Message message = MailingListServicesProvider.getFactory().getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
     MessageEvent event = new MessageEvent();
     event.addMessage(message);
@@ -147,7 +147,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
     checkNoMessage("selma.bouvier@silverpeas.com");
     checkNoMessage("patty.bouvier@silverpeas.com");
 
-    message = ServicesFactory.getFactory().getMessageService().getMessage(message.getId());
+    message = MailingListServicesProvider.getFactory().getMessageService().getMessage(message.getId());
     message.setModerated(true);
     event = new MessageEvent();
     event.addMessage(message);
@@ -193,7 +193,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
   @Test
   public void testOnMessageNotModeratedNotify() throws Exception {
     MailingListComponent componentNotModerated = new MailingListComponent("101");
-    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("101");
+    MailingList list = MailingListServicesProvider.getFactory().getMailingListService().findMailingList("101");
     assertNotNull(list);
     assertNotNull(list.getModerators());
     assertEquals(3, list.getModerators().size());
@@ -201,7 +201,7 @@ public class TestMailingListComponent extends AbstractMailingListTest {
     assertEquals(2, list.getReaders().size());
     assertFalse(list.isModerated());
     assertTrue(list.isNotify());
-    Message message = ServicesFactory.getFactory().getMessageService().getMessage("701");
+    Message message = MailingListServicesProvider.getFactory().getMessageService().getMessage("701");
     assertEquals(textEmailContent, message.getBody());
     message.setContentType("text/plain; charset=\"UTF-8\"");
     MessageEvent event = new MessageEvent();

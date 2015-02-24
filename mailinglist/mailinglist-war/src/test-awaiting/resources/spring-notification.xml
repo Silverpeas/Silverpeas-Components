@@ -45,7 +45,7 @@
     <property name="notificationSender" ref="notificationSender" />
     <property name="notificationFormatter" ref="notificationFormatter" />
     <property name="smtpConfig" ref="smtpConfiguration" />
-    <property name="organisationController" ref="organizationController" />
+    <!-- <property name="organisationController" ref="organizationController" /> -->
     <!-- ebo <property name="calendarBm" ref="calendarBm" /> -->
     <property name="externalThread" value="false" />
   </bean>

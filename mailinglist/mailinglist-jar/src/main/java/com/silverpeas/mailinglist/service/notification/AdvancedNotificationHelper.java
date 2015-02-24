@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.notification;
 
@@ -37,6 +37,8 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Singleton;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -47,8 +49,9 @@ import java.util.Properties;
 /**
  * Utility class to send notifications.
  * @author Emmanuel Hugonnet
- * @version $revision$
  */
+@Singleton
+@Default
 public class AdvancedNotificationHelper extends SimpleNotificationHelper {
 
   private static final Properties templateConfiguration = new Properties();
@@ -56,12 +59,12 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
   public static final String MESSAGE_TEMPLATE_FILE = "notificationMailinglistMessage";
 
   static {
-    ResourceLocator settings = new ResourceLocator(
-            "com.silverpeas.mailinglist.settings.mailinglistSettings", "");
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString(
-            "templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings.getString(
-            "customersTemplatePath"));
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.mailinglist.settings.mailinglistSettings", "");
+    templateConfiguration
+        .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
+        settings.getString("customersTemplatePath"));
   }
 
   public SilverpeasTemplate getTemplate(Message message, String mailingListName, boolean moderate) {
@@ -75,28 +78,28 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
     template.setAttribute("fullContent", message.getBody());
     if (moderate) {
       template.setAttribute("messageUrl",
-              "/Rmailinglist/" + message.getComponentId() + "/moderationList/"
-              + message.getComponentId());
+          "/Rmailinglist/" + message.getComponentId() + "/moderationList/" +
+              message.getComponentId());
     } else {
-      template.setAttribute("messageUrl", "/Rmailinglist/" + message.getComponentId() + "/message/"
-              + message.getId());
+      template.setAttribute("messageUrl",
+          "/Rmailinglist/" + message.getComponentId() + "/message/" + message.getId());
     }
     return template;
   }
 
   @Override
-  public void notifyInternals(Message message, MailingList list,
-          Collection<String> userIds, Collection<String> groupIds, boolean moderate)
-          throws NotificationManagerException {
+  public void notifyInternals(Message message, MailingList list, Collection<String> userIds,
+      Collection<String> groupIds, boolean moderate) throws NotificationManagerException {
     Map<String, SilverpeasTemplate> templates = new HashMap<>();
-    String subject = getNotificationFormatter().formatTitle(message, list.getName(),
-        DisplayI18NHelper.getDefaultLanguage(), moderate);
+    String subject = getNotificationFormatter()
+        .formatTitle(message, list.getName(), DisplayI18NHelper.getDefaultLanguage(), moderate);
     String templateFileName = MESSAGE_TEMPLATE_FILE;
     if (moderate) {
       templateFileName = MODERATION_TEMPLATE_FILE;
     }
-    NotificationMetaData metadata = new NotificationMetaData(NotificationParameters.NORMAL, subject,
-            templates, templateFileName);
+    NotificationMetaData metadata =
+        new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+            templateFileName);
     for (String lang : DisplayI18NHelper.getLanguages()) {
       metadata.addLanguage(lang, subject, "");
       templates.put(lang, getTemplate(message, list.getName(), moderate));
@@ -121,8 +124,8 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
         createTask(message, subject, userIds);
       }
     } catch (CalendarRuntimeException | UnsupportedEncodingException | RemoteException e) {
-      throw new NotificationManagerException("NotificationHelperImpl",
-              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+      throw new NotificationManagerException("NotificationHelperImpl", SilverpeasException.ERROR,
+          "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
   }
 }

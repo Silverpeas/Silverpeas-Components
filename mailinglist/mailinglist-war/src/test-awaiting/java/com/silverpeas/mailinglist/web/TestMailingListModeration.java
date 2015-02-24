@@ -28,7 +28,7 @@ import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
 import com.silverpeas.mailinglist.AbstractMailingListTest;
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -51,7 +51,8 @@ public class TestMailingListModeration extends AbstractMailingListTest {
 
   @Test
   public void testModerateMessage() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
     assertNotNull(loginPage);
@@ -125,17 +126,18 @@ public class TestMailingListModeration extends AbstractMailingListTest {
     HttpUnitOptions.setScriptingEnabled(false);
     moderationPage = connection.getResponse(buildUrl(formSubmit));
     assertFalse(moderationPage.getText().indexOf("Simple database message") > 0);
-    Message message = servicesFactory.getMessageService().getMessage("12");
+    Message message = mailingListServicesProvider.getMessageService().getMessage("12");
     assertNotNull(message);
     assertTrue(message.isModerated());
-    message = servicesFactory.getMessageService().getMessage("13");
+    message = mailingListServicesProvider.getMessageService().getMessage("13");
     assertNotNull(message);
     assertTrue(message.isModerated());
   }
 
   @Test
   public void testDeleteMessage() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
     HttpUnitOptions.setScriptingEnabled(false);
@@ -209,9 +211,9 @@ public class TestMailingListModeration extends AbstractMailingListTest {
     HttpUnitOptions.setScriptingEnabled(false);
     moderationPage = connection.getResponse(buildUrl(formSubmit));
     assertFalse(moderationPage.getText().indexOf("Simple database message") > 0);
-    Message message = servicesFactory.getMessageService().getMessage("12");
+    Message message = mailingListServicesProvider.getMessageService().getMessage("12");
     assertNull(message);
-    message = servicesFactory.getMessageService().getMessage("13");
+    message = mailingListServicesProvider.getMessageService().getMessage("13");
     assertNull(message);
   }
 

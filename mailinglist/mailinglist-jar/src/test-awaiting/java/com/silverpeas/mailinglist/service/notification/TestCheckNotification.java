@@ -23,7 +23,7 @@ package com.silverpeas.mailinglist.service.notification;
 import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
@@ -79,9 +79,10 @@ public class TestCheckNotification extends AbstractMailingListTest {
 
   @Test
   public void testNotifyArchivageNotModeratedOpen() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
-    MailingList list = servicesFactory.getMailingListService().findMailingList("101");
-    Message message = servicesFactory.getMessageService().getMessage("701");
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList("101");
+    Message message = mailingListServicesProvider.getMessageService().getMessage("701");
     assertNotNull(message);
     assertNotNull(list);
     assertFalse(list.isModerated());
@@ -111,9 +112,10 @@ public class TestCheckNotification extends AbstractMailingListTest {
 
   @Test
   public void testNotifyArchivageModeratedOpen() throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
-    MailingList list = servicesFactory.getMailingListService().findMailingList("102");
-    Message message = servicesFactory.getMessageService().getMessage("702");
+    MailingListServicesProvider
+        mailingListServicesProvider = MailingListServicesProvider.getFactory();
+    MailingList list = mailingListServicesProvider.getMailingListService().findMailingList("102");
+    Message message = mailingListServicesProvider.getMessageService().getMessage("702");
     assertNotNull(message);
     assertNotNull(list);
     assertTrue(list.isModerated());

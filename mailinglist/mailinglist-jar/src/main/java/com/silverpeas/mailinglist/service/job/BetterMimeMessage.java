@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,27 +9,26 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.job;
 
-import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 
 /**
- *
  * @author ehugonnet
  */
 public class BetterMimeMessage extends MimeMessage {
@@ -100,9 +99,9 @@ public class BetterMimeMessage extends MimeMessage {
     String[] autoSubmittedHeaders = this.mimeMessage.getHeader(AUTO_SUBMITTED_HEADER);
     if (autoSubmittedHeaders != null) {
       for (String autoSubmittedHeader : autoSubmittedHeaders) {
-        if ("auto-generated".equalsIgnoreCase(autoSubmittedHeader)
-            || "auto-replied".equalsIgnoreCase(autoSubmittedHeader)
-            || autoSubmittedHeader.startsWith("auto-notified")) {
+        if ("auto-generated".equalsIgnoreCase(autoSubmittedHeader) ||
+            "auto-replied".equalsIgnoreCase(autoSubmittedHeader) ||
+            autoSubmittedHeader.startsWith("auto-notified")) {
           return true;
         }
       }
@@ -119,7 +118,8 @@ public class BetterMimeMessage extends MimeMessage {
    * (DSNs).  A DSN can be used to notify the sender of a message of any of several conditions:
    * failed delivery, delayed delivery, successful delivery, or the gatewaying of a message into an
    * environment that may not support DSNs.  The "message/delivery-status" content-type defined
-   * herein is intended for use within the framework of the "multipart/report" content type defined.
+   * herein is intended for use within the framework of the "multipart/report" content type
+   * defined.
    * Cf. RFC 1894
    * @param contentType the content-type for the mail part.
    * @return true if it is a content-type for delivery status.

@@ -41,6 +41,24 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>node</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>publication</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>tagcloud</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
     </dependency>
