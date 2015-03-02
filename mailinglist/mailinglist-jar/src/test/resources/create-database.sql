@@ -125,7 +125,7 @@ CREATE TABLE ST_User
   lastLoginCredentialUpdateDate TIMESTAMP,
   expirationDate                TIMESTAMP,
   state                         VARCHAR(30)          NOT NULL,
-  stateSaveDate                 TIMESTAMP            NOT,
+  stateSaveDate                 TIMESTAMP            NOT NULL,
   notifManualReceiverLimit      INT
 );
 
