@@ -23,11 +23,11 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<contribution product="almanach">
+<migration module="almanach">
 
   <current version="005">
     <script name="create_table.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
   </current>
 
-</contribution>
+</migration>
