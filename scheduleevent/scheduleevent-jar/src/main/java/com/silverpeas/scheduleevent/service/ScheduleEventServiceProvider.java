@@ -22,16 +22,16 @@ import javax.inject.Inject;
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-public class ServicesFactory {
+public class ScheduleEventServiceProvider {
 
-  private static ServicesFactory instance = new ServicesFactory();
+  private static ScheduleEventServiceProvider instance = new ScheduleEventServiceProvider();
   @Inject
   private ScheduleEventService scheduleEventService;
 
-  private ServicesFactory() {
+  private ScheduleEventServiceProvider() {
   }
 
-  public static ServicesFactory getFactory() {
+  public static ScheduleEventServiceProvider getFactory() {
     return instance;
   }
 
