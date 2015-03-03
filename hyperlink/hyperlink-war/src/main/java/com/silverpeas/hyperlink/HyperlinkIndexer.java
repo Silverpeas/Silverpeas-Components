@@ -33,7 +33,7 @@ import javax.inject.Singleton;
  * @author ehugonnet
  */
 @Singleton
-@Named("HyperlinkComponentIndexation")
+@Named("hyperlink" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class HyperlinkIndexer implements ComponentIndexation {
 
   @Override

@@ -25,15 +25,19 @@ package com.silverpeas.mailinglist;
 
 import com.silverpeas.mailinglist.service.MailingListServicesProvider;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class MailingListStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("mailingList" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class MailingListStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

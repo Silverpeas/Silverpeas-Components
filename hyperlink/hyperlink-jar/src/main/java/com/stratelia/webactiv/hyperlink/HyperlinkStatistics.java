@@ -23,15 +23,20 @@
  */
 package com.stratelia.webactiv.hyperlink;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * @author
  */
-public class HyperlinkStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("hyperlink" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class HyperlinkStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {

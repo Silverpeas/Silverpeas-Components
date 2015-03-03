@@ -35,7 +35,7 @@ import javax.inject.Singleton;
  * @author Antoine HEDIN
  */
 @Singleton
-@Named("MyDBComponentIndexation")
+@Named("myDB" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class MyDBIndexer implements ComponentIndexation {
 
   @Override

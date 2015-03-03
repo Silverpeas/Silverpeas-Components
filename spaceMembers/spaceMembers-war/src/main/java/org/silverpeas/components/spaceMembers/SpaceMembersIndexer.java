@@ -30,7 +30,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("SpaceMembersComponentIndexation")
+@Named("spaceMembers" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class SpaceMembersIndexer implements ComponentIndexation {
 
   @Override

@@ -28,9 +28,11 @@ import com.silverpeas.crm.control.CrmDataManager;
 import com.silverpeas.crm.control.ServiceFactory;
 import com.silverpeas.crm.model.Crm;
 import com.silverpeas.crm.model.CrmContact;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +43,9 @@ import java.util.List;
  *
  * @author
  */
-public class CrmStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("crm" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class CrmStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

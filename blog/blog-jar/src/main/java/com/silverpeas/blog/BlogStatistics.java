@@ -26,13 +26,17 @@ package com.silverpeas.blog;
 import com.silverpeas.blog.control.BlogService;
 import com.silverpeas.blog.control.BlogServiceFactory;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BlogStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("blog" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class BlogStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

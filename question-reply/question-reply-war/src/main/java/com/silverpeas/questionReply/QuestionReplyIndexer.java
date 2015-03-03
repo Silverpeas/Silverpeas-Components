@@ -39,7 +39,7 @@ import java.util.Collection;
  * @author ehugonnet
  */
 @Singleton
-@Named("QuestionReplyComponentIndexation")
+@Named("questionReply" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class QuestionReplyIndexer implements ComponentIndexation {
 
   private final QuestionIndexer questionIndexer = new QuestionIndexer();

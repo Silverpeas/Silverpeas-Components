@@ -26,14 +26,18 @@ package com.silverpeas.classifieds;
 import com.silverpeas.classifieds.control.ClassifiedService;
 import com.silverpeas.classifieds.control.ClassifiedServiceProvider;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ClassifiedsStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("classifieds" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class ClassifiedsStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

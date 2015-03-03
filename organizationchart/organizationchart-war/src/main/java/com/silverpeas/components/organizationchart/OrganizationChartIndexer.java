@@ -31,7 +31,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("OrganizationChartComponentIndexation")
+@Named("organizationchart" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class OrganizationChartIndexer implements ComponentIndexation {
 
   @Override

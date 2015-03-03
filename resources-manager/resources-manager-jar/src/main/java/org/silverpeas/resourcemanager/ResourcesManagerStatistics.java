@@ -23,15 +23,19 @@
  */
 package org.silverpeas.resourcemanager;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import org.silverpeas.resourcemanager.model.Reservation;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ResourcesManagerStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("resourcesManager" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class ResourcesManagerStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

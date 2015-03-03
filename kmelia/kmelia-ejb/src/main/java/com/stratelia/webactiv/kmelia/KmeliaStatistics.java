@@ -20,16 +20,15 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ServiceProvider;
 
-import javax.ejb.EJBException;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +39,9 @@ import java.util.List;
  *
  * @author
  */
-public class KmeliaStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("kmelia" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class KmeliaStatistics implements ComponentStatisticsProvider {
 
   private PublicationService publicationService = null;
 

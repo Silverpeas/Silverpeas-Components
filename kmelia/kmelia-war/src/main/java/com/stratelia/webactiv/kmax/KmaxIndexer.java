@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 import java.util.Collection;
 
 @Singleton
-@Named("KmaxComponentIndexation")
+@Named("kmax" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class KmaxIndexer implements ComponentIndexation {
 
   @Inject

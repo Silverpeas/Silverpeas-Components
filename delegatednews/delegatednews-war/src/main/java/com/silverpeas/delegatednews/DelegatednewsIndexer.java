@@ -30,7 +30,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("DelegatedNewsComponentIndexation")
+@Named("delegatednews" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class DelegatednewsIndexer implements ComponentIndexation {
 
   @Override

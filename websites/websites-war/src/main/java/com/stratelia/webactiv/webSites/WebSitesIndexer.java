@@ -32,7 +32,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("WebSitesComponentIndexation")
+@Named("webSites" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class WebSitesIndexer implements ComponentIndexation {
 
   @Inject

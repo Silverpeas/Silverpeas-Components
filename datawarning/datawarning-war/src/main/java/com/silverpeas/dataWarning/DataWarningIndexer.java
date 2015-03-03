@@ -32,7 +32,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("DataWarningComponentIndexation")
+@Named("dataWarning" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class DataWarningIndexer implements ComponentIndexation {
 
     @Override

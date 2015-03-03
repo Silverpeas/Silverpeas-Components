@@ -24,13 +24,15 @@
 
 package com.stratelia.webactiv.quizz;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,7 +42,9 @@ import java.util.List;
  *
  * @author
  */
-public class QuizzStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("quizz" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class QuizzStatistics implements ComponentStatisticsProvider {
 
   @Inject
   private QuestionContainerService questionContainerService;

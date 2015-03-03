@@ -24,8 +24,11 @@
 package org.silverpeas.components.spaceMembers;
 
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -33,7 +36,9 @@ import java.util.Collections;
  * Class declaration
  * @author
  */
-public class SpaceMembersStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("spaceMembers" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class SpaceMembersStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws Exception {

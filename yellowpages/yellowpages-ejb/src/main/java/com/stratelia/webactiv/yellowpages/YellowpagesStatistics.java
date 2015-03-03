@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.yellowpages;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.contact.model.ContactDetail;
@@ -38,6 +38,8 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,7 +49,9 @@ import java.util.List;
  * Class declaration
  * @author
  */
-public class YellowpagesStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("yellowpages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class YellowpagesStatistics implements ComponentStatisticsProvider {
 
   private YellowpagesBm kscEjb = null;
   private NodeService nodeService = NodeService.get();

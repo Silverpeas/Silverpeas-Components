@@ -33,7 +33,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("ResourceManagerComponentIndexation")
+@Named("resourcesManager" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ResourcesManagerIndexer implements ComponentIndexation {
 
   @Inject

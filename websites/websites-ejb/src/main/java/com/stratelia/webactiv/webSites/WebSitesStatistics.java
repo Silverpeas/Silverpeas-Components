@@ -23,17 +23,21 @@
  */
 package com.stratelia.webactiv.webSites;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 import org.silverpeas.util.ServiceProvider;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class WebSitesStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("webSites" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class WebSitesStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.almanach;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
@@ -32,6 +32,8 @@ import com.stratelia.webactiv.almanach.model.EventPK;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,7 +42,9 @@ import java.util.List;
  * Class declaration
  * @author
  */
-public class AlmanachStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("almanach" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class AlmanachStatistics implements ComponentStatisticsProvider {
 
   @Inject
   private AlmanachBm almanachBm = null;

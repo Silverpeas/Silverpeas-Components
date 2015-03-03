@@ -20,13 +20,15 @@
  */
 package com.stratelia.webactiv.kmax;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +37,9 @@ import java.util.List;
  * Class declaration
  * @author
  */
-public class KmaxStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("kmax" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class KmaxStatistics implements ComponentStatisticsProvider {
 
   @Inject
   private PublicationService publicationService;

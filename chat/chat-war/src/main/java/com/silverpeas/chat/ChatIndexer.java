@@ -38,7 +38,7 @@ import javax.inject.Singleton;
  * @author neysseri
  */
 @Singleton
-@Named("ChatComponentIndexation")
+@Named("chat" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ChatIndexer implements ComponentIndexation {
 
   @Override

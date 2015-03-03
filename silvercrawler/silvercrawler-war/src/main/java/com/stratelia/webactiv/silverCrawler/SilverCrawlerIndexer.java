@@ -30,7 +30,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("SilverCrawlerComponentIndexation")
+@Named("silverCrawler" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class SilverCrawlerIndexer implements ComponentIndexation {
 
   @Override

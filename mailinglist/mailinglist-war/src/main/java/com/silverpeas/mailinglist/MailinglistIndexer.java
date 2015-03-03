@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 import java.util.List;
 
 @Singleton
-@Named("MailinglistComponentIndexation")
+@Named("mailingList" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class MailinglistIndexer implements ComponentIndexation {
 
   @Inject

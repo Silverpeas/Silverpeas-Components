@@ -26,11 +26,13 @@
  ---*/
 package com.stratelia.webactiv.forums;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumPK;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +40,9 @@ import java.util.List;
 import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
     .getForumsService;
 
-public class ForumsStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("forums" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class ForumsStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

@@ -34,6 +34,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("suggestionBox" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class SuggestionBoxIndexer implements ComponentIndexation {
 
   @Inject

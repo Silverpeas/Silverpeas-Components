@@ -27,14 +27,18 @@ package com.silverpeas.rssAgregator;
 import com.silverpeas.rssAgregator.control.RssAgregatorBm;
 import com.silverpeas.rssAgregator.control.RssAgregatorBmImpl;
 import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class RssAgregatorStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("rssAgregator" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class RssAgregatorStatistics implements ComponentStatisticsProvider {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {

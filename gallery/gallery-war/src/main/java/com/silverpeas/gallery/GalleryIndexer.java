@@ -33,7 +33,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("GalleryComponentIndexation")
+@Named("gallery" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class GalleryIndexer implements ComponentIndexation {
 
   @Inject

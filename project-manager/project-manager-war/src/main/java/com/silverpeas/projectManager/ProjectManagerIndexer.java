@@ -40,7 +40,7 @@ import javax.inject.Singleton;
  * @author neysseri
  */
 @Singleton
-@Named("ProjectManagerComponentIndexation")
+@Named("projectManager" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ProjectManagerIndexer implements ComponentIndexation {
 
   @Inject

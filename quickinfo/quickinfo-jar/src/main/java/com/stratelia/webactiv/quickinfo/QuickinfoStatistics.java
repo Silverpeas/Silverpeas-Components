@@ -24,13 +24,15 @@
 
 package com.stratelia.webactiv.quickinfo;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.util.ServiceProvider;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +42,9 @@ import java.util.List;
  * Class declaration
  * @author
  */
-public class QuickinfoStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("quickInfo" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class QuickinfoStatistics implements ComponentStatisticsProvider {
 
   private PublicationService publicationService = null;
 

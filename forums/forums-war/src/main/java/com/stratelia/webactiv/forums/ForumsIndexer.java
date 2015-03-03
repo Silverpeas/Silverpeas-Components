@@ -38,7 +38,7 @@ import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvi
     .getForumsService;
 
 @Singleton
-@Named("ForumsComponentIndexation")
+@Named("forums" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ForumsIndexer implements ComponentIndexation {
 
   private static String ROOT_FORUM_ID = "0";

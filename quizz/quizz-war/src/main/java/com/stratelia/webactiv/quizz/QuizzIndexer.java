@@ -35,7 +35,7 @@ import javax.inject.Singleton;
 import java.util.Collection;
 
 @Singleton
-@Named("QuizzComponentIndexation")
+@Named("quizz" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class QuizzIndexer implements ComponentIndexation {
 
   @Inject

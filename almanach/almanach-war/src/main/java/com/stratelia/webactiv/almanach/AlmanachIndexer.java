@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 import java.util.Collection;
 
 @Singleton
-@Named("AlmanachComponentIndexation")
+@Named("almanach" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class AlmanachIndexer implements ComponentIndexation {
 
   @Inject

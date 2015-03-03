@@ -25,10 +25,12 @@ package com.silverpeas.questionReply;
 
 import com.silverpeas.questionReply.control.QuestionManagerProvider;
 import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.persistence.PersistenceException;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +38,9 @@ import java.util.List;
 /**
  * @author
  */
-public class QuestionReplyStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("questionReply" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class QuestionReplyStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

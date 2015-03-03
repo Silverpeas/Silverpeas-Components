@@ -38,7 +38,7 @@ import java.util.Collection;
  * This class is the main entry point to index the content of survey component
  */
 @Singleton
-@Named("SurveyComponentIndexation")
+@Named("survey" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class SurveyIndexer implements ComponentIndexation {
 
   @Inject

@@ -26,13 +26,15 @@
 
 package com.stratelia.silverpeas.infoLetter;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.infoLetter.control.InfoLetterServiceProvider;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +44,9 @@ import java.util.List;
  * Class declaration
  * @author
  */
-public class InfoLetterStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("infoLetter" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class InfoLetterStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

@@ -55,7 +55,7 @@ import java.util.List;
  * @author neysseri
  */
 @Singleton
-@Named("WhitePagesComponentIndexation")
+@Named("whitePages" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class WhitePagesIndexer implements ComponentIndexation {
 
   @Inject

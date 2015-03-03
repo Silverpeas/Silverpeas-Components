@@ -31,7 +31,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("FormsOnlineComponentIndexation")
+@Named("formsOnline" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class FormsOnlineIndexer implements ComponentIndexation {
 
   @Override

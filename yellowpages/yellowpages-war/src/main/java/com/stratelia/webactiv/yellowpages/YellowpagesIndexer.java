@@ -33,13 +33,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("YellowpagesComponentIndexation")
+@Named("yellowpages" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class YellowpagesIndexer implements ComponentIndexation {
 
   @Inject
   private YellowpagesBm yellowpagesBm;
-  @Inject
-  private NodeService nodeService;
 
   @Override
   public void index(ComponentInst componentInst) throws Exception {

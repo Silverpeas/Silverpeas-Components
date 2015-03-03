@@ -27,14 +27,18 @@ import java.util.List;
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
 import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
 import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-public class ProjectManagerStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("projectManager" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class ProjectManagerStatistics implements ComponentStatisticsProvider {
 
   @Inject
   private ProjectManagerBm projectManagerBm = null;

@@ -33,7 +33,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-@Named("KmeliaComponentIndexation")
+@Named("kmelia" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class KmeliaIndexer implements ComponentIndexation {
 
   @Inject

@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 import java.util.List;
 
 @Singleton
-@Named("QuickinfoComponentIndexation")
+@Named("quickinfo" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class QuickinfoIndexer implements ComponentIndexation {
 
   @Inject

@@ -23,11 +23,13 @@
  */
 package com.silverpeas.whitePages;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,7 +37,9 @@ import java.util.Collection;
  * Class declaration
  * @author
  */
-public class WhitePagesStatistics implements ComponentStatisticsInterface {
+@Singleton
+@Named("whitePages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class WhitePagesStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
