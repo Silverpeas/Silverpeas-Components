@@ -56,6 +56,9 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.NotifierUtil;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -64,7 +67,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.io.FileUtils;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 
@@ -383,6 +385,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     result.setScheduleEvent(scheduleEvent);
     result.setUserId(Integer.parseInt(getUserId()));
     result.setOptionId(dateId);
+
+    NotifierUtil.addSuccess(getString("scheduleevent.form.confirmMessage"));
     return result;
   }
 
