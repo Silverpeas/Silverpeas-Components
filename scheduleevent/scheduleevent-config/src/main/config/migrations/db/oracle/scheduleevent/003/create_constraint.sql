@@ -1,0 +1,30 @@
+ALTER TABLE sc_scheduleevent_list
+ADD CONSTRAINT pk_scheduleevent_list
+PRIMARY KEY (id);
+ALTER TABLE sc_scheduleevent_options
+ADD CONSTRAINT pk_scheduleevent_options
+PRIMARY KEY (id);
+ALTER TABLE sc_scheduleevent_contributor
+ADD CONSTRAINT pk_scheduleevent_contrib
+PRIMARY KEY (id);
+ALTER TABLE sc_scheduleevent_response
+ADD CONSTRAINT pk_scheduleevent_response
+PRIMARY KEY (id);
+
+ALTER TABLE sc_scheduleevent_options
+ADD CONSTRAINT fk_options_eventid
+FOREIGN KEY (scheduleeventid)
+REFERENCES sc_scheduleevent_list (id);
+ALTER TABLE sc_scheduleevent_contributor
+ADD CONSTRAINT fk_contrib_scheduleeventid
+FOREIGN KEY (scheduleeventid)
+REFERENCES sc_scheduleevent_list (id);
+ALTER TABLE sc_scheduleevent_response
+ADD CONSTRAINT fk_response_scheduleeventid
+FOREIGN KEY (scheduleeventid)
+REFERENCES sc_scheduleevent_list (id);
+ALTER TABLE sc_scheduleevent_response
+ADD CONSTRAINT fk_response_optionid
+FOREIGN KEY (optionid)
+REFERENCES sc_scheduleevent_options (id);
+                

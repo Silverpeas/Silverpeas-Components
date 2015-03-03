@@ -22,9 +22,15 @@ package com.silverpeas.scheduleevent.service;
 
 import com.silverpeas.ApplicationService;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.Set;
 
 public interface ScheduleEventService extends ApplicationService<ScheduleEvent> {
+
+  static ScheduleEventService get() {
+    return ServiceProvider.getService(ScheduleEventService.class);
+  }
 
   String createScheduleEvent(ScheduleEvent scheduleEvent);
 

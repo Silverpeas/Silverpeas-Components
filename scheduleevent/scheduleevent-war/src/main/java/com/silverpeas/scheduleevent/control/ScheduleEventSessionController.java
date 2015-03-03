@@ -29,7 +29,7 @@ import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
 import com.silverpeas.scheduleevent.service.CalendarEventEncoder;
 import com.silverpeas.scheduleevent.service.ScheduleEventService;
-import com.silverpeas.scheduleevent.service.ServicesFactory;
+import com.silverpeas.scheduleevent.service.ScheduleEventServiceProvider;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventStatus;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
@@ -296,7 +296,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   private ScheduleEventService getScheduleEventService() {
-    return ServicesFactory.getFactory().getScheduleEventService();
+    return ScheduleEventServiceProvider.getScheduleEventService();
   }
 
   public List<ScheduleEvent> getScheduleEventsByUserId() {
@@ -389,8 +389,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   /**
    * Converts the specified detailed scheduleevent into a calendar event.
    *
-   * @param scheduleevent detail.
-   * @param list of dates.
+   * @param event detail.
+   * @param listDateOption of dates.
    * @return the calendar events corresponding to the schedule event.
    */
   private List<CalendarEvent> asCalendarEvents(final ScheduleEvent event,

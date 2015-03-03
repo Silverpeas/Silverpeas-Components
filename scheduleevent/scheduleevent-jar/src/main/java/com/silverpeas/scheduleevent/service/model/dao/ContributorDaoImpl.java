@@ -20,12 +20,13 @@
  */
 package com.silverpeas.scheduleevent.service.model.dao;
 
-import com.silverpeas.annotation.Repository;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
-import java.util.Set;
-import org.springframework.transaction.annotation.Transactional;
 
-@Repository("contributorDao")
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
+import java.util.Set;
+
+@Singleton
 @Transactional
 public class ContributorDaoImpl implements ContributorDao {
 

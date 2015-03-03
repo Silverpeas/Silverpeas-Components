@@ -26,12 +26,12 @@ import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
 import org.silverpeas.util.ResourceLocator;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
-@Named("scheduleEventService")
+@Singleton
 public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   private static final String MESSAGES_PATH

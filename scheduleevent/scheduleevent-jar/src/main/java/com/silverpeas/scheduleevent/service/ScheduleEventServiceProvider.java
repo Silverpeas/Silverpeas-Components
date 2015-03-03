@@ -24,18 +24,10 @@ import javax.inject.Inject;
  */
 public class ScheduleEventServiceProvider {
 
-  private static ScheduleEventServiceProvider instance = new ScheduleEventServiceProvider();
-  @Inject
-  private ScheduleEventService scheduleEventService;
-
   private ScheduleEventServiceProvider() {
   }
 
-  public static ScheduleEventServiceProvider getFactory() {
-    return instance;
-  }
-
-  public ScheduleEventService getScheduleEventService() {
-    return scheduleEventService;
+  public static ScheduleEventService getScheduleEventService() {
+    return ScheduleEventService.get();
   }
 }

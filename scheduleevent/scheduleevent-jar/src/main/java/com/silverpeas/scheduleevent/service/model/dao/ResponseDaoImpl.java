@@ -20,13 +20,14 @@
  */
 package com.silverpeas.scheduleevent.service.model.dao;
 
-import com.silverpeas.annotation.Repository;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
+
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
+import javax.transaction.Transactional;
 
-@Repository("responseDao")
+@Singleton
 @Transactional
 public class ResponseDaoImpl implements ResponseDao {
 
