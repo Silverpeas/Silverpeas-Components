@@ -22,7 +22,8 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
-<migration module="connecteurJDBC">
+<migration module="connecteurJDBC"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="002">
     <script name="create_table.sql" type="sql"/>

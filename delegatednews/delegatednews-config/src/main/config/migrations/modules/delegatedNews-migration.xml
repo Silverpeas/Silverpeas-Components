@@ -25,7 +25,8 @@
 
 -->
 
-<migration module="delegatedNews">
+<migration module="delegatedNews"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="003">
     <script name="create_table.sql" type="sql"/>
