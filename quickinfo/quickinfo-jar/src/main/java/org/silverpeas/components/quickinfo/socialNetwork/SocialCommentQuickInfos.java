@@ -25,7 +25,6 @@
 package org.silverpeas.components.quickinfo.socialNetwork;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -36,6 +35,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,27 +45,25 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
 
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<String>();
-    listResourceType.add(Comment.NEWS_RESOURCETYPE); //quickinfo components
+    listResourceType.add(News.getResourceType()); //quickinfo components
     return listResourceType;
   }
 
-  private List<SocialInformation> fillOtherSocialInformation(
-      List<SocialInformation> listSocialInformation) {
-    for (SocialInformation socialInformation : listSocialInformation) {
-      SocialInformationComment socialCommentPublication =
-          (SocialInformationComment) socialInformation;
-      String resourceId = socialCommentPublication.getResourceId();
+  @SuppressWarnings("unchecked")
+  private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
+    for (SocialInformationComment socialInformation : listSocialInformation) {
+      String resourceId = socialInformation.getComment().getForeignKey().getId();
 
       News news = QuickInfoServiceFactory.getQuickInfoService().getNews(resourceId);
 
       //set URL, title and description of the news
-      socialCommentPublication.setUrl(URLManager
+      socialInformation.setUrl(URLManager
           .getSimpleURL(URLManager.URL_PUBLI, news.getPublicationId(),
               news.getComponentInstanceId(), false));
-      socialCommentPublication.setTitle(news.getTitle());
+      socialInformation.setTitle(news.getTitle());
     }
 
-    return listSocialInformation;
+    return (List) listSocialInformation;
   }
 
   /**
@@ -80,14 +78,12 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException {
 
-    List<String> listResourceType = getListResourceType();
-
-    List<SocialInformation> listSocialInformation =
+    List<SocialInformationComment> listSocialInformation =
         CommentServiceFactory.getFactory().getCommentService()
-            .getSocialInformationCommentsListByUserId(listResourceType, userId, begin, end);
+            .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
+                Period.from(begin, end));
 
-    listSocialInformation = fillOtherSocialInformation(listSocialInformation);
-    return listSocialInformation;
+    return decorate(listSocialInformation);
   }
 
   /**
@@ -103,19 +99,15 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
 
-    List<String> listResourceType = getListResourceType();
-
-    // getting all components (that manage publications and comments in publications) allowed to me
     OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
-    List<String> options = new ArrayList<String>();
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
+    List<String> instanceIds = new ArrayList<String>();
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
 
-    List<SocialInformation> listSocialInformation =
+    List<SocialInformationComment> listSocialInformation =
         CommentServiceFactory.getFactory().getCommentService()
-            .getSocialInformationCommentsListOfMyContacts(listResourceType, myContactsIds, options,
-                begin, end);
+            .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
+                instanceIds, Period.from(begin, end));
 
-    listSocialInformation = fillOtherSocialInformation(listSocialInformation);
-    return listSocialInformation;
+    return decorate(listSocialInformation);
   }
 }
