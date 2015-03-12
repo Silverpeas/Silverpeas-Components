@@ -1,50 +1,49 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.projectManager.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.silverpeas.projectManager.control.ProjectManagerSessionController;
+import com.silverpeas.projectManager.model.TaskDetail;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.JSONCodec;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.silverpeas.projectManager.control.ProjectManagerSessionController;
-import com.silverpeas.projectManager.model.TaskDetail;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.FileUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
-
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.util.JSONCodec;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
 
 public class AjaxProjectManagerServlet extends HttpServlet {
 
@@ -59,8 +58,8 @@ public class AjaxProjectManagerServlet extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException {
     HttpSession session = req.getSession(true);
     String elementId = req.getParameter("ElementId");
     String componentId = req.getParameter("ComponentId");
@@ -72,8 +71,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
     if (projectManagerSC != null) {
       String output = "";
       if ("ProcessUserOccupation".equals(action)) {
-        // mise à jour de la charge en tenant compte de la modification des
-        // dates de début et fin
+        // mise à jour de la charge en tenant compte de la modification des dates de début et fin
         String taskId = req.getParameter("TaskId");
         String userId = req.getParameter("UserId");
         String userCharge = req.getParameter("UserCharge");
@@ -84,17 +82,17 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         Date beginDate = null;
         try {
           beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
 
         Date endDate = null;
         try {
           endDate = projectManagerSC.uiDate2Date(sEndDate);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
 
-        SilverTrace.info("projectManager", "AjaxProjectManagerServlet",
-            "root.MSG_GEN_PARAM_VALUE", "beginDate = " + beginDate + ", endDate = " + endDate);
+        SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
+            "beginDate = " + beginDate + ", endDate = " + endDate);
         int occupation = projectManagerSC.checkOccupation(taskId, userId, beginDate, endDate);
         occupation += Integer.parseInt(userCharge);
         if (occupation > 100) {
@@ -102,9 +100,8 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         } else {
           output = "<font color=\"green\">" + occupation + " %</font>";
         }
-      } else if (action.equals("ProcessUserOccupationInit")) {
-        // mise à jour de la charge en tenant compte de la modification des
-        // dates de début et fin
+      } else if ("ProcessUserOccupationInit".equals(action)) {
+        // mise à jour de la charge en tenant compte de la modification des dates de début et fin
         String userId = req.getParameter("UserId");
         String userCharge = req.getParameter("UserCharge");
         String sBeginDate = req.getParameter("BeginDate");
@@ -113,7 +110,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         Date beginDate = null;
         try {
           beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
         SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
             "userId = " + userId + ", charge = " + userCharge);
@@ -121,7 +118,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         Date endDate = null;
         try {
           endDate = projectManagerSC.uiDate2Date(sEndDate);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
         SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
             "beginDate = " + beginDate + ", endDate = " + endDate);
@@ -141,7 +138,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         Date beginDate = null;
         try {
           beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
         if (beginDate == null) {
           beginDate = new Date();
@@ -156,7 +153,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         Date beginDate = null;
         try {
           beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
         }
         if (beginDate == null) {
           beginDate = new Date();
@@ -166,54 +163,22 @@ public class AjaxProjectManagerServlet extends HttpServlet {
       } else if (ACTION_LOAD_TASK.equals(action)) {
         String taskId = req.getParameter("TaskId");
         List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);
-        List<String> jsonTasks = new ArrayList<String>();
         output = JSONCodec.encodeObject(jsonResult -> {
           jsonResult.put("success", true);
           jsonResult.put("componentId", projectManagerSC.getComponentId());
-
-          String listTask = JSONCodec.encodeArray(taskArray -> {
-
-            for (TaskDetail curTask : tasks) {
-              String jsonTask = JSONCodec.encodeObject(jsonElt -> {
-                jsonElt.put("id", curTask.getId());
-                jsonElt.put("status", curTask.getStatut());
-                // level is not used : need to use another element
-                jsonElt.put("level", curTask.getLevel());
-                jsonElt.put("containsSubTask", curTask.getEstDecomposee());
-                jsonElt.put("name", curTask.getNom());
-                jsonElt.put("manager", curTask.getResponsableFullName());
-                jsonElt.put("startDate", DateUtil.formatDate(curTask.getDateDebut(), "yyyyMMdd"));
-                jsonElt.put("endDate", DateUtil.formatDate(curTask.getDateFin(), "yyyyMMdd"));
-                float conso = curTask.getConsomme();
-                if (conso != 0) {
-                  jsonElt.put("percentage", (conso / (conso + curTask.getRaf())) * 100);
-                } else {
-                  jsonElt.put("percentage", conso);
-                }
-                return jsonElt;
-              });
-              jsonTasks.add(jsonTask);
-            }
-            taskArray.addJSONArray(jsonTasks);
-            return taskArray;
-          });
-
-          jsonResult.put("tasks", listTask);
+          jsonResult.put("tasks", getJSONTasks(tasks));
           return jsonResult;
         });
+        isJsonResult = true;
       } else if (ACTION_COLLAPSE_TASK.equals(action)) {
         String taskId = req.getParameter("TaskId");
         isJsonResult = true;
         output = JSONCodec.encodeObject(jsonResult -> {
           jsonResult.put("success", true);
           jsonResult.put("componentId", projectManagerSC.getComponentId());
-
-          String listTask = JSONCodec.encodeArray(taskArray -> {
-            buildJSonTasksId(projectManagerSC, taskId, taskArray);
-            return taskArray;
-          });
-
-          jsonResult.put("tasks", listTask);
+          List<Integer> listTaskIds = new ArrayList<>();
+          jsonResult.put("tasks", convertCollapsedTaskIdsIntoJSON(
+              getCollapsedTaskIds(projectManagerSC, taskId, listTaskIds)));
           return jsonResult;
         });
       }
@@ -235,29 +200,63 @@ public class AjaxProjectManagerServlet extends HttpServlet {
     }
   }
 
+  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> convertCollapsedTaskIdsIntoJSON(
+      List<Integer> taskIds) {
+    return (jsonTaskIds -> {
+      for (Integer taskId : taskIds) {
+        jsonTaskIds.addJSONObject(jsonTask -> jsonTask.put("id", taskId));
+      }
+      return jsonTaskIds;
+    });
+  }
+
+
   /**
    * Recursive method which build the list of tasks id that are child of the task identifier given
    * in parameter
-   *
    * @param projectManagerSC the project manager session controller
    * @param taskId the current task identifier we need to have task childs
-   * @param taskArray the JSONArray
+   * @param taskIds the list of ids to build
    */
-  private void buildJSonTasksId(ProjectManagerSessionController projectManagerSC, String taskId,
-      JSONCodec.JSONArray taskArray) {
+  private List<Integer> getCollapsedTaskIds(ProjectManagerSessionController projectManagerSC,
+      String taskId, List<Integer> taskIds) {
     List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);
-    List<String> jsonTasks = new ArrayList<String>();
     for (TaskDetail curTask : tasks) {
-      String jsonTask = JSONCodec.encodeObject(jsonElt -> {
-        jsonElt.put("id", curTask.getId());
-        return jsonElt;
-      });
-      jsonTasks.add(jsonTask);
-
+      taskIds.add(curTask.getId());
       if (curTask.getEstDecomposee() == 1) {
-        this.buildJSonTasksId(projectManagerSC, Integer.toString(curTask.getId()), taskArray);
+        this.getCollapsedTaskIds(projectManagerSC, Integer.toString(curTask.getId()), taskIds);
       }
     }
-    taskArray.addJSONArray(jsonTasks);
+    return taskIds;
+  }
+
+  /**
+   * @param tasks the list of tasks to convert into JSON
+   * @return JSONArray of list of tasks
+   */
+  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONTasks(List<TaskDetail> tasks) {
+    return (jsonTasks -> {
+      for (TaskDetail curTask : tasks) {
+        jsonTasks.addJSONObject(jsonTask -> {
+          jsonTask.put("id", curTask.getId());
+          jsonTask.put("status", curTask.getStatut());
+          // level is not used : need to use another element
+          jsonTask.put("level", curTask.getLevel());
+          jsonTask.put("containsSubTask", curTask.getEstDecomposee());
+          jsonTask.put("name", curTask.getNom());
+          jsonTask.put("manager", curTask.getResponsableFullName());
+          jsonTask.put("startDate", DateUtil.formatDate(curTask.getDateDebut(), "yyyyMMdd"));
+          jsonTask.put("endDate", DateUtil.formatDate(curTask.getDateFin(), "yyyyMMdd"));
+          float conso = curTask.getConsomme();
+          if (conso != 0) {
+            jsonTask.put("percentage", (conso / (conso + curTask.getRaf())) * 100);
+          } else {
+            jsonTask.put("percentage", conso);
+          }
+          return jsonTask;
+        });
+      }
+      return jsonTasks;
+    });
   }
 }
