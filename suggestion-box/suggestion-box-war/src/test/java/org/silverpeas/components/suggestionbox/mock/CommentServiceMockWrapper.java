@@ -27,8 +27,10 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.date.Period;
 
 import java.util.List;
 
@@ -157,5 +159,19 @@ public class CommentServiceMockWrapper implements CommentService {
   @Override
   public List<Comment> getLastComments(String resourceType, int count) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public List<SocialInformationComment> getSocialInformationCommentsListByUserId(
+      final List<String> listResourceType, final String userId, final Period period) {
+    return mock.getSocialInformationCommentsListByUserId(listResourceType, userId, period);
+  }
+
+  @Override
+  public List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
+      final List<String> listResourceType, final List<String> myContactsIds,
+      final List<String> listInstanceId, final Period period) {
+    return mock.getSocialInformationCommentsListOfMyContacts(listResourceType, myContactsIds,
+        listInstanceId, period);
   }
 }

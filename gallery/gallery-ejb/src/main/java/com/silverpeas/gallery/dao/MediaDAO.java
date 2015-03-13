@@ -755,8 +755,8 @@ public class MediaDAO {
             "'update' as type from SC_Gallery_Media where lastUpdatedBy = ? and lastUpdateDate <>" +
             " createDate and lastUpdateDate >= ? and lastUpdateDate <= ? ) order by " +
             "dateinformation desc, mediaId desc", Arrays
-            .asList(userId, period.getBeginDate(), period.getEndDate(), userId,
-                period.getBeginDate(), period.getEndDate()),
+            .asList(userId, period.getBeginDatable(), period.getEndDatable(), userId,
+                period.getBeginDatable(), period.getEndDatable()),
         new SelectResultRowProcessor<SocialInformation>() {
 
           @Override
@@ -792,8 +792,8 @@ public class MediaDAO {
     query.append(" and instanceId in ");
     appendListOfParameters(query, availableComponents, params);
     query.append(" AND createDate >= ? AND createDate <= ?) ");
-    params.add(period.getBeginDate());
-    params.add(period.getEndDate());
+    params.add(period.getBeginDatable());
+    params.add(period.getEndDatable());
     query.append(" union (SELECT lastUpdateDate AS dateinformation, mediaId, 'update' as type ");
     query.append("from SC_Gallery_Media where lastUpdatedBy in ");
     appendListOfParameters(query, userIds, params);
@@ -801,8 +801,8 @@ public class MediaDAO {
     appendListOfParameters(query, availableComponents, params);
     query.append(" and lastUpdateDate <> createDate ");
     query.append("and lastUpdateDate >= ? and lastUpdateDate <= ?) ");
-    params.add(period.getBeginDate());
-    params.add(period.getEndDate());
+    params.add(period.getBeginDatable());
+    params.add(period.getEndDatable());
     query.append("order by dateinformation desc, mediaId desc");
 
     return select(con, query.toString(), params, new SelectResultRowProcessor<SocialInformation>() {
