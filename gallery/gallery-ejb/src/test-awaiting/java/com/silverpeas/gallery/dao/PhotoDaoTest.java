@@ -154,8 +154,8 @@ public class PhotoDaoTest extends BaseGalleryTest {
       photos = MediaDAO.getSocialInformationListOfMyContacts(listOfuserId, availableList, Period.from(begin, end));
       assertThat(photos, notNullValue());
       assertThat(photos, hasSize(4));
-      assertThat(photos.get(0), equalTo(socialCiel));
-      assertThat(photos.get(1), equalTo(socialFleur));
+      assertThat(photos.get(3), equalTo(socialCiel));
+      assertThat(photos.get(2), equalTo(socialFleur));
     } finally {
       connexion.close();
     }

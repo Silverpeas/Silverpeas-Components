@@ -416,13 +416,13 @@ public class MediaDaoTest extends BaseGalleryTest {
         List<SocialInformation> socialInformationList = MediaDAO
             .getSocialInformationListOfMyContacts(Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
                 Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
-        assertThat(socialInformationList, hasSize(0));
+        assertThat(socialInformationList, hasSize(3));
 
         beginDate = DateUtils.addDays(CREATE_DATE, 0);
         endDate = DateUtils.addDays(CREATE_DATE, +2);
         socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
             Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
-        assertThat(socialInformationList, hasSize(4));
+        assertThat(socialInformationList, hasSize(7));
 
         beginDate = DateUtils.addDays(LAST_UPDATE_DATE, -2);
         endDate = DateUtils.addDays(LAST_UPDATE_DATE, +2);
