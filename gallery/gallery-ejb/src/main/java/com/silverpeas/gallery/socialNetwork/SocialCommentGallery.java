@@ -25,10 +25,10 @@
 package com.silverpeas.gallery.socialNetwork;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.gallery.GalleryComponentSettings;
-import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.silverpeas.gallery.control.ejb.MediaServiceProvider;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
@@ -37,16 +37,17 @@ import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentGalleryInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Singleton
 public class SocialCommentGallery implements SocialCommentGalleryInterface {
 
   private List<String> getListResourceType() {
@@ -65,7 +66,7 @@ public class SocialCommentGallery implements SocialCommentGalleryInterface {
       String instanceId = socialInformation.getComment().getComponentInstanceId();
 
       MediaPK mediaPk = new MediaPK(resourceId, instanceId);
-      Media media = MediaServiceFactory.getMediaService().getMedia(mediaPk);
+      Media media = MediaServiceProvider.getMediaService().getMedia(mediaPk);
 
       // Set URL and title of the media comment
       socialInformation.setUrl("/Rgallery/" + media.getInstanceId() + "/" + media.getURL());
@@ -88,7 +89,7 @@ public class SocialCommentGallery implements SocialCommentGalleryInterface {
       throws SilverpeasException {
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceFactory.getFactory().getCommentService()
+        CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
                 Period.from(begin, end));
 
@@ -108,13 +109,13 @@ public class SocialCommentGallery implements SocialCommentGalleryInterface {
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
 
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.addAll(
         Arrays.asList(oc.getComponentIdsForUser(myId, GalleryComponentSettings.COMPONENT_NAME)));
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceFactory.getFactory().getCommentService()
+        CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
                 instanceIds, Period.from(begin, end));
 

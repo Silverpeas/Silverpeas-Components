@@ -25,22 +25,24 @@
 package org.silverpeas.components.quickinfo.socialNetwork;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentQuickInfosInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Singleton
 public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface {
 
   private List<String> getListResourceType() {
@@ -54,7 +56,7 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
     for (SocialInformationComment socialInformation : listSocialInformation) {
       String resourceId = socialInformation.getComment().getForeignKey().getId();
 
-      News news = QuickInfoServiceFactory.getQuickInfoService().getNews(resourceId);
+      News news = QuickInfoServiceProvider.getQuickInfoService().getNews(resourceId);
 
       //set URL, title and description of the news
       socialInformation.setUrl(URLManager
@@ -79,7 +81,7 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
       throws SilverpeasException {
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceFactory.getFactory().getCommentService()
+        CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
                 Period.from(begin, end));
 
@@ -99,12 +101,12 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
 
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceFactory.getFactory().getCommentService()
+        CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
                 instanceIds, Period.from(begin, end));
 
