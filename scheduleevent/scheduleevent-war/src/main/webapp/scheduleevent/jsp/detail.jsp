@@ -59,23 +59,20 @@
 		document.utilForm.action = "<c:url value="/Rscheduleevent/jsp/ModifyState"/>";
 		document.utilForm.submit();
 	}
-	
-	function callAgain() {
-		document.callAgainForm.action = "/silverpeas/Rscheduleevent/jsp/CallAgain";
-		  $('#callagain-popup-content').popup('validation', {
-		      title : "<fmt:message key="scheduleevent.callagain.title" />",
-		      width : "700px",
-		      isMaxWidth: false,
-		    callback : function() {
-		      if ( window.console && window.console.log ) {
-		        console.log("Call again query");
-		      }
-		      
-		      document.callAgainForm.submit();
-		    }
-		  });
-		
-	}
+
+  function callAgain() {
+    document.callAgainForm.action = "/silverpeas/Rscheduleevent/jsp/CallAgain";
+    $('#callagain-popup-content').popup('validation', {
+      title : "<fmt:message key="scheduleevent.callagain.title" />", callback : function() {
+        if (window.console && window.console.log) {
+          console.log("Call again query");
+        }
+
+        document.callAgainForm.submit();
+      }
+    });
+
+  }
 	
 	function valid() {
 		document.reponseForm.submit();
@@ -263,16 +260,15 @@
 	</c:if>
 </view:window>
 
-	<div id="callagain-popup-content" style="display: none">
-		<form name="callAgainForm" id="callAgainForm" action="" method="post">
-			<label id="message_label" class="label-ui-dialog" for="url"><fmt:message key="scheduleevent.callagain.message"/></label>
-			<span class="champ-ui-dialog">
-			  <textarea id="message_content" name="message_content" rows="6" cols="60" type="text" ></textarea>
-			  &nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>
-			</span>
-		    <input type="hidden" name="scheduleEventId" value="${scheduleEventDetail.id}" />
-		</form>
-	</div>
+<div id="callagain-popup-content" style="display: none">
+  <form name="callAgainForm" id="callAgainForm" action="" method="post">
+    <div>
+      <label id="message_label" class="txtlibform" for="message_content"><fmt:message key="scheduleevent.callagain.message"/></label>
+      <textarea id="message_content" name="message_content" rows="6" cols="60" type="text"></textarea>
+    </div>
+    <input type="hidden" name="scheduleEventId" value="${scheduleEventDetail.id}"/>
+  </form>
+</div>
 
 </body>
 </html>

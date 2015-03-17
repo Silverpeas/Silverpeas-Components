@@ -107,7 +107,7 @@ public class ScheduleEventRequestRouter extends
     ScheduleEventExportRequestHandler exportRequestHandler =
         new ScheduleEventExportRequestHandler("exportIcalPopup.jsp");
     ScheduleEventCallAgainRequestHandler callAgainRequestHandler =
-        new ScheduleEventCallAgainRequestHandler("detail.jsp");
+        new ScheduleEventCallAgainRequestHandler();
 
     deleteRequestHandler.setForwardRequestHandler(mainRequestHandler);
     modifyStateRequestHandler.setForwardRequestHandler(mainRequestHandler);
@@ -134,7 +134,7 @@ public class ScheduleEventRequestRouter extends
 
     validResponseRequestHandler.setForwardRequestHandler(detailRequestHandler);
 
-    callAgainRequestHandler.setDetailHandler(detailRequestHandler);
+    callAgainRequestHandler.setForwardRequestHandler(detailRequestHandler);
 
     actions.put("Main", mainRequestHandler);
     actions.put("Detail", detailRequestHandler);
