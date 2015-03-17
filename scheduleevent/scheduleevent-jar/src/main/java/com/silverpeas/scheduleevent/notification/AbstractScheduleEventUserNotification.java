@@ -23,19 +23,10 @@
  */
 package com.silverpeas.scheduleevent.notification;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Yohann Chastagnier

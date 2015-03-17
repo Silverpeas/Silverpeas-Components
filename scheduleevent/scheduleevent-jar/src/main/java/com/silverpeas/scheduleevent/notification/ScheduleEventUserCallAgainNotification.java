@@ -23,12 +23,12 @@
  */
 package com.silverpeas.scheduleevent.notification;
 
-import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.template.SilverpeasTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
