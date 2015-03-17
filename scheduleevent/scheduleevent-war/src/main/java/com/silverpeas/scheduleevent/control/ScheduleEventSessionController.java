@@ -57,6 +57,8 @@ import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.NotifierUtil;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -64,11 +66,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.util.NotifierUtil;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 
@@ -178,7 +178,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         result.add(String.valueOf(subscriber.getUserId()));
       }
     }
-    return (String[]) result.toArray(new String[result.size()]);
+    return result.toArray(new String[result.size()]);
   }
 
   public void setIdUsersAndGroups() {
@@ -221,34 +221,32 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
   }
 
-  private void deleteRecordedContributors(String[] usersId, Set<Contributor> recordedContributors) {
-    // if (usersId.length < 1 || recordedContributors.isEmpty()) {
+  private void deleteRecordedContributors(String[] selectedUsersIds,
+      Set<Contributor> recordedContributors) {
     if (recordedContributors.isEmpty()) {
       return;
     }
 
-    UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
-    Contributor[] contrib = (Contributor[]) recordedContributors.toArray(
-        new Contributor[recordedContributors.size()]);
+    UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(selectedUsersIds);
     boolean found = false;
-    for (int c = contrib.length - 1; c >= 0; c--) {
-      if (getUserId().equals(String.valueOf(contrib[c].getUserId()))) {
+    Iterator<Contributor> recordedContributorIt = recordedContributors.iterator();
+    while (recordedContributorIt.hasNext()) {
+      Contributor currentContributor = recordedContributorIt.next();
+      String currentContributorUserId = String.valueOf(currentContributor.getUserId());
+      if (getUserId().equals(currentContributorUserId)) {
         continue;
       }
-      for (int i = 0; i < userDetails.length; i++) {
-        if (userDetails[i].getId().equals(String.valueOf(contrib[c].getUserId()))) {
+      for (final UserDetail userDetail : userDetails) {
+        if (userDetail.getId().equals(currentContributorUserId)) {
           found = true;
         }
       }
       if (!found) {
-        // if (currentScheduleEvent.id == null) {
-        // getScheduleEventService().deleteContributor(contrib[c].getId());
-        // } else {
-        currentScheduleEvent.getContributors().remove(contrib[c]);
-        // }
+        recordedContributorIt.remove();
+
         SilverTrace.debug("scheduleevent",
             "ScheduleEventSessionController.deleteRecordedContributors()",
-            "Contributor '" + contrib[c].getUserName() + "' deleted from event '"
+            "Contributor '" + currentContributor.getUserName() + "' deleted from event '"
                 + currentScheduleEvent.getTitle() + "'");
       }
     }
@@ -276,20 +274,18 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
     // notify contributors
     // initAlertUser();
-    sendSubscriptionsNotification("create");
+    sendSubscriptionsNotification();
 
     // delete session object after saving it
     currentScheduleEvent = null;
 
   }
 
-  public void sendSubscriptionsNotification(final String type) {
-    // Send email alerts
+  public void sendSubscriptionsNotification() {
     try {
 
       UserNotificationHelper
-          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail(),
-              type));
+          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail()));
 
     } catch (Exception e) {
       SilverTrace.warn("scheduleevent",
@@ -298,13 +294,13 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
   }
 
-  public void sendCallAgainNotification(final String type, String message) {
+  public void sendCallAgainNotification(String message) {
     try {
 
       UserNotificationHelper
           .buildAndSend(new ScheduleEventUserCallAgainNotification(currentScheduleEvent, message,
-              getUserDetail(),
-              type));
+              getUserDetail()));
+      NotifierUtil.addSuccess(getString("scheduleevent.callagain.ok"));
 
     } catch (Exception e) {
       SilverTrace.warn("scheduleevent",
@@ -373,7 +369,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
           return contributor;
         }
       }
-    } catch (Exception e) {
+    } catch (Exception ignore) {
     }
     return null;
   }

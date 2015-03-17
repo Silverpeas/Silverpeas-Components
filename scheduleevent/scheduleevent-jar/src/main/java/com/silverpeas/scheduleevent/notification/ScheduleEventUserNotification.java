@@ -23,56 +23,31 @@
  */
 package com.silverpeas.scheduleevent.notification;
 
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.scheduleevent.service.model.beans.Contributor;
+import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.DateUtil;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.silverpeas.scheduleevent.service.model.beans.Contributor;
-import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-
 /**
  * @author Yohann Chastagnier
  */
-public class ScheduleEventUserNotification extends AbstractTemplateUserNotificationBuilder<ScheduleEvent> {
+public class ScheduleEventUserNotification extends AbstractScheduleEventUserNotification {
 
-  private final UserDetail senderUserDetail;
-  private final String type;
-
-  public ScheduleEventUserNotification(final ScheduleEvent resource, final UserDetail senderUserDetail,
-      final String type) {
-    super(resource, null, null);
-    this.senderUserDetail = senderUserDetail;
-    this.type = type;
-  }
-
-  @Override
-  protected String getMultilangPropertyFile() {
-    return "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
-  }
-
-  @Override
-  protected String getTemplatePath() {
-    return "scheduleevent";
-  }
-
-  @Override
-  protected String getBundleSubjectKey() {
-    return "scheduleevent.notifSubject";
+  public ScheduleEventUserNotification(final ScheduleEvent resource,
+      final UserDetail senderUserDetail) {
+    super(resource, senderUserDetail);
   }
 
   @Override
   protected String getFileName() {
-    if ("create".equals(type)) {
-      return "new";
-    }
-    return "";
+    return "new";
   }
 
   @Override
@@ -88,12 +63,15 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
   @Override
   protected void performTemplateData(final String language, final ScheduleEvent resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("eventName", resource.getTitle());
     template.setAttribute("eventDescription", resource.getDescription());
-    template.setAttribute("eventCreationDate", DateUtil.getOutputDate(resource.getCreationDate(), language));
+    template.setAttribute("eventCreationDate",
+        DateUtil.getOutputDate(resource.getCreationDate(), language));
     template.setAttribute("event", resource);
-    template.setAttribute("senderName", senderUserDetail.getDisplayedName());
+    template.setAttribute("senderName", getSenderUserDetail().getDisplayedName());
   }
 
   @Override
@@ -101,25 +79,5 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
     notificationResourceData.setResourceDescription(resource.getDescription());
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return NotifAction.REPORT;
-  }
-
-  @Override
-  protected String getComponentInstanceId() {
-    return getResource().getComponentInstanceId();
-  }
-
-  @Override
-  protected String getSender() {
-    return senderUserDetail.getId();
-  }
-
-  @Override
-  protected String getContributionAccessLinkLabelBundleKey() {
-    return "scheduleevent.notifEventLinkLabel";
   }
 }

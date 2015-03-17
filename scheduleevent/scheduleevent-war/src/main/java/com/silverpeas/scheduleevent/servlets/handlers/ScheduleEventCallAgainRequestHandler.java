@@ -1,31 +1,25 @@
 package com.silverpeas.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.util.NotifierUtil;
-
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ScheduleEventCallAgainRequestHandler implements ScheduleEventRequestHandler {
 
-  private String jspDestination;
-
   private ScheduleEventDetailRequestHandler detailHandler;
 
-  public ScheduleEventCallAgainRequestHandler(String jspDestination) {
-    this.jspDestination = jspDestination;
+  public ScheduleEventCallAgainRequestHandler() {
   }
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
     String message = request.getParameter("message_content");
-    scheduleeventSC.sendCallAgainNotification("callagain", message);
-    NotifierUtil.addSuccess(scheduleeventSC.getString("scheduleevent.callagain.ok"));
+    scheduleeventSC.sendCallAgainNotification(message);
     return detailHandler.getDestination(function, scheduleeventSC, request);
   }
 
-  public void setDetailHandler(ScheduleEventDetailRequestHandler detailHandler) {
+  public void setForwardRequestHandler(ScheduleEventDetailRequestHandler detailHandler) {
     this.detailHandler = detailHandler;
   }
 

@@ -23,95 +23,66 @@
  */
 package com.silverpeas.scheduleevent.notification;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import static java.lang.String.valueOf;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ScheduleEventUserCallAgainNotification extends
-    AbstractTemplateUserNotificationBuilder<ScheduleEvent> {
+public class ScheduleEventUserCallAgainNotification extends AbstractScheduleEventUserNotification {
 
-  private final UserDetail senderUserDetail;
-  private final String type;
   private String message;
 
-  public ScheduleEventUserCallAgainNotification(final ScheduleEvent resource,
-      String message, final UserDetail senderUserDetail,
-      final String type) {
-    super(resource, null, null);
-    this.senderUserDetail = senderUserDetail;
-    this.type = type;
+  public ScheduleEventUserCallAgainNotification(final ScheduleEvent resource, String message,
+      final UserDetail senderUserDetail) {
+    super(resource, senderUserDetail);
     this.message = message;
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
-    return "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
-  }
-
-  @Override
-  protected String getTemplatePath() {
-    return "scheduleevent";
-  }
-
-  @Override
-  protected String getBundleSubjectKey() {
-    return "scheduleevent.notifSubject";
-  }
-
-  @Override
   protected String getFileName() {
-    if ("callagain".equals(type)) {
-      return "callagain";
-    }
-    return "";
+    return "callagain";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final Set<Contributor> contributors = getResource().getContributors();
-    final List<String> userIds = new ArrayList<String>(contributors.size());
+    final List<String> userIdsToNotify = new ArrayList<String>(contributors.size());
+
+    // First getting potential users to notify
     for (final Contributor contributor : contributors) {
-      int userId = contributor.getUserId();
-      Iterator<Response> responses = getResource().getResponses().iterator();
-      boolean found = false;
-      while (responses.hasNext() && !found) {
-        Response response = responses.next();
-        found = response.getUserId() == userId;
-      }
-      if (!found) {
-        userIds.add(Integer.toString(userId));
-      }
+      userIdsToNotify.add(valueOf(contributor.getUserId()));
     }
-    return userIds;
+
+    // Then excluding those that have given a response
+    for (Response response : getResource().getResponses()) {
+      userIdsToNotify.remove(valueOf(response.getUserId()));
+    }
+
+    return userIdsToNotify;
   }
 
   @Override
   protected void performTemplateData(final String language, final ScheduleEvent resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language,
-        getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("eventName", resource.getTitle());
-    template.setAttribute("senderName", senderUserDetail.getDisplayedName());
+    template.setAttribute("senderName", getSenderUserDetail().getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
     template.setAttribute("message", message);
-    template.setAttribute("hasmessage", StringUtils.isNotBlank(message));
   }
 
   @Override
@@ -119,20 +90,5 @@ public class ScheduleEventUserCallAgainNotification extends
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
     notificationResourceData.setResourceDescription(resource.getDescription());
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return NotifAction.REPORT;
-  }
-
-  @Override
-  protected String getComponentInstanceId() {
-    return getResource().getComponentInstanceId();
-  }
-
-  @Override
-  protected String getSender() {
-    return senderUserDetail.getId();
   }
 }
