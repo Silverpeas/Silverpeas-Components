@@ -239,7 +239,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
               getUserId());
       context.setEncoding("UTF-8");
       context.setObjectId("0");
-      context.setContentLanguage(getLanguage());
+      context.setContentLanguage(I18NHelper.defaultLanguage);
 
       form.update(items, data, context);
       set.save(data);
