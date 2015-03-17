@@ -31,6 +31,7 @@
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
+<%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
 <%
 	boolean isSubscriber = ((Boolean) request.getAttribute("IsSubscriber")).booleanValue();
 
@@ -88,7 +89,7 @@
 			  	  form.display(out, context, data);
 			  	} else {
 			  	  %>
-			  	  <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>"/>
+			  	  <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>"/>
 			  	  <%
 			  	}
 			} else {
