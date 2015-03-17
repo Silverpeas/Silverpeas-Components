@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,10 +23,12 @@
  */
 package com.silverpeas.scheduleevent.notification;
 
+import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
@@ -38,46 +40,53 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
-public class ScheduleEventUserNotification extends AbstractScheduleEventUserNotification {
+public abstract class AbstractScheduleEventUserNotification
+    extends AbstractTemplateUserNotificationBuilder<ScheduleEvent> {
 
-  public ScheduleEventUserNotification(final ScheduleEvent resource,
+  private final UserDetail senderUserDetail;
+
+  protected AbstractScheduleEventUserNotification(final ScheduleEvent resource,
       final UserDetail senderUserDetail) {
-    super(resource, senderUserDetail);
+    super(resource, null, null);
+    this.senderUserDetail = senderUserDetail;
   }
 
   @Override
-  protected String getFileName() {
-    return "new";
+  protected String getMultilangPropertyFile() {
+    return "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
   }
 
   @Override
-  protected Collection<String> getUserIdsToNotify() {
-    final Set<Contributor> contributors = getResource().getContributors();
-    final List<String> userIds = new ArrayList<String>(contributors.size());
-    for (final Contributor contributor : contributors) {
-      userIds.add(Integer.toString(contributor.getUserId()));
-    }
-    return userIds;
+  protected String getTemplatePath() {
+    return "scheduleevent";
   }
 
   @Override
-  protected void performTemplateData(final String language, final ScheduleEvent resource,
-      final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
-    template.setAttribute("eventName", resource.getTitle());
-    template.setAttribute("eventDescription", resource.getDescription());
-    template.setAttribute("eventCreationDate",
-        DateUtil.getOutputDate(resource.getCreationDate(), language));
-    template.setAttribute("event", resource);
-    template.setAttribute("senderName", getSenderUserDetail().getDisplayedName());
+  protected String getBundleSubjectKey() {
+    return "scheduleevent.notifSubject";
   }
 
   @Override
-  protected void performNotificationResource(final String language, final ScheduleEvent resource,
-      final NotificationResourceData notificationResourceData) {
-    notificationResourceData.setResourceName(resource.getTitle());
-    notificationResourceData.setResourceDescription(resource.getDescription());
+  protected NotifAction getAction() {
+    return NotifAction.REPORT;
+  }
+
+  @Override
+  protected String getComponentInstanceId() {
+    return getResource().getComponentInstanceId();
+  }
+
+  @Override
+  protected String getSender() {
+    return senderUserDetail.getId();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "scheduleevent.notifEventLinkLabel";
+  }
+
+  public UserDetail getSenderUserDetail() {
+    return senderUserDetail;
   }
 }

@@ -25,39 +25,52 @@ package com.silverpeas.scheduleevent.notification;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
+import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.valueOf;
+
 /**
  * @author Yohann Chastagnier
  */
-public class ScheduleEventUserNotification extends AbstractScheduleEventUserNotification {
+public class ScheduleEventUserCallAgainNotification extends AbstractScheduleEventUserNotification {
 
-  public ScheduleEventUserNotification(final ScheduleEvent resource,
+  private String message;
+
+  public ScheduleEventUserCallAgainNotification(final ScheduleEvent resource, String message,
       final UserDetail senderUserDetail) {
     super(resource, senderUserDetail);
+    this.message = message;
   }
 
   @Override
   protected String getFileName() {
-    return "new";
+    return "callagain";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final Set<Contributor> contributors = getResource().getContributors();
-    final List<String> userIds = new ArrayList<String>(contributors.size());
+    final List<String> userIdsToNotify = new ArrayList<String>(contributors.size());
+
+    // First getting potential users to notify
     for (final Contributor contributor : contributors) {
-      userIds.add(Integer.toString(contributor.getUserId()));
+      userIdsToNotify.add(valueOf(contributor.getUserId()));
     }
-    return userIds;
+
+    // Then excluding those that have given a response
+    for (Response response : getResource().getResponses()) {
+      userIdsToNotify.remove(valueOf(response.getUserId()));
+    }
+
+    return userIdsToNotify;
   }
 
   @Override
@@ -67,11 +80,9 @@ public class ScheduleEventUserNotification extends AbstractScheduleEventUserNoti
         .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
             "");
     template.setAttribute("eventName", resource.getTitle());
-    template.setAttribute("eventDescription", resource.getDescription());
-    template.setAttribute("eventCreationDate",
-        DateUtil.getOutputDate(resource.getCreationDate(), language));
-    template.setAttribute("event", resource);
     template.setAttribute("senderName", getSenderUserDetail().getDisplayedName());
+    template.setAttribute("silverpeasURL", getResourceURL(resource));
+    template.setAttribute("message", message);
   }
 
   @Override

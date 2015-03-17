@@ -60,6 +60,20 @@
 		document.utilForm.submit();
 	}
 
+  function callAgain() {
+    document.callAgainForm.action = "/silverpeas/Rscheduleevent/jsp/CallAgain";
+    $('#callagain-popup-content').popup('validation', {
+      title : "<fmt:message key="scheduleevent.callagain.title" />", callback : function() {
+        if (window.console && window.console.log) {
+          console.log("Call again query");
+        }
+
+        document.callAgainForm.submit();
+      }
+    });
+
+  }
+	
 	function valid() {
 		document.reponseForm.submit();
 	}
@@ -100,11 +114,16 @@
 	</c:if>
 	<fmt:message key="scheduleevent.icons.users" var="usersIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.users.alt" var="usersIconAlt" />
+	
+	<fmt:message key="scheduleevent.icons.users" var="callAgainIcon" bundle="${icons}" />
+	<fmt:message key="scheduleevent.icons.callagain.alt" var="callAgainIconAlt" />
 		<view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
 		<view:operationSeparator/>
 		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
 		<view:operationSeparator/>
 		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
+		<view:operationSeparator/>
+		<view:operation altText="${callAgainIconAlt}" icon="${usersIcon}" action="${'javascript:callAgain();'}" />
   <view:operationSeparator/>
 </c:if>
 <c:if test="${scheduleEventDetail.currentUserDefinedAsSubscriber and scheduleEventDetail.closed and selectionTime.bestDateExists}">
@@ -240,5 +259,16 @@
 						resourceType="${scheduleEventDetail.resourceType}" resourceId="${scheduleEventDetail.id}" />
 	</c:if>
 </view:window>
+
+<div id="callagain-popup-content" style="display: none">
+  <form name="callAgainForm" id="callAgainForm" action="" method="post">
+    <div>
+      <label id="message_label" class="txtlibform" for="message_content"><fmt:message key="scheduleevent.callagain.message"/></label>
+      <textarea id="message_content" name="message_content" rows="6" cols="60" type="text"></textarea>
+    </div>
+    <input type="hidden" name="scheduleEventId" value="${scheduleEventDetail.id}"/>
+  </form>
+</div>
+
 </body>
 </html>
