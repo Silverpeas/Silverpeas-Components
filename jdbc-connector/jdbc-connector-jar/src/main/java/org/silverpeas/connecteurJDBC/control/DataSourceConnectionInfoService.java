@@ -23,12 +23,28 @@
  */
 package org.silverpeas.connecteurJDBC.control;
 
-public class ConnecteurJDBCServiceProvider {
+import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfo;
+import org.silverpeas.connecteurJDBC.model.DataSourceDefinition;
+import org.silverpeas.util.ServiceProvider;
 
-  public static ConnecteurJDBCService getConnecteurJDBCService() {
-    return ConnecteurJDBCService.get();
+import java.util.List;
+
+public interface DataSourceConnectionInfoService {
+
+  static DataSourceConnectionInfoService get() {
+    return ServiceProvider.getService(DataSourceConnectionInfoService.class);
   }
 
-  private ConnecteurJDBCServiceProvider() {
-  }
+  public List<DataSourceConnectionInfo> getConnectionInfoList(String instanceId);
+
+  public void removeConnectionInfo(DataSourceConnectionInfo connectionInfo);
+
+  public void removeConnectionInfoOfComponentInstance(String componentInstanceId);
+
+  public DataSourceConnectionInfo getConnectionInfo(String id);
+
+  public DataSourceConnectionInfo saveConnectionInfo(DataSourceConnectionInfo connectionInfo);
+
+  public List<DataSourceDefinition> getAllDataSourceDefinitions();
+
 }

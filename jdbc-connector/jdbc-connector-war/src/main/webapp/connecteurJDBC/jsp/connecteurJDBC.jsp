@@ -44,8 +44,8 @@
   String action = request.getParameter("Action");
   String sort = request.getParameter("Sort");
 
-  String[] columns = (String[]) request.getParameterValues("columns");
-  String[] compares = (String[]) request.getParameterValues("compares");
+  String[] columns = request.getParameterValues("columns");
+  String[] compares = request.getParameterValues("compares");
 
   String value = "";
   String label = "";
@@ -81,7 +81,7 @@
     cpp = Integer.parseInt(col);
   }
 
-  String SQLreq = connecteurJDBC.getSQLreq();
+  String SQLreq = connecteurJDBC.getCurrentConnectionInfo().getSqlRequest();
   String lastValidSqlReq = connecteurJDBC.getFullRequest();
 
   if (action != null) {
@@ -221,7 +221,7 @@
               <input name="Action" type="hidden"/>
               <input name="colNumber" type="hidden"/>
               <input name="Sort" type="hidden" value="<%=connecteurJDBC.getSortType()%>"/>
-              <input name="SQLreq" type="hidden" value="<%=connecteurJDBC.getSQLreq()%>"/>
+              <input name="SQLreq" type="hidden" value="<%=connecteurJDBC.getCurrentConnectionInfo().getSqlRequest()%>"/>
               <table cellpadding=2 cellspacing=1 border=0 width="100%" >
                 <tr>
                   <td class="intfdcolor" align="center" nowrap="nowrap" height="24">

@@ -1,0 +1,2 @@
+ALTER TABLE sc_connecteurjdbc_connectinfo DELETE COLUMN JDBCdriverName;
+ALTER TABLE sc_connecteurjdbc_connectinfo DELETE COLUMN JDBCurl;

@@ -23,33 +23,25 @@
  */
 package org.silverpeas.connecteurJDBC.control;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.XMLConfigurationStore;
+import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfo;
+import org.silverpeas.connecteurJDBC.model.DataSourceDefinition;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.connecteurJDBC.service.ConnecteurJDBCConnectionInfoDetail;
-import org.silverpeas.connecteurJDBC.service.ConnecteurJDBCConnectionInfoPK;
 
-import java.io.File;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.Vector;
 
 /**
@@ -58,9 +50,6 @@ import java.util.Vector;
  */
 public class ConnecteurJDBCSessionController extends AbstractComponentSessionController {
 
-  private static final String CONFIGURATION_FILE =
-      "org.silverpeas.connecteurJDBC.control.settings.connecteurJDBCSettings"
-          .replace('.', File.separatorChar);
   private String table = null;
   private String column = null;
   private String selected = null;
@@ -72,18 +61,14 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   private String fullreq = "";
   private String sortType = "";
   private boolean connectionOpened = false;
-  private ConnecteurJDBCConnectionInfoDetail connecteurJDBCDetail = null;
-  private String[] driversNames;
-  private String[] driversDisplayNames;
-  private List<Object> driversUrls;
-  private String[] driversClassNames;
-  private String[] driversDescriptions;
+
+  private DataSourceConnectionInfo currentConnectionInfo = null;
+  private List<DataSourceDefinition> allDataSources = null;
+
   private String[] tableNames = null;
   private String[] columnNames = null;
   ResultSet tables_rs;
   ResultSetMetaData tables_rsmd;
-  // current driver
-  private Driver driver = null;
   private ResultSet rs;
   private DatabaseMetaData dbMetaData;
   // Current row number
@@ -100,34 +85,40 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   public ConnecteurJDBCSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.connecteurJDBC.multilang.connecteurJDBC");
-    loadDrivers();
-    initConnector();
+        "org.silverpeas.connecteurJDBC.multilang.connecteurJDBC");
+    loadAllAvailableDataSources();
+    loadCurrentConnectionInfo();
   }
 
   /**
    * Initialize connector
    */
-  private void initConnector() {
-    if (connecteurJDBCDetail == null) {
+  private void loadCurrentConnectionInfo() {
+    if (currentConnectionInfo == null) {
       try {
-        // load and return the current jdbc settings for the component
-        ConnecteurJDBCService connecteurJDBCBm =
-            ConnecteurJDBCServiceProvider.getConnecteurJDBCService();
-        Collection<ConnecteurJDBCConnectionInfoDetail> c = connecteurJDBCBm.getConnectionList(
-            new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-        if (c.size() > 1) {
+        // load and return the current connection settings for the component
+        List<DataSourceConnectionInfo> connectionInfos =
+            DataSourceConnectionInfo.getFromComponentInstance(getComponentId());
+        if (connectionInfos.isEmpty()) {
+          currentConnectionInfo =
+              new DataSourceConnectionInfo("", getComponentId()).withSqlRequest("");
+        } else {
+          if (connectionInfos.size() > 1) {
           throw new ConnecteurJDBCException("connecteurJDBCSessionControl.initConnecteur()",
               SilverpeasException.FATAL, "connecteurJDBC.EX_THERE_MUST_BE_ONLY_ONE_CONECTION");
-        }
-        Iterator<ConnecteurJDBCConnectionInfoDetail> i = c.iterator();
-        if (i.hasNext()) {
-          connecteurJDBCDetail = i.next();
+          }
+          currentConnectionInfo = connectionInfos.get(0);
         }
       } catch (Exception e) {
         throw new ConnecteurJDBCRuntimeException("connecteurJDBCSessionControl.initConnecteur()",
             SilverpeasException.FATAL, "connecteurJDBC.EX_INIT_CONNECTEUR_FAIL", e);
       }
+    }
+  }
+
+  private void loadAllAvailableDataSources() {
+    if (allDataSources == null || allDataSources.isEmpty()) {
+      allDataSources = DataSourceDefinition.getAll();
     }
   }
 
@@ -148,58 +139,31 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public void startConnection() {
-    final String temp = getSQLreq();
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.startConnection()",
-        "root.MSG_GEN_ENTER_METHOD", "temp : " + temp);
-    rowNumber = 0;
-
-    if (!connectionOpened && (connecteurJDBCDetail != null)) {
-      Properties info = new Properties();
-      info.setProperty("user", getLogin());
-      info.setProperty("password", getPassword());
-      try (Connection con = getDriver().connect(getJDBCurl(), info)) {
-        dbMetaData = con.getMetaData();
-        try (Statement stmt = con.createStatement()) {
-          if (!StringUtil.isDefined(temp)) {
-            rs = null;
-          } else {
-            rs = stmt.executeQuery(temp);
-          }
-        }
-        connectionOpened = true;
-      } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.startConnection()",
-            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + getSQLreq(), e);
-      }
-    }
-
+    final String request = currentConnectionInfo.getSqlRequest();
+    startConnection(request);
   }
 
-  public void startConnection(String temp) {
+  public void startConnection(String request) {
     SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.startConnection()",
-        "root.MSG_GEN_ENTER_METHOD", "temp : " + temp);
+        "root.MSG_GEN_ENTER_METHOD", "temp : " + request);
     rowNumber = 0;
 
-    if (!connectionOpened && (connecteurJDBCDetail != null)) {
+    if (!connectionOpened && (currentConnectionInfo != null)) {
       try {
-        Properties info = new Properties();
-        info.setProperty("user", getLogin());
-        info.setProperty("password", getPassword());
-        Connection con = getDriver().connect(getJDBCurl(), info);
-        dbMetaData = con.getMetaData();
-        Statement stmt = con.createStatement();
-        if (!StringUtil.isDefined(temp)) {
+        Connection connection = currentConnectionInfo.openConnection();
+        dbMetaData = connection.getMetaData();
+        Statement stmt = connection.createStatement();
+        if (!StringUtil.isDefined(request)) {
           rs = null;
         } else {
-          rs = stmt.executeQuery(temp);
+          rs = stmt.executeQuery(request);
         }
         connectionOpened = true;
       } catch (Exception e) {
         SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.startConnection()",
-            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + getSQLreq(), e);
+            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + request, e);
       }
     }
-
   }
 
   /**
@@ -233,8 +197,8 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    * get the full request
    */
   public String getFullRequest() {
-    if (fullreq == null || "".equals(fullreq)) {
-      return getSQLreq();
+    if (StringUtil.isNotDefined(fullreq)) {
+      return currentConnectionInfo.getSqlRequest();
     }
     return fullreq;
   }
@@ -471,7 +435,10 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   public boolean getNext() {
     boolean ret = false;
     if (rs != null) {
-      if (getRowLimit() == 0 || rowNumber < getRowLimit()) {
+      final int rowLimit =
+          (StringUtil.isNotDefined(currentConnectionInfo.getDataSourceName()) ? -1 :
+              currentConnectionInfo.getDataMaxNumber());
+      if (rowLimit == 0 || rowNumber < rowLimit) {
         rowNumber++;
         try {
           ret = rs.next();
@@ -498,316 +465,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public boolean isConnectionConfigured() {
-    return (connecteurJDBCDetail != null);
-  }
-
-  // setters (à utiliser via les jsp)
-  public void setJDBCdriverName(String jdbcDriverName) throws ConnecteurJDBCException {
-
-    if (connecteurJDBCDetail == null) {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      newConnecteur();
-    }
-
-    updateConnecteur();
-  }
-
-  public void setJDBCurl(String jdbcUrl) throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail == null) {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      newConnecteur();
-    }
-    if (connecteurJDBCDetail != null) {
-      connecteurJDBCDetail.setJDBCurl(jdbcUrl);
-    }
-    updateConnecteur();
-  }
-
-  public void setSQLreq(String sqlReq) throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail == null) {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      newConnecteur();
-    }
-    if (connecteurJDBCDetail != null) {
-      connecteurJDBCDetail.setSQLreq(sqlReq);
-    }
-    updateConnecteur();
-  }
-
-  public void setLogin(String login) throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail == null) {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      newConnecteur();
-    }
-    if (connecteurJDBCDetail != null) {
-      connecteurJDBCDetail.setLogin(login);
-    }
-    updateConnecteur();
-  }
-
-  public void setPassword(String password) throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail == null) {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      newConnecteur();
-    }
-    if (connecteurJDBCDetail != null) {
-      connecteurJDBCDetail.setPassword(password);
-    }
-    updateConnecteur();
-  }
-
-  public void setRowLimit(int rowLimit) throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail == null) {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      newConnecteur();
-    }
-    if (connecteurJDBCDetail != null) {
-      connecteurJDBCDetail.setRowLimit(rowLimit);
-    }
-    updateConnecteur();
-  }
-
-  // getters
-  public String getJDBCdriverName() {
-    if (connecteurJDBCDetail != null) {
-      return (connecteurJDBCDetail.getJDBCdriverName());
-    } else {
-      return null;
-    }
-  }
-
-  public String getJDBCurl() {
-    if (connecteurJDBCDetail != null) {
-      return (connecteurJDBCDetail.getJDBCurl());
-    } else {
-      return null;
-    }
-  }
-
-  public String getSQLreq() {
-    if (connecteurJDBCDetail != null) {
-      return (connecteurJDBCDetail.getSQLreq());
-    } else {
-      return null;
-    }
-
-  }
-
-  public String getLogin() {
-    if (connecteurJDBCDetail != null) {
-      return (connecteurJDBCDetail.getLogin());
-    } else {
-      return "";
-    }
-
-  }
-
-  public String getPassword() {
-    if (connecteurJDBCDetail != null) {
-      return (connecteurJDBCDetail.getPassword());
-    } else {
-      return "";
-    }
-
-  }
-
-  public int getRowLimit() {
-    if (connecteurJDBCDetail != null) {
-      return (connecteurJDBCDetail.getRowLimit());
-    } else {
-      return -1;
-    }
-  }
-
-  private int searchDriverIndice(String driverName) {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.searchDriverIndice()",
-        "connecteurJDBC.MSG_DRIVER_NAME", "DriverName : " + driverName);
-    int i = 0;
-    while (i < driversNames.length) {
-      SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.searchDriverIndice()",
-          "connecteurJDBC.MSG_DRIVER_NAME", "driver n°" + i + "=" + driversNames[i]);
-      if (driversNames[i].equals(driverName)) {
-        return i;
-      }
-      i++;
-    }
-    throw new ConnecteurJDBCRuntimeException("ConnecteurJDBCSessionController.searchDriverIndice()",
-        SilverpeasException.ERROR, "connecteurJDBC.EX_UNK_DRIVER_NAME", driverName);
-  }
-
-  private Driver registerAndInstanciateDriver(String driverName)
-      throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-    SilverTrace
-        .info("connecteurJDBC", "ConnecteurJDBCSessionControl.registerAndInstanciateDriver()",
-            "root.MSG_GEN_ENTER_METHOD", "driverName=" + driverName);
-    SilverTrace
-        .info("connecteurJDBC", "ConnecteurJDBCSessionControl.registerAndInstanciateDriver()",
-            "root.MSG_GEN_PARAM_VALUE", "driversClassNames.length=" + driversClassNames.length);
-
-    String driverClass = driversClassNames[searchDriverIndice(driverName)];
-
-    return (Driver) Class.forName(driverClass).newInstance();
-
-  }
-
-  // register existing drivers
-  public final void loadDrivers() {
-    try {
-      InputStream myConfigFileInputStream =
-          ResourceLocator.getResourceAsStream(this, null, CONFIGURATION_FILE, ".xml");
-      XMLConfigurationStore m_XMLConfig =
-          new XMLConfigurationStore(null, myConfigFileInputStream, "ConnecteurJDBC-configuration");
-      driversNames = m_XMLConfig.getValues("Drivers");
-      myConfigFileInputStream.close();
-      driversDisplayNames = new String[driversNames.length];
-      driversClassNames = new String[driversNames.length];
-      driversDescriptions = new String[driversNames.length];
-      driversUrls = new Vector<>();
-      for (int j = 0; j < driversNames.length; j++) {
-        SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionControl.loadDrivers()",
-            "connecteurJDBC.MSG_DRIVER_NAME", "DriverName=" + driversNames[j]);
-
-        myConfigFileInputStream =
-            ResourceLocator.getResourceAsStream(this, null, CONFIGURATION_FILE, ".xml");
-        m_XMLConfig = new XMLConfigurationStore(null, myConfigFileInputStream,
-            driversNames[j] + "-configuration");
-
-        driversDisplayNames[j] = m_XMLConfig.getString("DriverName");
-        driversClassNames[j] = m_XMLConfig.getString("ClassName");
-        driversDescriptions[j] = m_XMLConfig.getString("Description");
-        driversUrls.add(m_XMLConfig.getValues("JDBCUrls"));
-        myConfigFileInputStream.close();
-      }
-
-    } catch (Exception e) {
-      SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.loadDrivers()",
-          "connecteurJDBC.MSG_load_DRIVERS_FAIL", null, e);
-    }
-  }
-
-  public Collection<String> getDriversDescriptions() {
-    return Arrays.asList(driversDescriptions);
-  }
-
-  public Collection<String> getAvailableDriversNames() {
-    return Arrays.asList(driversNames);
-  }
-
-  // returns available drivers names
-  public Collection<String> getAvailableDriversDisplayNames() {
-    return Arrays.asList(driversDisplayNames);
-  }
-
-  // returns jdbc urls for driver
-  public Collection<String> getJDBCUrlsForDriver(String driverName) {
-    String[] str = (String[]) driversUrls.get(searchDriverIndice(driverName));
-    return Arrays.asList(str);
-  }
-
-  // returns description for driver
-  public String getDescriptionForDriver(String driverName) {
-    String str = driversDescriptions[searchDriverIndice(driverName)];
-    return str;
-  }
-
-  public void updateConnection(String jdbcDriverName, String jdbcUrl, String login, String password,
-      int rowLimit) throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail != null) {
-      connecteurJDBCDetail.setJDBCdriverName(jdbcDriverName);
-      connecteurJDBCDetail.setJDBCurl(jdbcUrl);
-      connecteurJDBCDetail.setLogin(login);
-      connecteurJDBCDetail.setPassword(password);
-      connecteurJDBCDetail.setRowLimit(rowLimit);
-      updateConnecteur();
-    } else {
-      connecteurJDBCDetail = new ConnecteurJDBCConnectionInfoDetail();
-      connecteurJDBCDetail
-          .setPK(new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
-      connecteurJDBCDetail.setJDBCdriverName(jdbcDriverName);
-      connecteurJDBCDetail.setJDBCurl(jdbcUrl);
-      connecteurJDBCDetail.setLogin(login);
-      connecteurJDBCDetail.setPassword(password);
-      connecteurJDBCDetail.setRowLimit(rowLimit);
-      newConnecteur();
-    }
-  }
-
-  private void updateConnecteur() throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail != null) {
-      try {
-        // load and return the current jdbc settings for the component
-        ConnecteurJDBCService connecteurJDBCBm =
-            ConnecteurJDBCServiceProvider.getConnecteurJDBCService();
-        connecteurJDBCBm.updateConnection(connecteurJDBCDetail);
-      } catch (Exception e) {
-        throw new ConnecteurJDBCException("connecteurJDBCSessionControl.updateConnecteur()",
-            SilverpeasException.FATAL, "connecteurJDBC.EX_UPDATE_CONNECTION_FAIL", null, e);
-      }
-    }
-  }
-
-  private void newConnecteur() throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail != null) {
-      try {
-        // load and return the current jdbc settings for the component
-        ConnecteurJDBCService connecteurJDBCBm =
-            ConnecteurJDBCServiceProvider.getConnecteurJDBCService();
-        connecteurJDBCDetail.setPK(connecteurJDBCBm.addConnection(connecteurJDBCDetail));
-      } catch (Exception e) {
-        throw new ConnecteurJDBCException("connecteurJDBCSessionControl.newConnecteur()",
-            SilverpeasException.FATAL, "connecteurJDBC.EX_NEW_CONNECTION_FAIL", null, e);
-      }
-    }
-  }
-
-  private Driver getDriver() {
-    if (driver == null) {
-      try {
-        String driverName = connecteurJDBCDetail.getJDBCdriverName();
-        if (!StringUtil.isDefined(driverName)) {
-          SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionControl.getDriver()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "driverName undefined ! default one used instead = " + driverName);
-          driverName = driversNames[0];
-        }
-        driver = registerAndInstanciateDriver(driverName);
-      } catch (Exception e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.initConnecteur()",
-            "connecteurJDBC.MSG_INIT_CONNECTEUR_FAIL", null, e);
-      }
-    }
-    return driver;
-  }
-
-  public String checkConnection(String JDBCurl, String login, String password) {
-    if ((JDBCurl == null) || (login == null) || (password == null)) {
-      return getString("erreurParametresConnectionIncorrects");
-    } else {
-      Properties info = new Properties();
-      info.setProperty("user", login);
-      info.setProperty("password", password);
-      try (Connection con = getDriver().connect(JDBCurl, info)) {
-      } catch (Exception e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.checkConnection()",
-            "connecteurJDBC.MSG_CHECK_CONNECTION_FAIL",
-            "login : " + login + "password : " + password + "JDBCurl : " + JDBCurl, e);
-        return SilverTrace
-            .getTraceMessage("connecteurJDBC.MSG_CHECK_CONNECTION_FAIL", getLanguage());
-      }
-      return null;
-    }
+    return (currentConnectionInfo != null);
   }
 
   public String checkRequest(String request) {
@@ -816,27 +474,28 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     String temp = request.trim();
 
     try {
-      if ((getDriver() == null) || (getJDBCurl() == null)) {
+      if (!StringUtil.isDefined(currentConnectionInfo.getDataSourceName())) {
         return getString("erreurParametresConnectionIncorrects");
       } else if (!StringUtil.isDefined(request)) {
         return getString("erreurRequeteVide");
-      } else if (!temp.startsWith("select") && !temp.startsWith("SELECT")) {
+      } else if (!temp.trim().toLowerCase().startsWith("select")) {
         return getString("erreurModifTable");
       } else {
-        Properties info = new Properties();
-        info.setProperty("user", getLogin());
-        info.setProperty("password", getPassword());
-        try (Connection con = getDriver().connect(getJDBCurl(), info)) {
-          if (con == null) {
+        Connection connection = null;
+        try {
+          connection = currentConnectionInfo.openConnection();
+          if (connection == null) {
             return getString("erreurParametresConnectionIncorrects");
           } else {
-            try (Statement stmt = con.createStatement()) {
+            try (Statement stmt = connection.createStatement()) {
               rs = stmt.executeQuery(request);
             }
           }
+        } finally {
+          DBUtil.close(connection);
         }
       }
-    } catch (SQLException e) {
+    } catch (ConnecteurJDBCException | SQLException e) {
       SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.checkConnection()",
           "connecteurJDBC.MSG_CHECK_REQUEST_FAIL", "request : " + request, e);
       return e.getMessage();
@@ -846,5 +505,51 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
       return "can't find error Message";
     }
     return null;
+  }
+
+  public List<DataSourceDefinition> getAvailableDataSources() {
+    return allDataSources;
+  }
+
+  public void updateSQLRequest(String sqlRequest) throws ConnecteurJDBCException {
+    String error = checkRequest(sqlRequest);
+    if (StringUtil.isDefined(error)) {
+      throw new ConnecteurJDBCException(getClass().getSimpleName() + ".updateSQLRequest()",
+          SilverpeasException.ERROR, "connecteurJDBC.MSG_CHECK_REQUEST_FAIL", error);
+    }
+    setValidRequest(sqlRequest);
+    getCurrentConnectionInfo().withSqlRequest(sqlRequest).save();
+  }
+
+  public void updateConnectionInfo(String dataSource, String login, String password, int rowLimit)
+      throws ConnecteurJDBCException {
+    if (StringUtil.isDefined(dataSource)) {
+      currentConnectionInfo = getCurrentConnectionInfo().withDataSourceName(dataSource)
+          .withLoginAndPassword(login, password)
+          .withDataMaxNumber(rowLimit);
+      checkConnection(currentConnectionInfo);
+      currentConnectionInfo.save();
+    }
+  }
+
+  public DataSourceConnectionInfo getCurrentConnectionInfo() {
+    return currentConnectionInfo;
+  }
+
+  private void checkConnection(DataSourceConnectionInfo connectionInfo)
+      throws ConnecteurJDBCException {
+    Connection connection = null;
+    try {
+      connection = connectionInfo.openConnection();
+    } catch (Exception ex) {
+      SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.checkConnection()",
+          "connecteurJDBC.MSG_CHECK_CONNECTION_FAIL",
+          "data source: " + currentConnectionInfo.getDataSourceName() + ", login: " +
+              currentConnectionInfo.getLogin() + ", password : " +
+              currentConnectionInfo.getPassword());
+      throw ex;
+    } finally {
+      DBUtil.close(connection);
+    }
   }
 }

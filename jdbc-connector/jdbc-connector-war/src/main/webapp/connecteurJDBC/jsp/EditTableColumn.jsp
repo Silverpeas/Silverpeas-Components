@@ -1,6 +1,4 @@
-<%@ page import="org.silverpeas.connecteurJDBC.control.ConnecteurJDBCSessionController" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.*" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%--
 
@@ -112,11 +110,13 @@ String label = "";
 String selected = "";
 String SCOL = "";
 
-tables = (String[]) request.getParameterValues("tables");
-columns = (String[]) request.getParameterValues("columns");
-compares = (String[]) request.getParameterValues("compares");
-selectedColumns = (String[]) request.getParameterValues("sColumns");
-ssCols = (String[]) request.getParameterValues("ssColumns");
+  String sqlRequest = "";
+
+  tables = request.getParameterValues("tables");
+  columns = request.getParameterValues("columns");
+  compares = request.getParameterValues("compares");
+  selectedColumns = request.getParameterValues("sColumns");
+  ssCols = request.getParameterValues("ssColumns");
 
 temp = request.getParameter("Temp");
 cpp = request.getParameter("Cpp");
@@ -263,7 +263,6 @@ String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">
-	
 	function getColumnList()
 	{
 		document.editForm.Action.value = "updateColumnList";
@@ -288,8 +287,9 @@ String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src
 	
 	function writeTableName()
 	{
-		window.opener.document.processForm.Action.value = "writeTable";
-		window.opener.document.processForm.table.value = document.editForm.tables.options[document.editForm.tables.selectedIndex].value;
+    var sqlreq = 'select * from ' +
+        document.editForm.tables.options[document.editForm.tables.selectedIndex].value
+    window.opener.document.processForm.SQLReq.value = sqlreq;
 		window.opener.document.processForm.submit();
 		window.close();
 	}
@@ -314,8 +314,8 @@ String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src
 
 	function endCriter()
 	{
-		window.opener.document.processForm.SqlReq.value = "<%=connecteurJDBC.getSQLreq()%>";
-        window.opener.document.processForm.submit();
+    window.opener.document.processForm.SQLReq.value = document.editForm.SQLReq.value;
+    window.opener.document.processForm.submit();
 		window.close();
 	}
 
@@ -379,45 +379,32 @@ function moveall_groups(btn) {
    }                   
 }
 
-function validateColumns() {
-    
+  function computeSQLRequest() {
+    var listTables = document.editForm.tables;
+    var selectedTable = "<%=table%>";
+    var Count = "<%=count%>";
 
-	window.opener.document.processForm.Action.value = "writeColumn";
-	
-	var listTables = document.editForm.tables;
-	var selectedTable = "<%=table%>";
-	var Count = "<%=count%>";
+    var cpt = 0;
+    nbr = document.editForm.sColumns.length;
 
-	var cpt = 0;
-	nbr = document.editForm.sColumns.length;
-
-	if(nbr > 0)
-	{
-		var Cols = document.editForm.sColumns[0].value;
-		cpt = 1;
-		while(cpt < nbr)
-		{
-			Cols = Cols +","+document.editForm.sColumns[cpt].value;
-			cpt++;
-		}
-		window.opener.document.processForm.SqlReq.value = 
-        "select "+Cols + " from <%=table%>";
-		
-	}
-	else
-	{
-		window.opener.document.processForm.SqlReq.value = 
-		"select *from <%=table%>";
-	}
-		
-		window.opener.document.processForm.submit();
-		window.close();
-	
+    if (nbr > 0) {
+      var Cols = document.editForm.sColumns[0].value;
+      cpt = 1;
+      while (cpt < nbr) {
+        Cols = Cols + "," + document.editForm.sColumns[cpt].value;
+        cpt++;
+      }
+      return 'select ' + Cols + ' from <%=table%>';
+    } else {
+      return 'select * from <%=table%>';
+    }
 }
 
-
-
-
+  function validateColumns() {
+    window.opener.document.processForm.SQLReq.value = computeSQLRequest();
+    window.opener.document.processForm.submit();
+    window.close();
+  }
 </Script>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 <%
@@ -479,7 +466,6 @@ function validateColumns() {
 							}
 					%>
 										  </select></span>
-									</td>
 						</td></tr></TABLE>
 						</td></tr></TABLE>
 							
@@ -585,57 +571,58 @@ if (count.equals("false"))
 
 <% if (temp.equals("selCol"))
 {
-	//String SCOL = "";
-	if(connecteurJDBC.getSelectedColumn().size() > 0) {
-		SCOL = (String) connecteurJDBC.getSelectedColumn().elementAt(0);
-		int n = connecteurJDBC.getSelectedColumn().size();
-		int i = 1;
-		while (i < n)
-		{
-			SCOL = SCOL +" , "+ (String) connecteurJDBC.getSelectedColumn().elementAt(i);
-			i++;
-		}
-		connecteurJDBC.setColumn(SCOL);
-	}
-	if(connecteurJDBC.getColumn().equals("") && connecteurJDBC.getSQLreq().equals(""))
-		connecteurJDBC.setSQLreq("select *from "+table);
-	else if(!connecteurJDBC.getColumn().equals("") && connecteurJDBC.getSQLreq().equals(""))
-		connecteurJDBC.setSQLreq("select "+connecteurJDBC.getColumn()+" from "+table);
+  sqlRequest = request.getParameter("SQLReq");
+  if (connecteurJDBC.getSelectedColumn().size() > 0) {
+    SCOL = (String) connecteurJDBC.getSelectedColumn().elementAt(0);
+    int n = connecteurJDBC.getSelectedColumn().size();
+    int i = 1;
+    while (i < n) {
+      SCOL = SCOL + " , " + (String) connecteurJDBC.getSelectedColumn().elementAt(i);
+      i++;
+    }
+    connecteurJDBC.setColumn(SCOL);
+  }
+  if (connecteurJDBC.getColumn().equals("")) {
+    sqlRequest = "select * from " + table;
+  } else if (!connecteurJDBC.getColumn().equals("")) {
+    sqlRequest = "select " + connecteurJDBC.getColumn() + " from " + table;
+  }
 
 	if(action != null)
 	{
 		if(action.equals("addCriter"))
 		{
-			String sqlReq = request.getParameter("SQLReq");
-			connecteurJDBC.setValidRequest(sqlReq);
-	
+      connecteurJDBC.setValidRequest(sqlRequest);
+
 			try
 			{
-				if (sqlReq.indexOf("where") == -1)
+        if (sqlRequest.indexOf("where") == -1)
 				{
-					sqlReq =  sqlReq+" where "+ssColumn + " "+compare +" "+"'"+columnValueS+"'";
-					connecteurJDBC.setSQLreq(sqlReq);
+          sqlRequest =
+              sqlRequest + " where " + ssColumn + " " + compare + " " + "'" + columnValueS + "'";
+
 				}
 				else
 				{
-					sqlReq =  sqlReq+" and "+ssColumn+ " "+compare +" "+"'"+columnValueS+"'";
-					connecteurJDBC.setSQLreq(sqlReq);
+          sqlRequest =
+              sqlRequest + " and " + ssColumn + " " + compare + " " + "'" + columnValueS + "'";
 				}
+        connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(sqlRequest);
 			}
 			catch (NullPointerException e)
 			{
 				SilverTrace.warn("connecteurJDBC",
-							     "JSPEditTableColumn", 
-				                 "connecteurJDBC.MSG_ADD_CRITER_TO_CLOSE_WHERE_FAIL", "request : "+sqlReq, e);
+							     "JSPEditTableColumn", "connecteurJDBC.MSG_ADD_CRITER_TO_CLOSE_WHERE_FAIL",
+            "request : " + sqlRequest, e);
 			}
 		}
 		else if(action.equals("annulCriter"))
 		{
-			connecteurJDBC.setSQLreq(connecteurJDBC.getLastValidRequest());
+      connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(connecteurJDBC.getLastValidRequest());
 		}
 	}
 %>
-<input name="SQLReq" type="hidden" value = "<%=connecteurJDBC.getSQLreq()%>">
+  <input name="SQLReq" type="hidden" value="<%=connecteurJDBC.getCurrentConnectionInfo().getSqlRequest()%>">
 
 <tr><td valign="top" nowrap>
 	<span class="txtlibform"><%=connecteurJDBC.getString("popupChamp2")%> :</span>  

@@ -25,7 +25,7 @@ package org.silverpeas.connecteurJDBC.mock;
 
 
 import com.stratelia.webactiv.persistence.PersistenceException;
-import org.silverpeas.connecteurJDBC.control.ConnecteurJDBCService;
+import org.silverpeas.connecteurJDBC.control.DataSourceConnectionInfoService;
 import org.silverpeas.connecteurJDBC.service.ConnecteurJDBCConnectionInfoDetail;
 import org.silverpeas.connecteurJDBC.service.ConnecteurJDBCConnectionInfoPK;
 
@@ -33,11 +33,11 @@ import javax.inject.Named;
 import java.util.Collection;
 
 @Named
-public class MockableConnecteurJDBCService implements ConnecteurJDBCService {
+public class MockableConnecteurJDBCService implements DataSourceConnectionInfoService {
 
-  private  ConnecteurJDBCService realService;
+  private DataSourceConnectionInfoService realService;
 
-  public void setRealService(ConnecteurJDBCService realService) {
+  public void setRealService(DataSourceConnectionInfoService realService) {
     this.realService = realService;
   }
 

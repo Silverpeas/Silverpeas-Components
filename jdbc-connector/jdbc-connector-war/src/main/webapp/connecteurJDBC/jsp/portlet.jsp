@@ -38,7 +38,6 @@ String componentId =  connecteurJDBC.getComponentId();
   <link rel="stylesheet" href="../../util/styleSheets/globalSP.css">
 </head>
 <Script language="JavaScript">
-
 	function doRequest()
 	{
 		document.navigationForm.action = "../../RconnecteurJDBC/jsp/connecteurJDBC.jsp?Space=<%=spaceId%>&Component=<%=componentId%>";
@@ -47,7 +46,8 @@ String componentId =  connecteurJDBC.getComponentId();
 
 <%
 	if (flag.equals("admin")||flag.equals("publisher"))
-	{%>
+	{
+	%>
 	function doParameterRequest()
 	{
 		document.navigationForm.action = "../../RconnecteurJDBC/jsp/requestParameters.jsp?Space=<%=spaceId%>&Component=<%=componentId%>";
@@ -56,7 +56,8 @@ String componentId =  connecteurJDBC.getComponentId();
 
 <%
 		if (flag.equals("admin"))
-		{%>
+		{
+		%>
 	function doParameterConnection()
 	{
 		document.navigationForm.action = "../../RconnecteurJDBC/jsp/connectionParameters.jsp?Space=<%=spaceId%>&Component=<%=componentId%>";
@@ -109,7 +110,7 @@ function goto_jsp(jsp, param)
 	  ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
 	  arrayPane.setSortable(true);
 	
-	if (connecteurJDBC.getSQLreq()!=null)
+	if (connecteurJDBC.getCurrentConnectionInfo().getSqlRequest()!=null)
 	{	
 	  connecteurJDBC.startConnection();
 	

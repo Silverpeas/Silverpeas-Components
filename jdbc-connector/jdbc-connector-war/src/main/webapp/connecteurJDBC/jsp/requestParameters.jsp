@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.*" %>
 <%--
   Copyright (C) 2000 - 2015 Silverpeas
 
@@ -22,7 +23,6 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="imports.jsp" %>
@@ -49,43 +49,27 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 <view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	function processUpdate()
 	{
 
 		if( isValidTextMaxi(document.processForm.SQLReq))
 		{
-			document.processForm.Action.value = "setSQLReq";
+			document.processForm.action = "SetSQLRequest";
 			document.processForm.submit();
-		}else 
-			alert("<%=connecteurJDBC.getString("erreurChampsTropLong")%>");
+    } else {
+      var err = '<%=connecteurJDBC.getString("erreurChampsTropLong")%>';
+      alert(err);
+    }
 	}
 
-	function annule()
+	function cancel()
 	{
-		document.processForm.Action.value = "cancelSQLReq";
-		document.processForm.submit();
-	}
-	
-	function doRequest()
-	{
-		document.navigationForm.action = "connecteurJDBC.jsp";
-		document.navigationForm.submit();
-	}
-
-	function writeTableName()
-	{
-		document.processForm.Action.value = "writeTable";
+		document.processForm.action = "connecteurJDBC";
 		document.processForm.submit();
 	}
 
-	function writeColumnName()
-	{
-		document.processForm.Action.value = "writeColumn";
-		document.processForm.submit();
-	}
-
-	function editTableColumn() 
+	function editTableColumn()
 	{
 		chemin = "<%=m_context%><%=connecteurJDBC.getComponentUrl()%>EditTableColumn.jsp?indiceForm=0&indiceElem=5";
 		largeur = "540";
@@ -93,29 +77,6 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 		SP_openWindow(chemin,"SqlRequest_Debut",largeur,hauteur,"");
 	}
 
-
-
-<%
-	if (flag.equals("admin")||flag.equals("publisher"))
-	{%>
-	function doParameterRequest()
-	{
-		document.navigationForm.action = "requestParameters.jsp";
-		document.navigationForm.submit();
-	}
-
-<%
-		if (flag.equals("admin"))
-		{%>
-	function doParameterConnection()
-	{
-		document.navigationForm.action = "connectionParameters.jsp";
-		document.navigationForm.submit();
-	}
-<%		
-		}
-	}
-%>
 </script>
 <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
 
@@ -129,13 +90,16 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 	//Les onglets
     tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "javaScript:doRequest()", false);
-    
-    if (flag.equals("publisher") || flag.equals("admin"))
-    	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "javaScript:doParameterRequest()",true );
-	
-	if (flag.equals("admin"))
-		tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"), "javaScript:doParameterConnection()", false);
+  tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "DoRequest", false);
+
+  if (flag.equals("publisher") || flag.equals("admin")) {
+    tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "ParameterRequest", true);
+  }
+
+  if (flag.equals("admin")) {
+    tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"), "ParameterConnection",
+        false);
+  }
 
 
 
@@ -147,12 +111,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 	out.println(frame.printBefore());
 	
 %>
-<form name="processForm" action="processForm.jsp" >
-	<input name="Sender" type="hidden" value = "connecteurJDBC.jsp" >
-	<input name="Action" type="hidden" >
-	<input name="SqlReq" type="hidden" >
-
- <CENTER>
+<form name="processForm" action="SetSQLRequest" >
 
 <table cellpadding=0 cellspacing=0 border=0 width="98%" class=intfdcolor4><TR><TD><!--Cadre bleu-->
 	  <table cellpadding=5 cellspacing=0 border=0 width="100%" class=contourintfdcolor>
@@ -161,9 +120,8 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 		<td align="center" valign=top><span class="txtlibform"><%=connecteurJDBC.getString("champRequete")%> : </span>
 		</td>		
 		<td align="center" valign=top>
-			<input TYPE='hidden' name='table'>
 			<textarea name="SQLReq" cols=70 rows="15" wrap="SOFT"  ><%
-				String requete = connecteurJDBC.getSQLreq();
+        String requete = connecteurJDBC.getCurrentConnectionInfo().getSqlRequest();
 				if (requete != null )
 					out.print(requete);
 %></textarea>
@@ -174,13 +132,15 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 	</td></tr></table>
 	</form>
 	<%
-	Button validateButton = (Button) gef.getFormButton(connecteurJDBC.getString("boutonValider"), "javascript:onClick=processUpdate()", false);
+    Button validateButton = gef.getFormButton(connecteurJDBC.getString("boutonValider"),
+        "javascript:onClick=processUpdate()", false);
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
-    buttonPane.addButton((Button) gef.getFormButton(connecteurJDBC.getString("boutonAnnuler"), "javascript:onClick=annule()", false));
+    buttonPane.addButton(
+        gef.getFormButton(connecteurJDBC.getString("boutonAnnuler"), "javascript:onClick=cancel()",
+            false));
     out.println(buttonPane.print());
    %>
-   
 
 </center>
 

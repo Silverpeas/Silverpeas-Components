@@ -23,12 +23,13 @@
  */
 package org.silverpeas.connecteurJDBC.control;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
@@ -92,11 +93,11 @@ public class ConnecteurJDBCRequestRouter
     } else if (function.startsWith("DoRequest")) {
       destination = "connecteurJDBC.jsp";
     } else if (function.startsWith("ParameterConnection")) {
-      connecteurJDBC.loadDrivers();
+      request.setAttribute("currentConnectionInfo", connecteurJDBC.getCurrentConnectionInfo());
+      request.setAttribute("availableDataSources", connecteurJDBC.getAvailableDataSources());
       destination = "connectionParameters.jsp";
     } else if (function.startsWith("UpdateConnection")) {
-      String JDBCdriverName = request.getParameter("JDBCdriverName");
-      String JDBCurl = request.getParameter("JDBCurl");
+      String dataSource = request.getParameter("DataSource");
       String login = request.getParameter("Login");
       String password = request.getParameter("Password");
       int rowLimit = 0;
@@ -104,14 +105,24 @@ public class ConnecteurJDBCRequestRouter
         rowLimit = Integer.parseInt(request.getParameter("RowLimit"));
       }
       try {
-        connecteurJDBC.setJDBCdriverName(JDBCdriverName);
-        connecteurJDBC.updateConnection(JDBCdriverName, JDBCurl, login, password, rowLimit);
-        connecteurJDBC.loadDrivers();
+        connecteurJDBC.updateConnectionInfo(dataSource, login, password, rowLimit);
+        destination = "connecteurJDBC.jsp";
       } catch (Exception e) {
         SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCRequestRouter.getDestination()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", e);
+        NotifierUtil.addError(connecteurJDBC.getString("erreurParametresConnectionIncorrects"));
+        destination = "connectionParameters.jsp";
       }
-      destination = "connecteurJDBC.jsp";
+    } else if (function.startsWith("SetSQLRequest")) {
+      String sqlRequest = request.getParameter("SQLReq");
+      try {
+        connecteurJDBC.updateSQLRequest(sqlRequest);
+        destination = "connecteurJDBC.jsp";
+      } catch (ConnecteurJDBCException ex) {
+        NotifierUtil.addError(
+            connecteurJDBC.getString("erreurRequeteIncorrect") + ": " + ex.getExtraInfos());
+        destination = "requestParameters.jsp";
+      }
     } else if (function.startsWith("processForm")) {
       destination = "processForm.jsp";
     } else {

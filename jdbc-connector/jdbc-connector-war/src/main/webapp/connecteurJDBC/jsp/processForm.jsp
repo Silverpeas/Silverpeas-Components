@@ -100,7 +100,8 @@
 		
 		if (ok)
 			connecteurJDBC.setValidRequest(SQLreq);	
-		connecteurJDBC.setSQLreq(SQLreq);
+		connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(SQLreq);
+    connecteurJDBC.getCurrentConnectionInfo().save();
 			
 	}
 	
@@ -121,7 +122,7 @@
 		String SQLreq = request.getParameter("SQLReq");
 		SQLreq = "select * from "+table;  
 
-		connecteurJDBC.setSQLreq(SQLreq);
+		connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(SQLreq);
 	}
 	
 	// past the selected column to the SQL request
@@ -129,7 +130,7 @@
 	{
 		String SQLreq = request.getParameter("SqlReq");
 
-		connecteurJDBC.setSQLreq(SQLreq);
+		connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(SQLreq);
 		connecteurJDBC.setSelectedColumn(new Vector());
 	}
 
@@ -164,7 +165,7 @@
 				              "connecteurJDBC.MSG_ADD_CRITER_TO_CLOSE_WHERE_FAIL", "request : "+SQLreq, e);
 		}
 
-		connecteurJDBC.setSQLreq(SQLreq);
+		connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(SQLreq);
 	}
 
 	

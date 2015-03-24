@@ -54,7 +54,7 @@ public class ConnecteurJDBCSessionControllerTest {
     MainSessionController controller = mock(MainSessionController.class);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("connecteurJDBC10");
-    ConnecteurJDBCService ejb = mock(ConnecteurJDBCService.class);
+    DataSourceConnectionInfoService ejb = mock(DataSourceConnectionInfoService.class);
     List<ConnecteurJDBCConnectionInfoDetail> connecteurs =
         new ArrayList<ConnecteurJDBCConnectionInfoDetail>();
     when(ejb.getConnectionList(any(ConnecteurJDBCConnectionInfoPK.class))).thenReturn(connecteurs);
@@ -67,7 +67,7 @@ public class ConnecteurJDBCSessionControllerTest {
     MainSessionController controller = mock(MainSessionController.class);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("connecteurJDBC10");
-    ConnecteurJDBCService ejb = mock(ConnecteurJDBCService.class);
+    DataSourceConnectionInfoService ejb = mock(DataSourceConnectionInfoService.class);
     ConnecteurJDBCConnectionInfoDetail detail = new ConnecteurJDBCConnectionInfoDetail();
     detail.setInstanceId("connecteurJDBC10");
     detail.setRowLimit(10);
