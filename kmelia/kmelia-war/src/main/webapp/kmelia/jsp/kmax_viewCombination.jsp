@@ -82,27 +82,25 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 	function search() {
-	    z = "";
-	    nbSelectedAxis = 0;
-      // -1 because of security tokens
-      // before, it was :
-      //  - i < document.axisForm.length
-	    for (var i=0; i<(document.axisForm.length-1); i++) {
-	        if (document.axisForm.elements[i].value.length != 0) {
-	            if (nbSelectedAxis != 0)
-	                z += ",";
-	            nbSelectedAxis = 1;
-	            truc = document.axisForm.elements[i].value.split("|");
-	            z += truc[0];
-	        }
-	    }
-	    if (nbSelectedAxis != 1) {
-	            window.alert("Vous devez sélectionnez au moins un axe !");
-	    } else {
-	            document.managerForm.action = "KmaxAddCoordinate";
-	            document.managerForm.SearchCombination.value = z;
-	            document.managerForm.submit();
-	    }
+    var criterias = "";
+    $(".axis").each(function() {
+      var val = $(this).val();
+      if (val.length != 0) {
+        if (criterias.length != 0) {
+          criterias += ",";
+        }
+        truc = val.split("|");
+        criterias += truc[0];
+      }
+    });
+
+    if (criterias.length == 0) {
+      window.alert("Vous devez sélectionnez au moins un axe !");
+    } else {
+      document.managerForm.action = "KmaxAddCoordinate";
+      document.managerForm.SearchCombination.value = criterias;
+      document.managerForm.submit();
+    }
 	}
 
 	function deleteCoordinate(coordinateId) {
