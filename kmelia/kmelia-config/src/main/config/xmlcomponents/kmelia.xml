@@ -543,8 +543,8 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Permet de désactiver l'opération "Notifier" sur les publications</message>
-            <message lang="en">Avoid "Notify" operation on publications</message>
+            <message lang="fr">Permet d'activer l'opération "Notifier" sur les publications.</message>
+            <message lang="en">Enable "Notify" operation on publications.</message>
             <message lang="de">Vermeidet "Benachrichtigungen" auf Veröffentlichungen</message>
           </help>
           <personalSpaceValue>no</personalSpaceValue>
