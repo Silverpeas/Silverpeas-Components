@@ -83,34 +83,28 @@ var topicAddWindow = window;
 var exportComponentWindow = window;
 
 function search() {
-    z = "";
-    nbSelectedAxis = 0;
-    timeCriteria = "X";
-    timeCriteriaUsed = 0;
+    var criterias = "";
+    var timeCriteria = "X";
 	<% if (kmeliaScc.isTimeAxisUsed()) { %>
-      // -2 instead of -1 because of security tokens
-      // before, it was :
-      //  - document.axisForm.elements[document.axisForm.length - 1].value
-      //  - timeCriteriaUsed = 1;
-	    timeCriteria = document.axisForm.elements[document.axisForm.length - 2].value;
-	    timeCriteriaUsed = 2;
+	    timeCriteria = $("#timeAxis").val();
 	<% } %>
-	for (var i=0; i<document.axisForm.length - timeCriteriaUsed; i++) {
-    	if (document.axisForm.elements[i].value.length != 0) {
-            if (nbSelectedAxis != 0)
-                z += ",";
-            nbSelectedAxis = 1;
-            truc = document.axisForm.elements[i].value.split("|");
-            z += truc[0];
-        }
+  $(".axis").each(function() {
+    var val = $(this).val();
+    if (val.length != 0) {
+      if (criterias.length != 0) {
+        criterias += ",";
+      }
+      truc = val.split("|");
+      criterias += truc[0];
     }
-    if (nbSelectedAxis != 1) {
-		window.alert("Vous devez sélectionnez au moins un axe !");
+  });
+    if (criterias.length == 0) {
+		  window.alert("Vous devez sélectionnez au moins un axe !");
     } else {
-		document.managerForm.TimeCriteria.value = timeCriteria;
-		document.managerForm.SearchCombination.value = z;
-		document.managerForm.action = "KmaxSearch";
-		document.managerForm.submit();
+      document.managerForm.TimeCriteria.value = timeCriteria;
+      document.managerForm.SearchCombination.value = criterias;
+      document.managerForm.action = "KmaxSearch";
+      document.managerForm.submit();
     }
 }
 

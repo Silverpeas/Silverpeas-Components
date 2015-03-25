@@ -140,9 +140,9 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
                                   axis.append("<label for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label>");
                               
                                         if (axisLinked)
-                                          axis.append("<select id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\" onchange=\"positionManage(this)\">");
+                                          axis.append("<select class=\"axis\" id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\" onchange=\"positionManage(this)\">");
                                         else
-                                          axis.append("<select id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\">");
+                                          axis.append("<select class=\"axis\" id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\">");
                                         axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"\">"+kmeliaScc.getString("AllComponents")+"</option>");
                   } else if (node.getLevel() == 3) {
                       selectValue = "";
@@ -198,7 +198,7 @@ String displayAxis(KmeliaSessionController kmeliaScc, GraphicElementFactory gef,
     
     if (timeAxisEnabled && axisList.size() > 0) {
         //get the time axis
-        ResourceLocator timeSettings = new ResourceLocator("com.stratelia.webactiv.kmelia.multilang.timeAxisBundle", kmeliaScc.getLanguage());
+        ResourceLocator timeSettings = new ResourceLocator("org.silverpeas.kmelia.multilang.timeAxisBundle", kmeliaScc.getLanguage());
         axisList.add(getTimeAxis(kmeliaScc, timeSettings,  timeCriteriaValue));
     }
     
