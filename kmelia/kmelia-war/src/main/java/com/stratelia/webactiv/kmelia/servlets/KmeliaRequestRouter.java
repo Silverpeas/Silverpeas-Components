@@ -656,7 +656,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("Profile", "user");
             request.setAttribute("TaxonomyOK", false);
             request.setAttribute("ValidatorsOK", false);
-            request.setAttribute("IsAlias", "1");
           } else {
             request.setAttribute("Profile", kmelia.getProfile());
             request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
