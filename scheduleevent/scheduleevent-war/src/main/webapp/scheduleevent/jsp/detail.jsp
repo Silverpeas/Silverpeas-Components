@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -80,7 +81,7 @@
 
   function exportICal() {
     displaySingleFreePopupFrom('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>', {
-      title : '${scheduleEventDetail.title}',
+      title : '${silfn:escapeJs(scheduleEventDetail.title)}',
       width : '500'
     });
   }
