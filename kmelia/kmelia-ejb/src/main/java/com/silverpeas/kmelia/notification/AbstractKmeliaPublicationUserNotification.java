@@ -116,7 +116,8 @@ public abstract class AbstractKmeliaPublicationUserNotification
       return null;
     } else if (NotifAction.CREATE.equals(action)) {
       String userId = getResource().getCreatorId();
-      if (UserDetail.getById(userId).isDeletedState()) {
+      UserDetail creator = UserDetail.getById(userId);
+      if (!creator.isActivatedState()) {
         return getResource().getUpdaterId();
       }
       return userId;
