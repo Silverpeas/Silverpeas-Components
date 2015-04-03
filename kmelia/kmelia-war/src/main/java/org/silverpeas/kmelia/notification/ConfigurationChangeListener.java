@@ -23,21 +23,21 @@
  */
 package org.silverpeas.kmelia.notification;
 
-import javax.inject.Named;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.notification.jsondiff.Operation;
-
 import com.silverpeas.admin.notification.ComponentJsonPatch;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.util.StringUtil;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.notification.jsondiff.Operation;
+
+import javax.inject.Named;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.ADMIN_COMPONENT_TOPIC;
 import static com.silverpeas.notification.RegisteredTopics.fromName;
 import static com.silverpeas.notification.SilverpeasNotificationCause.UPDATE;
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 /**
@@ -64,9 +64,15 @@ public class ConfigurationChangeListener extends DefaultNotificationSubscriber {
       if ("kmelia".equalsIgnoreCase(patch.getComponentType())) {
         Operation operation = patch.getOperationByPath(VERSION_MODE);
         if (operation != null) {
-          AttachmentServiceFactory.getAttachmentService().switchComponentBehaviour(notification
-              .getSource().getComponentInstanceId(), StringUtil.getBooleanValue(operation
-              .getValue()));
+          boolean toVersionning = StringUtil.getBooleanValue(operation.getValue());
+          boolean alwaysVisible = StringUtil.getBooleanValue(getAdminService()
+              .getComponentParameterValue(notification.getSource().getComponentInstanceId(),
+                  "publicationAlwaysVisible"));
+          if (!alwaysVisible || !toVersionning) {
+            AttachmentServiceFactory.getAttachmentService()
+                .switchComponentBehaviour(notification.getSource().getComponentInstanceId(),
+                    toVersionning);
+          }
         }
       }
     }

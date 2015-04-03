@@ -1391,7 +1391,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone = isClone(pubDetail);
+      boolean isClone = pubDetail.isClone();
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
       
@@ -1690,8 +1690,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         return;
       }
 
-      boolean clone = isClone(pubDetail);
-      if (clone) {
+      if (pubDetail.isClone()) {
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
 
@@ -1718,11 +1717,6 @@ public class KmeliaBmEJB implements KmeliaBm {
       // index all attached files to taking into account visibility period
       indexExternalElementsOfPublication(pubDetail);
     }
-  }
-
-  private boolean isClone(PublicationDetail publication) {
-    return isDefined(publication.getCloneId()) && !"-1".equals(publication.getCloneId())
-        && !isDefined(publication.getCloneStatus());
   }
 
   /**
@@ -2270,7 +2264,7 @@ public class KmeliaBmEJB implements KmeliaBm {
               "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
           PublicationDetail publi = publicationBm.getDetail(pubPK);
           if (publi != null) {
-            boolean isClone = isClone(publi);
+            boolean isClone = publi.isClone();
             SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
                 "root.MSG_GEN_PARAM_VALUE", "This publication is clone ? " + isClone);
             if (isClone) {
