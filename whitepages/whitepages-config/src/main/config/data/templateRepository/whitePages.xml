@@ -26,6 +26,9 @@
 -->
 
 <publicationTemplate>
+  <name>Fiche expert</name>
+  <description>Utilisé par l'application Annuaire d'experts</description>
+  <visible>false</visible>
 	<dataFileName>whitePages/data.xml</dataFileName>
 	<viewFileName>whitePages/view.xml</viewFileName>
 	<updateFileName>whitePages/update.xml</updateFileName>
