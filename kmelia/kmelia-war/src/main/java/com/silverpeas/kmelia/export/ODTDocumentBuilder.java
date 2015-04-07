@@ -67,6 +67,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
 import static com.silverpeas.converter.DocumentFormat.odt;
@@ -327,6 +328,11 @@ public class ODTDocumentBuilder {
       context.setNodeId(getTopicIdOf(publication));
       String htmlText = viewForm.toString(context, dataRecord);
       if (isDefined(htmlText)) {
+        //Suppress script tag
+        htmlText = Pattern.compile("<script[^>]*>.*?</script>",
+            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
+            .matcher(htmlText)
+            .replaceAll("");
         buildWithHTMLText(htmlText, in(odtDocument));
         removeSection = false;
       }
