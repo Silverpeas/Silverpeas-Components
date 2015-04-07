@@ -91,10 +91,10 @@
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
-      <value>whitePages/annuaire.xml</value>
+      <value>whitePages.xml</value>
       <type>text</type>
-	  <size>30</size>
-      <updatable>creation</updatable>
+      <size>30</size>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur l'expert.</message>
         <message lang="en">XML form to describe the skills of an expert.</message>
@@ -112,7 +112,7 @@
       <mandatory>true</mandatory>
       <value>whitePages/annuaire.html</value>
       <type>text</type>
-	  <size>30</size>
+      <size>30</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Fichier html permettant de présenter les informations de l'expert.</message>
