@@ -26,6 +26,9 @@
 -->
 
 <publicationTemplate>
+  <name>whitePages</name>
+  <description>Fiche expert</description>
+  <visible>true</visible>
 	<dataFileName>whitePages/data.xml</dataFileName>
 	<viewFileName>whitePages/view.xml</viewFileName>
 	<updateFileName>whitePages/update.xml</updateFileName>
