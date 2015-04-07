@@ -61,6 +61,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.File;
@@ -284,8 +285,7 @@ public class ODTDocumentBuilder {
       try {
         htmlFile = new File(
             FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
-        // warning: the content of HTML text is actually in ISO-8859-1!
-        FileUtils.writeStringToFile(htmlFile, html, "ISO-8859-1");
+        FileUtils.writeStringToFile(htmlFile, html, Charsets.UTF_8);
         HTMLConverter converter = DocumentFormatConverterProvider.getHTMLConverter();
         odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
         TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
