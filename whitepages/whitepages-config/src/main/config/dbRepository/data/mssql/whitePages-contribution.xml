@@ -51,9 +51,9 @@
         </drop_index>
     </current>
 
-    <upgrade version="003">
+    <upgrade version="004">
        <create_table>
-            <file name="mssql\whitePages\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\whitePages\up004\update_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
        </create_table>
     </upgrade>
 
