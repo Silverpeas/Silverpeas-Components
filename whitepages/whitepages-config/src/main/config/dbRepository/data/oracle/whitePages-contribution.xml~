@@ -53,7 +53,7 @@
 
     <upgrade version="004">
        <create_table>
-            <file name="oracle\whitePages\up004\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\whitePages\up004\update_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
        </create_table>
     </upgrade>
 
