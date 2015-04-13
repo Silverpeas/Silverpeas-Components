@@ -11,9 +11,9 @@ sql.eachRow('SELECT id, JDBCurl FROM SC_ConnecteurJDBC_ConnectInfo') { row ->
   int count = sql.executeUpdate('UPDATE SC_ConnecteurJDBC_ConnectInfo SET dataSource = :dataSource WHERE id = :id',
       [id: row.id, dataSource: dataSource])
   if (count != 1) {
-    throw new SQLException("Failed to update connection info of id = ${id} with data source = ${dataSource}")
+    throw new SQLException("Failed to update connection info of id = ${row.id} with data source = ${dataSource}")
   } else {
-    log.info "Connection Info of id = ${id} -> set data source = ${dataSource}: [Ok]"
+    log.info "Connection Info of id = ${row.id} -> set data source = ${dataSource}: [Ok]"
   }
 }
 

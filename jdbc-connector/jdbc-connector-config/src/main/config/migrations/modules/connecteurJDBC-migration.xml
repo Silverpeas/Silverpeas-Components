@@ -31,6 +31,7 @@
   </current>
 
   <upgrade fromVersion="002">
+    <script name="alter_table_before.sql" type="sql"/>
     <script name="setDataSourceFromJdbcUrl.groovy" type="groovy"/>
     <script name="alter_table.sql" type="sql"/>
   </upgrade>
