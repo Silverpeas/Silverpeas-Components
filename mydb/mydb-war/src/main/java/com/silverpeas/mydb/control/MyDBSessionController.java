@@ -46,6 +46,7 @@ import org.silverpeas.mydb.control.DriverManager;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.mydb.control.ejb.MyDBBm;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.date.DateFormatter;
@@ -545,7 +546,12 @@ public class MyDBSessionController extends AbstractComponentSessionController {
             rs = dbMetaData.getColumns(null, "%", tableName, "%");
             while (rs.next()) {
               String columnName = rs.getString(DbColumn.COLUMN_NAME);
+              
+              //In jdbc Oracle, override mapping between DATE and java.sql.Date instead of DATE and java.sql.Timestamp
               int dataType = rs.getInt(DbColumn.DATA_TYPE);
+              if (DateField.TYPE.equalsIgnoreCase(rs.getString("TYPE_NAME")))
+                dataType = java.sql.Types.DATE;
+
               int dataSize = rs.getInt(DbColumn.COLUMN_SIZE);
               int nullable = rs.getInt(DbColumn.NULLABLE);
               boolean isNull = (nullable == 1);
