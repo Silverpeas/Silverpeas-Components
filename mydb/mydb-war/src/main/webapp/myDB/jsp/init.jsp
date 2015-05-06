@@ -73,6 +73,7 @@
 %><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"
 %><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"
 %><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"
+%><%@ page import="com.silverpeas.util.EncodeHelper"
 %><%
 	response.setHeader("Cache-Control", "no-store"); // HTTP 1.1
 	response.setHeader("Pragma", "no-cache");        // HTTP 1.0
