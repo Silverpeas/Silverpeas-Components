@@ -111,7 +111,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.mydb.multilang.myDBBundle",
-        "org.silverpeas.mydb.settings.myDBIcons");
+        "org.silverpeas.mydb.settings.myDBIcons","org.silverpeas.mydb.settings.myDBSettings");
     resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(),
         getLanguage());
     driverManager = new DriverManager();
@@ -213,7 +213,6 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
               SilverpeasException.FATAL, "myDB.EX_MUST_BE_ONLY_ONE_CONNECTION");
         }
-
         Iterator<MyDBConnectionInfoDetail> i = c.iterator();
         if (i.hasNext()) {
           myDBDetail = i.next();

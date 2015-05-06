@@ -1,3 +1,25 @@
+  $(document).ready(function() {
+    init();
+     // By suppling no content attribute, the library uses each elements title attribute by default
+     $('#fieldValue[title]').qtip({
+    content: {
+      text: false
+    },
+    style: {
+      tip: true,
+      classes: "qtip-shadow qtip-green"
+    },
+    position: {
+      adjust: {
+        method: "flip flip"
+      },
+      at: "top right",
+      my: "bottom left",
+      viewport: $(window)
+    }
+     });
+  });
+
 var tableDiv = null;
 
 function detail(index, command)
