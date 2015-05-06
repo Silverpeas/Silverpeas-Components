@@ -56,7 +56,7 @@ public abstract class AbstractForumsMessageUserNotification
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("text", resource.getText());
     template.setAttribute("originTitle",
-        getForumsBm().getMessageTitle(getForumsBm().getMessageParentId(getResource().getId())));
+        getForumsService().getMessageTitle(getForumsService().getMessageParentId(getResource().getId())));
   }
 
   @Override
@@ -92,5 +92,10 @@ public abstract class AbstractForumsMessageUserNotification
       bundleKeyPrefix.append("message");
     }
     return bundleKeyPrefix.append(".notification.").toString();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return getNotificationBundleKeyPrefix()+"notifLinkLabel";
   }
 }

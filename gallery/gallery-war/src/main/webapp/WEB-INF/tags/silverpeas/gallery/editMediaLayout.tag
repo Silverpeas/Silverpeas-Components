@@ -64,6 +64,7 @@
 <jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
 <c:set var="isNewMediaCase" value="${empty media.id}" scope="request"/>
+<c:set var="isUpdateMediaFromAlbumCase" value="${requestScope.isUpdateMediaFromAlbumCase}" scope="request"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
@@ -103,6 +104,7 @@
   <title></title>
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
+  <view:includePlugin name="datepicker"/>
   <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <%
     if (formUpdate != null) {
@@ -117,6 +119,10 @@
   <c:when test="${isNewMediaCase}">
     <fmt:message key="gallery.${fn:toLowerCase(mediaType)}.add" var="browseBarLabel"/>
     <c:set var="additionalBrowseBarElements" value="${browseBarLabel}@#"/>
+  </c:when>
+  <c:when test="${isUpdateMediaFromAlbumCase}">
+    <fmt:message key="GML.modify" var="modifyLabel"/>
+    <c:set var="additionalBrowseBarElements" value="${modifyLabel} '${silfn:truncate(mediaTitle, 50)}'@#"/>
   </c:when>
   <c:otherwise>
     <fmt:message key="GML.modify" var="modifyLabel"/>
@@ -147,7 +153,8 @@
                                mediaType="${mediaType}"
                                supportedMediaMimeTypes="${supportedMediaMimeTypes}"
                                formUpdate="<%=formUpdate%>"
-                               isUsePdc="${requestScope.IsUsePdc}"/>
+                               isUsePdc="${requestScope.IsUsePdc}"
+                               isUpdateMediaFromAlbumCase="${isUpdateMediaFromAlbumCase}"/>
 
             <c:if test="${requestScope.IsUsePdc}">
               <%-- Display PDC form --%>
@@ -179,7 +186,7 @@
             <view:buttonPane>
               <view:button action="javascript:onClick=sendData();" label="${validateLabel}"/>
               <c:choose>
-                <c:when test="${not isNewMediaCase}">
+                <c:when test="${not isNewMediaCase and not isUpdateMediaFromAlbumCase}">
                   <view:button action="MediaView?MediaId=${media.id}" label="${cancelLabel}"/>
                 </c:when>
                 <c:otherwise>

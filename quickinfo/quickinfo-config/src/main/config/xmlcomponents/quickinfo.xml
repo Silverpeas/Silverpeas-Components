@@ -85,6 +85,80 @@
       </help>
     </profile>
   </profiles>
+  <groupsOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Visuels</message>
+        <message lang="en">Visuals</message>
+        <message lang="de">Visuals</message>
+      </label>
+      <description>
+        <message lang="fr">Il est possible d'associer un visuel à chaque actualité et de le recadrer.</message>
+        <message lang="en">It is possible to associate a visual to each news and reframe it.</message>
+        <message lang="de">It is possible to associate a visual to each news and reframe it.</message>
+      </description>
+      <help></help>
+      <order>2</order>
+      <parameters>
+        <parameter>
+          <name>thumbnailMandatory</name>
+          <label>
+            <message lang="fr">Visuel obligatoire</message>
+            <message lang="en">Mandatory image</message>
+            <message lang="de">Obligatorisches Vorschaubild</message>
+          </label>
+          <order>2</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de rendre obligatoire l'ajout d'une image à chaque actualité.</message>
+            <message lang="en">Lets make it mandatory to add an image to each news.</message>
+            <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede News hinzu zu fügen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>thumbnailWidthSize</name>
+          <label>
+            <message lang="fr">Largeur de recadrage</message>
+            <message lang="en">Width crop</message>
+            <message lang="de">Breite des Vorschaubilds</message>
+          </label>
+          <order>3</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de définir la largeur de l'image recadrée</message>
+            <message lang="en">This feature allows to define width of the cropped image</message>
+            <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht zu definieren</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>thumbnailHeightSize</name>
+          <label>
+            <message lang="fr">Hauteur de recadrage</message>
+            <message lang="en">Height crop</message>
+            <message lang="de">Höhe des Vorschaubilds</message>
+          </label>
+          <order>4</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de définir la hauteur de l'image recadrée</message>
+            <message lang="en">This feature allows to define height of the cropped image</message>
+            <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht zu definieren</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+  </groupsOfParameters>
   <parameters>
     <parameter>
       <name>usePdc</name>
@@ -102,62 +176,6 @@
         <message lang="fr">Les brèves créées au sein de cette instance pourront être classées sur le Plan de Classement.</message>
         <message lang="en">News created in this application will be classified on the classification scheme.</message>
         <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>thumbnailMandatory</name>
-      <label>
-        <message lang="fr">Vignette obligatoire</message>
-        <message lang="en">Mandatory thumbnail</message>
-        <message lang="de">Obligatorisches Vorschaubild</message>
-      </label>
-      <order>2</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet de rendre obligatoire l'ajout d'une vignette à chaque actualité.</message>
-        <message lang="en">Lets make it mandatory to add a thumbnail to each news.</message>
-        <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede News hinzu zu fügen.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>thumbnailWidthSize</name>
-      <label>
-        <message lang="fr">Largeur de la vignette</message>
-        <message lang="en">Thumbnail width</message>
-        <message lang="de">Breite des Vorschaubilds</message>
-      </label>
-      <order>3</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Ce paramètre permet de définir la largeur de la vignette à afficher.</message>
-        <message lang="en">This feature allows to define width of the displayed thumbnail.</message>
-        <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht zu definieren</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>thumbnailHeightSize</name>
-      <label>
-        <message lang="fr">Hauteur de la vignette</message>
-        <message lang="en">Thumbnail height</message>
-        <message lang="de">Höhe des Vorschaubilds</message>
-      </label>
-      <order>4</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Ce paramètre permet de définir la hauteur de la vignette à afficher.</message>
-        <message lang="en">This feature allows to define height of the displayed thumbnail.</message>
-        <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht zu definieren</message>
       </help>
     </parameter>
     <parameter>

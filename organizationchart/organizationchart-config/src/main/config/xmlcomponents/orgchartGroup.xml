@@ -34,7 +34,7 @@
   </label>
   <description>
     <message lang="fr">Cette application permet l'affichage d'un organigramme basé sur les groupes d'utilisateurs.</message>
-    <message lang="en">This application display an organization chart based on a groups structure.</message>
+    <message lang="en">This application displays an organization chart based on a group.</message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
@@ -56,6 +56,207 @@
       </help>
     </profile>
   </profiles>
+  <groupsOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Vue "services"</message>
+        <message lang="en">Units view</message>
+        <message lang="de">Units view</message>
+      </label>
+      <description>
+        <message lang="fr">La vue "services" est la vue principale. Elle présente la composition d'un service (en sous services). Les responsables de chaque entité sont également affichés.</message>
+        <message lang="en">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
+        <message lang="de">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
+      </description>
+      <help></help>
+      <order>3</order>
+      <parameters>
+        <parameter>
+          <name>unitsChartCentralLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du service principal</message>
+            <message lang="en">Role(s) of the main organizational unit</message>
+          </label>
+          <order>14</order>
+          <mandatory>false</mandatory>
+          <value>Direction=Directrice;Direction=Directeur</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Rôle(s) à afficher pour le service principal (basé sur le titre des personnes)</message>
+            <message lang="en">Role(s) of the main organizational unit</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>unitsChartRightLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du bloc droit</message>
+            <message lang="en">Role(s) of the right block</message>
+          </label>
+          <order>15</order>
+          <mandatory>false</mandatory>
+          <value>Assistantes=Assistante</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Rôle(s) à afficher dans la case droite</message>
+            <message lang="en">Role(s) to be placed in the right cell</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>unitsChartLeftLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du bloc gauche</message>
+            <message lang="en">Role(s) of the left block</message>
+          </label>
+          <order>16</order>
+          <mandatory>false</mandatory>
+          <value>Role(s) gauche</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Rôle(s) à afficher dans la case gauche</message>
+            <message lang="en">Role(s) to be placed in the left cell</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>unitsChartOthersInfosKeys</name>
+          <label>
+            <message lang="fr">Champ(s) à afficher</message>
+            <message lang="en">Field(s) to display</message>
+          </label>
+          <order>20</order>
+          <mandatory>false</mandatory>
+          <value>Téléphone=phone</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut(s) désignant le(s) champ(s) à afficher</message>
+            <message lang="en">Attribute(s) of field to display</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Vue détaillée</message>
+        <message lang="en">Detailed view</message>
+        <message lang="de">Detailed view</message>
+      </label>
+      <description>
+        <message lang="fr">La vue détaillée présente toutes les personnes d'un service.</message>
+        <message lang="en">The detailed view shows every person of the unit.</message>
+        <message lang="de">The detailed view shows every person of the unit.</message>
+      </description>
+      <help></help>
+      <order>4</order>
+      <parameters>
+        <parameter>
+          <name>personnsChartCentralLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du service principal</message>
+            <message lang="en">Role(s) of the main organizational unit</message>
+          </label>
+          <order>18</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Rôle(s) à afficher pour le service principal</message>
+            <message lang="en">Role(s) of the main organizational unit</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>personnsChartCategoriesLabel</name>
+          <label>
+            <message lang="fr">Catégorie(s) d'un service</message>
+            <message lang="en">Categorie(s) of an unit</message>
+          </label>
+          <order>19</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut désignant les catégories d'un service</message>
+            <message lang="en">Attribute name of the main sub-functions in a unit</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>personnsChartOthersInfosKeys</name>
+          <label>
+            <message lang="fr">Champ(s) à afficher</message>
+            <message lang="en">Field(s) to display</message>
+          </label>
+          <order>21</order>
+          <mandatory>false</mandatory>
+          <value>Téléphone=phone</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut(s) désignant le(s) champ(s) à afficher</message>
+            <message lang="en">Attribute(s) of field to display</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Affichage</message>
+        <message lang="en">Display</message>
+        <message lang="de">Display</message>
+      </label>
+      <description>
+        <message lang="fr"></message>
+        <message lang="en"></message>
+        <message lang="de"></message>
+      </description>
+      <help></help>
+      <order>5</order>
+      <parameters>
+        <parameter>
+          <name>labels</name>
+          <label>
+            <message lang="fr">Libellés</message>
+            <message lang="en">Labels</message>
+          </label>
+          <order>25</order>
+          <mandatory>false</mandatory>
+          <value>true</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
+            <message lang="en">Allows to display/hide label of fields</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>avatars</name>
+          <label>
+            <message lang="fr">Avatars</message>
+            <message lang="en">Avatars</message>
+          </label>
+          <order>26</order>
+          <mandatory>false</mandatory>
+          <value>true</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
+            <message lang="en">Allows to display/hide avatar of each people</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+  </groupsOfParameters>
   <parameters>
     <parameter>
       <name>ldapRoot</name>
@@ -77,8 +278,8 @@
     <parameter>
       <name>ldapAttTitle</name>
       <label>
-        <message lang="fr">Titre</message>
-        <message lang="en">Title</message>
+        <message lang="fr">Attribut "Fonction"</message>
+        <message lang="en">"Title" attribute</message>
       </label>
       <order>12</order>
       <mandatory>false</mandatory>
@@ -87,159 +288,8 @@
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Nom de l'attribut désignant le titre de l'utilisateur</message>
+        <message lang="fr">Nom de l'attribut désignant la fonction de l'utilisateur</message>
         <message lang="en">Name of the attribute for the title of users</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartCentralLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du service principal (vue services)</message>
-        <message lang="en">Role(s) of the main organization unit</message>
-      </label>
-      <order>14</order>
-      <mandatory>false</mandatory>
-      <value>Direction=Directrice;Direction=Directeur</value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Role(s) à afficher pour le service principal (basé sur le titre des personnes)</message>
-        <message lang="en">Role(s) of the main organization unit</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartRightLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du bloc droit (vue services)</message>
-        <message lang="en">Role(s) of the right block (units view)</message>
-      </label>
-      <order>15</order>
-      <mandatory>false</mandatory>
-      <value>Assistantes=Assistante</value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Rôle(s) à afficher dans la case droite</message>
-        <message lang="en">Role(s) to be placed in the right cell</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartLeftLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du bloc gauche (vue services)</message>
-        <message lang="en">Role(s) of the left block</message>
-      </label>      
-      <order>16</order>
-      <mandatory>false</mandatory>
-      <value>Role(s) gauche</value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Rôle(s) à afficher dans la case gauche</message>
-        <message lang="en">Role(s) to be placed in the left cell</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>personnsChartCentralLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du service principal (vue détaillée)</message>
-        <message lang="en">Role(s) of the main organization unit (detailed view)</message>
-      </label>
-      <order>18</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Rôle(s) à afficher pour le service principal</message>
-        <message lang="en">Role(s) of the main organization unit</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>personnsChartCategoriesLabel</name>
-      <label>
-        <message lang="fr">Catégorie(s) d'un service (vue détaillée)</message>
-        <message lang="en">Categorie(s) of a unit (detailed view)</message>
-      </label>      
-      <order>19</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant les catégories d'un service</message>
-        <message lang="en">Attribute name of the main sub-functions in a unit</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartOthersInfosKeys</name>
-      <label>
-        <message lang="fr">Champ(s) à afficher (vue services)</message>
-        <message lang="en">Field(s) to display (units view)</message>
-      </label>
-      <order>20</order>
-      <mandatory>false</mandatory>
-      <value>Téléphone=phone</value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut(s) désignant le(s) champ(s) à afficher</message>
-        <message lang="en">Attribute(s) of field to display</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>personnsChartOthersInfosKeys</name>
-      <label>
-        <message lang="fr">Champ(s) à afficher (vue détaillée)</message>
-        <message lang="en">Field(s) to display (detailed view)</message>
-      </label>
-      <order>21</order>
-      <mandatory>false</mandatory>
-      <value>Téléphone=phone</value>
-      <type>text</type>
-      <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) champ(s) ldap d'informations à afficher</message>
-        <message lang="en">Attribute(s) of field to display</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>labels</name>
-      <label>
-        <message lang="fr">Libellés</message>
-        <message lang="en">Labels</message>
-      </label>
-      <order>22</order>
-      <mandatory>false</mandatory>
-      <value>true</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
-        <message lang="en">Allows to display/hide label of fields</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>avatars</name>
-      <label>
-        <message lang="fr">Avatars</message>
-        <message lang="en">Avatars</message>
-      </label>
-      <order>23</order>
-      <mandatory>false</mandatory>
-      <value>true</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
-        <message lang="en">Allows to display/hide avatar of each people</message>
       </help>
     </parameter>
   </parameters>

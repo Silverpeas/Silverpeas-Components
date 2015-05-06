@@ -1,19 +1,19 @@
 package org.silverpeas.components.quickinfo.notification;
 
-import java.util.Collection;
-import java.util.Map;
-
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.components.quickinfo.model.News;
 
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import java.util.Collection;
 
-public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotification {
-  
-  private final Map<SubscriberType, Collection<String>> subscriberIdsByTypes = SubscriptionUtil.
-      indexSubscriberIdsByType(null);
+public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotification
+    implements UserSubscriptionNotificationBehavior {
+
+  private final SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+      new SubscriptionSubscriberMapBySubscriberType();
 
   public QuickInfoSubscriptionUserNotification(News resource, NotifAction action) {
     super(resource, action);
@@ -22,9 +22,8 @@ public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotif
   @Override
   protected void initialize() {
     super.initialize();
-    SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes, getSubscribeBm().getSubscribers(
-        ComponentSubscriptionResource.from(getResource().getComponentInstanceId())));
-    subscriberIdsByTypes.get(SubscriberType.USER).remove(getSender());
+    subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
+        .getSubscribersOfComponent(getResource().getComponentInstanceId()));
   }
 
   @Override
@@ -42,6 +41,11 @@ public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotif
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return subscriberIdsByTypes.get(SubscriberType.USER);
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 }

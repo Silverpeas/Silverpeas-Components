@@ -68,9 +68,11 @@
 <c:set var="formUpdate" value="<%=formUpdate%>"/>
 <c:set var="formData" value="<%=formData%>"/>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <view:looknfeel/>
+  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <view:includePlugin name="datepicker"/>
   <view:includePlugin name="wysiwyg"/>
   <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -151,103 +153,131 @@
   </script>
 
 </head>
-<body class="yui-skin-sam" onLoad="document.mediaForm.Media$Title.focus();">
+<body class="gallery yui-skin-sam" onLoad="document.mediaForm.Media$Title.focus();">
 <fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaLabel"/>
 <gallery:browseBar albumPath="${albumPath}" additionalElements="${updateSelectedMediaLabel} (${fn:length(selectedMediaIds)})@#"/>
 <view:window>
   <view:frame>
     <form name="mediaForm" action="UpdateSelectedMedia" method="POST" enctype="multipart/form-data">
-      <view:board>
-        <table cellpadding="5">
-          <tr>
-            <td class="txtlibform"><fmt:message key="GML.title"/> :</td>
-            <td><input type="text" name="Media$Title" size="60" maxlength="150" value="">
-              <input type="hidden" name="Im$SearchKeyWord" value="${searchKeyWord}"></td>
-          </tr>
-          <tr>
-            <td class="txtlibform"><fmt:message key="GML.description"/> :</td>
-            <td>
-              <input type="text" name="Media$Description" size="60" maxlength="150" value="">
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform"><fmt:message key="GML.author"/> :</td>
-            <td><input type="text" name="Media$Author" size="60" maxlength="150" value="">
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform"><fmt:message key="gallery.keyword"/> :</td>
-            <td><input type="text" name="Media$KeyWord" size="60" maxlength="150" value="">
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform"><fmt:message key="gallery.download"/> :</td>
-            <td>
-              <input type="checkbox" name="Media$DownloadAuthorized" value="true">
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="gallery.beginDownloadDate" var="tmpDateLabel">
-                <fmt:param value="${1}"/>
-              </fmt:message>
-              <label for="beginDownloadDate">${tmpDateLabel} :</label>
-            </td>
-            <td>
-              <input type="text" class="dateToPick" id="beginDownloadDate" name="Media$BeginDownloadDate" size="12" maxlength="10" value=""/>
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="gallery.endDownloadDate" var="tmpDateLabel">
-                <fmt:param value="${1}"/>
-              </fmt:message>
-              <label for="endDownloadDate">${tmpDateLabel} :</label>
-            </td>
-            <td>
-              <input type="text" class="dateToPick" id="endDownloadDate" name="Media$EndDownloadDate" size="12" maxlength="10" value=""/>
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="gallery.beginDate" var="tmpDateLabel">
-                <fmt:param value="${1}"/>
-              </fmt:message>
-              <label for="beginVisibilityDate">${tmpDateLabel} :</label>
-            </td>
-            <td>
-              <input type="text" class="dateToPick" id="beginVisibilityDate" name="Media$BeginVisibilityDate" size="12" maxlength="10" value=""/>
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="gallery.endDate" var="tmpDateLabel">
-                <fmt:param value="${1}"/>
-              </fmt:message>
-              <label for="endVisibilityDate">${tmpDateLabel} :</label>
-            </td>
-            <td>
-              <input type="text" class="dateToPick" id="endVisibilityDate" name="Media$EndVisibilityDate" size="12" maxlength="10" value=""/>&nbsp;
-            </td>
-          </tr>
-        </table>
-      </view:board>
+      <input type="hidden" name="Im$SearchKeyWord" value="${searchKeyWord}">
+      <table cellpadding="5" width="100%">
+        <tr>
+          <td valign="top">
+            <fieldset id="allInfo" class="skinFieldset">
+              <legend><fmt:message key="GML.bloc.information.principals"/></legend>
+              <div class="fields">
+                <div class="field" id="titleArea">
+                  <label for="title" class="txtlibform"><fmt:message key="GML.title"/></label>
 
-      <c:if test="${not empty formUpdate}">
-        <!-- Affichage du formulaire XML -->
-        <br/>
-        <view:board>
-          <table>
-            <tr>
-              <td>
+                  <div class="champs">
+                    <input id="title" type="text" name="Media$Title" size="60" maxlength="150" value=""/>&nbsp;
+                  </div>
+                </div>
+                <div class="field" id="descriptionArea">
+                  <label for="description" class="txtlibform"><fmt:message key="GML.description"/></label>
+
+                  <div class="champs">
+                    <input id="description" type="text" name="Media$Description" size="60" maxlength="150" value=""/>&nbsp;
+                  </div>
+                </div>
+                <div class="field" id="authorArea">
+                  <label for="author" class="txtlibform"><fmt:message key="GML.author"/></label>
+
+                  <div class="champs">
+                    <input id="author" type="text" name="Media$Author" size="60" maxlength="150" value=""/>&nbsp;
+                  </div>
+                </div>
+                <div class="field" id="keywordArea">
+                  <label for="keyword" class="txtlibform"><fmt:message key="gallery.keyword"/></label>
+
+                  <div class="champs">
+                    <input id="keyword" type="text" name="Media$KeyWord" size="60" maxlength="150" value=""/>&nbsp;
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="skinFieldset" id="allOptions">
+              <legend><fmt:message key="gallery.options"/></legend>
+              <div class="fields">
+
+                <div class="field" id="downloadArea">
+                  <label for="download" class="txtlibform">
+                    <fmt:message key="gallery.download"/>
+                  </label>
+
+                  <div class="champs">
+                    <input id="download" type="checkbox" name="Media$DownloadAuthorized" value="true"/>
+                  </div>
+                </div>
+
+                <div class="field" id="beginDownloadDateArea">
+                  <fmt:message key="gallery.beginDownloadDate" var="tmpDateLabel">
+                    <fmt:param value="${1}"/>
+                  </fmt:message>
+                  <label for="beginDownloadDate" class="txtlibform">${tmpDateLabel}</label>
+
+                  <div class="champs">
+                    <input id="beginDownloadDate" type="text" class="dateToPick" name="Media$BeginDownloadDate" size="12" maxlength="10" value=""/>
+                    <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+                  </div>
+                </div>
+
+                <div class="field" id="endDownloadDateArea">
+                  <fmt:message key="gallery.endDownloadDate" var="tmpDateLabel">
+                    <fmt:param value="${1}"/>
+                  </fmt:message>
+                  <label for="endDownloadDate" class="txtlibform">${tmpDateLabel}</label>
+
+                  <div class="champs">
+                    <input id="endDownloadDate" type="text" class="dateToPick" name="Media$EndDownloadDate" size="12" maxlength="10" value=""/>
+                    <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+                  </div>
+                </div>
+
+                <div class="field" id="beginDateArea">
+                  <fmt:message key="gallery.beginDate" var="tmpDateLabel">
+                    <fmt:param value="${1}"/>
+                  </fmt:message>
+                  <label for="beginVisibilityDate" class="txtlibform">${tmpDateLabel}</label>
+
+                  <div class="champs">
+                    <input id="beginVisibilityDate" type="text" class="dateToPick" name="Media$BeginVisibilityDate" size="12" maxlength="10" value="${beginVisibilityDate}"/>
+                    <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+                  </div>
+                </div>
+
+                <c:set var="endVisibilityDate">
+                  <c:if test="${media.visibilityPeriod.endDatable.defined}">
+                    <view:formatDate value="${media.visibilityPeriod.endDate}" language="${_language}"/>
+                  </c:if>
+                </c:set>
+                <div class="field" id="endDateArea">
+                  <fmt:message key="gallery.endDate" var="tmpDateLabel">
+                    <fmt:param value="${1}"/>
+                  </fmt:message>
+                  <label for="endVisibilityDate" class="txtlibform">${tmpDateLabel}</label>
+
+                  <div class="champs">
+                    <input id="endVisibilityDate" type="text" class="dateToPick" name="Media$EndVisibilityDate" size="12" maxlength="10" value="${endVisibilityDate}"/>
+                    <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <c:if test="${not empty formUpdate}">
+              <!-- Affichage du formulaire XML -->
+              <fieldset id="formInfo" class="skinFieldset">
+                <legend><fmt:message key="GML.bloc.further.information"/></legend>
                 <%
                   formUpdate.display(out, context, formData);
                 %>
-              </td>
-            </tr>
-          </table>
-        </view:board>
-      </c:if>
+              </fieldset>
+            </c:if>
+          </td>
+        </tr>
+      </table>
     </form>
 
     <view:buttonPane>

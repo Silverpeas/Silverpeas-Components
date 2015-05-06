@@ -66,7 +66,6 @@ public abstract class AbstractKmeliaPublicationUserNotification
     template.setAttribute("publicationDesc", resource.getDescription(language));
     template.setAttribute("publicationKeywords", resource.getKeywords(language));
     template.setAttribute("senderName", getSenderName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override
@@ -117,11 +116,17 @@ public abstract class AbstractKmeliaPublicationUserNotification
       return null;
     } else if (NotifAction.CREATE.equals(action)) {
       String userId = getResource().getCreatorId();
-      if (UserDetail.getById(userId).isDeletedState()) {
+      UserDetail creator = UserDetail.getById(userId);
+      if (!creator.isActivatedState()) {
         return getResource().getUpdaterId();
       }
       return userId;
     }
     return getResource().getUpdaterId();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "kmelia.notifPublicationLinkLabel";
   }
 }

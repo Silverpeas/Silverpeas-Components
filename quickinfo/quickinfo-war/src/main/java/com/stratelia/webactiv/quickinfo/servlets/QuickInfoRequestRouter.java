@@ -43,6 +43,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -77,11 +78,11 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   public String getDestination(String function, QuickInfoSessionController quickInfo,
       HttpRequest request) {
     String destination = null;
-    String flag = getFlag(quickInfo.getUserRoles());
+    SilverpeasRole flag = quickInfo.getHighestSilverpeasUserRole();
     if (flag == null) {
       return null;
     }
-    request.setAttribute("Role", flag);
+    request.setAttribute("Role", flag.toString());
     request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
 
     try {
@@ -119,9 +120,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       } else if ("View".equals(function)) {
         News news = (News) request.getAttribute("News");
         if (news == null) {
-          String id = request.getParameter("Id");
+          String id = (String) request.getAttribute("Id");
           if (!StringUtil.isDefined(id)) {
-            id = (String) request.getAttribute("Id");
+            id = request.getParameter("Id");
           }
           request.setAttribute("News", quickInfo.getNews(id, true));
         }
@@ -141,7 +142,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         if (!isContributor(flag)) {
           throwHttpForbiddenError();
         }
-        News news = quickInfo.createEmptyNews();
+        News news = quickInfo.prepareEmptyNews();
         request.setAttribute("NewOneInProgress", true);
         setCommonAttributesToAddOrUpdate(quickInfo, news, request);
         destination = "/quickinfo/jsp/quickInfoEdit.jsp";
@@ -197,8 +198,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     return destination;
   }
 
-  private boolean isContributor(String role) {
-    return "publisher".equals(role) || "admin".equals(role);
+  private boolean isContributor(SilverpeasRole role) {
+    return role.isGreaterThanOrEquals(SilverpeasRole.publisher);
   }
 
   private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news, HttpRequest request) {
@@ -224,6 +225,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     News news = requestToNews(items, quickInfo.getLanguage());
 
     String positions = request.getParameter("Positions");
+
+    if (quickInfo.isNewsIdentifierFromMemory(news.getId())) {
+      quickInfo.create(news);
+    }
 
     String id = news.getId();
 

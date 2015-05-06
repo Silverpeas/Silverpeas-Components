@@ -41,11 +41,6 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
   }
 
   @Override
-  protected UserDetail getSenderDetail() {
-    return UserDetail.getById(getSender());
-  }
-
-  @Override
   protected void performTemplateData(String language, News resource, SilverpeasTemplate template) {
     getNotificationMetaData()
         .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
@@ -54,7 +49,6 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
     template.setAttribute("description", resource.getDescription());
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());
     template.setAttribute("senderName", getSenderName());
-    template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override

@@ -29,6 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 <%@ include file="check.jsp" %>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
@@ -96,7 +97,8 @@
             <c:forEach var="media" items="${mediaList}">
               <div id="vignette">
                 <a href="javascript:onClick=goToImage('${media.id}')">
-                  <img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"></a>
+                  <gallery:displayMediaInAlbumContent media="${media}" mediaResolution="${TINY_RESOLUTION}" isPortletDisplay="true"/>
+                </a>
               </div>
             </c:forEach>
           </td>

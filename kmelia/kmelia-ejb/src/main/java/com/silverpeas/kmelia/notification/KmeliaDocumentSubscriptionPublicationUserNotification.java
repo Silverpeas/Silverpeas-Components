@@ -70,6 +70,12 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   }
 
   @Override
+  protected void perform(final PublicationDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
@@ -120,5 +126,10 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   @Override
   protected String getResourceURL(final PublicationDetail resource) {
     return KmeliaHelper.getDocumentUrl(resource, document);
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "kmelia.notifDocumentLinkLabel";
   }
 }

@@ -23,23 +23,25 @@
  */
 package com.silverpeas.blog.notification;
 
-import java.util.Collection;
-
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
+import java.util.Collection;
+
 /**
  * The centralization of the construction of the blog notifications
  * @author Yohann Chastagnier
  */
-public class BlogUserNotification extends AbstractTemplateUserNotificationBuilder<PostDetail> {
+public class BlogUserNotification extends AbstractTemplateUserNotificationBuilder<PostDetail>
+    implements UserSubscriptionNotificationBehavior {
 
   private final UserDetail userDetail;
   private final String componentInstanceId;
@@ -69,12 +71,6 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
       action = NotifAction.CREATE;
     } else if ("update".equals(type)) {
       fileName = "blogNotificationSubscriptionUpdate";
-      action = NotifAction.UPDATE;
-    } else if ("commentCreate".equals(type)) {
-      fileName = "blogNotificationSubscriptionCommentCreate";
-      action = NotifAction.CREATE;
-    } else if ("commentUpdate".equals(type)) {
-      fileName = "blogNotificationSubscriptionCommentUpdate";
       action = NotifAction.UPDATE;
     } else {
       fileName = "blogNotification";
@@ -109,6 +105,12 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   }
 
   @Override
+  protected void perform(final PostDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
@@ -128,7 +130,6 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
     }
     template.setAttribute("blogCategorie", categorieName);
     template.setAttribute("senderName", (userDetail != null ? userDetail.getDisplayedName() : ""));
-    template.setAttribute("silverpeasURL", getNotificationMetaData().getLink());
   }
 
   @Override
@@ -159,6 +160,11 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
 
   @Override
   protected String getMultilangPropertyFile() {
-    return "com.silverpeas.blog.multilang.blogBundle";
+    return "org.silverpeas.blog.multilang.blogBundle";
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "blog.notifPostLinkLabel";
   }
 }

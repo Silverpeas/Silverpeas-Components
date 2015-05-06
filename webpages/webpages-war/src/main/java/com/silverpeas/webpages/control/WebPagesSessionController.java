@@ -33,7 +33,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -142,7 +142,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**
@@ -185,11 +185,10 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pubTemplate = getXMLTemplate();
 
       RecordSet recordSet = pubTemplate.getRecordSet();
-      DataRecord data = recordSet.getRecord("0", getLanguage());
+      DataRecord data = recordSet.getRecord("0");
       if (data == null) {
         data = recordSet.getEmptyRecord();
         data.setId("0");
-        data.setLanguage(getLanguage());
       }
 
       return data;
@@ -205,7 +204,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pubTemplate = getXMLTemplate();
 
       RecordSet recordSet = pubTemplate.getRecordSet();
-      data = recordSet.getRecord("0", getLanguage());
+      data = recordSet.getRecord("0");
       return data != null;
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.isXMLContentDefined()",
@@ -242,18 +241,17 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       PublicationTemplate pub = getXMLTemplate();
       set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
-      DataRecord data = set.getRecord("0", getLanguage());
+      DataRecord data = set.getRecord("0");
       if (data == null) {
         data = set.getEmptyRecord();
         data.setId("0");
-        data.setLanguage(getLanguage());
       }
 
       PagesContext context = new PagesContext("useless", "0", getLanguage(), false, getComponentId(),
               getUserId());
       context.setEncoding("UTF-8");
       context.setObjectId("0");
-      context.setContentLanguage(getLanguage());
+      context.setContentLanguage(I18NHelper.defaultLanguage);
 
       form.update(items, data, context);
       set.save(data);

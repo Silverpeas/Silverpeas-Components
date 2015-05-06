@@ -46,6 +46,12 @@ public class ForumsMessagePendingValidationUserNotification
   }
 
   @Override
+  protected void perform(final Message resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return getNotificationBundleKeyPrefix() + "subject.toValidate";
   }
@@ -67,7 +73,7 @@ public class ForumsMessagePendingValidationUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    Collection<Moderator> moderators = getForumsBm().getModerators(getResource().getForumId());
+    Collection<Moderator> moderators = getForumsService().getModerators(getResource().getForumId());
     Collection<String> moderatorIds = new ArrayList<String>(moderators.size());
     for (Moderator moderator : moderators) {
       moderatorIds.add(moderator.getUserId());

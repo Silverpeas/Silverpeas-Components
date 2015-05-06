@@ -131,17 +131,8 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -166,7 +157,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import org.owasp.encoder.Encode;
+import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -1931,10 +1922,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isVersionControlled() {
+    if (isPublicationAlwaysVisibleEnabled()) {
+      // This mode is not compatible, for now, with the possibility to manage versioned
+      // attachments.
+      return false;
+    }
     return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
   public boolean isVersionControlled(String anotherComponentId) {
+    String strPublicationAlwaysVisible = getOrganisationController()
+        .getComponentParameterValue(anotherComponentId, "publicationAlwaysVisible");
+    if (StringUtil.getBooleanValue(strPublicationAlwaysVisible)) {
+      // This mode is not compatible, for now, with the possibility to manage versioned
+      // attachments.
+      return false;
+    }
     String strVersionControlled = getOrganisationController().getComponentParameterValue(
         anotherComponentId, VERSION_MODE);
     return StringUtil.getBooleanValue(strVersionControlled);
@@ -2682,7 +2685,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void copyPublication(String pubId) throws ClipboardException, RemoteException {
-    CompletePublication pub = getCompletePublication(pubId);
+    PublicationDetail pub = getPublicationDetail(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
     SilverTrace.info("kmelia", "KmeliaSessionController.copyPublication()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
@@ -2704,7 +2707,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void cutPublication(String pubId) throws ClipboardException, RemoteException {
-    CompletePublication pub = getCompletePublication(pubId);
+    PublicationDetail pub = getPublicationDetail(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
     pubSelect.setCutted(true);
 
@@ -2760,16 +2763,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
-          if (clipObject.isDataFlavorSupported(PublicationSelection.CompletePublicationFlavor)) {
-            CompletePublication pub = (CompletePublication) clipObject.getTransferData(
-                PublicationSelection.CompletePublicationFlavor);
+          if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+            PublicationDetail pub = (PublicationDetail) clipObject.getTransferData(
+                PublicationSelection.PublicationDetailFlavor);
             if (clipObject.isCutted()) {
-              movePublication(pub.getPublicationDetail().getPK(), folder.getNodePK());
+              movePublication(pub.getPK(), folder.getNodePK());
             } else {
-              getKmeliaBm().copyPublication(pub.getPublicationDetail(), folder.getNodePK(),
-                  getUserId());
+              getKmeliaBm().copyPublication(pub, folder.getNodePK(), getUserId());
             }
-            pastedItems.add(pub.getPublicationDetail());
+            pastedItems.add(pub);
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
             NodeDetail node = (NodeDetail) clipObject.getTransferData(
                 NodeSelection.NodeDetailFlavor);

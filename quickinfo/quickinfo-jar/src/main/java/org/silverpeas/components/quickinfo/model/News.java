@@ -1,6 +1,7 @@
 package org.silverpeas.components.quickinfo.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
@@ -218,6 +220,15 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return CONTRIBUTION_TYPE;
   }
 
+  /**
+   * The type of this resource
+   *
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return CONTRIBUTION_TYPE;
+  }
+
   @Override
   public boolean canBeAccessedBy(UserDetail user) {
     return OrganisationControllerFactory.getOrganisationController().isComponentAvailable(
@@ -287,7 +298,11 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {
     String silverObjectId = getPublication().getSilverObjectId();
-    return getTaxonomyService().getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
+    if (StringUtil.isDefined(silverObjectId)) {
+      return getTaxonomyService()
+          .getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
+    }
+    return Collections.emptyList();
   }
   
   private PdcBm getTaxonomyService() {

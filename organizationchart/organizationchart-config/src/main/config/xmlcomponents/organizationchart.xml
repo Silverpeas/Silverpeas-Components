@@ -56,451 +56,531 @@
       </help>
     </profile>
   </profiles>
-  <parameters>
-    <parameter>
-      <name>serverURL</name>
+  <groupsOfParameters>
+    <groupOfParameters>
       <label>
-        <message lang="fr">Adresse serveur LDAP</message>
-        <message lang="en">LDAP server address</message>
+        <message lang="fr">Connexion à l'annuaire LDAP</message>
+        <message lang="en">LDAP Connection</message>
+        <message lang="de">LDAP Connection</message>
       </label>
+      <description>
+        <message lang="fr">Renseignez les paramètres de connexion à l'annuaire LDAP.</message>
+        <message lang="en">Fill in the connection settings to the LDAP directory.</message>
+        <message lang="de">Fill in the connection settings to the LDAP directory.</message>
+      </description>
+      <help></help>
       <order>1</order>
-      <mandatory>true</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Adresse du serveur LDAP (ex : ldap://serveur:389/)</message>
-        <message lang="en">LDAP server adress (ex : ldap://serveur:389/)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>initialContextFactory</name>
-      <label>
-        <message lang="fr">Context factory</message>
-        <message lang="en">Context factory</message>
-      </label>
-      <order>2</order>
-      <mandatory>true</mandatory>
-      <value>com.sun.jndi.ldap.LdapCtxFactory</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom de classe factory utilisée de lors l'initialisation du contexte.</message>
-        <message lang="en">Class name of the factory class that will create an initial context.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>authenticationMode</name>
-      <label>
-        <message lang="fr">Mode d'authentification</message>
-        <message lang="en">Authentication mode</message>
-      </label>
-      <order>3</order>
-      <mandatory>true</mandatory>
-      <value>simple</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Aucune</message>
-            <message lang="en">None</message>
-          </name>
-          <value>none</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Simple</message>
-            <message lang="en">Simple</message>
-          </name>
+      <parameters>
+        <parameter>
+          <name>serverURL</name>
+          <label>
+            <message lang="fr">Adresse serveur LDAP</message>
+            <message lang="en">LDAP server address</message>
+          </label>
+          <order>1</order>
+          <mandatory>true</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Adresse du serveur LDAP (ex : ldap://serveur:389/)</message>
+            <message lang="en">LDAP server adress (ex : ldap://serveur:389/)</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>initialContextFactory</name>
+          <label>
+            <message lang="fr">Context factory</message>
+            <message lang="en">Context factory</message>
+          </label>
+          <order>2</order>
+          <mandatory>true</mandatory>
+          <value>com.sun.jndi.ldap.LdapCtxFactory</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de classe factory utilisée de lors l'initialisation du contexte.</message>
+            <message lang="en">Class name of the factory class that will create an initial context.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>authenticationMode</name>
+          <label>
+            <message lang="fr">Mode d'authentification</message>
+            <message lang="en">Authentication mode</message>
+          </label>
+          <order>3</order>
+          <mandatory>true</mandatory>
           <value>simple</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Forte</message>
-            <message lang="en">Strong</message>
-          </name>
-          <value>strong</value>
-        </option>        
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Mode d'authentification au serveur LDAP (none, simple ou strong).</message>
-        <message lang="en">Security level for LDAP server authentication (none, simple or strong).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>principal</name>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Aucune</message>
+                <message lang="en">None</message>
+              </name>
+              <value>none</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Simple</message>
+                <message lang="en">Simple</message>
+              </name>
+              <value>simple</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Forte</message>
+                <message lang="en">Strong</message>
+              </name>
+              <value>strong</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Mode d'authentification au serveur LDAP (none, simple ou strong).</message>
+            <message lang="en">Security level for LDAP server authentication (none, simple or strong).</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>principal</name>
+          <label>
+            <message lang="fr">Identifiant</message>
+            <message lang="en">Principal</message>
+          </label>
+          <order>4</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Identité du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com).</message>
+            <message lang="en">Principal for authenticating the caller to the service (ex : cn=Manager,dc=mondomain,dc=com).</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>credentials</name>
+          <label>
+            <message lang="fr">Mot de passe</message>
+            <message lang="en">Credentials</message>
+          </label>
+          <order>5</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Mot de passe du principal pour authentification</message>
+            <message lang="en">Credentials of the principal for authentication</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
       <label>
-        <message lang="fr">Identifiant</message>
-        <message lang="en">Principal</message>
+        <message lang="fr">Ciblage et correspondances</message>
+        <message lang="en">Targeting and correspondence</message>
+        <message lang="de">Targeting and correspondence</message>
       </label>
+      <description>
+        <message lang="fr">Paramétrez les informations à récupérer et à afficher.</message>
+        <message lang="en">Set up the information to display.</message>
+        <message lang="de">Set up the information to display.</message>
+      </description>
+      <help></help>
+      <order>2</order>
+      <parameters>
+        <parameter>
+          <name>ldapRoot</name>
+          <label>
+            <message lang="fr">Noeud racine</message>
+            <message lang="en">Root LDAP node</message>
+          </label>
+          <order>7</order>
+          <mandatory>true</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Noeud racine de l'annuaire ldap (ex : o=monEntreprise,dc=mondomain,dc=com).</message>
+            <message lang="en">Root Ldap node (ex : o=mycompany,dc=mydomain,dc=com).</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapClassPerson</name>
+          <label>
+            <message lang="fr">Classe LDAP des personnes</message>
+            <message lang="en">LDAP class for person</message>
+          </label>
+          <order>8</order>
+          <mandatory>true</mandatory>
+          <value>organizationalPerson</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Classe LDAP des personnes</message>
+            <message lang="en">Object class of person</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapClassUnit</name>
+          <label>
+            <message lang="fr">Classe LDAP des services/groupes</message>
+            <message lang="en">LDAP class for departments/services</message>
+          </label>
+          <order>9</order>
+          <mandatory>true</mandatory>
+          <value>organizationalUnit</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Object class des services/groupes</message>
+            <message lang="en">Object class of departments/services</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttUnit</name>
+          <label>
+            <message lang="fr">Attribut 'nom' du service</message>
+            <message lang="en">Attribute containing the name of the organizational unit</message>
+          </label>
+          <order>11</order>
+          <mandatory>true</mandatory>
+          <value>ou</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de l'attribut désignant le nom du service</message>
+            <message lang="en">Name of the attribute containing the name of the service or department.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttName</name>
+          <label>
+            <message lang="fr">Attribut 'nom' d'une personne</message>
+            <message lang="en">Attribute for the last name of a person</message>
+          </label>
+          <order>10</order>
+          <mandatory>true</mandatory>
+          <value>cn</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de l'attribut désignant le nom de l'utilisateur</message>
+            <message lang="en">Name of the attribut for a person's last name.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttTitle</name>
+          <label>
+            <message lang="fr">Attribut 'titre' d'une personne</message>
+            <message lang="en">Name of the attribute containing the title</message>
+          </label>
+          <order>12</order>
+          <mandatory>false</mandatory>
+          <value>title</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de l'attribut désignant le titre de l'utilisateur</message>
+            <message lang="en">Name of the attribut for a person's title.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttDesc</name>
+          <label>
+            <message lang="fr">Attribut 'description' d'une personne</message>
+            <message lang="en">Name of the attribute containing the description</message>
+          </label>
+          <order>13</order>
+          <mandatory>false</mandatory>
+          <value>description</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de l'attribut désignant la description de l'utilisateur</message>
+            <message lang="en">Name of the attribut for a person's description.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttActif</name>
+          <label>
+            <message lang="fr">Attribut 'personne active'</message>
+            <message lang="en">Attribute 'active people'</message>
+          </label>
+          <order>17</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de l'attribut indiquant si la personne est active (attribut booléen)</message>
+            <message lang="en">Name of the attribute indicating if the person is active (boolean attribut)</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttAccount</name>
+          <label>
+            <message lang="fr">Attribut 'login'</message>
+            <message lang="en">Attribute 'login'</message>
+          </label>
+          <order>23</order>
+          <mandatory>false</mandatory>
+          <value>sAMAccountName</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Nom de l'attribut désignant le login utilisateur</message>
+            <message lang="en">Attribut name of the user login</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>ldapAttCSS</name>
+          <label>
+            <message lang="fr">Attribut 'CSS'</message>
+            <message lang="en">Attribute 'CSS'</message>
+          </label>
+          <order>24</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut contenant la classe CSS à utiliser</message>
+            <message lang="en">Name of the attribute for CSS class to use</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>chartDomainSilverpeas</name>
+          <label>
+            <message lang="fr">Domaine Silverpeas</message>
+            <message lang="en">Silverpeas domain</message>
+          </label>
+          <order>22</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Identifiant du domaine Silverpeas où se trouvent les utilisateurs présents dans l'organigramme</message>
+            <message lang="en">Domain Silverpeas where organization chart users is defined</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Vue "services"</message>
+        <message lang="en">Units view</message>
+        <message lang="de">Units view</message>
+      </label>
+      <description>
+        <message lang="fr">La vue "services" est la vue principale. Elle présente la composition d'un service (en sous services). Les responsables de chaque entité sont également affichés.</message>
+        <message lang="en">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
+        <message lang="de">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
+      </description>
+      <help></help>
+      <order>3</order>
+      <parameters>
+        <parameter>
+          <name>unitsChartCentralLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du service principal</message>
+            <message lang="en">Main organizational unit role(s)</message>
+          </label>
+          <order>14</order>
+          <mandatory>false</mandatory>
+          <value>Role(s) principal(s)</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut désignant le(s) rôle(s) des personnes à afficher avec le service principal</message>
+            <message lang="en">Attribute containing the role(s) of the main organization unit positions</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>unitsChartRightLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du bloc droit</message>
+            <message lang="en">Right block role(s)</message>
+          </label>
+          <order>15</order>
+          <mandatory>false</mandatory>
+          <value>Role(s) droite</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case droite</message>
+            <message lang="en">Attribute name for the function to be placed in the right cell</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>unitsChartLeftLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du bloc gauche</message>
+            <message lang="en">Left block role(s)</message>
+          </label>
+          <order>16</order>
+          <mandatory>false</mandatory>
+          <value>Role(s) gauche</value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case gauche</message>
+            <message lang="en">Attribute name for the function to be placed in the left cell</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>unitsChartOthersInfosKeys</name>
+          <label>
+            <message lang="fr">Champ(s) à afficher</message>
+            <message lang="en">Fields to display</message>
+          </label>
+          <order>20</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut désignant le(s) champ(s) LDAP d'informations à afficher</message>
+            <message lang="en">LDAP fields for the person information details</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
+      <label>
+        <message lang="fr">Vue détaillée</message>
+        <message lang="en">Detailed view</message>
+        <message lang="de">Detailed view</message>
+      </label>
+      <description>
+        <message lang="fr">La vue détaillée présente toutes les personnes d'un service.</message>
+        <message lang="en">The detailed view shows every person of the unit.</message>
+        <message lang="de">The detailed view shows every person of the unit.</message>
+      </description>
+      <help></help>
       <order>4</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Identité du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com).</message>
-        <message lang="en">Principal for authenticating the caller to the service (ex : cn=Manager,dc=mondomain,dc=com).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>credentials</name>
+      <parameters>
+        <parameter>
+          <name>personnsChartCentralLabel</name>
+          <label>
+            <message lang="fr">Rôle(s) du service principal</message>
+            <message lang="en">Role(s) of the main organization unit</message>
+          </label>
+          <order>18</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut(s) désignant le(s) rôle(s) des personnes à afficher avec le service principal</message>
+            <message lang="en">Attribute name of the main unit positions</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>personnsChartCategoriesLabel</name>
+          <label>
+            <message lang="fr">Catégorie(s) d'un service</message>
+            <message lang="en">Unit categorie(s)</message>
+          </label>
+          <order>19</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut(s) désignant le(s) sous-rôle(s) d'un service</message>
+            <message lang="en">Attribute(s) name of the main sub-functions in a unit</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>personnsChartOthersInfosKeys</name>
+          <label>
+            <message lang="fr">Champ(s) à afficher</message>
+            <message lang="en">Field(s) to display</message>
+          </label>
+          <order>21</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>30</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Attribut(s) désignant le(s) champ(s) LDAP d'informations à afficher</message>
+            <message lang="en">LDAP fields for the person information details</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters>
       <label>
-        <message lang="fr">Mot de passe</message>
-        <message lang="en">Credentials</message>
+        <message lang="fr">Affichage</message>
+        <message lang="en">Display</message>
+        <message lang="de">Display</message>
       </label>
+      <description>
+        <message lang="fr"></message>
+        <message lang="en"></message>
+        <message lang="de"></message>
+      </description>
+      <help></help>
       <order>5</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Mt de passe du principal pour authentification.</message>
-        <message lang="en">Credentials of the principal for authentication.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapRoot</name>
-      <label>
-        <message lang="fr">Noeud racine</message>
-        <message lang="en">Root Ldap node</message>
-      </label>
-      <order>7</order>
-      <mandatory>true</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Noeud racine de l'annuaire ldap (ex : o=monEntreprise,dc=mondomain,dc=com).</message>
-        <message lang="en">Root Ldap node (ex : o=mycompany,dc=mydomain,dc=com).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapClassPerson</name>
-      <label>
-        <message lang="fr">Classe LDAP des personnes</message>
-        <message lang="en">LDAP class for person</message>
-      </label>
-      <order>8</order>
-      <mandatory>true</mandatory>
-      <value>organizationalPerson</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Classe LDAP des personnes</message>
-        <message lang="en">Object class of person</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapClassUnit</name>
-      <label>
-        <message lang="fr">Classe LDAP des services/groupes</message>
-        <message lang="en">Ldap class for departments or services</message>
-      </label>
-      <order>9</order>
-      <mandatory>true</mandatory>
-      <value>organizationalUnit</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Object class des services/groupes</message>
-        <message lang="en">Object class of departments or services</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapAttUnit</name>
-      <label>
-        <message lang="fr">Attribut 'nom' du service</message>
-        <message lang="en">Attribute containing the name of the organizational unit</message>
-      </label>
-      <order>11</order>
-      <mandatory>true</mandatory>
-      <value>ou</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom de l'attribut désignant le nom du service</message>
-        <message lang="en">Name of the attribute containing the name of the service or department.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapAttName</name>
-      <label>
-        <message lang="fr">Attribut 'nom' d'une personne.</message>
-        <message lang="en">Attribute for the last name of a person</message>
-      </label>
-      <order>10</order>
-      <mandatory>true</mandatory>
-      <value>cn</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom de l'attribut désignant le nom de l'utilisateur</message>
-        <message lang="en">Name of the attribut for a person's last name.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapAttTitle</name>
-      <label>
-        <message lang="fr">Attribut 'titre' d'une personne</message>
-        <message lang="en">Name of the attribute containing the title</message>
-      </label>
-      <order>12</order>
-      <mandatory>false</mandatory>
-      <value>title</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom de l'attribut désignant le titre de l'utilisateur</message>
-        <message lang="en">Name of the attribut for a person's title.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapAttDesc</name>
-      <label>
-        <message lang="fr">Attribut 'description' d'une personne</message>
-        <message lang="en">Name of the attribute containing the description</message>
-      </label>      
-      <order>13</order>
-      <mandatory>false</mandatory>
-      <value>description</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom de l'attribut désignant la description de l'utilisateur</message>
-        <message lang="en">Name of the attribut for a person's description.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartCentralLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du service principal (vue services)</message>
-        <message lang="en">Role(s) of the main organization unit</message>
-      </label>
-      <order>14</order>
-      <mandatory>false</mandatory>
-      <value>Role(s) principal(s)</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher avec le service principal (vue services)</message>
-        <message lang="en">Attribute containing the role(s) of the main organization unit positions (units view)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartRightLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du bloc droit (vue services)</message>
-        <message lang="en">Role(s) of the right block (units view)</message>
-      </label>
-      <order>15</order>
-      <mandatory>false</mandatory>
-      <value>Role(s) droite</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case droite (vue service)</message>
-        <message lang="en">Attribute name for the function to be placed in the right cell (units view)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartLeftLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du bloc gauche (vue services)</message>
-        <message lang="en">Role(s) of the left block</message>
-      </label>      
-      <order>16</order>
-      <mandatory>false</mandatory>
-      <value>Role(s) gauche</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case gauche (vue services)</message>
-        <message lang="en">Attribute name for the function to be placed in the left cell (units view)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapAttActif</name>
-      <label>
-        <message lang="fr">Attribut 'personne active'</message>
-        <message lang="en">Attribute 'active people'</message>
-      </label>
-      <order>17</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">nom de l'attribut indiquant si la personne est active (attribut booléen)</message>
-        <message lang="en">Name of the attribute indicating if the person is active (boolean attribut)</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>personnsChartCentralLabel</name>
-      <label>
-        <message lang="fr">Rôle(s) du service principal (vue détaillée)</message>
-        <message lang="en">Role(s) of the main organization unit (detailed view)</message>
-      </label>
-      <order>18</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher avec le service principal (vue détaillée).</message>
-        <message lang="en">Attribute name of the main unit positions (detailed view).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>personnsChartCategoriesLabel</name>
-      <label>
-        <message lang="fr">Catégorie(s) d'un service (vue détaillée)</message>
-        <message lang="en">Categorie(s) of a unit (detailed view)</message>
-      </label>      
-      <order>19</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">attribut désignant le(s) sous-role(s) d'un service (vue détaillée).</message>
-        <message lang="en">Attribute name of the main sub-functions in a unit (detailed view).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>unitsChartOthersInfosKeys</name>
-      <label>
-        <message lang="fr">Champ(s) à afficher (vue services)</message>
-        <message lang="en">Fields to display (units view)</message>
-      </label>
-      <order>20</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) champ(s) ldap d'informations à afficher (vue services).</message>
-        <message lang="en">Ldap fields for the person information details (units view).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>personnsChartOthersInfosKeys</name>
-      <label>
-        <message lang="fr">Champ(s) à afficher (vue détaillée)</message>
-        <message lang="en">Field(s) to display (detailed view)</message>
-      </label>
-      <order>21</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut désignant le(s) champ(s) ldap d'informations à afficher (vue détaillée).</message>
-        <message lang="en">Ldap fields for the personn information details (detailed view).</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>chartDomainSilverpeas</name>
-      <label>
-        <message lang="fr">Domaine Silverpeas</message>
-        <message lang="en">Silverpeas domain</message>
-      </label>
-      <order>22</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Identifiant du domaine Silverpeas où se trouvent les utilisateurs présents dans l'organigramme</message>
-        <message lang="en">Domain Silverpeas where organization chart users is defined</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>ldapAttAccount</name>
-      <label>
-        <message lang="fr">Attribut 'login'</message>
-        <message lang="en">Name of the attribute for the user login.</message>
-      </label>      
-      <order>23</order>
-      <mandatory>false</mandatory>
-      <value>sAMAccountName</value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nom de l'attribut désignant le login utilisateur</message>
-        <message lang="en">Attribut name of the user login</message>
-      </help>
-    </parameter>
-	<parameter>
-      <name>ldapAttCSS</name>
-      <label>
-        <message lang="fr">Attribut 'CSS'</message>
-        <message lang="en">Attribute 'CSS'</message>
-      </label>      
-      <order>24</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-	  <size>30</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Attribut contenant la classe CSS à utiliser</message>
-        <message lang="en">Name of the attribute for CSS class to use</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>labels</name>
-      <label>
-        <message lang="fr">Libellés</message>
-        <message lang="en">Labels</message>
-      </label>
-      <order>25</order>
-      <mandatory>false</mandatory>
-      <value>true</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
-        <message lang="en">Allows to display/hide label of fields</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>avatars</name>
-      <label>
-        <message lang="fr">Avatars</message>
-        <message lang="en">Avatars</message>
-      </label>
-      <order>26</order>
-      <mandatory>false</mandatory>
-      <value>true</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
-        <message lang="en">Allows to display/hide avatar of each people</message>
-      </help>
-    </parameter>
-  </parameters>
+      <parameters>
+        <parameter>
+          <name>labels</name>
+          <label>
+            <message lang="fr">Libellés</message>
+            <message lang="en">Labels</message>
+          </label>
+          <order>25</order>
+          <mandatory>false</mandatory>
+          <value>true</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
+            <message lang="en">Allows to display/hide label of fields</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>avatars</name>
+          <label>
+            <message lang="fr">Avatars</message>
+            <message lang="en">Avatars</message>
+          </label>
+          <order>26</order>
+          <mandatory>false</mandatory>
+          <value>true</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
+            <message lang="en">Allows to display/hide avatar of each people</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+  </groupsOfParameters>
 </WAComponent>

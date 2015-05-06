@@ -145,9 +145,6 @@
     String linkedPathString = displayPath(path, true, 3, language) + name;
     String pathString = displayPath(path, false, 3, language);
 
-    Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
-    Button validateButton = null;
-
 //Action = View, New, Add, UpdateView, Update, Delete, LinkAuthorView, SameSubjectView ou SameTopicView
     if (action.equals("UpdateView") || action.equals("ValidateView")) {
 
@@ -266,8 +263,6 @@
 
       nextAction = "AddPublication";
 	}
-
-    validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
 	String backUrl = URLManager.getFullApplicationURL(request) + URLManager.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
 %>
@@ -433,12 +428,12 @@
             result = true;
             break;
           case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
+            error.msg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + error.msg;
+            window.alert(error.msg);
             break;
           default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
+            error.msg = "<%=resources.getString("GML.ThisFormContains")%> " + error.nb + " <%=resources.getString("GML.errors")%> :\n" + error.msg;
+            window.alert(error.msg);
             break;
         }
         return result;
@@ -614,7 +609,7 @@
 				</div>
 				<% } %>
 
-				<% if (I18NHelper.isI18N) { %>
+				<% if (I18NHelper.isI18nContentActivated) { %>
 				<div class="field" id="languageArea">
 					<label for="language" class="txtlibform"><%=resources.getString("GML.language")%></label>
 					<div class="champs">
@@ -800,11 +795,29 @@
   <%
         out.println(frame.printMiddle());
         if(isOwner || !"user".equalsIgnoreCase(profile)) {
-          ButtonPane buttonPane = gef.getButtonPane();
-          buttonPane.addButton(validateButton);
-          buttonPane.addButton(cancelButton);
-          buttonPane.setHorizontalPosition();
-          out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
+          %>
+          <view:buttonPane>
+            <c:set var="saveLabel"><%=resources.getString("GML.validate")%></c:set>
+            <c:set var="saveAction"><%="javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');"%></c:set>
+            <c:set var="cancelLabel"><%=resources.getString("GML.cancel")%></c:set>
+            <view:button label="${saveLabel}" action="${saveAction}">
+              <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
+              <c:if test="${not empty subscriptionManagementContext}">
+                <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+                <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
+                      and subscriptionManagementContext.entityStatusAfterPersistAction.validated
+                      and subscriptionManagementContext.entityPersistenceAction.update}">
+                  <view:confirmResourceSubscriptionNotificationSending
+                      jsValidationCallbackMethodName="isCorrectForm"
+                      subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
+                      subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
+
+                </c:if>
+              </c:if>
+            </view:button>
+            <view:button label="${cancelLabel}" action="GoToCurrentTopic"/>
+          </view:buttonPane>
+          <%
         }
         out.println(frame.printAfter());
         out.println(window.printAfter());

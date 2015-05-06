@@ -25,11 +25,8 @@ package org.silverpeas.components.forum.notification;
 
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import javax.ejb.EJBException;
 
 /**
  * @author Yohann Chastagnier
@@ -57,11 +54,7 @@ public abstract class AbstractForumsUserNotification<T>
    * Gets the services of forum.
    * @return
    */
-  protected ForumsBM getForumsBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-    } catch (Exception e) {
-      throw new EJBException(e.getMessage(), e);
-    }
+  protected ForumsBM getForumsService() {
+    return ForumsServiceProvider.getForumsService();
   }
 }

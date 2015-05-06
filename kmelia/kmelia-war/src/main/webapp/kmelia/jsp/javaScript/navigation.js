@@ -78,6 +78,7 @@ function displayTopicDescription(id) {
   $.get(getWebContext() + '/KmeliaAJAXServlet', {Id: id, Action: 'GetTopicWysiwyg', ComponentId: componentId, IEFix: ieFix},
   function(data) {
     $("#topicDescription").html(data);
+    activateIDCards();
   }, "html");
 }
 
@@ -88,9 +89,8 @@ function refreshPublications()
   var componentId = getComponentId();
   $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Id: nodeId, ComponentId: componentId, IEFix: ieFix},
   function(data) {
-    //$('#pubList').html(data);
-	updateHtmlContainingAngularDirectives($('#pubList'), data);
-    activateUserZoom();
+    updateHtmlContainingAngularDirectives($('#pubList'), data);
+      activateUserZoom();
   }, "html");
 }
 
@@ -158,16 +158,6 @@ function displayPublications(id) {
 	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
   }, "html");
-}
-
-function activateUserZoom() {
-  $('.userToZoom').each(function() {
-    var $this = $(this);
-    if ($this.data('userZoom') == null)
-      $this.userZoom({
-        id: $this.attr('rel')
-      });
-  });
 }
 
 function displayOperations(id) {

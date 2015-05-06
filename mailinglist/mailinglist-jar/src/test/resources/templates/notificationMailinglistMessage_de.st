@@ -1,0 +1,1 @@
+<html><head/><body>p><b>Message [$title$] :</b></p><p>$summary$ ...<br/><a href="$messageUrl$">Click here</a></p></body></html>

@@ -20,22 +20,17 @@
  */
 package org.silverpeas.servlets;
 
-import java.net.URLEncoder;
+import com.silverpeas.peasUtil.GoTo;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.forums.url.ActionUrl;
+import org.apache.commons.lang3.CharEncoding;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
-import com.silverpeas.peasUtil.GoTo;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.forums.url.ActionUrl;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
-import org.apache.commons.lang3.CharEncoding;
+import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
+    .getForumsService;
 
 public class GoToMessage extends GoTo {
 
@@ -45,19 +40,10 @@ public class GoToMessage extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     int forumId = Integer.parseInt(req.getParameter("ForumId"));
-    String componentName = getForumsBM().getForumInstanceId(forumId);
+    String componentName = getForumsService().getForumInstanceId(forumId);
     String messageUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, Integer.parseInt(objectId),
         forumId);
     String gotoURL = URLManager.getURL(null, componentName) + messageUrl;
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
-  }
-
-  private ForumsBM getForumsBM() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-    } catch (Exception e) {
-      throw new ForumsRuntimeException("RssServlet.getForumsBM()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 }

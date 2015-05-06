@@ -28,6 +28,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.mockito.Mockito;
 
 import java.util.Collection;
@@ -123,35 +124,24 @@ public class SubscriptionServiceMockWrapper implements SubscriptionService {
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource) {
+  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource) {
     return mock.getSubscribers(resource);
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource,
+  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource,
       final SubscriptionMethod method) {
     return mock.getSubscribers(resource, method);
   }
 
   @Override
-  public Collection<String> getUserSubscribers(final SubscriptionResource resource) {
-    return mock.getUserSubscribers(resource);
-  }
-
-  @Override
-  public Collection<String> getUserSubscribers(final SubscriptionResource resource,
-      final SubscriptionMethod method) {
-    return mock.getUserSubscribers(resource, method);
-  }
-
-  @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources) {
     return mock.getSubscribers(resources);
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources, final SubscriptionMethod method) {
     return mock.getSubscribers(resources, method);
   }

@@ -26,6 +26,7 @@ import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.scheduleevent.notification.ScheduleEventUserCallAgainNotification;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
 import com.silverpeas.scheduleevent.service.CalendarEventEncoder;
 import com.silverpeas.scheduleevent.service.ScheduleEventService;
@@ -56,15 +57,18 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.NotifierUtil;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.io.FileUtils;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 
@@ -76,7 +80,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   /**
    * Standard Session Controller Constructeur
-   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -175,7 +178,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         result.add(String.valueOf(subscriber.getUserId()));
       }
     }
-    return (String[]) result.toArray(new String[result.size()]);
+    return result.toArray(new String[result.size()]);
   }
 
   public void setIdUsersAndGroups() {
@@ -210,7 +213,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         addContributor(recordedContributors, detail.getId());
         SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.addContributors()",
             "Contributor '" + getUserDetail(detail.getId()).getDisplayedName()
-            + "' added to event '" + currentScheduleEvent.getTitle() + "'");
+                + "' added to event '" + currentScheduleEvent.getTitle() + "'");
       }
     }
     if (!foundCreator) {
@@ -218,35 +221,33 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
   }
 
-  private void deleteRecordedContributors(String[] usersId, Set<Contributor> recordedContributors) {
-    // if (usersId.length < 1 || recordedContributors.isEmpty()) {
+  private void deleteRecordedContributors(String[] selectedUsersIds,
+      Set<Contributor> recordedContributors) {
     if (recordedContributors.isEmpty()) {
       return;
     }
 
-    UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
-    Contributor[] contrib = (Contributor[]) recordedContributors.toArray(
-        new Contributor[recordedContributors.size()]);
+    UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(selectedUsersIds);
     boolean found = false;
-    for (int c = contrib.length - 1; c >= 0; c--) {
-      if (getUserId().equals(String.valueOf(contrib[c].getUserId()))) {
+    Iterator<Contributor> recordedContributorIt = recordedContributors.iterator();
+    while (recordedContributorIt.hasNext()) {
+      Contributor currentContributor = recordedContributorIt.next();
+      String currentContributorUserId = String.valueOf(currentContributor.getUserId());
+      if (getUserId().equals(currentContributorUserId)) {
         continue;
       }
-      for (int i = 0; i < userDetails.length; i++) {
-        if (userDetails[i].getId().equals(String.valueOf(contrib[c].getUserId()))) {
+      for (final UserDetail userDetail : userDetails) {
+        if (userDetail.getId().equals(currentContributorUserId)) {
           found = true;
         }
       }
       if (!found) {
-        // if (currentScheduleEvent.id == null) {
-        // getScheduleEventService().deleteContributor(contrib[c].getId());
-        // } else {
-        currentScheduleEvent.getContributors().remove(contrib[c]);
-        // }
+        recordedContributorIt.remove();
+
         SilverTrace.debug("scheduleevent",
             "ScheduleEventSessionController.deleteRecordedContributors()",
-            "Contributor '" + contrib[c].getUserName() + "' deleted from event '"
-            + currentScheduleEvent.getTitle() + "'");
+            "Contributor '" + currentContributor.getUserName() + "' deleted from event '"
+                + currentScheduleEvent.getTitle() + "'");
       }
     }
   }
@@ -273,20 +274,33 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
     // notify contributors
     // initAlertUser();
-    sendSubscriptionsNotification("create");
+    sendSubscriptionsNotification();
 
     // delete session object after saving it
     currentScheduleEvent = null;
 
   }
 
-  public void sendSubscriptionsNotification(final String type) {
-    // Send email alerts
+  public void sendSubscriptionsNotification() {
     try {
 
       UserNotificationHelper
-          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail(),
-                  type));
+          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail()));
+
+    } catch (Exception e) {
+      SilverTrace.warn("scheduleevent",
+          "ScheduleEventSessionController.sendSubscriptionsNotification()",
+          "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "", e);
+    }
+  }
+
+  public void sendCallAgainNotification(String message) {
+    try {
+
+      UserNotificationHelper
+          .buildAndSend(new ScheduleEventUserCallAgainNotification(currentScheduleEvent, message,
+              getUserDetail()));
+      NotifierUtil.addSuccess(getString("scheduleevent.callagain.ok"));
 
     } catch (Exception e) {
       SilverTrace.warn("scheduleevent",
@@ -355,7 +369,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
           return contributor;
         }
       }
-    } catch (Exception e) {
+    } catch (Exception ignore) {
     }
     return null;
   }
@@ -383,14 +397,15 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     result.setScheduleEvent(scheduleEvent);
     result.setUserId(Integer.parseInt(getUserId()));
     result.setOptionId(dateId);
+
+    NotifierUtil.addSuccess(getString("scheduleevent.form.confirmMessage"));
     return result;
   }
 
   /**
    * Converts the specified detailed scheduleevent into a calendar event.
-   *
-   * @param scheduleevent detail.
-   * @param list of dates.
+   * @param event detail.
+   * @param listDateOption of dates.
    * @return the calendar events corresponding to the schedule event.
    */
   private List<CalendarEvent> asCalendarEvents(final ScheduleEvent event,
@@ -402,13 +417,12 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   /**
    * Exports the current ScheduleEvent in iCal format. The iCal file is generated into the temporary
    * directory.
-   *
    * @return the iCal file name into which is generated the current ScheduleEvent.
    * @throws Exception
    */
   public String exportToICal(ScheduleEvent event) throws Exception {
 
-    //construction de la liste des dates retenues de l'événement
+    // construction de la liste des dates retenues de l'événement
     List<DateOption> listDateOption = new ArrayList<DateOption>();
     ScheduleEventDetailVO scheduleEventDetailVO = new ScheduleEventDetailVO(this, event);
     BestTimeVO bestTimeVO = scheduleEventDetailVO.getBestTimes();
@@ -431,10 +445,10 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       }
     }
 
-    //transformation des dates en CalendarEvent
+    // transformation des dates en CalendarEvent
     List<CalendarEvent> eventsToExport = asCalendarEvents(event, listDateOption);
 
-    //export iCal
+    // export iCal
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
     Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
     String icsFileName = ICS_PREFIX + getUserId() + ".ics";

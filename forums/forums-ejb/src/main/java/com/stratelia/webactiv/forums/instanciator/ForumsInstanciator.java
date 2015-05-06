@@ -25,20 +25,20 @@ package com.stratelia.webactiv.forums.instanciator;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
-import javax.ejb.EJBException;
 import java.sql.Connection;
 import java.util.Collection;
+
+import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
+    .getForumsService;
 
 public class ForumsInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -74,36 +74,21 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
         "spaceId : " + spaceId);
 
     // Forums
-    final Collection<Forum> forumRoots = getForumsBM().getForumRootList(componentId);
+    final Collection<Forum> forumRoots = getForumsService().getForumRootList(componentId);
     for (Forum forum : forumRoots) {
-      getForumsBM().deleteForum(forum.getPk());
+      getForumsService().deleteForum(forum.getPk());
     }
 
     // Categories
-    for (NodeDetail categoryId : getForumsBM().getAllCategories(componentId)) {
-      getForumsBM().deleteCategory(String.valueOf(categoryId.getId()), componentId);
+    for (NodeDetail categoryId : getForumsService().getAllCategories(componentId)) {
+      getForumsService().deleteCategory(String.valueOf(categoryId.getId()), componentId);
     }
 
     // Unsubscribe component subscribers
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribeByResource(ComponentSubscriptionResource.from(componentId));
 
     // delete all attachments (wysiwyg, files...)
     new SimpleDocumentInstanciator().delete(componentId);
-  }
-
-  /**
-   * Gets the instance of forum services.
-   * @return
-   */
-  protected ForumsBM getForumsBM() {
-    if (forumsBM == null) {
-      try {
-        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage(), e);
-      }
-    }
-    return forumsBM;
   }
 }

@@ -80,13 +80,13 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
-<view:looknfeel/>
-<title></title>
+  <title></title>
+  <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.jstree.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/splitter.js"></script>
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
@@ -161,7 +161,7 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
-params["i18n"] = <%=I18NHelper.isI18N%>;
+params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
 params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
 var searchInProgress = <%=searchContext != null%>;
@@ -183,9 +183,11 @@ var searchFolderId = "<%=id%>";
     out.println(window.printBefore());
 %>
 	<view:frame>
-			<div id="splitter">
-				<div id="treeDiv1"></div>
-				<div id="rightSide">
+	
+       
+         <div class="wrap">
+            <div class="resizable resizable1"><div id="treeDiv1"></div></div>
+				<div id="rightSide" class="resizable resizable2">
 					<% if (displaySearch.booleanValue()) {
 						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
 						<div id="searchZone">
@@ -949,13 +951,25 @@ $(document).ready(
 		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
     });
 
-	$("#splitter").splitter({
-		splitVertical: true,
-		minLeft: 50, sizeLeft: 300, minRight: 250,
-		anchorToWindow: true,
-		resizeToWidth: false,
-		accessKey: 'I'
-	});
+    // init splitter
+    $(".resizable1").resizable({
+      autoHide: true,
+      handles: 'e',
+      maxWidth: 500,
+      resize: function (e, ui) {
+        var parent = ui.element.parent();
+        var remainingSpace = parent.width() - ui.element.outerWidth();
+        var divTwo = ui.element.next();
+        var divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width())) / parent.width() * 100 + "%";
+        divTwo.width(divTwoWidth);
+      },
+      stop: function (e, ui) {
+        var parent = ui.element.parent();
+        ui.element.css({
+          width: ui.element.width() / parent.width() * 100 + "%"
+        });
+      }
+    });
 
 	$.i18n.properties({
         name: 'kmeliaBundle',

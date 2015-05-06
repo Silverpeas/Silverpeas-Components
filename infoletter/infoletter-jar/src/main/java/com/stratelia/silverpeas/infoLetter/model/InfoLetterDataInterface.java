@@ -24,12 +24,10 @@
 package com.stratelia.silverpeas.infoLetter.model;
 
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import com.silverpeas.subscribe.constant.SubscriberType;
-
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -122,7 +120,7 @@ public interface InfoLetterDataInterface {
    * @param componentId componentId component instance id
    * @return map of subscriber ids indexed by type of subscriber
    */
-  public Map<SubscriberType, Collection<String>> getInternalSuscribers(String componentId);
+  public SubscriptionSubscriberList getInternalSuscribers(String componentId);
 
   /**
    * Update internal user subscribers list
@@ -133,14 +131,14 @@ public interface InfoLetterDataInterface {
   public void setInternalSuscribers(String componentId, UserDetail[] users, Group[] groups);
 
   // Recuperation de la liste des emails externes
-  public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK);
+  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK);
 
   /**
    * Save external subscriber emails address 
    * @param letterPK the letter primary key
    * @param emails the list of external emails to save
    */
-  public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails);
+  public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails);
 
   // abonnement ou desabonnement d'un utilisateur interne
   public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);
@@ -159,4 +157,19 @@ public interface InfoLetterDataInterface {
   public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
 
   public int getSilverObjectId(String pubId, String componentId);
+  
+  /**
+   * Send letter by mail
+   *
+   *
+   * @param ilp the information letter
+   * @param server
+   * @param mimeMultipart
+   * @param listEmailDest
+   * @param subject
+   * @param emailFrom
+   * @return list of emails in error
+   */
+  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server, String mimeMultipart,
+      Set<String> listEmailDest, String subject, String emailFrom);
 }

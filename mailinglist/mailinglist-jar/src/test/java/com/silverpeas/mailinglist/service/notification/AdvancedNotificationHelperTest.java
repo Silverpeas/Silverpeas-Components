@@ -30,16 +30,6 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.JNDINames;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import javax.jms.TextMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -49,11 +39,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
+import org.silverpeas.mail.MailSending;
+
+import javax.jms.TextMessage;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.silverpeas.mail.MailAddress.eMail;
 
 public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
+
+  private static final String TECHNICAL_CONTENT =
+      "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
 
   private static final String textEmailContent =
       "Bonjour famille Simpson, j'espère que vous allez bien. "
@@ -104,7 +109,7 @@ public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
           "bart.simpson@silverpeas.com"));
       String notificationMessage = "<html><head/><body>p><b>Message [" + message.getTitle()
           + "] :</b></p><p>" + message.getSummary() + " ...<br/><a href=\"/Rmailinglist/100/"
-          + "message/700\">Cliquer ici</a></p></body></html>";
+          + "message/700\">Cliquer ici</a></p></body></html>" + TECHNICAL_CONTENT;
       assertThat(data.getMessage(), is(notificationMessage));
       String url = (String) data.getTargetParam().get("URL");
       assertThat(url, is(notNullValue()));
@@ -136,12 +141,11 @@ public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
 
   }
 
+  @Test
   public void testSimpleSendMail() throws Exception {
-    MimeMessage mail = new MimeMessage(notificationHelper.getSession());
-    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[]{theSimpsons});
-    mail.setSubject("Simple text Email test");
-    mail.setText(textEmailContent);
+    MailSending mail = MailSending.from(eMail("thesimpsons@silverpeas.com"));
+    mail.withSubject("Simple text Email test");
+    mail.withContent(textEmailContent);
     List<ExternalUser> externalUsers = new LinkedList<ExternalUser>();
     ExternalUser user = new ExternalUser();
     user.setComponentId("100");
@@ -153,11 +157,9 @@ public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
 
   @Test
   public void testMultiSendMail() throws Exception {
-    MimeMessage mail = new MimeMessage(notificationHelper.getSession());
-    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[]{theSimpsons});
-    mail.setSubject("Simple text Email test");
-    mail.setText(textEmailContent);
+    MailSending mail = MailSending.from(eMail("thesimpsons@silverpeas.com"));
+    mail.withSubject("Simple text Email test");
+    mail.withContent(textEmailContent);
     List<ExternalUser> externalUsers = new LinkedList<ExternalUser>();
     ExternalUser user = new ExternalUser();
     user.setComponentId("100");
@@ -226,6 +228,7 @@ public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
     assertThat((String) alert.getContent(), is(textEmailContent));
   }
 
+  @Test
   public void testSpringLoading() {
     assertThat(notificationHelper, is(notNullValue()));
     assertThat(notificationHelper.getSmtpConfig(), is(notNullValue()));

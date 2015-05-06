@@ -20,12 +20,6 @@
  */
 package com.stratelia.webactiv.forums;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -34,12 +28,18 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider
+    .getForumsService;
 
 /**
  * The forums implementation of ContentInterface.
@@ -112,8 +112,8 @@ public class ForumsContentManager implements ContentInterface {
           "ForumsContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
           + scv.toString());
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          forumPK.getComponentName(), silverContentId);
+      getContentManager().updateSilverContentVisibilityAttributes(scv, forumPK.getComponentName(),
+          silverContentId);
       ClassifyEngine.clearCache();
     }
   }
@@ -185,7 +185,7 @@ public class ForumsContentManager implements ContentInterface {
    * @return a list of ForumDetail
    */
   private List getHeaders(List<ForumPK> ids) {
-    Collection<ForumDetail> forumDetails = getForumsBM().getForums(ids);
+    Collection<ForumDetail> forumDetails = getForumsService().getForums(ids);
     List<ForumDetail> headers = new ArrayList<ForumDetail>(forumDetails.size());
     for (ForumDetail forumDetail : forumDetails) {
       forumDetail.setIconUrl("forumsSmall.gif");
@@ -212,23 +212,5 @@ public class ForumsContentManager implements ContentInterface {
     return contentManager;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  private ForumsBM getForumsBM() {
-    if (forumsBM == null) {
-      try {
-        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-      } catch (Exception e) {
-        throw new ForumsRuntimeException("ForumsContentManager.getForumsBM()",
-            SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
-      }
-    }
-    return forumsBM;
-  }
   private ContentManager contentManager = null;
-  private ForumsBM forumsBM = null;
 }

@@ -22,10 +22,10 @@ package com.stratelia.webactiv.forums.forumsManager.ejb;
 
 import com.silverpeas.notation.ejb.RatingBm;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
@@ -72,7 +72,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 
@@ -1093,30 +1092,9 @@ public class ForumsBMEJB implements ForumsBM {
    * @see
    */
   @Override
-  public Map<SubscriberType, Collection<String>> listAllSubscribers(MessagePK messagePK) {
-    Message message = getMessage(messagePK);
-
-    // Subsribers of the message
-    Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
-        .indexSubscriberIdsByType(
-            getSubscribeBm().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
-
-    // Subscribers of parent forum messages if any
-    Message currentMessage = message;
-    while (!currentMessage.isSubject()) {
-      currentMessage = getMessage(
-          new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
-      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers, getSubscribeBm()
-          .getSubscribers(ForumMessageSubscriptionResource.from(currentMessage.getPk())));
-    }
-
-    // Subscribers on the attached forum and their fathers if any
-    final ForumPK forumParent =
-        new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
-    SubscriptionUtil
-        .mergeIndexedSubscriberIdsByType(allSubscribers, listAllSubscribers(forumParent));
-
-    return allSubscribers;
+  public SubscriptionSubscriberList listAllSubscribers(MessagePK messagePK) {
+    return ResourceSubscriptionProvider
+        .getSubscribersOfSubscriptionResource(ForumMessageSubscriptionResource.from(messagePK));
   }
 
   /**
@@ -1125,27 +1103,9 @@ public class ForumsBMEJB implements ForumsBM {
    * @return
    */
   @Override
-  public Map<SubscriberType, Collection<String>> listAllSubscribers(final ForumPK forumPK) {
-
-    // Subscribers of the forum
-    Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
-        .indexSubscriberIdsByType(
-            getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(forumPK)));
-
-    // Subscribers of parent forums if any
-    Forum currentForum = getForum(forumPK);
-    while (!currentForum.isRoot()) {
-      currentForum =
-          getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
-      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers,
-          getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(currentForum.getPk())));
-    }
-
-    // Subscribers on component instance id
-    SubscriptionUtil.mergeIndexedSubscriberIdsByType(allSubscribers,
-        listAllSubscribers(forumPK.getInstanceId()));
-
-    return allSubscribers;
+  public SubscriptionSubscriberList listAllSubscribers(final ForumPK forumPK) {
+    return ResourceSubscriptionProvider
+        .getSubscribersOfSubscriptionResource(ForumSubscriptionResource.from(forumPK));
   }
 
   /**
@@ -1155,9 +1115,8 @@ public class ForumsBMEJB implements ForumsBM {
    * @return
    */
   @Override
-  public Map<SubscriberType, Collection<String>> listAllSubscribers(final String instanceId) {
-    return SubscriptionUtil.indexSubscriberIdsByType(
-        getSubscribeBm().getSubscribers(ComponentSubscriptionResource.from(instanceId)));
+  public SubscriptionSubscriberList listAllSubscribers(final String instanceId) {
+    return ResourceSubscriptionProvider.getSubscribersOfComponent(instanceId);
   }
 
   /**
@@ -1180,22 +1139,9 @@ public class ForumsBMEJB implements ForumsBM {
    */
   @Override
   public boolean isSubscriberByInheritance(final MessagePK messagePK, final String userId) {
-    Message message = getMessage(messagePK);
-
-    // Verify subscriptions on parent forum messages and theur fathers id any
-    Message currentMessage = message;
-    while (!currentMessage.isSubject()) {
-      currentMessage = getMessage(
-          new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
-      if (isSubscriber(currentMessage.getPk(), userId)) {
-        return true;
-      }
-    }
-
-    // Verify subscriptions on parent forum and their fathers if any
-    final ForumPK forumParent =
-        new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
-    return isSubscriber(forumParent, userId) || isSubscriberByInheritance(forumParent, userId);
+    return !isSubscriber(messagePK, userId) && ResourceSubscriptionProvider
+        .getSubscribersOfSubscriptionResource(ForumMessageSubscriptionResource.from(messagePK))
+        .getAllUserIds().contains(userId);
   }
 
   /**
@@ -1218,19 +1164,9 @@ public class ForumsBMEJB implements ForumsBM {
    */
   @Override
   public boolean isSubscriberByInheritance(final ForumPK forumPK, final String userId) {
-
-    // Verify subscriptions on parent forums if any
-  Forum currentForum = getForum(forumPK);
-    while (!currentForum.isRoot()) {
-      currentForum =
-          getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
-      if (isSubscriber(currentForum.getPk(), userId)) {
-        return true;
-      }
-    }
-
-    // Verify subscriptions on component
-    return isSubscriber(forumPK.getInstanceId(), userId);
+    return !isSubscriber(forumPK, userId) && ResourceSubscriptionProvider
+        .getSubscribersOfSubscriptionResource(ForumSubscriptionResource.from(forumPK))
+        .getAllUserIds().contains(userId);
   }
 
   /**
@@ -1575,6 +1511,6 @@ public class ForumsBMEJB implements ForumsBM {
    * @return
    */
   protected SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 }

@@ -440,6 +440,10 @@ br.clear {
   display: none;
 }
 
+#allInfo legend {
+  background: transparent url("../../../util/icons/component/gallerySmall.gif") 11px 0 no-repeat;
+}
+
 #photoInfo legend {
   background: transparent url("../icons/icon-photo.gif") 11px 0 no-repeat;
 }
@@ -456,6 +460,7 @@ br.clear {
   background: transparent url("../icons/icon-streaming.png") 11px 0 no-repeat;
 }
 
+#allOptions legend,
 #photoOptions legend,
 #videoOptions legend,
 #soundOptions legend,

@@ -24,17 +24,19 @@
 package com.stratelia.silverpeas.infoLetter.implementation;
 
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
+import com.stratelia.silverpeas.infoLetter.control.ByteArrayDataSource;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
@@ -52,16 +54,31 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.mail.MailSending;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.result.MailContentProcess;
 
-
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+
+import static org.silverpeas.mail.MailAddress.eMail;
 
 /**
  * Class declaration
@@ -72,6 +89,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Statiques
   private final static String TableExternalEmails = "SC_IL_ExtSus";
+  
   // Membres
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -140,7 +158,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     try {
       InfoLetter letter = getInfoLetter(letterPK);
       String whereClause = "instanceId = '" + letter.getInstanceId() + "' AND letterId = "
-          + letterPK.getId();
+          + letterPK.getId() + " ORDER BY id desc";
       return new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(
           letterPK, whereClause));
     } catch (PersistenceException pe) {
@@ -267,10 +285,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   @Override
-  public Map<SubscriberType, Collection<String>> getInternalSuscribers(final String componentId) {
-    return SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
-            .getSubscribers(ComponentSubscriptionResource.from(componentId)));
+  public SubscriptionSubscriberList getInternalSuscribers(final String componentId) {
+    return ResourceSubscriptionProvider.getSubscribersOfComponent(componentId);
   }
 
   @Override
@@ -291,23 +307,23 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
     // Getting all existing subscriptions and selecting those that have to be deleted
     Collection<Subscription> subscriptionsToDelete =
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
+        SubscriptionServiceProvider.getSubscribeService()
             .getByResource(ComponentSubscriptionResource.from(componentId));
     subscriptionsToDelete.removeAll(subscriptions);
 
     // Deleting
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribe(subscriptionsToDelete);
 
     // Creating subscriptions (nothing is registered for subscriptions that already exist)
-    SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscriptions);
+    SubscriptionServiceProvider.getSubscribeService().subscribe(subscriptions);
   }
 
   // Recuperation de la liste des emails externes
   @Override
-  public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK) {
+  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
     Connection con = openConnection();
-    List<String> retour = new ArrayList<String>();
+    Set<String> retour = new LinkedHashSet<String>();
     Statement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -316,7 +332,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
       selectQuery += " and letter = " + letterPK.getId() + " ";
       SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.getExternalsSuscribers()",
+          "InfoLetterDataManager.getEmailsExternalsSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
@@ -336,7 +352,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Sauvegarde de la liste des emails externes
-  public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails) {
+  @Override
+  public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails) {
     Connection con = openConnection();
     Statement stmt = null;
     try {
@@ -345,7 +362,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       query += " where instanceId = '" + letter.getInstanceId() + "' ";
       query += " and letter = " + letterPK.getId() + " ";
       SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.setExternalsSuscribers()",
+          "InfoLetterDataManager.setEmailsExternalsSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "query = " + query);
       stmt = con.createStatement();
       stmt.executeUpdate(query);
@@ -374,16 +391,16 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     Subscription subscription =
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId);
     if (isUserSubscribing) {
-      SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
     } else {
-      SubscriptionServiceFactory.getFactory().getSubscribeService().unsubscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
     }
   }
 
   // test d'abonnement d'un utilisateur interne
   @Override
   public boolean isUserSuscribed(String userId, String componentId) {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
+    return SubscriptionServiceProvider.getSubscribeService().existsSubscription(
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId));
   }
 
@@ -420,5 +437,105 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
     return con;
+  }
+
+  private Multipart attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
+      throws MessagingException {
+    for (SimpleDocument attachment : listAttachedFiles) {
+      // create the second message part
+      MimeBodyPart mbp = new MimeBodyPart();
+
+      // attach the file to the message
+      FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
+      mbp.setDataHandler(new DataHandler(fds));
+      // For Displaying images in the mail
+      mbp.setFileName(attachment.getFilename());
+      mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.attachFilesToMail()",
+          "root.MSG_GEN_PARAM_VALUE", "Content-ID= " + mbp.getContentID());
+
+      // create the Multipart and its parts to it
+      mp.addBodyPart(mbp);
+    }
+    return mp;
+  }
+
+  private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart)
+      throws Exception {
+    Multipart multipart = new MimeMultipart(mimeMultipart);
+
+    // create and fill the first message part
+    ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), ilp.getComponentInstanceId());
+
+    // Load and transform WYSIWYG content for mailing
+    String wysiwygContent =
+        WysiwygController.load(foreignKey.getInstanceId(), foreignKey.getId(), null);
+    MailContentProcess.MailResult wysiwygMailTransformResult =
+        WysiwygContentTransformer.on(wysiwygContent).toMailContent();
+
+    // Prepare Mail parts
+    // First the WYSIWYG
+    MimeBodyPart wysiwygBodyPart = new MimeBodyPart();
+    wysiwygBodyPart.setDataHandler(new DataHandler(
+        new ByteArrayDataSource(wysiwygMailTransformResult.getWysiwygContent(),
+            MimeTypes.HTML_MIME_TYPE)));
+    multipart.addBodyPart(wysiwygBodyPart);
+
+    // Then all the referenced media content
+    wysiwygMailTransformResult.applyOn(multipart);
+    
+    // Finally explicit attached files
+    List<SimpleDocument> listAttachedFilesFromTab = AttachmentServiceFactory.getAttachmentService().
+                  listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
+    multipart = attachFilesToMail(multipart, listAttachedFilesFromTab);
+
+    // The completed multipart mail to send
+    return multipart;
+  }
+  
+  @Override
+  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
+      String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom) {
+
+    Set<String> emailErrors = new LinkedHashSet<String>();
+
+    if (listEmailDest.size() > 0) {
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
+          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
+          "root.MSG_GEN_PARAM_VALUE", "from = " + emailFrom);
+
+      try {
+        // create the Multipart and its parts to it
+        Multipart mp = createContentMessageMail(ilp, mimeMultipart);
+
+        for (String receiverEmail : listEmailDest) {
+          try {
+            // Verifying the email
+            new InternetAddress(receiverEmail);
+
+            // Prepare the mail
+            MailSending mail =
+                MailSending.from(eMail(emailFrom)).to(eMail(receiverEmail)).withSubject(subject)
+                    .withContent(mp);
+
+            // Sending the mail
+            mail.send();
+
+          } catch (Exception ex) {
+            SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
+                "root.MSG_GEN_PARAM_VALUE", "Email = " + receiverEmail, new InfoLetterException(
+                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
+            emailErrors.add(receiverEmail);
+          }
+        }
+      } catch (Exception e) {
+        throw new InfoLetterException(
+            "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
+            SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      }
+    }
+    return emailErrors;
   }
 }

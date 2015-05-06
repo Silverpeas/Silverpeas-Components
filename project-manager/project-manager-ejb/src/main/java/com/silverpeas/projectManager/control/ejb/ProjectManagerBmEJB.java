@@ -30,6 +30,8 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -58,6 +60,7 @@ import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.Link;
 
 @Stateless(name = "ProjectManager", description = "Stateless session bean to manage a project.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -518,29 +521,57 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     }
   }
 
+  private String getNotificationSubject(final ResourceLocator message, boolean onCreation) {
+    String subject;
+    if (onCreation) {
+      subject = message.getString("projectManager.NewTask");
+    } else {
+      subject = message.getString("projectManager.UpdateTask");
+    }
+    return subject;
+  }
+
+  private String getNotificationBody(final ResourceLocator message, boolean onCreation, String taskName) {
+    StringBuilder body = new StringBuilder(128);
+    if (onCreation) {
+      body.append(message.getString("projectManager.NewTaskNamed")).append(
+          " '" + taskName + "' ").append(
+          message.getString("projectManager.NewTaskAssigned")).append("\n");
+    } else {
+      body.append(message.getString("projectManager.UpdateTaskNamed")).append(
+          " '" + taskName + "' ").append(
+          message.getString("projectManager.UpdateTaskAssigned")).append("\n");
+    }
+    return body.toString();
+  }
+
   private void alertResource(TaskDetail task, boolean onCreation) {
     NotificationSender notifSender = new NotificationSender(task.getInstanceId());
 
-    String subject;
-    StringBuilder body = new StringBuilder(128);
-    if (onCreation) {
-      subject = "Nouvelle tâche";
-      body.append("Une nouvelle tâche nommée \"").append(task.getNom()).append(
-          "\" vient de vous être affecté.\n");
-    } else {
-      subject = "Modification d'une tâche";
-      body.append("La tâche \"").append(task.getNom()).append(
-          "\" dont vous êtes responsable vient d'être modifiée.\n");
-    }
-
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        subject, body.toString());
-    notifMetaData.setSender(Integer.toString(task.getOrganisateurId()));
-    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf((task.getResponsableId()))));
-
     String url = URLManager.getURL("projectManager", null, task.getInstanceId())
         + "searchResult?Type=Task&Id=" + task.getId();
-    notifMetaData.setLink(url);
+
+    ResourceLocator message = new ResourceLocator("org.silverpeas.projectManager.multilang.projectManagerBundle",
+        DisplayI18NHelper.getDefaultLanguage());
+
+    String subject = getNotificationSubject(message, onCreation);
+    String body = getNotificationBody(message, onCreation, task.getNom());
+
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+        subject, body);
+
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      message = new ResourceLocator("org.silverpeas.projectManager.multilang.projectManagerBundle", language);
+      subject = getNotificationSubject(message, onCreation);
+      body = getNotificationBody(message, onCreation, task.getNom());
+      notifMetaData.addLanguage(language, subject, body);
+
+      Link link = new Link(url, message.getString("projectManager.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+
+    notifMetaData.setSender(Integer.toString(task.getOrganisateurId()));
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf((task.getResponsableId()))));
 
     try {
       notifSender.notifyUser(notifMetaData);

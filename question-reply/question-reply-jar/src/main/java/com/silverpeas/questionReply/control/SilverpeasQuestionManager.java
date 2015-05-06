@@ -26,13 +26,11 @@ import com.silverpeas.questionReply.index.QuestionIndexer;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -988,10 +986,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
       QuestionReplyException {
     if (reply.getPublicReply() == 1) {
       UserDetail sender = reply.readAuthor();
-      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, URLManager.getServerURL(null),
-              question, reply);
-      Collection<String> subscribers = SubscriptionServiceFactory.getFactory().getSubscribeService().
-              getUserSubscribers(ComponentSubscriptionResource.from(question.getInstanceId()));
+      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, question, reply);
+      Collection<String> subscribers =
+          ResourceSubscriptionProvider.getSubscribersOfComponent(question.getInstanceId())
+              .getAllUserIds();
       Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();
       for (String subscriberId : subscribers) {
         userRecipients.add(new UserRecipient(subscriberId));

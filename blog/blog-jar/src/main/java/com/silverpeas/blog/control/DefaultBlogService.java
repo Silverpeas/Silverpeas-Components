@@ -23,30 +23,6 @@
  */
 package com.silverpeas.blog.control;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.blog.BlogContentManager;
 import com.silverpeas.blog.dao.PostDAO;
 import com.silverpeas.blog.model.Archive;
@@ -65,12 +41,11 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -90,6 +65,28 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Default implementation of the services provided by the Blog component. It is managed by the
@@ -202,8 +199,9 @@ public class DefaultBlogService implements BlogService {
   @Override
   public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
       final Comment comment, final String type, final String senderId) {
-    Collection<String> subscriberIds = getSubscribeBm()
-        .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
+    Collection<String> subscriberIds =
+        ResourceSubscriptionProvider.getSubscribersOfComponent(fatherPK.getInstanceId())
+            .getAllUserIds();
     OrganisationController orgaController = new OrganizationController();
     if (subscriberIds != null && !subscriberIds.isEmpty()) {
       // get only subscribers who have sufficient rights to read pubDetail
@@ -249,16 +247,16 @@ public class DefaultBlogService implements BlogService {
       PostDAO.updateDateEvent(con, pubPk.getId(), post.getDateEvent());
       
       // Save wysiwyg content
-      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+      if (pub.isValid()) {
         WysiwygController.updateFileAndAttachment(post.getContent(),
             pub.getInstanceId(), pubPk.getId(), pub.getUpdaterId(), pub.getLanguage());
-      } else if (pub.getStatus().equals(PublicationDetail.DRAFT)) {//DRAFT mode -> do not index
+      } else if (pub.isDraft()) {//DRAFT mode -> do not index
         WysiwygController.updateFileAndAttachment(post.getContent(),
             pub.getInstanceId(), pubPk.getId(), pub.getUpdaterId(), pub.getLanguage(), false);
       }
 
       // Send notification if subscription
-      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+      if (pub.isValid()) {
         sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
             getInstanceId()), post, null, "update", pub.getUpdaterId());
       }
@@ -836,7 +834,7 @@ public class DefaultBlogService implements BlogService {
   }
 
   private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   private PublicationBm getPublicationBm() {

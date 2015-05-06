@@ -23,15 +23,13 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.classifieds.model.Subscribe;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -41,16 +39,14 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -58,13 +54,14 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
@@ -239,7 +236,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
           throws PublicationTemplateException, FormException {
     getClassifiedService().draftOutClassified(classifiedId, highestRole.getName(), isValidationEnabled());
-    if (highestRole == ClassifiedsRole.MANAGER) {
+    if (!isValidationEnabled() &&
+        (highestRole == ClassifiedsRole.PUBLISHER || highestRole == ClassifiedsRole.MANAGER)) {
       sendSubscriptionsNotification(classifiedId);
     }
   }
@@ -354,22 +352,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       boolean notify = false;
       if (isUpdate) {
         classified.setUpdateDate(new Date());
-        // That's a real update
-        if (isDraftEnabled()) {
-          if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
-            notify = true;
-          }
-        }
         
         if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
             ClassifiedDetail.VALID)) {
           classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+          notify = true;
         }
 
         // special case : status is UNPUBLISHED, user requested classified republication
         if (classified.getStatus().equals(ClassifiedDetail.UNPUBLISHED)) {
           if (!isAdmin && isValidationEnabled()) {
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+            notify = true;
           } else {
             classified.setStatus(ClassifiedDetail.VALID);
           }

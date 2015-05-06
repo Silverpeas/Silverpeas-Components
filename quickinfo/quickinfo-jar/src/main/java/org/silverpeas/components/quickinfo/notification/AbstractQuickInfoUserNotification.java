@@ -1,11 +1,8 @@
 package org.silverpeas.components.quickinfo.notification;
 
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 
 public abstract class AbstractQuickInfoUserNotification<T> extends
     AbstractTemplateUserNotificationBuilder<T> {
@@ -30,14 +27,6 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
   }
 
   /**
-   * Gets the service instance of subscription management.
-   * @return the subscriptions service instance.
-   */
-  protected SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
-  }
-
-  /**
    * Gets the name of the sender.
    * @return
    */
@@ -53,6 +42,13 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
    * Gets the {@link UserDetail} instance of the sender.
    * @return
    */
-  protected abstract UserDetail getSenderDetail();
+  protected final UserDetail getSenderDetail() {
+    return UserDetail.getById(getSender());
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "quickinfo.news.notifNewsLinkLabel";
+  }
 
 }

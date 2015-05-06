@@ -38,6 +38,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionManagementContext;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
@@ -61,6 +63,7 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.servlets.handlers.StatisticRequestHandler;
+import com.stratelia.webactiv.util.ActionType;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -76,6 +79,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -147,6 +151,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     boolean profileError = false;
     boolean kmaxMode = false;
     boolean toolboxMode;
+    SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic = SilverpeasRole.getGreaterFrom(
+        SilverpeasRole.from(kmelia.getUserTopicProfile(kmelia.getCurrentFolderId())));
     try {
       SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "getComponentRootName() = " + kmelia.getComponentRootName());
@@ -386,6 +392,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
           request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
+          setupRequestForSubscriptionNotificationSending(request,
+              highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
+              kmelia.getSessionPubliOrClone().getDetail());
         } else if ("New".equals(action)) {
           request.setAttribute("TaxonomyOK", true);
           request.setAttribute("ValidatorsOK", true);
@@ -1297,6 +1306,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("UserId", kmelia.getUserId());
         request.setAttribute("IndexIt", "false");
 
+        // Subscription management
+        setupRequestForSubscriptionNotificationSending(request,
+            highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(), publication);
+
         destination = "/wysiwyg/jsp/htmlEditor.jsp";
       } else if ("FromWysiwyg".equals(function)) {
         String id = request.getParameter("PubId");
@@ -1335,6 +1348,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         boolean wysiwygUsable = (Boolean) request.getAttribute("WysiwygValid");
         request.setAttribute("IsChangingTemplateAllowed",
             templates.size() >= 2 || (!templates.isEmpty() && wysiwygUsable));
+
+        setupRequestForSubscriptionNotificationSending(request,
+            highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
+            kmelia.getSessionPubliOrClone().getDetail());
+
 
         destination = rootDestination + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
@@ -2458,6 +2476,28 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       request.setAttribute("XMLForms", templates);
       request.setAttribute("WysiwygValid", Boolean.TRUE);
     }
+  }
+
+  /**
+   * Setup the request to manager some behaviors around subscription notification sending.
+   * @param request the current request.
+   * @param highestSilverpeasUserRoleOnCurrentTopic the highest role the user has on the current
+   * folder.
+   * @param currentFolderPK the primary key of the current folder.
+   * @param publication the current handled publication.
+   */
+  private void setupRequestForSubscriptionNotificationSending(HttpRequest request,
+      SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic, NodePK currentFolderPK,
+      PublicationDetail publication) {
+    ContributionStatus statusBeforeSave = publication.isValid() ? ContributionStatus.VALIDATED :
+        ContributionStatus.from(publication.getStatus());
+    ContributionStatus statusAfterSave = ContributionStatus.UNKNOWN;
+    if (highestSilverpeasUserRoleOnCurrentTopic.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+      statusAfterSave = ContributionStatus.VALIDATED;
+    }
+    request.setAttribute("subscriptionManagementContext", SubscriptionManagementContext
+        .on(NodeSubscriptionResource.from(currentFolderPK), publication.getId())
+        .forPersistenceAction(statusBeforeSave, ActionType.UPDATE, statusAfterSave));
   }
 
   /**

@@ -23,14 +23,9 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
-import java.io.UnsupportedEncodingException;
-import java.rmi.RemoteException;
-import java.util.Collection;
-
-
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
@@ -41,6 +36,10 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -91,16 +90,17 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
           throws NotificationManagerException {
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
     String subject = getNotificationFormatter().formatTitle(message, list.getName(),
-            I18NHelper.defaultLanguage, moderate);
-    for (String lang : I18NHelper.getAllSupportedLanguages()) {
-      templates.put(lang, getTemplate(message, lang, moderate));
-    }
+        DisplayI18NHelper.getDefaultLanguage(), moderate);
     String templateFileName = MESSAGE_TEMPLATE_FILE;
     if (moderate) {
       templateFileName = MODERATION_TEMPLATE_FILE;
     }
     NotificationMetaData metadata = new NotificationMetaData(NotificationParameters.NORMAL, subject,
             templates, templateFileName);
+    for (String lang : DisplayI18NHelper.getLanguages()) {
+      metadata.addLanguage(lang, subject, "");
+      templates.put(lang, getTemplate(message, list.getName(), moderate));
+    }
     metadata.setAnswerAllowed(false);
     metadata.setDate(message.getSentDate());
     metadata.setSource(list.getSubscribedAddress());

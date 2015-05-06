@@ -23,16 +23,6 @@
  */
 package com.silverpeas.kmelia.export;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.HTMLConverter;
@@ -43,7 +33,6 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -59,7 +48,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextAElement;
@@ -70,6 +58,17 @@ import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
 import static com.silverpeas.converter.DocumentFormat.odt;
@@ -79,7 +78,8 @@ import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static com.stratelia.webactiv.util.DateUtil.formatDate;
+import static com.stratelia.webactiv.util.DateUtil.getOutputDate;
 
 /**
  * A builder of an ODT document based on a given template and from a specified Kmelia publication.
@@ -288,8 +288,7 @@ public class ODTDocumentBuilder {
       try {
         htmlFile = new File(
             FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
-        // warning: the content of HTML text is actually in ISO-8859-1!
-        FileUtils.writeStringToFile(htmlFile, html, "ISO-8859-1");
+        FileUtils.writeStringToFile(htmlFile, html, Charsets.UTF_8);
         HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
         odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
         TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
@@ -333,6 +332,11 @@ public class ODTDocumentBuilder {
       context.setNodeId(getTopicIdOf(publication));
       String htmlText = viewForm.toString(context, dataRecord);
       if (isDefined(htmlText)) {
+        //Suppress script tag
+        htmlText = Pattern.compile("<script[^>]*>.*?</script>",
+            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
+            .matcher(htmlText)
+            .replaceAll("");
         buildWithHTMLText(htmlText, in(odtDocument));
         removeSection = false;
       }
