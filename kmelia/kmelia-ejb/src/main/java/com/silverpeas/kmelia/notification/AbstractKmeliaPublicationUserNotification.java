@@ -83,7 +83,7 @@ public abstract class AbstractKmeliaPublicationUserNotification
 
   @Override
   protected String getResourceURL(final PublicationDetail resource) {
-    return KmeliaHelper.getPublicationUrl(resource);
+    return KmeliaHelper.getPublicationUrl(resource, getNodePK());
   }
 
   protected NodePK getNodePK() {

@@ -24,6 +24,7 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.io.Serializable;
 
+import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 
@@ -98,11 +99,11 @@ public class KmeliaHelper implements Serializable {
     return url.substring(url.indexOf("Type=") + 5, url.lastIndexOf("&"));
   }
 
-  public static String getPublicationUrl(PublicationDetail pubDetail) {
-    if (pubDetail.isAlias()) {
+  public static String getPublicationUrl(PublicationDetail pubDetail, NodePK nodePK) {
+    if (pubDetail.isAlias() && nodePK != null) {
       // app of the alias have to be defined
       return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
-          pubDetail.getInstanceId(), false);
+          nodePK.getInstanceId(), false);
     }
     return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(), false);
   }
