@@ -439,8 +439,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
           SortedSet<SearchField> fields = scc.getSearchFields();
           request.setAttribute("searchFields", fields);
 
-          SearchContext searchContext = new SearchContext();
-          searchContext.setUserId(scc.getUserId());
+          SearchContext searchContext = new SearchContext(scc.getUserId());
 
           // primary axis for form 
           List<SearchAxis> primaryPdcFields = scc.getUsedAxisList(searchContext, "P");
@@ -540,8 +539,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
     SearchContext pdcContext = null;
 
     // Axes primaires
-    SearchContext searchContext = new SearchContext();
-    searchContext.setUserId(scc.getUserId());
+    SearchContext searchContext = new SearchContext(scc.getUserId());
     List<SearchAxis> primaryPdcFields = scc.getUsedAxisList(searchContext, "P");
     if (primaryPdcFields != null && primaryPdcFields.size() > 0) {
       Iterator<SearchAxis> iterPrimaryPdcFields = primaryPdcFields.iterator();
@@ -551,8 +549,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         if (value != null && value.length() > 0) {
           request.setAttribute("Axis" + String.valueOf(current.getAxisId()), value);
           if (pdcContext == null) {
-            pdcContext = new SearchContext();
-            pdcContext.setUserId(scc.getUserId());
+            pdcContext = new SearchContext(scc.getUserId());
           }
           SearchCriteria criteria = new SearchCriteria(current.getAxisId(), value);
           pdcContext.addCriteria(criteria);
@@ -570,8 +567,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         if (value != null && value.length() > 0) {
           request.setAttribute("Axis" + String.valueOf(current.getAxisId()), value);
           if (pdcContext == null) {
-            pdcContext = new SearchContext();
-            pdcContext.setUserId(scc.getUserId());
+            pdcContext = new SearchContext(scc.getUserId());
           }
           SearchCriteria criteria = new SearchCriteria(current.getAxisId(), value);
           pdcContext.addCriteria(criteria);
