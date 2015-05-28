@@ -984,7 +984,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         // Ajout élément PDC
-        SearchContext pdcContext = new SearchContext();
+        SearchContext pdcContext = new SearchContext(gallerySC.getUserId());
+
         List<Integer> silverObjectIds = null;
 
         // Récupération des couples (axe, valeur)
