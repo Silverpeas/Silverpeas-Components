@@ -21,14 +21,14 @@
 
 package com.silverpeas.components.organizationchart.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.silverpeas.components.organizationchart.model.OrganizationalChart;
+import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
+import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
+import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
+import com.silverpeas.components.organizationchart.model.PersonCategory;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
@@ -41,16 +41,14 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
-import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import com.silverpeas.components.organizationchart.model.PersonCategory;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartServiceImpl
     implements OrganizationChartService {
@@ -469,6 +467,10 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
           } else {
             detail = getFirstAttributeValue(att);
           }
+
+          // convert characters
+          detail = escapeHTML(detail);
+
           details.put(attribute.getValue(), detail);
         } catch (NamingException e) {
           SilverTrace.warn("organizationchart",
@@ -478,6 +480,42 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
       }
     }
     return details;
+  }
+
+  private String escapeHTML(String s) {
+    StringBuffer sb = new StringBuffer();
+    int n = s.length();
+    for (int i = 0; i < n; i++) {
+      char c = s.charAt(i);
+      switch (c) {
+        case '<':
+          sb.append("&lt;");
+          break;
+        case '>':
+          sb.append("&gt;");
+          break;
+        case '&':
+          sb.append("&amp;");
+          break;
+        case '\'':
+          sb.append("&apos;");
+          break;
+        case '"':
+          sb.append("&quot;");
+          break;
+        case '/':
+          sb.append("&#47;");
+          break;
+        case '\\':
+          sb.append("&#92;");
+          break;
+
+        default:
+          sb.append(c);
+          break;
+      }
+    }
+    return sb.toString();
   }
 
   /**

@@ -53,7 +53,6 @@
 
   //Recuperation des parametres
   String profile = (String) request.getAttribute("Profile");
-  String alias = (String) request.getAttribute("IsAlias");
   String action = (String) request.getAttribute("Action");
   KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
   String wizard = (String) request.getAttribute("Wizard");
@@ -103,6 +102,10 @@
   String contextComponentId = componentId;
   //surcharge le componentId du composant courant (cas de l'alias)
   componentId = pubDetail.getPK().getInstanceId();
+  String alias = "";
+  if (kmeliaPublication.isAlias()) {
+    alias = contextComponentId;
+  }
 
   String linkedPathString = kmeliaScc.getSessionPath();
 

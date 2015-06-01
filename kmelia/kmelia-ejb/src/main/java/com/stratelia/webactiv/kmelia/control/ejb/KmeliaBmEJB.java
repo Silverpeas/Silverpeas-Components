@@ -1956,12 +1956,6 @@ public class KmeliaBmEJB implements KmeliaBm {
   private void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
       NotifAction action) {
 
-    // Save instance id of publication
-    String originalComponentId = pubDetail.getInstanceId();
-
-    // Change the instanceId (to make the right URL)
-    pubDetail.getPK().setComponentName(fatherPK.getInstanceId());
-
     // Send email alerts
     try {
 
@@ -1973,10 +1967,6 @@ public class KmeliaBmEJB implements KmeliaBm {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendSubscriptionsNotification()",
           "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
           + fatherPK.getId() + ", pubId = " + pubDetail.getPK().getId(), e);
-    } finally {
-
-      //Restore original primary key
-      pubDetail.getPK().setComponentName(originalComponentId);
     }
   }
 
