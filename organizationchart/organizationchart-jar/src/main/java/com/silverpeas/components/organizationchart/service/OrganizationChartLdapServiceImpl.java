@@ -504,9 +504,6 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
         case '\\':
           sb.append("&#92;");
           break;
-        case ' ':
-          sb.append("&nbsp;");
-          break;
 
         default:
           sb.append(c);
