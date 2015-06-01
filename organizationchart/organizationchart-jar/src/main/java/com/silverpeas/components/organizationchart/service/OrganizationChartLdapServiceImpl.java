@@ -21,14 +21,14 @@
 
 package com.silverpeas.components.organizationchart.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.silverpeas.components.organizationchart.model.OrganizationalChart;
+import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
+import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
+import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
+import com.silverpeas.components.organizationchart.model.PersonCategory;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
@@ -41,17 +41,14 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
-import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import com.silverpeas.components.organizationchart.model.PersonCategory;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartServiceImpl
     implements OrganizationChartService {
@@ -511,9 +508,6 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
           break;
         case '\\':
           sb.append("&#92;");
-          break;
-        case ' ':
-          sb.append("&nbsp;");
           break;
 
         default:
