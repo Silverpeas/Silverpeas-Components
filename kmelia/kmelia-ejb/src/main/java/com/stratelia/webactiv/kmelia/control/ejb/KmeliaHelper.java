@@ -22,16 +22,15 @@
 
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import java.io.Serializable;
-
-import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import java.io.Serializable;
 
 /**
  * @author neysseri
