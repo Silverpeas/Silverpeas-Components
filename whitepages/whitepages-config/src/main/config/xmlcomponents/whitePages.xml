@@ -110,7 +110,7 @@
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
-      <value>whitePages/annuaire.html</value>
+      <value>whitePages/view.html</value>
       <type>text</type>
       <size>30</size>
       <updatable>always</updatable>
