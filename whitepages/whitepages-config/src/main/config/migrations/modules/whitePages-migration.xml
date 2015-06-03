@@ -23,10 +23,14 @@
 <migration module="whitePages"
            xmlns="http://www.silverpeas.org/schema/migration">
 
-  <current version="004">
+  <current version="005">
     <script name="create_table.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
     <script name="create_index.sql" type="sql"/>
   </current>
+
+  <upgrade fromVersion="004">
+    <script name="update_table.sql" type="sql"/>
+  </upgrade>
 
 </migration>
