@@ -93,36 +93,51 @@ public class GalleryDragAndDrop extends HttpServlet {
       String albumId = request.getParameter("AlbumId");
       userId = request.getParameter("UserId");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
-      String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId +
-          System.currentTimeMillis() + File.separatorChar;
-      List<FileItem> items = request.getFileItems();
-      String parentPath = getParameterValue(items, "userfile_parent");
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "parentPath = " + parentPath);
+        "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
 
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "debut de la boucle");
+      String savePath = FileRepositoryManager.getTemporaryPath()  + "tmpupload"
+          + File.separatorChar + albumId + System.currentTimeMillis() + File.separatorChar;
+
+      List<FileItem> items = request.getFileItems();
+
       for (FileItem item : items) {
         if (!item.isFormField()) {
+          String fileUploadId = item.getFieldName().substring(4);
+          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
           String fileName = FileUploadUtil.getFileName(item);
-          SilverTrace
-              .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-                  "item = " + item.getFieldName() + " - " + fileName);
-          if (fileName != null) {
-            SilverTrace
-                .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-                    "fileName = " + fileName);
-            // modifier le nom avant de l'écrire
-            File f = new File(savePath + File.separatorChar + fileName);
-            File parent = f.getParentFile();
-            if (!parent.exists()) {
-              parent.mkdirs();
+          if (StringUtil.isDefined(parentPath)) {
+            if (parentPath.endsWith(":\\")) { // special case for file on root of disk
+              parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
             }
-            item.write(f);
-            // Cas du zip
-            if (FileUtil.isArchive(fileName)) {
-              ZipUtil.extract(f, parent);
+          }
+          parentPath = FileUtil.convertPathToServerOS(parentPath);
+          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
+            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getFieldName() + " - " + fileName);
+          if (fileName != null) {
+            if (fileName.contains(File.separator)) {
+              fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
+              parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.
+                  lastIndexOf(File.separatorChar));
+            }
+            SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
+              "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
+
+            if (parentPath != null && parentPath.length() > 0) {
+              fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
+            }
+
+            if (!"".equals(savePath)) {
+              File f = new File(savePath + fileName);
+              File parent = f.getParentFile();
+              if (!parent.exists()) {
+                parent.mkdirs();
+              }
+              item.write(f);
+
+              // Cas du zip
+              if (FileUtil.isArchive(fileName)) {
+                ZipManager.extract(f, parent);
+              }
             }
           }
         }
