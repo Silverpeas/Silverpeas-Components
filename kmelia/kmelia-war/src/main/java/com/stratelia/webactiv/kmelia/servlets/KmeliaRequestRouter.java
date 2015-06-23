@@ -1412,9 +1412,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           destination = getDestination("ToDBModel", kmelia, request);
         }
       } else if (function.equals("GoToXMLForm")) {
-        String xmlFormName = request.getParameter("Name");
+        String xmlFormName = (String) request.getAttribute("Name");
         if (!StringUtil.isDefined(xmlFormName)) {
-          xmlFormName = (String) request.getAttribute("Name");
+          xmlFormName = request.getParameter("Name");
         }
         setXMLForm(request, kmelia, xmlFormName);
         // put current publication
