@@ -94,7 +94,7 @@
       }
 
       function B_ANNULER_ONCLICK() {
-        location.href = "Main";
+        location.href = "ViewPublication";
       }
 
       function showTranslation(lang) {
@@ -128,7 +128,6 @@
           Window window = gef.getWindow();
           Frame frame = gef.getFrame();
           Board board = gef.getBoard();
-          Board boardHelp = gef.getBoard();
 
           BrowseBar browseBar = window.getBrowseBar();
           browseBar.setDomainName(spaceLabel);
