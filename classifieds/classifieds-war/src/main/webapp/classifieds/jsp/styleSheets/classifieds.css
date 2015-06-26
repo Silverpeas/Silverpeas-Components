@@ -405,6 +405,10 @@ div.tableBoard {
 	color:#666
 }
 
+.principalContent #classified_content_form .forms .fields {
+  margin-left: 255px;
+}
+
 #classified_contact_link {
 	border-radius:8px;
 	padding:0.5em;
@@ -568,4 +572,3 @@ div.tableBoard {
 .classifiedForm .table {
 	margin-bottom:15px
 }
-
