@@ -1009,8 +1009,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   /**
    * @param models
    */
-  public void addModelUsed(String[] models) {
-    getYellowpagesService().addModelUsed(models, getComponentId());
+  public void setModelUsed(String[] models) {
+    getYellowpagesService().setModelUsed(models, getComponentId());
   }
 
   public Collection<String> getModelUsed() {

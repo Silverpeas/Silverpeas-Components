@@ -2107,9 +2107,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return isPublicationDeleted;
   }
 
-  public void addModelUsed(String[] models) {
+  public void setModelUsed(String[] models) {
     String objectId = getCurrentFolderId();
-    getKmeliaBm().addModelUsed(models, getComponentId(), objectId);
+    getKmeliaBm().setModelUsed(models, getComponentId(), objectId);
   }
 
   public Collection<String> getModelUsed() {

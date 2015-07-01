@@ -416,7 +416,7 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   public String getWysiwyg(PublicationPK pubPK, String language);
 
-  public void addModelUsed(String[] models, String instanceId, String nodeId);
+  public void setModelUsed(String[] models, String instanceId, String nodeId);
 
   public Collection<String> getModelUsed(String instanceId, String nodeId);
 

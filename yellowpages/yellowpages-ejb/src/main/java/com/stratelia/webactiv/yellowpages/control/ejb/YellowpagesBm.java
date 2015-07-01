@@ -207,7 +207,7 @@ public interface YellowpagesBm {
 
   public void removeGroup(String groupId, NodePK nodePK);
 
-  public void addModelUsed(String[] models, String instanceId);
+  public void setModelUsed(String[] models, String instanceId);
 
   public Collection<String> getModelUsed(String instanceId);
 

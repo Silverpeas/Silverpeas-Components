@@ -321,11 +321,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         // Back to topic
         destination = getDestination("topicManager", scc, request);
       } else if ("SelectModel".equals(function)) {
-        Object o = request.getParameterValues("modelChoice");
-        if (o != null) {
-          String[] models = (String[]) o;
-          scc.addModelUsed(models);
-        }
+        scc.setModelUsed(request.getParameterValues("modelChoice"));
         destination = getDestination("topicManager", scc, request);
       } else if ("DeleteBasketContent".equals(function)) {
         scc.deleteBasketContent();
