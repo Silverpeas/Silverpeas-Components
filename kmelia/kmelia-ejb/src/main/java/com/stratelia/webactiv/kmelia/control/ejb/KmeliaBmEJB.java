@@ -3576,12 +3576,14 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   @Override
-  public void addModelUsed(String[] models, String instanceId, String nodeId) {
+  public void setModelUsed(String[] models, String instanceId, String nodeId) {
     Connection con = getConnection();
     try {
       ModelDAO.deleteModel(con, instanceId, nodeId);
-      for (String modelId : models) {
-        ModelDAO.addModel(con, instanceId, modelId, nodeId);
+      if (models != null) {
+        for (String modelId : models) {
+          ModelDAO.addModel(con, instanceId, modelId, nodeId);
+        }
       }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addModelUsed()", ERROR,
