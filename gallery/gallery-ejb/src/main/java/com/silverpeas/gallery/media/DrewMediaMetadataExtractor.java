@@ -94,6 +94,16 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
             case ExifIFD0Directory.TAG_WIN_TITLE:
               value = descriptor.getWindowsTitleDescription();
               break;
+
+            case ExifIFD0Directory.TAG_RESOLUTION_UNIT:
+              value = exifDirectory.getString(currentMetadata);
+              if("2".equals(value)) {//dots per inch
+                value = "DPI";
+              } else if ("3".equals(value)) {//dots per cm
+                value = "DPC";
+              }
+              break;
+
             default:
               value = exifDirectory.getString(currentMetadata);
           }
@@ -139,27 +149,6 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
           case TAG_KEYWORDS:
             addStringMetaData(result, iptcDirectory, iptcProperty, lang, forEncodingDetection);
             break;
-          case TAG_BY_LINE:
-          case TAG_BY_LINE_TITLE:
-          case TAG_CAPTION:
-          case TAG_CATEGORY:
-          case TAG_CITY:
-          case TAG_COPYRIGHT_NOTICE:
-          case TAG_COUNTRY_OR_PRIMARY_LOCATION_NAME:
-          case TAG_COUNTRY_OR_PRIMARY_LOCATION_CODE:
-          case TAG_CREDIT:
-          case TAG_HEADLINE:
-          case TAG_OBJECT_NAME:
-          case TAG_ORIGINAL_TRANSMISSION_REFERENCE:
-          case TAG_ORIGINATING_PROGRAM:
-          case TAG_PROVINCE_OR_STATE:
-          case TAG_RELEASE_TIME:
-          case TAG_SOURCE:
-          case TAG_SPECIAL_INSTRUCTIONS:
-          case TAG_SUPPLEMENTAL_CATEGORIES:
-          case TAG_TIME_CREATED:
-          case TAG_URGENCY:
-          case TAG_CAPTION_WRITER:
           default:
             addMetaData(result, iptcDirectory, iptcProperty, lang, forEncodingDetection);
             break;
