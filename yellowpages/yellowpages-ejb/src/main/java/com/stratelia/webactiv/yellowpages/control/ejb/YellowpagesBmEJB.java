@@ -1007,13 +1007,14 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   }
 
   @Override
-  public void addModelUsed(String[] models, String instanceId) {
+  public void setModelUsed(String[] models, String instanceId) {
     Connection con = getConnection();
     try {
       ModelDAO.deleteModel(con, instanceId);
-      for (int i = 0; i < models.length; i++) {
-        String modelId = models[i];
-        ModelDAO.addModel(con, instanceId, modelId);
+      if (models != null) {
+        for (String modelId : models) {
+          ModelDAO.addModel(con, instanceId, modelId);
+        }
       }
     } catch (Exception e) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.addModelUsed()",

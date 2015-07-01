@@ -1268,10 +1268,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "modelUsedList.jsp";
       } else if (function.equals("SelectModel")) {
-        Object o = request.getParameterValues("modelChoice");
-        if (o != null) {
-          kmelia.addModelUsed((String[]) o);
-        }
+        kmelia.setModelUsed(request.getParameterValues("modelChoice"));
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if ("ChangeTemplate".equals(function)) {
         kmelia.removePublicationContent();

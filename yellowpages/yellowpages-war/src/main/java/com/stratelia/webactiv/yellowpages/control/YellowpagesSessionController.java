@@ -1066,8 +1066,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   /**
    * @param models
    */
-  public void addModelUsed(String[] models) {
-    getKSCEJB().addModelUsed(models, getComponentId());
+  public void setModelUsed(String[] models) {
+    getKSCEJB().setModelUsed(models, getComponentId());
   }
 
   public Collection<String> getModelUsed() {
