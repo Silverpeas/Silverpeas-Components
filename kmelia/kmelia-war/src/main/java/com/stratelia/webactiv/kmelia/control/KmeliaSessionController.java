@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
@@ -111,6 +112,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
+import org.silverpeas.accesscontrol.PublicationAccessController;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -889,15 +891,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     pubDetail.getPK().setSpace(getSpaceId());
     pubDetail.getPK().setComponentName(getComponentId());
     pubDetail.setUpdaterId(getUserId());
-
-    SilverTrace.info("kmelia", "KmeliaSessionController.updatePublication(pubDetail)",
-        "root.MSG_GEN_PARAM_VALUE",
-        "isPublicationAlwaysVisibleEnabled() = " + isPublicationAlwaysVisibleEnabled());
-    SilverTrace.info("kmelia", "KmeliaSessionController.updatePublication(pubDetail)",
-        "root.MSG_GEN_PARAM_VALUE", "'writer'.equals(KmeliaHelper.getProfile(getUserRoles())) = " +
-            "writer".equals(KmeliaHelper.getProfile(getUserRoles())));
-    SilverTrace.info("kmelia", "KmeliaSessionController.updatePublication(pubDetail)",
-        "root.MSG_GEN_PARAM_VALUE", "(getSessionClone() == null) = " + (getSessionClone() == null));
     if (isCloneNeeded()) {
       clonePublication(pubDetail);
     } else {
@@ -915,9 +908,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
       getKmeliaBm().updatePublication(pubDetail);
     }
-    SilverTrace
-        .spy("kmelia", "KmeliaSessionController.updatePublication", getSpaceId(), getComponentId(),
-            pubDetail.getId(), getUserDetail().getId(), SilverTrace.SPY_ACTION_UPDATE);
   }
 
   public boolean isCloneNeeded() throws RemoteException {
@@ -1375,9 +1365,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         "root.MSG_PARAM_VALUE", "NbPubli=" + allPublications.size());
     for (PublicationDetail pubDetail : allPublications) {
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
-        SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublications()",
-            "root.MSG_PARAM_VALUE",
-            "Get pubId" + pubDetail.getId() + "InstanceId=" + pubDetail.getInstanceId());
         allVisiblesPublications.add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.
             getInstanceId()));
       }
@@ -1406,9 +1393,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         "root.MSG_PARAM_VALUE", "NbPubli=" + allPublications.size());
     for (PublicationDetail pubDetail : allPublications) {
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
-        SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublicationsByTopic()",
-            "root.MSG_PARAM_VALUE",
-            "Get pubId" + pubDetail.getId() + "InstanceId=" + pubDetail.getInstanceId());
         allVisiblesPublications.add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.
             getInstanceId()));
       }
@@ -1424,9 +1408,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             "NbPubli=" + allPublications.size());
     for (PublicationDetail pubDetail : allPublications) {
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
-        SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsIds()",
-            "root.MSG_PARAM_VALUE",
-            "Get pubId" + pubDetail.getId() + "InstanceId=" + pubDetail.getInstanceId());
         allPublicationsIds
             .add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.getInstanceId()));
       }
@@ -2043,10 +2024,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    */
   public ImportReport importFile(File fileUploaded, String fileType, String importMode,
       boolean draftMode, int versionType) throws ImportExportException {
-    SilverTrace.debug("kmelia", "KmeliaSessionController.importFile()", "root.MSG_GEN_ENTER_METHOD",
-        "fileUploaded = " + fileUploaded.getAbsolutePath() + " fileType=" + fileType +
-            " importMode=" + importMode + " draftMode=" + draftMode + " versionType=" +
-            versionType);
     ImportReport importReport = null;
     FileImport fileImport = new FileImport(this, fileUploaded);
     boolean draft = draftMode;
@@ -2305,9 +2282,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     for (KmeliaPublication aPubli : allPublications) {
       PublicationDetail pubDetail = aPubli.getDetail();
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
-        SilverTrace.info("kmelia", "KmeliaSessionController.getCurrentPublicationsList()",
-            "root.MSG_PARAM_VALUE",
-            "Get pubId" + pubDetail.getId() + "InstanceId=" + pubDetail.getInstanceId());
         currentPublications
             .add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.getInstanceId()));
       }
@@ -2555,9 +2529,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<ProfileInst> alShowProfile = new ArrayList<>();
     String[] asAvailProfileNames = getAdmin().getAllProfilesNames("kmelia");
     for (String asAvailProfileName : asAvailProfileNames) {
-      SilverTrace
-          .info("jobStartPagePeas", "JobStartPagePeasSessionController.getAllProfilesNames()",
-              "root.MSG_GEN_PARAM_VALUE", "asAvailProfileNames = " + asAvailProfileName);
       ProfileInst profile = getTopicProfile(asAvailProfileName, topicId);
       profile.setLabel(
           getAdmin().getProfileLabelfromName("kmelia", asAvailProfileName, getLanguage()));
@@ -2617,9 +2588,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public void copyPublication(String pubId) throws ClipboardException, RemoteException {
     PublicationDetail pub = getPublicationDetail(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
-    SilverTrace
-        .info("kmelia", "KmeliaSessionController.copyPublication()", "root.MSG_GEN_PARAM_VALUE",
-            "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
     addClipboardSelection(pubSelect);
   }
 
@@ -3192,8 +3160,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             }
           }
           linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('")
-              .append(nodeInPath.getNodePK().getId()).append("')\">")
-              .append(Encode.forHtml(nodeName)).append("</a>");
+              .append(nodeInPath.getNodePK().getId())
+              .append("')\">")
+              .append(Encode.forHtml(nodeName))
+              .append("</a>");
           pathString.append(nodeName);
           if (iterator.hasNext()) {
             linkedPathString.append(" > ");
@@ -3449,7 +3419,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       while (tokenizer.hasMoreTokens()) {
         String[] str = StringUtil.splitByWholeSeparator(tokenizer.nextToken(), "-");
         PublicationPK pk = new PublicationPK(str[0], str[1]);
-        this.selectedPublicationPKs.add(pk);
+        PublicationAccessController publicationAccessController =
+            ServiceProvider.getService(PublicationAccessController.class);
+        if (publicationAccessController.isUserAuthorized(getUserId(), pk,
+            AccessControlContext.init())) {
+          this.selectedPublicationPKs.add(pk);
+        }
       }
     }
 

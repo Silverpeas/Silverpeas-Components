@@ -98,6 +98,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private static final StatisticRequestHandler STATISTIC_REQUEST_HANDLER =
       new StatisticRequestHandler();
 
+  private KmeliaActionAccessController actionAccessController = new KmeliaActionAccessController();
+
   /**
    * This method creates a KmeliaSessionController instance
    * @param mainSessionCtrl The MainSessionController instance
@@ -1716,6 +1718,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  @Override
+  protected boolean checkUserAuthorization(final String function,
+      final KmeliaSessionController kmelia) {
+    return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
   }
 
   private String getDocumentNotFoundDestination(KmeliaSessionController kmelia,
