@@ -108,6 +108,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private static final StatisticRequestHandler statisticRequestHandler
       = new StatisticRequestHandler();
 
+  private KmeliaActionAccessController actionAccessController = new KmeliaActionAccessController();
+
   /**
    * This method creates a KmeliaSessionController instance
    *
@@ -440,7 +442,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         NodeDetail node = kmelia.getSubTopicDetail(id);
         if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id))
             && !SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(node.getFatherPK().
-                    getId()))) {
+            getId()))) {
           destination = "/admin/jsp/accessForbidden.jsp";
         } else {
           request.setAttribute("NodeDetail", node);
@@ -1012,7 +1014,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           for (String pubId : pubIds) {
             StringTokenizer tokens = new StringTokenizer(pubId, "-");
             infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
-            
+
             // removing deleted pks from session
             Set<String> list =
                 (Set<String>) request.getSession().getAttribute(
@@ -1098,7 +1100,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String pubId = pubDetail.getPK().getId();
         ThumbnailController.processThumbnail(new ForeignPK(pubId, kmelia.getComponentId()),
             PublicationDetail.getResourceType(), parameters);
-        
+
         kmelia.updatePublication(pubDetail);
 
         if(kmelia.isReminderUsed()) {
@@ -1332,7 +1334,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           if (kmelia.getSessionClone() != null
               && id.equals(kmelia.getSessionClone().getDetail().getPK().
-                  getId())) {
+              getId())) {
             destination = getDestination("ViewClone", kmelia, request);
           } else {
             destination = getDestination("ViewPublication", kmelia, request);
@@ -1745,6 +1747,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return destination;
   }
 
+  @Override
+  protected boolean checkUserAuthorization(final String function,
+      final KmeliaSessionController kmelia) {
+    return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
+  }
+
   private String getDocumentNotFoundDestination(KmeliaSessionController kmelia,
       HttpServletRequest request) {
     request.setAttribute("ComponentId", kmelia.getComponentId());
@@ -1809,7 +1817,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return pubDetail;
   }
 
- /**
+  /**
    * Process Form Upload for publications import
    *
    * @param kmeliaScc
@@ -1891,7 +1899,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
                 GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
-                + tempFolderName);
+                    + tempFolderName);
           }
 
           // Creation of the file in the temp folder
@@ -2031,13 +2039,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   private void putXMLDisplayerIntoRequest(PublicationDetail pubDetail,
       KmeliaSessionController kmelia, HttpServletRequest request) throws
-      PublicationTemplateException, FormException {
+                                                                  PublicationTemplateException, FormException {
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
     if (!StringUtil.isInteger(infoId)) {
-      PublicationTemplateImpl pubTemplate
-          = (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              pubDetail.getPK().getInstanceId() + ":" + infoId);
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+          pubDetail.getPK().getInstanceId() + ":" + infoId);
 
       // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
       Form formView = pubTemplate.getViewForm();
