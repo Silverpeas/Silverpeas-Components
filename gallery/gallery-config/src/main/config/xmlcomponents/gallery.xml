@@ -334,13 +334,13 @@
         <parameter>
           <name>previewSize</name>
           <label>
-            <message lang="fr">Format de prévisualisation</message>
+            <message lang="fr">Format de prévisualisation des images</message>
             <message lang="en">Preview format</message>
             <message lang="de">Vorschau Format</message>
           </label>
           <order>14</order>
           <mandatory>true</mandatory>
-          <value>preview</value>
+          <value>600x400</value>
           <options>
             <option>
               <name>
@@ -348,7 +348,7 @@
                 <message lang="en">600x400</message>
                 <message lang="de">600x400</message>
               </name>
-              <value>preview</value>
+              <value>600x400</value>
             </option>
             <option>
               <name>
@@ -370,9 +370,9 @@
           <type>select</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Choix de la taille du format de la preview</message>
-            <message lang="en">Choice off the preview size</message>
-            <message lang="de">Wahl der Vorschau Größe</message>
+            <message lang="fr">Choix du format de prévisualisation des images pour les lecteurs</message>
+            <message lang="en">Choice of the image preview format for readers</message>
+            <message lang="de">AusWahl der Bilder Vorschau Format für die Leser</message>
           </help>
         </parameter>
         <parameter>

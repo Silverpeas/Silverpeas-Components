@@ -408,6 +408,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
           request.setAttribute("IsWatermark", gallerySC.isMakeWatermark());
+          request.setAttribute("ImageResolutionPreview", gallerySC.getImageResolutionPreview(media));
 
           boolean linkDownload = gallerySC.getHighestSilverpeasUserRole()
               .isGreaterThanOrEquals(SilverpeasRole.publisher) ||

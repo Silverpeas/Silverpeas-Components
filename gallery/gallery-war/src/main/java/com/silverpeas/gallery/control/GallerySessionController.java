@@ -1427,4 +1427,35 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return exportReport;
   }
 
+  /**
+   * Get the resolution preview of images
+   * @return the image resolution on preview
+   */
+  public MediaResolution getImagePreviewSize() {
+    String previewSize = getComponentParameterValue("previewSize");
+    if("600x400".equals(previewSize)) {
+      return MediaResolution.LARGE;
+    } else if("266x150".equals(previewSize)) {
+      return MediaResolution.MEDIUM;
+    } else if("133x100".equals(previewSize)) {
+      return MediaResolution.SMALL;
+    }
+    return MediaResolution.LARGE;
+  }
+
+  /**
+   * Get the resolution preview of the images
+   * @param media
+   * @return the media resolution on preview
+   */
+  public MediaResolution getImageResolutionPreview(Media media) {
+    SilverpeasRole highestUserRole = this.getHighestSilverpeasUserRole();
+    if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher) ||
+        (highestUserRole == SilverpeasRole.writer && media.getCreatorId().equals(this.getUserId()))) {
+      return MediaResolution.PREVIEW;
+    } else {
+      return getImagePreviewSize();
+    }
+  }
+
 }
