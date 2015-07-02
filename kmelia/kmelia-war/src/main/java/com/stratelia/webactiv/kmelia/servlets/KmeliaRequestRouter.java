@@ -1267,10 +1267,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "modelUsedList.jsp";
       } else if (function.equals("SelectModel")) {
-        Object o = request.getParameterValues("modelChoice");
-        if (o != null) {
-          kmelia.addModelUsed((String[]) o);
-        }
+        kmelia.setModelUsed(request.getParameterValues("modelChoice"));
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if ("ChangeTemplate".equals(function)) {
         kmelia.removePublicationContent();
@@ -1412,9 +1409,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           destination = getDestination("ToDBModel", kmelia, request);
         }
       } else if (function.equals("GoToXMLForm")) {
-        String xmlFormName = request.getParameter("Name");
+        String xmlFormName = (String) request.getAttribute("Name");
         if (!StringUtil.isDefined(xmlFormName)) {
-          xmlFormName = (String) request.getAttribute("Name");
+          xmlFormName = request.getParameter("Name");
         }
         setXMLForm(request, kmelia, xmlFormName);
         // put current publication
