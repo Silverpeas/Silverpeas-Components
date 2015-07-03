@@ -40,7 +40,6 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.ejb.EJBException;
@@ -127,7 +126,7 @@ public class GalleryDragAndDrop extends HttpServlet {
 
               // Cas du zip
               if (FileUtil.isArchive(filePath.getName())) {
-                ZipManager.extract(filePath, parentFolder);
+                ZipUtil.extract(filePath, parentFolder);
               }
             }
           }
