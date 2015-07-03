@@ -29,6 +29,7 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -52,6 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -95,55 +97,43 @@ public class GalleryDragAndDrop extends HttpServlet {
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
 
-      String savePath = FileRepositoryManager.getTemporaryPath()  + "tmpupload"
-          + File.separatorChar + albumId + System.currentTimeMillis() + File.separatorChar;
+      File savePath =
+          new File(FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
 
       List<FileItem> items = request.getFileItems();
 
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
-          String fileName = FileUploadUtil.getFileName(item);
-          if (StringUtil.isDefined(parentPath)) {
-            if (parentPath.endsWith(":\\")) { // special case for file on root of disk
-              parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
-            }
-          }
-          parentPath = FileUtil.convertPathToServerOS(parentPath);
-          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getFieldName() + " - " + fileName);
-          if (fileName != null) {
-            if (fileName.contains(File.separator)) {
-              fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
-              parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.
-                  lastIndexOf(File.separatorChar));
-            }
-            SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
+          String fileNameParam = FileUploadUtil.getFileName(item);
+          String parentPathParam =
+              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
+          if (fileNameParam != null) {
 
-            if (parentPath != null && parentPath.length() > 0) {
-              fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
-            }
+            File filePath = new File(
+                new File(savePath, (StringUtil.isDefined(parentPathParam) ? parentPathParam : "")),
+                fileNameParam);
 
-            if (!"".equals(savePath)) {
-              File f = new File(savePath + fileName);
-              File parent = f.getParentFile();
-              if (!parent.exists()) {
-                parent.mkdirs();
+            SilverTrace
+                .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+                    "item = " + item.getFieldName() + " - full path = " + filePath);
+
+              File parentFolder = filePath.getParentFile();
+              if (!parentFolder.exists()) {
+                parentFolder.mkdirs();
               }
-              item.write(f);
+
+              item.write(filePath);
 
               // Cas du zip
-              if (FileUtil.isArchive(fileName)) {
-                ZipManager.extract(f, parent);
+              if (FileUtil.isArchive(filePath.getName())) {
+                ZipManager.extract(filePath, parentFolder);
               }
             }
           }
-        }
       }
-      importRepository(new File(savePath), userId, componentId, albumId);
-      FileFolderManager.deleteFolder(savePath);
+      importRepository(savePath, userId, componentId, albumId);
+      FileUtils.deleteQuietly(savePath);
     } catch (Exception e) {
       SilverTrace
           .debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE", e);
