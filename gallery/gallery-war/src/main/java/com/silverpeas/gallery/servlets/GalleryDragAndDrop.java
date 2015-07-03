@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -50,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -92,39 +94,44 @@ public class GalleryDragAndDrop extends HttpServlet {
       userId = request.getParameter("UserId");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
-      String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId
-        + System.currentTimeMillis() + File.separatorChar;
-      List<FileItem> items = request.getFileItems();
-      String parentPath = getParameterValue(items, "userfile_parent");
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
 
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "debut de la boucle");
+      File savePath =
+          new File(FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
+
+      List<FileItem> items = request.getFileItems();
+
       for (FileItem item : items) {
         if (!item.isFormField()) {
-          String fileName = FileUploadUtil.getFileName(item);
-          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getFieldName() + " - " + fileName);
-          if (fileName != null) {
-            SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
-            // modifier le nom avant de l'écrire
-            File f = new File(savePath + File.separatorChar + fileName);
-            File parent = f.getParentFile();
-            if (!parent.exists()) {
-              parent.mkdirs();
-            }
-            item.write(f);
-            // Cas du zip
-            if (FileUtil.isArchive(fileName)) {
-              ZipManager.extract(f, parent);
+          String fileUploadId = item.getFieldName().substring(4);
+          String fileNameParam = FileUploadUtil.getFileName(item);
+          String parentPathParam =
+              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
+          if (fileNameParam != null) {
+
+            File filePath = new File(
+                new File(savePath, (StringUtil.isDefined(parentPathParam) ? parentPathParam : "")),
+                fileNameParam);
+
+            SilverTrace
+                .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+                    "item = " + item.getFieldName() + " - full path = " + filePath);
+
+              File parentFolder = filePath.getParentFile();
+              if (!parentFolder.exists()) {
+                parentFolder.mkdirs();
+              }
+
+              item.write(filePath);
+
+              // Cas du zip
+              if (FileUtil.isArchive(filePath.getName())) {
+                ZipManager.extract(filePath, parentFolder);
+              }
             }
           }
-        }
       }
-      importRepository(new File(savePath), userId, componentId, albumId);
-      FileFolderManager.deleteFolder(savePath);
+      importRepository(savePath, userId, componentId, albumId);
+      FileUtils.deleteQuietly(savePath);
     } catch (Exception e) {
       SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
           e);
