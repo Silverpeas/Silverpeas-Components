@@ -3871,17 +3871,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     PublicationNoteReference publicationNoteReference = PublicationNoteReference.fromPublicationDetail(pubDetail);
     PersistentResourceDateReminder actualResourceDateReminder = getDateReminderService().get(publicationNoteReference);
 
-    if(actualResourceDateReminder.isDefined()) {
+    if (actualResourceDateReminder.isDefined()) {
 
-      if(dateReminderDate != null) {//Update reminder
+      if (dateReminderDate != null) {//Update reminder
 
         DateReminderDetail actualDateReminderDetail = actualResourceDateReminder.getDateReminder();
-        String actualDateReminder = DateUtil.dateToString(
-            actualDateReminderDetail.getDateReminder(), this.getLanguage());
+        String actualDateReminder = DateUtil.dateToString(actualDateReminderDetail.getDateReminder(), this.getLanguage());
         int processStatus;
-        if(! actualDateReminder.equals(dateReminder)) {// the date reminder has been updated
+        if (!actualDateReminder.equals(dateReminder)) {// the date reminder has been updated
           // the date reminder must be processed by the scheduler
-          processStatus =  DateReminderDetail.REMINDER_NOT_PROCESSED;
+          processStatus = DateReminderDetail.REMINDER_NOT_PROCESSED;
         } else {// the date reminder has not been updated
           // keep the same process status
           processStatus = actualDateReminderDetail.getProcessStatus();
@@ -3899,4 +3898,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       createResourceDateReminder(pubDetail, dateReminderDate, messageReminder);
     }
   }
+
+  public PublicationAccessController getPublicationAccessController() {
+    return this.publicationAccessController;
+  }
+
 }

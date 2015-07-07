@@ -606,6 +606,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         KmeliaPublication kmeliaPublication;
         if (StringUtil.isDefined(id)) {
           kmeliaPublication = kmelia.getPublication(id, true);
+          // Check user publication access
+          if (!kmelia.getPublicationAccessController()
+              .isUserAuthorized(kmelia.getUserId(), kmeliaPublication.getPk())) {
+            return "/admin/jsp/accessForbidden.jsp";
+          }
           kmelia.setSessionPublication(kmeliaPublication);
 
           PublicationDetail pubDetail = kmeliaPublication.getDetail();
