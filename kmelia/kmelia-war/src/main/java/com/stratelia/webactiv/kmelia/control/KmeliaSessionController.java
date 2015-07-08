@@ -552,61 +552,56 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return parameterValue;
   }
 
+  public boolean isLastVisitorsEnabled() {
+    String parameterValue = getComponentParameterValue("tabLastVisitors");
+    if (!StringUtil.isDefined(parameterValue)) {
+      return true;
+    }
+    return StringUtil.getBooleanValue(parameterValue);
+  }
+
   public List<String> getInvisibleTabs() throws RemoteException {
     List<String> invisibleTabs = new ArrayList<String>(0);
 
-    if (!isPdcUsed()) {
-      invisibleTabs.add("usepdc");
-    }
-
     if (!isContentEnabled()) {
-      invisibleTabs.add("tabcontent");
+      invisibleTabs.add(this.TAB_CONTENT);
     }
 
     if (isToolbox()) {
-      invisibleTabs.add(KmeliaSessionController.TAB_PREVIEW);
+      invisibleTabs.add(this.TAB_PREVIEW);
     }
 
     String parameterValue = this.getComponentParameterValue("tabAttachments");
     if (!isToolbox()) {
       // attachments tab is always visible with toolbox
-      if (!StringUtil.isDefined(parameterValue)) {
-        // invisibleTabs.add("tabattachments");
-      } else {
-        if (!StringUtil.getBooleanValue(parameterValue)) {
-          invisibleTabs.add("tabattachments");
-        }
+      if (StringUtil.isDefined(parameterValue) &&
+          !StringUtil.getBooleanValue(parameterValue)) {
+          invisibleTabs.add(this.TAB_ATTACHMENTS);
       }
     }
 
     if (!isSeeAlsoEnabled()) {
-      invisibleTabs.add("tabseealso");
+      invisibleTabs.add(this.TAB_SEE_ALSO);
     }
 
     parameterValue = this.getComponentParameterValue("tabAccessPaths");
-    if (!StringUtil.isDefined(parameterValue)) {
-      // invisibleTabs.add("tabaccesspaths");
-    } else {
-      if (!StringUtil.getBooleanValue(parameterValue)) {
-        invisibleTabs.add("tabaccesspaths");
-      }
+    if (StringUtil.isDefined(parameterValue) &&
+        !StringUtil.getBooleanValue(parameterValue)) {
+        invisibleTabs.add(this.TAB_ACCESS_PATHS);
     }
 
     parameterValue = this.getComponentParameterValue("tabReadersList");
-    if (!StringUtil.isDefined(parameterValue)) {
-      // invisibleTabs.add("tabreaderslist");
-    } else {
-      if (!StringUtil.getBooleanValue(parameterValue)) {
-        invisibleTabs.add("tabreaderslist");
-      }
+    if (StringUtil.isDefined(parameterValue) &&
+        !StringUtil.getBooleanValue(parameterValue)) {
+        invisibleTabs.add(this.TAB_READER_LIST);
     }
 
     parameterValue = this.getComponentParameterValue("tabComments");
     if (!StringUtil.isDefined(parameterValue)) {
-      invisibleTabs.add("tabcomments");
+      invisibleTabs.add(this.TAB_COMMENT);
     } else {
       if (!StringUtil.getBooleanValue(parameterValue)) {
-        invisibleTabs.add("tabcomments");
+        invisibleTabs.add(this.TAB_COMMENT);
       }
     }
 
@@ -3300,7 +3295,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isAttachmentsEnabled() {
-    return StringUtil.getBooleanValue(getComponentParameterValue(TAB_ATTACHMENTS));
+    return StringUtil.getBooleanValue(getComponentParameterValue("tabAttachments"));
   }
 
   /**
