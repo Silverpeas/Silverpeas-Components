@@ -59,6 +59,7 @@ import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -579,19 +580,10 @@ public class WebSiteSessionController extends AbstractComponentSessionController
    * unzip
    */
   public synchronized void unzip(String destPath, String zipFilePath) throws WebSitesException {
-    SilverTrace.debug("webSites", "WebSiteSessionController.unzip", "root.MSG_GEN_ENTER_METHOD",
-        "destPath = " + destPath + ", zipFilePath = " + zipFilePath);
-    /*
-     * destPath = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
-     * zipFilePath = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\toto.zip
-     */
     try {
-      Expand exp = new Expand();
       File zip = new File(zipFilePath);
       File dest = new File(destPath);
-      exp.setSrc(zip);
-      exp.setDest(dest);
-      exp.execute();
+      ZipUtil.extract(zip, dest);
     } catch (Exception e) {
       throw new WebSitesException("WebSiteSessionController.unzip()", SilverpeasException.ERROR,
           "webSites.EX_UNZIP_FILE_FAIL", e);
