@@ -40,8 +40,8 @@ import java.util.zip.ZipFile;
  */
 public class Expand {
 
-  private File dest; // req
-  private File source; // req
+  private File dest; // required
+  private File source; // required
 
   /**
    * Do the work.
@@ -82,6 +82,7 @@ public class Expand {
         } else {
           entryName = entryName + ze.getName();
         }
+        entryName = validateFilename(entryName, dir.getAbsolutePath());
         File f = new File(entryName);
         try {
           // create intermediary directories - sometimes zip don't add them
@@ -105,7 +106,7 @@ public class Expand {
 
         } catch (FileNotFoundException ex) {
           SilverTrace.warn("webSites", "Expand.expandFile()",
-              "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
+                  "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
         }
       }
     } catch (IOException ioe) {
@@ -121,6 +122,22 @@ public class Expand {
               "webSites.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
         }
       }
+    }
+  }
+
+  private String validateFilename(String fileName, String intendedDir)
+      throws java.io.IOException {
+    File f = new File(fileName);
+    String canonicalPath = f.getCanonicalPath();
+
+    File iD = new File(intendedDir);
+    String canonicalID = iD.getCanonicalPath();
+
+    if (canonicalPath.startsWith(canonicalID)) {
+      return canonicalPath;
+    } else {
+      throw new IllegalStateException(
+          "File is outside extraction target directory (security): " + fileName);
     }
   }
 
