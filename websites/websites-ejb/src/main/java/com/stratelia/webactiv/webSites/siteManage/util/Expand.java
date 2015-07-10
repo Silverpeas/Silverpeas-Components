@@ -41,8 +41,8 @@ import java.util.zip.ZipFile;
  */
 public class Expand {
 
-  private File dest;
-  private File source;
+  private File dest; // required
+  private File source; // required
 
   /**
    * Do the work.
@@ -79,6 +79,7 @@ public class Expand {
         } else {
           entryName = entryName + ze.getName();
         }
+        entryName = validateFilename(entryName, dir.getAbsolutePath());
         File f = new File(entryName);
         try {
           // create intermediary directories - sometimes zip don't add them
@@ -117,6 +118,22 @@ public class Expand {
               "webSites.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
         }
       }
+    }
+  }
+
+  private String validateFilename(String fileName, String intendedDir)
+      throws java.io.IOException {
+    File f = new File(fileName);
+    String canonicalPath = f.getCanonicalPath();
+
+    File iD = new File(intendedDir);
+    String canonicalID = iD.getCanonicalPath();
+
+    if (canonicalPath.startsWith(canonicalID)) {
+      return canonicalPath;
+    } else {
+      throw new IllegalStateException(
+          "File is outside extraction target directory (security): " + fileName);
     }
   }
 
