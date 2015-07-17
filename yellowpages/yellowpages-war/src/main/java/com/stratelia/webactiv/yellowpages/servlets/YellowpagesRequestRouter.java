@@ -57,6 +57,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    */
   private static final long serialVersionUID = 1L;
 
+  private YellowpagesActionAccessController actionAccessController =
+      new YellowpagesActionAccessController();
+
   @Override
   public YellowpagesSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -354,6 +357,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
     SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
+  }
+
+  @Override
+  protected boolean checkUserAuthorization(final String function,
+      final YellowpagesSessionController componentSC) {
+    return actionAccessController
+        .hasRightAccess(function, componentSC.getHighestSilverpeasUserRole());
   }
 
   private void setAvailableForms(HttpServletRequest request, YellowpagesSessionController ysc) {
