@@ -112,6 +112,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
+import org.silverpeas.accesscontrol.NodeAccessController;
 import org.silverpeas.accesscontrol.PublicationAccessController;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
@@ -2587,8 +2588,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void copyPublication(String pubId) throws ClipboardException, RemoteException {
     PublicationDetail pub = getPublicationDetail(pubId);
-    PublicationSelection pubSelect = new PublicationSelection(pub);
-    addClipboardSelection(pubSelect);
+    // Can only copy user accessed publication
+    PublicationAccessController publicationAccessController =
+        ServiceProvider.getService(PublicationAccessController.class);
+    if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
+      PublicationSelection pubSelect = new PublicationSelection(pub);
+      addClipboardSelection(pubSelect);
+    } else {
+      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+          "Security purpose, access to publication is forbidden");
+    }
   }
 
   private void copyPublications(List<PublicationPK> pubPKs)
@@ -2606,13 +2615,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void cutPublication(String pubId) throws ClipboardException, RemoteException {
     PublicationDetail pub = getPublicationDetail(pubId);
-    PublicationSelection pubSelect = new PublicationSelection(pub);
-    pubSelect.setCutted(true);
+    // Can only copy user accessed publication
+    PublicationAccessController publicationAccessController =
+        ServiceProvider.getService(PublicationAccessController.class);
+    if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
+      PublicationSelection pubSelect = new PublicationSelection(pub);
+      pubSelect.setCutted(true);
 
-    SilverTrace
-        .info("kmelia", "KmeliaSessionController.cutPublication()", "root.MSG_GEN_PARAM_VALUE",
-            "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
-    addClipboardSelection(pubSelect);
+      SilverTrace.info("kmelia", "KmeliaSessionController.cutPublication()",
+          "root.MSG_GEN_PARAM_VALUE",
+          "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+      addClipboardSelection(pubSelect);
+    } else {
+      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+          "Security purpose, access to publication is forbidden");
+    }
   }
 
   private void cutPublications(List<PublicationPK> pubPKs)
@@ -2629,19 +2646,34 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void copyTopic(String id) throws ClipboardException, RemoteException {
-    NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
-
-    SilverTrace.info("kmelia", "KmeliaSessionController.copyTopic()", "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
-    addClipboardSelection(nodeSelect);
+    NodeDetail nodeDetail = getNodeHeader(id);
+    NodeAccessController nodeAccessController =
+        ServiceProvider.getService(NodeAccessController.class);
+    if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
+      NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
+      SilverTrace.info("kmelia", "KmeliaSessionController.copyTopic()", "root.MSG_GEN_PARAM_VALUE",
+          "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+      addClipboardSelection(nodeSelect);
+    } else {
+      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+          "Security purpose : access to node is forbidden");
+    }
   }
 
   public void cutTopic(String id) throws ClipboardException, RemoteException {
-    NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
-    nodeSelect.setCutted(true);
-    SilverTrace.info("kmelia", "KmeliaSessionController.cutTopic()", "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
-    addClipboardSelection(nodeSelect);
+    NodeDetail nodeDetail = getNodeHeader(id);
+    NodeAccessController nodeAccessController =
+        ServiceProvider.getService(NodeAccessController.class);
+    if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
+      NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
+      nodeSelect.setCutted(true);
+      SilverTrace.info("kmelia", "KmeliaSessionController.cutTopic()", "root.MSG_GEN_PARAM_VALUE",
+          "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+      addClipboardSelection(nodeSelect);
+    } else {
+      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+          "Security purpose : access to node is forbidden");
+    }
   }
 
   public List<Object> paste() throws ClipboardException, RemoteException {

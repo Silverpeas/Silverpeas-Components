@@ -52,7 +52,6 @@ import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.WebSitesRuntimeException;
-import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.servlet.FileUploadUtil;

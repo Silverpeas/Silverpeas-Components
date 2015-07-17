@@ -66,6 +66,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.accesscontrol.PublicationAccessController;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -591,7 +592,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (StringUtil.isDefined(id)) {
           kmeliaPublication = kmelia.getPublication(id, true);
           // Check user publication access
-          if (!kmelia.getPublicationAccessController()
+          PublicationAccessController publicationAccessController =
+              ServiceProvider.getService(PublicationAccessController.class);
+          if (!publicationAccessController
               .isUserAuthorized(kmelia.getUserId(), kmeliaPublication.getPk())) {
             return "/admin/jsp/accessForbidden.jsp";
           }
