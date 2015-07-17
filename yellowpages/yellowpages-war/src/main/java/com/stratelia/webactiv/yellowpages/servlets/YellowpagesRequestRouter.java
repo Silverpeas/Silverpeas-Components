@@ -20,17 +20,6 @@
  */
 package com.stratelia.webactiv.yellowpages.servlets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.util.StringUtil;
@@ -48,6 +37,15 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
@@ -55,6 +53,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    *
    */
   private static final long serialVersionUID = 1L;
+
+  private YellowpagesActionAccessController actionAccessController =
+      new YellowpagesActionAccessController();
 
   @Override
   public YellowpagesSessionController createComponentSessionController(
@@ -362,6 +363,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
+  }
+
+  @Override
+  protected boolean checkUserAuthorization(final String function,
+      final YellowpagesSessionController componentSC) {
+    return actionAccessController
+        .hasRightAccess(function, componentSC.getHighestSilverpeasUserRole());
   }
 
   private void setAvailableForms(HttpServletRequest request, YellowpagesSessionController ysc) {
