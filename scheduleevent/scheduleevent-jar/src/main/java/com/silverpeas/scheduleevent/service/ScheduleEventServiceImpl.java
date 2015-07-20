@@ -29,6 +29,7 @@ import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -50,9 +51,8 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
-  public void deleteScheduleEvent(String scheduleEventId) {
-    ScheduleEvent event = scheduleEventDao.getScheduleEvent(scheduleEventId);
-    scheduleEventDao.deleteScheduleEvent(event);
+  public void deleteScheduleEvent(ScheduleEvent scheduleEvent) {
+    scheduleEventDao.deleteScheduleEvent(scheduleEvent);
   }
 
   @Override

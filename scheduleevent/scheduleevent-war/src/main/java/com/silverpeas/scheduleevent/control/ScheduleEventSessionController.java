@@ -128,47 +128,48 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public String initSelectUsersPanel() {
-    SilverTrace.debug("scheduleevent",
-        "ScheduleEventSessionController.initSelectUsersPanel()",
-        "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
+    if (getCurrentScheduleEvent().getAuthor() == Integer.parseInt(getUserId())) {
+      String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+      Pair<String, String> hostComponentName = new Pair<>(getComponentName(), "");
+      Pair<String, String>[] hostPath = new Pair[1];
+      hostPath[0] = new Pair<>(getString("scheduleevent.form.selectContributors"), "");
 
-    String m_context = ResourceLocator.getGeneralSettingBundle()
-        .getString("ApplicationURL");
-    Pair<String, String> hostComponentName = new Pair<>(getComponentName(), "");
-    Pair<String, String>[] hostPath = new Pair[1];
-    hostPath[0] = new Pair<>(getString("scheduleevent.form.selectContributors"), "");
+      sel.resetAll();
+      sel.setHostSpaceName("");
+      sel.setHostComponentName(hostComponentName);
+      sel.setHostPath(hostPath);
 
-    sel.resetAll();
-    sel.setHostSpaceName("");
-    sel.setHostComponentName(hostComponentName);
-    sel.setHostPath(hostPath);
+      String[] idUsers = getContributorsUserIds(currentScheduleEvent.getContributors());
+      sel.setSelectedElements(idUsers);
+      sel.setSelectedSets(new String[0]);
 
-    String[] idUsers = getContributorsUserIds(currentScheduleEvent.getContributors());
-    sel.setSelectedElements(idUsers);
-    sel.setSelectedSets(new String[0]);
+      // constraints
+      String hostDirection, cancelDirection;
+      if (currentScheduleEvent.getId() == null) {
+        hostDirection = "ConfirmUsers?popupMode=Yes";
+        cancelDirection = "ConfirmScreen?popupMode=Yes";
+      } else {
+        hostDirection = "ConfirmModifyUsers?scheduleEventId=" + currentScheduleEvent.getId();
+        cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.getId();
+      }
+      String hostUrl =
+          m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
+      String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) +
+          cancelDirection;
+      sel.setGoBackURL(hostUrl);
+      sel.setCancelURL(cancelUrl);
 
-    // Contraintes
-    String hostDirection, cancelDirection;
-    if (currentScheduleEvent.getId() == null) {
-      hostDirection = "ConfirmUsers?popupMode=Yes";
-      cancelDirection = "ConfirmScreen?popupMode=Yes";
+      sel.setMultiSelect(true);
+      sel.setPopupMode(true);
+      sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
+
+      return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
     } else {
-      hostDirection = "ConfirmModifyUsers?scheduleEventId=" + currentScheduleEvent.getId();
-      cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.getId();
+      SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.initSelectUsersPanel",
+          "Security alert from user " + getUserId());
+      NotifierUtil.addError(getString("GML.security.access"));
+      return "/admin/jsp/accessForbidden.jsp";
     }
-
-    String hostUrl = m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null)
-        + hostDirection;
-    String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null)
-        + cancelDirection;
-    sel.setGoBackURL(hostUrl);
-    sel.setCancelURL(cancelUrl);
-
-    sel.setMultiSelect(true);
-    sel.setPopupMode(true);
-    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
   private static String[] getContributorsUserIds(Set<Contributor> contributors) {
@@ -337,16 +338,29 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   public void switchState(String id) {
     ScheduleEvent event = getScheduleEventService().findScheduleEvent(id);
-    int actualStatus = event.getStatus();
-    int newStatus = ScheduleEventStatus.OPEN;
-    if (ScheduleEventStatus.OPEN == actualStatus) {
-      newStatus = ScheduleEventStatus.CLOSED;
+    if (event.getAuthor() == Integer.parseInt(getUserId())) {
+      int actualStatus = event.getStatus();
+      int newStatus = ScheduleEventStatus.OPEN;
+      if (ScheduleEventStatus.OPEN == actualStatus) {
+        newStatus = ScheduleEventStatus.CLOSED;
+      }
+      getScheduleEventService().updateScheduleEventStatus(id, newStatus);
+    } else {
+      SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.switchState",
+          "Security alert from user " + getUserId());
+      NotifierUtil.addError(getString("GML.security.access"));
     }
-    getScheduleEventService().updateScheduleEventStatus(id, newStatus);
   }
 
   public void delete(String scheduleEventId) {
-    getScheduleEventService().deleteScheduleEvent(scheduleEventId);
+    ScheduleEvent scheduleEvent = getScheduleEventService().findScheduleEvent(scheduleEventId);
+    if (scheduleEvent.getAuthor() == Integer.parseInt(getUserId())) {
+      getScheduleEventService().deleteScheduleEvent(scheduleEvent);
+    } else {
+      SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.delete",
+          "Security alert from user " + getUserId());
+      NotifierUtil.addError(getString("GML.security.access"));
+    }
   }
 
   public void updateUserAvailabilities(ScheduleEvent scheduleEvent) {

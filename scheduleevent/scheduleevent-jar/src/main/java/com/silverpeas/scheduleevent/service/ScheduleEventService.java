@@ -34,7 +34,7 @@ public interface ScheduleEventService extends ApplicationService<ScheduleEvent> 
 
   String createScheduleEvent(ScheduleEvent scheduleEvent);
 
-  void deleteScheduleEvent(String scheduleEventId);
+  void deleteScheduleEvent(ScheduleEvent scheduleEvent);
 
   ScheduleEvent findScheduleEvent(String scheduleEventId);
 
