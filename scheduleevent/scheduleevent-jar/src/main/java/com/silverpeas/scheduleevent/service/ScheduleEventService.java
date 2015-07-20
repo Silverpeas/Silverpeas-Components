@@ -28,7 +28,7 @@ public interface ScheduleEventService extends SilverpeasComponentService<Schedul
 
   String createScheduleEvent(ScheduleEvent scheduleEvent);
 
-  void deleteScheduleEvent(String scheduleEventId);
+  void deleteScheduleEvent(ScheduleEvent scheduleEvent);
 
   ScheduleEvent findScheduleEvent(String scheduleEventId);
 
