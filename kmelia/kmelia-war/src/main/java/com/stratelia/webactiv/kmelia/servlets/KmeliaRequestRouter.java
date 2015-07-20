@@ -1456,6 +1456,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (!StringUtil.isDefined(id)) {
           id = (String) request.getAttribute("NodeId");
         }
+        if (!kmelia.isTopicAdmin(id)) {
+          return "/admin/jsp/accessForbidden.jsp";
+        }
         request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
         NodeDetail topic = kmelia.getNodeHeader(id);
         ProfileInst profile;
@@ -1503,8 +1506,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] groupIds =
             StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
 
-        kmelia.updateTopicRole(role, nodeId, groupIds, userIds);
-
+        if (kmelia.isTopicAdmin(nodeId)) {
+          kmelia.updateTopicRole(role, nodeId, groupIds, userIds);
+        }
         destination = getDestination("ViewTopicProfiles", kmelia, request);
       } else if (function.equals("CloseWindow")) {
         destination = rootDestination + "closeWindow.jsp";

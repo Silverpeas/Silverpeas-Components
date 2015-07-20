@@ -777,7 +777,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       throws RemoteException {
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
-    return getKmeliaBm().updateTopic(nd, alertType);
+    if (isTopicAdmin(nd.getNodePK().getId())) {
+      return getKmeliaBm().updateTopic(nd, alertType);
+    }
+    return null;
   }
 
   public synchronized NodeDetail getSubTopicDetail(String subTopicId) throws RemoteException {
@@ -3658,5 +3661,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     publication.setStatusMustBeChecked(false);
     publication.setIndexOperation(IndexManager.NONE);
     getPublicationBm().setDetail(publication);
+  }
+
+  /**
+   * Check user access right on folder
+   * @param nodeId the topic/folder identifier to check
+   * @return true if current user has admin access on topic given in parameter
+   */
+  public boolean isTopicAdmin(final String nodeId) {
+    return SilverpeasRole.getGreatestFrom(SilverpeasRole.from(getUserTopicProfile(nodeId)))
+        .isGreaterThanOrEquals(SilverpeasRole.admin);
   }
 }
