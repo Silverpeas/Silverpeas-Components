@@ -122,8 +122,11 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.dateReminder.persistent.service.DateReminderServiceFactory;
+import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.process.annotation.SimulationActionProcessAnnotationEJBInterceptor;
+import org.silverpeas.publication.dateReminder.PublicationNoteReference;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -176,6 +179,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   private CoordinatesBm coordinatesBm;
 
   private CommentService commentService = null;
+
+  private PersistentDateReminderService dateReminderService = null;
 
   public KmeliaBmEJB() {
   }
@@ -3347,6 +3352,10 @@ public class KmeliaBmEJB implements KmeliaBm {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications",
           ERROR, "root.EX_DELETE_THUMBNAIL_FAILED", e);
     }
+
+    // remove date reminder
+    PublicationNoteReference publicationNoteReference = new PublicationNoteReference(pubPK.getId());
+    getDateReminderService().remove(publicationNoteReference);
   }
 
   @Override
@@ -5029,6 +5038,18 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
     }
     return false;
+  }
+
+  /**
+   * Gets a business service of dateReminder.
+   *
+   * @return a DefaultDateReminderService instance.
+   */
+  protected PersistentDateReminderService getDateReminderService() {
+    if (dateReminderService == null) {
+      dateReminderService = DateReminderServiceFactory.getDateReminderService();
+    }
+    return dateReminderService;
   }
 
 }

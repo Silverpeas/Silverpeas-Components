@@ -336,6 +336,24 @@
           </help>
         </parameter>
         <parameter>
+          <name>useReminder</name>
+          <label>
+            <message lang="fr">Rappel</message>
+            <message lang="en">Reminder</message>
+            <message lang="de">Reminder</message>
+          </label>
+          <order>53</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ajout d'une date et d'une note pour rappeler (via notification automatique) aux contributeurs de mettre à jour leur publication.</message>
+            <message lang="en">Adding a date and a note to remind (automatic notification) contributors to update their publication.</message>
+            <message lang="de">Addieren Sie ein Datum und eine Notiz zu erinnern (automatische Benachrichtigung) Mitwirkende deren Veröffentlichung zu aktualisieren.</message>
+          </help>
+        </parameter>
+        <parameter>
             <name>tabContent</name>
             <label>
               <message lang="fr">Contenu</message>
@@ -925,121 +943,121 @@
       <order>1</order>
       <parameters>
         <parameter>
-            <name>isTree</name>
-            <label>
-              <message lang="fr">Arborescence</message>
-              <message lang="en">Treeview</message>
-              <message lang="de">Baumansicht</message>
-            </label>
-            <order>5</order>
-            <mandatory>true</mandatory>
-            <value>0</value>
-            <options>
-              <option>
-                <name>
-                  <message lang="fr">Oui avec explorateur de dossiers</message>
-                  <message lang="en">Yes with explorer</message>
-                  <message lang="de">Ja mit Explorer</message>
-                </name>
-                <value>0</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Oui sans explorateur de dossiers</message>
-                  <message lang="en">Yes without explorer</message>
-                  <message lang="de">Ja ohne Explorer</message>
-                </name>
-                <value>1</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Non</message>
-                  <message lang="en">No</message>
-                  <message lang="de">Nein</message>
-                </name>
-                <value>2</value>
-              </option>
-            </options>
-            <type>select</type>
-            <updatable>creation</updatable>
-            <help>
-              <message lang="fr">Active l'organisation arborescente de dossiers.</message>
-              <message lang="en">Activates the tree organization of folders.</message>
-              <message lang="de">Aktiviert die Baum Organisation von Themen.</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>delegatedTopicManagement</name>
-            <label>
-              <message lang="fr">Gestion déléguée</message>
-              <message lang="en">Delegated management</message>
-              <message lang="de">Theme-Verwaltung Delegierung</message>
-            </label>
-            <order>17</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>never</updatable>
-            <help>
-              <message lang="fr">La gestion des dossiers est déléguée aux publieurs et rédacteurs.</message>
-              <message lang="en">Publishers and writers can manage the folders.</message>
-              <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>rightsOnTopics</name>
-            <label>
-              <message lang="fr">Droits spécifiques</message>
-              <message lang="en">Specific rights</message>
-              <message lang="de">Rechte auf die Themen</message>
-            </label>
-            <order>28</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Permet de définir des droits d'accès au niveau des dossiers.</message>
-              <message lang="en">Allow to define rights on folders.</message>
-              <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>wysiwygOnTopics</name>
-            <label>
-              <message lang="fr">Description riche</message>
-              <message lang="en">Rich description</message>
-              <message lang="de">Reiche Beschreibung</message>
-            </label>
-            <order>36</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un dossier qui sera affichée dans le dossier.</message>
-              <message lang="en">This feature allows to make a rich description of a folder.</message>
-              <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu machen.</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>displayNB</name>
-            <label>
-              <message lang="fr">Nombre de publications</message>
-              <message lang="en">Number of publications</message>
-              <message lang="de">Anzahl der Veröffentlichungen zeigen</message>
-            </label>
-            <order>27</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Affiche le nombre de publications par dossier</message>
-              <message lang="en">Display the number of publications per folder</message>
-              <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
-            </help>
-          </parameter>
+          <name>isTree</name>
+          <label>
+            <message lang="fr">Arborescence</message>
+            <message lang="en">Treeview</message>
+            <message lang="de">Baumansicht</message>
+          </label>
+          <order>5</order>
+          <mandatory>true</mandatory>
+          <value>0</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Oui avec explorateur de dossiers</message>
+                <message lang="en">Yes with explorer</message>
+                <message lang="de">Ja mit Explorer</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Oui sans explorateur de dossiers</message>
+                <message lang="en">Yes without explorer</message>
+                <message lang="de">Ja ohne Explorer</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Non</message>
+                <message lang="en">No</message>
+                <message lang="de">Nein</message>
+              </name>
+              <value>2</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>creation</updatable>
+          <help>
+            <message lang="fr">Active l'organisation arborescente de dossiers.</message>
+            <message lang="en">Activates the tree organization of folders.</message>
+            <message lang="de">Aktiviert die Baum Organisation von Themen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>delegatedTopicManagement</name>
+          <label>
+            <message lang="fr">Gestion déléguée</message>
+            <message lang="en">Delegated management</message>
+            <message lang="de">Theme-Verwaltung Delegierung</message>
+          </label>
+          <order>17</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>never</updatable>
+          <help>
+            <message lang="fr">La gestion des dossiers est déléguée aux publieurs et rédacteurs.</message>
+            <message lang="en">Publishers and writers can manage the folders.</message>
+            <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>rightsOnTopics</name>
+          <label>
+            <message lang="fr">Droits spécifiques</message>
+            <message lang="en">Specific rights</message>
+            <message lang="de">Rechte auf die Themen</message>
+          </label>
+          <order>28</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de définir des droits d'accès au niveau des dossiers.</message>
+            <message lang="en">Allow to define rights on folders.</message>
+            <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>wysiwygOnTopics</name>
+          <label>
+            <message lang="fr">Description riche</message>
+            <message lang="en">Rich description</message>
+            <message lang="de">Reiche Beschreibung</message>
+          </label>
+          <order>36</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un dossier qui sera affichée dans le dossier.</message>
+            <message lang="en">This feature allows to make a rich description of a folder.</message>
+            <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu machen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>displayNB</name>
+          <label>
+            <message lang="fr">Nombre de publications</message>
+            <message lang="en">Number of publications</message>
+            <message lang="de">Anzahl der Veröffentlichungen zeigen</message>
+          </label>
+          <order>27</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Affiche le nombre de publications par dossier</message>
+            <message lang="en">Display the number of publications per folder</message>
+            <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
+          </help>
+        </parameter>
       </parameters>
     </groupOfParameters>
     <groupOfParameters name="sharing">
@@ -1049,391 +1067,391 @@
         <message lang="de">Sharing</message>
       </label>
       <description>
-            <message lang="fr">Partagez en toute sécurité des contenus avec des tiers non utilisateurs de cette plate-forme</message>
-            <message lang="en">Share content safely with third non-users of this platform</message>
-            <message lang="de">Sichere gemeinsame Inhalte mit Dritt Nicht-Nutzer dieser Plattform</message>
-        </description>
-        <order>4</order>
+        <message lang="fr">Partagez en toute sécurité des contenus avec des tiers non utilisateurs de cette plate-forme</message>
+        <message lang="en">Share content safely with third non-users of this platform</message>
+        <message lang="de">Sichere gemeinsame Inhalte mit Dritt Nicht-Nutzer dieser Plattform</message>
+      </description>
+      <order>4</order>
       <parameters>
-          <parameter>
-            <name>useFolderSharing</name>
-            <label>
-              <message lang="fr">Dossiers</message>
-              <message lang="en">Folders</message>
-              <message lang="de">Folders</message>
-            </label>
-            <order>48</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Ce paramètre permet de partager des dossiers avec des tiers non utilisateurs de la plate-forme.</message>
-              <message lang="en">This feature allows to share folders with some persons who have no access to the platform.</message>
-              <message lang="de">This feature allows to share folders with some persons who have no access to the platform.</message>
-            </help>
-            <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
-            </warning>
-            <personalSpaceValue>no</personalSpaceValue>
-          </parameter>
-          <parameter>
-            <name>usePublicationSharing</name>
-            <label>
-              <message lang="fr">Publications</message>
-              <message lang="en">Publications</message>
-              <message lang="de">Publications</message>
-            </label>
-            <order>48</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Ce paramètre permet de partager des publications avec des tiers non utilisateurs de la plate-forme.</message>
-              <message lang="en">This feature allows to share publications with some persons who have no access to the platform.</message>
-              <message lang="de">This feature allows to share publications with some persons who have no access to the platform.</message>
-            </help>
-            <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les publications avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
-            </warning>
-            <personalSpaceValue>no</personalSpaceValue>
-          </parameter>
-          <parameter>
-            <name>useFileSharing</name>
-            <label>
-              <message lang="fr">Fichiers</message>
-              <message lang="en">Files</message>
-              <message lang="de">Anhänge freigeben</message>
-            </label>
-            <order>37</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Ce paramètre permet de partager des fichiers avec des tiers non utilisateurs de la plate-forme.</message>
-              <message lang="en">This feature allows to share files with some persons who have no access to the platform.</message>
-              <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
-            </help>
-            <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
-            </warning>
-            <personalSpaceValue>yes</personalSpaceValue>
-          </parameter>
+        <parameter>
+          <name>useFolderSharing</name>
+          <label>
+            <message lang="fr">Dossiers</message>
+            <message lang="en">Folders</message>
+            <message lang="de">Folders</message>
+          </label>
+          <order>48</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de partager des dossiers avec des tiers non utilisateurs de la plate-forme.</message>
+            <message lang="en">This feature allows to share folders with some persons who have no access to the platform.</message>
+            <message lang="de">This feature allows to share folders with some persons who have no access to the platform.</message>
+          </help>
+          <warning>
+            <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
+            <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+            <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+          </warning>
+          <personalSpaceValue>no</personalSpaceValue>
+        </parameter>
+        <parameter>
+          <name>usePublicationSharing</name>
+          <label>
+            <message lang="fr">Publications</message>
+            <message lang="en">Publications</message>
+            <message lang="de">Publications</message>
+          </label>
+          <order>48</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de partager des publications avec des tiers non utilisateurs de la plate-forme.</message>
+            <message lang="en">This feature allows to share publications with some persons who have no access to the platform.</message>
+            <message lang="de">This feature allows to share publications with some persons who have no access to the platform.</message>
+          </help>
+          <warning>
+            <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les publications avec des utilisateurs non référencés dans la plate-forme.</message>
+            <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
+            <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
+          </warning>
+          <personalSpaceValue>no</personalSpaceValue>
+        </parameter>
+        <parameter>
+          <name>useFileSharing</name>
+          <label>
+            <message lang="fr">Fichiers</message>
+            <message lang="en">Files</message>
+            <message lang="de">Anhänge freigeben</message>
+          </label>
+          <order>37</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de partager des fichiers avec des tiers non utilisateurs de la plate-forme.</message>
+            <message lang="en">This feature allows to share files with some persons who have no access to the platform.</message>
+            <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
+          </help>
+          <warning>
+            <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
+            <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+            <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+          </warning>
+          <personalSpaceValue>yes</personalSpaceValue>
+        </parameter>
       </parameters>
     </groupOfParameters>
-  	<groupOfParameters name="taxonomy">
-  		<label>
-			<message lang="fr">Plan de classement</message>
-			<message lang="en">Taxonomy</message>
-			<message lang="de">Taxonomy</message>
-		</label>
-		<description>
-			<message lang="fr">Classez les publications sur le plan de classement transverse à la plate-forme</message>
-			<message lang="en">Classify publications on the transverse classification scheme to the platform</message>
-			<message lang="de">Ordnen Sie die Veröffentlichungen über die Querklassifikationsschema zur Plattform</message>
-		</description>
-		<order>5</order>
-		<parameters>
-			<parameter>
-		      <name>usePdc</name>
-		      <label>
-		        <message lang="fr">Classification PDC</message>
-		        <message lang="en">Classification Scheme</message>
-		        <message lang="de">Klassierungsplan</message>
-		      </label>
-		      <order>6</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
-		        <message lang="en">Publications would be classified on PDC</message>
-		        <message lang="de">Veröffentlichungen würden auf dem KP klassifiziert werden</message>
-		      </help>
-		    </parameter>
-		    <parameter>
-		      <name>axisIdGlossary</name>
-		      <label>
-		        <message lang="fr">Lexique</message>
-		        <message lang="en">Glossary</message>
-		        <message lang="de">Glossar</message>
-		      </label>
-		      <order>40</order>
-		      <mandatory>false</mandatory>
-		      <value></value>
-		      <type>text</type>
-		      <size>5</size>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">
-		          Ce paramètre permet de définir l'identifiant de l'axe du PDC qui sera utilisé comme lexique dans l'application courante.
-		        </message>
-		        <message lang="en">
-		          This feature allows to indicate the identifier of classification scheme axis's used as glossary for the current application.
-		        </message>
-		        <message lang="de">Diese Funktion ermöglicht es die Identifikazion der KP-Achsen festzulegen, die als Glossar dür diese Kompnonte benützt werden.</message>
-		      </help>
-		    </parameter>
-		</parameters>
-  	</groupOfParameters>
-  	<groupOfParameters name="thumbnail">
-  		<label>
-			<message lang="fr">Vignette de publication</message>
-			<message lang="en">Thumbnail of publication</message>
-			<message lang="de">Thumbnail of publication</message>
-		</label>
-		<description>
-			<message lang="fr">Agrémentez la liste des publications avec une vignette</message>
-			<message lang="en">Enhance the publications list with thumbnail</message>
-			<message lang="de">Steigern Sie die Publikationsliste mit Miniatur</message>
-		</description>
-		<order>7</order>
-		<parameters>
-			<parameter>
-		      <name>thumbnailMandatory</name>
-		      <label>
-		        <message lang="fr">Vignette obligatoire</message>
-		        <message lang="en">Mandatory thumbnail</message>
-		        <message lang="de">Obligatorisches Vorschaubild</message>
-		      </label>
-		      <order>42</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Permet de rendre obligatoire l'ajout d'une vignette à chaque publication.</message>
-		        <message lang="en">Lets make it mandatory to add a thumbnail to each publication.</message>
-		        <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede Publikation hinzu zu fügen.</message>
-		      </help>
-		    </parameter>
-		    <parameter>
-		      <name>thumbnailWidthSize</name>
-		      <label>
-		        <message lang="fr">Largeur de la vignette</message>
-		        <message lang="en">Thumbnail's width</message>
-		        <message lang="de">Breite des Vorschaubilds</message>
-		      </label>
-		      <order>43</order>
-		      <mandatory>false</mandatory>
-		      <value></value>
-		      <type>text</type>
-		      <size>5</size>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Ce paramètre permet de définir la largeur de la vignette à afficher.</message>
-		        <message lang="en">This feature allows to define width of the displayed thumbnail.</message>
-		        <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht zu definieren</message>
-		      </help>
-		    </parameter>
-		    <parameter>
-		      <name>thumbnailHeightSize</name>
-		      <label>
-		        <message lang="fr">Hauteur de la vignette</message>
-		        <message lang="en">Thumbnail's height</message>
-		        <message lang="de">Höhe des Vorschaubilds</message>
-		      </label>
-		      <order>44</order>
-		      <mandatory>false</mandatory>
-		      <value></value>
-		      <type>text</type>
-		      <size>5</size>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Ce paramètre permet de définir la hauteur de la vignette à afficher.</message>
-		        <message lang="en">This feature allows to define height of the displayed thumbnail.</message>
-		        <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht zu definieren</message>
-		      </help>
-		    </parameter>
-		</parameters>
-  	</groupOfParameters>
-  	<groupOfParameters name="search">
-  		<label>
-			<message lang="fr">Recherche</message>
-			<message lang="en">Search</message>
-			<message lang="de">Search</message>
-		</label>
-		<description>
-			<message lang="fr">Activez la recherche locale et/ou exclure cette GED de la recherche générale</message>
-			<message lang="en">Enable local search and/or exclude this ECM from general search</message>
-			<message lang="de">Aktivieren der lokalen Forschung und / oder löschen Sie die allgemeine Suche</message>
-		</description>
-		<order>6</order>
-		<parameters>
-			<parameter>
-		      <name>searchOnTopics</name>
-		      <label>
-		        <message lang="fr">Recherche locale</message>
-		        <message lang="en">Local search</message>
-		        <message lang="de">Lokale Suche</message>
-		      </label>
-		      <order>41</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Ce paramètre permet d'afficher une zone de recherche pour chaque dossier.</message>
-		        <message lang="en">This feature allows to display a search box in each folder.</message>
-		        <message lang="de">Diese Funktion erlaubt es, ein Suchfeld in jedem Thema anzuzeigen.</message>
-		      </help>
-		    </parameter>
-			<parameter>
-		      <name>privateSearch</name>
-		      <label>
-		        <message lang="fr">Exclu de la recherche générale</message>
-		        <message lang="en">Excluded from the main search engine</message>
-		        <message lang="de">Ausgeschlossen von der Haupt-Suchmaschine</message>
-		      </label>
-		      <order>35</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">
-		          Si ce paramètre est activé, les informations indexées ne seront pas
-		          retrouvables par le moteur de recherche général.
-		        </message>
-		        <message lang="en">
-		          If this parameter is enabled, indexed informations won't be findable by the
-		          global search engine.
-		        </message>
-		        <message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
-		          nicht durch die globale Suchmaschine auffindbar sein.</message>
-		      </help>
-		    </parameter>		    
-		</parameters>
-  	</groupOfParameters>
-  	<groupOfParameters name="miscellaneous">
-  		<label>
-			<message lang="fr">Divers</message>
-			<message lang="en">Miscellaneous</message>
-			<message lang="de">Miscellaneous</message>
-		</label>
-		<description>
-			<message lang="fr">Autres paramètres pouvant être tout aussi utiles...</message>
-			<message lang="en">Other parameters that can be useful...</message>
-			<message lang="de">Andere Parameter, die ebenso nützlich sein kann ...</message>
-		</description>
-		<order>8</order>
-		<parameters>
-			<parameter>
-		      <name>webContent</name>
-		      <label>
-		        <message lang="fr">Orienté CMS</message>
-		        <message lang="en">Content for web</message>
-		        <message lang="de">Inhalt für das Web</message>
-		      </label>
-		      <order>16</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au dossier, visibilité des dossiers).</message>
-		        <message lang="en">Activate functionalities for managing web content (wysiwyg for folder and folder visibility).</message>
-		        <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren (WYSIWYG für Themen und Themen Sichtbarkeit).</message>
-		      </help>
-		    </parameter>
-		    <parameter>
-		      <name>exportComponent</name>
-		      <label>
-		        <message lang="fr">Exportation</message>
-		        <message lang="en">Export</message>
-		        <message lang="de">Export</message>
-		      </label>
-		      <order>22</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <options>
-		        <option>
-		          <name>
-		            <message lang="fr">Non</message>
-		            <message lang="en">No</message>
-		            <message lang="de">Nein</message>
-		          </name>
-		          <value>no</value>
-		        </option>
-		        <option>
-		          <name>
-		            <message lang="fr">Au format ZIP</message>
-		            <message lang="en">In a zip file</message>
-		            <message lang="de">In einer ZIP-Datei</message>
-		          </name>
-		          <value>yes</value>
-		        </option>
-		        <option>
-		          <name>
-		            <message lang="fr">Des fichiers PDF</message>
-		            <message lang="en">In pdf files</message>
-		            <message lang="de">In einer PDF-Datei</message>
-		          </name>
-		          <value>pdf</value>
-		        </option>
-		        <option>
-		          <name>
-		            <message lang="fr">Tous</message>
-		            <message lang="en">All</message>
-		            <message lang="de">Alle</message>
-		          </name>
-		          <value>both</value>
-		        </option>
-		      </options>
-		      <type>select</type>
-		      <updatable>always</updatable>
-		      <help>
-		        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
-		        <message lang="en">This function allow the user to export all the visible publications of the application.</message>
-		        <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
-		      </help>
-		    </parameter>
-		    <parameter>
-		      <name>updateChain</name>
-		      <label>
-		        <message lang="fr">Modifications en chaine</message>
-		        <message lang="en">Modifications in a row</message>
-		        <message lang="de">Kettenänderungen</message>
-		      </label>
-		      <order>32</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>never</updatable>
-		      <help>
-		        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains dossiers (possédant un descripteur).</message>
-		        <message lang="en">Provides the possibility of making successive modifications on certains folders (having a descriptor).</message>
-		        <message lang="de">Bietet die Möglichkeit, aufeinanderfolgende Änderungen an einigen Themen (mit einem Deskriptor)auszuführen.</message>
-		      </help>
-		    </parameter>
-		    <parameter>
-		      <name>isNewsManage</name>
-		      <label>
-		        <message lang="fr">Actualités déléguées</message>
-		        <message lang="en">Delegated news</message>
-		        <message lang="de">Dezentralisierte Nachrichten</message>
-		      </label>
-		      <order>46</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>never</updatable>
-		      <help>
-		        <message lang="fr">Permet de gérer les actualités soumises à validation dans l'application Actualités déléguées.</message>
-		        <message lang="en">Activates the news manage option. The news are valided in the application Delegated news.</message>
-		        <message lang="de">Diese Funktion erlaubt es Nachrichten zu verwalten die die Valiedierung in der Nachrichtenkomponente unterliegen, </message>
-		      </help>
-		    </parameter>
-		</parameters>
-  	</groupOfParameters>
+    <groupOfParameters name="taxonomy">
+      <label>
+        <message lang="fr">Plan de classement</message>
+        <message lang="en">Taxonomy</message>
+        <message lang="de">Taxonomy</message>
+      </label>
+      <description>
+        <message lang="fr">Classez les publications sur le plan de classement transverse à la plate-forme</message>
+        <message lang="en">Classify publications on the transverse classification scheme to the platform</message>
+        <message lang="de">Ordnen Sie die Veröffentlichungen über die Querklassifikationsschema zur Plattform</message>
+      </description>
+      <order>5</order>
+      <parameters>
+        <parameter>
+          <name>usePdc</name>
+          <label>
+            <message lang="fr">Classification PDC</message>
+            <message lang="en">Classification Scheme</message>
+            <message lang="de">Klassierungsplan</message>
+          </label>
+          <order>6</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+            <message lang="en">Publications would be classified on PDC</message>
+            <message lang="de">Veröffentlichungen würden auf dem KP klassifiziert werden</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>axisIdGlossary</name>
+          <label>
+            <message lang="fr">Lexique</message>
+            <message lang="en">Glossary</message>
+            <message lang="de">Glossar</message>
+          </label>
+          <order>40</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">
+              Ce paramètre permet de définir l'identifiant de l'axe du PDC qui sera utilisé comme lexique dans l'application courante.
+            </message>
+            <message lang="en">
+              This feature allows to indicate the identifier of classification scheme axis's used as glossary for the current application.
+            </message>
+            <message lang="de">Diese Funktion ermöglicht es die Identifikazion der KP-Achsen festzulegen, die als Glossar dür diese Kompnonte benützt werden.</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters name="thumbnail">
+      <label>
+        <message lang="fr">Vignette de publication</message>
+        <message lang="en">Thumbnail of publication</message>
+        <message lang="de">Thumbnail of publication</message>
+      </label>
+      <description>
+        <message lang="fr">Agrémentez la liste des publications avec une vignette</message>
+        <message lang="en">Enhance the publications list with thumbnail</message>
+        <message lang="de">Steigern Sie die Publikationsliste mit Miniatur</message>
+      </description>
+      <order>7</order>
+      <parameters>
+        <parameter>
+          <name>thumbnailMandatory</name>
+          <label>
+            <message lang="fr">Vignette obligatoire</message>
+            <message lang="en">Mandatory thumbnail</message>
+            <message lang="de">Obligatorisches Vorschaubild</message>
+          </label>
+          <order>42</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de rendre obligatoire l'ajout d'une vignette à chaque publication.</message>
+            <message lang="en">Lets make it mandatory to add a thumbnail to each publication.</message>
+            <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede Publikation hinzu zu fügen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>thumbnailWidthSize</name>
+          <label>
+            <message lang="fr">Largeur de la vignette</message>
+            <message lang="en">Thumbnail's width</message>
+            <message lang="de">Breite des Vorschaubilds</message>
+          </label>
+          <order>43</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de définir la largeur de la vignette à afficher.</message>
+            <message lang="en">This feature allows to define width of the displayed thumbnail.</message>
+            <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht zu definieren</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>thumbnailHeightSize</name>
+          <label>
+            <message lang="fr">Hauteur de la vignette</message>
+            <message lang="en">Thumbnail's height</message>
+            <message lang="de">Höhe des Vorschaubilds</message>
+          </label>
+          <order>44</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet de définir la hauteur de la vignette à afficher.</message>
+            <message lang="en">This feature allows to define height of the displayed thumbnail.</message>
+            <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht zu definieren</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters name="search">
+      <label>
+        <message lang="fr">Recherche</message>
+        <message lang="en">Search</message>
+        <message lang="de">Search</message>
+      </label>
+      <description>
+        <message lang="fr">Activez la recherche locale et/ou exclure cette GED de la recherche générale</message>
+        <message lang="en">Enable local search and/or exclude this ECM from general search</message>
+        <message lang="de">Aktivieren der lokalen Forschung und / oder löschen Sie die allgemeine Suche</message>
+      </description>
+      <order>6</order>
+      <parameters>
+        <parameter>
+          <name>searchOnTopics</name>
+          <label>
+            <message lang="fr">Recherche locale</message>
+            <message lang="en">Local search</message>
+            <message lang="de">Lokale Suche</message>
+          </label>
+          <order>41</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet d'afficher une zone de recherche pour chaque dossier.</message>
+            <message lang="en">This feature allows to display a search box in each folder.</message>
+            <message lang="de">Diese Funktion erlaubt es, ein Suchfeld in jedem Thema anzuzeigen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>privateSearch</name>
+          <label>
+            <message lang="fr">Exclu de la recherche générale</message>
+            <message lang="en">Excluded from the main search engine</message>
+            <message lang="de">Ausgeschlossen von der Haupt-Suchmaschine</message>
+          </label>
+          <order>35</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">
+              Si ce paramètre est activé, les informations indexées ne seront pas
+              retrouvables par le moteur de recherche général.
+            </message>
+            <message lang="en">
+              If this parameter is enabled, indexed informations won't be findable by the
+              global search engine.
+            </message>
+            <message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
+              nicht durch die globale Suchmaschine auffindbar sein.</message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters name="miscellaneous">
+      <label>
+        <message lang="fr">Divers</message>
+        <message lang="en">Miscellaneous</message>
+        <message lang="de">Miscellaneous</message>
+      </label>
+      <description>
+        <message lang="fr">Autres paramètres pouvant être tout aussi utiles...</message>
+        <message lang="en">Other parameters that can be useful...</message>
+        <message lang="de">Andere Parameter, die ebenso nützlich sein kann ...</message>
+      </description>
+      <order>8</order>
+      <parameters>
+        <parameter>
+          <name>webContent</name>
+          <label>
+            <message lang="fr">Orienté CMS</message>
+            <message lang="en">Content for web</message>
+            <message lang="de">Inhalt für das Web</message>
+          </label>
+          <order>16</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au dossier, visibilité des dossiers).</message>
+            <message lang="en">Activate functionalities for managing web content (wysiwyg for folder and folder visibility).</message>
+            <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren (WYSIWYG für Themen und Themen Sichtbarkeit).</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>exportComponent</name>
+          <label>
+            <message lang="fr">Exportation</message>
+            <message lang="en">Export</message>
+            <message lang="de">Export</message>
+          </label>
+          <order>22</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Non</message>
+                <message lang="en">No</message>
+                <message lang="de">Nein</message>
+              </name>
+              <value>no</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Au format ZIP</message>
+                <message lang="en">In a zip file</message>
+                <message lang="de">In einer ZIP-Datei</message>
+              </name>
+              <value>yes</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Des fichiers PDF</message>
+                <message lang="en">In pdf files</message>
+                <message lang="de">In einer PDF-Datei</message>
+              </name>
+              <value>pdf</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Tous</message>
+                <message lang="en">All</message>
+                <message lang="de">Alle</message>
+              </name>
+              <value>both</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
+            <message lang="en">This function allow the user to export all the visible publications of the application.</message>
+            <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>updateChain</name>
+          <label>
+            <message lang="fr">Modifications en chaine</message>
+            <message lang="en">Modifications in a row</message>
+            <message lang="de">Kettenänderungen</message>
+          </label>
+          <order>32</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>never</updatable>
+          <help>
+            <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains dossiers (possédant un descripteur).</message>
+            <message lang="en">Provides the possibility of making successive modifications on certains folders (having a descriptor).</message>
+            <message lang="de">Bietet die Möglichkeit, aufeinanderfolgende Änderungen an einigen Themen (mit einem Deskriptor)auszuführen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>isNewsManage</name>
+          <label>
+            <message lang="fr">Actualités déléguées</message>
+            <message lang="en">Delegated news</message>
+            <message lang="de">Dezentralisierte Nachrichten</message>
+          </label>
+          <order>46</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>never</updatable>
+          <help>
+            <message lang="fr">Permet de gérer les actualités soumises à validation dans l'application Actualités déléguées.</message>
+            <message lang="en">Activates the news manage option. The news are valided in the application Delegated news.</message>
+            <message lang="de">Diese Funktion erlaubt es Nachrichten zu verwalten die die Valiedierung in der Nachrichtenkomponente unterliegen, </message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
   </groupsOfParameters>
 </WAComponent>
