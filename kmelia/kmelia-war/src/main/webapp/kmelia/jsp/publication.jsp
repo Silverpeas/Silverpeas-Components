@@ -76,6 +76,7 @@
   boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
   boolean sharingAllowed = (Boolean) request.getAttribute("PublicationSharingAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
+  boolean lastVisitorsEnabled = (Boolean) request.getAttribute("LastVisitorsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean validatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   int searchScope = (Integer) request.getAttribute("SearchScope");
@@ -668,7 +669,7 @@
 
 
 			           /*********************************************************************************************************************/
-			          /** Affichage des Info de publication																		**/
+			          /** Affichage des Infos de publication																		**/
 			          /*********************************************************************************************************************/
 			        %>
 			         <div id="infoPublication" class="bgDegradeGris crud-container">
@@ -716,39 +717,45 @@
 							    <%
 							      }
 							    %>
-					</div>
-					<!-- consultation -->
-                    <div id="lastReader" class="bgDegradeGris">
-                   		<div class="bgDegradeGris header">
-                        	<h4 class="clean"><%=resources.getString("kmelia.publication.lastvisitors") %></h4>
-                      	</div>
-                      	<% if (lastAccess.isEmpty()) { %>
-                      		<div class="paragraphe"><%=resources.getString("kmelia.publication.lastvisitors.none") %></div>
-                      	<% } else { %>
-	                      	<ul id="lastReaderList">
-	                      	<%
-	                      		for (int i=0; i<lastAccess.size() && i<4; i++) {
-									HistoryObjectDetail access = lastAccess.get(i);
-							%>
-									<li>
-	                          			<div class="profilPhoto"><view:image src="<%=UserDetail.getById(access.getUserId()).getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
-	                              		<view:username userId="<%=access.getUserId() %>" /> <span class="consultationDate"><%=resources.getString("kmelia.publication.lastvisitors.on") %> <%=resources.getOutputDate(access.getDate()) %></span>
-	                          		</li>
-							<% } %>
-                      		</ul>
-                      	<% } %>
-                      	<% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
-                      		<a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
-                      	<% } else { %>
-                      		<br clear="all" />
-                      	<% } %>
-                    </div>
-                    <!-- /consultation -->
-                    <%
-                    /*********************************************************************************************************************/
-        /** Affichage de la classification de la publication sur le PdC														**/
+					    </div>
+        <%
+              if (lastVisitorsEnabled) {
+              /*********************************************************************************************************************/
+              /** Affichage des derniers visiteurs																					**/
+              /*********************************************************************************************************************/
+        %>
 
-        /*********************************************************************************************************************/
+                  <div id="lastReader" class="bgDegradeGris">
+                    <div class="bgDegradeGris header">
+                        <h4 class="clean"><%=resources.getString("kmelia.publication.lastvisitors") %></h4>
+                      </div>
+                      <% if (lastAccess.isEmpty()) { %>
+                        <div class="paragraphe"><%=resources.getString("kmelia.publication.lastvisitors.none") %></div>
+                      <% } else { %>
+                        <ul id="lastReaderList">
+                        <%
+                          for (int i=0; i<lastAccess.size() && i<4; i++) {
+                            HistoryObjectDetail access = lastAccess.get(i);
+                        %>
+                          <li>
+                            <div class="profilPhoto"><view:image src="<%=UserDetail.getById(access.getUserId()).getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
+                              <view:username userId="<%=access.getUserId() %>" /> <span class="consultationDate"><%=resources.getString("kmelia.publication.lastvisitors.on") %> <%=resources.getOutputDate(access.getDate()) %></span>
+                          </li>
+                        <% } %>
+                        </ul>
+                      <% } %>
+                      <% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
+                        <a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
+                      <% } else { %>
+                        <br clear="all" />
+                      <% } %>
+                  </div>
+        <%
+              }
+
+              /*********************************************************************************************************************/
+              /** Affichage de la classification de la publication sur le PdC														**/
+              /*********************************************************************************************************************/
         if(!kmaxMode) {
         %>
           <view:pdcClassificationPreview componentId="<%= componentId %>" contentId="<%= id %>" />

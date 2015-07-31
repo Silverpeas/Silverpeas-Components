@@ -157,7 +157,184 @@
                 in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt.
               </message>
             </help>
-          </parameter>
+        </parameter>
+        <parameter>
+          <name>nbPubliPerPage</name>
+          <label>
+            <message lang="fr">Nombre par page</message>
+            <message lang="en">Number per page</message>
+            <message lang="de">Anzahl der Veröffentlichungen pro Seite</message>
+          </label>
+          <order>4</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>5</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de définir le nombre de publications affichées par page</message>
+            <message lang="en">Defines the number of publications displyed on a page</message>
+            <message lang="de">Definiert die Anzahl der Veröffentlichungen die auf einer Seite angezeigt werden</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>publicationSort</name>
+          <label>
+            <message lang="fr">Ordre d'affichage</message>
+            <message lang="en">Publications sorting</message>
+            <message lang="de">Publications sorting</message>
+          </label>
+          <order>47</order>
+          <mandatory>true</mandatory>
+          <value>2</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Nom du créateur croissant</message>
+                <message lang="en">Ascending creator's name</message>
+                <message lang="de">Ascending creator's name</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Date de modification croissante</message>
+                <message lang="en">Ascending update date</message>
+                <message lang="de">Ascending update date</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Date de modification décroissante</message>
+                <message lang="en">Descending update date</message>
+                <message lang="de">Descending update date</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Importance croissante</message>
+                <message lang="en">Ascending importance</message>
+                <message lang="de">Ascending importance</message>
+              </name>
+              <value>3</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Titre croissant</message>
+                <message lang="en">Ascending title</message>
+                <message lang="de">Ascending title</message>
+              </name>
+              <value>4</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Date de création croissante</message>
+                <message lang="en">Ascending creation date</message>
+                <message lang="de">Ascending creation date</message>
+              </name>
+              <value>5</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Date de création décroissante</message>
+                <message lang="en">Descending creation date</message>
+                <message lang="de">Descending creation date</message>
+              </name>
+              <value>6</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Description croissante</message>
+                <message lang="en">Ascending description</message>
+                <message lang="de">Ascending description</message>
+              </name>
+              <value>7</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
+            <message lang="en">Sets the display order of publications.</message>
+            <message lang="de">Sets the display order of publications.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>wizardEnabled</name>
+          <label>
+            <message lang="fr">Assistant de création</message>
+            <message lang="en">Creation wizard</message>
+            <message lang="de">Assistent für die Erstellung einer Veröffentlichung</message>
+          </label>
+          <order>26</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</message>
+            <message lang="en">For beginners only. This wizard allows the user to create a publication step by step.</message>
+            <message lang="de">Nur für Anfänger. Dieser Assistent ermöglicht es dem Benutzer, eine Veröffentlichung Schritt für Schritt zu erstellen.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>draft</name>
+          <label>
+            <message lang="fr">Mode brouillon</message>
+            <message lang="en">Draft mode</message>
+            <message lang="de">Entwurf</message>
+          </label>
+          <order>15</order>
+          <mandatory>true</mandatory>
+          <value>yes</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Le mode brouillon permet de travailler sur une publication sans que personne d'autre
+              puisse la voir.
+            </message>
+            <message lang="en">A publication in draft mode is visible only to the author, so he can work on it.</message>
+            <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>codification</name>
+          <label>
+            <message lang="fr">Codification unique</message>
+            <message lang="en">Unique code</message>
+            <message lang="de">Einzigartige Kodifizierung</message>
+          </label>
+          <order>30</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette option permet d'afficher sur l'entête l'identifiant unique de chaque publication.</message>
+            <message lang="en">This feature displays the unique id of each publication in the header tab.</message>
+            <message lang="de">Diese Funktion zeigt die eindeutige ID jeder Veröffentlichung in der Kopf Registerkarte.</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>useAuthor</name>
+          <label>
+            <message lang="fr">Champ Auteur</message>
+            <message lang="en">Author field</message>
+            <message lang="de">Autor Feld</message>
+          </label>
+          <order>18</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</message>
+            <message lang="en">Publication have a field to enter the name of the author.</message>
+            <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors anzugeben.</message>
+          </help>
+        </parameter>
         <parameter>
             <name>tabContent</name>
             <label>
@@ -251,41 +428,58 @@
             </help>
           </parameter>
           <parameter>
-            <name>draft</name>
+            <name>tabLastVisitors</name>
             <label>
-              <message lang="fr">Mode brouillon</message>
-              <message lang="en">Draft mode</message>
-              <message lang="de">Entwurf</message>
+              <message lang="fr">Derniers visiteurs</message>
+              <message lang="en">Last visitors</message>
+              <message lang="de">Letzte Besucher</message>
             </label>
-            <order>15</order>
+            <order>52</order>
             <mandatory>true</mandatory>
             <value>yes</value>
             <type>checkbox</type>
             <updatable>always</updatable>
             <help>
-              <message lang="fr">Le mode brouillon permet de travailler sur une publication sans que personne d'autre
-                puisse la voir.
-              </message>
-              <message lang="en">A publication in draft mode is visible only to the author, so he can work on it.</message>
-              <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
+              <message lang="fr">Affiche les 4 derniers utilisateurs ayant consulté la publication</message>
+              <message lang="en">Shows the last 4 users who viewed the publication</message>
+              <message lang="de">Zeigt die letzten 4 Benutzer, die die Publikation angesehen</message>
             </help>
           </parameter>
           <parameter>
-            <name>useAuthor</name>
+            <name>notifications</name>
             <label>
-              <message lang="fr">Champ Auteur</message>
-              <message lang="en">Author field</message>
-              <message lang="de">Autor Feld</message>
+              <message lang="fr">Notifications</message>
+              <message lang="en">Notifications</message>
+              <message lang="de">Benachrichtigungen</message>
             </label>
-            <order>18</order>
+            <order>34</order>
             <mandatory>true</mandatory>
-            <value>no</value>
+            <value>yes</value>
             <type>checkbox</type>
             <updatable>always</updatable>
             <help>
-              <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</message>
-              <message lang="en">Publication have a field to enter the name of the author.</message>
-              <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors anzugeben.</message>
+              <message lang="fr">Permet d'activer l'opération "Notifier" sur les publications.</message>
+              <message lang="en">Enable "Notify" operation on publications.</message>
+              <message lang="de">Vermeidet "Benachrichtigungen" auf Veröffentlichungen</message>
+            </help>
+            <personalSpaceValue>no</personalSpaceValue>
+          </parameter>
+          <parameter>
+            <name>publicationRating</name>
+            <label>
+              <message lang="fr">Notes</message>
+              <message lang="en">Ratings</message>
+              <message lang="de">Bewertungen</message>
+            </label>
+            <order>51</order>
+            <mandatory>false</mandatory>
+            <value/>
+            <type>checkbox</type>
+            <updatable>always</updatable>
+            <help>
+              <message lang="fr">Permet aux lecteurs de donner une note (de 1 à 5) à chaque publication</message>
+              <message lang="en">Allows readers to give a rating to each publication</message>
+              <message lang="de">Ermöglicht den Leser auf eine Note auf jede Veröffentlichung geben</message>
             </help>
           </parameter>
           <parameter>
@@ -372,24 +566,6 @@
             </help>
           </parameter>
           <parameter>
-            <name>wizardEnabled</name>
-            <label>
-              <message lang="fr">Assistant de création</message>
-              <message lang="en">Creation wizard</message>
-              <message lang="de">Assistent für die Erstellung einer Veröffentlichung</message>
-            </label>
-            <order>26</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</message>
-              <message lang="en">For beginners only. This wizard allows the user to create a publication step by step.</message>
-              <message lang="de">Nur für Anfänger. Dieser Assistent ermöglicht es dem Benutzer, eine Veröffentlichung Schritt für Schritt zu erstellen.</message>
-            </help>
-          </parameter>
-          <parameter>
             <name>coWriting</name>
             <label>
               <message lang="fr">Co-rédaction</message>
@@ -411,145 +587,6 @@
             </help>
           </parameter>
           <parameter>
-            <name>codification</name>
-            <label>
-              <message lang="fr">Codification unique</message>
-              <message lang="en">Unique code</message>
-              <message lang="de">Einzigartige Kodifizierung</message>
-            </label>
-            <order>30</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Cette option permet d'afficher sur l'entête l'identifiant unique de chaque publication.</message>
-              <message lang="en">This feature displays the unique id of each publication in the header tab.</message>
-              <message lang="de">Diese Funktion zeigt die eindeutige ID jeder Veröffentlichung in der Kopf Registerkarte.</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>publicationSort</name>
-            <label>
-              <message lang="fr">Ordre d'affichage</message>
-              <message lang="en">Publications sorting</message>
-              <message lang="de">Publications sorting</message>
-            </label>
-            <order>47</order>
-            <mandatory>true</mandatory>
-            <value>2</value>
-            <options>
-              <option>
-                <name>
-                  <message lang="fr">Nom du créateur croissant</message>
-                  <message lang="en">Ascending creator's name</message>
-                  <message lang="de">Ascending creator's name</message>
-                </name>
-                <value>0</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Date de modification croissante</message>
-                  <message lang="en">Ascending update date</message>
-                  <message lang="de">Ascending update date</message>
-                </name>
-                <value>1</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Date de modification décroissante</message>
-                  <message lang="en">Descending update date</message>
-                  <message lang="de">Descending update date</message>
-                </name>
-                <value>2</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Importance croissante</message>
-                  <message lang="en">Ascending importance</message>
-                  <message lang="de">Ascending importance</message>
-                </name>
-                <value>3</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Titre croissant</message>
-                  <message lang="en">Ascending title</message>
-                  <message lang="de">Ascending title</message>
-                </name>
-                <value>4</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Date de création croissante</message>
-                  <message lang="en">Ascending creation date</message>
-                  <message lang="de">Ascending creation date</message>
-                </name>
-                <value>5</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Date de création décroissante</message>
-                  <message lang="en">Descending creation date</message>
-                  <message lang="de">Descending creation date</message>
-                </name>
-                <value>6</value>
-              </option>
-              <option>
-                <name>
-                  <message lang="fr">Description croissante</message>
-                  <message lang="en">Ascending description</message>
-                  <message lang="de">Ascending description</message>
-                </name>
-                <value>7</value>
-              </option>
-            </options>
-            <type>select</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
-              <message lang="en">Sets the display order of publications.</message>
-              <message lang="de">Sets the display order of publications.</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>publicationRating</name>
-            <label>
-              <message lang="fr">Notes</message>
-              <message lang="en">Ratings</message>
-              <message lang="de">Bewertungen</message>
-            </label>
-            <order>51</order>
-            <mandatory>false</mandatory>
-            <value/>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Permet aux lecteurs de donner une note (de 1 à 5) à chaque publication</message>
-              <message lang="en">Allows readers to give a rating to each publication</message>
-              <message lang="de">Ermöglicht den Leser auf eine Note auf jede Veröffentlichung geben</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>notifications</name>
-            <label>
-              <message lang="fr">Notifications</message>
-              <message lang="en">Notifications</message>
-              <message lang="de">Benachrichtigungen</message>
-            </label>
-            <order>34</order>
-            <mandatory>true</mandatory>
-            <value>yes</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Permet d'activer l'opération "Notifier" sur les publications.</message>
-              <message lang="en">Enable "Notify" operation on publications.</message>
-              <message lang="de">Vermeidet "Benachrichtigungen" auf Veröffentlichungen</message>
-            </help>
-            <personalSpaceValue>no</personalSpaceValue>
-          </parameter>
-          <parameter>
             <name>suppressionOnlyForAdmin</name>
             <label>
               <message lang="fr">Suppression restreinte</message>
@@ -565,25 +602,6 @@
               <message lang="fr">Seuls les gestionnaires de l'application peuvent supprimer une publication et accéder à la corbeille de publications</message>
               <message lang="en">Only administrators of this application are be able to remove publications and to access to publications bin</message>
               <message lang="de">Nur Administratoren dieser Komponente können Veröffentlichungen entfernen und am Papierkorb der Publikationen zugreifen</message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>nbPubliPerPage</name>
-            <label>
-              <message lang="fr">Nombre par page</message>
-              <message lang="en">Number per page</message>
-              <message lang="de">Anzahl der Veröffentlichungen pro Seite</message>
-            </label>
-            <order>4</order>
-            <mandatory>false</mandatory>
-            <value></value>
-            <type>text</type>
-            <size>5</size>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Permet de définir le nombre de publications affichées par page</message>
-              <message lang="en">Defines the number of publications displyed on a page</message>
-              <message lang="de">Definiert die Anzahl der Veröffentlichungen die auf einer Seite angezeigt werden</message>
             </help>
           </parameter>
       </parameters>
@@ -620,21 +638,21 @@
             </help>
           </parameter>
           <parameter>
-            <name>versionControl</name>
+            <name>attachmentsInPubList</name>
             <label>
-              <message lang="fr">Suivi de versions</message>
-              <message lang="en">Version tracking</message>
-              <message lang="de">Versionierte Anhänge</message>
+              <message lang="fr">Listing</message>
+              <message lang="en">Listing</message>
+              <message lang="de">Listen</message>
             </label>
-            <order>13</order>
+            <order>38</order>
             <mandatory>true</mandatory>
             <value>no</value>
             <type>checkbox</type>
             <updatable>always</updatable>
             <help>
-              <message lang="fr">Permet de garder l'historique des différentes versions des documents. Ce paramètre est ignoré et considéré comme désactivé si celui "Publication toujours visible" est activé.</message>
-              <message lang="en">Documents are versioned. This parameter is ignored and considered disabled if "Publication always visible" is enabled.</message>
-              <message lang="de">Anhänge werden versioniert. Dieser Parameter wird ignoriert und deaktiviert, wenn "Veröffentlichung immer Sichtbar" aktiviert ist.</message>
+              <message lang="fr">Ce paramètre permet d'afficher directement dans la liste des publications les fichiers joints à chaque publication.</message>
+              <message lang="en">This feature allows to display the attached files to each publications directly in the publications list.</message>
+              <message lang="de">Diese Funktion erlaubt es, die angehängten Dateien zu jeder Veröffentlichung direkt in der Publikation anzuzeigen.</message>
             </help>
           </parameter>
           <parameter>
@@ -653,6 +671,56 @@
               <message lang="fr">Si une publication contient un seul fichier joint alors l'ouverture de la publication déclenche automatiquement l'ouverture du fichier joint.</message>
               <message lang="en">Opening a publication with only once attachment will open this attachment automatically.</message>
               <message lang="de">Öffnen einer Veröffentlichung mit nur einem Anhang wird diesen Anhang automatisch öffnen.</message>
+            </help>
+          </parameter>
+          <parameter>
+            <name>authorizedFileExtension</name>
+            <label>
+              <message lang="fr">Extension(s) autorisée(s)</message>
+              <message lang="en">Extension(s) authorized</message>
+              <message lang="de">Extension(s) authorized</message>
+            </label>
+            <order>49</order>
+            <mandatory>false</mandatory>
+            <value/>
+            <type>text</type>
+            <size>25</size>
+            <updatable>always</updatable>
+            <help>
+              <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, le paramètre
+                "Fichiers interdits" est ignoré si une valeur est saisie
+              </message>
+              <message lang="en">List of file extensions separated by comma, "Forbidden files" parameter
+                is ignored if a value is filled
+              </message>
+              <message lang="de">List of file extensions separated by comma, "Forbidden files" parameter
+                is ignored if a value is filled
+              </message>
+            </help>
+          </parameter>
+          <parameter>
+            <name>forbiddenFileExtension</name>
+            <label>
+              <message lang="fr">Extension(s) interdite(s)</message>
+              <message lang="en">Extension(s) forbidden</message>
+              <message lang="de">Extension(s) forbidden</message>
+            </label>
+            <order>50</order>
+            <mandatory>false</mandatory>
+            <value/>
+            <type>text</type>
+            <size>25</size>
+            <updatable>always</updatable>
+            <help>
+              <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, ignoré si une
+                valeur existe pour le paramètre "Fichiers autorisés"
+              </message>
+              <message lang="en">List of file extensions separated by comma, ignored if a value is entered
+                into "Authorized files" parameter
+              </message>
+              <message lang="de">List of file extensions separated by comma, ignored if a value is entered
+                into "Authorized files" parameter
+              </message>
             </help>
           </parameter>
           <parameter>
@@ -769,21 +837,39 @@
             </help>
           </parameter>
           <parameter>
-            <name>attachmentsInPubList</name>
+            <name>versionControl</name>
             <label>
-              <message lang="fr">Listing</message>
-              <message lang="en">Listing</message>
-              <message lang="de">Listen</message>
+              <message lang="fr">Suivi de versions</message>
+              <message lang="en">Version tracking</message>
+              <message lang="de">Versionierte Anhänge</message>
             </label>
-            <order>38</order>
+            <order>13</order>
             <mandatory>true</mandatory>
             <value>no</value>
             <type>checkbox</type>
             <updatable>always</updatable>
             <help>
-              <message lang="fr">Ce paramètre permet d'afficher directement dans la liste des publications les fichiers joints à chaque publication.</message>
-              <message lang="en">This feature allows to display the attached files to each publications directly in the publications list.</message>
-              <message lang="de">Diese Funktion erlaubt es, die angehängten Dateien zu jeder Veröffentlichung direkt in der Publikation anzuzeigen.</message>
+              <message lang="fr">Permet de garder l'historique des différentes versions des documents. Ce paramètre est ignoré et considéré comme désactivé si celui "Publication toujours visible" est activé.</message>
+              <message lang="en">Documents are versioned. This parameter is ignored and considered disabled if "Publication always visible" is enabled.</message>
+              <message lang="de">Anhänge werden versioniert. Dieser Parameter wird ignoriert und deaktiviert, wenn "Veröffentlichung immer Sichtbar" aktiviert ist.</message>
+            </help>
+          </parameter>
+          <parameter>
+            <name>hideAllVersionsLink</name>
+            <label>
+              <message lang="fr">Dernière version publique</message>
+              <message lang="en">Last public version</message>
+              <message lang="de">Letzte öffentliche Version</message>
+            </label>
+            <order>45</order>
+            <mandatory>false</mandatory>
+            <value>no</value>
+            <type>checkbox</type>
+            <updatable>always</updatable>
+            <help>
+              <message lang="fr">Ce paramètre permet de limiter l'accès à la dernière version publique d'un document.</message>
+              <message lang="en">This feature allows readers to see only the last public version of a document.</message>
+              <message lang="de">Diese Funktion erlaubt es dem Leser nur die letzte öffentliche Version eines Dokuments zu sehen.</message>
             </help>
           </parameter>
           <parameter>
@@ -822,74 +908,6 @@
                 By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
               </message>
             </warning>
-          </parameter>
-          <parameter>
-            <name>hideAllVersionsLink</name>
-            <label>
-              <message lang="fr">Dernière version publique</message>
-              <message lang="en">Last public version</message>
-              <message lang="de">Letzte öffentliche Version</message>
-            </label>
-            <order>45</order>
-            <mandatory>false</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Ce paramètre permet de limiter l'accès à la dernière version publique d'un document.</message>
-              <message lang="en">This feature allows readers to see only the last public version of a document.</message>
-              <message lang="de">Diese Funktion erlaubt es dem Leser nur die letzte öffentliche Version eines Dokuments zu sehen.</message>
-            </help>
-          </parameter>
-        <parameter>
-            <name>authorizedFileExtension</name>
-            <label>
-              <message lang="fr">Extension(s) autorisée(s)</message>
-              <message lang="en">Extension(s) authorized</message>
-              <message lang="de">Extension(s) authorized</message>
-            </label>
-            <order>49</order>
-            <mandatory>false</mandatory>
-            <value/>
-            <type>text</type>
-            <size>25</size>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, le paramètre
-                "Fichiers interdits" est ignoré si une valeur est saisie
-              </message>
-              <message lang="en">List of file extensions separated by comma, "Forbidden files" parameter
-                is ignored if a value is filled
-              </message>
-              <message lang="de">List of file extensions separated by comma, "Forbidden files" parameter
-                is ignored if a value is filled
-              </message>
-            </help>
-          </parameter>
-          <parameter>
-            <name>forbiddenFileExtension</name>
-            <label>
-              <message lang="fr">Extension(s) interdite(s)</message>
-              <message lang="en">Extension(s) forbidden</message>
-              <message lang="de">Extension(s) forbidden</message>
-            </label>
-            <order>50</order>
-            <mandatory>false</mandatory>
-            <value/>
-            <type>text</type>
-            <size>25</size>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, ignoré si une
-                valeur existe pour le paramètre "Fichiers autorisés"
-              </message>
-              <message lang="en">List of file extensions separated by comma, ignored if a value is entered
-                into "Authorized files" parameter
-              </message>
-              <message lang="de">List of file extensions separated by comma, ignored if a value is entered
-                into "Authorized files" parameter
-              </message>
-            </help>
           </parameter>
       </parameters>
     </groupOfParameters>
@@ -1037,30 +1055,6 @@
         </description>
         <order>4</order>
       <parameters>
-        <parameter>
-            <name>useFileSharing</name>
-            <label>
-              <message lang="fr">Fichiers</message>
-              <message lang="en">Files</message>
-              <message lang="de">Anhänge freigeben</message>
-            </label>
-            <order>37</order>
-            <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
-            <updatable>always</updatable>
-            <help>
-              <message lang="fr">Ce paramètre permet de partager des fichiers avec des tiers non utilisateurs de la plate-forme.</message>
-              <message lang="en">This feature allows to share files with some persons who have no access to the platform.</message>
-              <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
-            </help>
-            <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
-            </warning>
-            <personalSpaceValue>yes</personalSpaceValue>
-          </parameter>
           <parameter>
             <name>useFolderSharing</name>
             <label>
@@ -1108,6 +1102,30 @@
               <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
             </warning>
             <personalSpaceValue>no</personalSpaceValue>
+          </parameter>
+          <parameter>
+            <name>useFileSharing</name>
+            <label>
+              <message lang="fr">Fichiers</message>
+              <message lang="en">Files</message>
+              <message lang="de">Anhänge freigeben</message>
+            </label>
+            <order>37</order>
+            <mandatory>true</mandatory>
+            <value>no</value>
+            <type>checkbox</type>
+            <updatable>always</updatable>
+            <help>
+              <message lang="fr">Ce paramètre permet de partager des fichiers avec des tiers non utilisateurs de la plate-forme.</message>
+              <message lang="en">This feature allows to share files with some persons who have no access to the platform.</message>
+              <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
+            </help>
+            <warning>
+              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
+              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+            </warning>
+            <personalSpaceValue>yes</personalSpaceValue>
           </parameter>
       </parameters>
     </groupOfParameters>
