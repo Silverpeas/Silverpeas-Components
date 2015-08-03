@@ -53,11 +53,13 @@ public class KmeliaPaste implements ComponentPasteInterface {
     
     NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, fromComponentId);
     NodePK targetPK = new NodePK(NodePK.ROOT_NODE_ID, toComponentId);
-    
-    // copy publications on root
-    copyDetail.setFromNodePK(rootPK);
-    copyDetail.setToNodePK(targetPK);
-    getKmeliaBm().copyPublications(copyDetail);
+
+    if (copyDetail.isPublicationHeaderMustBeCopied()) {
+      // copy publications on root
+      copyDetail.setFromNodePK(rootPK);
+      copyDetail.setToNodePK(targetPK);
+      getKmeliaBm().copyPublications(copyDetail);
+    }
     
     // copy Wysiwyg of root
     WysiwygController.copy(fromComponentId, "Node_" + NodePK.ROOT_NODE_ID,
