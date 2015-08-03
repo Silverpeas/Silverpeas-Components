@@ -132,7 +132,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         "ScheduleEventSessionController.initSelectUsersPanel()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
 
-    if (getCurrentScheduleEvent().getAuthor() == Integer.parseInt(getUserId())) {
+    if (isUserOwnerOfEvent(getCurrentScheduleEvent())) {
       String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
           .getString("ApplicationURL");
       PairObject hostComponentName = new PairObject(getComponentName(), "");
@@ -344,7 +344,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   public void switchState(String id) {
     ScheduleEvent event = getScheduleEventService().findScheduleEvent(id);
-    if (event.getAuthor() == Integer.parseInt(getUserId())) {
+    if (isUserOwnerOfEvent(event)) {
       int actualStatus = event.getStatus();
       int newStatus = ScheduleEventStatus.OPEN;
       if (ScheduleEventStatus.OPEN == actualStatus) {
@@ -358,9 +358,13 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
   }
 
+  private boolean isUserOwnerOfEvent(final ScheduleEvent event) {
+    return event.getAuthor() == Integer.parseInt(getUserId());
+  }
+
   public void delete(String scheduleEventId) {
     ScheduleEvent scheduleEvent = getScheduleEventService().findScheduleEvent(scheduleEventId);
-    if (scheduleEvent.getAuthor() == Integer.parseInt(getUserId())) {
+    if (isUserOwnerOfEvent(scheduleEvent)) {
       getScheduleEventService().deleteScheduleEvent(scheduleEvent);
     } else {
       SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.delete",
