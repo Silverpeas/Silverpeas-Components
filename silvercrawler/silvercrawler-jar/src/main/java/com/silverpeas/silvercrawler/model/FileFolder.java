@@ -24,7 +24,7 @@
 
 package com.silverpeas.silvercrawler.model;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.io.FileUtils;
