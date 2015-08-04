@@ -229,9 +229,12 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   public FolderZIPInfo zipFolder(String folderName) {
     FolderZIPInfo zipInfo = new FolderZIPInfo();
     File downloadPath = FileUtils.getFile(getFullPath(folderName));
-    SilverTrace
-        .info("silverCrawler", "SilverCrawlerRequestRouter.zipFolder()", "root.MSG_GEN_PARAM_VALUE",
-            "downloadPath = " + downloadPath.getPath());
+    try {
+      FileUtil.validateFilename(downloadPath.getPath(), getRootPath());
+    } catch (IOException e) {
+      SilverTrace.error("silverCrawler", "SilverCrawlerRequestRouter.zipFolder()",
+          "root.MSG_GEN_PARAM_VALUE", "downloadPath error = " + downloadPath.getPath());
+    }
 
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
     String date = createDate(calendar);
