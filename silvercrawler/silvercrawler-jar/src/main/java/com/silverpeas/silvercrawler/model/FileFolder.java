@@ -24,6 +24,7 @@
 
 package com.silverpeas.silvercrawler.model;
 
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.io.FileUtils;
@@ -92,6 +93,8 @@ public class FileFolder implements java.io.Serializable {
     try {
       SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
           "Starting constructor for FileFolder. Path = " + path);
+      // Check security access : cannot browse inside rootPath
+      FileUtil.validateFilename(path, rootPath);
       File f = new File(path);
 
       SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
