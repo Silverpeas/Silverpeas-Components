@@ -15,6 +15,7 @@ import org.silverpeas.date.PeriodType;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
 
@@ -34,8 +35,8 @@ public class NewsRepositoryTest {
   }
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "quickinfo-dataset.xml");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("quickinfo-dataset.sql");
 
   @Deployment
   public static Archive<?> createTestArchive() {

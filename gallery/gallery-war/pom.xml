@@ -20,10 +20,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-server</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet.jsp.jstl</groupId>
       <artifactId>javax.servlet.jsp.jstl-api</artifactId>
     </dependency>
@@ -77,11 +73,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>clipboard</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.metaparadigm</groupId>
-      <artifactId>json-rpc</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

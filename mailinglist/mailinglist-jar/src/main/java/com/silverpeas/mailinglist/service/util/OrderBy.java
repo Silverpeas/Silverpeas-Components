@@ -23,8 +23,6 @@
  */
 package com.silverpeas.mailinglist.service.util;
 
-import org.hibernate.criterion.Order;
-
 public class OrderBy {
 
   private String propertyName;
@@ -54,13 +52,6 @@ public class OrderBy {
       expr += " DESC";
     }
     return expr;
-  }
-
-  public Order getOrder() {
-    if (asc) {
-      return Order.asc(propertyName);
-    }
-    return Order.desc(propertyName);
   }
 
   public OrderBy(final String propertyName, final boolean asc) {

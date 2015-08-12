@@ -23,8 +23,6 @@
  */
 package com.silverpeas.mailinglist.service.model.beans;
 
-import org.hibernate.annotations.DiscriminatorOptions;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -34,7 +32,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "sc_mailinglist_internal_sub")
 @DiscriminatorColumn(name = "subscriber_type", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorOptions(force = true)
 public abstract class InternalSubscriber extends IdentifiableObject {
 
   @Column(nullable = false)
