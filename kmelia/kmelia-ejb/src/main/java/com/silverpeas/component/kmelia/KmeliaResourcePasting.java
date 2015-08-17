@@ -23,28 +23,31 @@
  */
 package com.silverpeas.component.kmelia;
 
-import com.silverpeas.admin.components.ComponentPasteInterface;
+import com.silverpeas.admin.components.ApplicationResourcePasting;
 import com.silverpeas.admin.components.PasteDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class KmeliaPaste implements ComponentPasteInterface {
+@Named("kmelia" + ApplicationResourcePasting.NAME_SUFFIX)
+public class KmeliaResourcePasting implements ApplicationResourcePasting {
 
-  public KmeliaPaste() {
-  }
+  @Inject
+  private NodeService nodeService;
+
+  @Inject
+  private KmeliaBm kmeliaBm;
 
   @Override
-  public void paste(PasteDetail pasteDetail) throws RemoteException {
+  public void paste(PasteDetail pasteDetail) throws RuntimeException {
     SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_ENTER_METHOD");
     String fromComponentId = pasteDetail.getFromComponentId();
     String toComponentId = pasteDetail.getToComponentId();
@@ -59,7 +62,7 @@ public class KmeliaPaste implements ComponentPasteInterface {
       // copy publications on root
       copyDetail.setFromNodePK(rootPK);
       copyDetail.setToNodePK(targetPK);
-      getKmeliaBm().copyPublications(copyDetail);
+      kmeliaBm.copyPublications(copyDetail);
     }
     
     // copy Wysiwyg of root
@@ -67,34 +70,16 @@ public class KmeliaPaste implements ComponentPasteInterface {
         "Node_" + NodePK.ROOT_NODE_ID, pasteDetail.getUserId());
 
     // copy first level of nodes
-    List<NodeDetail> firstLevelNodes = getNodeBm().getHeadersByLevel(rootPK, 2);
+    List<NodeDetail> firstLevelNodes = nodeService.getHeadersByLevel(rootPK, 2);
     for (NodeDetail nodeToPaste : firstLevelNodes) {
       if (nodeToPaste.getId() > 2) {
         // Don't take unbalanced and basket nodes
         copyDetail.setFromNodePK(nodeToPaste.getNodePK());
         copyDetail.setToNodePK(targetPK);
-        getKmeliaBm().copyNode(copyDetail);
+        kmeliaBm.copyNode(copyDetail);
       }
     }
     SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  private NodeService getNodeBm() {
-    try {
-      return ServiceProvider.getService(NodeService.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("PasteDetail.getNodeService()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-    }
-  }
-
-  private KmeliaBm getKmeliaBm() {
-    try {
-      return ServiceProvider.getService(KmeliaBm.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("SendInKmelia.getKmeliaBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
 }
