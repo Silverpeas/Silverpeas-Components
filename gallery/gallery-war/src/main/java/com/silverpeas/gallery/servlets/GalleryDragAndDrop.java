@@ -26,42 +26,32 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+import org.silverpeas.upload.UploadSession;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.ejb.EJBException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
-
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
- *
- *
  * @author
  */
-public class GalleryDragAndDrop extends HttpServlet {
+public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -3063286463794353943L;
 
@@ -71,7 +61,7 @@ public class GalleryDragAndDrop extends HttpServlet {
       super.init(config);
     } catch (ServletException se) {
       SilverTrace.fatal("importExportPeas", "ImportDragAndDrop.init",
-        "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
@@ -85,67 +75,43 @@ public class GalleryDragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-    String userId = null;
+    UserDetail userDetail = UserDetail.getCurrentRequester();
     HttpRequest request = HttpRequest.decorate(req);
+    UploadSession uploadSession = UploadSession.from(request);
     try {
       request.setCharacterEncoding("UTF-8");
       String componentId = request.getParameter("ComponentId");
       String albumId = request.getParameter("AlbumId");
-      userId = request.getParameter("UserId");
+
+      if (!uploadSession.isUserAuthorized(componentId)) {
+        throwHttpForbiddenError();
+      }
+
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-        "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
+          "componentId = " + componentId + " albumId = " + albumId + " userId = " +
+              userDetail.getId());
 
-      File savePath =
-          new File(FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
+      for (File filePath : uploadSession.getRootFolderFiles()) {
 
-      List<FileItem> items = request.getFileItems();
+        SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+            "full path = " + filePath);
 
-      for (FileItem item : items) {
-        if (!item.isFormField()) {
-          String fileUploadId = item.getFieldName().substring(4);
-          String fileNameParam = FileUploadUtil.getFileName(item);
-          String parentPathParam =
-              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
-          if (fileNameParam != null) {
-
-            File filePath = new File(
-                new File(savePath, (StringUtil.isDefined(parentPathParam) ? parentPathParam : "")),
-                fileNameParam);
-
-            SilverTrace
-                .info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-                    "item = " + item.getFieldName() + " - full path = " + filePath);
-
-              File parentFolder = filePath.getParentFile();
-              if (!parentFolder.exists()) {
-                parentFolder.mkdirs();
-              }
-
-              item.write(filePath);
-
-              // Cas du zip
-              if (FileUtil.isArchive(filePath.getName())) {
-                ZipManager.extract(filePath, parentFolder);
-              }
-            }
-          }
+        // Cas du zip
+        if (FileUtil.isArchive(filePath.getName())) {
+          ZipManager.extract(filePath, filePath.getParentFile());
+        }
       }
-      importRepository(savePath, userId, componentId, albumId);
-      FileUtils.deleteQuietly(savePath);
+
+      importRepository(uploadSession.getRootFolder(), userDetail.getId(), componentId, albumId);
+
     } catch (Exception e) {
-      SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-          e);
-      final StringBuilder sb = new StringBuilder("ERROR");
-      final String errorMessage = SilverpeasTransverseWebErrorUtil
-          .performAppletAlertExceptionMessage(e,
-              UserDetail.getById(userId).getUserPreferences().getLanguage());
-      if (isDefined(errorMessage)) {
-        sb.append(": ");
-        sb.append(errorMessage);
-      }
-      res.getOutputStream().println(sb.toString());
+      SilverTrace
+          .debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverpeasTransverseErrorUtil
+          .throwTransverseErrorIfAny(e, userDetail.getUserPreferences().getLanguage());
+    } finally {
+      uploadSession.clear();
     }
-    res.getOutputStream().println("SUCCESS");
   }
 
   private void importRepository(final File repository, final String userId, final String componentId,
@@ -182,15 +148,6 @@ public class GalleryDragAndDrop extends HttpServlet {
         throw e;
       }
     }
-  }
-
-  private String getParameterValue(List<FileItem> items, String parameterName) {
-    for (FileItem item : items) {
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
   }
 
   /**

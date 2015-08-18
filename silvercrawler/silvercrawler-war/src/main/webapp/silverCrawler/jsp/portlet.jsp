@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <% 
 FileFolder 	folder 			= (FileFolder) request.getAttribute("Folder");
@@ -44,41 +45,12 @@ boolean nav = true;
 if ("user".equals(profile) && !allowedNav)
 	nav = false;
 
-//cr�ation du chemin :
-String 		chemin 		= "";
-if (path != null)
-{
-	String 		namePath	= "";
-	boolean 	suivant 	= false;
-	Iterator 	itPath 		= (Iterator) path.iterator();
-	
-	while (itPath.hasNext()) 
-	{
-		String directory = (String) itPath.next();
-		if (directory != null)
-		{
-			if (suivant) 
-			{
-				chemin = chemin + " > ";
-				namePath = " > " + namePath;
-			}
-			if (nav)
-				chemin = chemin + "<a href=\"GoToDirectory?DirectoryPath="+ directory + "\">" + Encode.javaStringToHtmlString(directory)+"</a>";
-			else
-				chemin = chemin + Encode.javaStringToHtmlString(directory);
-				
-			namePath = namePath + directory;
-			suivant = itPath.hasNext();
-		}
-	}
-}
-
 %>
 
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
 <script language="javascript">
 
 var downloadWindow = window;
@@ -139,10 +111,6 @@ function checkSubmitToSearch(ev)
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
 <%
-
-// mettre les op�ration si on est � la racine
-String name = folder.getName();
-
 out.println(frame.printBefore());
 
 Board board	= gef.getBoard();

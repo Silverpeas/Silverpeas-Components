@@ -159,6 +159,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsOrder", gallerySC.isOrder());
         destination = rootDest + "welcome.jsp";
       } else if ("ViewAlbum".equals(function)) {
+        if (StringUtil.isDefined(request.getParameter("deselectAll"))) {
+          deselectAll(gallerySC);
+        }
         // récupération de l'Id de l'album en cours
         String albumId = request.getParameter("Id");
         gallerySC.goToAlbum(albumId);

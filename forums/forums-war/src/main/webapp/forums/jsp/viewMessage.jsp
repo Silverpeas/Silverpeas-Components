@@ -419,7 +419,6 @@
                                           <c:param name="ComponentId"><%=instanceId%></c:param>
                                           <c:param name="Context" value="${'attachment'}" />
                                           <c:param name="addFileMenu" value="${'true'}" />
-                                          <c:param name="dnd" value="${'false'}" />
                                           <c:param name="notI18n" value="${'true'}" />
                                           <c:param name="CallbackUrl" value="${callBackUrl}" />
                                         </c:import>
