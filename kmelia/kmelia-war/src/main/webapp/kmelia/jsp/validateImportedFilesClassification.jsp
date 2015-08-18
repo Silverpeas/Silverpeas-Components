@@ -407,7 +407,7 @@
   </head>
   <body>
     <view:browseBar clickable="false" path="${classification}"/>
-    <view:window browseBarVisible="true">
+    <view:window browseBarVisible="true" popup="true">
       <view:frame>
 		<c:choose>
           <c:when test="${message == null}">

@@ -29,6 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/silverCrawler" prefix="silverCrawler" %>
 
 <c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController">Silverpeas_SilverCrawler_<c:out value="${componentId}" />
@@ -36,24 +37,18 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<fmt:message key="silverCrawler.someConflictsDetected" var="pageTitle" />
+<fmt:message key="silverCrawler.someConflictsDetected" var="someConflictsDetectedLabel" />
 
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>${pageTitle}</title>
+		<title>${someConflictsDetectedLabel}</title>
 		<view:looknfeel />
 	</head>
 	<body>
 
 	<%-- BrowseBar --%>
-	<view:browseBar>
-  		<view:browseBarElt link="" label="${pageTitle}" />
-	</view:browseBar>
-
-	<%-- Operation Pane --%>
-	<view:operationPane>
-	</view:operationPane>
+  <silverCrawler:browseBar navigationAuthorized="false"/>
 
 	<%-- Main content --%>
 	<fmt:message key="silverCrawler.alreadyExists" var="alreadyExistsLabel"/>
@@ -64,7 +59,7 @@
 	<view:window>
 		<view:board>
 			<form name="conflictsForm" action="ResolveConflicts" method="POST">
-				<b><fmt:message key="silverCrawler.someConflictsDetected"/> :</b>
+				<b>${someConflictsDetectedLabel} :</b>
 				<br/><br/>
 				<table>
 				<c:forEach items="${DnDReport.items}" var="item">

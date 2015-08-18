@@ -1883,8 +1883,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                     fileType + " importMode=" + importMode + " draftMode=" + draftMode);
 
             // Import !!
-            ImportReport importReport = kmeliaScc
-                .importFile(fileUploaded, fileType, topicId, importMode, draftMode, versionType);
+            ImportReport importReport =
+                kmeliaScc.importFile(fileUploaded, fileType, importMode, draftMode, versionType);
             long processDuration = new Date().getTime() - processStart;
 
             // Compute nbPublication created

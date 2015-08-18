@@ -57,6 +57,7 @@ public class ProcessDragAndDropHandler extends FunctionHandler {
     }
 
     // redirect to "ViewDirectory" use case
+    request.setAttribute("Path", sessionController.getPath());
     request.setAttribute("DnDReport", report);
 
     return "dragNDropConflicts.jsp";

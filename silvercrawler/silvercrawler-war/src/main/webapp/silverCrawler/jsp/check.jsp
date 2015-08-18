@@ -84,6 +84,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 Window window = gef.getWindow();
+pageContext.setAttribute(NeedWindowTag.WINDOW_PAGE_ATT, window, PageContext.REQUEST_SCOPE);
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();

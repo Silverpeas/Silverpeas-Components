@@ -25,12 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 <%@ include file="checkKmelia.jsp" %>
 
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page import="com.silverpeas.kmelia.SearchContext"%>
+
+<c:set var='greatestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 
 <%
 String id = "0";
@@ -56,10 +60,7 @@ String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //
 
 String language = kmeliaScc.getLanguage();
 
-String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);;
-
-//For Drag And Drop
-boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
+String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);
 
 String userId = kmeliaScc.getUserId();
 
@@ -76,11 +77,10 @@ boolean userCanSeeStats =
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
-<script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
+
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -120,13 +120,6 @@ function getComponentId() {
 
 function getPubIdToHighlight() {
   return "<%=pubIdToHighlight%>";
-}
-
-function showDnD() {
-	<%
-	long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
-	%>
-	showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 
 function fileUpload() {
@@ -254,44 +247,17 @@ $(document).ready(function() {
 					<% } %>
 					<div id="topicDescription"></div>
 					<view:areaOfOperationOfCreation/>
-				<%
-					  if (dragAndDropEnable && userCanCreatePublications) {
-						%>
-						<div id="DnD">
-						<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
-						<a href="javascript:showDnD()" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
-						</td></tr></table>
-						<table width="100%" border="0" id="DropZone">
-						<tr>
-						<%
-							boolean appletDisplayed = false;
-							if (kmeliaScc.isDraftEnabled() && kmeliaScc.isPdcUsed() && kmeliaScc.isPDCClassifyingMandatory()) {
-								//Do not display applet in normal mode.
-								//Only display applet in draft mode
-							} else {
-								appletDisplayed = true;
-						%>
-								<td>
-									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
-								</td>
-						<% } %>
-						<% if (kmeliaScc.isDraftEnabled()) {
-							if (appletDisplayed)
-								out.println("<td width=\"5%\">&nbsp;</td>");
-							%>
-							<td>
-								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
-							</td>
-						<% } %>
-						</tr></table>
-						</div>
-				<% }  %>
-					<div id="pubList">
-					<br/>
-					<view:board>
-					<br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center><br/>
-					</view:board>
-					</div>
+          <div class="dragAndDropUpload" style="min-height: 75px">
+            <div id="pubList">
+              <br/>
+              <view:board>
+                <br/>
+                <center><%=resources.getString("kmelia.inProgressPublications") %>
+                  <br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center>
+                <br/>
+              </view:board>
+            </div>
+          </div>
 					<div id="footer" class="txtBaseline"></div>
 	</view:frame>
 	<%
@@ -319,6 +285,7 @@ $(document).ready(function() {
 
 <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
+<kmelia:dragAndDrop greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" forceIgnoreFolder="true" contentLanguage="<%=translation%>" />
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */
 var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
