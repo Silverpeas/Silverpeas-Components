@@ -24,27 +24,19 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@page import="com.silverpeas.form.Form"%>
-<%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 
 <%
-	Form formUpdate    = (Form) request.getAttribute("Form");
-	DataRecord data    = (DataRecord) request.getAttribute("Data"); 
-	String xmlFormName = (String) request.getAttribute("XMLFormName");
+	Form formUpdate = (Form) request.getAttribute("Form");
+  FormDetail formDetail = (FormDetail) request.getAttribute("FormDetail");
 
 	// context creation
 	PagesContext context = (PagesContext) request.getAttribute("FormContext");
@@ -58,44 +50,35 @@
 <head>
 <title></title>
 <view:looknfeel/>
-	<% formUpdate.displayScripts(out, context); %>
-	
-	<script type="text/javascript">
-		function B_VALIDER_ONCLICK()
-		{
-			if (isCorrectForm())
-			{
-				document.newInstanceForm.submit();
-			}
+<% formUpdate.displayScripts(out, context); %>
+<script type="text/javascript">
+  function sendRequest() {
+		if (isCorrectForm()) {
+			document.newInstanceForm.submit();
 		}
-	</script>
+	}
+</script>
 </head>
 <body class="yui-skin-sam">
-
-	<%=window.printBefore()%>
-	<%=frame.printBefore()%>
-
-	<form name="newInstanceForm" method="POST" action="SaveNewInstance" 
-                    enctype="multipart/form-data">
+<view:window>
+<view:frame>
+<div id="header-OnlineForm">
+  <h2 class="title"><%=formDetail.getTitle()%></h2>
+</div>
+<form name="newInstanceForm" method="post" action="SaveRequest" enctype="multipart/form-data">
 	<% 
-	formUpdate.display(out, context, data); 
+	formUpdate.display(out, context);
 	%>
-	</form>
-	
-    <%=frame.printAfter()%>
+</form>
+</view:frame>
 
-	<%    
-	Button cancel = (Button) gef.getFormButton(resource.getString("GML.cancel"), "OutBox", false);
-	Button validate = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
-	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(validate);
-	buttonPane.addButton(cancel);
-	%>
-	<br/>
-	<center>
-	<%=buttonPane.print()%>
-	</center>
-  	<%=window.printAfter()%>  
+  <view:buttonPane>
+    <fmt:message var="buttonValidate" key="formsOnline.request.send"/>
+    <fmt:message var="buttonCancel" key="GML.cancel"/>
+    <view:button label="${buttonValidate}" action="javascript:onclick=sendRequest();" />
+    <view:button label="${buttonCancel}" action="Main" />
+  </view:buttonPane>
 
+</view:window>
 </body>
 </html>

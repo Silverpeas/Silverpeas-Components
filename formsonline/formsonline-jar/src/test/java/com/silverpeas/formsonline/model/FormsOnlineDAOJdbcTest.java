@@ -102,7 +102,7 @@ public class FormsOnlineDAOJdbcTest {
     int formId = 1000;
     FormDetail expResult = getFormDetailExpectedResult();
     
-    FormDetail result = dao.getForm(instanceId, formId);
+    FormDetail result = dao.getForm(new FormPK(formId, instanceId));
     assertEquals(expResult.equals(result), true);
   }
 
@@ -142,7 +142,7 @@ public class FormsOnlineDAOJdbcTest {
     dao.updateForm(curForm);
     // Need to create another connection because the last one was closed inside updateForm method
     dao = new FormsOnlineDAOJdbcMock(dataSource.getConnection());
-    FormDetail updatedForm = dao.getForm(curForm.getInstanceId(), curForm.getId());
+    FormDetail updatedForm = dao.getForm(curForm.getPK());
     assertEquals(curForm.equals(updatedForm), true);
   }
 

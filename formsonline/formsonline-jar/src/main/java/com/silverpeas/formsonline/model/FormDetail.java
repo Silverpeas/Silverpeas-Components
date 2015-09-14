@@ -24,7 +24,13 @@
 
 package com.silverpeas.formsonline.model;
 
+import com.silverpeas.workflow.api.user.User;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FormDetail {
   public static final int STATE_NOT_YET_PUBLISHED = 0;
@@ -41,6 +47,13 @@ public class FormDetail {
   private String instanceId = null;
   private boolean alreadyUsed = false;
   private int state = STATE_NOT_YET_PUBLISHED;
+
+  private transient boolean sendable = true;
+
+  List<UserDetail> sendersAsUsers;
+  List<Group> sendersAsGroups;
+  List<UserDetail> receiversAsUsers;
+  List<Group> receiversAsGroups;
 
   /**
    * @return the id
@@ -218,5 +231,112 @@ public class FormDetail {
     }
 
     return true;
+  }
+
+  public boolean isPublished() {
+    return getState() == STATE_PUBLISHED;
+  }
+
+  public boolean isUnpublished() {
+    return getState() == STATE_UNPUBLISHED;
+  }
+
+  public boolean isNotYetPublished() {
+    return getState() == STATE_NOT_YET_PUBLISHED;
+  }
+
+  public void setSendable(boolean sendable) {
+    this.sendable = sendable;
+  }
+
+  public boolean isSendable() {
+    return sendable;
+  }
+
+  public boolean isSender(String userId) {
+    return isInList(userId, getAllSenders());
+  }
+
+  public boolean isValidator(String userId) {
+    return isInList(userId, getAllReceivers());
+  }
+
+  public FormPK getPK() {
+    return new FormPK(Integer.toString(getId()), getInstanceId());
+  }
+
+  private boolean isInList(String userId, List<UserDetail> users) {
+    for (UserDetail user : users) {
+      if (user.getId().equals(userId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private List<UserDetail> getAllSenders() {
+    List<UserDetail> senders = getSendersAsUsers();
+    senders.addAll(getUsers(getSendersAsGroups()));
+    return senders;
+  }
+
+  private List<UserDetail> getAllReceivers() {
+    List<UserDetail> users = getReceiversAsUsers();
+    users.addAll(getUsers(getReceiversAsGroups()));
+    return users;
+  }
+
+  private List<UserDetail> getUsers(List<Group> groups) {
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    for (Group group : groups) {
+      for (UserDetail user : group.getAllUsers()) {
+        users.add(user);
+      }
+    }
+    return users;
+  }
+
+  public List<UserDetail> getSendersAsUsers() {
+    if (sendersAsUsers == null) {
+      return new ArrayList<UserDetail>();
+    }
+    return sendersAsUsers;
+  }
+
+  public void setSendersAsUsers(final List<UserDetail> sendersAsUsers) {
+    this.sendersAsUsers = sendersAsUsers;
+  }
+
+  public List<Group> getSendersAsGroups() {
+    if (sendersAsGroups == null) {
+      return new ArrayList<Group>();
+    }
+    return sendersAsGroups;
+  }
+
+  public void setSendersAsGroups(final List<Group> sendersAsGroups) {
+    this.sendersAsGroups = sendersAsGroups;
+  }
+
+  public List<UserDetail> getReceiversAsUsers() {
+    if (receiversAsUsers == null) {
+      return new ArrayList<UserDetail>();
+    }
+    return receiversAsUsers;
+  }
+
+  public void setReceiversAsUsers(final List<UserDetail> receiversAsUsers) {
+    this.receiversAsUsers = receiversAsUsers;
+  }
+
+  public List<Group> getReceiversAsGroups() {
+    if (receiversAsGroups == null) {
+      return new ArrayList<Group>();
+    }
+    return receiversAsGroups;
+  }
+
+  public void setReceiversAsGroups(final List<Group> receiversAsGroups) {
+    this.receiversAsGroups = receiversAsGroups;
   }
 }

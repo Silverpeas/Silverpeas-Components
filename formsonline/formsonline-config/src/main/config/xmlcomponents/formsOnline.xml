@@ -59,22 +59,52 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits d'utilisation (émetteurs / valideurs).</message>
-        <message lang="en">Administrators manage forms and assign rights (senders/recievers).</message>
+        <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits d'utilisation sur chaque formulaire (émetteurs / valideurs).</message>
+        <message lang="en">Administrators manage forms and assign rights on each form (senders/validators).</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="SenderReceiver">
       <label>
-        <message lang="fr">Emetteurs et Récepteurs</message>
-        <message lang="en">Senders and Recipients</message>
+        <message lang="fr">Demandeurs et Valideurs</message>
+        <message lang="en">Senders and Validators</message>
         <message lang="de">Sender und Empfänger</message>
       </label>
       <help>
-        <message lang="fr">Utilisateurs pouvant envoyer ou valider un formulaire.</message>
-        <message lang="en">Users than can send or validate a form.</message>
+        <message lang="fr">Utilisateurs pouvant envoyer ou valider une demande.</message>
+        <message lang="en">Users than can send or validate a request.</message>
         <message lang="de">Sender und Empfänger</message>
       </help>
     </profile>
   </profiles>
+  <parameters>
+    <parameter>
+      <name>workgroup</name>
+      <label>
+        <message lang="fr">Travail de groupe</message>
+        <message lang="en">Team work</message>
+        <message lang="en">Zusammenspiel</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>false</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'avoir une visibilité totale de toutes les demandes
+          (non traitées et traitées par n'importe quel valideur) sur les formulaires autorisés.
+          Si ce paramètre n'est pas activé, seules les demandes non traitées et celles traitées par
+          le valideur connecté sont visibles.
+        </message>
+        <message lang="en">Provides a total visibility of all requests (untreated and treated by any
+          validator) on permitted forms. If this setting is not enabled, only the untreated requests
+          and those treated by the connected validator are visible.
+        </message>
+        <message lang="de">Provides a total visibility of all requests (untreated and treated by any
+          validator) on permitted forms. If this setting is not enabled, only the untreated requests
+          and those treated by the connected validator are visible.
+        </message>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

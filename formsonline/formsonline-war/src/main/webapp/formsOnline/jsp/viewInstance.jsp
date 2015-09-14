@@ -26,107 +26,158 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
-<%@page import="com.silverpeas.formsonline.model.FormInstance"%>
-<%@page import="com.silverpeas.form.DataRecord"%>
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
+
+<fmt:setLocale value="${lang}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:set var="userRequest" value="${requestScope['UserRequest']}"/>
+<c:set var="validationEnabled" value="${requestScope['ValidationEnabled']}"/>
+<c:set var="form" value="${requestScope['FormDetail']}"/>
+<c:set var="origin" value="${requestScope['Origin']}"/>
+
+<fmt:message var="buttonBack" key="GML.back"/>
 
 <%
-	Form formView    = (Form) request.getAttribute("Form");
-	DataRecord data    = (DataRecord) request.getAttribute("Data"); 
-	String xmlFormName = (String) request.getAttribute("XMLFormName");
-	String validationMode = (String) request.getAttribute("validationMode");
-	FormInstance currentFormInstance = (FormInstance) request.getAttribute("currentFormInstance");
-	String backFunction = (String) request.getAttribute("backFunction");
-	String title = (String) request.getAttribute("title");
-	String titleClassName = resource.getSetting("titleClassName");
-	boolean backButtonAdded = false;
-	
-	boolean displayComment = currentFormInstance.getState() == FormInstance.STATE_REFUSED || currentFormInstance.getState() == FormInstance.STATE_VALIDATED || currentFormInstance.getState() == FormInstance.STATE_ARCHIVED;
-	
+	Form        formView  = (Form) request.getAttribute("Form");
+
 	// context creation
 	PagesContext context = (PagesContext) request.getAttribute("FormContext");
 	context.setFormName("newInstanceForm");
 	context.setFormIndex("0");
 	context.setBorderPrinted(false);
-	
-	Button back = gef.getFormButton(resource.getString("GML.back"), backFunction, false);
-	ButtonPane buttonPane = gef.getButtonPane();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
-<view:looknfeel />
-<% formView.displayScripts(out, context); %>
-<script type="text/javascript">
-	function validate() {
-		document.validationForm.decision.value = "validate";
-		document.validationForm.submit();
-	}
+  <title></title>
+  <view:looknfeel />
+  <% formView.displayScripts(out, context); %>
+  <script type="text/javascript">
+	  function validate() {
+		  document.validationForm.decision.value = "validate";
+		  document.validationForm.submit();
+	  }
 
-	function refuse() {
-		document.validationForm.decision.value = "refuse";
-		document.validationForm.submit();
-	}
-</script>
+	  function refuse() {
+		  document.validationForm.decision.value = "refuse";
+		  document.validationForm.submit();
+	  }
+
+    function deleteRequest() {
+      document.requestForm.action = "DeleteRequest";
+      document.requestForm.submit();
+    }
+
+    function archive() {
+      document.requestForm.action = "ArchiveRequest";
+      document.requestForm.submit();
+    }
+  </script>
 </head>
 <body>
+    <view:operationPane>
+      <c:choose>
+        <c:when test="${userRequest.creatorId == currentUser.id}">
+          <c:if test="${userRequest.denied || userRequest.validated}">
+            <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
+            <view:operation action="javascript:archive()" altText="${opArchive}"/>
+          </c:if>
+        </c:when>
+        <c:otherwise>
+          <c:if test="${userRequest.archived}">
+            <fmt:message var="opDelete" key="GML.delete"/>
+            <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
+          </c:if>
+        </c:otherwise>
+      </c:choose>
+    </view:operationPane>
+  <view:window>
 
-	<%=window.printBefore()%>
-	<view:board>
-	<span class="<%=titleClassName%>"><%=title%></span>
-	<form>	
-	<% 
-	formView.display(out, context, data); 
+  <div id="header-OnlineForm">
+    <h2 class="title">${form.title}</h2>
+    <div id="ask-by" class="bgDegradeGris">
+      <fmt:message key="formsOnline.request.from"/> <view:username userId="${userRequest.creatorId}"/>
+      <div class="profilPhoto"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
+      <div class="ask-date"><fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.creationDate}"/></div>
+    </div>
+
+    <c:choose>
+      <c:when test="${userRequest.canBeValidated}">
+        <div id="ask-statut" class="inlineMessage"><fmt:message key="GML.contribution.validation.status.PENDING_VALIDATION"/></div>
+      </c:when>
+      <c:when test="${userRequest.validated}">
+        <div id="ask-statut" class="commentaires">
+          <div class="inlineMessage-ok oneComment">
+            <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
+            <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
+            <div>
+              <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
+            </div>
+          </div>
+        </div>
+      </c:when>
+      <c:when test="${userRequest.denied}">
+        <div id="ask-statut" class="commentaires">
+          <div class="inlineMessage-nok oneComment">
+            <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
+            <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
+            <div>
+              <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
+            </div>
+          </div>
+        </div>
+      </c:when>
+    </c:choose>
+  </div>
+
+	<%
+	  formView.display(out, context);
 	%>
-	</form>
-    </view:board>
-    
-    <center>
-    <% if (displayComment) { %>
-    	<% if (StringUtil.isDefined(currentFormInstance.getComments())) {%>
-    		<fieldset>
-    		<legend><%=resource.getString("formsOnline.receiverComments")%></legend>
-    		<span class="comment"><%=currentFormInstance.getComments() %></span>
-    		</fieldset>
-    	<% } %>
-    	<% buttonPane.addButton(back); %>
-    	<%=buttonPane.print()%>
-    <% } else { %>
-		<fieldset>
-			<legend><%=resource.getString("formsOnline.receiverComments")%></legend>
-			<form name="validationForm" action="EffectiveValideForm" method="post">
-				<input type="hidden" name="formInstanceId" value="<%=currentFormInstance.getId()%>"/>
-				<input type="hidden" name="decision" value=""/>
-				<textarea name="comment" rows="5" cols="80"></textarea>
-			</form>
-		</fieldset>
-	    <% 
-			Button validate = gef.getFormButton(resource.getString("formsOnline.validateFormInstance"), "javascript:validate()", false);
-			Button refuse = gef.getFormButton(resource.getString("formsOnline.refuseFormInstance"), "javascript:refuse()", false);
-			buttonPane.addButton(validate);
-			buttonPane.addButton(refuse);
-			buttonPane.addButton(back);
-		%>
-		<%=buttonPane.print()%>
-	<% } %>
-	</center>
-  	<%=window.printAfter()%>  
+
+  <c:if test="${validationEnabled}">
+    <div class="commentaires">
+      <div id="edition-box">
+        <p class="title">Commentez votre décision</p>
+        <div class="avatar"><view:image src="${currentUser.avatar}" type="avatar"/> </div>
+        <form name="validationForm" action="EffectiveValideForm" method="post">
+          <input type="hidden" name="Id" value="${userRequest.id}"/>
+          <input type="hidden" name="Origin" value="${origin}"/>
+          <input type="hidden" name="decision" value=""/>
+          <textarea name="comment"  style="resize: none; overflow-y: hidden; height: 60px;" class="text"></textarea>
+        </form>
+      </div>
+    </div>
+    <br/>
+    <view:buttonPane>
+      <fmt:message var="buttonValidate" key="GML.accept"/>
+      <fmt:message var="buttonDeny" key="GML.refuse"/>
+      <view:button label="${buttonValidate}" action="javascript:validate();" />
+      <view:button label="${buttonDeny}" action="javascript:refuse();" />
+      <view:button label="${buttonBack}" action="${origin}" />
+    </view:buttonPane>
+  </c:if>
+  <c:if test="${not validationEnabled}">
+    <br/>
+    <view:buttonPane>
+      <view:button label="${buttonBack}" action="${origin}" />
+    </view:buttonPane>
+  </c:if>
+
+  </view:window>
+<form name="requestForm" action="" method="post">
+  <input type="hidden" name="Id" value="${userRequest.id}"/>
+</form>
 </body>
 </html>

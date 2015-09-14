@@ -2468,7 +2468,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     this.currentLanguage = currentLanguage;
   }
 
-  public String initUserPanelForTopicProfile(String role, String nodeId) throws RemoteException {
+  public String initUserPanelForTopicProfile(String role, String nodeId, String[] groupIds,
+      String[] userIds) throws RemoteException {
     String m_context = URLManager.getApplicationURL();
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
@@ -2485,6 +2486,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
+    sel.setPopupMode(true);
+    sel.setHtmlFormElementId("roleItems");
+    sel.setHtmlFormName("dummy");
 
     List<ProfileInst> profiles = getAdmin().getProfilesByObject(nodeId, ObjectType.NODE.getCode(),
         getComponentId());
@@ -2507,10 +2511,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     if (topicProfile != null) {
-      List<String> users = topicProfile.getAllUsers();
-      sel.setSelectedElements(users.toArray(new String[users.size()]));
-      List<String> groups = topicProfile.getAllGroups();
-      sel.setSelectedSets(groups.toArray(new String[groups.size()]));
+      sel.setSelectedElements(userIds);
+      sel.setSelectedSets(groupIds);
     }
 
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
@@ -2529,12 +2531,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void deleteTopicRole(String profileId) throws RemoteException {
+  private void deleteTopicRole(String profileId) throws RemoteException {
     // Remove the profile
     getAdmin().deleteProfileInst(profileId);
   }
 
-  public void updateTopicRole(String role, String nodeId) throws RemoteException {
+  public void updateTopicRole(String role, String nodeId, String[] groupIds, String[] userIds)
+      throws RemoteException {
     ProfileInst profile = getTopicProfile(role, nodeId);
 
     // Update the topic
@@ -2542,24 +2545,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     topic.setRightsDependsOnMe();
     getNodeBm().updateRightsDependency(topic);
 
+    profile.removeAllGroups();
+    profile.removeAllUsers();
+    profile.setGroupsAndUsers(groupIds, userIds);
+
     if (StringUtil.isDefined(profile.getId())) {
-      // Update the profile
-      profile.removeAllGroups();
-      profile.removeAllUsers();
-
-      profile.setGroupsAndUsers(getSelection().getSelectedSets(),
-          getSelection().getSelectedElements());
-
-      getAdmin().updateProfileInst(profile);
+      if (profile.isEmpty()) {
+        deleteTopicRole(profile.getId());
+      } else {
+        // Update the profile
+        getAdmin().updateProfileInst(profile);
+      }
     } else {
-      // Create the profile
       profile.setObjectId(Integer.parseInt(nodeId));
       profile.setObjectType(ObjectType.NODE.getCode());
       profile.setComponentFatherId(getComponentId());
-
-      profile.setGroupsAndUsers(getSelection().getSelectedSets(),
-          getSelection().getSelectedElements());
-
+      // Create the profile
       getAdmin().addProfileInst(profile);
     }
   }
@@ -2644,12 +2645,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return res;
   }
 
-  public List<String> userIds2Users(List<String> userIds) {
-    List<String> res = new ArrayList<String>();
-    for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
-      UserDetail user = getUserDetail(userIds.get(nI));
-      if (user != null) {
-        res.add(user.getDisplayedName());
+  public List<UserDetail> userIds2Users(List<String> userIds) {
+    List<UserDetail> res = new ArrayList<UserDetail>();
+    if (userIds != null) {
+      for (String userId : userIds) {
+        UserDetail user = UserDetail.getById(userId);
+        if (user != null) {
+          res.add(user);
+        }
       }
     }
     return res;

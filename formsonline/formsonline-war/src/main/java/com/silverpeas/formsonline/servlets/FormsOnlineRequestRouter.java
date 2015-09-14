@@ -29,19 +29,25 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.formsonline.control.FormsOnlineSessionController;
-import com.silverpeas.formsonline.control.TitleHelper;
 import com.silverpeas.formsonline.model.FormDetail;
 import com.silverpeas.formsonline.model.FormInstance;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.NotifierUtil;
 
 import java.util.List;
+
+import static com.silverpeas.formsonline.control.FormsOnlineSessionController
+    .userPanelSendersPrefix;
+import static com.silverpeas.formsonline.control.FormsOnlineSessionController
+    .userPanelReceiversPrefix;
 
 public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnlineSessionController> {
 
@@ -63,8 +69,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
    * @see
    */
   public FormsOnlineSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FormsOnlineSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -87,12 +92,23 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
     try {
       if ("Main".equals(function)) {
 
-        /* this area's access is restricted to Administrators */
-        if (!getFlag(formsOnlineSC.getUserRoles()).equals("Administrator")) {
-          return getDestination("OutBox", formsOnlineSC, request);
+        String role = formsOnlineSC.getBestProfile();
+        if ("Administrator".equals(role)) {
+          request.setAttribute("formsList", formsOnlineSC.getAllForms(true));
+          request.setAttribute("RequestsAsValidator", formsOnlineSC.getAllValidatorRequests());
+          request.setAttribute("Role", "admin");
+        } else {
+          if (!formsOnlineSC.getAvailableFormIdsAsReceiver().isEmpty()) {
+            request.setAttribute("RequestsAsValidator", formsOnlineSC.getAllValidatorRequests());
+            request.setAttribute("Role", "validator");
+          } else {
+            request.setAttribute("Role", "senderOnly");
+          }
+          request.setAttribute("formsList", formsOnlineSC.getAvailableFormsToSend());
         }
 
-        request.setAttribute("formsList", formsOnlineSC.getAllForms());
+        request.setAttribute("UserRequests", formsOnlineSC.getAllUserRequests());
+        request.setAttribute("App", formsOnlineSC.getComponentInstLight());
         formsOnlineSC.setCurrentForm(null);
 
         destination = "formsList.jsp";
@@ -100,7 +116,6 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
       else if (function.equals("CreateForm")) {
         FormDetail form = new FormDetail();
-        form.setCreatorId(formsOnlineSC.getUserId());
 
         formsOnlineSC.setCurrentForm(form);
 
@@ -113,21 +128,32 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       else if (function.equals("SaveForm")) {
         FormDetail form = formsOnlineSC.getCurrentForm();
 
-        form.setName(request.getParameter("name"));
         form.setDescription(request.getParameter("description"));
         form.setTitle(request.getParameter("title"));
+        form.setName(form.getTitle());
         if (request.getParameter("template") != null) {
           form.setXmlFormName(request.getParameter("template"));
         }
 
-        formsOnlineSC.updateCurrentForm();
+        String[] senderUserIds =
+            StringUtil.split(request.getParameter(userPanelSendersPrefix + "UserPanelCurrentUserIds"), ',');
+        String[] senderGroupIds = StringUtil
+            .split(request.getParameter(userPanelSendersPrefix + "UserPanelCurrentGroupIds"), ',');
 
-        return getDestination("EditForm", formsOnlineSC, request);
+        String[] receiverUserIds = StringUtil
+            .split(request.getParameter(userPanelReceiversPrefix + "UserPanelCurrentUserIds"), ',');
+        String[] receiverGroupIds = StringUtil
+            .split(request.getParameter(userPanelReceiversPrefix + "UserPanelCurrentGroupIds"), ',');
+
+        formsOnlineSC
+            .updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds, receiverGroupIds);
+
+        return getDestination("Main", formsOnlineSC, request);
       }
 
       else if (function.equals("EditForm")) {
         String formId = request.getParameter("formId");
-        FormDetail form = null;
+        FormDetail form;
 
         if (formId != null) {
           form = formsOnlineSC.loadForm(Integer.parseInt(formId));
@@ -155,60 +181,22 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         return getDestination("Main", formsOnlineSC, request);
       }
 
-      else if (function.equals("SendersReceivers")) {
-        try {
-          request.setAttribute("sendersAsUser", formsOnlineSC
-              .getSendersAsUsers());
-          request.setAttribute("sendersAsGroup", formsOnlineSC
-              .getSendersAsGroups());
-          request.setAttribute("receiversAsUser", formsOnlineSC
-              .getReceiversAsUsers());
-          request.setAttribute("receiversAsGroup", formsOnlineSC
-              .getReceiversAsGroups());
-          destination = "sendersReceivers.jsp";
-        } catch (Exception e) {
-          SilverTrace.warn("formsOnline",
-              "FormsOnlineRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = "
-                  + function, e);
+      else if (function.equals("ModifySenders") || function.equals("ModifyReceivers")) {
+        List<String> userIds = (List<String>) StringUtil
+            .splitString(request.getParameter("UserPanelCurrentUserIds"), ',');
+        List<String> groupIds = (List<String>) StringUtil
+            .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
+
+        if (function.equals("ModifySenders")) {
+          return formsOnlineSC.initSelectionSenders(userIds, groupIds);
         }
-      }
 
-      else if (function.equals("ModifySenders")) {
-        try {
-          return formsOnlineSC.initSelectionSenders();
-        } catch (Exception e) {
-          SilverTrace.warn("formsOnline",
-              "FormsOnlineRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = "
-                  + function, e);
-        }
-      }
-
-      else if (function.equals("ModifyReceivers")) {
-        try {
-          return formsOnlineSC.initSelectionReceivers();
-        } catch (Exception e) {
-          SilverTrace.warn("formsOnline",
-              "FormsOnlineRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = "
-                  + function, e);
-        }
-      }
-
-      else if (function.equals("UpdateSenders")) {
-        formsOnlineSC.updateSenders();
-        return getDestination("SendersReceivers", formsOnlineSC, request);
-      }
-
-      else if (function.equals("UpdateReceivers")) {
-        formsOnlineSC.updateReceivers();
-        return getDestination("SendersReceivers", formsOnlineSC, request);
+        return formsOnlineSC.initSelectionReceivers(userIds, groupIds);
       }
 
       else if (function.equals("Preview")) {
         // form object and data fetching
-        String xmlFormName = formsOnlineSC.getCurrentForm().getXmlFormName();
+        String xmlFormName = request.getParameter("Form");
         String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
@@ -224,121 +212,34 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         RecordSet recordSet = pubTemplate.getRecordSet();
         DataRecord data = recordSet.getEmptyRecord();
 
-        // Fake formInstance to compute title
-        FormInstance fake = new FormInstance();
-        fake.setCreatorId(formsOnlineSC.getUserId());
-
         // call to the JSP with required parameters
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute("title", TitleHelper.computeTitle(fake, formsOnlineSC.getCurrentForm()
-            .getTitle()));
         request.setAttribute("FormContext", getFormContext(formsOnlineSC));
 
         destination = "preview.jsp";
       }
 
       else if (function.equals("PublishForm")) {
-        formsOnlineSC.publishForm(request.getParameter("formId"));
+        formsOnlineSC.publishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
       }
 
       else if (function.equals("UnpublishForm")) {
-        formsOnlineSC.unpublishForm(request.getParameter("formId"));
+        formsOnlineSC.unpublishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
       }
 
-      else if (function.equals("OutBox")) {
-        List<FormDetail> availableForms = formsOnlineSC.getAvailableFormsToSend();
-        request.setAttribute("availableForms", availableForms);
-
-        int requestFormId = (request.getParameter("formId") == null) ? -1
-            : Integer.parseInt(request.getParameter("formId"));
-        int choosenFormId = -1;
-        FormDetail choosenForm = null;
-
-        if (requestFormId != -1) {
-          for (FormDetail form : availableForms) {
-            if (requestFormId == form.getId()) {
-              choosenFormId = requestFormId;
-              choosenForm = form;
-              break;
-            }
-          }
-        }
-
-        if (choosenFormId == -1) {
-          if (availableForms.size() > 0) {
-            FormDetail form = (FormDetail) availableForms.get(0);
-            choosenFormId = form.getId();
-            choosenForm = form;
-          }
-        }
-
-        formsOnlineSC.setChoosenForm(choosenForm);
-
-        // Filter instance on state
-        List<FormInstance> sentForInstances = formsOnlineSC.getFormInstances(choosenFormId);
-        formsOnlineSC.filter(sentForInstances, request.getParameter("filteredState"));
-
-        request.setAttribute("choosenForm", choosenForm);
-        request.setAttribute("formInstances", sentForInstances);
-
-        destination = "outbox.jsp";
-      }
-
       else if (function.equals("InBox")) {
-        // List receivedForInstances = formsOnlineSC.getAvailableFormInstancesReceived();
-        // Iterator itInstances = receivedForInstances.iterator();
-        // Set formIds = new HashSet();
-        // while (itInstances.hasNext()) {
-        // FormInstance instance = (FormInstance) itInstances.next();
-        // formIds.add(String.valueOf(instance.getFormId()));
-        // }
-
-        List<String> formIds = formsOnlineSC.getAvailableFormIdsAsReceiver();
-        List<FormDetail> availableForms = formsOnlineSC.getForms(formIds);
-
-        int requestFormId = (request.getParameter("formId") == null) ? -1
-            : Integer.parseInt(request.getParameter("formId"));
-        int choosenFormId = -1;
-        FormDetail choosenForm = null;
-
-        if (requestFormId != -1) {
-          for (FormDetail form : availableForms) {
-            if (requestFormId == form.getId()) {
-              choosenFormId = requestFormId;
-              choosenForm = form;
-              break;
-            }
-          }
-        }
-
-        if (choosenFormId == -1) {
-          if (availableForms.size() > 0) {
-            FormDetail form = availableForms.get(0);
-            choosenFormId = form.getId();
-            choosenForm = form;
-          }
-        }
-
-        List<FormInstance> receivedForInstances =
-            formsOnlineSC.getAvailableFormInstancesReceived(choosenFormId);
-
-        // Filter instance on state
-        formsOnlineSC.filter(receivedForInstances, request.getParameter("filteredState"));
-
-        formsOnlineSC.setChoosenForm(choosenForm);
-        request.setAttribute("choosenForm", choosenForm);
-        request.setAttribute("formInstances", receivedForInstances);
-        request.setAttribute("availableForms", availableForms);
-
+        request.setAttribute("Requests", formsOnlineSC.getAllValidatorRequests());
         destination = "inbox.jsp";
       }
 
-      else if (function.equals("CreateInstance")) {
-        FormDetail form = formsOnlineSC.getChoosenForm();
+      else if (function.equals("NewRequest")) {
+        String formId = request.getParameter("FormId");
+        FormDetail form = formsOnlineSC.loadForm(Integer.parseInt(formId));
+        formsOnlineSC.setCurrentForm(form);
 
         // form object and name fetching
         String xmlFormName = form.getXmlFormName();
@@ -356,150 +257,69 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         Form formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
         DataRecord data = recordSet.getEmptyRecord();
+        formUpdate.setData(data);
 
         // call of the JSP with required parameters
         request.setAttribute("Form", formUpdate);
-        request.setAttribute("Data", data);
-        request.setAttribute("XMLFormName", xmlFormName);
         request.setAttribute("FormContext", getFormContext(formsOnlineSC));
+        request.setAttribute("FormDetail", form);
 
         destination = "newFormInstance.jsp";
       }
 
-      else if (function.equals("SaveNewInstance")) {
+      else if (function.equals("SaveRequest")) {
         // recuperation des donnees saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
 
         // Sauvegarde des donnees
-        formsOnlineSC.saveNewInstance(items);
+        formsOnlineSC.saveRequest(items);
 
-        // Mise a jour du formulaire pour indiquer qu'il a ete utilise
-        FormDetail form = formsOnlineSC.loadForm(formsOnlineSC
-            .getChoosenForm().getId());
-        if (!form.isAlreadyUsed()) {
-          form.setAlreadyUsed(true);
-          formsOnlineSC.updateCurrentForm();
-        }
-
-        return getDestination("OutBox", formsOnlineSC, request);
+        return getDestination("Main", formsOnlineSC, request);
       }
-      else if ("ViewFormInstance".equals(function)) {
-        String formInstanceId = request.getParameter("formInstanceId");
-        FormInstance currentFormInstance =
-            formsOnlineSC.loadFormInstance(Integer.parseInt(formInstanceId));
-
-        // recuperation de l'objet et du nom du formulaire
-        FormDetail form = formsOnlineSC.loadForm(currentFormInstance.getFormId());
-        formsOnlineSC.setChoosenForm(form);
-        String xmlFormName = form.getXmlFormName();
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-
-        // creation du PublicationTemplate
-        getPublicationTemplateManager().addDynamicPublicationTemplate(
-            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
-
-        // Retrieve Form and DataRecord
-        Form formView = pubTemplate.getViewForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getRecord(formInstanceId);
-        if (data == null) {
-          return getDestination("OutBox", formsOnlineSC, request);
-        }
-        String validationMode = "inactive";
-        int currentState = currentFormInstance.getState();
-        // Check FormsOnline request states in order to display or hide comment
-        if (FormInstance.STATE_VALIDATED == currentState ||
-            FormInstance.STATE_REFUSED == currentState ||
-            FormInstance.STATE_ARCHIVED == currentState) {
-          validationMode = "active";
-        }
+      else if ("ViewRequest".equals(function)) {
+        String formInstanceId = request.getParameter("Id");
+        FormInstance userRequest = formsOnlineSC.loadRequest(formInstanceId);
 
         // Add attribute inside request to display data inside JSP view
-        request.setAttribute("Form", formView);
-        request.setAttribute("Data", data);
-        request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
-        request.setAttribute("validationMode", validationMode);
-        request.setAttribute("currentFormInstance", currentFormInstance);
-        request.setAttribute("title", TitleHelper.computeTitle(currentFormInstance, formsOnlineSC
-            .getChoosenForm().getTitle()));
-        request.setAttribute("backFunction", "OutBox");
-        destination = "viewInstance.jsp";
-      }
-      else if ("ValidFormInstance".equals(function)) {
-        String formInstanceId = request.getParameter("formInstanceId");
-        FormInstance formInstance =
-            formsOnlineSC.loadFormInstance(Integer.parseInt(formInstanceId));
-
-        // recuperation de l'objet et du nom du formulaire
-        FormDetail formDetail = formsOnlineSC.loadForm(formInstance.getFormId());
-        formsOnlineSC.setChoosenForm(formDetail);
-        String xmlFormName = formDetail.getXmlFormName();
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-
-        // creation du PublicationTemplate
-        getPublicationTemplateManager().addDynamicPublicationTemplate(
-            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
-
-        // creation du formulaire et du DataRecord
-        Form formView = pubTemplate.getViewForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getRecord(formInstanceId);
-        if (data == null) {
-          return getDestination("OutBox", formsOnlineSC, request);
-        }
-
-        // mise a jour du statut de l'instance
-        if (formInstance.getState() == FormInstance.STATE_UNREAD) {
-          formInstance.setState(FormInstance.STATE_READ);
-          formsOnlineSC.updateFormInstance(formInstance);
-        }
-
-        // appel de la jsp avec les parametres
-        request.setAttribute("Form", formView);
-        request.setAttribute("Data", data);
-        request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
-        request.setAttribute("validationMode", "active");
-        request.setAttribute("currentFormInstance", formInstance);
-        request.setAttribute("backFunction", "InBox");
-        request
-            .setAttribute("title", TitleHelper.computeTitle(formInstance, formDetail.getTitle()));
+        request.setAttribute("Form", userRequest.getFormWithData());
+        PagesContext formContext = getFormContext(formsOnlineSC);
+        formContext.setObjectId(formInstanceId);
+        request.setAttribute("FormContext", formContext);
+        request.setAttribute("ValidationEnabled", userRequest.isValidationEnabled());
+        request.setAttribute("UserRequest", userRequest);
+        request.setAttribute("FormDetail", userRequest.getForm());
+        request.setAttribute("Origin", checkOrigin(request));
 
         destination = "viewInstance.jsp";
       }
 
       else if (function.equals("EffectiveValideForm")) {
-        int formInstanceId = Integer.parseInt(request.getParameter("formInstanceId"));
+        String requestId = request.getParameter("Id");
         String decision = request.getParameter("decision");
         String comment = request.getParameter("comment");
-        formsOnlineSC.updateValidationStatus(formInstanceId, decision, comment);
+        String origin = checkOrigin(request);
+        formsOnlineSC.updateValidationStatus(requestId, decision, comment);
+
+        return getDestination(origin, formsOnlineSC, request);
+      }
+
+      else if (function.equals("ArchiveRequest")) {
+        String id = request.getParameter("Id");
+        formsOnlineSC.archiveRequest(id);
+
+        return getDestination("Main", formsOnlineSC, request);
+      }
+
+      else if (function.equals("DeleteRequest")) {
+        String id = request.getParameter("Id");
+        formsOnlineSC.deleteRequest(id);
 
         return getDestination("InBox", formsOnlineSC, request);
       }
 
-      else if (function.equals("ArchiveFormInstances")) {
-        String[] formInstanceIds = request.getParameterValues("archiveInst");
-        if ((formInstanceIds != null) && (formInstanceIds.length > 0)) {
-          formsOnlineSC.archiveFormInstances(formInstanceIds);
-        }
-
-        return getDestination("OutBox", formsOnlineSC, request);
-      }
-
-      else if (function.equals("DeleteFormInstances")) {
-        String[] formInstanceIds = request.getParameterValues("suppInst");
-        if ((formInstanceIds != null) && (formInstanceIds.length > 0)) {
-          formsOnlineSC.deleteFormInstances(formInstanceIds);
-        }
+      else if (function.equals("DeleteRequests")) {
+        String[] ids = request.getParameterValues("Id");
+        formsOnlineSC.deleteRequests(ids);
 
         return getDestination("InBox", formsOnlineSC, request);
       }
@@ -513,25 +333,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    // store user's best profile in request
-    request.setAttribute("userBestProfile", getFlag(formsOnlineSC.getUserRoles()));
-
-    SilverTrace.info("formsOnline",
-        "FormsOnlineRequestRouter.getDestination()",
+    SilverTrace.info("formsOnline", "FormsOnlineRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
-  }
-
-  /* getFlag */
-  private String getFlag(String[] profiles) {
-    String flag = "SenderReceiver";
-    for (String profile : profiles) {
-      // if Administrator, return it, we won't find a better profile
-      if (profile.equals("Administrator")) {
-        return profile;
-      }
-    }
-    return flag;
   }
 
   /**
@@ -542,8 +346,18 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
     return PublicationTemplateManager.getInstance();
   }
 
+  private String checkOrigin(HttpRequest httpRequest) {
+    String origin = httpRequest.getParameter("Origin");
+    if (!StringUtil.isDefined(origin)) {
+      origin = "Main";
+    }
+    return origin;
+  }
+
   private PagesContext getFormContext(FormsOnlineSessionController fosc) {
-    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(), fosc
-        .getUserId());
+    PagesContext formContext =
+        new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(),
+            fosc.getUserId());
+    return formContext;
   }
 }
