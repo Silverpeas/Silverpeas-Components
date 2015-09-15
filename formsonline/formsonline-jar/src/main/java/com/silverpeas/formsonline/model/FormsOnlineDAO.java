@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.formsonline.model;
@@ -32,14 +32,14 @@ public interface FormsOnlineDAO {
    * @param instanceId the instance id
    * @return a List of FormDetail object
    */
-  public List<FormDetail> findAllForms(String instanceId) throws FormsOnlineDatabaseException;
+  List<FormDetail> findAllForms(String instanceId) throws FormsOnlineDatabaseException;
 
   /**
    * Load forms from database with given instance Id and form id
    * @param pk the form primary key
    * @return a FormDetail object
    */
-  public FormDetail getForm(FormPK pk) throws FormsOnlineDatabaseException;
+  FormDetail getForm(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Save new form in database
@@ -47,7 +47,7 @@ public interface FormsOnlineDAO {
    * @return the created FormDetail
    * @throws FormsOnlineDatabaseException
    */
-  public FormDetail createForm(FormDetail formDetail) throws FormsOnlineDatabaseException;
+  FormDetail createForm(FormDetail formDetail) throws FormsOnlineDatabaseException;
 
   /**
    * Update form in database
@@ -55,7 +55,7 @@ public interface FormsOnlineDAO {
    * @return a List of FormDetail object
    * @throws FormsOnlineDatabaseException
    */
-  public void updateForm(FormDetail formDetail) throws FormsOnlineDatabaseException;
+  void updateForm(FormDetail formDetail) throws FormsOnlineDatabaseException;
 
   /**
    * Delete Form from database
@@ -63,7 +63,7 @@ public interface FormsOnlineDAO {
    * @return the deleted FormDetail
    * @throws FormsOnlineDatabaseException
    */
-  public FormDetail deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
+  FormDetail deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Update form senders list.
@@ -72,7 +72,7 @@ public interface FormsOnlineDAO {
    * @param newGroupSenderIds the new sender list as group ids
    * @throws FormsOnlineDatabaseException
    */
-  public void updateSenders(FormPK pk, String[] newUserSenderIds, String[] newGroupSenderIds)
+  void updateSenders(FormPK pk, String[] newUserSenderIds, String[] newGroupSenderIds)
       throws FormsOnlineDatabaseException;
 
   /**
@@ -82,7 +82,7 @@ public interface FormsOnlineDAO {
    * @param newGroupReceiverIds the new receivers list as group ids
    * @throws FormsOnlineDatabaseException
    */
-  public void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds)
+  void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds)
       throws FormsOnlineDatabaseException;
 
   /**
@@ -91,7 +91,7 @@ public interface FormsOnlineDAO {
    * @return user ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getSendersAsUsers(FormPK pk)
+  List<String> getSendersAsUsers(FormPK pk)
       throws FormsOnlineDatabaseException;
 
   /**
@@ -100,7 +100,7 @@ public interface FormsOnlineDAO {
    * @return group ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getSendersAsGroups(FormPK pk) throws FormsOnlineDatabaseException;
+  List<String> getSendersAsGroups(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Get the form's receivers list where users has been declared directly.
@@ -108,7 +108,7 @@ public interface FormsOnlineDAO {
    * @return user ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException;
+  List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Get the form's receivers list where groups has been declared directly.
@@ -116,7 +116,7 @@ public interface FormsOnlineDAO {
    * @return group ids as a list of String
    * @throws FormsOnlineDatabaseException
    */
-  public List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineDatabaseException;
+  List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineDatabaseException;
 
   /**
    * Get the form available to be sent for given user or given groups
@@ -126,7 +126,7 @@ public interface FormsOnlineDAO {
    * @return a list of FormDetail objects
    * @throws FormsOnlineDatabaseException
    */
-  public List<FormDetail> getUserAvailableForms(String componentId, String userId,
+  List<FormDetail> getUserAvailableForms(String componentId, String userId,
       String[] userGroupIds) throws FormsOnlineDatabaseException;
 
   /**
@@ -137,7 +137,7 @@ public interface FormsOnlineDAO {
    * @return a list of FormInstance objects
    * @throws FormsOnlineDatabaseException
    */
-  public List<FormInstance> getSentFormInstances(FormPK pk, String userId)
+  List<FormInstance> getSentFormInstances(FormPK pk, String userId)
       throws FormsOnlineDatabaseException;
 
   /**
@@ -149,19 +149,19 @@ public interface FormsOnlineDAO {
    * user are returned. If true, all requests (validated or not) are returned.
    * @throws FormsOnlineDatabaseException
    */
-  public List<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId)
+  List<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId)
       throws FormsOnlineDatabaseException;
 
-  public List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
+  List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
       String[] userGroupIds) throws FormsOnlineDatabaseException;
 
-  public FormInstance createInstance(FormInstance instance) throws FormsOnlineDatabaseException;
+  FormInstance createInstance(FormInstance instance) throws FormsOnlineDatabaseException;
 
-  public FormInstance getRequest(RequestPK pk) throws FormsOnlineDatabaseException;
+  FormInstance getRequest(RequestPK pk) throws FormsOnlineDatabaseException;
 
-  public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineDatabaseException;
+  List<FormDetail> getForms(List<String> formIds) throws FormsOnlineDatabaseException;
 
-  public void updateRequest(FormInstance instance) throws FormsOnlineDatabaseException;
+  void updateRequest(FormInstance instance) throws FormsOnlineDatabaseException;
 
-  public void deleteRequest(RequestPK pk) throws FormsOnlineDatabaseException;
+  void deleteRequest(RequestPK pk) throws FormsOnlineDatabaseException;
 }

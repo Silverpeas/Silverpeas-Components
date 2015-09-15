@@ -150,4 +150,14 @@ public class FormsOnlineDAOJdbcTest {
     assertEquals(curForm.equals(updatedForm), true);
   }
 
+  @Test
+  public void testGetReceivedRequests() throws Exception {
+    List<FormInstance> forms =
+        dao.getReceivedRequests(new FormPK(1000, "formsOnline100"), true, null);
+    assertEquals(1, forms.size());
+    assertEquals(1000, forms.get(0).getFormId());
+    assertEquals("20", forms.get(0).getId());
+    assertEquals("Salle 18 disponible", forms.get(0).getComments());
+  }
+
 }

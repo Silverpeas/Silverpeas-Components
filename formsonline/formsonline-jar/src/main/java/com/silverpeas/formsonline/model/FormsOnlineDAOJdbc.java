@@ -506,7 +506,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     List<FormInstance> formInstances = new ArrayList<>();
     /* first get forms whose user can be receiver */
     String query = "select * from " + FORMS_INSTANCES_TABLENAME +
-        " where instanceId = ? an formId = ?";
+        " where instanceId = ? and formId = ?";
     if (!allRequests) {
       query += " and (validatorId = ? or (validatorId is null))";
     }
@@ -517,7 +517,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       if (!allRequests) {
         stmt.setString(3, userId);
       }
-      try (ResultSet rs = stmt.executeQuery(query.toString())) {
+      try (ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
           FormInstance instance = fetchFormInstance(rs);
           formInstances.add(instance);
