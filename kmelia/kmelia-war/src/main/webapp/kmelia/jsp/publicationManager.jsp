@@ -762,6 +762,7 @@
 				</div>
 			</fieldset>
 		</div>
+
 		<% if (kmeliaMode && settings.getBoolean("isVignetteVisible", true)) {%>
 		<div class="cell">
 			<fieldset id="pubThumb" class="skinFieldset">
@@ -772,6 +773,14 @@
 		<% } %>
 
 	</div>
+
+  <% if (kmeliaScc.isReminderUsed()) {%>
+  <div class="table">
+    <div class="cell">
+      <view:dateReminder resourceId="<%=id %>" resourceType="<%=PublicationDetail.getResourceType() %>" userId="<%= kmeliaScc.getUserId()%>" language="<%= language%>"/>
+    </div>
+  </div>
+  <% } %>
 
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>

@@ -105,6 +105,9 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
+import org.silverpeas.dateReminder.exception.DateReminderValidationException;
+import org.silverpeas.publication.dateReminder.PublicationNoteReference;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -131,6 +134,7 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -139,11 +143,17 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.dateReminder.exception.DateReminderException;
+import org.silverpeas.dateReminder.persistent.DateReminderDetail;
+import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
+import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
+import org.silverpeas.dateReminder.persistent.service.DateReminderServiceFactory;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.subscription.SubscriptionContext;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.UnitUtil;
@@ -157,6 +167,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
@@ -181,6 +192,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
   private NotificationManager notificationManager = null;
+  private PersistentDateReminderService dateReminderService = null;
+
   // Session objects
   private TopicDetail sessionTopic = null;
   private String currentFolderId = NodePK.ROOT_NODE_ID;
@@ -302,6 +315,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return commentService;
   }
 
+  /**
+   * Gets a business service of dateReminder.
+   *
+   * @return a DefaultDateReminderService instance.
+   */
+  protected PersistentDateReminderService getDateReminderService() {
+    if (dateReminderService == null) {
+      dateReminderService = DateReminderServiceFactory.getDateReminderService();
+    }
+    return dateReminderService;
+  }
+
   public KmeliaBm getKmeliaBm() {
     try {
       return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
@@ -393,6 +418,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isAuthorUsed() {
     return StringUtil.getBooleanValue(getComponentParameterValue("useAuthor"));
+  }
+
+  public boolean isReminderUsed() {
+    return StringUtil.getBooleanValue(getComponentParameterValue("useReminder"));
   }
 
   public boolean openSingleAttachmentAutomatically() {
@@ -989,6 +1018,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void deletePublication(String pubId, boolean kmaxMode)
       throws RemoteException {
+
     // récupération de la position de la publication pour savoir si elle se trouve déjà dans
     // la corbeille node=1
     // si elle se trouve déjà au node 1, il est nécessaire de supprimer les fichier joints
@@ -1002,8 +1032,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         throw new KmeliaRuntimeException("KmeliaSessionController.deletePublication",
             SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);
       }
-
       removeXMLContentOfPublication(getPublicationPK(pubId));
+
       getKmeliaBm().deletePublication(getPublicationPK(pubId));
     } else {
       getKmeliaBm().sendPublicationToBasket(getPublicationPK(pubId), kmaxMode);
@@ -3769,5 +3799,103 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     publication.setStatusMustBeChecked(false);
     publication.setIndexOperation(IndexManager.NONE);
     getPublicationBm().setDetail(publication);
+  }
+
+  /**
+   * Persist the date reminder for the given publication
+   * @param pubDetail
+   * @param dateReminderDate
+   * @param messageReminder
+   * @throws DateReminderException
+   */
+  private void createResourceDateReminder(final PublicationDetail pubDetail,
+      final Date dateReminderDate, final String messageReminder) throws DateReminderException {
+
+    if(dateReminderDate != null) {
+      DateReminderDetail dateReminderDetail =
+          new DateReminderDetail(dateReminderDate, messageReminder,
+              DateReminderDetail.REMINDER_NOT_PROCESSED, pubDetail.getUpdaterId(), pubDetail.getUpdaterId());
+      PublicationNoteReference publicationNoteReference = PublicationNoteReference.fromPublicationDetail(pubDetail);
+      PersistentResourceDateReminder savedDateReminder = getDateReminderService().create(publicationNoteReference, dateReminderDetail);
+    }
+  }
+
+  /**
+   * Create the date reminder for the given publication
+   * @param pubDetail
+   * @param parameters
+   * @throws DateReminderException
+   */
+  public void addPublicationReminder(PublicationDetail pubDetail, List<FileItem> parameters)
+      throws DateReminderException {
+    String dateReminder = FileUploadUtil.getParameter(parameters, "DateReminder");
+    String messageReminder = FileUploadUtil.getParameter(parameters, "MessageReminder");
+
+    Date dateReminderDate = null;
+
+    try {
+      if (StringUtil.isDefined(dateReminder)) {
+        dateReminderDate = DateUtil.stringToDate(dateReminder, this.getLanguage());
+      }
+    } catch (ParseException e) {
+      dateReminderDate = null;
+    }
+
+    //Create date reminder
+    createResourceDateReminder(pubDetail, dateReminderDate, messageReminder);
+  }
+
+  /**
+   * Save Or remove the date reminder for the given publication
+   * @param pubId
+   * @param parameters
+   * @throws DateReminderException
+   */
+  public void updatePublicationReminder(String pubId, List<FileItem> parameters)
+      throws DateReminderException, RemoteException {
+    String dateReminder = FileUploadUtil.getParameter(parameters, "DateReminder");
+    String messageReminder = FileUploadUtil.getParameter(parameters, "MessageReminder");
+
+    Date dateReminderDate = null;
+
+    try {
+      if (StringUtil.isDefined(dateReminder)) {
+        dateReminderDate = DateUtil.stringToDate(dateReminder, this.getLanguage());
+      }
+    } catch (ParseException e) {
+      dateReminderDate = null;
+    }
+
+    PublicationDetail pubDetail = getPublicationDetail(pubId);
+    PublicationNoteReference publicationNoteReference = PublicationNoteReference.fromPublicationDetail(pubDetail);
+    PersistentResourceDateReminder actualResourceDateReminder = getDateReminderService().get(publicationNoteReference);
+
+    if(actualResourceDateReminder.isDefined()) {
+
+      if(dateReminderDate != null) {//Update reminder
+
+        DateReminderDetail actualDateReminderDetail = actualResourceDateReminder.getDateReminder();
+        String actualDateReminder = DateUtil.dateToString(
+            actualDateReminderDetail.getDateReminder(), this.getLanguage());
+        int processStatus;
+        if(! actualDateReminder.equals(dateReminder)) {// the date reminder has been updated
+          // the date reminder must be processed by the scheduler
+          processStatus =  DateReminderDetail.REMINDER_NOT_PROCESSED;
+        } else {// the date reminder has not been updated
+          // keep the same process status
+          processStatus = actualDateReminderDetail.getProcessStatus();
+        }
+
+        DateReminderDetail dateReminderDetail =
+            new DateReminderDetail(dateReminderDate, messageReminder, processStatus,
+                actualDateReminderDetail.getCreatorId(), pubDetail.getUpdaterId());
+        PersistentResourceDateReminder savedDateReminder = getDateReminderService().set(publicationNoteReference, dateReminderDetail);
+
+      } else {//Delete reminder
+        getDateReminderService().remove(publicationNoteReference);
+      }
+    } else {//Create reminder
+      createResourceDateReminder(pubDetail, dateReminderDate, messageReminder);
+    }
   }
 }
