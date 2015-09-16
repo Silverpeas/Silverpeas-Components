@@ -529,9 +529,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
     try {
       String nameFile = "banner." + extension.toLowerCase();
-      File fileWallPaper = new File(path + File.separator + nameFile);
+      File fileWallPaper = new File(path, nameFile);
 
       //create the file
+      File rootFolder = fileWallPaper.getParentFile();
+      if (!rootFolder.exists()) {
+        rootFolder.mkdirs();
+      }
       fileItemWallPaper.write(fileWallPaper);
 
       //save the information
@@ -552,17 +556,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    */
   public void removeWallPaperFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
-    File banner = new File(path + File.separator + "banner.gif");
+    File banner = new File(path, "banner.gif");
     if (banner.exists()) {
       banner.delete();
     }
 
-    banner = new File(path + File.separator + "banner.jpg");
+    banner = new File(path, "banner.jpg");
     if (banner.exists()) {
       banner.delete();
     }
 
-    banner = new File(path + File.separator + "banner.png");
+    banner = new File(path, "banner.png");
     if (banner.exists()) {
       banner.delete();
     }
@@ -632,9 +636,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
     try {
       String nameFile = "styles.css";
-      File fileStyleSheet = new File(path + File.separator + nameFile);
+      File fileStyleSheet = new File(path, nameFile);
 
       //create the file
+      File rootFolder = fileStyleSheet.getParentFile();
+      if (!rootFolder.exists()) {
+        rootFolder.mkdirs();
+      }
       fileItemStyleSheet.write(fileStyleSheet);
 
       //save the information
@@ -663,7 +671,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    */
   public void removeStyleSheetFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
-    File styles = new File(path + File.separator + "styles.css");
+    File styles = new File(path, "styles.css");
     if (styles.exists()) {
       styles.delete();
     }
