@@ -2438,14 +2438,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
-
-    // The selectable users and groups are component's ones.
-    List<String> profileNames = new ArrayList<>();
-    profileNames.add("user");
-    profileNames.add("writer");
-    profileNames.add("publisher");
-    profileNames.add("admin");
-    sug.setProfileNames(profileNames);
     sel.setExtraParams(sug);
 
     if (topicProfile != null) {
