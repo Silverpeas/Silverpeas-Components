@@ -27,46 +27,20 @@
 <%@page import="java.net.URLEncoder"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/silverCrawler" prefix="silverCrawler" %>
 <% 
 Collection docs 			= (Collection) request.getAttribute("Docs");
-Collection path 			= (Collection) request.getAttribute("Path");
-String userId 				= (String) request.getAttribute("UserId");
 String profile 				= (String) request.getAttribute("Profile");
 String word 				= (String) request.getAttribute("Word");
-
-//cr�ation du chemin :
-String 		chemin 		= "";
-if (path != null)
-{
-	String 		namePath	= "";
-	boolean 	suivant 	= false;
-	Iterator 	itPath 		= (Iterator) path.iterator();
-	
-	while (itPath.hasNext()) 
-	{
-		String directory = (String) itPath.next();
-		if (directory != null)
-		{
-			if (suivant) 
-			{
-				chemin = chemin + " > ";
-				namePath = " > " + namePath;
-			}
-			chemin = chemin + "<a href=\"GoToDirectory?DirectoryPath="+ directory + "\">" + Encode.javaStringToHtmlString(directory)+"</a>";
-			namePath = namePath + directory;
-			suivant = itPath.hasNext();
-		}
-	}
-}
-
 %>
 
 
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
 <script type="text/javascript">
 
 var downloadWindow = window;
@@ -102,11 +76,9 @@ function checkSubmitToSearch(ev)
 
 </head>
 <body>
+<silverCrawler:browseBar navigationAuthorized="true" />
 
 <%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "Main");
-browseBar.setPath(chemin);
 
 out.println(window.printBefore());
 out.println(frame.printBefore());

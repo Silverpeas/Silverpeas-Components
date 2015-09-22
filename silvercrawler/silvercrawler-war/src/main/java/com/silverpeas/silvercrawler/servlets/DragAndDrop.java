@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,35 +23,29 @@
  */
 package com.silverpeas.silvercrawler.servlets;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.control.UploadItem;
 import com.silverpeas.silvercrawler.control.UploadReport;
-import com.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.upload.UploadSession;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Class declaration
  * @author
  */
-public class DragAndDrop extends HttpServlet {
+public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
 
@@ -62,8 +56,6 @@ public class DragAndDrop extends HttpServlet {
     } catch (ServletException se) {
       SilverTrace.fatal("silverCrawler", "DragAndDrop.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
-
-
   }
 
   @Override
@@ -79,22 +71,18 @@ public class DragAndDrop extends HttpServlet {
     HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding("UTF-8");
 
-    if (!request.isContentInMultipart()) {
-      res.getOutputStream().println("SUCCESS");
-      return;
-    }
+    UploadSession uploadSession = UploadSession.from(request);
 
     try {
-      String sessionId = request.getParameter("SessionId");
-      String instanceId = request.getParameter("ComponentId");
-      String ignoreFolders = request.getParameter("IgnoreFolders");
+      String componentId = request.getParameter("ComponentId");
+      boolean ignoreFolders = request.getParameterAsBoolean("IgnoreFolders");
 
-      SessionManagementFactory factory = SessionManagementFactory.getFactory();
-      SessionManagement sessionManagement = factory.getSessionManagement();
-      SessionInfo session = sessionManagement.getSessionInfo(sessionId);
+      if (!uploadSession.isUserAuthorized(componentId)) {
+        throwHttpForbiddenError();
+      }
 
       SilverCrawlerSessionController sessionController =
-          session.getAttribute("Silverpeas_SilverCrawler_" + instanceId);
+          getSessionInfo(request).getAttribute("Silverpeas_SilverCrawler_" + componentId);
 
       // build report
       UploadReport report = sessionController.getLastUploadReport();
@@ -103,59 +91,48 @@ public class DragAndDrop extends HttpServlet {
         sessionController.setLastUploadReport(report);
       }
 
-      // if first part of upload, needs to generate temporary path
-      File savePath = report.getRepositoryPath();
-      if (report.getRepositoryPath() == null) {
-        savePath = FileUtils.getFile(FileRepositoryManager.getTemporaryPath(), "tmpupload",
-            ("SilverWrawler_" + System.currentTimeMillis()));
-        report.setRepositoryPath(savePath);
+      File rootUploadFolder = new File(uploadSession.getRootFolder().getParentFile(),
+          "SilverCrawler_" + uploadSession.getRootFolder().getName());
+      int rootUploadFolderPathLength = rootUploadFolder.getPath().length();
+      FileUtils.moveDirectory(uploadSession.getRootFolder(), rootUploadFolder);
+
+      // Setting into report instance the path into which the files have been uploaded
+      report.setRepositoryPath(rootUploadFolder);
+
+      if (ignoreFolders) {
+        // Verifying that is does not exist folders
+        File[] folders =
+            rootUploadFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
+        if (folders != null && folders.length > 0) {
+          report.setFailed(true);
+          report.setForbiddenFolderDetected(true);
+          return;
+        }
       }
 
       // Loop items
-      List<FileItem> items = request.getFileItems();
-      for (FileItem item : items) {
-        if (!item.isFormField()) {
-          String fileUploadId = item.getFieldName().substring(4);
-          String unixParentPath = FilenameUtils.separatorsToUnix(
-              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null));
-          File parentPath = FileUtils.getFile(unixParentPath);
+      for (File file : FileUtils.listFiles(rootUploadFolder, FileFilterUtils.fileFileFilter(),
+          FileFilterUtils.trueFileFilter())) {
 
-          // if ignoreFolder is activated, no folders are permitted
-          if (StringUtil.isDefined(parentPath.getName()) &&
-              StringUtil.getBooleanValue(ignoreFolders)) {
-            report.setFailed(true);
-            report.setForbiddenFolderDetected(true);
-            break;
-          }
+        // Get the file path and name
+        File fileName = new File(file.getPath().substring(rootUploadFolderPathLength));
 
-          // Get the file path and name
-          File fileName = FileUtils.getFile(parentPath, FileUploadUtil.getFileName(item));
+        // Logging the name of the file
+        SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+            "fileName = " + fileName.getName());
 
-          // Logging the name of the file
-          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "fileName = " + fileName.getName());
-
-          // Registering in the temporary location
-          File fileToSave = FileUtils.getFile(savePath, fileName.getPath());
-          fileToSave.getParentFile().mkdirs();
-          item.write(fileToSave);
-
-          // Save info into report
-          UploadItem uploadItem = new UploadItem();
-          uploadItem.setFileName(fileName.getName());
-          uploadItem.setParentRelativePath(fileName.getParentFile());
-          report.addItem(uploadItem);
-        } else {
-          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "item = " + item.getFieldName() + " - " + item.getString());
-        }
+        // Save info into report
+        UploadItem uploadItem = new UploadItem();
+        uploadItem.setFileName(fileName.getName());
+        uploadItem.setParentRelativePath(fileName.getParentFile());
+        report.addItem(uploadItem);
       }
 
     } catch (Exception e) {
       SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
-      res.getOutputStream().println("ERROR");
-      return;
+      throw new ServletException(e);
+    } finally {
+      uploadSession.clear();
     }
-    res.getOutputStream().println("SUCCESS");
   }
 }

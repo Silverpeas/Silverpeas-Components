@@ -62,6 +62,9 @@ $(document).ready(function() {
           method : "flipinvert"
         },
         viewport : $(window)
+      },
+      show: {
+        solo: true
       }
     });
   });

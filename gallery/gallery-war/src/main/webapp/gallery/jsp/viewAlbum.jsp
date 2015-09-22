@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%-- Set resource bundle --%>
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
@@ -125,8 +126,6 @@
 <c:set var="albums" value="${requestScope.Albums}"/>
 <jsp:useBean id="albums" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
 
-<c:set var="maximumFileSize" value="<%=FileRepositoryManager.getUploadMaximumFileSize()%>"/>
-
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="path" value="${requestScope.Path}"/>
 <jsp:useBean id="path" type="java.util.List<com.stratelia.webactiv.util.node.model.NodeDetail>"/>
@@ -157,8 +156,6 @@
   <view:includePlugin name="popup"/>
   <view:includePlugin name="embedPlayer"/>
   <view:progressMessage/>
-  <script type="text/javascript" src="<c:url value="/gallery/jsp/javaScript/dragAndDrop.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/upload_applet.js"/>"></script>
   <script type="text/javascript">
 var currentGallery = {
   'id' : "${currentAlbum.id}",
@@ -188,15 +185,7 @@ function deleteConfirm(id, nom) {
   <c:if test="${dragAndDropEnable}">
 function uploadCompleted(s) {
   location.href =
-      "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>";
-}
-
-function showDnD() {
-  var url = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/RgalleryDragAndDrop/jsp/Drop?UserId=${userId}&ComponentId=${componentId}&AlbumId=${currentAlbum.id}"/>";
-  var message = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/upload/Gallery_${userLanguage}.html"/>";
-  showHideDragDrop(url, message, '<fmt:message key="GML.applet.dnd.alt"/>',
-      '${maximumFileSize}', '<c:url value="/"/>', '<fmt:message key="GML.DragNDropExpand"/>',
-      '<fmt:message key="GML.DragNDropCollapse"/>');
+      "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>&deselectAll=true";
 }
   </c:if>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
@@ -435,21 +424,6 @@ function CutSelectedMedia() {
         </td>
       </tr>
     </table>
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and dragAndDropEnable}">
-      <!-- Displaying the Drag&Drop area -->
-      <center>
-        <table width="98%">
-          <tr>
-            <td align="right"><a href="javascript:showDnD()"
-                                 id="dNdActionLabel"><%=resource.getString("GML.DragNDropExpand")%>
-            </a>
-
-              <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0" valign="top"></div>
-            </td>
-          </tr>
-        </table>
-      </center>
-    </c:if>
     <gallery:displayAlbumContent currentAlbum="${currentAlbum}"
                                  mediaList="${currentAlbum.media}"
                                  selectedIds="${selectedIds}"
@@ -472,7 +446,7 @@ function CutSelectedMedia() {
       </c:when>
     </c:choose>
     <c:if test="${not empty templateUserRole}">
-      <div id="folder-empty" class="inlineMessage">
+      <div id="folder-empty" class="inlineMessage dragAndDropUpload">
         <view:applyTemplate locationBase="components:gallery" name="galleryEmptyAlbum">
           <view:templateParam name="dragAndDropEnable" value="${dragAndDropEnable}"/>
           <view:templateParam name="albumPart" value="${templateUserRole eq publisherRole}"/>
@@ -515,5 +489,18 @@ function CutSelectedMedia() {
   <input type="hidden" name="Id"/>
 </form>
 <view:progressMessage/>
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and dragAndDropEnable}">
+  <c:url var="uploadCompletedUrl" value="/RgalleryDragAndDrop/jsp/Drop">
+    <c:param name="ComponentId" value="${componentId}"/>
+    <c:param name="AlbumId" value="${currentAlbum.id}"/>
+  </c:url>
+  <c:url var="helpContentUrl" value="/upload/Gallery_${userLanguage}.html"/>
+  <viewTags:commonDragAndDrop domSelector=".dragAndDropUpload"
+                              domHelpHighlightSelector=".tableBoard"
+                              componentInstanceId="${componentId}"
+                              uploadCompletedUrl="${uploadCompletedUrl}"
+                              uploadCompletedUrlSuccess="uploadCompleted"
+                              helpContentUrl="${helpContentUrl}"/>
+</c:if>
 </body>
 </html>
