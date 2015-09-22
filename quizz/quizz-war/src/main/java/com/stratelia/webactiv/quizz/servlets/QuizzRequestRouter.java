@@ -25,6 +25,8 @@
 package com.stratelia.webactiv.quizz.servlets;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.silverpeas.util.StringUtil;
 
@@ -37,7 +39,11 @@ import com.stratelia.webactiv.quizz.control.QuizzSessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.question.model.Question;
+import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.http.HttpSession;
 
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
 
@@ -79,6 +85,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
     SilverTrace
         .info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
     String destination = "";
+    String rootDest = "/quizz/jsp/";
 
     String flag = quizzSC.getUserRoleLevel();
     request.setAttribute("Profile", flag);
@@ -88,22 +95,22 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       if (function.startsWith("Main")) {
         // the flag is the best user's profile
         if ("publisher".equals(flag) || "admin".equals(flag)) {
-          destination = "quizzAdmin.jsp";
+          destination = rootDest + "quizzAdmin.jsp";
         } else {
-          destination = "quizzUser.jsp";
+          destination = rootDest + "quizzUser.jsp";
         }
       } else if (function.startsWith("portlet")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
-          destination = "quizzPortlet.jsp";
+          destination = rootDest + "quizzPortlet.jsp";
         } else {
-          destination = "quizzUserPortlet.jsp";
+          destination = rootDest + "quizzUserPortlet.jsp";
         }
       } else if (function.startsWith("quizzCreator")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           
           quizzSC.createTemporaryQuizz(request);
           
-          destination = "quizzCreator.jsp";
+          destination = rootDest + "quizzCreator.jsp";
         } else {
           profileError = true;
         }
@@ -118,13 +125,13 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
           file = null;
         }
-        destination = "downloadCSV.jsp";
+        destination = rootDest + "downloadCSV.jsp";
       } else if (function.equals("copy")) {
         String quizzId = request.getParameter("Id");
         try {
           quizzSC.copySurvey(quizzId);
         } catch (Exception e) {
-          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
+          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CLIPBOARD_COPY_FAILED",
               "function = " + function, e);
         }
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
@@ -133,10 +140,10 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         try {
           quizzSC.paste();
         } catch (Exception e) {
-          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CUT_FAILED",
+          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CLIPBOARD_PASTE_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
+        destination = getDestination("Main", quizzSC, request);
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
@@ -144,24 +151,37 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
             "id = " + id);
 
         if ("publisher".equals(flag) || "admin".equals(flag)) {
-          destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
+          destination = rootDest + "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
         } else {
           if (quizzSC.isParticipationAllowed(id)) {
-            destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
+            destination = rootDest + "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
                 + id;
           } else {
-            destination = "quizzResultUser.jsp";
+            destination = rootDest + "quizzResultUser.jsp";
           }
         }
+      } else if (function.equals("SubmitQuizz")) {
+        HttpSession session = request.getSession(false);
+        QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
+
+        //Vector 2 Collection
+        List questionsV = (List) session.getAttribute("questionsVector");
+        List<Question> q = new ArrayList<Question>();
+        for (int j = 0; j < questionsV.size(); j++) {
+          q.add((Question) questionsV.get(j));
+        }
+        quizzDetail.setQuestions(q);
+        quizzSC.createQuizz(quizzDetail);
+        session.removeAttribute("quizzUnderConstruction");
+        quizzSC.setPositions(null);
+        destination = getDestination("Main", quizzSC, request);
       } else {
-        destination = function;
+        destination = rootDest + function;
       }
 
       if (profileError) {
         String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         destination = sessionTimeout;
-      } else {
-        destination = "/quizz/jsp/" + destination;
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

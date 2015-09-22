@@ -144,10 +144,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<QuestionContainerHeader> getUserQuizzList() throws QuizzException {
@@ -167,10 +164,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<QuestionContainerHeader> getAdminQuizzList() throws QuizzException {
@@ -191,10 +185,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param id
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public QuestionContainerDetail getQuizzDetail(String id)
@@ -215,7 +206,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzDetail
-   * @throws QizzException
+   * @throws QuizzException
    * @see
    */
   public void createQuizz(QuestionContainerDetail quizzDetail) throws QuizzException {
@@ -294,9 +285,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<QuestionResult> getSuggestions(String quizzId) throws QuizzException {
@@ -313,9 +302,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public void closeQuizz(String quizzId) throws QuizzException {
@@ -334,9 +321,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public int getNbVoters(String quizzId) throws QuizzException {
@@ -354,9 +339,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public float getAveragePoints(String quizzId) throws QuizzException {
@@ -373,9 +356,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<QuestionContainerHeader> getAdminResults() throws QuizzException {
@@ -392,9 +373,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<QuestionContainerHeader> getUserResults() throws QuizzException {
@@ -412,9 +391,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<ScoreDetail> getUserScoresByFatherId(String quizzId) throws QuizzException {
@@ -432,9 +409,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<ScoreDetail> getUserPalmares(String quizzId) throws QuizzException {
@@ -452,9 +427,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public Collection<ScoreDetail> getAdminPalmares(String quizzId) throws QuizzException {
@@ -473,12 +446,10 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @param getUserId ()
+   * @param userId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public QuestionContainerDetail getQuestionContainerByParticipationId(String quizzId,
@@ -501,9 +472,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @param quizzId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public QuestionContainerDetail getQuestionContainerForCurrentUserByParticipationId(
@@ -526,11 +495,9 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @param getUserId ()
+   * @param userId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public int getUserNbParticipationsByFatherId(String quizzId, String userId) throws QuizzException {
@@ -549,12 +516,10 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @param getUserId ()
+   * @param userId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(String quizzId, String userId,
@@ -578,9 +543,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @param quizzId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public ScoreDetail getCurrentUserScoreByFatherIdAndParticipationId(String quizzId,
@@ -603,10 +566,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param scoreDetail
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public void updateScore(ScoreDetail scoreDetail) throws QuizzException {
@@ -624,9 +584,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzHeader
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public void updateQuizzHeader(QuestionContainerHeader quizzHeader, String quizzId)
@@ -646,9 +604,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param questions
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
+   * @throws QuizzException
    * @see
    */
   public void updateQuestions(Collection<Question> questions, String quizzId)
@@ -686,7 +642,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
-    getClipboardObjects().add((ClipboardSelection) questionContainerSelect);
+    addClipboardSelection(questionContainerSelect);
   }
 
   public void paste() throws Exception {
