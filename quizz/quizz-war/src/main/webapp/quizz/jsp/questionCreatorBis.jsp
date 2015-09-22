@@ -404,10 +404,11 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 %>
       <!--DEBUT CORPS -->
       <form name="quizzForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
-<%         if (action.equals("SendQuestionForm")) { %>
+<%
 
+    if (action.equals("SendQuestionForm")) { %>
 
-
+<input type="hidden" name="questionStyle" value="<%=style%>"/>
 <fieldset id="questionFieldset" class="skinFieldset">
   <legend><fmt:message key="quizz.header.fieldset.question" /></legend>
   <div class="fields">
@@ -530,7 +531,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   </fieldset>
 
 <%  
-              } else { %>
+  } //end if action = SendQuestionForm
+  else { //action= CreateQuestion %>
 
 
 <fieldset id="questionFieldset" class="skinFieldset">
@@ -590,8 +592,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 </fieldset>
 
 <%
-           }
-        %>
+    } //end if CreateQuestion
+%>
 
 <div class="legend">
   <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
@@ -606,7 +608,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 %>
 </body></html>
 <%
- } //End if action = ViewQuestion
+ } //End if action = CreateQuestion || SendQuestionForm
 if (action.equals("SendNewQuestion")) {
 %>
 <html>

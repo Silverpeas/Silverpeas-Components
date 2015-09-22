@@ -452,8 +452,7 @@ String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory 
 			r += displayQuizzHeaderPreview(quizzScc, quizzHeader,resources, gef);
 
 			//Display the questions
-			r += "<form name=\"quizz\" Action=\"quizzQuestionsNew.jsp\" Method=\"Post\">";
-			r += "<input type=\"hidden\" name=\"Action\" value=\"SubmitQuizz\">";
+			r += "<form name=\"quizz\" Action=\"SubmitQuizz\" Method=\"Post\">";
 			Iterator<Question> itQ = questions.iterator();
 			int i = 1;
 			while (itQ.hasNext()) {
@@ -723,7 +722,7 @@ QuestionContainerDetail quizz = null;
 
 boolean isClosed = false;
 
-if (action.equals("PreviewQuizz") || action.equals("SubmitQuizz")) {
+if (action.equals("PreviewQuizz")) {
       quizz = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
 }
 else {
@@ -906,23 +905,8 @@ if (action.equals("RecordQuestionsResponses")) {
   quizzScc.recordReply(quizzId, hash);
   action = "ViewResult";
 } //End if action = ViewResult
-if (action.equals("SubmitQuizz")) {
-  QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
-  //Vector 2 Collection
-  List questionsV = (List) session.getAttribute("questionsVector");
-  List<Question> q = new ArrayList<Question>();
-  for (int j = 0; j < questionsV.size(); j++) {
-        q.add((Question) questionsV.get(j));
-  }
-  quizzDetail.setQuestions(q);
-  quizzScc.createQuizz(quizzDetail);
-  session.removeAttribute("quizzUnderConstruction");
-  quizzScc.setPositions(null);
-  %>
-  <jsp:forward page='<%=quizzScc.getComponentUrl()+"Main.jsp"%>'/>
-  <%
-  return;
-} else if (action.equals("PreviewQuizz")) {
+
+if (action.equals("PreviewQuizz")) {
     out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
 
     Window window = gef.getWindow();

@@ -390,7 +390,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Method declaration
    * @param quizzId the quizz identifier
    * @param userId the user identifier
    * @param participationId
@@ -434,7 +433,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Method declaration
    * @param quizzId the quizz identifier
    * @param userId the user identifier
    * @return the number of particippations of the quizz
@@ -454,7 +452,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Method declaration
    * @param quizzId the quizz identifier
    * @param userId the user identifier
    * @param participationId
@@ -480,7 +477,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @param quizzId the quizz identifier
    * @param participationId
    * @return
-   * @throws QuizzException
    */
   public ScoreDetail getCurrentUserScoreByFatherIdAndParticipationId(String quizzId,
       int participationId) throws QuizzException {
@@ -513,7 +509,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Method declaration
    * @param quizzHeader
    * @param quizzId the quizz identifier
    * @throws QuizzException
@@ -531,7 +526,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Method declaration
    * @param questions
    * @param quizzId the quizz identifier
    * @throws QuizzException
@@ -572,7 +566,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
-    getClipboardObjects().add(questionContainerSelect);
   }
 
   public void paste() throws Exception {
