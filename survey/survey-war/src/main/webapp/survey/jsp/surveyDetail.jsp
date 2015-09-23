@@ -268,6 +268,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 </head>
 <body>
     <%
@@ -327,6 +328,7 @@
 <head>
 <title></title>
 <view:looknfeel />
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function sendVote(roundId) {
@@ -508,6 +510,7 @@ function clipboardCopy() {
 <head>
 <title></title>
 <view:looknfeel />
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
 
