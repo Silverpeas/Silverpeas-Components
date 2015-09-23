@@ -218,7 +218,7 @@ function getObjects(selected) {
     				name = ind + name;	
     				
     				// recherche si ce th�me est dans la liste des alias de la publication
-					String usedCheck = "";
+					  String usedCheck = "";
     				for (NodePK node : pathList) {
 	    				String nodeId = node.getId();
 	    				if (Integer.toString(topic.getId()).equals(nodeId)) {
@@ -299,12 +299,16 @@ function getObjects(selected) {
 	    		    				}
 	    		    			}
 	    	    				boolean displayCheckbox = false;
-	    	    				if (topic.getUserRole()==null || topic.getUserRole().equals("admin") || topic.getUserRole().equals("publisher")) {
+                    String readonlyCheckbox = "";
+	    	    				if (topic.getUserRole()==null || !topic.getUserRole().equals("user")) {
 	    	    					displayCheckbox = true;
+                      if ("writer".equals(topic.getUserRole())) {
+                        readonlyCheckbox = " onclick=\"return false\"";
+                      }
 	    	    				}
 	    	    	        	out.println("<tr><td width=\"10px\">");
 	    	    	        	if (displayCheckbox) {
-	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+">");
+	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+readonlyCheckbox+">");
 	    	    	        	} else {
 	    	    	        		out.println("&nbsp;");
 	    	    	        	}
