@@ -3016,16 +3016,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Return the url to the first attached file for the current publication.
+   * Returns URL of single attached file for the current publication.
+   * If publication contains more than one file, null is returned
    *
-   * @return the url to the first attached file for the curent publication.
+   * @return URL of single attached file for the current publication. Null if publication
+   * contains more than one file.
    * @throws RemoteException
    */
-  public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
+  public String getSingleAttachmentURLOfCurrentPublication() throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(pubPK, getLanguage());
-    if (!attachments.isEmpty()) {
+    if (attachments.size() == 1) {
       SimpleDocument document = attachments.get(0);
       return getDocumentVersionURL(document);
     }
