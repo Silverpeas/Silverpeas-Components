@@ -29,14 +29,16 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.UploadSession;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;
@@ -49,7 +51,6 @@ import java.io.IOException;
 
 /**
  * Class declaration
- * @author
  */
 public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
@@ -101,7 +102,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
         // Cas du zip
         if (FileUtil.isArchive(filePath.getName())) {
-          ZipManager.extract(filePath, filePath.getParentFile());
+          ZipUtil.extract(filePath, filePath.getParentFile());
         }
       }
 
@@ -141,8 +142,9 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       final MediaDataCreateDelegate delegate =
           new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(), albumId);
       delegate.getHeaderData().setDownloadAuthorized(download);
-      getGalleryBm().importFromRepository(user, componentId, repository, watermark, watermarkHD,
-          watermarkOther, delegate);
+      getGalleryService()
+          .importFromRepository(user, componentId, repository, watermark, watermarkHD,
+              watermarkOther, delegate);
 
     } catch (Exception e) {
       SilverTrace
@@ -158,7 +160,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    * Gets the GalleryBm Service
    * @return a GalleryBm
    */
-  private static GalleryBm getGalleryBm() {
+  private static GalleryBm getGalleryService() {
     try {
       return ServiceProvider.getService(GalleryBm.class);
     } catch (final Exception e) {

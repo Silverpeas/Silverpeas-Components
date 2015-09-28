@@ -25,16 +25,16 @@ import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.MassiveReport;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import java.io.File;
@@ -79,10 +79,9 @@ public class FileImport {
    * @throws ImportExportException
    */
   public ImportReport importFile(boolean draft) throws ImportExportException {
-    MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
     ImportSettings importSettings = getImportSettings(fileUploaded.getParent(), draft);
 
-    return massiveImporter.importDocuments(importSettings, new MassiveReport());
+    return MassiveDocumentImport.get().importDocuments(importSettings, new MassiveReport());
   }
 
   /**
@@ -97,11 +96,10 @@ public class FileImport {
 
       FileUtil.moveAllFilesAtRootFolder(tempFolder);
 
-      MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
       ImportSettings settings = getImportSettings(tempFolder.getPath(), draft);
       settings.getPublicationForAllFiles()
           .setName(settings.getPublicationName(fileUploaded.getName()));
-      importReport = massiveImporter.importDocuments(settings, new MassiveReport());
+      importReport = MassiveDocumentImport.get().importDocuments(settings, new MassiveReport());
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFiles()", "root.EX_LOAD_ATTACHMENT_FAILED", e);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e,
@@ -139,9 +137,8 @@ public class FileImport {
         FileUtil.moveAllFilesAtRootFolder(tempFolder);
       }
 
-      MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
       ImportSettings settings = getImportSettings(tempFolder.getPath(), draft);
-      importReport = massiveImporter.importDocuments(settings, new MassiveReport());
+      importReport = MassiveDocumentImport.get().importDocuments(settings, new MassiveReport());
     } catch (Exception e) {
       SilverTrace
           .warn("kmelia", "FileImport.importFilesMultiPubli()", "root.EX_LOAD_ATTACHMENT_FAILED",

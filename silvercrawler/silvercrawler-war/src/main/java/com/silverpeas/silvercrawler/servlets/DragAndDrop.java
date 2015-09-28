@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpSer
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.UploadSession;
 

@@ -41,7 +41,6 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
@@ -171,13 +170,13 @@ public class SuggestionRepository implements
       withContent(suggestion);
     }
     withCommentCount(suggestion);
-    suggestion.setRating(RatingService.getInstance().getRating(suggestion));
+    suggestion.setRating(RatingService.get().getRating(suggestion));
     return suggestion;
   }
 
   private List<Suggestion> decorate(final List<Suggestion> suggestions,
       final SuggestionCriteria criteria) {
-    Map<String, ContributionRating> suggestionRatings = RatingService.getInstance()
+    Map<String, ContributionRating> suggestionRatings = RatingService.get()
         .getRatings(suggestions.toArray(new SilverpeasContent[suggestions.size()]));
     for (Suggestion suggestion : suggestions) {
       if (criteria.mustLoadWysiwygContent()) {

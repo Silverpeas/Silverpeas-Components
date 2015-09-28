@@ -265,7 +265,7 @@ public class Message implements Rateable, Serializable {
   @Override
   public ContributionRating getRating() {
     if (contributionRating == null) {
-      contributionRating = RatingService.getInstance()
+      contributionRating = RatingService.get()
           .getRating(
               new ContributionRatingPK(String.valueOf(getId()), getInstanceId(), RESOURCE_TYPE));
     }
