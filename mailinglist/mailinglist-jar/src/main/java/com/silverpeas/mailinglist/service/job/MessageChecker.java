@@ -32,6 +32,7 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.mail.engine.SmtpConfiguration;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -88,7 +89,8 @@ public class MessageChecker implements SchedulerEventListener {
   public MessageChecker() {
     this.listeners = new HashMap<>(10);
     SmtpConfiguration smtpConfig = SmtpConfiguration.fromDefaultSettings();
-    ResourceLocator notifConfig = new ResourceLocator("org/silverpeas/mailinglist/notification");
+    SettingBundle notifConfig =
+        ResourceLocator.getSettingBundle("org.silverpeas.mailinglist.notification");
     protocol = notifConfig.getString("mail.server.protocol");
     mailServer = notifConfig.getString("mail.server.host");
     login = notifConfig.getString("mail.server.login");

@@ -24,6 +24,7 @@
 
 package com.silverpeas.silvercrawler.control;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import java.io.File;
@@ -39,8 +40,8 @@ public class UploadReport {
   List<UploadItem> items = new ArrayList<>();
   boolean conflictous = false;
   boolean failed = false;
-  ResourceLocator resources =
-      new ResourceLocator("com.silverpeas.silvercrawler.multilang.silverCrawlerBundle");
+  LocalizationBundle resources = ResourceLocator.getLocalizationResource(
+      "com.silverpeas.silvercrawler.multilang.silverCrawlerBundle");
   public int nbCopied = 0;
   public int nbIgnored = 0;
   public int nbReplaced = 0;

@@ -24,6 +24,7 @@
 package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import javax.enterprise.inject.Alternative;
@@ -44,8 +45,8 @@ public class SimpleNotificationFormatter extends AbstractNotificationFormatter {
   private MessageFormat bodyModerationFormatter;
 
   public SimpleNotificationFormatter() {
-    ResourceLocator resources =
-        new ResourceLocator("com.silverpeas.mailinglist.multilang.mailinglistBundle");
+    LocalizationBundle resources = ResourceLocator.getLocalizationResource(
+        "com.silverpeas.mailinglist.multilang.mailinglistBundle");
     titleFormatter = new MessageFormat(resources.getString(TITLE_KEY));
     titleModerationFormatter = new MessageFormat(resources.getString(TITLE_MODERATION_KEY));
     bodyFormatter = new MessageFormat(resources.getString(BODY_KEY));
