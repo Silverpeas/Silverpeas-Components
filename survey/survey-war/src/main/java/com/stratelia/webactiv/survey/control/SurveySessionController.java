@@ -296,7 +296,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
-      return questionContainerBm.getOpenedQuestionContainers(qcPK);
+      return getQuestionContainerBm().getOpenedQuestionContainers(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getOpenedSurveys",
           SurveyException.WARNING, "Survey.EX_NO_OPENED_SURVEY", e);
@@ -308,7 +308,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
-      return questionContainerBm.getClosedQuestionContainers(qcPK);
+      return getQuestionContainerBm().getClosedQuestionContainers(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getClosedSurveys",
           SurveyException.WARNING, "Survey.EX_NO_CLOSED_SURVEY", e);
@@ -320,7 +320,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
-      return questionContainerBm.getInWaitQuestionContainers(qcPK);
+      return getQuestionContainerBm().getInWaitQuestionContainers(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getInWaitSurveys",
           SurveyException.WARNING, "Survey.EX_NO_WAIT_SURVEY", e);
@@ -337,7 +337,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      QuestionContainerDetail qc = questionContainerBm.getQuestionContainer(qcPK, getUserId());
+      QuestionContainerDetail qc = getQuestionContainerBm().getQuestionContainer(qcPK, getUserId());
       qc.getHeader().setNbRegistered(getNbRegistered());
       return qc;
     } catch (Exception e) {
@@ -353,7 +353,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
     //encodeForHtml(surveyDetail.getHeader());
     try {
-      qcPK = questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
+      qcPK = getQuestionContainerBm().createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
@@ -394,13 +394,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
     //encodeForHtml(surveyDetail.getHeader());
     try {
-      qcPK = questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
+      qcPK = getQuestionContainerBm().createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
     }
-    // Classify content if needed
-    classifyContent(surveyDetail, qcPK);
 
     return qcPK;
   }
@@ -413,7 +411,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       surveyHeader.setPK(qcPK);
       //encodeForHtml(surveyHeader);
-      questionContainerBm.updateQuestionContainerHeader(surveyHeader);
+      getQuestionContainerBm().updateQuestionContainerHeader(surveyHeader);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.updateSurveyHeader",
           SurveyException.WARNING, "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "id = " + surveyId
@@ -427,7 +425,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.updateQuestions(qcPK, questions);
+      getQuestionContainerBm().updateQuestions(qcPK, questions);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.updateQuestions", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", "id = " + surveyId, e);
@@ -439,7 +437,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.deleteQuestionContainer(qcPK);
+      getQuestionContainerBm().deleteQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
@@ -451,7 +449,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.deleteVotes(qcPK);
+      getQuestionContainerBm().deleteVotes(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.deleteVotes", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
@@ -463,7 +461,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.deleteQuestionContainer(qcPK);
+      getQuestionContainerBm().deleteQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.deleteResponse", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
@@ -532,7 +530,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.closeQuestionContainer(qcPK);
+      getQuestionContainerBm().closeQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.closeSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CLOSE_SURVEY", "id = " + surveyId, e);
@@ -544,7 +542,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.openQuestionContainer(qcPK);
+      getQuestionContainerBm().openQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.openSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_OPEN_SURVEY", "id = " + surveyId, e);
@@ -555,7 +553,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
+      getQuestionContainerBm().recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
     } catch (Exception e) {
 
       throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
@@ -567,8 +565,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       boolean isAnonymousComment) throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply, comment,
-          isAnonymousComment);
+      getQuestionContainerBm().recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply,
+          comment, isAnonymousComment);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
           "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
@@ -578,7 +576,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public Collection<QuestionResult> getSuggestions(String surveyId) throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      return questionContainerBm.getSuggestions(qcPK);
+      return getQuestionContainerBm().getSuggestions(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getSuggestions", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", "id = " + surveyId, e);
@@ -621,7 +619,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     int silverObjectId = -1;
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
-      silverObjectId = questionContainerBm.getSilverObjectId(qcPK);
+      silverObjectId = getQuestionContainerBm().getSilverObjectId(qcPK);
     } catch (Exception e) {
       SilverTrace.error("Survey", "SurveySessionClientController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
@@ -831,7 +829,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public String exportSurveyCSV(String surveyId) {
     try {
       QuestionContainerDetail survey = getSurvey(surveyId);
-      return questionContainerBm.exportCSV(survey, false);
+      return getQuestionContainerBm().exportCSV(survey, false);
     } catch (Exception e) {
       SilverTrace.error("Survey", SurveySessionController.class.getName(),
           "exportSurveyCSV error surveyId=" + surveyId, e);
@@ -873,6 +871,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   private void pasteSurvey(QuestionContainerDetail survey) throws Exception {
     String componentId;
+    QuestionContainerPK surveyPk = survey.getHeader().getPK();
+
     if (survey.getHeader().getInstanceId().equals(getComponentId())) {
       // in the same component
       componentId = survey.getHeader().getInstanceId();
@@ -920,7 +920,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
         }
       }
     }
-    createSurvey(survey, componentId);
+
+    QuestionContainerPK toQuestionContainerPk = createSurvey(survey, componentId);
+
+    // Paste positions on Pdc
+    final int fromSilverObjectId = getQuestionContainerBm().getSilverObjectId(surveyPk);
+    final int toSilverObjectId = getQuestionContainerBm().getSilverObjectId(toQuestionContainerPk);
+
+    PdcServiceFactory.getFactory().getPdcManager()
+        .copyPositions(fromSilverObjectId, survey.getHeader().getInstanceId(), toSilverObjectId,
+            componentId);
   }
 
   /**
@@ -1348,7 +1357,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     try {
       QuestionPK qPK = new QuestionPK(questionId, getSpaceId(), getComponentId());
       AnswerPK aPK = new AnswerPK(answerId, getSpaceId(), getComponentId());
-      return questionContainerBm.getSuggestion(userId, qPK, aPK);
+      return getQuestionContainerBm().getSuggestion(userId, qPK, aPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getSuggestion", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", "userId="+userId+", questionId="+questionId+", answerId="+answerId, e);
