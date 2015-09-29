@@ -111,7 +111,7 @@ function clipboardPaste() {
 			OperationPane operationPane = window.getOperationPane();
 			if (isAdmin && quizzScc.isPdcUsed()) {
 				operationPane.addOperation(pdcUtilizationSrc, resources
-						.getString("GML.PDC"),
+						.getString("GML.PDCParam"),
 						"javascript:onClick=openSPWindow('" + m_context
 								+ "/RpdcUtilization/jsp/Main?ComponentId="
 								+ quizzScc.getComponentId()

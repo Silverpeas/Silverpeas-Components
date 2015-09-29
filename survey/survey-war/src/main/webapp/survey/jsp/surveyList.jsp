@@ -435,7 +435,7 @@ function openSPWindow(fonction, windowName){
     OperationPane operationPane = window.getOperationPane();
     if (SilverpeasRole.admin.toString().equals(profile) &&
         surveyScc.isPdcUsed()) {
-      operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDC"),
+      operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"),
           "javascript:openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" +
           surveyScc.getComponentId() + "','utilizationPdc1')");
       operationPane.addLine();
