@@ -196,7 +196,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @param componentId the component instance identifier
    * @throws QuizzException
    */
-  public void createQuizz(QuestionContainerDetail quizzDetail, String componentId)
+  public QuestionContainerPK createQuizz(QuestionContainerDetail quizzDetail, String componentId)
       throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
     try {
@@ -205,8 +205,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       throw new QuizzException("QuizzSessionController.createQuizz", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_CREATE", e);
     }
-    // persist positions after quiz creation
-    classifyContent(quizzDetail, qcPK);
+
+    return qcPK;
   }
 
   /**
@@ -585,6 +585,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   private void pasteQuizz(QuestionContainerDetail quizz) throws Exception {
     String componentId;
+    QuestionContainerPK quizzPk = quizz.getHeader().getPK();
+
     if (quizz.getHeader().getInstanceId().equals(getComponentId())) {
       // in the same component
       componentId = quizz.getHeader().getInstanceId();
@@ -644,7 +646,16 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
         }
       }
     }
-    createQuizz(quizz, componentId);
+
+    QuestionContainerPK toQuestionContainerPk = createQuizz(quizz, componentId);
+
+    // Paste positions on Pdc
+    final int fromSilverObjectId = getQuestionContainerBm().getSilverObjectId(quizzPk);
+    final int toSilverObjectId = getQuestionContainerBm().getSilverObjectId(toQuestionContainerPk);
+
+    PdcServiceFactory.getFactory().getPdcManager()
+        .copyPositions(fromSilverObjectId, quizz.getHeader().getInstanceId(), toSilverObjectId,
+            componentId);
   }
 
   public int getSilverObjectId(String objectId) {
