@@ -33,6 +33,7 @@ import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -358,8 +359,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
       throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
     }
-    // Classify content if needed
-    classifyContent(surveyDetail, qcPK);
 
     return qcPK;
   }
@@ -823,6 +822,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   private void pasteSurvey(QuestionContainerDetail survey) throws Exception {
     String componentId;
+    QuestionContainerPK surveyPk = survey.getHeader().getPK();
+
     if (survey.getHeader().getInstanceId().equals(getComponentId())) {
       // in the same component
       componentId = survey.getHeader().getInstanceId();
@@ -868,7 +869,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
         }
       }
     }
-    createSurvey(survey, componentId);
+
+    QuestionContainerPK toQuestionContainerPk = createSurvey(survey, componentId);
+
+    // Paste positions on Pdc
+    final int fromSilverObjectId = getQuestionContainerService().getSilverObjectId(surveyPk);
+    final int toSilverObjectId = getQuestionContainerService().getSilverObjectId(toQuestionContainerPk);
+
+    PdcManager.get()
+        .copyPositions(fromSilverObjectId, survey.getHeader().getInstanceId(), toSilverObjectId,
+            componentId);
   }
 
   /**
