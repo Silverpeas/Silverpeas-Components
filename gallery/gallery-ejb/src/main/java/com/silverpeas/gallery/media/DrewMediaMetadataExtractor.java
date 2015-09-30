@@ -70,7 +70,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       // lire le fichier des properties
       // 1. Traitement des metadata EXIF
       Metadata metadata = ImageMetadataReader.readMetadata(image);
-      ExifIFD0Directory exifDirectory = metadata.getDirectory(ExifIFD0Directory.class);
+      ExifIFD0Directory exifDirectory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
       ExifIFD0Descriptor descriptor = new ExifIFD0Descriptor(exifDirectory);
       String value = null;
       if (exifDirectory != null) {
@@ -140,7 +140,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       List<MetaData> result = new ArrayList<>();
       Metadata metadata = ImageMetadataReader.readMetadata(image);
       ByteArrayOutputStream forEncodingDetection = new ByteArrayOutputStream(1024);
-      IptcDirectory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
+      IptcDirectory iptcDirectory = metadata.getFirstDirectoryOfType(IptcDirectory.class);
       String iptcCharset = getIptcCharset(iptcDirectory);
       for (IptcProperty iptcProperty : imageIptcProperties) {
         switch (iptcProperty.getProperty()) {
