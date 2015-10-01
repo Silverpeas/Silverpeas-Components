@@ -26,12 +26,13 @@ package com.stratelia.webactiv.almanach.servlets;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
@@ -83,7 +84,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
    */
   private void setGlobalInfo(AlmanachSessionController almanach,
           HttpServletRequest request) {
-    ResourceLocator settings = almanach.getSettings();
+    SettingBundle settings = almanach.getSettings();
     request.setAttribute("settings", settings);
   }
 
@@ -194,7 +195,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         String[] startDay = {"", ""};
         if (day != null && day.length() > 0) {
           event.setStartDate(DateUtil.parseISO8601Date(day));
-          ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+          MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
           startDay[0] = resources.getInputDate(event.getStartDate());
           if (!day.endsWith("00:00")) {
             startDay[1] = day.substring(day.indexOf('T') + 1);

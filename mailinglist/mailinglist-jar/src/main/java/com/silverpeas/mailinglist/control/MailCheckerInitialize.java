@@ -37,6 +37,7 @@ import com.silverpeas.scheduler.trigger.TimeUnit;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 
@@ -47,11 +48,11 @@ public class MailCheckerInitialize implements Initialization {
   private MessageChecker messageChecker;
   @Inject
   private MailingListService mailingListService;
-  private static ResourceLocator settings;
+  private static SettingBundle settings;
   private static final int DEFAULT_FREQUENCY = 1;
 
   static {
-    settings = new ResourceLocator("org.silverpeas.mailinglist.notification", "");
+    settings = ResourceLocator.getSettingBundle("org.silverpeas.mailinglist.notification");
   }
 
   public int getFrequency() {

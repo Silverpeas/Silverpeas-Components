@@ -24,33 +24,23 @@
 package com.silverpeas.gallery.media;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExtractor {
 
-  static final Properties DEFAULT_SETTINGS = new Properties();
+  private static final SettingBundle DEFAULT_SETTINGS =
+      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.metadataSettings");
 
-  static {
-    try {
-      FileUtil.loadProperties(DEFAULT_SETTINGS,
-          "org/silverpeas/gallery/settings/metadataSettings.properties");
-    } catch (IOException e) {
-      SilverTrace.error("gallery", AbstractMediaMetadataExtractor.class.getName(),
-          "Problem loading metadata settings", e);
-    }
-  }
-  protected Properties settings = new Properties(DEFAULT_SETTINGS);
-  protected Map<String, ResourceLocator> metaDataBundles;
+  protected SettingBundle settings = DEFAULT_SETTINGS;
+  protected Map<String, LocalizationBundle> metaDataBundles;
   protected List<ExifProperty> imageProperties;
   protected List<IptcProperty> imageIptcProperties;
 
@@ -59,11 +49,11 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
     List<ExifProperty> properties = new ArrayList<ExifProperty>();
     for (String value : propertyNames) {
       if (value.startsWith("METADATA_")) {
-        String property = settings.getProperty(value + "_TAG");
+        String property = settings.getString(value + "_TAG");
         if (property != null) {
-          String labelKey = settings.getProperty(value + "_LABEL");
+          String labelKey = settings.getString(value + "_LABEL");
           ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
-          for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
+          for (Map.Entry<String, LocalizationBundle> labels : metaDataBundles.entrySet()) {
             String label = labels.getValue().getString(labelKey);
             exifProperty.setLabel(labels.getKey(), label);
           }
@@ -79,12 +69,12 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
     List<IptcProperty> properties = new ArrayList<IptcProperty>();
     for (String value : propertyNames) {
       if (value.startsWith("IPTC_")) {
-        String property = settings.getProperty(value + "_TAG");
+        String property = settings.getString(value + "_TAG");
         if (property != null) {
-          String labelKey = settings.getProperty(value + "_LABEL");
-          boolean isDate = StringUtil.getBooleanValue(settings.getProperty(value + "_DATE"));
+          String labelKey = settings.getString(value + "_LABEL");
+          boolean isDate = StringUtil.getBooleanValue(settings.getString(value + "_DATE"));
           IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
-          for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
+          for (Map.Entry<String, LocalizationBundle> labels : metaDataBundles.entrySet()) {
             String label = labels.getValue().getString(labelKey);
             iptcProperty.setLabel(labels.getKey(), label);
           }
@@ -97,19 +87,18 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
   }
 
   final void init(String instanceId) {
-    try {
-      FileUtil.loadProperties(settings,
-          "org/silverpeas/gallery/settings/metadataSettings_" + instanceId + ".properties");
-    } catch (Exception e) {
+    settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.gallery.settings.metadataSettings_" + instanceId);
+    if (!settings.exists()) {
       this.settings = DEFAULT_SETTINGS;
     }
-    this.metaDataBundles =
-        new HashMap<String, ResourceLocator>(DisplayI18NHelper.getLanguages().size());
+    this.metaDataBundles = new HashMap<>(DisplayI18NHelper.getLanguages().size());
     for (String lang : DisplayI18NHelper.getLanguages()) {
-      metaDataBundles
-          .put(lang, new ResourceLocator("org.silverpeas.gallery.multilang.metadataBundle", lang));
+      metaDataBundles.put(lang,
+          ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.metadataBundle",
+              lang));
     }
-    String display = settings.getProperty("display");
+    String display = settings.getString("display");
     Iterable<String> propertyNames = StringUtil.splitString(display, ',');
     this.imageProperties = defineImageProperties(propertyNames);
     this.imageIptcProperties = defineImageIptcProperties(propertyNames);

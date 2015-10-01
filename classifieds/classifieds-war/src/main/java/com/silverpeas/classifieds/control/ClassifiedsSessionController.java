@@ -49,7 +49,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -70,7 +70,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
   private CommentService commentService = null;
-  private ResourcesWrapper resources = null;
+  private MultiSilverpeasBundle resources = null;
   private ClassifiedService classifiedService;
   
   private SearchContext searchContext = null;
@@ -118,9 +118,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * Gets the resources associated with this session controller.
    * @return all of the resources (messages, settings, icons, ...)
    */
-  public synchronized ResourcesWrapper getResources() {
+  public synchronized MultiSilverpeasBundle getResources() {
     if (resources == null) {
-      resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
+      resources = new MultiSilverpeasBundle(getMultilang(), getIcon(), getSettings(), getLanguage());
     }
     return resources;
   }

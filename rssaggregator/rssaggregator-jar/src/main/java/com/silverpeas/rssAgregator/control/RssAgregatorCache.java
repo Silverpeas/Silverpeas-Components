@@ -26,6 +26,7 @@ package com.silverpeas.rssAgregator.control;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
@@ -49,8 +50,8 @@ public class RssAgregatorCache {
    * Default constructor
    */
   private RssAgregatorCache() {
-    ResourceLocator res =
-        new ResourceLocator("com.silverpeas.rssAgregator.settings.rssAgregatorSettings", "");
+    SettingBundle res = ResourceLocator.getSettingBundle(
+        "org.silverpeas.rssAgregator.settings.rssAgregatorSettings");
     String refreshRate = res.getString("refreshRate");
     RssAgregatorCache.refreshRate = (60 * 1000) * Long.valueOf(refreshRate);
   }

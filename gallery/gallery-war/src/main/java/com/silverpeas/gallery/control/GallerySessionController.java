@@ -82,7 +82,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,7 +89,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 
@@ -112,27 +110,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private DataRecord xmlSearchContext;
   // select/deselect all
   private boolean select = false;
-  private ResourceLocator metadataResources = null;
+  private LocalizationBundle metadataResources = null;
   private CommentService commentService = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfCurrentPage = 0;
   // manage basket case (contains list of media identifier)
   private List<String> basket = new ArrayList<String>();
-  static final Properties DEFAULT_SETTINGS = new Properties();
+  private static final SettingBundle DEFAULT_SETTINGS =
+      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.metadataSettings");
   private static final String MULTILANG_GALLERY_BUNDLE =
       "org.silverpeas.gallery.multilang.galleryBundle";
 
-  static {
-    try {
-      FileUtil.loadProperties(DEFAULT_SETTINGS,
-          "org/silverpeas/gallery/settings/metadataSettings.properties");
-    } catch (IOException e) {
-      SilverTrace
-          .fatal("gallery", "GallerySessionController()", "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
 
-  Properties settings = new Properties(DEFAULT_SETTINGS);
+  private SettingBundle settings = DEFAULT_SETTINGS;
 
   /**
    * Gets the business service of operations on comments
@@ -154,8 +144,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public GallerySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, MULTILANG_GALLERY_BUNDLE,
-        "com.silverpeas.gallery.settings.galleryIcons",
-        "com.silverpeas.gallery.settings.gallerySettings");
+        "org.silverpeas.gallery.settings.galleryIcons",
+        "org.silverpeas.gallery.settings.gallerySettings");
 
     // affectation du formulaire à la médiathèque
     String xmlFormName = getXMLFormName();
@@ -325,10 +315,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public ResourceLocator getMetadataResources() {
+  public LocalizationBundle getMetadataResources() {
     if (metadataResources == null) {
       metadataResources =
-          new ResourceLocator("com.silverpeas.gallery.multilang.metadataBundle", getLanguage());
+          ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.metadataBundle",
+              getLanguage());
     }
     return metadataResources;
   }
@@ -675,7 +666,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String user = getUserDetail().getDisplayedName();
     String url = URLManager.getURL(null, getComponentId()) + "Main";
 
-    ResourceLocator message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE,
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
     String subject = message.getString("gallery.notifAskSubject");
@@ -688,7 +679,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message =
-          new ResourceLocator(MULTILANG_GALLERY_BUNDLE, language);
+          ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
       subject = message.getString("gallery.notifAskSubject");
       messageBody = new StringBuilder();
       messageBody =
@@ -716,7 +707,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String htmlPath = getMediaService().getHTMLNodePath(nodePK);
     String url = getMediaUrl(media);
 
-    ResourceLocator message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE,
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
     String subject = message.getString("gallery.notifSubject");
@@ -726,7 +717,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE, language);
+      message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
       subject = message.getString("gallery.notifSubject");
       body = getNotificationBody(media, htmlPath, message, senderName);
       notifMetaData.addLanguage(language, subject, body);
@@ -742,7 +733,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return notifMetaData;
   }
 
-  private String getNotificationBody(Media media, String htmlPath, ResourceLocator message,
+  private String getNotificationBody(Media media, String htmlPath, LocalizationBundle message,
       String senderName) {
     StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");
@@ -936,7 +927,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String url = URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId;
 
-    ResourceLocator message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE,
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
     String subject = message.getString("gallery.orderNotifAskSubject");
@@ -949,7 +940,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         new NotificationMetaData(NotificationParameters.NORMAL, subject, messageBody.toString());
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE, language);
+      message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
       subject = message.getString("gallery.orderNotifAskSubject");
       messageBody = new StringBuilder();
       messageBody = messageBody.append(user).append(" ").append(
@@ -979,7 +970,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String url = URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId;
 
-    ResourceLocator message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE,
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
     String subject = message.getString("gallery.orderNotifAskSubject");
@@ -991,7 +982,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         new NotificationMetaData(NotificationParameters.NORMAL, subject, messageBody.toString());
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator(MULTILANG_GALLERY_BUNDLE, language);
+      message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
       subject = message.getString("gallery.orderNotifAskSubject");
       messageBody = new StringBuilder();
       messageBody = messageBody.append(user).append(" ").append(
@@ -1153,24 +1144,23 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public List<MetaData> getMetaDataKeys() {
-    List<MetaData> metaDatas = new ArrayList<MetaData>();
-    try {
-      FileUtil.loadProperties(settings,
-          "org/silverpeas/gallery/settings/metadataSettings_" + getComponentId() + ".properties");
-    } catch (Exception e) {
+    List<MetaData> metaDatas = new ArrayList<>();
+    settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.gallery.settings.metadataSettings_" + getComponentId());
+    if (!settings.exists()) {
       settings = DEFAULT_SETTINGS;
     }
-    String display = settings.getProperty("display");
+    String display = settings.getString("display");
     Iterable<String> propertyNames = StringUtil.splitString(display, ',');
 
     for (String value : propertyNames) {
       if (value.startsWith("IPTC_")) {
-        String property = settings.getProperty(value + "_TAG");
-        String label = settings.getProperty(value + "_LABEL");
+        String property = settings.getString(value + "_TAG");
+        String label = settings.getString(value + "_LABEL");
         label = getMetadataResources().getString(label);
-        boolean isSearch = StringUtil.getBooleanValue(settings.getProperty(value + "_SEARCH"));
+        boolean isSearch = StringUtil.getBooleanValue(settings.getString(value + "_SEARCH"));
         if (isSearch) {
-          boolean isDate = StringUtil.getBooleanValue(settings.getProperty(value + "_DATE"));
+          boolean isDate = StringUtil.getBooleanValue(settings.getString(value + "_DATE"));
           MetaData metaData = new MetaData();
           metaData.setProperty(property);
           metaData.setDate(isDate);

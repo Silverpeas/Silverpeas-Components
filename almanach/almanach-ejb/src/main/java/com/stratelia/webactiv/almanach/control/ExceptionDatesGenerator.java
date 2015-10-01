@@ -36,6 +36,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import static org.silverpeas.util.DateUtil.extractHour;
 import static org.silverpeas.util.DateUtil.extractMinutes;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import java.util.*;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -80,8 +81,8 @@ public class ExceptionDatesGenerator {
   private Datable<?> toDatable(final java.util.Date date, String time) {
     Datable<?> datable;
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    ResourceLocator almanachSettings =
-            new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+    SettingBundle almanachSettings =
+            ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
     TimeZone timeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
     if (isDefined(time)) {
       java.util.Calendar calendarDate = java.util.Calendar.getInstance();

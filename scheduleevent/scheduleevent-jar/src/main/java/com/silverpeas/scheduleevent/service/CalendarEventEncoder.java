@@ -23,17 +23,14 @@
  */
 package com.silverpeas.scheduleevent.service;
 
-import static com.silverpeas.calendar.CalendarEvent.anEventAt;
-
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventStatus;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-
-import static org.silverpeas.util.DateUtil.asDatable;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,15 +40,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import static com.silverpeas.calendar.CalendarEvent.anEventAt;
+import static org.silverpeas.util.DateUtil.asDatable;
+
 /**
  * An encoder of EventDetail instances to EventCalendar instances.
  */
 public class CalendarEventEncoder {
 
-  private static ResourceLocator settings = new ResourceLocator(
-          "org.silverpeas.components.scheduleevent.settings.ScheduleEventSettings", "");
+  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.components.scheduleevent.settings.ScheduleEventSettings");
 
-  private static ResourceLocator getSettings() {
+  private static SettingBundle getSettings() {
     return settings;
   }
   
@@ -74,9 +74,8 @@ public class CalendarEventEncoder {
   /**
    * Encodes the specified detailed scheduleevent with the specified dates into calendar events.
    *
-   * @param scheduleevent detail.
-   * @param scheduleevent detail.
-   * @param list of dates.
+   * @param eventDetail detail.
+   * @param listDateOption list of dates.
    * @return the list of calendar event corresponding to the schedule event.
    */
   public List<CalendarEvent> encode(final ScheduleEvent eventDetail, final List<DateOption> listDateOption) {

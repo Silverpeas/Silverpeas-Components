@@ -48,7 +48,7 @@
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
@@ -96,7 +96,7 @@
   GraphicElementFactory gef =
       (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
   QuizzSessionController quizzScc = (QuizzSessionController) request.getAttribute("quizz");
-  ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+  MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
   if (quizzScc == null) {
     String sessionTimeout =
         GeneralPropertiesManager.getString("sessionTimeout");

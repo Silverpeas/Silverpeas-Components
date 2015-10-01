@@ -44,7 +44,7 @@ public class InfoLetterInstanciator extends SQLRequest implements ComponentsInst
    * Creates new FileBoxPlusInstanciator
    */
   public InfoLetterInstanciator() {
-    super("com.stratelia.silverpeas.infoLetter");
+    super("org.silverpeas.infoLetter");
   }
 
   @Override

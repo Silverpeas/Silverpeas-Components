@@ -62,7 +62,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-ResourceLocator settings = quizzScc.getSettings();
+SettingBundle settings = quizzScc.getSettings();
 
 QuestionContainerDetail quizz = null;
 if (action.equals("SendQuizzHeader")) {

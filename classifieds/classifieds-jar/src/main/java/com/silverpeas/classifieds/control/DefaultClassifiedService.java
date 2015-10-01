@@ -51,7 +51,9 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -73,10 +75,10 @@ import java.util.Map;
 public class DefaultClassifiedService implements ClassifiedService {
 
   private static final String MESSAGES_PATH =
-      "com.silverpeas.classifieds.multilang.classifiedsBundle";
+      "org.silverpeas.classifieds.multilang.classifiedsBundle";
   private static final String SETTINGS_PATH =
-      "com.silverpeas.classifieds.settings.classifiedsSettings";
-  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+      "org.silverpeas.classifieds.settings.classifiedsSettings";
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
 
   @Inject
   private OrganizationController organizationController;
@@ -95,13 +97,13 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return settings;
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
-    return new ResourceLocator(MESSAGES_PATH, language);
+  public LocalizationBundle getComponentMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 
   @Override

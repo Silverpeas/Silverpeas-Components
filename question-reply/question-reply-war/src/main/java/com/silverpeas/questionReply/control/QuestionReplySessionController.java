@@ -23,21 +23,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganizationController;
-
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -53,11 +38,8 @@ import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.QuestionDetail;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ZipUtil;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
-
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -69,26 +51,33 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.persistence.IdPK;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.*;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
 
-import org.apache.commons.io.IOUtils;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.util.Charsets.UTF_8;
@@ -812,7 +801,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public ExportReport export(ResourcesWrapper resource)
+  public ExportReport export(MultiSilverpeasBundle resource)
       throws QuestionReplyException, ParseException {
     StringBuilder sb = new StringBuilder("exportFAQ");
     Date date = new Date();
@@ -849,8 +838,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
 
     // intégrer la css du disque dans "files"
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+    SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.questionReply.settings.questionReplySettings");
     try {
       String chemin = (settings.getString("mappingDir"));
       if (chemin.startsWith("file:")) {
@@ -898,7 +887,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return exportReport;
   }
 
-  public String toHTML(File file, ResourcesWrapper resource)
+  public String toHTML(File file, MultiSilverpeasBundle resource)
       throws QuestionReplyException, ParseException {
     String fileName = file.getName();
     StringBuilder sb = new StringBuilder();
@@ -954,7 +943,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return sb.toString();
   }
 
-  public String addBody(ResourcesWrapper resource, File file)
+  public String addBody(MultiSilverpeasBundle resource, File file)
       throws QuestionReplyException, ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");

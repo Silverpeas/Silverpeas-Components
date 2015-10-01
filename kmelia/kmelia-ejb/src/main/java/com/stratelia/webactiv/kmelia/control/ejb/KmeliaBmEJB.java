@@ -109,15 +109,7 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.publication.notification.PublicationEventNotifier;
 import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.*;
 import org.silverpeas.util.annotation.Action;
 import org.silverpeas.util.annotation.SourcePK;
 import org.silverpeas.util.annotation.TargetPK;
@@ -156,7 +148,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private static final String MESSAGES_PATH = "org.silverpeas.kmelia.multilang.kmeliaBundle";
   private static final String SETTINGS_PATH = "org.silverpeas.kmelia.settings.kmeliaSettings";
-  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
   @Inject
   private NodeService nodeService;
   @Inject
@@ -196,8 +188,8 @@ public class KmeliaBmEJB implements KmeliaBm {
         return 0;
       }
       // lecture du properties
-      ResourceLocator theSettings = getComponentSettings();
-      return Integer.parseInt(theSettings.getString("HomeNbPublications"));
+      SettingBundle theSettings = getComponentSettings();
+      return theSettings.getInteger("HomeNbPublications");
     }
   }
 
@@ -3082,8 +3074,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private String addTodo(PublicationDetail pubDetail, String[] users) {
-    ResourceLocator message =
-        new ResourceLocator("com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", "fr");
+    LocalizationBundle message =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaBundle");
 
     TodoDetail todo = new TodoDetail();
 
@@ -3396,8 +3388,8 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public List<NodeDetail> getAxis(String componentId) {
-    ResourceLocator nodeSettings =
-        new ResourceLocator("com.stratelia.webactiv.node.nodeSettings", "");
+    SettingBundle nodeSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     SilverTrace.info("kmax", "KmeliaBmEjb.getAxis()", "root.MSG_GEN_PARAM_VALUE",
@@ -4151,8 +4143,8 @@ public class KmeliaBmEJB implements KmeliaBm {
 
       PublicationDetail clone = getClone(refPub);
 
-      ResourceLocator publicationSettings =
-          new ResourceLocator("org.silverpeas.publication.publicationSettings", "");
+      SettingBundle publicationSettings =
+          ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
       String absolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
 
       if (pubDetail != null) {
@@ -4266,8 +4258,8 @@ public class KmeliaBmEJB implements KmeliaBm {
     return commentService;
   }
 
-  private ResourceLocator getMultilang() {
-    return new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaBundle", "fr");
+  private LocalizationBundle getMultilang() {
+    return ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaBundle");
   }
 
   @Override
@@ -4643,13 +4635,13 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return settings;
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
-    return new ResourceLocator(MESSAGES_PATH, language);
+  public LocalizationBundle getComponentMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 
   @Override

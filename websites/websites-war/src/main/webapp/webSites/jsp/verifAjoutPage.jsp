@@ -55,6 +55,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 
 <%@ include file="util.jsp" %>
 
@@ -69,7 +70,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     * debutAffichage
     */  
    private void debutAffichage(JspWriter out, String rep, String action, 
-                                              String currentPath, String nomPage, String nameSite, GraphicElementFactory gef, String id, ResourcesWrapper resources) throws IOException {
+                                              String currentPath, String nomPage, String nameSite, GraphicElementFactory gef, String id, MultiSilverpeasBundle resources) throws IOException {
         out.println(
               "<!-- verifAjoutPage -->"+
               

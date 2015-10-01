@@ -32,6 +32,7 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ page import="org.silverpeas.servlet.HttpRequest" %>
+<%@ page import="org.silverpeas.util.*" %>
 <%@ include file="checkSurvey.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -72,8 +73,8 @@
   String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
   String px = m_context + "/util/icons/colorPix/1px.gif";
 
-  ResourceLocator surveySettings =
-      new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
+  SettingBundle surveySettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
 
   String nbMaxAnswers = surveySettings.getString("NbMaxAnswers");
 

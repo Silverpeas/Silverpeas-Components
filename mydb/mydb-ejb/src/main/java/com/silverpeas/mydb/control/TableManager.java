@@ -39,7 +39,7 @@ import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.data.key.UnicityKeys;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 /**
  * Manager used to create or modify a database table, not its content but its description. For the
@@ -182,7 +182,7 @@ public class TableManager {
    * @return True if the current table's name is valid.
    */
   public boolean isValidTableName(String[] tableNames,
-      ResourcesWrapper resources) {
+      MultiSilverpeasBundle resources) {
     String tableName = table.getName();
     if (tableName == null || tableName.length() == 0) {
       errorLabel = resources.getString("ErrorTableNameRequired");
@@ -208,7 +208,7 @@ public class TableManager {
    * @param exceptedIndex The index of the column (to avoid comparing the column with itself).
    * @return True if the column is valid.
    */
-  public boolean isValidColumn(DbColumn column, ResourcesWrapper resources,
+  public boolean isValidColumn(DbColumn column, MultiSilverpeasBundle resources,
       int exceptedIndex) {
     errorLabel = "";
     return (isValidKeyName(column, resources, exceptedIndex)
@@ -221,7 +221,7 @@ public class TableManager {
    * @param resources The resources wrapper.
    * @return True if the data type of the column has been set.
    */
-  private boolean isValidColumnType(DbColumn column, ResourcesWrapper resources) {
+  private boolean isValidColumnType(DbColumn column, MultiSilverpeasBundle resources) {
     if (column.getDataType() == DbColumn.DEFAULT_DATA_TYPE) {
       errorLabel = resources.getString("ErrorColumnTypeRequired");
       return false;
@@ -236,7 +236,7 @@ public class TableManager {
    */
   @SuppressWarnings("unchecked")
   private boolean isValidColumnDefaultValue(DbColumn column,
-      ResourcesWrapper resources) {
+      MultiSilverpeasBundle resources) {
     Class clazz = null;
     if (column.hasDefaultValue()) {
       String defaultValue = column.getDefaultValue();
@@ -280,7 +280,7 @@ public class TableManager {
    * @param index The index of the object (to avoid comparing the object with itself).
    * @return True if the name of the object is valid.
    */
-  public boolean isValidKeyName(Object object, ResourcesWrapper resources,
+  public boolean isValidKeyName(Object object, MultiSilverpeasBundle resources,
       int index) {
     errorLabel = "";
     String name = "";

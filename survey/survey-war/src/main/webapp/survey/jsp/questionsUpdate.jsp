@@ -35,6 +35,7 @@
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.*" %>
 
 <%@ include file="checkSurvey.jsp" %>
 
@@ -66,7 +67,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
+SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
 
 QuestionContainerDetail survey = null;
 

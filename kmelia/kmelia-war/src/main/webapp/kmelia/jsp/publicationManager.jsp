@@ -84,7 +84,7 @@
 
     String nextAction = "";
 
-    ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.publication.publicationSettings", resources.getLanguage());
+    SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
 
     KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
     UserDetail ownerDetail = null;

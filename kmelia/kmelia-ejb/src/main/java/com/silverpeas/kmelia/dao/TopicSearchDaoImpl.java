@@ -28,6 +28,7 @@ import com.silverpeas.kmelia.model.MostInterestedQueryVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.sql.SQLException;
@@ -44,8 +45,8 @@ public class TopicSearchDaoImpl implements TopicSearchDao {
       "count(*) as nb, query FROM sc_kmelia_search WHERE instanceid = ? GROUP BY query, " +
           "language ORDER BY nb DESC, query";
 
-  private static ResourceLocator settings =
-      new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
+  private static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 
   @Override
   public List<MostInterestedQueryVO> getMostInterestedSearch(String instanceId) {

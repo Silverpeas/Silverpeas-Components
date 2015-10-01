@@ -56,7 +56,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
 
 <%@ page import="org.silverpeas.util.i18n.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%!
 
@@ -76,7 +76,7 @@ String getAxisAllLabel(int valueMaxLength, KmeliaSessionController kmeliaScc) {
       return allLabel;
 }
 
-String getTimeAxis(KmeliaSessionController kmeliaScc, ResourceLocator timeSettings, String defaultValue) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
+String getTimeAxis(KmeliaSessionController kmeliaScc, LocalizationBundle timeSettings, String defaultValue) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
 
       List keys = kmeliaScc.getTimeAxisKeys();
       StringBuffer axis = new StringBuffer(1000);
@@ -198,7 +198,7 @@ String displayAxis(KmeliaSessionController kmeliaScc, GraphicElementFactory gef,
     
     if (timeAxisEnabled && axisList.size() > 0) {
         //get the time axis
-        ResourceLocator timeSettings = new ResourceLocator("org.silverpeas.kmelia.multilang.timeAxisBundle", kmeliaScc.getLanguage());
+        LocalizationBundle timeSettings = ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.timeAxisBundle", kmeliaScc.getLanguage());
         axisList.add(getTimeAxis(kmeliaScc, timeSettings,  timeCriteriaValue));
     }
     
@@ -244,7 +244,7 @@ String displayAxis(KmeliaSessionController kmeliaScc, GraphicElementFactory gef,
 	return result.toString();
 }
 
-String displayAxisManageView(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String axisId, String mandatoryFieldSrc, ResourcesWrapper resources, String translation)
+String displayAxisManageView(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String axisId, String mandatoryFieldSrc, MultiSilverpeasBundle resources, String translation)
 	 throws CreateException, SQLException, NamingException, RemoteException, FinderException {
     NodeDetail axis = kmeliaScc.getNodeHeader(axisId);
     StringBuffer result = new StringBuffer(1000);
@@ -313,7 +313,7 @@ String displayAxisManageView(KmeliaSessionController kmeliaScc, GraphicElementFa
     return result.toString();
 }
 
-String displayComponentManageView(KmeliaSessionController kmelia, GraphicElementFactory gef, String componentId, String path, String mandatoryFieldSrc, ResourcesWrapper resources, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
+String displayComponentManageView(KmeliaSessionController kmelia, GraphicElementFactory gef, String componentId, String path, String mandatoryFieldSrc, MultiSilverpeasBundle resources, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
     NodeDetail nodeDetail = kmelia.getNodeHeader(componentId);
     StringBuffer result = new StringBuffer(1000);
     Board board = gef.getBoard();

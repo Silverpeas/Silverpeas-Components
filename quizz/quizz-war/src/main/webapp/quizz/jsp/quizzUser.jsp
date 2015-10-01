@@ -76,7 +76,7 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
   session.removeAttribute("currentQuizz");
   session.removeAttribute("questionsResponses");
 
-  ResourceLocator settings = quizzScc.getSettings();
+  SettingBundle settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
   String component = quizzScc.getComponentLabel(); 
 

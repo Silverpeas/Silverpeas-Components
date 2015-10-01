@@ -33,6 +33,7 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Set;
 
 /**
@@ -63,9 +64,13 @@ public class ScheduleEventUserNotification extends AbstractScheduleEventUserNoti
   @Override
   protected void performTemplateData(final String language, final ScheduleEvent resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("eventName", resource.getTitle());
     template.setAttribute("eventDescription", resource.getDescription());
     template.setAttribute("eventCreationDate",

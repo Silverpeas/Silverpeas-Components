@@ -41,11 +41,11 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
           return pathString;
 }
 
-TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, String id, String separator, GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, Exception {
+TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, String id, String separator, GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException, Exception {
 	return displayTopicsToAdmin(yellowpagesScc, id, separator, gef, pageContext, request, session, resources, out, true);
 }
 
-TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, String id, String separator, GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out, boolean displayOperations) throws IOException, Exception {
+TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, String id, String separator, GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out, boolean displayOperations) throws IOException, Exception {
       TopicDetail CurrentTopic = yellowpagesScc.getTopic(id);
       NodeDetail nodeDetail = CurrentTopic.getNodeDetail();
       Collection path = CurrentTopic.getPath();
@@ -131,7 +131,7 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
       return CurrentTopic;
 }
 
-TopicDetail displayTopicsToUsers(YellowpagesSessionController yellowpagesScc, String id, String separator,String profile,GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, Exception {
+TopicDetail displayTopicsToUsers(YellowpagesSessionController yellowpagesScc, String id, String separator,String profile,GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException, Exception {
       return displayTopicsToAdmin(yellowpagesScc, id, separator, gef, pageContext, request, session, resources, out, false);
 }
 %>

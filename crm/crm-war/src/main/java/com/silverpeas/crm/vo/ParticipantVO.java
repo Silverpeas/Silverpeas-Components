@@ -25,13 +25,13 @@
 package com.silverpeas.crm.vo;
 
 import com.silverpeas.crm.model.CrmParticipant;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 public class ParticipantVO extends ElementVO {
 
   private CrmParticipant participant;
 
-  public ParticipantVO(CrmParticipant participant, ResourcesWrapper resources) {
+  public ParticipantVO(CrmParticipant participant, MultiSilverpeasBundle resources) {
     super(resources);
     this.participant = participant;
   }

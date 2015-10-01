@@ -55,12 +55,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%!
 
-  ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+  SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
   
   /* getMachine */
   public String getMachine(HttpServletRequest request) {
-    ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
-    ResourceLocator generalSettings = new ResourceLocator("com.stratelia.webactiv.general","fr");
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
+    SettingBundle generalSettings = ResourceLocator.getGeneralBundle();
 
     String machine = settings.getString("Machine");
     String context = (generalSettings.getString("ApplicationURL")).substring(1);
@@ -463,7 +463,7 @@ String navigPath(Collection path, boolean linked, int beforeAfter) {
   }
 
  /* parseCodeSupprImage */
- private String parseCodeSupprImage(WebSiteSessionController scc, String code, HttpServletRequest request, ResourceLocator settings, String currentPath) {
+ private String parseCodeSupprImage(WebSiteSessionController scc, String code, HttpServletRequest request, SettingBundle settings, String currentPath) {
     String theCode = code;
     String avant;
     String apres;
@@ -513,7 +513,7 @@ String navigPath(Collection path, boolean linked, int beforeAfter) {
  /* parseCodeSupprHref */
  /* ex : code = ...<a href="rr:icones/fleche.html"> <a href="http://www.etc"> <a href="aa:REP1/page.html">: liens deja en relatif (rr:) ou url externe (http://) ou liens en abslu
          res = ...<a href="icones/fleche.html"> <a href="http://www.etc"> <a href="page.html"> : tous les liens en relatifs ou urlk externe */
- private String parseCodeSupprHref(WebSiteSessionController scc, String code, ResourceLocator settings, String currentPath) {
+ private String parseCodeSupprHref(WebSiteSessionController scc, String code, SettingBundle settings, String currentPath) {
     String theCode = code;
     String avant;
     String apres;

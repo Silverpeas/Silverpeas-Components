@@ -120,7 +120,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 
-ResourceLocator settings = new ResourceLocator("org.silverpeas.webSites.settings.webSiteSettings","fr");
+SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 String checkSite=m_context+"/util/icons/ok.gif";
 String addSite=m_context+"/util/icons/webSites_to_add.gif";
 String declass=m_context+"/util/icons/webSites_trash.gif";

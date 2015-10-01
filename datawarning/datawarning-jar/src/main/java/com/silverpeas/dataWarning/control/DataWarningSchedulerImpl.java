@@ -43,6 +43,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;
@@ -62,8 +63,8 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
   private ScheduledJob theJob = null;
   private Scheduler scheduler = null;
   private String jobName = null;
-  private ResourceLocator messages =
-      new ResourceLocator("com.silverpeas.dataWarning.multilang.dataWarning", "");
+  private LocalizationBundle messages =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.dataWarning.multilang.dataWarning");
 
   public DataWarningSchedulerImpl(String instanceId) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();

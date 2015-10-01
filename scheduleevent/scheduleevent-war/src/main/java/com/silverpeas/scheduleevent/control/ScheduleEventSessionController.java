@@ -87,9 +87,9 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   public ScheduleEventSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle",
-        "com.silverpeas.components.scheduleevent.settings.ScheduleEventIcons",
-        "com.silverpeas.components.scheduleevent.settings.ScheduleEventSettings");
+        "org.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle",
+        "org.silverpeas.components.scheduleevent.settings.ScheduleEventIcons",
+        "org.silverpeas.components.scheduleevent.settings.ScheduleEventSettings");
     sel = getSelection();
   }
 

@@ -36,6 +36,7 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.*" %>
 
 <%@ include file="checkSurvey.jsp" %>
 
@@ -101,7 +102,7 @@ surveyScc.removeSessionSurveyUnderConstruction();
 surveyScc.removeSessionSurvey();
 surveyScc.removeSessionResponses();
 
-ResourceLocator message = new ResourceLocator("org.silverpeas.survey.multilang.surveyBundle", surveyScc.getLanguage());
+LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.survey.multilang.surveyBundle", surveyScc.getLanguage());
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

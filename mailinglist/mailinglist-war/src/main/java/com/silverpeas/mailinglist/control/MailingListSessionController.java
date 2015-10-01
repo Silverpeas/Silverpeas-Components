@@ -38,8 +38,8 @@ public class MailingListSessionController extends AbstractComponentSessionContro
   public MailingListSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.mailinglist.multilang.mailinglistBundle",
-        "com.silverpeas.mailinglist.settings.mailinglistIcons");
+        "org.silverpeas.mailinglist.multilang.mailinglistBundle",
+        "org.silverpeas.mailinglist.settings.mailinglistIcons");
   }
 
   public boolean isModerated() {

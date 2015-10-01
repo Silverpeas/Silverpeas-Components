@@ -45,7 +45,7 @@
 <c:set var="componentId" value="<%=componentId%>"/>
 <%!
 
-void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String role, String context, ResourcesWrapper resource, JspWriter out) throws IOException, java.text.ParseException {
+void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String role, String context, MultiSilverpeasBundle resource, JspWriter out) throws IOException, java.text.ParseException {
 
 	String		sDate		= null;
 	Channel		channel	= null;

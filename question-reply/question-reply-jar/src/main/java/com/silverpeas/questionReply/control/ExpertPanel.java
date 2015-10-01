@@ -60,11 +60,11 @@ public class ExpertPanel extends PanelProvider {
     this.language = lang;
     ResourceLocator message = GeneralPropertiesManager.getGeneralMultilang(language);
     // Set the resource locator for columns header
-    resourceLocator =
-        new ResourceLocator("com.silverpeas.questionReply.multilang.questionReplyBundle", language);
+    messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.questionReply.multilang.questionReplyBundle", language);
     // Set the Page name
-    pageName = resourceLocator.getString("questionReply.experts");
-    pageSubTitle = resourceLocator.getString("questionReply.experts");
+    pageName = messages.getString("questionReply.experts");
+    pageSubTitle = messages.getString("questionReply.experts");
     // Set column headers
     columnHeaders = new String[2];
     columnHeaders[COL_LASTNAME] = message.getString("GML.lastName");

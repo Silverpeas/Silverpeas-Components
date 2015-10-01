@@ -45,6 +45,7 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -533,7 +534,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     }
   }
 
-  private String getNotificationSubject(final ResourceLocator message, boolean onCreation) {
+  private String getNotificationSubject(final LocalizationBundle message, boolean onCreation) {
     String subject;
     if (onCreation) {
       subject = message.getString("projectManager.NewTask");
@@ -543,7 +544,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     return subject;
   }
 
-  private String getNotificationBody(final ResourceLocator message, boolean onCreation, String taskName) {
+  private String getNotificationBody(final LocalizationBundle message, boolean onCreation,
+      String taskName) {
     StringBuilder body = new StringBuilder();
     if (onCreation) {
       body.append(message.getString("projectManager.NewTaskNamed")).append(
@@ -563,7 +565,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     String url = URLManager.getURL("projectManager", null, task.getInstanceId())
         + "searchResult?Type=Task&Id=" + task.getId();
 
-    ResourceLocator message = new ResourceLocator("org.silverpeas.projectManager.multilang.projectManagerBundle",
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.projectManager.multilang.projectManagerBundle",
         DisplayI18NHelper.getDefaultLanguage());
 
     String subject = getNotificationSubject(message, onCreation);
@@ -573,7 +576,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
         subject, body);
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator("org.silverpeas.projectManager.multilang.projectManagerBundle", language);
+      message = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.projectManager.multilang.projectManagerBundle", language);
       subject = getNotificationSubject(message, onCreation);
       body = getNotificationBody(message, onCreation, task.getNom());
       notifMetaData.addLanguage(language, subject, body);

@@ -24,11 +24,12 @@
 package com.silverpeas.questionReply.control.notification;
 
 import com.silverpeas.questionReply.QuestionReplyException;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -52,8 +53,8 @@ public abstract class Notifier {
    * @return new SilverpeasTemplate
    */
   protected SilverpeasTemplate loadTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(
+        "org.silverpeas.questionReply.settings.questionReplySettings");
     Properties templateConfiguration = new Properties();
     templateConfiguration
         .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));

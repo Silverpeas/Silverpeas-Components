@@ -33,7 +33,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.servlet.HttpRequest;
 
 /**
@@ -53,7 +53,7 @@ public class ViewClassifiedHandler extends FunctionHandler {
     }
 
     // Get creationDate
-    ResourcesWrapper resources = classifiedsSC.getResources();
+    MultiSilverpeasBundle resources = classifiedsSC.getResources();
     ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
     request.setAttribute("Classified", classifiedsSC.getClassifiedWithImages(classifiedId));
     String creationDate;

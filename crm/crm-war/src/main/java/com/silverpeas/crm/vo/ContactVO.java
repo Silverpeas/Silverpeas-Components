@@ -25,13 +25,13 @@
 package com.silverpeas.crm.vo;
 
 import com.silverpeas.crm.model.CrmContact;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 public class ContactVO extends ElementVO {
 
   private CrmContact contact;
 
-  public ContactVO(CrmContact contact, ResourcesWrapper resources) {
+  public ContactVO(CrmContact contact, MultiSilverpeasBundle resources) {
     super(resources);
     this.contact = contact;
   }

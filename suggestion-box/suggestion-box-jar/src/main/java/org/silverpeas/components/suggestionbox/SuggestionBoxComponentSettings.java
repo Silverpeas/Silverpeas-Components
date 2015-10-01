@@ -24,7 +24,9 @@
 package org.silverpeas.components.suggestionbox;
 
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 
 /**
@@ -64,24 +66,24 @@ public final class SuggestionBoxComponentSettings {
    * @param language the language in which are written the messages.
    * @return the resource with the translated messages.
    */
-  public static ResourceLocator getMessagesIn(String language) {
-    return new ResourceLocator(MESSAGES_PATH, language);
+  public static LocalizationBundle getMessagesIn(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 
   /**
    * Gets all the settings of the Suggestion Box component.
    * @return the resource with the different component settings.
    */
-  public static ResourceLocator getSettings() {
-    return new ResourceLocator(SETTINGS_PATH, "");
+  public static SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle(SETTINGS_PATH);
   }
 
   /**
    * Gets all the icons definitions particular to the Suggestion Box component.
    * @return the resource with icons definition.
    */
-  public static ResourceLocator getIcons() {
-    return new ResourceLocator(ICONS_PATH, "");
+  public static LocalizationBundle getIcons() {
+    return ResourceLocator.getLocalizationBundle(ICONS_PATH);
   }
 
   /**

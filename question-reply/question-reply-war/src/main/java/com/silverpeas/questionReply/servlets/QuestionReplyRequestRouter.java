@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.servlet.HttpRequest;
@@ -76,8 +76,8 @@ public class QuestionReplyRequestRouter
   public QuestionReplySessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new QuestionReplySessionController(mainSessionCtrl, componentContext,
-        "com.silverpeas.questionReply.multilang.questionReplyBundle",
-        "com.silverpeas.questionReply.settings.questionReplyIcons");
+        "org.silverpeas.questionReply.multilang.questionReplyBundle",
+        "org.silverpeas.questionReply.settings.questionReplyIcons");
   }
 
   /**
@@ -471,7 +471,7 @@ public class QuestionReplyRequestRouter
           destination = getDestination("Main", scc, request);
         }
       } else if ("Export".equals(function)) {
-        ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+        MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
         ExportReport report = scc.export(resource);
         request.setAttribute("ExportReport", report);
         destination = "/questionReply/jsp/downloadZip.jsp";

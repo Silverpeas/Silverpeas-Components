@@ -64,15 +64,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.Link;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.*;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.DecodingException;
@@ -94,6 +86,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -709,7 +702,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     // Get default resource bundle
     String resource = "org.silverpeas.survey.multilang.surveyBundle";
-    ResourceLocator message = new ResourceLocator(resource, DisplayI18NHelper.getDefaultLanguage());
+    LocalizationBundle message =
+        ResourceLocator.getLocalizationBundle(resource, DisplayI18NHelper.getDefaultLanguage());
 
     Map<String, SilverpeasTemplate> templates = new HashMap<>();
     String subject = message.getString("survey.notifSubject");
@@ -723,7 +717,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     List<String> languages = DisplayI18NHelper.getLanguages();
     for (String language : languages) {
       // initialize new resource locator
-      message = new ResourceLocator(resource, language);
+      message = ResourceLocator.getLocalizationBundle(resource, language);
 
       // Create a new silverpeas template
       SilverpeasTemplate template = getNewTemplate();
@@ -737,7 +731,13 @@ public class SurveySessionController extends AbstractComponentSessionController 
       }
       template.setAttribute("htmlPath", htmlPath);
       templates.put(language, template);
-      notifMetaData.addLanguage(language, message.getString("survey.notifSubject", subject), "");
+      String translation;
+      try {
+        translation = message.getString("survey.notifSubject");
+      } catch (MissingResourceException ex) {
+        translation = subject;
+      }
+      notifMetaData.addLanguage(language, translation, "");
 
       Link link = new Link(url, message.getString("survey.notifSurveyLinkLabel"));
       notifMetaData.setLink(link, language);

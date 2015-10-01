@@ -25,6 +25,7 @@ package com.silverpeas.kmelia.export;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import org.odftoolkit.odfdom.dom.element.table.TableTableElement;
 import org.odftoolkit.simple.TextDocument;
@@ -34,6 +35,7 @@ import org.odftoolkit.simple.text.Footer;
 import org.odftoolkit.simple.text.Header;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
+import org.silverpeas.util.LocalizationBundle;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -52,18 +54,18 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class ODTDocumentTextTranslator {
 
-  private final ResourceLocator bundle;
+  private final LocalizationBundle bundle;
 
   /**
    * Creates a translator of ODT texts with the specified localized resource bundle.
    * @param bundle the bundle to use for translating texts.
    * @return an ODTDocumentTextTranslator instance.
    */
-  public static ODTDocumentTextTranslator aTranslatorWith(final ResourceLocator bundle) {
+  public static ODTDocumentTextTranslator aTranslatorWith(final LocalizationBundle bundle) {
     return new ODTDocumentTextTranslator(bundle);
   }
 
-  private ODTDocumentTextTranslator(final ResourceLocator bundle) {
+  private ODTDocumentTextTranslator(final LocalizationBundle bundle) {
     this.bundle = bundle;
   }
 
@@ -154,14 +156,20 @@ public class ODTDocumentTextTranslator {
     String[] words = text.split(" ");
     for (String aWord : words) {
       if (!aWord.isEmpty()) {
-        translatedText.append(getBundle().getString(aWord.trim(), aWord));
+        String translation;
+        try {
+          translation = getBundle().getString(aWord.trim());
+        } catch(MissingResourceException ex) {
+          translation = aWord;
+        }
+        translatedText.append(translation);
       }
       translatedText.append(" ");
     }
     return translatedText.toString();
   }
 
-  private ResourceLocator getBundle() {
+  private LocalizationBundle getBundle() {
     return this.bundle;
   }
 }

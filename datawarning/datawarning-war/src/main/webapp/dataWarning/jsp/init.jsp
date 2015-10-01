@@ -35,7 +35,7 @@
 	OperationPane operationPane;
 	
 	DataWarningSessionController dataWarningSC;
-	ResourceLocator messages;
+	LocalizationBundle messages;
 %>
 <%
 	response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -53,7 +53,7 @@
 	
 	if (dataWarningSC == null) {
 		// No DataWarning session controller in the request -> security exception
-		String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}
@@ -73,5 +73,6 @@
 	//operation pane
 	operationPane = window.getOperationPane();
 
-	messages = new ResourceLocator("com.silverpeas.dataWarning.multilang.dataWarning", "");
+	messages = ResourceLocator.getLocalizationBundle(
+			"org.silverpeas.dataWarning.multilang.dataWarning");
 %>

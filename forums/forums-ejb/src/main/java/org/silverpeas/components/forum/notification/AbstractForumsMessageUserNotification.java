@@ -30,6 +30,7 @@ import com.stratelia.webactiv.forums.models.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * User: Yohann Chastagnier
@@ -49,9 +50,13 @@ public abstract class AbstractForumsMessageUserNotification
   @Override
   protected void performTemplateData(final String language, final Message resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("isSubject", resource.isSubject());
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("text", resource.getText());

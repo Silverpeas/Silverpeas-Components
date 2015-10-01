@@ -45,7 +45,7 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
    * Creates new ForumsInstanciator
    */
   public ForumsInstanciator() {
-    super("com.stratelia.webactiv.forums");
+    super("org.silverpeas.forums");
   }
 
   @Override

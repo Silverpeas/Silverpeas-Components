@@ -41,7 +41,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -90,24 +90,24 @@ public class CrmSessionController extends AbstractComponentSessionController {
   private String[] eventStates = null;
   private String[] medias = null;
 
-  private ResourcesWrapper resources = null;
+  private MultiSilverpeasBundle resources = null;
 
   private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
   private DateFormat displayDateFormat = null;
 
   public CrmSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.silverpeas.crm.multilang.crmBundle",
-        "com.silverpeas.crm.settings.crmIcons");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.crm.multilang.crmBundle",
+        "org.silverpeas.crm.settings.crmIcons");
     functions = CrmSettings.getFunction();
     eventStates = CrmSettings.getEventState();
     medias = CrmSettings.getMedia();
     dataManager = ServiceFactory.getCrmData();
   }
 
-  public ResourcesWrapper getResouces() {
+  public MultiSilverpeasBundle getResouces() {
     if (resources == null) {
-      resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
+      resources = new MultiSilverpeasBundle(getMultilang(), getIcon(), getSettings(), getLanguage());
     }
     return resources;
   }

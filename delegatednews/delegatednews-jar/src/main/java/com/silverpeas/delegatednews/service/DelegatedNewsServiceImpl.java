@@ -39,6 +39,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -219,7 +220,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
             "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
       } else {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        ResourceLocator message = new ResourceLocator(
+        LocalizationBundle message = ResourceLocator.getLocalizationBundle(
             "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
         String subject = message.getString("delegatednews.newsSuggest");
@@ -233,7 +234,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           template.setAttribute("publicationId", id);
           template.setAttribute("publicationName", news.getTitle());
           template.setAttribute("senderName", UserDetail.getById(senderId).getDisplayedName());
-          ResourceLocator localizedMessage = new ResourceLocator(
+          LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
               "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsSuggest");
           notifMetaData.addLanguage(lang, subject, "");
@@ -309,7 +310,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
       } else {
         PublicationDetail publication = news.getPublicationDetail();
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
-        ResourceLocator message = new ResourceLocator(
+        LocalizationBundle message = ResourceLocator.getLocalizationBundle(
             "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
         String subject = message.getString("delegatednews.newsValid");
@@ -323,7 +324,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           template.setAttribute("publicationId", publication.getId());
           template.setAttribute("publicationName", publication.getName());
           template.setAttribute("senderName", UserDetail.getById(senderId).getDisplayedName());
-          ResourceLocator localizedMessage = new ResourceLocator(
+          LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
               "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsValid");
           notifMetaData.addLanguage(lang, subject, "");
@@ -356,7 +357,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
       } else {
         PublicationDetail publication = news.getPublicationDetail();
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        ResourceLocator message = new ResourceLocator(
+        LocalizationBundle message = ResourceLocator.getLocalizationBundle(
             "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
         String subject = message.getString("delegatednews.newsRefused");
@@ -371,7 +372,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           template.setAttribute("publicationName", publication.getName(lang));
           template.setAttribute("refusalMotive", refusalMotive);
           template.setAttribute("senderName", UserDetail.getById(userId).getDisplayedName());
-          ResourceLocator localizedMessage = new ResourceLocator(
+          LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
               "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsRefused");
           notifMetaData.addLanguage(lang, subject, "");

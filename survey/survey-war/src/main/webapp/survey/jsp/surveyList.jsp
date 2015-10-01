@@ -34,6 +34,7 @@
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.*" %>
 
 <%@ include file="checkSurvey.jsp"%>
 
@@ -66,7 +67,7 @@
       GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
   ArrayPane buildSurveyArrayToAdmin(GraphicElementFactory gef, SurveySessionController surveyScc,
-      int view, Collection surveys, ResourcesWrapper resources,
+      int view, Collection surveys, MultiSilverpeasBundle resources,
       javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session,
       boolean pollingStationMode) throws ParseException {
 
@@ -212,7 +213,7 @@
   }
 
   ArrayPane buildSurveyArrayToUser(GraphicElementFactory gef, SurveySessionController surveyScc,
-      int view, Collection surveys, ResourcesWrapper resources,
+      int view, Collection surveys, MultiSilverpeasBundle resources,
       javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session,
       boolean pollingStationMode) throws ParseException {
 

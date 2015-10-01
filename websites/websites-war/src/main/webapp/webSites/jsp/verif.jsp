@@ -58,6 +58,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 
 <%@ include file="util.jsp" %>
 <%@ include file="checkScc.jsp" %>
@@ -71,7 +72,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     */     
    private void debutAffichage(JspWriter out, String rep, String action, String id, 
                                               String currentPath, String name, String newName, 
-                                              String code, GraphicElementFactory gef, ResourcesWrapper resources) throws IOException {
+                                              String code, GraphicElementFactory gef, MultiSilverpeasBundle resources) throws IOException {
         out.println(
         
                  "<!-- verif -->"+

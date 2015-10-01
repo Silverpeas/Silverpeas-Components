@@ -45,7 +45,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
@@ -64,7 +64,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 	Window 		window 		= gef.getWindow();
 	BrowseBar 	browseBar 	= window.getBrowseBar();

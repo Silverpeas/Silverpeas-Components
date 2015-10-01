@@ -63,12 +63,12 @@
 <%@ page import="com.stratelia.webactiv.yellowpages.model.*"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
-ResourcesWrapper 				resources 		= (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resources 		= (MultiSilverpeasBundle)request.getAttribute("resources");
 YellowpagesSessionController 	yellowpagesScc 	= (YellowpagesSessionController) request.getAttribute("yellowpagesScc");
 GraphicElementFactory gef 			= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String[] 						browseContext 	= (String[]) request.getAttribute("browseContext");

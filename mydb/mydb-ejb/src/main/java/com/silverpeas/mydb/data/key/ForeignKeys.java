@@ -29,7 +29,7 @@ import com.silverpeas.mydb.data.db.DbColumn;
 import com.silverpeas.mydb.data.db.DbTable;
 import org.silverpeas.util.StringUtil;
 
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 /**
  * Table foreign keys list.
@@ -133,7 +133,7 @@ public class ForeignKeys {
   }
 
   public ForeignKeyError[] getErrors(DataTypeList dataTypeList,
-      ResourcesWrapper resources) {
+      MultiSilverpeasBundle resources) {
     ArrayList<ForeignKeyError> errors = new ArrayList<ForeignKeyError>();
     String label;
     String columnName;

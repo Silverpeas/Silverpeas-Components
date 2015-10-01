@@ -27,7 +27,7 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
@@ -46,10 +46,10 @@ import java.util.Iterator;
 public class QuestionReplyExport {
 
   private File file;
-  private ResourcesWrapper resource;
+  private MultiSilverpeasBundle resource;
   private UserDetail currentUser;
 
-  public QuestionReplyExport(UserDetail currentUser, ResourcesWrapper resource, File file) {
+  public QuestionReplyExport(UserDetail currentUser, MultiSilverpeasBundle resource, File file) {
     this.file = file;
     this.resource = resource;
     this.currentUser = currentUser;

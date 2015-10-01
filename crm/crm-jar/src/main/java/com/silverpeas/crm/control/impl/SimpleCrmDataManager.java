@@ -59,14 +59,14 @@ public class SimpleCrmDataManager implements CrmDataManager {
 
   public SimpleCrmDataManager() {
     try {
-      crmDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.crm.model.Crm");
-      crmContactDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.crm.model.CrmContact");
+      crmDAO = SilverpeasBeanDAOFactory.getDAO(Crm.class.getName());
+      crmContactDAO = SilverpeasBeanDAOFactory.getDAO(CrmContact.class.getName());
       crmParticipantDAO =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.crm.model.CrmParticipant");
-      crmDeliveryDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.crm.model.CrmDelivery");
-      crmEventDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.crm.model.CrmEvent");
+          SilverpeasBeanDAOFactory.getDAO(CrmParticipant.class.getName());
+      crmDeliveryDAO = SilverpeasBeanDAOFactory.getDAO(CrmDelivery.class.getName());
+      crmEventDAO = SilverpeasBeanDAOFactory.getDAO(CrmEvent.class.getName());
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -82,7 +82,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       SilverTrace.debug("crm", "SimpleCrmDataManager.createCrm()", "add ok=");
       crm.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -95,7 +95,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmDAO.remove(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -108,7 +108,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmDAO.update(crm);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -122,7 +122,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       String clause = "instanceId = '" + instanceId + "'";
       return (ArrayList<Crm>) crmDAO.findByWhereClause(new IdPK(), clause);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -137,7 +137,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       String clause = "instanceId = '" + crm.getInstanceId() + "' and crmId = " + crmPK.getId();
       return (ArrayList<CrmContact>) crmContactDAO.findByWhereClause(crmPK, clause);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -149,7 +149,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       WAPrimaryKey pk = crmContactDAO.add(contact);
       contact.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -160,7 +160,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmContactDAO.remove(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -172,7 +172,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       crmContactDAO.update(contact);
       // crmContentManager.updateSilverContentVisibility(ilp);
     } catch (Exception e) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
   }
@@ -183,7 +183,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       return crmDAO.findByPrimaryKey(crmPK);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -194,7 +194,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       return crmContactDAO.findByPrimaryKey(contactPK);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -220,7 +220,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       return crmParticipantDAO.findByPrimaryKey(participantPK);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -233,7 +233,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       String clause = "instanceId = '" + crm.getInstanceId() + "' and crmId = " + crmPK.getId();
       return (ArrayList<CrmParticipant>) crmParticipantDAO.findByWhereClause(crmPK, clause);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -245,7 +245,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       WAPrimaryKey pk = crmParticipantDAO.add(participant);
       participant.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -256,7 +256,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmParticipantDAO.remove(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -267,7 +267,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmParticipantDAO.update(participant);
     } catch (Exception e) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
   }
@@ -278,7 +278,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       return crmEventDAO.findByPrimaryKey(eventPK);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -291,7 +291,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       String clause = "instanceId = '" + crm.getInstanceId() + "' and crmId = " + crmPK.getId();
       return (ArrayList<CrmEvent>) crmEventDAO.findByWhereClause(crmPK, clause);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -303,7 +303,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       WAPrimaryKey pk = crmEventDAO.add(event);
       event.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -314,7 +314,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmEventDAO.remove(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -325,7 +325,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmEventDAO.update(event);
     } catch (Exception e) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
   }
@@ -335,7 +335,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       return crmDeliveryDAO.findByPrimaryKey(deliveryPK);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage());
     }
   }
@@ -348,7 +348,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       String clause = "instanceId = '" + crm.getInstanceId() + "' and crmId = " + crmPK.getId();
       return (ArrayList<CrmDelivery>) crmDeliveryDAO.findByWhereClause(crmPK, clause);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -360,7 +360,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
       WAPrimaryKey pk = crmDeliveryDAO.add(delivery);
       delivery.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -371,7 +371,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmDeliveryDAO.remove(pk);
     } catch (PersistenceException pe) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
@@ -381,7 +381,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
     try {
       crmDeliveryDAO.update(delivery);
     } catch (PersistenceException e) {
-      throw new CrmException("com.silverpeas.crm.control.impl.SimpleCrmDataManager",
+      throw new CrmException(SimpleCrmDataManager.class.getName(),
           SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
   }

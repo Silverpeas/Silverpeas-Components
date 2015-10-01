@@ -35,7 +35,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import org.silverpeas.util.FileRepositoryManager;
@@ -140,14 +140,14 @@ public class KmeliaDisplayHelper {
   }
 
   public static void displayAllOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, ResourcesWrapper resources, JspWriter out) throws
+      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out) throws
       IOException {
     boolean kmaxMode = false;
     displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
   }
 
   public static void displayAllOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, ResourcesWrapper resources, JspWriter out,
+      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out,
       boolean kmaxMode) throws IOException {
     String routerUrl = URLManager.getApplicationURL() + URLManager.getURL(kmeliaScc
         .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
@@ -252,13 +252,13 @@ public class KmeliaDisplayHelper {
   }
 
   public static void displayUserOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, ResourcesWrapper resources, JspWriter out) throws
+      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out) throws
       IOException {
     displayUserOperations(id, kmeliaScc, gef, action, resources, out, false);
   }
 
   public static void displayUserOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, ResourcesWrapper resources, JspWriter out,
+      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out,
       boolean kmaxMode) throws IOException {
 
     String routerUrl = URLManager.getApplicationURL() + URLManager.getURL(kmeliaScc
@@ -288,7 +288,7 @@ public class KmeliaDisplayHelper {
 
   public static void displayWizardOperations(String wizardRow, String id,
       KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String action,
-      ResourcesWrapper resources, JspWriter out, boolean kmaxMode) throws IOException {
+      MultiSilverpeasBundle resources, JspWriter out, boolean kmaxMode) throws IOException {
 
     String routerUrl = URLManager.getApplicationURL() + URLManager.getURL(kmeliaScc
         .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
@@ -355,7 +355,7 @@ public class KmeliaDisplayHelper {
   }
 
   public static void displayUserAttachmentsView(PublicationDetail pubDetail, String webContext,
-      JspWriter out, String lang, boolean showIcon, ResourcesWrapper resources) throws IOException {
+      JspWriter out, String lang, boolean showIcon, MultiSilverpeasBundle resources) throws IOException {
     ForeignPK foreignKey = new ForeignPK(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(foreignKey, lang);

@@ -33,6 +33,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
@@ -152,10 +153,10 @@ public class AliasFileServer extends HttpServlet {
   // Add By Mohammed Hguig
   private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     OutputStream out = res.getOutputStream();
-    ResourceLocator resourceLocator = new ResourceLocator(
-        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
 
-    InputStream in = new ByteArrayInputStream(resourceLocator.getString("warning").
+    InputStream in = new ByteArrayInputStream(messages.getString("warning").
         getBytes(Charsets.UTF_8));
     try {
       IOUtils.copy(in, out);

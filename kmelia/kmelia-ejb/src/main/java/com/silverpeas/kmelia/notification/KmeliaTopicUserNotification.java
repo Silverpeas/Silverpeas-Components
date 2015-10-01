@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.MissingResourceException;
 
 /**
  * @author Yohann Chastagnier
@@ -141,7 +142,13 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
 
   @Override
   protected void performTemplateData(final String language, final NodeDetail resource, final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
     template.setAttribute("topic", resource);
     template.setAttribute("topicName", resource.getName(language));

@@ -53,8 +53,8 @@ public class PdcSearchUserWrapperSessionController extends AbstractComponentSess
    */
   public PdcSearchUserWrapperSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.pdcPeas.multilang.pdcBundle",
+        "org.silverpeas.pdcPeas.settings.pdcPeasIcons");
   }
 
   /**

@@ -38,7 +38,7 @@ public class QuestionReplyInstanciator extends SQLRequest implements ComponentsI
    * Creates new QuestionReplyInstanciator
    */
   public QuestionReplyInstanciator() {
-    super("com.silverpeas.questionReply");
+    super("org.silverpeas.questionReply");
   }
 
   @Override

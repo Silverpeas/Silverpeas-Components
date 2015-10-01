@@ -76,7 +76,7 @@ Vector infos(JspWriter out, Collection<Question> Questions, String questionId)  
   String quizz_id = (String) request.getParameter("quizz_id");
 
   //get SessionController, Language & Settings
-  ResourceLocator settings = quizzScc.getSettings();
+  SettingBundle settings = quizzScc.getSettings();
   
   //Get Space, component, and current quizz_id 
   String space = quizzScc.getSpaceLabel();

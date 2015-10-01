@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.util.i18n.I18NHelper"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
@@ -49,7 +49,7 @@
   <fmt:message var="validateButtonLabel" key="GML.validate"/>
   <c:set var="node" value="${requestScope.NodeDetail}" scope="page"/>
   <%
-  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
   String translation = (String) request.getAttribute("Translation");
   String language = (String) request.getAttribute("Language");
   NodeDetail node = (NodeDetail) request.getAttribute("NodeDetail");

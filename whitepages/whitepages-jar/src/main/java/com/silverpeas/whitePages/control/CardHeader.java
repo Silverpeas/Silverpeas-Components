@@ -26,6 +26,7 @@ package com.silverpeas.whitePages.control;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.i18n.AbstractBean;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.record.UserRecord;
@@ -47,8 +48,8 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
   private String instanceId;
   private String date;
   private String creatorId;
-  private final static ResourceLocator whitePagesIcons =
-      new ResourceLocator("com.silverpeas.whitePages.settings.whitePagesIcons", "");
+  private final static SettingBundle whitePagesIcons =
+      ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.whitePagesIcons");
 
   public void init(long id, Card card) {
     this.id = id;
@@ -129,8 +130,8 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     UserTemplate template = templates.get(instanceId);
 
     if (template == null) {
-      ResourceLocator templateSettings =
-          new ResourceLocator("com.silverpeas.whitePages.settings.template", "");
+      SettingBundle templateSettings =
+          ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.template");
       String templateDir = templateSettings.getString("templateDir");
       String userTemplate = getParam("userTemplate", instanceId);
       template =

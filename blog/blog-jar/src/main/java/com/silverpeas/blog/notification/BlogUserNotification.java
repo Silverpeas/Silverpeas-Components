@@ -35,6 +35,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 
 import java.util.Collection;
+import java.util.MissingResourceException;
 
 /**
  * The centralization of the construction of the blog notifications
@@ -115,9 +116,13 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   @Override
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("blog", resource);
     template.setAttribute("blogName", resource.getPublication().getName(language));
     template.setAttribute("blogDate", DateUtil.getOutputDate(resource.getDateEvent(), language));

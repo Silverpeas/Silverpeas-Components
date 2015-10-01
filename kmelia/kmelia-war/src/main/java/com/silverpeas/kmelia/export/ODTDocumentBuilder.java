@@ -57,8 +57,10 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.Charsets;
@@ -87,12 +89,12 @@ import static org.silverpeas.util.StringUtil.isInteger;
 public class ODTDocumentBuilder {
 
   private static final String DOCUMENT_TEMPLATE = "kmelia.export.template";
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
   private UserDetail user;
   private String language = "";
   private String topicIdToConsider;
-  private ResourceLocator messages;
+  private LocalizationBundle messages;
 
   /**
    * Gets an instance of a builder of ODT documents.
@@ -487,10 +489,10 @@ public class ODTDocumentBuilder {
     return this.user;
   }
 
-  private ResourceLocator getMessagesBundle() {
+  private LocalizationBundle getMessagesBundle() {
     if (this.messages == null) {
       this.messages =
-          new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaExport", getLanguage());
+          ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaExport", getLanguage());
     }
     return this.messages;
 

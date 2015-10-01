@@ -27,14 +27,15 @@ import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationB
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsServiceProvider;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractForumsUserNotification<T>
     extends AbstractTemplateUserNotificationBuilder<T> {
-  protected ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
+  protected SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.forums.settings.forumsMails");
 
   protected AbstractForumsUserNotification(final T resource) {
     super(resource);

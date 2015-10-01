@@ -30,14 +30,15 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class AutomaticDraftOut implements SchedulerEventListener {
 
   public static final String AUTOMATICDRAFTOUT_JOB_NAME = "KmeliaAutomaticDraftOutJob";
-  private ResourceLocator resources =
-      new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "");
+  private SettingBundle resources =
+      ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 
   public void initialize() {
     SilverTrace.info("kmelia", "AutomaticDraftOut.initialize()", "root.MSG_GEN_ENTER_METHOD");

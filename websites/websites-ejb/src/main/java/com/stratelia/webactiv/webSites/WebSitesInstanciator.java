@@ -37,6 +37,7 @@ import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
@@ -46,14 +47,14 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
  */
 public class WebSitesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
-  private static ResourceLocator uploadSettings =
-      new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+  private static SettingBundle uploadSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 
   /**
    * WebSiteInstanciator constructor
    */
   public WebSitesInstanciator() {
-    super("com.stratelia.webactiv.webSites");
+    super("org.silverpeas.webSites");
   }
 
   @Override
@@ -62,9 +63,9 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
     SilverTrace.info("websites", "WebSitesInstanciator.create()",
         "webSites.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
         "space : " + spaceId + "component : " + componentId);
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.webSites");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.webSites");
     pub.create(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.webSites");
+    NodeInstanciator node = new NodeInstanciator("org.silverpeas.webSites");
     node.create(con, spaceId, componentId, userId);
     setInsertQueries();
     insertSpecialNode(con, componentId, userId);
@@ -86,9 +87,9 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "siteIcons");
     deleteDataOfInstance(con, componentId, "site");
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.webSites");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.webSites");
     pub.delete(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.webSites");
+    NodeInstanciator node = new NodeInstanciator("org.silverpeas.webSites");
     node.delete(con, spaceId, componentId, userId);
     try {
       deleteAttachmentsAndImagesDirectory(spaceId, componentId);

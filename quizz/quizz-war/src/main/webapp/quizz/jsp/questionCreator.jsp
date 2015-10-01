@@ -53,8 +53,8 @@ if (galleries != null) {
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 String ligne = m_context + "/util/icons/colorPix/1px.gif";
 
-ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", quizzScc.getLanguage());
-ResourceLocator quizzSettings = quizzScc.getSettings();
+SettingBundle uploadSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
+SettingBundle quizzSettings = quizzScc.getSettings();
 
 Button validateButton = null;
 Button cancelButton = null;

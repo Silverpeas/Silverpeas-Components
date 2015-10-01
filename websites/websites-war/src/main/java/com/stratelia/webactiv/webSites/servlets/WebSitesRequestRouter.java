@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.webSites.servlets;
 
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -1159,8 +1160,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         nomPage = "http://" + nomPage;
       }
     } else { // upload, design
-      ResourceLocator settings =
-          new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 
       nomPage = "http://" + getMachine(request) + "/" + settings.getString("Context") + "/" +
           scc.getWebSitePathById(siteId) + "/" + nomPage;
@@ -1200,9 +1201,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
    * @return
    */
   private String getMachine(HttpServletRequest request) {
-    ResourceLocator settings =
-        new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-    ResourceLocator generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "fr");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
+    SettingBundle generalSettings = ResourceLocator.getGeneralBundle();
 
     String machine = settings.getString("Machine"); // ex :
     String context = (generalSettings.getString("ApplicationURL")).substring(1);
@@ -1390,7 +1391,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   }
 
   private String parseCodeSupprImage(WebSiteSessionController scc, String code,
-      HttpServletRequest request, ResourceLocator settings, String currentPath) {
+      HttpServletRequest request, SettingBundle settings, String currentPath) {
     String avant;
     String apres;
     int index;
@@ -1442,7 +1443,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   }
 
   private String parseCodeSupprHref(WebSiteSessionController scc, String code,
-      ResourceLocator settings, String currentPath) {
+      SettingBundle settings, String currentPath) {
     String avant;
     String apres;
     int index;

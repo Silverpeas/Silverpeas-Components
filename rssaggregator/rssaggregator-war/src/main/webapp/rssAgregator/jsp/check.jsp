@@ -51,7 +51,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
@@ -100,7 +100,7 @@ if (rssSC == null) {
 */
 String context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();

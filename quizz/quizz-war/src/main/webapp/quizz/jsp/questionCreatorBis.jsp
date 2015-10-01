@@ -50,7 +50,7 @@ if (galleries != null) {
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 String ligne = m_context + "/util/icons/colorPix/1px.gif";
 
-ResourceLocator quizzSettings = quizzScc.getSettings();
+SettingBundle quizzSettings = quizzScc.getSettings();
 
 Button validateButton = null;
 Button cancelButton = null;

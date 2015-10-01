@@ -81,7 +81,7 @@
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
@@ -94,7 +94,7 @@
 <%
     WebSiteSessionController 	scc 		= (WebSiteSessionController) request.getAttribute("webSites");
     GraphicElementFactory 		gef 		= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-    ResourcesWrapper 			resources 	= (ResourcesWrapper)request.getAttribute("resources");
+    MultiSilverpeasBundle resources 	= (MultiSilverpeasBundle)request.getAttribute("resources");
 	String[] 					browseContext 	= (String[]) request.getAttribute("browseContext");
 
 	String m_context = URLManager.getApplicationURL();

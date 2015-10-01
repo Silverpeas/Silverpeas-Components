@@ -41,7 +41,7 @@
 %>
 <%!
 public void listFolders(JspWriter out, String userId, boolean admin, int rootId, int parentId,
-        String indent, ResourceLocator resource, ForumsSessionController fsc)
+        String indent, LocalizationBundle resource, ForumsSessionController fsc)
     throws ForumsException
 {
     try

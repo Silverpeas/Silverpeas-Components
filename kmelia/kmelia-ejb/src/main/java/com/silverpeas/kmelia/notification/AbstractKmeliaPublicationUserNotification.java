@@ -31,6 +31,8 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
+import java.util.MissingResourceException;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -57,9 +59,13 @@ public abstract class AbstractKmeliaPublicationUserNotification
   @Override
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("path", getPath(language));
     template.setAttribute("publication", resource);
     template.setAttribute("publicationName", resource.getName(language));

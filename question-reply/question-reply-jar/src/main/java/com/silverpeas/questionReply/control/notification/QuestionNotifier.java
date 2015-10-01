@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -71,7 +72,7 @@ public class QuestionNotifier extends Notifier {
     try {
       // Get default resource bundle
       String resource = "org.silverpeas.questionReply.multilang.questionReplyBundle";
-      ResourceLocator message;
+      LocalizationBundle message;
 
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       NotificationMetaData notifMetaData =
@@ -80,7 +81,7 @@ public class QuestionNotifier extends Notifier {
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
         // initialize new resource locator
-        message = new ResourceLocator(resource, language);
+        message = ResourceLocator.getLocalizationBundle(resource, language);
         // Create a new silverpeas template
         SilverpeasTemplate template = loadTemplate();
         template.setAttribute("UserDetail", sender);
@@ -91,7 +92,7 @@ public class QuestionNotifier extends Notifier {
         template.setAttribute("silverpeasURL", question._getPermalink());
         templates.put(language, template);
         notifMetaData.addLanguage(language,
-            message.getString("questionReply.notification", "") + componentLabel, "");
+            message.getString("questionReply.notification") + componentLabel, "");
 
         Link link = new Link(question._getPermalink(), message.getString("questionReply.notifLinkLabel"));
         notifMetaData.setLink(link, language);

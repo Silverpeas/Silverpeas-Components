@@ -60,6 +60,7 @@ import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -86,8 +87,8 @@ import static org.silverpeas.util.StringUtil.isDefined;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class AlmanachBmEJB implements AlmanachBm {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
   private AlmanachContentManager almanachContentManager = null;
   private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
   private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
@@ -797,7 +798,7 @@ public class AlmanachBmEJB implements AlmanachBm {
       com.silverpeas.calendar.Date today = today();
       java.util.Calendar endDate = java.util.Calendar.getInstance();
       String upToDay = null;
-      int numberOfMonths = getAlmanachSettings().getInteger("almanach.nextEvents.windowtime", 0);
+      int numberOfMonths = settings.getInteger("almanach.nextEvents.windowtime", 0);
       if (numberOfMonths > 0) {
         endDate.add(java.util.Calendar.MONTH, numberOfMonths);
         upToDay = date2SQLDate(endDate.getTime());
@@ -846,7 +847,4 @@ public class AlmanachBmEJB implements AlmanachBm {
     }
   }
 
-  private ResourceLocator getAlmanachSettings() {
-    return settings;
-  }
 }

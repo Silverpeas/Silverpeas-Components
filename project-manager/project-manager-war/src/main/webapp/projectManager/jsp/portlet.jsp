@@ -28,7 +28,7 @@
 <%@ include file="check.jsp" %>
 
 <%!
-String getStatusIcon(int statut, ResourcesWrapper resource)
+String getStatusIcon(int statut, MultiSilverpeasBundle resource)
 {
 	String icon = "";
 	switch (statut)
@@ -73,7 +73,7 @@ boolean otherActionOnLowerLevel(List tasks, TaskDetail task, int debut)
 	return false;
 }
 
-ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaison, int userId, String role, ResourcesWrapper resource, GraphicElementFactory gef)
+ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaison, int userId, String role, MultiSilverpeasBundle resource, GraphicElementFactory gef)
 {
 	ArrayCellText cellStatut = arrayLine.addArrayCellText(getStatusIcon(task.getStatut(), resource));
 	cellStatut.setAlignement("center");

@@ -93,7 +93,7 @@ String description;
 String linkedPathString = "";
 String pathString = "";
 
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
+SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 
 String addFolder=m_context+"/util/icons/create-action/add-folder.png";
 String addSite=m_context+"/util/icons/create-action/add-website-to-topic.png";

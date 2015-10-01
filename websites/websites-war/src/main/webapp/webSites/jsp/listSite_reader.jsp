@@ -117,7 +117,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 
 
-ResourceLocator settings;
+SettingBundle settings;
 String rootId = "0";
 String action;
 String id;
@@ -127,7 +127,7 @@ String pathString = "";
 FolderDetail webSitesCurrentFolder = null;
 Collection listeSites = null;
 
-settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
+settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 
 
 //Icons

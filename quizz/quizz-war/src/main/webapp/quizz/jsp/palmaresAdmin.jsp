@@ -46,7 +46,7 @@ String folderSrc = iconsPath + "/util/icons/delete.gif";
 	<title></title>
 	<view:looknfeel/>
   <%
-  ResourceLocator settings = quizzScc.getSettings();
+  SettingBundle settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
   String component = quizzScc.getComponentLabel();
   String m_Context = GeneralPropertiesManager.getString("ApplicationURL");

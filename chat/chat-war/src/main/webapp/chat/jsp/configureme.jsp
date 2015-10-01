@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 <%!
 	/**--------------------------------------------------------------*/
 	/**        MODIFY THE FILENAME BELOW TO YOUR jchatbox.xml        */
@@ -35,7 +36,7 @@
 	/** For Un*x OS  => /home/alice/jchatbox/conf/jchatbox.xml       */
 	/** For Max OS   => MAC_HD:webserver:jchatbox:conf:jchatbox.xml  */
 	/**--------------------------------------------------------------*/
-	private static ResourceLocator settings = new ResourceLocator("com.stratelia.silverpeas.chat.settings.chatSettings", "fr");
+	private static SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.chat.settings.chatSettings");
 	// OLD String XMLjChatBox = "/tmp/chat/conf/jchatbox.xml";
 	String XMLjChatBox = settings.getString("xmlConfigLocation");
 

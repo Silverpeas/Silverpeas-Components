@@ -51,7 +51,7 @@
 
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
@@ -106,6 +106,7 @@
 <%@page import="com.silverpeas.kmelia.KmeliaConstants"%>
 <%@ page import="com.silverpeas.form.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -119,7 +120,7 @@
 	    return;
 	}
 
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 	String[] browseContext = (String[]) request.getAttribute("browseContext");
 	String spaceLabel = browseContext[0];
@@ -135,5 +136,5 @@
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));
 	boolean kmeliaMode 	= (componentId != null && componentId.startsWith("kmelia"));
 
-	ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
+	SettingBundle settings = ResourceLocator.getSettingBundle("com.stratelia.webactiv.kmelia.settings.kmeliaSettings");
 %>

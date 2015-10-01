@@ -32,7 +32,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspWriter;
 
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.contact.model.ContactDetail;
@@ -51,7 +51,7 @@ public class DisplayContactsHelper {
   public static void displayContactsAdmin(String contactCard,
       YellowpagesSessionController yellowpagesScc, String profile, Collection<UserContact> contacts,
       boolean subtopicsExist, String contactDeleteIcon, GraphicElementFactory gef,
-      ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out)
+      ServletRequest request, HttpSession session, MultiSilverpeasBundle resources, JspWriter out)
       throws IOException {
     int indexLastNameColumn = 1;
 
@@ -119,7 +119,7 @@ public class DisplayContactsHelper {
   public static void displayContactsUser(YellowpagesSessionController yellowpagesScc,
       Collection<ContactFatherDetail> contacts, String id, String componentLabel,
       GraphicElementFactory gef, ServletRequest request, HttpSession session,
-      ResourcesWrapper resources, JspWriter out) throws IOException {
+      MultiSilverpeasBundle resources, JspWriter out) throws IOException {
 
     ArrayPane arrayPane;
     if (id != null) {

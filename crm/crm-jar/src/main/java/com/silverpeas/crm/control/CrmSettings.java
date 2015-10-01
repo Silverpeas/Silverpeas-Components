@@ -24,6 +24,7 @@
 
 package com.silverpeas.crm.control;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 public class CrmSettings {
@@ -32,10 +33,11 @@ public class CrmSettings {
   static private String[] m_Media = null;
 
   static {
-    ResourceLocator rs = new ResourceLocator("com.silverpeas.crm.multilang.crmBundle", "");
-    m_Function = rs.getStringArray("crm.", ".function", -1);
-    m_Event_State = rs.getStringArray("crm.", ".event_state", -1);
-    m_Media = rs.getStringArray("crm.", ".media", -1);
+    LocalizationBundle msg =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.crm.multilang.crmBundle");
+    m_Function = msg.getStringArray("crm", "function", -1);
+    m_Event_State = msg.getStringArray("crm", "event_state", -1);
+    m_Media = msg.getStringArray("crm", "media", -1);
   }
 
   static public String[] getFunction() {

@@ -47,7 +47,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.stratelia.silverpeas.chat.control.ChatSessionController "%>
@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 	ChatSessionController chatScc = (ChatSessionController) request.getAttribute("chat");
 
-	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 	
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	

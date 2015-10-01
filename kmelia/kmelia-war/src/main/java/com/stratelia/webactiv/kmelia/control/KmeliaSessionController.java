@@ -185,7 +185,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private String sortValue = null;
   private String defaultSortValue = "2";
   private int rang = 0;
-  private ResourceLocator publicationSettings = null;
+  private SettingBundle publicationSettings = null;
   public static final String TAB_PREVIEW = "tabpreview";
   public static final String TAB_HEADER = "tabheader";
   public static final String TAB_CONTENT = "tabcontent";
@@ -309,10 +309,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return statisticService;
   }
 
-  public ResourceLocator getPublicationSettings() {
+  public SettingBundle getPublicationSettings() {
     if (publicationSettings == null) {
       publicationSettings =
-          new ResourceLocator("org.silverpeas.publication.publicationSettings", getLanguage());
+          ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
     }
     return publicationSettings;
   }
@@ -2065,10 +2065,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
 
     //print a log file of the report
-    ResourceLocator multilang =
-        new ResourceLocator("org.silverpeas.importExportPeas.multilang.importExportPeasBundle",
-            "fr");
-    ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");
+    LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.importExportPeas.multilang.importExportPeasBundle");
+    MultiSilverpeasBundle resource = new MultiSilverpeasBundle(multilang, "fr");
     fileImport.writeImportToLog(importReport, resource);
 
     return importReport;
@@ -2190,8 +2189,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public List<Integer> getTimeAxisKeys() {
     if (this.timeAxis == null) {
-      ResourceLocator timeSettings =
-          new ResourceLocator("com.stratelia.webactiv.kmelia.multilang.timeAxisBundle",
+      LocalizationBundle timeSettings =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.timeAxisBundle",
               getLanguage());
       Enumeration<String> keys = timeSettings.getKeys();
       List<Integer> orderKeys = new ArrayList<>();
@@ -3549,8 +3548,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    */
   public String getErrorMessageImportation(ImportReport importReport, String importMode) {
     String message = null;
-    ResourceLocator attachmentResourceLocator =
-        new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment",
+    LocalizationBundle attachmentResourceLocator =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.attachment.multilang.attachment",
             this.getLanguage());
     ComponentReport componentRpt = importReport.getListComponentReport().get(0);
 
@@ -3634,7 +3633,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return listPublicationDetail;
   }
 
-  private String getMaxSizeErrorMessage(ResourceLocator messages) {
+  private String getMaxSizeErrorMessage(LocalizationBundle messages) {
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
     String maximumFileSizeMo = UnitUtil.formatMemSize(maximumFileSize);
     return messages.getString("attachment.dialog.errorAtLeastOneFileSize") + " " + messages.

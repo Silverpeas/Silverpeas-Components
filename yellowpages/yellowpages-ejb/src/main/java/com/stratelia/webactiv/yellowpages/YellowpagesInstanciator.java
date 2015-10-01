@@ -43,7 +43,7 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
    * Creates new YellowpagesInstanciator
    */
   public YellowpagesInstanciator() {
-    super("com.stratelia.webactiv.yellowpages");
+    super("org.silverpeas.yellowpages");
   }
 
   @Override
@@ -56,9 +56,9 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
           .info("yellowpages", "YellowpagesInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
               "spaceId = " + spaceId + " , componentId = " + componentId);
 
-      ContactInstanciator pub = new ContactInstanciator("com.stratelia.webactiv.yellowpages");
+      ContactInstanciator pub = new ContactInstanciator("org.silverpeas.yellowpages");
       pub.create(con, spaceId, componentId, userId);
-      NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.yellowpages");
+      NodeInstanciator node = new NodeInstanciator("org.silverpeas.yellowpages");
       node.create(con, spaceId, componentId, userId);
       setInsertQueries();
       insertSpecialNode(con, componentId, userId);
@@ -76,9 +76,9 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
         .info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
         "spaceId = " + spaceId + " , componentId = " + componentId);
-    ContactInstanciator pub = new ContactInstanciator("com.stratelia.webactiv.yellowpages");
+    ContactInstanciator pub = new ContactInstanciator("org.silverpeas.yellowpages");
     pub.delete(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.yellowpages");
+    NodeInstanciator node = new NodeInstanciator("org.silverpeas.yellowpages");
     node.delete(con, spaceId, componentId, userId);
     SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }

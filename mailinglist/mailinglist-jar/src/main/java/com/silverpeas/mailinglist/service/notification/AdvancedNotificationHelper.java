@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -59,8 +60,8 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
   public static final String MESSAGE_TEMPLATE_FILE = "notificationMailinglistMessage";
 
   static {
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.mailinglist.settings.mailinglistSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.mailinglist.settings.mailinglistSettings");
     templateConfiguration
         .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString("templatePath"));
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,

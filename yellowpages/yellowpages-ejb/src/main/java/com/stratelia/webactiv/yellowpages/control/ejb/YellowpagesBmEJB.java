@@ -44,6 +44,7 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -418,8 +419,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     contactDetail.setFirstName(userDetail.getFirstName());
     contactDetail.setLastName(userDetail.getLastName());
     contactDetail.setEmail(userDetail.geteMail());
-    ResourceLocator yellowpagesSettings =
-        new ResourceLocator("org.silverpeas.yellowpages.settings.yellowpagesSettings", "fr");
+    SettingBundle yellowpagesSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.yellowpages.settings.yellowpagesSettings");
     UserFull userFull;
     if (!filterExtraInfos || yellowpagesSettings.getString("columns").contains("domain.")) {
       userFull = orga.getUserFull(contactDetail.getUserId());

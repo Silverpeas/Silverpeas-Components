@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.util.i18n.I18NHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -42,7 +42,7 @@
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
     }
-  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 %>
 <fmt:message var="cancelButtonLabel" key="GML.cancel"/>
 <fmt:message var="validateButtonLabel" key="GML.validate"/>

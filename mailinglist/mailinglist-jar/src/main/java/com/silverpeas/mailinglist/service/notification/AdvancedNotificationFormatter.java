@@ -24,7 +24,9 @@
 package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -51,8 +53,8 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
   public static final String SIMPLE_TEMPLATE_FILE = "mailinglistSimpleMessage";
 
   static {
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.mailinglist.settings.mailinglistSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.mailinglist.settings.mailinglistSettings");
     templateConfiguration
         .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString("templatePath"));
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
@@ -76,8 +78,8 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
   public String formatTitle(Message message, String mailingListName, String lang,
       boolean moderate) {
     SilverpeasTemplate template = getTemplate(message, mailingListName, moderate);
-    ResourceLocator resources =
-        new ResourceLocator("com.silverpeas.mailinglist.multilang.mailinglistBundle", lang);
+    LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.mailinglist.multilang.mailinglistBundle", lang);
     if (moderate) {
       return template.applyStringTemplate(resources.getString(TITLE_MODERATION_KEY));
     }

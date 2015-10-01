@@ -46,6 +46,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -63,8 +64,8 @@ public class EventDetail extends AbstractBean
     implements SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = 9077018265272108291L;
-  public static ResourceLocator almanachSettings =
-      new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
+  public static SettingBundle almanachSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
   private static final String TYPE = "Event";
   private EventPK _pk = null;
   private Date _startDate = null;

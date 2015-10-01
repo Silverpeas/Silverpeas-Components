@@ -51,11 +51,13 @@
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String language = (String) session.getAttribute("WYSIWYG_Language");
 String userId = (String) session.getAttribute("WYSIWYG_UserId");
-ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 String contextName = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
-<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%><html>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<html>
 <head>
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

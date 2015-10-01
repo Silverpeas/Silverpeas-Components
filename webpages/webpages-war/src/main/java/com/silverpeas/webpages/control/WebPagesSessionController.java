@@ -64,8 +64,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public WebPagesSessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-            "com.silverpeas.webpages.multilang.webPagesBundle",
-            "com.silverpeas.webpages.settings.webPagesIcons");
+            "org.silverpeas.webpages.multilang.webPagesBundle",
+            "org.silverpeas.webpages.settings.webPagesIcons");
 
     if (isXMLTemplateUsed()) {
       // register xmlForm to component

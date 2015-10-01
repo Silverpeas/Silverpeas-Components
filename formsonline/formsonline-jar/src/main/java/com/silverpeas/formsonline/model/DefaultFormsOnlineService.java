@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.notification
@@ -45,6 +46,7 @@ import org.silverpeas.components.formsonline.notification
     .FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification
     .FormsOnlineValidationRequestUserNotification;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -396,12 +398,12 @@ public class DefaultFormsOnlineService
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return null;
   }
 
   @Override
-  public ResourceLocator getComponentMessages(final String language) {
+  public LocalizationBundle getComponentMessages(final String language) {
     return null;
   }
 

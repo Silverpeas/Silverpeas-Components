@@ -51,7 +51,7 @@ import java.util.List;
 public class CrmInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   public CrmInstanciator() {
-    super("com.silverpeas.crm");
+    super("org.silverpeas.crm");
   }
 
   @Override

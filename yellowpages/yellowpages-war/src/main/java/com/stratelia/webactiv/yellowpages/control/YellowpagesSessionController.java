@@ -66,8 +66,10 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.csv.CSVReader;
 import org.silverpeas.util.csv.Variant;
@@ -104,7 +106,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   private String currentTypeSearch;
   private String currentSearchCriteria;
   public static final String GroupReferentielPrefix = "group_";
-  private ResourceLocator domainMultilang;
+  private LocalizationBundle domainMultilang;
 
   /**
    * Creates new sessionClientController
@@ -121,8 +123,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     String domainId = getSettings().getString("columns.domainId");
     if (StringUtil.isDefined(domainId)) {
       Domain domain = getOrganisationController().getDomain(domainId);
-      ResourceLocator domainProperty = new ResourceLocator(domain.getPropFileName(), "");
-      domainMultilang = new ResourceLocator(domainProperty.getString("property.ResourceFile"), "");
+      SettingBundle domainProperty = ResourceLocator.getSettingBundle(domain.getPropFileName());
+      domainMultilang =
+          ResourceLocator.getLocalizationBundle(domainProperty.getString("property.ResourceFile"));
     }
   }
 
@@ -1061,7 +1064,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return arrayHeaders;
   }
 
-  private ResourceLocator getDomainMultilang() {
+  private LocalizationBundle getDomainMultilang() {
     return domainMultilang;
   }
 

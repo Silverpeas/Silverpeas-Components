@@ -51,15 +51,15 @@ public class DataWarningDataManager {
   public DataWarningDataManager() throws DataWarningException {
     try {
       dataWarningDAO =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.dataWarning.model.DataWarning");
+          SilverpeasBeanDAOFactory.getDAO(DataWarning.class.getName());
       dataWarningGroupDAO =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.dataWarning.model.DataWarningGroup");
+          SilverpeasBeanDAOFactory.getDAO(DataWarningGroup.class.getName());
       dataWarningUserDAO =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.dataWarning.model.DataWarningUser");
+          SilverpeasBeanDAOFactory.getDAO(DataWarningUser.class.getName());
       dataWarningQueryDAO =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.dataWarning.model.DataWarningQuery");
+          SilverpeasBeanDAOFactory.getDAO(DataWarningQuery.class.getName());
       dataWarningSchedulerDAO =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.dataWarning.model.DataWarningScheduler");
+          SilverpeasBeanDAOFactory.getDAO(DataWarningScheduler.class.getName());
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.DataWarningDataManager()",
           SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
@@ -438,7 +438,7 @@ public class DataWarningDataManager {
       con = DBUtil.openConnection();
     } catch (Exception e) {
       throw new DataWarningException(
-          "com.silverpeas.dataWarning.implementation.DataWarningDataManager",
+          DataWarningDataManager.class.getName(),
           SilverpeasRuntimeException.WARNING, e.getMessage(), "openConnection", e);
     }
 

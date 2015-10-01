@@ -92,9 +92,9 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   public SilverCrawlerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.silvercrawler.multilang.silverCrawlerBundle",
-        "com.silverpeas.silvercrawler.settings.silverCrawlerIcons",
-        "com.silverpeas.silvercrawler.settings.silverCrawlerSettings");
+        "org.silverpeas.silvercrawler.multilang.silverCrawlerBundle",
+        "org.silverpeas.silvercrawler.settings.silverCrawlerIcons",
+        "org.silverpeas.silvercrawler.settings.silverCrawlerSettings");
     rootPath = new File(getComponentParameterValue("directory"));
     setRootPath();
   }

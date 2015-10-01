@@ -79,8 +79,10 @@ import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -598,8 +600,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * instanceId))
    */
   private UserTemplate getUserTemplate(String instanceId) {
-    ResourceLocator templateSettings =
-        new ResourceLocator("com.silverpeas.whitePages.settings.template", "");
+    SettingBundle templateSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.template");
     String templateDir = templateSettings.getString("templateDir");
     return new UserTemplate(templateDir.replace('\\', '/') + "/" +
         getParam("userTemplate", instanceId).replace('\\', '/'), getLanguage());
@@ -746,8 +748,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   private UserTemplate getUserTemplate() {
     if (userTemplate == null) {
-      ResourceLocator templateSettings =
-          new ResourceLocator("com.silverpeas.whitePages.settings.template", "");
+      SettingBundle templateSettings =
+          ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.template");
       String templateDir = templateSettings.getString("templateDir");
       this.userTemplate = new UserTemplate(
           templateDir.replace('\\', '/') + "/" + getParam("userTemplate").replace('\\', '/'),
@@ -814,10 +816,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     String url = URLManager.getURL(null, getComponentId()) + "consultIdentity?userCardId=" +
         notifiedUserCard.getPK().getId();
 
-    ResourceLocator message =
-        new ResourceLocator("org.silverpeas.whitePages.multilang.whitePagesBundle",
-            DisplayI18NHelper.
-                getDefaultLanguage());
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.whitePages.multilang.whitePagesBundle",
+        DisplayI18NHelper.getDefaultLanguage());
 
     String subject = message.getString("whitePages.notificationTitle");
     NotificationMetaData notifMetaData =
@@ -825,8 +826,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message =
-          new ResourceLocator("org.silverpeas.whitePages.multilang.whitePagesBundle", language);
+      message = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.whitePages.multilang.whitePagesBundle", language);
       subject = message.getString("whitePages.notificationTitle");
       notifMetaData.addLanguage(language, subject, bodyMessage);
 

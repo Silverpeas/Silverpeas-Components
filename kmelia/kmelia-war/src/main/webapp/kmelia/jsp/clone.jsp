@@ -42,7 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
 
 <%
-	ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
+	SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.publication.publicationSettings");
 
 	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");

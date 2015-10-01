@@ -78,7 +78,7 @@ function goto_jsp(jsp) {
   session.removeAttribute("currentQuizz");
   session.removeAttribute("questionsResponses");
 
-  ResourceLocator settings = quizzScc.getSettings();
+  SettingBundle settings = quizzScc.getSettings();
   // orig beaujolais ResourceLocator messages = quizzScc.getMessage();
   String space = quizzScc.getSpaceLabel();
   String component = quizzScc.getComponentLabel(); 

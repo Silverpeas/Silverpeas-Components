@@ -34,6 +34,7 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.util.List;
@@ -41,8 +42,8 @@ import java.util.List;
 public class ScheduledDeleteOrder implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJobOrder";
-  private ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.gallery.settings.gallerySettings", "");
+  private SettingBundle resources =
+      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
 
   public void initialize() {
     SilverTrace.info("gallery", "ScheduledDeleteOrder.initialize()",

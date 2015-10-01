@@ -46,7 +46,7 @@ import com.silverpeas.mydb.data.db.DbTable;
 import com.silverpeas.mydb.data.db.DbUtil;
 import com.silverpeas.mydb.exception.MyDBException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**
@@ -76,7 +76,7 @@ public class FormManager {
    * @return The XML form describing the concerned database record.
    * @throws MyDBException
    */
-  public Form getForm(DbTable dbTable, ResourcesWrapper resources,
+  public Form getForm(DbTable dbTable, MultiSilverpeasBundle resources,
       boolean consultation, boolean newRecord, String beanName,
       String componentId, String method) throws MyDBException {
     try {
@@ -100,7 +100,7 @@ public class FormManager {
    * @throws MyDBException
    */
   public RecordTemplate getRecordTemplate(DbTable dbTable,
-      ResourcesWrapper resources, boolean consultation, boolean newRecord,
+      MultiSilverpeasBundle resources, boolean consultation, boolean newRecord,
       String beanName, String componentId, String method) throws MyDBException {
     template = new GenericRecordTemplate();
 

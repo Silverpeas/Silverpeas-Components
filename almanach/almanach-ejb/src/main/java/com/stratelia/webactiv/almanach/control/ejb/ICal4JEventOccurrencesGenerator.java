@@ -34,6 +34,7 @@ import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,14 +57,14 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
           List<EventDetail> events) {
     Period thePeriod =
         new Period(new DateTime(period.getBeginDate()), new DateTime(period.getEndDate()));
-    return generateOccurrencesOf(events, occuringIn(thePeriod));
+    return generateOccurrencesOf(events, occurringIn(thePeriod));
   }
 
   @Override
   public List<EventOccurrence> generateOccurrencesInRange(Date startDate,  Date endDate,
     List<EventDetail> events) {
     Period period = new Period(new DateTime(startDate), new DateTime(endDate));
-    return generateOccurrencesOf(events, occuringIn(period));
+    return generateOccurrencesOf(events, occurringIn(period));
   }
   
   @Override
@@ -144,8 +145,8 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
   private Datable<?> toDatable(final java.util.Date date, String time) {
     Datable<?> datable;
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    ResourceLocator almanachSettings =
-            new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+    SettingBundle almanachSettings =
+            ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
     TimeZone timeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
     if (isDefined(time)) {
       java.util.Calendar calendarDate = java.util.Calendar.getInstance();
@@ -161,7 +162,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     return datable;
   }
 
-  private static Period occuringIn(final Period period) {
+  private static Period occurringIn(final Period period) {
     return period;
   }
 }

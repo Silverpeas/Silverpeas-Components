@@ -21,13 +21,6 @@
 package com.stratelia.silverpeas.chat.control;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import jChatBox.Chat.Chatroom;
-import jChatBox.Chat.ChatroomManager;
-
-import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.chat.ChatDataAccess;
 import com.stratelia.silverpeas.chat.ChatException;
@@ -38,13 +31,20 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
+import jChatBox.Chat.Chatroom;
+import jChatBox.Chat.ChatroomManager;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class ChatSessionController extends AbstractComponentSessionController {
   // utilisation de userPanel/ userpanelPeas
@@ -211,17 +211,17 @@ public class ChatSessionController extends AbstractComponentSessionController {
         Integer.parseInt(currentRoomId));
     String roomName = chatroom.getParams().getName();
 
-    ResourceLocator message = new ResourceLocator(
-        "org.silverpeas.chat.multilang.chatBundle", DisplayI18NHelper.
-        getDefaultLanguage());
+    LocalizationBundle message =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.chat.multilang.chatBundle",
+            DisplayI18NHelper.getDefaultLanguage());
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(message, senderName, roomName);
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, body);
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator(
-          "org.silverpeas.chat.multilang.chatBundle", language);
+      message = ResourceLocator.getLocalizationBundle("org.silverpeas.chat.multilang.chatBundle",
+          language);
       subject = getNotificationSubject(message);
       body = getNotificationBody(message, senderName, roomName);
       notifMetaData.addLanguage(language, subject, body);
@@ -233,11 +233,11 @@ public class ChatSessionController extends AbstractComponentSessionController {
     return notifMetaData;
   }
 
-  private String getNotificationSubject(ResourceLocator message) {
+  private String getNotificationSubject(LocalizationBundle message) {
     return message.getString("chat.SUBJECT");
   }
 
-  private String getNotificationBody(ResourceLocator message,
+  private String getNotificationBody(LocalizationBundle message,
       String senderName, String roomName) {
     StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");

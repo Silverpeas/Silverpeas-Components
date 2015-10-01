@@ -48,7 +48,7 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
    * Creates new KmeliaInstanciator
    */
   public KmeliaInstanciator() {
-    super("com.stratelia.webactiv.kmelia");
+    super("org.silverpeas.kmelia");
   }
 
   @Override
@@ -56,9 +56,9 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
       throws InstanciationException {
     SilverTrace.info("kmelia", "KmeliaInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
         "Space = " + spaceId);
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.kmelia");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.create(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.kmelia");
+    NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
     node.create(con, spaceId, componentId, userId);
     setInsertQueries();
     insertSpecialNode(con, componentId, userId);
@@ -69,11 +69,11 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
       throws InstanciationException {
     SilverTrace.info("kmelia", "KmeliaInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
         "Space = " + spaceId);
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.kmelia");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.delete(con, spaceId, componentId, userId);
     TodoBackboneAccess todoBBA = ServiceProvider.getService(TodoBackboneAccess.class);
     todoBBA.removeEntriesByInstanceId(componentId);
-    NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.kmelia");
+    NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
     node.delete(con, spaceId, componentId, userId);
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);

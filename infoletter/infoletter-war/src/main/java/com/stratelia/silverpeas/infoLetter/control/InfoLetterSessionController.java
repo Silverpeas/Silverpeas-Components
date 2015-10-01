@@ -60,8 +60,10 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.csv.CSVReader;
@@ -258,13 +260,13 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   protected SilverpeasTemplate getNotificationMessageTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("org.silverpeas.infoLetter.settings.infoLetterSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.infoLetter.settings.infoLetterSettings");
     Properties templateConfiguration = new Properties();
-    templateConfiguration
-        .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
-    templateConfiguration
-        .setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
+        settings.getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
+        settings.getString("customersTemplatePath"));
 
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
@@ -311,11 +313,13 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           template.setAttribute("infoLetterDesc", desc);
           template.setAttribute("senderName", getUserDetail().getDisplayedName());
 
-          ResourceLocator localizedMessage =
-              new ResourceLocator("org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
-          notifMetaData.addLanguage(lang, localizedMessage
-              .getString("infoLetter.emailSubject", getString("infoLetter.emailSubject")) +
-              ilp.getName(), "");
+          LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
+              "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
+          String emailSubject =  localizedMessage.getString("infoLetter.emailSubject");
+          if (!StringUtil.isDefined(emailSubject)) {
+            emailSubject = getString("infoLetter.emailSubject");
+          }
+          notifMetaData.addLanguage(lang, emailSubject + ilp.getName(), "");
 
           Link link = new Link(url, localizedMessage.getString("infoLetter.notifLinkLabel"));
           notifMetaData.setLink(link, lang);

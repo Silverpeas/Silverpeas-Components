@@ -41,7 +41,7 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
    * Creates new WhitePagesInstanciator
    */
   public WhitePagesInstanciator() {
-    super("com.silverpeas.whitePages");
+    super("org.silverpeas.whitePages");
   }
 
   @Override

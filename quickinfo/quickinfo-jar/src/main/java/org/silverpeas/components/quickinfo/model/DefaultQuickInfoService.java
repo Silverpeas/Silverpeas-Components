@@ -60,8 +60,10 @@ import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -162,12 +164,12 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return QuickInfoComponentSettings.getSettings();
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
+  public LocalizationBundle getComponentMessages(String language) {
     return QuickInfoComponentSettings.getMessagesIn(language);
   }
 

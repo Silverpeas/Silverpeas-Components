@@ -31,7 +31,7 @@ import com.stratelia.webactiv.forums.url.ActionUrl;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.web.RequestHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +67,7 @@ public class ForumHelper {
     return RequestHelper.getIntParameter(request, name, defaultValue);
   }
 
-  public static String convertDate(Date date, ResourcesWrapper resources) {
+  public static String convertDate(Date date, MultiSilverpeasBundle resources) {
     return resources.getOutputDateAndHour(date);
   }
 
@@ -112,7 +112,7 @@ public class ForumHelper {
 
   private static void displayMessageLine(Message message, JspWriter out, ResourceLocator resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view, int depth,
-      boolean simpleMode, String call, ForumsSessionController fsc, ResourcesWrapper resources,
+      boolean simpleMode, String call, ForumsSessionController fsc, MultiSilverpeasBundle resources,
       final boolean isSubscriberByInheritance) {
     try {
       int messageId = message.getId();
@@ -303,7 +303,7 @@ public class ForumHelper {
 
   public static void displayMessagesList(JspWriter out, ResourceLocator resource, String userId,
       boolean admin, boolean moderator, boolean reader, boolean view, int currentForumId,
-      boolean simpleMode, String call, ForumsSessionController fsc, ResourcesWrapper resources,
+      boolean simpleMode, String call, ForumsSessionController fsc, MultiSilverpeasBundle resources,
       boolean isSubscriberByInheritance) {
     try {
       Message[] messages = fsc.getMessagesList(currentForumId);
@@ -328,7 +328,7 @@ public class ForumHelper {
   public static void displaySingleMessageList(JspWriter out, ResourceLocator resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view,
       int currentForumId, int messageId, boolean simpleMode, String call,
-      ForumsSessionController fsc, ResourcesWrapper resources, boolean isSubscriberByInheritance) {
+      ForumsSessionController fsc, MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
     try {
       int parent = fsc.getMessageParentId(messageId);
       while (parent > 0) {
@@ -383,7 +383,7 @@ public class ForumHelper {
   private static void scanMessage(Message[] messages, JspWriter out, ResourceLocator resource,
       String userId, int currentPage, boolean admin, boolean moderator, boolean reader,
       boolean view, int currentMessageId, int depth, int maxDepth, boolean simpleMode, String call,
-      ForumsSessionController fsc, ResourcesWrapper resources, boolean isSubscriberByInheritance) {
+      ForumsSessionController fsc, MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
     for (Message message : messages) {
       int parentId = message.getParentId();
       if (parentId == currentMessageId) {
@@ -410,7 +410,7 @@ public class ForumHelper {
   private static void displayOneMessage(Message[] messages, JspWriter out, ResourceLocator resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view,
       int currentMessageId, int depth, boolean simpleMode, String call, ForumsSessionController fsc,
-      ResourcesWrapper resources, boolean isSubscriberByInheritance) {
+      MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
     int i = 0;
     boolean loop = true;
     while ((i < messages.length) && loop) {

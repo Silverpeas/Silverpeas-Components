@@ -56,7 +56,7 @@
 %><%@ page import="com.silverpeas.mydb.data.key.PrimaryKey"
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKey"
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKeys"
-%><%@ page import="org.silverpeas.util.ResourcesWrapper"
+%><%@ page import="org.silverpeas.util.MultiSilverpeasBundle"
 %><%@ page import="org.silverpeas.util.DBUtil"
 %><%@ page import="org.silverpeas.util.GeneralPropertiesManager"
 %><%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"
@@ -80,7 +80,7 @@
 	response.setDateHeader("Expires", -1);           // prevents caching at the proxy server
 
 	MyDBSessionController myDBSC = (MyDBSessionController)request.getAttribute("MyDB");
-	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 	String userRoleLevel = (String)request.getAttribute("userRoleLevel");
 	String applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
 	

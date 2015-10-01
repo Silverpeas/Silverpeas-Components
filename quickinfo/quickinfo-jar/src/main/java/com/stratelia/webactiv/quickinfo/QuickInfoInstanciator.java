@@ -48,7 +48,7 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
       throws InstanciationException {
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.create()",
         "QuickInfoInstanciator.create called with: space=" + spaceId);
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.quickinfo");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.quickinfo");
     pub.create(con, spaceId, componentId, userId);
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.create()",
         "QuickInfoInstanciator.create finished");
@@ -59,7 +59,7 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
       throws InstanciationException {
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
         "delete called with: space=" + spaceId);
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.quickinfo");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.quickinfo");
     pub.delete(con, spaceId, componentId, userId);
 
     // deleting thumbnails

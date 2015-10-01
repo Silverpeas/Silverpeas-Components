@@ -45,14 +45,14 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%
 	DelegatedNewsSessionController newsScc = (DelegatedNewsSessionController) request.getAttribute("DelegatedNews");
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 	
 	if (newsScc == null) {
 	    // No session controller in the request -> security exception

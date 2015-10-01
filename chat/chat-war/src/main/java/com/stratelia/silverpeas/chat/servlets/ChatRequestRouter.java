@@ -61,8 +61,8 @@ public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionControl
   public ChatSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ChatSessionController(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.chat.multilang.chatBundle",
-        "com.stratelia.silverpeas.chat.settings.chatIcons");
+        "org.silverpeas.chat.multilang.chatBundle",
+        "org.silverpeas.chat.settings.chatIcons");
   }
 
   public String getDestination(String function,

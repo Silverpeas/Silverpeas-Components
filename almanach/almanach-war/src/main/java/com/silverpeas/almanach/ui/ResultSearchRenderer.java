@@ -33,13 +33,14 @@ import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -64,8 +65,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    * Load template configuration
    */
   static {
-    ResourceLocator settings =
-        new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings
         .getString("templatePath"));
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings
@@ -97,7 +98,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     this.setCommonAttributes(searchResult, template);
 
     if (event != null) {
-      ResourcesWrapper settings = searchResult.getSettings();
+      MultiSilverpeasBundle settings = searchResult.getSettings();
       setEventAttributes(event, template, settings);
 
       result =
@@ -114,7 +115,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    * @param settings the specific almanach resources wrapper object
    */
   private void setEventAttributes(EventDetail event, SilverpeasTemplate template,
-      ResourcesWrapper settings) {
+      MultiSilverpeasBundle settings) {
     template.setAttribute("eventDetail", event);
     template.setAttribute("evtStartDate", event.getStartDate());
     String location = event.getPlace();

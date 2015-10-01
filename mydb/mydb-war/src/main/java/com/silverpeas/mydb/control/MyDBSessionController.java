@@ -20,29 +20,6 @@
  */
 package com.silverpeas.mydb.control;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.MessageFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-
-import org.silverpeas.mydb.control.DriverManager;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -64,19 +41,29 @@ import com.silverpeas.mydb.exception.MyDBException;
 import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
 import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
 import com.silverpeas.mydb.model.MyDBRuntimeException;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.persistence.PersistenceException;
+import org.silverpeas.mydb.control.DriverManager;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+
+import java.math.BigDecimal;
+import java.sql.*;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * MyDB session control.
@@ -98,7 +85,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   private FormManager formManager;
   private String[][] formParameters;
   private TableManager tableManager;
-  private ResourcesWrapper resources;
+  private MultiSilverpeasBundle resources;
   private DateFormatter dateFormatter;
 
   /**
@@ -112,7 +99,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.mydb.multilang.myDBBundle",
         "org.silverpeas.mydb.settings.myDBIcons","org.silverpeas.mydb.settings.myDBSettings");
-    resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(),
+    resources = new MultiSilverpeasBundle(getMultilang(), getIcon(), getSettings(),
         getLanguage());
     driverManager = new DriverManager();
     dateFormatter = new DateFormatter(resources.getString("DatePattern"));
@@ -265,8 +252,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   private MyDBBm getMyDBBm() throws MyDBException {
     if (myDBEjb == null) {
       try {
-        myDBEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.MYDBBM_EJBHOME, MyDBBm.class);
-      } catch (UtilException e) {
+        myDBEjb = ServiceProvider.getService(MyDBBm.class);
+      } catch (Exception e) {
         throw new MyDBException("myDBSessionController.getMyDBBm()",
             SilverpeasException.ERROR, "myDB.EX_EJB_CREATION_FAILED", e);
       }
@@ -330,7 +317,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
     tableManager = null;
   }
 
-  public ResourcesWrapper getResources() {
+  public MultiSilverpeasBundle getResources() {
     return resources;
   }
 

@@ -62,8 +62,10 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -92,7 +94,7 @@ public class DefaultBlogService implements BlogService {
 
   private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";
   private static final String SETTINGS_PATH = "org.silverpeas.blog.settings.blogSettings";
-  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
   @Inject
   private CommentService commentService;
   @Inject
@@ -111,13 +113,13 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return settings;
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
-    return new ResourceLocator(MESSAGES_PATH, language);
+  public LocalizationBundle getComponentMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 
   @Override

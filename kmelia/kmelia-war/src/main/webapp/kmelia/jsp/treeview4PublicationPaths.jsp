@@ -29,11 +29,11 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.publication.model.Alias" %>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%
-ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 List 	otherTree 	= (List) request.getAttribute("Tree");
 String	currentLang = (String) request.getAttribute("Language");

@@ -30,10 +30,11 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 public class QuestionTemplate implements RecordTemplate {
-  private ResourceLocator label = null;
+  private LocalizationBundle label = null;
   private String language;
   private boolean readonly;
 
@@ -43,7 +44,8 @@ public class QuestionTemplate implements RecordTemplate {
    * @param readonly is read only
    */
   public QuestionTemplate(String language, boolean readonly) {
-    label = new ResourceLocator("com.silverpeas.processManager.multilang.processManagerBundle",
+    label = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.processManager.multilang.processManagerBundle",
         language);
     this.language = language;
     this.readonly = readonly;

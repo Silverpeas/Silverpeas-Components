@@ -52,7 +52,7 @@ import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.StringUtil;
 
 import java.text.ParseException;
@@ -534,7 +534,7 @@ public class ResourcesManagerRequestRouter
         String provenance = resourcesManagerSC.getProvenanceResource();
         resourceId = resourcesManagerSC.getResourceIdForResource();
         Resource myResource = resourcesManagerSC.getResource(resourceId);
-        ResourcesWrapper resources = resourcesManagerSC.getResources();
+        MultiSilverpeasBundle resources = resourcesManagerSC.getResources();
         String chemin = "";
         if ("resources".equals(provenance)) {
           // on vient de resources

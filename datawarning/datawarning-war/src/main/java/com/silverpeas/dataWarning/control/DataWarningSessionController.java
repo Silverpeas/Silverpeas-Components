@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.*;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.Pair;
@@ -58,8 +59,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
    */
   public DataWarningSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.silverpeas.dataWarning.multilang.dataWarning",
-        "com.silverpeas.dataWarning.settings.dataWarningIcons");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.dataWarning.multilang.dataWarning",
+        "org.silverpeas.dataWarning.settings.dataWarningIcons");
     try {
       dataWarningEngine = new DataWarningEngine(getComponentId());
     } catch (Exception e) {
@@ -332,8 +333,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   public String getTextFrequenceScheduler() throws DataWarningException {
     String retour = "";
     DataWarningScheduler scheduler = dataWarningEngine.getDataWarningScheduler();
-    ResourceLocator messages =
-        new ResourceLocator("org.silverpeas.dataWarning.multilang.dataWarning", "");
+    LocalizationBundle messages =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.dataWarning.multilang.dataWarning");
     if (scheduler != null) {
       if (scheduler.getNumberOfTimes() == 1) {
         switch (scheduler.getNumberOfTimesMoment()) {

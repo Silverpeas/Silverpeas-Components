@@ -57,7 +57,8 @@ import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ImageUtil;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -140,8 +141,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         kmeliaSC.setSessionTopicToLink(currentTopicToLink);
       }
 
-      ResourcesWrapper resources =
-          new ResourcesWrapper(kmeliaSC.getMultilang(), kmeliaSC.getIcon(), kmeliaSC.getSettings(),
+      MultiSilverpeasBundle resources =
+          new MultiSilverpeasBundle(kmeliaSC.getMultilang(), kmeliaSC.getIcon(), kmeliaSC.getSettings(),
               kmeliaSC.getLanguage());
 
       String index = req.getParameter("Index");
@@ -279,14 +280,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    */
   private void displayPublications(List<KmeliaPublication> allPubs, boolean sortAllowed,
       boolean linksAllowed, boolean seeAlso, boolean toSearch, KmeliaSessionController kmeliaScc,
-      String profile, GraphicElementFactory gef, ResourcesWrapper resources,
+      String profile, GraphicElementFactory gef, MultiSilverpeasBundle resources,
       List<PublicationPK> selectedIds, String pubIdToHighlight, Writer out, boolean linkAttachment)
       throws IOException {
 
     String publicationSrc = resources.getIcon("kmelia.publication");
-    ResourceLocator publicationSettings =
-        new ResourceLocator("org.silverpeas.publication.publicationSettings",
-            kmeliaScc.getLanguage());
+    SettingBundle publicationSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
 
     String language = kmeliaScc.getCurrentLanguage();
@@ -523,7 +523,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displayFragmentOfPublication(boolean specificTemplateUsed, KmeliaPublication aPub,
       PublicationFragmentSettings fragmentSettings, String language, String userId, String topicId,
-      KmeliaSessionController kmeliaScc, ResourcesWrapper resources, Writer out)
+      KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources, Writer out)
       throws IOException {
 
     // check if publication is draggable
@@ -544,7 +544,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displayTemplatedFragmentOfPublication(KmeliaPublication aPub,
       PublicationFragmentSettings fragmentSettings, String language, String userId, String topicId,
-      KmeliaSessionController kmeliaScc, ResourcesWrapper resources, Writer out)
+      KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources, Writer out)
       throws IOException {
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
     PublicationDetail pub = aPub.getDetail();
@@ -613,7 +613,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displayDefaultFragmentOfPublication(KmeliaPublication aPub,
       PublicationFragmentSettings fragmentSettings, String language, String userId, String topicId,
-      KmeliaSessionController kmeliaScc, ResourcesWrapper resources, Writer out)
+      KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources, Writer out)
       throws IOException {
     PublicationDetail pub = aPub.getDetail();
     String name = Encode.forHtml(pub.getName(language));
@@ -733,7 +733,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String displayDate(PublicationDetail pub, KmeliaSessionController kmeliaScc,
-      ResourcesWrapper resources) {
+      MultiSilverpeasBundle resources) {
     if ("5".equals(kmeliaScc.getSortValue()) || "6".equals(kmeliaScc.getSortValue())) {
       return resources.getOutputDate(pub.getCreationDate());
     } else {
@@ -742,7 +742,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String displayFiles(PublicationDetail pub, boolean linkAttachment, boolean seeAlso, String userId,
-      String topicId, KmeliaSessionController kmeliaScc, ResourcesWrapper resources)
+      String topicId, KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources)
       throws IOException {
     StringBuilder sb = new StringBuilder(1024);
     boolean displayFiles =
@@ -764,7 +764,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
-      ResourceLocator publicationSettings, Writer out)
+      SettingBundle publicationSettings, Writer out)
       throws IOException, NumberFormatException, ThumbnailException {
     ThumbnailSettings thumbnailSettings = ksc.getThumbnailSettings();
     String vignette_url;
@@ -800,7 +800,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String displayPermalink(PublicationDetail pub, KmeliaSessionController kmeliaScc,
-      ResourcesWrapper resources) throws IOException {
+      MultiSilverpeasBundle resources) throws IOException {
     String link;
     if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
       link = URLManager
@@ -814,7 +814,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         resources.getString("kmelia.CopyPublicationLink") + "\"/></a>";
   }
 
-  void displaySortingListBox(ResourcesWrapper resources, KmeliaSessionController ksc, Writer out)
+  void displaySortingListBox(MultiSilverpeasBundle resources, KmeliaSessionController ksc, Writer out)
       throws IOException {
     out.
         write(
@@ -853,7 +853,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   void displayPublicationsListHeader(int nbPubs, boolean sortAllowed, Pagination pagination,
-      ResourcesWrapper resources, KmeliaSessionController ksc, Writer out) throws IOException {
+      MultiSilverpeasBundle resources, KmeliaSessionController ksc, Writer out) throws IOException {
     String publicationSrc = resources.getIcon("kmelia.publication");
     out.write("<div id=\"pubsHeader\">");
     out.write("<img src=\"" + publicationSrc + "\" alt=\"\"/>");
@@ -908,7 +908,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayAttachments(final KmeliaSessionController kmeliaScc,
-      PublicationDetail pubDetail, ResourcesWrapper resources, boolean linkAttachment,
+      PublicationDetail pubDetail, MultiSilverpeasBundle resources, boolean linkAttachment,
       boolean alias) {
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
@@ -978,7 +978,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    */
   private String displayFile(String url, String title, String info, String icon, String logicalName,
       String size, String downloadTime, Date creationDate, String permalink,
-      ResourcesWrapper resources, boolean attachmentLink, boolean previewable, boolean viewable,
+      MultiSilverpeasBundle resources, boolean attachmentLink, boolean previewable, boolean viewable,
       final boolean isDownloadAllowedForReaders, final boolean isUserAllowedToDownloadFile,
       String id) {
     SilverTrace
@@ -1112,7 +1112,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private void displayLastPublications(KmeliaSessionController kmeliaScc,
-      ResourcesWrapper resources, GraphicElementFactory gef, Writer writer) throws IOException {
+      MultiSilverpeasBundle resources, GraphicElementFactory gef, Writer writer) throws IOException {
 
     List<KmeliaPublication> pubs = kmeliaScc.getLatestPublications();
     boolean displayLinks = URLManager.displayUniversalLinks();
@@ -1233,7 +1233,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return "";
   }
 
-  private File getThumbnail(PublicationDetail pubDetail, ResourceLocator publicationSettings) {
+  private File getThumbnail(PublicationDetail pubDetail, SettingBundle publicationSettings) {
     if (StringUtil.isDefined(pubDetail.getImage())) {
       return new File(FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId()) +
           publicationSettings.getString("imagesSubDirectory") + File.separatorChar +

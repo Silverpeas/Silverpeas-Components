@@ -58,7 +58,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 	String pubId = (String) request.getParameter("PubId");
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(chatScc.getLanguage());
 %>
 
 <HTML>

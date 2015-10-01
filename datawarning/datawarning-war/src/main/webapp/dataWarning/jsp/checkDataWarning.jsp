@@ -50,7 +50,7 @@
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="java.util.*"%>
 <%@ page import="java.text.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
@@ -66,7 +66,7 @@
 	OperationPane operationPane;
 	
 	DataWarningSessionController dataWarningSC;
-    ResourcesWrapper resource;
+    MultiSilverpeasBundle resource;
 
 	gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
   	
@@ -100,5 +100,5 @@
 	operationPane = window.getOperationPane();
 
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    resource = (ResourcesWrapper)request.getAttribute("resources");
+    resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 %>

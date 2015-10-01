@@ -39,7 +39,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkQuizz.jsp" %>
 
 <%!
-  String displayQuestionsUpdateView(List<Question> questions, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc,ResourceLocator settings, ResourcesWrapper resources) throws QuizzException {
+  String displayQuestionsUpdateView(List<Question> questions, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc,SettingBundle settings, MultiSilverpeasBundle resources) throws QuizzException {
         String questionUpSrc = "icons/questionUp.gif";
         String questionDownSrc = "icons/questionDown.gif";
         String questionDeleteSrc = "icons/questionDelete.gif";
@@ -173,7 +173,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-ResourceLocator settings = quizzScc.getSettings();
+SettingBundle settings = quizzScc.getSettings();
 
 QuestionContainerDetail quizz = null;
 

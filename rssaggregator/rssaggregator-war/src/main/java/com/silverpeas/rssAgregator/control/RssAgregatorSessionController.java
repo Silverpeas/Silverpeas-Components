@@ -24,6 +24,24 @@
 
 package com.silverpeas.rssAgregator.control;
 
+import com.silverpeas.rssAgregator.model.RSSViewType;
+import com.silverpeas.rssAgregator.model.RssAgregatorException;
+import com.silverpeas.rssAgregator.model.SPChannel;
+import com.silverpeas.rssAgregator.model.SPChannelPK;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import de.nava.informa.core.ParseException;
+import de.nava.informa.impl.basic.Channel;
+import de.nava.informa.impl.basic.ChannelBuilder;
+import de.nava.informa.parsers.FeedParser;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,24 +50,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
-import com.silverpeas.rssAgregator.model.RSSViewType;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
-
-import de.nava.informa.core.ParseException;
-import de.nava.informa.impl.basic.Channel;
-import de.nava.informa.impl.basic.ChannelBuilder;
-import de.nava.informa.parsers.FeedParser;
 
 /**
  * Standard Session Controller Constructor
@@ -71,9 +71,9 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   public RssAgregatorSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.rssAgregator.multilang.rssAgregatorBundle",
-        "com.silverpeas.rssAgregator.settings.rssAgregatorIcons",
-        "com.silverpeas.rssAgregator.settings.rssAgregatorSettings");
+        "org.silverpeas.rssAgregator.multilang.rssAgregatorBundle",
+        "org.silverpeas.rssAgregator.settings.rssAgregatorIcons",
+        "org.silverpeas.rssAgregator.settings.rssAgregatorSettings");
     String defaultView = getComponentParameterValue(DEFAULT_VIEW_PARAMETER);
     if (defaultView.isEmpty()) {
       viewMode = RSSViewType.SEPARATED;
@@ -248,8 +248,8 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
    * @return an RSS aggregator Silverpeas Template
    */
   private SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("com.silverpeas.rssAgregator.settings.rssAgregatorSettings", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(
+        "org.silverpeas.rssAgregator.settings.rssAgregatorSettings");
     Properties templateConfiguration = new Properties();
     templateConfiguration
         .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));

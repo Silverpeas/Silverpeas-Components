@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>

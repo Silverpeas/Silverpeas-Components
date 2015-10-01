@@ -55,7 +55,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
-  ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.publication.publicationSettings", resources.getLanguage());
+  SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
 
   //Recuperation des parametres
   String profile = (String) request.getAttribute("Profile");

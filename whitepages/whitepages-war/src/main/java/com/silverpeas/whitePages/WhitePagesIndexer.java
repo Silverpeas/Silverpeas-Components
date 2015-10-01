@@ -41,6 +41,7 @@ import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
@@ -116,8 +117,8 @@ public class WhitePagesIndexer implements ComponentIndexation {
   private UserTemplate getUserTemplateFor(String componentId) {
     String userTemplateFileName =
         admin.getComponentParameterValue(componentId, "cardTemplate").replace('\\', '/');
-    ResourceLocator templateSettings =
-        new ResourceLocator("org.silverpeas.whitePages.settings.template", "");
+    SettingBundle templateSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.template");
     UserDetail currentUser = UserDetail.getCurrentRequester();
     String language = currentUser.getUserPreferences().getLanguage();
     String templateDir = templateSettings.getString("templateDir").replace('\\', '/');

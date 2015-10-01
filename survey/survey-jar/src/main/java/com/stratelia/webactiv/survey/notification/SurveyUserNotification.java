@@ -25,6 +25,7 @@ package com.stratelia.webactiv.survey.notification;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.MissingResourceException;
 
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.model.NotificationResourceData;
@@ -90,9 +91,13 @@ public class SurveyUserNotification
   @Override
   protected void performTemplateData(final String language, final QuestionContainerDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("UserDetail", this.userDetail);
     template.setAttribute("userName",
         (this.userDetail != null ? this.userDetail.getDisplayedName() : ""));

@@ -35,7 +35,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
@@ -93,8 +93,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="org.silverpeas.util.exception.*"%>
 
-<%@ page import="org.silverpeas.util.*"%>
-
 <%!
 
 private static final String STATUS_VALIDATE       = "V";
@@ -105,7 +103,7 @@ private static final String STATUS_REFUSED        = "R";
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 ResourcesManagerSessionController  resourcesManagerSC = (ResourcesManagerSessionController) request.getAttribute("rsc");
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

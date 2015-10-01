@@ -43,15 +43,16 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%
     ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");
-    ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+    MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
     if (fsc == null) {
         // No forums session controller in the request -> security exception
         String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
@@ -59,8 +60,8 @@
             .forward(request, response);
         return;
     }
-    ResourceLocator resource = new ResourceLocator(
-      "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
+    LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     String userId = fsc.getUserId();
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();

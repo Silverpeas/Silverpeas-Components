@@ -55,7 +55,7 @@ String copySrc = m_context + "util/icons/copy.gif";
 
 <%!
 //Display the quizz header
-String displayQuizzHeader(QuizzSessionController quizzScc, QuestionContainerHeader quizzHeader, ResourcesWrapper resources, GraphicElementFactory gef) {
+String displayQuizzHeader(QuizzSessionController quizzScc, QuestionContainerHeader quizzHeader, MultiSilverpeasBundle resources, GraphicElementFactory gef) {
   String title = quizzHeader.getTitle();
   String description = quizzHeader.getDescription();
   String comment = quizzHeader.getComment();
@@ -78,7 +78,7 @@ String displayQuizzHeader(QuizzSessionController quizzScc, QuestionContainerHead
   return r;
 }
 
-String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, JspWriter out) throws QuizzException {
+String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings, JspWriter out) throws QuizzException {
   String r = "";
   Question question = null;
   Collection<Answer> answers = null;
@@ -113,7 +113,7 @@ String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, St
   return r;
 }
 
-List<String> displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, Frame frame, JspWriter out) throws QuizzException {
+List<String> displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings, Frame frame, JspWriter out) throws QuizzException {
   String r = "";
   String s = "";
   Question question = null;
@@ -183,7 +183,7 @@ List<String> displayQuestions(QuestionContainerDetail quizz, int roundId,Graphic
   return displayQuestions;
 }
 
-String displayQuestion(QuizzSessionController quizzScc, Question question, int i, String m_context, ResourceLocator settings, GraphicElementFactory gef, ResourcesWrapper resources) {
+String displayQuestion(QuizzSessionController quizzScc, Question question, int i, String m_context, SettingBundle settings, GraphicElementFactory gef, MultiSilverpeasBundle resources) {
   Collection<Answer> answers = question.getAnswers();
   Board board = gef.getBoard();
   String r = "";
@@ -291,7 +291,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 }
 
 
-List<String> displayQuestionResult(QuestionContainerDetail quizz, Question question, int i, String m_context, ResourceLocator settings, QuizzSessionController quizzScc, boolean solutionAllowed, ResourcesWrapper resources) {
+List<String> displayQuestionResult(QuestionContainerDetail quizz, Question question, int i, String m_context, SettingBundle settings, QuizzSessionController quizzScc, boolean solutionAllowed, MultiSilverpeasBundle resources) {
 
   Collection<Answer> answers = question.getAnswers();
   Collection<QuestionResult> questionResults = question.getQuestionResults();
@@ -416,7 +416,7 @@ List<String> displayQuestionResult(QuestionContainerDetail quizz, Question quest
 	return displayQuestionResult;
 }
 
-String displayQuizzHeaderPreview(QuizzSessionController quizzScc, QuestionContainerHeader quizzHeader, ResourcesWrapper resources, GraphicElementFactory gef) {
+String displayQuizzHeaderPreview(QuizzSessionController quizzScc, QuestionContainerHeader quizzHeader, MultiSilverpeasBundle resources, GraphicElementFactory gef) {
   Board board = gef.getBoard();
 	String title = EncodeHelper.javaStringToHtmlString(quizzHeader.getTitle());
   String description = EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription());
@@ -440,7 +440,7 @@ String displayQuizzHeaderPreview(QuizzSessionController quizzScc, QuestionContai
 
 
 
-String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings) throws QuizzException {
+String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings) throws QuizzException {
   String r = "";
   Question question = null;
   try{
@@ -473,7 +473,7 @@ String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory 
 }
 
 
-String displayQuestionPreview(Question question, int i, String m_context, QuizzSessionController quizzScc,ResourceLocator settings, GraphicElementFactory gef, ResourcesWrapper resources) {
+String displayQuestionPreview(Question question, int i, String m_context, QuizzSessionController quizzScc,SettingBundle settings, GraphicElementFactory gef, MultiSilverpeasBundle resources) {
         Collection<Answer> answers = question.getAnswers();
         Board board = gef.getBoard();
         String r = "<br>";
@@ -547,7 +547,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
         return r;
 }
 
-String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, int nb_user_votes) throws QuizzException {
+String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings, int nb_user_votes) throws QuizzException {
         String r = "";
         List<String> function = null;
         int quizzUserScore = 0;
@@ -623,7 +623,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 		return r;
 }
 
-  String displayQuizzResultAdmin(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, int nb_user_votes) throws QuizzException {
+  String displayQuizzResultAdmin(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings, int nb_user_votes) throws QuizzException {
         String r = "";
         List<String> function = null;
         int quizzUserScore = 0;
@@ -709,7 +709,7 @@ if (roundId == null) {
 if (participationIdSTR != null) {
   session.setAttribute("currentParticipationId", participationIdSTR);
 }
-ResourceLocator settings = quizzScc.getSettings();
+SettingBundle settings = quizzScc.getSettings();
 
 //Icons
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";

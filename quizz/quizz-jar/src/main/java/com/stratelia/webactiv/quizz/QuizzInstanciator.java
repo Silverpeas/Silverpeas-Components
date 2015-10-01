@@ -45,20 +45,20 @@ public class QuizzInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    QuestionInstanciator questionInst = new QuestionInstanciator("com.stratelia.webactiv.quizz");
+    QuestionInstanciator questionInst = new QuestionInstanciator("org.silverpeas.quizz");
     questionInst.create(con, spaceId, componentId, userId);
     QuestionContainerInstanciator questionContainerInst =
-        new QuestionContainerInstanciator("com.stratelia.webactiv.quizz");
+        new QuestionContainerInstanciator("org.silverpeas.quizz");
     questionContainerInst.create(con, spaceId, componentId, userId);
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    QuestionInstanciator questionInst = new QuestionInstanciator("com.stratelia.webactiv.quizz");
+    QuestionInstanciator questionInst = new QuestionInstanciator("org.silverpeas.quizz");
     questionInst.delete(con, spaceId, componentId, userId);
     QuestionContainerInstanciator questionContainerInst =
-        new QuestionContainerInstanciator("com.stratelia.webactiv.quizz");
+        new QuestionContainerInstanciator("org.silverpeas.quizz");
     questionContainerInst.delete(con, spaceId, componentId, userId);
 
   }

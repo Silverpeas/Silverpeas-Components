@@ -30,6 +30,7 @@ import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -100,7 +101,7 @@ public class ForumActionHelper {
    * @param fsc
    */
   public static void actionManagement(HttpServletRequest request, boolean isAdmin,
-      boolean isModerator, String userId, ResourceLocator resource, JspWriter out,
+      boolean isModerator, String userId, LocalizationBundle resource, JspWriter out,
       ForumsSessionController fsc) {
     int action = ForumHelper.getIntParameter(request, "action");
     int params = ForumHelper.getIntParameter(request, "params");
@@ -120,7 +121,7 @@ public class ForumActionHelper {
    * @param fsc
    */
   private static void actionManagement(int action, int params, HttpServletRequest request,
-      boolean isAdmin, boolean isModerator, String userId, ResourceLocator resource, JspWriter out,
+      boolean isAdmin, boolean isModerator, String userId, LocalizationBundle resource, JspWriter out,
       ForumsSessionController fsc) {
     if (action != -1) {
       try {
@@ -244,12 +245,12 @@ public class ForumActionHelper {
           }
           case UNSUBSCRIBE_FORUMS: {
             fsc.unsubscribeComponent();
-            NotifierUtil.addSuccess(resource.getString("forums.unsubscribe.success", ""));
+            NotifierUtil.addSuccess(resource.getString("forums.unsubscribe.success"));
             break;
           }
           case SUBSCRIBE_FORUMS: {
             fsc.subscribeComponent();
-            NotifierUtil.addSuccess(resource.getString("forums.subscribe.success", ""));
+            NotifierUtil.addSuccess(resource.getString("forums.subscribe.success"));
             break;
           }
           case UNSUBSCRIBE_FORUM: {

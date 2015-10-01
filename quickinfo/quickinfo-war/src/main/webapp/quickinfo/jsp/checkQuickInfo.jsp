@@ -60,7 +60,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.publication.model.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
@@ -72,7 +72,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   QuickInfoSessionController quickinfo = (QuickInfoSessionController) request.getAttribute("quickinfo");
   
-  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 
   String language = resources.getLanguage();
   String[] browseContext = (String[]) request.getAttribute("browseContext");

@@ -55,7 +55,7 @@
 <title>___/ Silverpeas - Corporate Portal Organizer\__________________________________________</title>
 <view:looknfeel/>
 <%
-  ResourceLocator settings = quizzScc.getSettings();
+  SettingBundle settings = quizzScc.getSettings();
 			String space = quizzScc.getSpaceLabel();
 			String component = quizzScc.getComponentLabel();
 			session.removeAttribute("currentQuizz");

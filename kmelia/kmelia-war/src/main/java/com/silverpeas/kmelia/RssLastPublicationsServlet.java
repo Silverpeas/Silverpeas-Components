@@ -44,6 +44,7 @@ import de.nava.informa.impl.basic.Item;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -65,8 +66,8 @@ public class RssLastPublicationsServlet extends HttpServlet {
   public static final String PASSWORD_PARAM = "password";
   public static final String LOGIN_PARAM = "login";
 
-  private static final ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.kmelia.settings.kmeliaSettings");
 
   @Inject
   private SilverpeasWebUtil util;

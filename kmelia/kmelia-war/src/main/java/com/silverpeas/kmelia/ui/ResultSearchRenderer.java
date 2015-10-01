@@ -38,6 +38,7 @@ import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -67,8 +68,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
    * Load template configuration
    */
   static {
-    ResourceLocator settings =
-        new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings
         .getString("templatePath"));
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings

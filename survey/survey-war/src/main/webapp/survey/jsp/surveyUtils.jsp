@@ -3,11 +3,12 @@
 <%@ page import="java.text.ParseException"%>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 
 <%!
 
 TabbedPane displayTabs(SurveySessionController surveyScc, String surveyId, GraphicElementFactory gef, String action, String profile,
-ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
+MultiSilverpeasBundle resources, boolean pollingStationMode, boolean participated) {
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	String label = "";
 	if (pollingStationMode) {
@@ -34,7 +35,7 @@ ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
 }
 
 //Display the survey header
-String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionController surveyScc, ResourcesWrapper resources, GraphicElementFactory gef) throws ParseException {
+String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionController surveyScc, MultiSilverpeasBundle resources, GraphicElementFactory gef) throws ParseException {
         String title = Encode.javaStringToHtmlString(surveyHeader.getTitle());
         String description = Encode.javaStringToHtmlParagraphe(surveyHeader.getDescription());
         String creationDate = resources.getOutputDate(surveyHeader.getCreationDate());
@@ -74,7 +75,7 @@ String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionCo
 }
 
 String displaySurvey(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
-ResourcesWrapper resources, ResourceLocator settings, String profile, boolean pollingStationMode, boolean participated) throws SurveyException, ParseException {
+MultiSilverpeasBundle resources, SettingBundle settings, String profile, boolean pollingStationMode, boolean participated) throws SurveyException, ParseException {
 
         String r = "";
         Question question = null;
@@ -124,7 +125,7 @@ ResourcesWrapper resources, ResourceLocator settings, String profile, boolean po
 }
 
 String displayQuestions(QuestionContainerDetail survey, int roundId, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
-ResourcesWrapper resources, ResourceLocator settings, String profile, boolean pollingStationMode, boolean participated) throws SurveyException, ParseException {
+MultiSilverpeasBundle resources, SettingBundle settings, String profile, boolean pollingStationMode, boolean participated) throws SurveyException, ParseException {
         Board board = gef.getBoard();
         String r = "";
         try{
@@ -237,7 +238,7 @@ ResourcesWrapper resources, ResourceLocator settings, String profile, boolean po
 /**
 	Display question
 **/
-String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTotalQuestion, String m_context, ResourceLocator settings, SurveySessionController surveyScc, GraphicElementFactory gef, ResourcesWrapper resources)
+String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTotalQuestion, String m_context, SettingBundle settings, SurveySessionController surveyScc, GraphicElementFactory gef, MultiSilverpeasBundle resources)
 {
         Collection answers = question.getAnswers();
         String r = "";
@@ -351,7 +352,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 }
 
 // Previsualisation
-  String displaySurveyPreview(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, ResourceLocator settings) throws SurveyException, ParseException
+  String displaySurveyPreview(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, MultiSilverpeasBundle resources, SettingBundle settings) throws SurveyException, ParseException
   {
         String r = "";
         try
@@ -511,7 +512,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
        return r;
   }
 
-  String displayQuestionsUpdateView(SurveySessionController surveyScc, List questions, GraphicElementFactory gef, String m_context, ResourceLocator settings, ResourcesWrapper resources) throws SurveyException
+  String displayQuestionsUpdateView(SurveySessionController surveyScc, List questions, GraphicElementFactory gef, String m_context, SettingBundle settings, MultiSilverpeasBundle resources) throws SurveyException
   {
         String questionUpSrc = "icons/arrowUp.gif";
         String questionDownSrc = "icons/arrowDown.gif";
@@ -645,7 +646,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 
 String displaySurveyResultOfUser(String userName, String userId, Collection resultsByUser,
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
-  ResourcesWrapper resources, ResourceLocator settings, String profile) throws SurveyException, ParseException {
+  MultiSilverpeasBundle resources, SettingBundle settings, String profile) throws SurveyException, ParseException {
 	   
   Board board = gef.getBoard();
   String r = "";
@@ -722,8 +723,8 @@ String displaySurveyResultOfUser(String userName, String userId, Collection resu
 }
 
 String displaySurveyResult(String choice, QuestionContainerDetail survey, GraphicElementFactory gef, String m_context,
-    SurveySessionController surveyScc, ResourcesWrapper resources, boolean isClosed,
-    ResourceLocator settings, boolean participated, String profile, HttpServletRequest request) throws SurveyException, ParseException {
+    SurveySessionController surveyScc, MultiSilverpeasBundle resources, boolean isClosed,
+    SettingBundle settings, boolean participated, String profile, HttpServletRequest request) throws SurveyException, ParseException {
   Board board = gef.getBoard();
   String r = "";
 
@@ -1044,7 +1045,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChart(boolean anonymous, Collection answers, String m_context, ResourceLocator settings, int nbUsers) throws SurveyException
+  String displaySurveyResultChart(boolean anonymous, Collection answers, String m_context, SettingBundle settings, int nbUsers) throws SurveyException
   {
         String r = "";
         try
@@ -1118,7 +1119,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChartNotAnonymous(Question question, Collection answers, String m_context, ResourceLocator settings, SurveySessionController surveyScc) throws SurveyException
+  String displaySurveyResultChartNotAnonymous(Question question, Collection answers, String m_context, SettingBundle settings, SurveySessionController surveyScc) throws SurveyException
   {
         String r = "";
         try
@@ -1223,7 +1224,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
   }
 
   String displaySurveyResultChartByUser(Collection resultsByUser, String userId, boolean anonymous, String questionId, Collection answers, 
-      String m_context, ResourceLocator settings, SurveySessionController surveyScc) throws SurveyException
+      String m_context, SettingBundle settings, SurveySessionController surveyScc) throws SurveyException
   { 
         String r = "";
         try
@@ -1290,7 +1291,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
   }
 
   String displaySurveyComments(SurveySessionController surveyScc, QuestionContainerDetail survey, GraphicElementFactory gef,
-  ResourcesWrapper resources, String profile, boolean pollingStationMode, boolean participated) throws SurveyException {
+  MultiSilverpeasBundle resources, String profile, boolean pollingStationMode, boolean participated) throws SurveyException {
 		Board board = gef.getBoard();
 		Frame frame = gef.getFrame();
         String r = "";

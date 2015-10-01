@@ -1676,14 +1676,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // get the time axis
         String timeCriteria = null;
         if (kmelia.isTimeAxisUsed() && StringUtil.isDefined(kmelia.getSessionTimeCriteria())) {
-          ResourceLocator timeSettings =
-              new ResourceLocator("org.silverpeas.kmelia.multilang.timeAxisBundle",
-                  kmelia.getLanguage());
+          LocalizationBundle timeSettings = ResourceLocator.getLocalizationBundle(
+              "org.silverpeas.kmelia.multilang.timeAxisBundle");
           if (kmelia.getSessionTimeCriteria().equals("X")) {
             timeCriteria = null;
           } else {
-            timeCriteria = "<b>" + kmelia.getString("TimeAxis") + "</b> > " +
-                timeSettings.getString(kmelia.getSessionTimeCriteria(), "");
+            String localizedCriteria = timeSettings.getString(kmelia.getSessionTimeCriteria());
+            if (localizedCriteria == null || localizedCriteria.trim().isEmpty()) {
+              localizedCriteria = "";
+            }
+            timeCriteria = "<b>" + kmelia.getString("TimeAxis") + "</b> > " + localizedCriteria;
           }
         }
         request.setAttribute("selectedResultsWa", publicationsIds);
@@ -1804,8 +1806,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String fileType;
     long fileSize;
     long processStart = new Date().getTime();
-    ResourceLocator attachmentResourceLocator =
-        new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment",
+    LocalizationBundle attachmentResourceLocator =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.attachment.multilang.attachment",
             kmeliaScc.getLanguage());
     FileItem fileItem;
     int versionType = DocumentVersion.TYPE_DEFAULT_VERSION;

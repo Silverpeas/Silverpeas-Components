@@ -44,7 +44,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
 public class ChatDataAccess {
-  private static final String DATASOURCE = JNDINames.CHAT_DATASOURCE;
   private static final String TBL_ROOM = "SC_chat_chatroom";
   private static final String TBL_BANNED = "SC_chat_banned";
 

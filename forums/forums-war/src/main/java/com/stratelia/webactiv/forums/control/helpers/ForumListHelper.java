@@ -31,7 +31,7 @@ import com.stratelia.webactiv.forums.url.ActionUrl;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class ForumListHelper {
     return result;
   }
 
-  private static void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter out,
+  private static void displayForumLine(Forum forum, MultiSilverpeasBundle resources, JspWriter out,
       int currentPage, String call, boolean admin, boolean moderator, boolean reader, int depth,
       ForumsSessionController fsc, boolean isSubscriberByInheritance) {
     try {
@@ -225,7 +225,7 @@ public class ForumListHelper {
     }
   }
 
-  public static void displayForumsList(JspWriter out, ResourcesWrapper resources, boolean admin,
+  public static void displayForumsList(JspWriter out, MultiSilverpeasBundle resources, boolean admin,
       boolean moderator, boolean reader, int currentForumId, String call,
       ForumsSessionController fsc, String categoryId, String nom, String description,
       boolean isSubscriberByInheritance) {
@@ -275,7 +275,7 @@ public class ForumListHelper {
     }
   }
 
-  public static void displayChildForums(JspWriter out, ResourcesWrapper resources, boolean admin,
+  public static void displayChildForums(JspWriter out, MultiSilverpeasBundle resources, boolean admin,
       boolean moderator, boolean reader, int currentForumId, String call,
       ForumsSessionController fsc, boolean isSubscriberByInheritance) {
     int[] forumIds = fsc.getForumSonsIds(currentForumId);
@@ -293,7 +293,7 @@ public class ForumListHelper {
     }
   }
 
-  private static void scanForum(Forum[] forums, ResourcesWrapper resources, JspWriter out,
+  private static void scanForum(Forum[] forums, MultiSilverpeasBundle resources, JspWriter out,
       int currentPage, String call, boolean admin, boolean moderator, boolean reader,
       int currentForumId, int depth, ForumsSessionController fsc,
       boolean isSubscriberByInheritance) {

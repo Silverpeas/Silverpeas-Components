@@ -33,6 +33,7 @@
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ page import="java.text.ParsePosition"%>
 <%@ page import="org.silverpeas.servlet.HttpRequest" %>
+<%@ page import="org.silverpeas.util.*" %>
 
 <%@ include file="checkSurvey.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -40,7 +41,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%!
-void displayAnswer(int i, String style, ResourcesWrapper resources, List<ComponentInstLight> galleries, JspWriter out) throws IOException {
+void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<ComponentInstLight> galleries, JspWriter out) throws IOException {
   String inputName = "answer" + i;
   
   out.println("<div class=\"field\">");
@@ -124,10 +125,8 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
       action = "CreatePoll";
     }
 
-    ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings",
-        surveyScc.getLanguage());
-    ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings",
-        surveyScc.getLanguage());
+    SettingBundle uploadSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
 
     creationDate = resources.getOutputDate(new Date());
     beginDate = resources.getInputDate(new Date());

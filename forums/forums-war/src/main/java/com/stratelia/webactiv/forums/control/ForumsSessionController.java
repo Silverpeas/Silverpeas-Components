@@ -63,6 +63,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.exception.DecodingException;
@@ -104,7 +105,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private NotificationSender notifSender = null;
   public String typeMessages = "Messages";
   public String typeSubjects = "Subjects";
-  private ResourceLocator settings = null;
+  private SettingBundle settings = null;
   private PublicationService publicationService = null;
   private StatisticService statisticService = null;
   private boolean displayAllMessages = true;
@@ -773,9 +774,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   @Override
-  public ResourceLocator getSettings() {
+  public SettingBundle getSettings() {
     if (settings == null) {
-      settings = new ResourceLocator("org.silverpeas.forums.settings.forumsSettings", "");
+      settings = ResourceLocator.getSettingBundle("org.silverpeas.forums.settings.forumsSettings");
     }
     return settings;
   }

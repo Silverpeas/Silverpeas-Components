@@ -27,13 +27,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkAlmanach.jsp" %>
 
-<%
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
-%>
-
 <HTML>
 <HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
 </head>
 <body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">

@@ -29,6 +29,8 @@ import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationB
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
+import java.util.MissingResourceException;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -45,7 +47,7 @@ public abstract class AbstractClassifiedUserNotification extends
 
   @Override
   protected String getMultilangPropertyFile() {
-    return "com.silverpeas.classifieds.multilang.classifiedsBundle";
+    return "org.silverpeas.classifieds.multilang.classifiedsBundle";
   }
 
   @Override
@@ -56,7 +58,13 @@ public abstract class AbstractClassifiedUserNotification extends
   @Override
   protected void performTemplateData(final String language, final ClassifiedDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("classified", resource);
     template.setAttribute("classifiedName", resource.getTitle());
   }

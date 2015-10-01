@@ -25,13 +25,13 @@
 package com.silverpeas.crm.vo;
 
 import com.silverpeas.crm.model.CrmDelivery;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 public class DeliveryVO extends ElementVO {
 
   private CrmDelivery delivery;
 
-  public DeliveryVO(CrmDelivery delivery, ResourcesWrapper resources) {
+  public DeliveryVO(CrmDelivery delivery, MultiSilverpeasBundle resources) {
     super(resources);
     this.delivery = delivery;
   }

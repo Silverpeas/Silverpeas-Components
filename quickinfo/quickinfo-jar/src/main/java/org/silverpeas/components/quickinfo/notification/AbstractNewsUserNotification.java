@@ -32,6 +32,8 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import java.util.MissingResourceException;
+
 public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUserNotification<News> {
 
   private final NotifAction action;
@@ -43,9 +45,13 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
 
   @Override
   protected void performTemplateData(String language, News resource, SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("description", resource.getDescription());
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());

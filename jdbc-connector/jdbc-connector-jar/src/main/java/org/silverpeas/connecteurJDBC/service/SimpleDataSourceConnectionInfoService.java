@@ -28,6 +28,7 @@ import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfo;
 import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfoRepository;
 import org.silverpeas.connecteurJDBC.model.DataSourceDefinition;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -40,8 +41,8 @@ import java.util.List;
 @Transactional
 public class SimpleDataSourceConnectionInfoService implements DataSourceConnectionInfoService {
 
-  private static final ResourceLocator dataSources =
-      new ResourceLocator("org.silverpeas.connecteurJDBC.settings.dataSources", "");
+  private static final SettingBundle dataSources =
+      ResourceLocator.getSettingBundle("org.silverpeas.connecteurJDBC.settings.dataSources");
 
   @Inject
   private DataSourceConnectionInfoRepository repository;

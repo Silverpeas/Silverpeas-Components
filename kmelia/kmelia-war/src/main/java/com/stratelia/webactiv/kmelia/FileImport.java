@@ -32,8 +32,9 @@ import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
@@ -54,8 +55,8 @@ import static org.silverpeas.util.Charsets.UTF_8;
  */
 public class FileImport {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.importExport.settings.mapping", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.mapping");
 
   /**
    * Private or Public (ie DocumentVersion)
@@ -153,11 +154,11 @@ public class FileImport {
   /**
    * Write import report into a log file
    */
-  public void writeImportToLog(ImportReport importReport, ResourcesWrapper resource) {
+  public void writeImportToLog(ImportReport importReport, MultiSilverpeasBundle resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
-      ResourceBundle resources = FileUtil
-          .loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverTrace",
+      ResourceBundle resources = FileUtil.loadBundle(
+          "org.silverpeas.silvertrace.settings.silverTrace",
               new Locale("", ""));
       String reportLogPath = resources.getString("ErrorDir");
       File file = new File(reportLogPath + separator + reportLogFile);

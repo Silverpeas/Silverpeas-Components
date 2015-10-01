@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.ResourcesWrapper" %>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,7 +29,7 @@
 <%@ include file="check.jsp" %>
 <%!
 
-String getHTMLMonthCalendar(Date date, ResourcesWrapper resource, List holidays) {
+String getHTMLMonthCalendar(Date date, MultiSilverpeasBundle resource, List holidays) {
 
 		String  weekDayStyle 		= "class=\"txtnav\"";
     	String  selectedDayStyle	= "class=\"intfdcolor3\"";

@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -68,8 +69,8 @@ public class KmeliaSecurity implements ComponentSecurity {
   private OrganizationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
-  private ResourceLocator kmeliaSettings = new ResourceLocator(
-      "org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
+  private SettingBundle kmeliaSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.kmelia.settings.kmeliaSettings");
 
   public KmeliaSecurity() {
     this.controller = OrganizationControllerProvider.getOrganisationController();

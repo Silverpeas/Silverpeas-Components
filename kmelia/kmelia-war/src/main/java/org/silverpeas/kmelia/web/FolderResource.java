@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.node.web.NodeAttrEntity;
 import org.silverpeas.node.web.NodeEntity;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 
@@ -251,8 +252,8 @@ public class FolderResource extends RESTWebService {
 
   private void decorateRootChildren(NodeEntity[] children, String lang) {
     // case of special nodes (bin, to validate)
-    ResourceLocator messages =
-        new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaBundle", lang);
+    LocalizationBundle messages =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaBundle", lang);
     for (NodeEntity child : children) {
       if (child.getAttr().getId().equalsIgnoreCase("tovalidate")) {
         child.getAttr().setRel("tovalidate");

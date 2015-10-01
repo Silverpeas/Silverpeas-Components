@@ -42,7 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.ForeignPK"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
@@ -93,7 +93,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
   SurveySessionController surveyScc = (SurveySessionController) request.getAttribute("survey");
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 
   if (surveyScc == null) {
       // No session controller in the request -> security exception

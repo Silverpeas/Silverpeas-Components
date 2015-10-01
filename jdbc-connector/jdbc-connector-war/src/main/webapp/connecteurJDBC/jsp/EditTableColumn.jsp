@@ -36,7 +36,7 @@
 	TabbedPane tabbedPane;
 	
 	ConnecteurJDBCSessionController connecteurJDBC;
-	ResourceLocator messages = null;
+	LocalizationBundle messages = null;
 
 	String flag = "user";
 

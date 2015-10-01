@@ -68,15 +68,16 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.almanach.control.AlmanachSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 	GraphicElementFactory graphicFactory = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	AlmanachSessionController almanach = (AlmanachSessionController) request.getAttribute("almanach");
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-	ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
+	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
+	SettingBundle settings = (SettingBundle) request.getAttribute("settings");
 	if (almanach == null)
 	{
 	    // No almanach session controller in the request -> security exception

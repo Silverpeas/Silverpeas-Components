@@ -42,7 +42,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -53,8 +55,8 @@ import static com.silverpeas.gallery.control.ejb.MediaServiceProvider.getMediaSe
 public class ScheduledAlertUser implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJob";
-  private ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.gallery.settings.gallerySettings", "");
+  private SettingBundle resources =
+      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
 
   public void initialize() {
     try {
@@ -87,9 +89,9 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       // pour chaque photo, construction d'une ligne ...
       String currentInstanceId = null;
 
-      ResourceLocator message =
-          new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle", DisplayI18NHelper.
-              getDefaultLanguage());
+      LocalizationBundle message =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle",
+              DisplayI18NHelper.getDefaultLanguage());
 
       StringBuilder messageBody = new StringBuilder();
       Media nextMedia = null;
@@ -155,8 +157,9 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
   private void createMessageByLanguage(String url, NotificationMetaData notifMetaData) {
     for (String language : DisplayI18NHelper.getLanguages()) {
-      ResourceLocator message =
-          new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle", language);
+      LocalizationBundle message =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle",
+              language);
       String subject = message.getString("gallery.notifSubject");
       StringBuilder messageBody = new StringBuilder();
       String body = messageBody.append("\n").append(

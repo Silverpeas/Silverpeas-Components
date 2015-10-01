@@ -25,13 +25,13 @@
 package com.silverpeas.crm.vo;
 
 import com.silverpeas.crm.model.CrmEvent;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 public class EventVO extends ElementVO {
 
   private CrmEvent event;
 
-  public EventVO(CrmEvent event, ResourcesWrapper resources) {
+  public EventVO(CrmEvent event, MultiSilverpeasBundle resources) {
     super(resources);
     this.event = event;
   }

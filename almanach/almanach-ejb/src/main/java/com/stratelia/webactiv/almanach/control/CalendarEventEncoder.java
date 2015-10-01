@@ -47,6 +47,7 @@ import com.silverpeas.calendar.DateTime;
 import com.silverpeas.calendar.DayOfWeek;
 import com.silverpeas.calendar.DayOfWeekOccurrence;
 import com.silverpeas.calendar.TimeUnit;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.model.EventDetail;
@@ -58,8 +59,8 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class CalendarEventEncoder {
 
-  private static ResourceLocator settings = new ResourceLocator(
-          "org.silverpeas.almanach.settings.almanachSettings", "");
+  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.almanach.settings.almanachSettings");
 
   /**
    * Encodes the specified details on almanach events into a calendar event.

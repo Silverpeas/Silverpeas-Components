@@ -36,16 +36,16 @@ import org.apache.ecs.xhtml.img;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.GeneralPropertiesManager;
 
 public abstract class ElementVO {
 
-  protected ResourcesWrapper resources;
+  protected MultiSilverpeasBundle resources;
   private DateFormat dateFormat = null;
   private DateFormat displayDateFormat = null;
 
-  public ElementVO(ResourcesWrapper resources) {
+  public ElementVO(MultiSilverpeasBundle resources) {
     this.resources = resources;
     dateFormat = new SimpleDateFormat("yyyy/MM/dd");
     displayDateFormat = new SimpleDateFormat(resources.getString("GML.dateFormat"));

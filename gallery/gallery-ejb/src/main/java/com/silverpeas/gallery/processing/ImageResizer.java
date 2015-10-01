@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  *
@@ -42,8 +43,8 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class ImageResizer {
 
-  final static ResourceLocator gallerySettings = new ResourceLocator(
-    "com.silverpeas.gallery.settings.gallerySettings", "");
+  final static SettingBundle gallerySettings = ResourceLocator.getSettingBundle(
+    "org.silverpeas.gallery.settings.gallerySettings");
   private BufferedImage imageSource;
   private int maxSize;
   private int width = 60;

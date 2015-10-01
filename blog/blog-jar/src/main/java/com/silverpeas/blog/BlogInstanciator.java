@@ -65,10 +65,10 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("blog", "BlogInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     // delete posts
-    PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.kmelia");
+    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.delete(con, spaceId, componentId, userId);
     // delete categories
-    NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.kmelia");
+    NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
     node.delete(con, spaceId, componentId, userId);
 
     // delete links

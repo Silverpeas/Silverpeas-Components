@@ -61,6 +61,7 @@ import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -707,9 +708,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
 
     // création des notifications
-    ResourceLocator message =
-        new ResourceLocator("org.silverpeas.almanach.multilang.almanach", DisplayI18NHelper.
-            getDefaultLanguage());
+    LocalizationBundle message =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.almanach.multilang.almanach",
+            DisplayI18NHelper.getDefaultLanguage());
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(eventDetail, htmlPath, message, senderName);
     NotificationMetaData notifMetaData =
@@ -717,7 +718,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       // création des messages ...
-      message = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", language);
+      message =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.almanach.multilang.almanach",
+              language);
 
       subject = getNotificationSubject(message);
       body = getNotificationBody(eventDetail, htmlPath, message, senderName);
@@ -737,12 +740,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     return notifMetaData;
   }
 
-  private String getNotificationSubject(final ResourceLocator message) {
+  private String getNotificationSubject(final LocalizationBundle message) {
     return message.getString("notifSubject");
   }
 
   private String getNotificationBody(final EventDetail eventDetail, final String htmlPath,
-      final ResourceLocator message, final String senderName) {
+      final LocalizationBundle message, final String senderName) {
     StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");
     messageText.append(message.getString("notifInfo")).append(" ");
@@ -752,7 +755,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     return messageText.toString();
   }
 
-  private String getNotificationLinkLabel(final ResourceLocator message) {
+  private String getNotificationLinkLabel(final LocalizationBundle message) {
     return message.getString("notifLinkLabel");
   }
 

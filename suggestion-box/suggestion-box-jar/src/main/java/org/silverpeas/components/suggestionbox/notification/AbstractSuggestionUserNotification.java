@@ -29,6 +29,8 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
+import java.util.MissingResourceException;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -46,9 +48,13 @@ public abstract class AbstractSuggestionUserNotification
   @Override
   protected void performTemplateData(final String language, final Suggestion resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("content", resource.getContent());
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());

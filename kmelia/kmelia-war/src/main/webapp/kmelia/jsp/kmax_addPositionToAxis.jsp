@@ -50,10 +50,9 @@ String axisId = request.getParameter("AxisId");
 String translation = request.getParameter("Translation");
 
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(kmeliaScc.getLanguage());
 
-Button cancelButton = gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(kmeliaScc.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(kmeliaScc.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
 %>
 <HTML>

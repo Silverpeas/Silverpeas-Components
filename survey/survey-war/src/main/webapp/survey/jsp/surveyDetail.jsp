@@ -39,6 +39,7 @@
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.*" %>
 
 <%@ include file="checkSurvey.jsp"%>
 <%@ include file="surveyUtils.jsp"%>
@@ -80,9 +81,8 @@
       destinationPath = "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId;
   }
   
-  ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc
-          .getLanguage());
+  SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
   String m_context =
       GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 

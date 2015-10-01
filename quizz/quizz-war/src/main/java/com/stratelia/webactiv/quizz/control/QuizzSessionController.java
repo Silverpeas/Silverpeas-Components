@@ -49,12 +49,12 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.DecodingException;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -72,7 +72,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   private QuestionContainerService questionContainerService =
       QuestionContainerService.getInstance();
-  private ResourceLocator settings = null;
+  private SettingBundle settings = null;
   private int nbTopScores = 0;
   private boolean isAllowedTopScores = false;
   private List<PdcPosition> positions = null;
@@ -113,13 +113,9 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @return
    */
   @Override
-  public ResourceLocator getSettings() {
+  public SettingBundle getSettings() {
     if (settings == null) {
-      try {
-        settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", getLanguage());
-      } catch (Exception e) {
-        settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", "fr");
-      }
+      settings = ResourceLocator.getSettingBundle("org.silverpeas.quizz.quizzSettings");
     }
     return settings;
   }
@@ -607,8 +603,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
         if (StringUtil.isDefined(physicalName)) {
           // copy image
-          ResourceLocator srvSettings =
-              new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
+          SettingBundle srvSettings =
+              ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
           String type =
               physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =

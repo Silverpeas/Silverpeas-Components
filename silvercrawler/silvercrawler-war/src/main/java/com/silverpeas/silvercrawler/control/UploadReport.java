@@ -40,8 +40,8 @@ public class UploadReport {
   List<UploadItem> items = new ArrayList<>();
   boolean conflictous = false;
   boolean failed = false;
-  LocalizationBundle resources = ResourceLocator.getLocalizationResource(
-      "com.silverpeas.silvercrawler.multilang.silverCrawlerBundle");
+  LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.silvercrawler.multilang.silverCrawlerBundle");
   public int nbCopied = 0;
   public int nbIgnored = 0;
   public int nbReplaced = 0;

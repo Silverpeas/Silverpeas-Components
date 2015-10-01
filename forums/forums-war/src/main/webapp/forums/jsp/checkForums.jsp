@@ -33,7 +33,7 @@
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.forums.forumsException.ForumsException"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
@@ -51,6 +51,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%!  
   public static String IMAGE_UPDATE = "../../util/icons/update.gif";
@@ -83,7 +84,7 @@
     return defaultValue;
   }
 
-  public String convertDate(Date date, ResourcesWrapper resources) {
+  public String convertDate(Date date, MultiSilverpeasBundle resources) {
     return resources.getOutputDateAndHour(date);
   }
 
@@ -125,10 +126,10 @@
 <%
       ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           "forumsSessionClientController");
-      ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+      MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
 
-      ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+      LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
 
       if (fsc == null) {
         // No forums session controller in the request -> security exception

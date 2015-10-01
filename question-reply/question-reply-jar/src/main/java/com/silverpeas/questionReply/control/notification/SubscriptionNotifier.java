@@ -34,7 +34,9 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
@@ -42,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * @author ehugonnet
@@ -66,14 +69,20 @@ public class SubscriptionNotifier extends Notifier {
     if (recipients != null && !recipients.isEmpty()) {
       try {
         // Get default resource bundle
-        ResourceLocator message = new ResourceLocator(BUNDLE_NAME, DisplayI18NHelper.getDefaultLanguage());
+        LocalizationBundle message = ResourceLocator.getLocalizationBundle(BUNDLE_NAME,
+            DisplayI18NHelper.getDefaultLanguage());
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
+        String translation;
+        try {
+          translation = message.getString("questionReply.subscription.title");
+        } catch (MissingResourceException ex) {
+          translation = "Réponse à : %1$s";
+        }
         NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-            String.format(message.getString("questionReply.subscription.title", "Réponse à : %1$s"),
-                question.getTitle()), templates, "reply_subscription");
+            String.format(translation, question.getTitle()), templates, "reply_subscription");
         List<String> languages = DisplayI18NHelper.getLanguages();
         for (String language : languages) {
-          message = new ResourceLocator(BUNDLE_NAME, language);
+          message = ResourceLocator.getLocalizationBundle(BUNDLE_NAME, language);
           SilverpeasTemplate template = loadTemplate();
           template.setAttribute("userName", getSendername());
           template.setAttribute("QuestionDetail", question);
@@ -83,8 +92,7 @@ public class SubscriptionNotifier extends Notifier {
           template.setAttribute("silverpeasURL", question._getPermalink());
           templates.put(language, template);
           notifMetaData.addLanguage(language, String
-              .format(message.getString("questionReply.subscription.title", "Réponse à : %1$s"),
-                  question.getTitle()), "");
+              .format(translation, question.getTitle()), "");
 
           Link link = new Link(question._getPermalink(), message.getString("questionReply.notifLinkLabel"));
           notifMetaData.setLink(link, language);

@@ -32,6 +32,7 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -51,12 +52,13 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   private ClassifiedService classifiedService;
 
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
-  private ResourceLocator resources = new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
+  private SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.classifieds.settings.classifiedsSettings");
 
   @PostConstruct
   public void initialize() {
     try {
-      String cron = resources.getString("cronScheduledDeleteClassifieds");
+      String cron = settings.getString("cronScheduledDeleteClassifieds");
       scheduler.unscheduleJob(CLASSIFIEDSENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(CLASSIFIEDSENGINE_JOB_NAME, trigger, this);
@@ -74,7 +76,8 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
       String[] instanceIds = organizationController.getCompoId("classifieds");
 
       // Get default expiration delay from properties
-      int defaultExpirationDelay = Integer.parseInt(resources.getString("nbDaysForDeleteClassifieds"));
+      int defaultExpirationDelay = Integer.parseInt(
+          settings.getString("nbDaysForDeleteClassifieds"));
       SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
           "root.MSG_GEN_PARAM_VALUE", "defaultExpirationDelay = " + defaultExpirationDelay);
 

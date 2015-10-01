@@ -61,7 +61,7 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 
 <%
   //get SessionController, Language & Settings
-  ResourceLocator settings = quizzScc.getSettings();
+  SettingBundle settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
   String component = quizzScc.getComponentLabel(); 
   String quizz_id = (String) request.getParameter("quizz_id");

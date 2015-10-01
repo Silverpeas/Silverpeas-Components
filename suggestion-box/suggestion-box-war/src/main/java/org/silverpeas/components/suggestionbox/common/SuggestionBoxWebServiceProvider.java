@@ -24,14 +24,8 @@
 package org.silverpeas.components.suggestionbox.common;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
@@ -39,8 +33,14 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.PaginationList;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
@@ -63,11 +63,6 @@ import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
  */
 @Singleton
 public class SuggestionBoxWebServiceProvider {
-
-  /**
-   * Multilang
-   */
-  private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
 
   private final static List<SilverpeasRole> MODERATOR_ROLES =
       CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
@@ -428,13 +423,9 @@ public class SuggestionBoxWebServiceProvider {
    * @return
    */
   private String getStringTranslation(final String key, final String language) {
-    ResourceLocator rl = multilang.get(language);
-    if (rl == null) {
-      rl = new ResourceLocator(
+    LocalizationBundle rl = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle", language);
-      multilang.put(language, rl);
-    }
-    return rl.getResourceBundle().getString(key);
+    return rl.getString(key);
   }
 
   /**

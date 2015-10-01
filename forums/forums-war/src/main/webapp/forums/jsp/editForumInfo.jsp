@@ -41,7 +41,7 @@
 <view:setBundle basename="com.stratelia.webactiv.forums.multilang.forumsBundle"/>
 
 <%!
-public String navigationBar(int forumId, ResourceLocator resource, ForumsSessionController fsc)
+public String navigationBar(int forumId, LocalizationBundle resource, ForumsSessionController fsc)
     throws ForumsException
 {
     String navigation = "";

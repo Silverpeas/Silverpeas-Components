@@ -34,7 +34,9 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -111,12 +113,12 @@ public class DefaultSuggestionBoxService
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return SuggestionBoxComponentSettings.getSettings();
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
+  public LocalizationBundle getComponentMessages(String language) {
     return SuggestionBoxComponentSettings.getMessagesIn(language);
   }
 

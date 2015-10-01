@@ -20,23 +20,15 @@
  */
 package com.silverpeas.projectManager.control;
 
-import java.text.ParseException;
-import java.util.*;
-
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
-import com.silverpeas.projectManager.model.*;
+import com.silverpeas.projectManager.model.Filtre;
+import com.silverpeas.projectManager.model.HolidayDetail;
+import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
+import com.silverpeas.projectManager.model.TaskDetail;
+import com.silverpeas.projectManager.model.TaskResourceDetail;
 import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -44,10 +36,28 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.MissingResourceException;
 
 /**
  * This class contains all the business model for project manager component
@@ -748,7 +758,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // Building Month ValueObject in order to prepare view
     Calendar curDayCal = new GregorianCalendar();
     curDayCal.setTime(startDate);
-    ResourceLocator resource = new ResourceLocator("org.silverpeas.multilang.generalMultilang",
+    LocalizationBundle resource =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.multilang.generalMultilang",
         this.getLanguage());
     int nbDaysDisplayed = curDayCal.getActualMaximum(Calendar.DAY_OF_MONTH);
     int currentWeek = -1;
@@ -761,8 +772,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       int numDayinWeek = curDayCal.get(Calendar.DAY_OF_WEEK);
       numWeekInYear = curDayCal.get(Calendar.WEEK_OF_YEAR);
       // GML.jour || GML.shortJour
-      DayVO curDay = new DayVO(Integer.toString(i), resource.getString("GML.jour" + numDayinWeek,
-          "?"), curDayCal.getTime());
+      String translation;
+      try {
+        translation = resource.getString("GML.jour" + numDayinWeek);
+      } catch (MissingResourceException ex) {
+        translation = "?";
+      }
+      DayVO curDay = new DayVO(Integer.toString(i), translation, curDayCal.getTime());
       if (numWeekInYear != currentWeek && currentWeek != -1) {
         WeekVO week = new WeekVO(curDays, Integer.toString(oldNumWeekInYear));
         weeks.add(week);

@@ -23,7 +23,9 @@ package com.silverpeas.scheduleevent.service;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,10 +37,10 @@ import java.util.Set;
 public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   private static final String MESSAGES_PATH
-      = "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
+      = "org.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
   private static final String SETTINGS_PATH
-      = "com.silverpeas.components.scheduleevent.settings.ScheduleEventSettings";
-  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+      = "org.silverpeas.components.scheduleevent.settings.ScheduleEventSettings";
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
   @Inject
   private ScheduleEventDao scheduleEventDao;
 
@@ -110,13 +112,13 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return settings;
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
-    return new ResourceLocator(MESSAGES_PATH, language);
+  public LocalizationBundle getComponentMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 
   @Override

@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.io.File;
@@ -46,8 +47,8 @@ import java.util.List;
 public class ScheduledIndexFiles implements SchedulerEventListener {
 
   public static final String SILVERCRAWLERENGINE_JOB_NAME = "SilverCrawlerEngineJob";
-  private ResourceLocator resources =
-      new ResourceLocator("com.silverpeas.silvercrawler.settings.silverCrawlerSettings", "");
+  private SettingBundle resources = ResourceLocator.getSettingBundle(
+      "org.silverpeas.silvercrawler.settings.silverCrawlerSettings");
 
   public void initialize() {
     try {

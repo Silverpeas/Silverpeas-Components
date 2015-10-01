@@ -30,6 +30,8 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import java.util.MissingResourceException;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -53,9 +55,13 @@ public abstract class AbstractFormsOnlineRequestUserNotification
   @Override
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("form", resource.getForm());
     template.setAttribute("request", resource);
     template.setAttribute("formName", resource.getForm().getName());

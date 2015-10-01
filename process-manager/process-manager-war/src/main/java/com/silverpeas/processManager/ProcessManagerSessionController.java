@@ -73,6 +73,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,8 +95,8 @@ import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
  */
 public class ProcessManagerSessionController extends AbstractComponentSessionController {
 
-  private ResourceLocator resources =
-      new ResourceLocator("com.silverpeas.processManager.settings.processManagerSettings", "");
+  private SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.processManager.settings.processManagerSettings");
 
   /**
    * Builds and init a new session controller
@@ -105,8 +106,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) throws ProcessManagerException {
-    super(mainSessionCtrl, context, "com.silverpeas.processManager.multilang.processManagerBundle",
-        "com.silverpeas.processManager.settings.processManagerIcons");
+    super(mainSessionCtrl, context, "org.silverpeas.processManager.multilang.processManagerBundle",
+        "org.silverpeas.processManager.settings.processManagerIcons");
     // the peasId is the current component id.
     peasId = context.getCurrentComponentId();
     processModel = getProcessModel(peasId);
@@ -151,8 +152,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, ProcessManagerException fatal) {
-    super(mainSessionCtrl, context, "com.silverpeas.processManager.multilang.processManagerBundle",
-        "com.silverpeas.processManager.settings.processManagerIcons");
+    super(mainSessionCtrl, context, "org.silverpeas.processManager.multilang.processManagerBundle",
+        "org.silverpeas.processManager.settings.processManagerIcons");
 
     fatalException = fatal;
   }
@@ -1730,7 +1731,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   public boolean isViewReturn() {
     // Retrieve global parameter
-    boolean hideReturnGlobal = "yes".equalsIgnoreCase(resources.getString("hideReturn"));
+    boolean hideReturnGlobal = "yes".equalsIgnoreCase(settings.getString("hideReturn"));
     boolean viewReturn = !hideReturnGlobal;
 
     if (viewReturn) {

@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 
@@ -147,11 +148,11 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
   }
 
   private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
-    ResourceLocator resourceLocator =
-        new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
 
     OutputStream out = res.getOutputStream();
-    StringReader sr = new StringReader(resourceLocator.getString("warning"));
+    StringReader sr = new StringReader(messages.getString("warning"));
     try {
       IOUtils.copy(sr, out);
       out.flush();

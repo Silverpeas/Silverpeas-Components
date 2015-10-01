@@ -72,6 +72,7 @@ import com.silverpeas.gallery.processing.Watermarker;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetadataExtractor;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -80,8 +81,8 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class MediaUtil {
 
-  final static ResourceLocator gallerySettings =
-      new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
+  final static SettingBundle gallerySettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
 
   /**
    * Saves uploaded sound file on file system

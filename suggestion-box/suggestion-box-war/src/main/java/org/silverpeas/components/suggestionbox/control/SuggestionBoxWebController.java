@@ -51,6 +51,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
@@ -164,7 +165,7 @@ public class SuggestionBoxWebController extends
               // ViewContext
               ViewContext viewContext = ViewContext.fromIdentifier(newContextIdentifier);
               if (viewContext != null) {
-                ResourceLocator multilang = context.getMultilang();
+                LocalizationBundle multilang = context.getMultilang();
                 switch (viewContext) {
                   case AllSuggestions:
                     clearSuggestionListState(

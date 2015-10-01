@@ -47,9 +47,10 @@ import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -75,7 +76,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   private Long categoryIdForResource;
   private Long currentResource;
   private NotificationSender notifSender;
-  private ResourcesWrapper resources;
+  private MultiSilverpeasBundle resources;
 
   public ReservationViewContext getViewContext() {
     if (viewContext == null) {
@@ -304,7 +305,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
-      ResourceLocator message = new ResourceLocator(
+      LocalizationBundle message = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
           DisplayI18NHelper.getDefaultLanguage());
 
@@ -332,7 +333,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
                 messageBody.toString());
 
         for (String language : DisplayI18NHelper.getLanguages()) {
-          message = new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+          message = ResourceLocator.getLocalizationBundle(
+              "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
           subject = message.getString("resourcesManager.notifSubject");
           messageBody = new StringBuilder();
           messageBody = messageBody.append(user).append(" ").append(message.getString(
@@ -563,7 +565,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  private String getMessageBodyValidReservation(ResourceLocator message, Reservation reservation) {
+  private String getMessageBodyValidReservation(LocalizationBundle message, Reservation reservation) {
     StringBuilder messageBody = new StringBuilder();
     messageBody.append(message.getString("resourcesManager.notifBodyValideBegin")).append(" '");
     messageBody.append(reservation.getEvent()).append("' ");
@@ -579,7 +581,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     String url = URLManager.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
-    ResourceLocator message = new ResourceLocator(
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
         DisplayI18NHelper.getDefaultLanguage());
 
@@ -589,7 +591,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         subject, getMessageBodyValidReservation(message, reservation));
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message = new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+      message = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
       subject = message.getString("resourcesManager.notifSubjectValide");
       notifMetaData.addLanguage(language, subject, getMessageBodyValidReservation(message, reservation));
 
@@ -604,7 +607,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     getNotificationSender().notifyUser(notifMetaData);
   }
 
-  private String getMessageBodyRefusedReservation(ResourceLocator message, Resource resource, Reservation reservation, String motive) {
+  private String getMessageBodyRefusedReservation(LocalizationBundle message, Resource resource,
+      Reservation reservation, String motive) {
     StringBuilder messageBody = new StringBuilder();
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(" '");
     messageBody.append(resource.getName()).append("' ");
@@ -623,8 +627,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     String url = URLManager.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
-    ResourceLocator message =
-        new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
             DisplayI18NHelper.getDefaultLanguage());
 
     Resource resource = getResource(resourceId);
@@ -635,8 +639,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         subject, getMessageBodyRefusedReservation(message, resource, reservation, motive));
 
     for (String language : DisplayI18NHelper.getLanguages()) {
-      message =
-          new ResourceLocator("org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+      message = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
               language);
       subject = message.getString("resourcesManager.notifSubjectRefuse");
 
@@ -659,9 +663,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
    * Gets the resources associated with this session controller.
    * @return all of the resources (messages, settings, icons, ...)
    */
-  public synchronized ResourcesWrapper getResources() {
+  public synchronized MultiSilverpeasBundle getResources() {
     if (resources == null) {
-      resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
+      resources =
+          new MultiSilverpeasBundle(getMultilang(), getIcon(), getSettings(), getLanguage());
     }
     return resources;
   }

@@ -27,6 +27,8 @@ import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 
+import java.util.MissingResourceException;
+
 /**
  * User: Yohann Chastagnier
  * Date: 10/06/13
@@ -51,9 +53,13 @@ public abstract class AbstractForumsForumUserNotification
   @Override
   protected void performTemplateData(final String language, final ForumDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("title", resource.getName());
   }
 

@@ -25,14 +25,15 @@
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.gallery.model.Media" %>
 <%@ page import="com.silverpeas.gallery.model.Photo" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -59,7 +60,9 @@ String language = (String) request.getAttribute("Language");
 int nbAffiche = 0;
 int nbParLigne = 4;
 
-ResourceLocator multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
+  LocalizationBundle multilang =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle",
+          language);
 %>
 
 <html>

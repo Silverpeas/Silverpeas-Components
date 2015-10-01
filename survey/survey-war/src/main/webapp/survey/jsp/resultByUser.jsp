@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.*" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -43,7 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String userName         = (String) request.getAttribute("UserName");
   String userId         = (String) request.getAttribute("UserId");
   
-  ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
+  SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
   String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 

@@ -33,6 +33,7 @@ import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.logging.Level;
@@ -40,14 +41,15 @@ import java.util.logging.Logger;
 
 public class UserTemplate implements RecordTemplate {
 
-  private ResourceLocator label = null;
+  private LocalizationBundle label = null;
   private HtmlForm viewForm;
 
   /**
    * A UserTemplate is built from a fileName and a language : use addFieldTemplate for each field.
    */
   public UserTemplate(String fileName, String language) {
-    label = new ResourceLocator("com.silverpeas.whitePages.multilang.whitePagesBundle", language);
+    label = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.whitePages.multilang.whitePagesBundle", language);
     try {
       this.viewForm = new HtmlForm(this);
     } catch (FormException e) {

@@ -41,10 +41,10 @@ public class SurveyInstanciator extends Object implements ComponentsInstanciator
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     SilverTrace.info("Survey", "SurveyInstanciator.create", "Survey.MSG_ENTRY_METHOD");
-    QuestionInstanciator questionInst = new QuestionInstanciator("com.stratelia.webactiv.survey");
+    QuestionInstanciator questionInst = new QuestionInstanciator("org.silverpeas.survey");
     questionInst.create(con, spaceId, componentId, userId);
     QuestionContainerInstanciator questionContainerInst = new QuestionContainerInstanciator(
-        "com.stratelia.webactiv.survey");
+        "org.silverpeas.survey");
     questionContainerInst.create(con, spaceId, componentId, userId);
   }
 
@@ -52,10 +52,10 @@ public class SurveyInstanciator extends Object implements ComponentsInstanciator
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     SilverTrace.info("Survey", "SurveyInstanciator.delete", "Survey.MSG_ENTRY_METHOD");
-    QuestionInstanciator questionInst = new QuestionInstanciator("com.stratelia.webactiv.survey");
+    QuestionInstanciator questionInst = new QuestionInstanciator("org.silverpeas.survey");
     questionInst.delete(con, spaceId, componentId, userId);
     QuestionContainerInstanciator questionContainerInst = new QuestionContainerInstanciator(
-        "com.stratelia.webactiv.survey");
+        "org.silverpeas.survey");
     questionContainerInst.delete(con, spaceId, componentId, userId);
   }
 }

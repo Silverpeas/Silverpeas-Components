@@ -45,8 +45,8 @@ public class SimpleNotificationFormatter extends AbstractNotificationFormatter {
   private MessageFormat bodyModerationFormatter;
 
   public SimpleNotificationFormatter() {
-    LocalizationBundle resources = ResourceLocator.getLocalizationResource(
-        "com.silverpeas.mailinglist.multilang.mailinglistBundle");
+    LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.mailinglist.multilang.mailinglistBundle");
     titleFormatter = new MessageFormat(resources.getString(TITLE_KEY));
     titleModerationFormatter = new MessageFormat(resources.getString(TITLE_MODERATION_KEY));
     bodyFormatter = new MessageFormat(resources.getString(BODY_KEY));

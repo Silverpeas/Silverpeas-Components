@@ -55,7 +55,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
@@ -99,7 +99,7 @@ if (scc == null)
 }
 	
 
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];

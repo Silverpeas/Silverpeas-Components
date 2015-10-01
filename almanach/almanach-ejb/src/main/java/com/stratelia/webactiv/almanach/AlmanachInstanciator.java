@@ -36,7 +36,7 @@ import java.sql.Statement;
 public class AlmanachInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   public AlmanachInstanciator() {
-    super("com.stratelia.webactiv.almanach");
+    super("org.silverpeas.almanach");
   }
 
   @Override
