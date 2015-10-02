@@ -28,6 +28,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -650,10 +651,10 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     QuestionContainerPK toQuestionContainerPk = createQuizz(quizz, componentId);
 
     // Paste positions on Pdc
-    final int fromSilverObjectId = getQuestionContainerBm().getSilverObjectId(quizzPk);
-    final int toSilverObjectId = getQuestionContainerBm().getSilverObjectId(toQuestionContainerPk);
+    final int fromSilverObjectId = getQuestionContainerService().getSilverObjectId(quizzPk);
+    final int toSilverObjectId = getQuestionContainerService().getSilverObjectId(toQuestionContainerPk);
 
-    PdcServiceFactory.getFactory().getPdcManager()
+    PdcManager.get()
         .copyPositions(fromSilverObjectId, quizz.getHeader().getInstanceId(), toSilverObjectId,
             componentId);
   }
