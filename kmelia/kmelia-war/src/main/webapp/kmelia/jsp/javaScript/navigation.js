@@ -213,7 +213,7 @@ function initOperations(id, op) {
   }
 
   if (op.pdc) {
-    menuItem = new YAHOO.widget.MenuItem(getString('GML.PDCParam'), {url: "javascript:onClick=openSPWindow('" + getWebContext() + "/RpdcUtilization/jsp/Main?ComponentId=" + getComponentId() + "','utilizationPdc1')"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.PDCParam'), {url: "javascript:onClick=openSPWindow('" + getWebContext() + "/RpdcUtilization/jsp/Main?ComponentId=" + getComponentId() + "','utilizationPdc1')"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
