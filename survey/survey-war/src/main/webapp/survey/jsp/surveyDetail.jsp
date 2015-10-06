@@ -84,7 +84,7 @@
   SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
   String m_context =
-      GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 
 
@@ -501,7 +501,7 @@ function clipboardCopy() {
 </view:window>
 <%
   } else if (action.equals("ViewResult")) {
-    String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
+    String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     int resultView = survey.getHeader().getResultView();
 %>
 

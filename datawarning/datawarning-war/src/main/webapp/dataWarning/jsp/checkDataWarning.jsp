@@ -47,7 +47,6 @@
 <%@ page import="com.silverpeas.dataWarning.control.DataWarningSessionController"%>
 <%@ page import="com.silverpeas.dataWarning.model.*"%>
 <%@ page import="com.silverpeas.dataWarning.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
@@ -79,7 +78,7 @@
 	
 	if (dataWarningSC == null) {
 		// No DataWarning session controller in the request -> security exception
-		String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}
@@ -99,6 +98,6 @@
 	//operation pane
 	operationPane = window.getOperationPane();
 
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 %>

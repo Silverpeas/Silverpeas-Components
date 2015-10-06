@@ -28,7 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <view:setBundle basename="com.silverpeas.crm.multilang.crmBundle"/>
 
@@ -60,7 +60,7 @@
 	String myURL = (String) request.getAttribute("myComponentURL");
 	String url = myURL + "attachmentManager.jsp?elmtId=" + elmtId + "&elmtType=" + elmtType
 	    + "&returnAction=" + returnAction + "&returnId=" + returnId;
-	String context = GeneralPropertiesManager.getString("ApplicationURL");
+	String context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     getServletConfig().getServletContext().getRequestDispatcher(
         "/attachment/jsp/editAttachedFiles.jsp?Id=" + elmtType +"_" + elmtId + "&SpaceId=" + spaceId
         + "&ComponentId=" + componentId + "&Context=attachment"

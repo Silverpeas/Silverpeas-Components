@@ -49,7 +49,6 @@
 <%@ page import="javax.ejb.CreateException"%>
 <%@ page import="javax.ejb.FinderException"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -115,7 +114,7 @@
 
 	if (kmeliaScc == null) {
 	    // No session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
@@ -130,7 +129,7 @@
 
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("kmelia", spaceId, componentId);
 
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 	boolean kmaxMode 	= (componentId != null && componentId.startsWith("kmax"));
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));

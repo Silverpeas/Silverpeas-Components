@@ -42,7 +42,7 @@
 <%@ page import="com.stratelia.webactiv.contact.info.model.*"%>
 <%@ page import="org.silverpeas.util.exception.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
@@ -75,12 +75,12 @@ String[] 						browseContext 	= (String[]) request.getAttribute("browseContext")
 
 if (yellowpagesScc == null) {
     // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 final int ROOT_TOPIC = 0;
 final String TRASHCAN_ID = "1";
 

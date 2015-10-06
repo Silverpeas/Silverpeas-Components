@@ -39,10 +39,8 @@
 	class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
 
 <%
-  String m_context = GeneralPropertiesManager
-					.getGeneralResourceLocator().getString("ApplicationURL");
-			String iconsPath = GeneralPropertiesManager
-					.getGeneralResourceLocator().getString("ApplicationURL");
+  String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+  String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 			//Icons
 			String folderSrc = iconsPath + "/util/icons/delete.gif";

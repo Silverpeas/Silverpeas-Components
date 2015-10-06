@@ -1707,7 +1707,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       }
 
       if (profileError) {
-        destination = GeneralPropertiesManager.getString("sessionTimeout");
+        destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
       }
       SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
           "destination = " + destination);
@@ -1858,18 +1858,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           // Directory Temp for the uploaded file
           tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
-              GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+              ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") + File.separator +
               tempFolderName;
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
-                GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+                ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") + File.separator +
                     tempFolderName);
           }
 
           // Creation of the file in the temp folder
           File fileUploaded = new File(
               FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
-                  GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+                  ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") + File.separator +
                   tempFolderName + File.separator + logicalName);
           fileItem.write(fileUploaded);
 

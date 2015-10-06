@@ -77,7 +77,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
@@ -611,8 +610,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Appel UserPannel pour set des users selectionnable (4 [] vides) :
    */
   public String initUserPanel() {
-    String mContext =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String mContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName =
         new Pair<>(getComponentLabel(), mContext + "/RwhitePages/" + getComponentId() + "/Main");
@@ -949,13 +947,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
             field.setLabel(domainProperties.get(field.getFieldName()));
           } else if (field.getFieldId().startsWith(SearchFieldsType.USER.getLabelType())) {
             if ("name".equals(field.getFieldName())) {
-              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage())
+              field.setLabel(ResourceLocator.getGeneralLocalizationBundle(getLanguage())
                   .getString("GML.lastName"));
             } else if ("surname".equals(field.getFieldName())) {
-              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage())
+              field.setLabel(ResourceLocator.getGeneralLocalizationBundle(getLanguage())
                   .getString("GML.surname"));
             } else if ("email".equals(field.getFieldName())) {
-              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage())
+              field.setLabel(ResourceLocator.getGeneralLocalizationBundle(getLanguage())
                   .getString("GML.eMail"));
             }
           }

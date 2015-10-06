@@ -72,7 +72,7 @@ TopicDetail displaySessionTopicsToUsers(KmeliaSessionController kmeliaScc, Topic
 
 	NodeDetail nodeDetail = currentTopic.getNodeDetail();
       
-      String folderSrc = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") + "/util/icons/component/kmeliaSmall.gif";
+      String folderSrc = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL") + "/util/icons/component/kmeliaSmall.gif";
       
 	if ("array".equals(resources.getSetting("userTopicAppearance")))
 		displayTopicsToUsersAsArray(kmeliaScc, nodeDetail, folderSrc, gef, request, session, resources, out);

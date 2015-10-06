@@ -62,7 +62,7 @@ String action = request.getParameter("Action");
 String surveyId = request.getParameter("SurveyId");
 String surveyName = "";
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";

@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -90,7 +90,7 @@ OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 WebPagesSessionController webPagesScc = (WebPagesSessionController) request.getAttribute("WebPages");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	
 String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];

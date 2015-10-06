@@ -58,7 +58,6 @@
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKeys"
 %><%@ page import="org.silverpeas.util.MultiSilverpeasBundle"
 %><%@ page import="org.silverpeas.util.DBUtil"
-%><%@ page import="org.silverpeas.util.GeneralPropertiesManager"
 %><%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"
 %><%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"
 %><%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"
@@ -82,7 +81,7 @@
 	MyDBSessionController myDBSC = (MyDBSessionController)request.getAttribute("MyDB");
 	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 	String userRoleLevel = (String)request.getAttribute("userRoleLevel");
-	String applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
+	String applicationURL = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	
 	GraphicElementFactory gef = (GraphicElementFactory)session.getAttribute("SessionGraphicElementFactory");
 	Window window = gef.getWindow();

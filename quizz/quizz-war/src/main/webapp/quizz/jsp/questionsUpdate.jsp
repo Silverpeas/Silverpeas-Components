@@ -167,7 +167,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 String action = request.getParameter("Action");
 String quizzId = request.getParameter("QuizzId");
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 //Icons
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";

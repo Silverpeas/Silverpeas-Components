@@ -32,11 +32,10 @@
 <%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
-    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+    String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
           "SessionGraphicElementFactory");            
       List albums = (List) request.getAttribute("Albums");

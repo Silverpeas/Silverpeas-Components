@@ -60,7 +60,7 @@
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%!
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 //Icons
 String axisUpdate = m_context + "/util/icons/update.gif";
 

@@ -43,10 +43,10 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
@@ -124,7 +124,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   // initialisation de Selection pour nav vers SelectionPeas
   private String initSelection(SelectionUsersGroups sug, String goFunction, List<String> userIds,
       List<String> groupIds) {
-    String url = GeneralPropertiesManager.getString("ApplicationURL") +
+    String url = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL") +
         URLManager.getURL(getSpaceId(), getComponentId());
     String goUrl = url + goFunction;
     String cancelUrl = url + "SendersReceivers";

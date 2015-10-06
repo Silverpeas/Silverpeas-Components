@@ -50,7 +50,7 @@ String nbAnswersNeeded = "1";
 String nbAnswersMax = "1";
 String nextAction = "";
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
 String space = quizzScc.getSpaceLabel();

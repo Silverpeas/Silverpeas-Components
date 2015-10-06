@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
@@ -58,7 +58,7 @@ public class ExpertPanel extends PanelProvider {
     setAllExperts(allExperts);
     // Set the language
     this.language = lang;
-    ResourceLocator message = GeneralPropertiesManager.getGeneralMultilang(language);
+    LocalizationBundle message = ResourceLocator.getGeneralLocalizationBundle(language);
     // Set the resource locator for columns header
     messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.questionReply.multilang.questionReplyBundle", language);

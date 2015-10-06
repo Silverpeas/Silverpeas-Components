@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -81,7 +81,7 @@ public class LoginFilter implements Filter {
       SilverTrace.warn("whitePages", "LoginFilter.doFilter", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.getId());
       RequestDispatcher dispatcher = request.getRequestDispatcher(
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
+          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
       dispatcher.forward(request, response);
     }
 

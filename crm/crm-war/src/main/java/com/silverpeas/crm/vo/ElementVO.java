@@ -24,20 +24,19 @@
 
 package com.silverpeas.crm.vo;
 
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.a;
+import org.apache.ecs.xhtml.img;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.a;
-import org.apache.ecs.xhtml.img;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.GeneralPropertiesManager;
 
 public abstract class ElementVO {
 
@@ -53,8 +52,7 @@ public abstract class ElementVO {
 
   protected String getAttachments(List<SimpleDocument> attachments) {
     ElementContainer container = new ElementContainer();
-    String context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     for (SimpleDocument attachment : attachments) {
       container.addElement(getImageLink(context + attachment.getAttachmentURL(), "CRMWindow",
           resources.getIcon("crm.attachedFiles"), attachment.getFilename()));

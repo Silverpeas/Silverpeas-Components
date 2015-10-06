@@ -42,7 +42,7 @@ import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -155,7 +155,8 @@ public class KmeliaPublication implements SilverpeasContent {
   public String getURL() {
     String defaultURL = getOrganizationController().getDomain(getCreator().getDomainId()).
         getSilverpeasServerURL();
-    String serverURL = GeneralPropertiesManager.getString("httpServerBase", defaultURL);
+    String serverURL =
+        ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", defaultURL);
     return serverURL + URLManager.getSimpleURL(URLManager.URL_PUBLI, getPk().getId());
   }
 

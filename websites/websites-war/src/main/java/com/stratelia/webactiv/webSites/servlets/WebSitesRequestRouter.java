@@ -1203,7 +1203,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   private String getMachine(HttpServletRequest request) {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
-    SettingBundle generalSettings = ResourceLocator.getGeneralBundle();
+    SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
 
     String machine = settings.getString("Machine"); // ex :
     String context = (generalSettings.getString("ApplicationURL")).substring(1);

@@ -49,7 +49,6 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="org.silverpeas.util.exception.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
@@ -81,12 +80,13 @@
 	if (almanach == null)
 	{
 	    // No almanach session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString(
+					"sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
 
-	String m_context			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context			= ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	
 	// Icones diverses
 	String addEventSrc			= m_context + "/util/icons/addEvent.gif";

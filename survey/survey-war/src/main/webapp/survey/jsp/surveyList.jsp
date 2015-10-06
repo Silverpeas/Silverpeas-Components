@@ -64,7 +64,7 @@
   String pdcUtilizationSrc = "";
   String linkSrc = "";
   String m_context =
-      GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
   ArrayPane buildSurveyArrayToAdmin(GraphicElementFactory gef, SurveySessionController surveyScc,
       int view, Collection surveys, MultiSilverpeasBundle resources,
@@ -306,7 +306,7 @@
   String action = (String) request.getParameter("Action");
   String profile = (String) request.getParameter("Profile");
   String iconsPath =
-      GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
   //Icons
   lockSrc = iconsPath + "/util/icons/checkoutFile.gif";

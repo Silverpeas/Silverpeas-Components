@@ -60,7 +60,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   /* getMachine */
   public String getMachine(HttpServletRequest request) {
     SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
-    SettingBundle generalSettings = ResourceLocator.getGeneralBundle();
+    SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
 
     String machine = settings.getString("Machine");
     String context = (generalSettings.getString("ApplicationURL")).substring(1);

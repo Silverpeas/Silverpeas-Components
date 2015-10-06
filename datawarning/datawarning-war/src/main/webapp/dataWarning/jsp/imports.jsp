@@ -40,7 +40,6 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.silverpeas.dataWarning.control.DataWarningSessionController"%>
 <%@ page import="com.silverpeas.dataWarning.model.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 

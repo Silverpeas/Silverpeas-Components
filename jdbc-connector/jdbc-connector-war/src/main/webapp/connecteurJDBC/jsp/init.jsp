@@ -46,7 +46,7 @@
 	
 	if (connecteurJDBC == null) {
 		// No connecteurJDBC session controller in the request -> security exception
-		String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}

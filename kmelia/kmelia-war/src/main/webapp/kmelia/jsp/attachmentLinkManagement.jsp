@@ -40,7 +40,6 @@
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@page import="java.util.List"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.treeMenu.process.TreeHandler"%>
 <%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
 
@@ -52,7 +51,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 String language = (String) session.getAttribute("WYSIWYG_Language");
 String userId = (String) session.getAttribute("WYSIWYG_UserId");
 LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
-String contextName = GeneralPropertiesManager.getString("ApplicationURL");
+String contextName = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>

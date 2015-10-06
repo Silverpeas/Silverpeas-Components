@@ -50,7 +50,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.util.DateUtil"%>
@@ -97,12 +96,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   if (surveyScc == null) {
       // No session controller in the request -> security exception
-      String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
       getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
       return;
   }
 
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(surveyScc.getLanguage());
+  LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(
+      surveyScc.getLanguage());
 
   String[] browseContext = (String[]) request.getAttribute("browseContext");
   String spaceLabel 		= browseContext[0];

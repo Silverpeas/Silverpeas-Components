@@ -105,7 +105,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
     String nextAction = "";
     String style = FileUploadUtil.getOldParameter(items, "questionStyle");
 
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");

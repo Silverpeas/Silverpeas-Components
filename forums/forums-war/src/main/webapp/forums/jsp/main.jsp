@@ -46,7 +46,6 @@
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
@@ -58,7 +57,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     if (fsc == null)
     {
         // No forums session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
+        String sessionTimeout = ResourceLocator.getGeneralSettingBundle()
             .getString("sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout)
             .forward(request, response);

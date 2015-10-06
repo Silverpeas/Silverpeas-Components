@@ -61,7 +61,7 @@ if (action != null) {
     action_prev = action;
 }
 
-String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
+String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 //Icons
 lockSrc = iconsPath + "/util/icons/lock.gif";

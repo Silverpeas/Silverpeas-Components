@@ -27,7 +27,6 @@
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -40,7 +39,7 @@
 <% com.stratelia.webactiv.kmelia.control.KmeliaSessionController kmeliaScc = (com.stratelia.webactiv.kmelia.control.KmeliaSessionController) request.getAttribute("kmelia");%>
   <% if(kmeliaScc == null ) {
     // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
     }

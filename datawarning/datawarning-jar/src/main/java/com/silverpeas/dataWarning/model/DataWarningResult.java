@@ -22,6 +22,7 @@ package com.silverpeas.dataWarning.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class DataWarningResult extends Object {
   // Trigger static values
@@ -189,7 +190,7 @@ public class DataWarningResult extends Object {
     queryResult = dwqr;
   }
 
-  public String getConditionDisplayedString(ResourceLocator rl) {
+  public String getConditionDisplayedString(SettingBundle rl) {
     String valret;
     switch (getTriggerCondition()) {
       case DataWarningQuery.TRIGGER_CONDITION_SUP:

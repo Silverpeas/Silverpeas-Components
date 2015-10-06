@@ -67,7 +67,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.silverpeas.processManager.*"%>
@@ -88,7 +87,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 String language = (String) request.getAttribute("language");
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];
 String componentLabel = browseContext[1];
@@ -96,7 +95,7 @@ String spaceId = browseContext[2];
 String componentId = browseContext[3];
 String processManagerUrl = browseContext[4];
 
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
+LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

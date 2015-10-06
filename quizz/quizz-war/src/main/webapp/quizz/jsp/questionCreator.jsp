@@ -41,7 +41,7 @@
 
 //Retrieve parameter
 String nextAction = "";
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 int nbZone = 4; // number of field to control
 List<ComponentInstLight> galleries = quizzScc.getGalleries();

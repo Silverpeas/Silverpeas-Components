@@ -61,8 +61,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
-String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 

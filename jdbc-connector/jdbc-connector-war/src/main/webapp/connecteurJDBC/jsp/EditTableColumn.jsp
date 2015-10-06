@@ -66,7 +66,7 @@
 	
 	if (connecteurJDBC == null) {
 		// No connecteurJDBC session controller in the request -> security exception
-		String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}
@@ -127,7 +127,7 @@ addCriter = request.getParameter("addCriter");
 count = request.getParameter("count");
 addConst = request.getParameter("addConst");
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 String arrowRight = m_context + "/util/icons/formButtons/arrowRight.gif";
 String arrowLeft = m_context + "/util/icons/formButtons/arrowLeft.gif";

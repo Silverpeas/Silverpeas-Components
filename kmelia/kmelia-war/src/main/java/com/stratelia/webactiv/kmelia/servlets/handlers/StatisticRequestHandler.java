@@ -23,31 +23,30 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.handlers;
 
+import com.silverpeas.kmelia.model.StatsFilterVO;
+import com.silverpeas.kmelia.search.KmeliaSearchServiceProvider;
+import com.silverpeas.kmelia.stats.StatisticService;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.selection.Selection;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.silverpeas.kmelia.model.StatsFilterVO;
-import com.silverpeas.kmelia.search.KmeliaSearchServiceProvider;
-import com.silverpeas.kmelia.stats.StatisticService;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.node.model.NodePK;
 /**
  * This class aims to manage Kmelia statistic request.
  */
@@ -157,8 +156,7 @@ public class StatisticRequestHandler {
   private String processStatisticGroupSelectionRequestHandler(HttpServletRequest request,
       KmeliaSessionController kmelia) {
 
-    String m_context =
-        GeneralPropertiesManager.getString("ApplicationURL");
+    String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(kmelia.getString("kmelia.SelectValidator"), "");
 

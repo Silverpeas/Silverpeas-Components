@@ -23,22 +23,20 @@
  */
 package com.stratelia.webactiv.hyperlink.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.hyperlink.control.HyperlinkSessionController;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSessionController> {
 
@@ -183,7 +181,8 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       //Http://xxxx url
       if (isInternalLink) {
         //internal link : must retain only uri
-        String applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
+        String applicationURL =
+            ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
         if (applicationURL.endsWith("/")) {
           applicationURL = applicationURL.substring(0, applicationURL.length() - 1);
         }

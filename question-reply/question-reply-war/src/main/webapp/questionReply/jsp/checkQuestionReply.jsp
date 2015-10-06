@@ -81,7 +81,6 @@
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -93,7 +92,7 @@ QuestionReplySessionController scc = (QuestionReplySessionController) request.ge
 if (scc == null)
 {
     // No questionReply session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
@@ -110,7 +109,7 @@ pageContext.setAttribute("componentId", componentId);
 
 String language = scc.getLanguage();
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 String routerUrl = m_context + URLManager.getURL("questionReplyPDC", spaceId, componentId);
 	

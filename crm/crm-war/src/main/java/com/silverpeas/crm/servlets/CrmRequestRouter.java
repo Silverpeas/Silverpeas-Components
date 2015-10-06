@@ -30,15 +30,15 @@ import com.silverpeas.crm.model.CrmContact;
 import com.silverpeas.crm.model.CrmDelivery;
 import com.silverpeas.crm.model.CrmEvent;
 import com.silverpeas.crm.model.CrmParticipant;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -433,7 +433,7 @@ public class CrmRequestRouter extends ComponentRequestRouter<CrmSessionControlle
     }
 
     request.setAttribute("context",
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL"));
+        ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL"));
 
     SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "Destination=" + destination);

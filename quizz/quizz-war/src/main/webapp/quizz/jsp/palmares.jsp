@@ -56,7 +56,7 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzExc
 }
 %>
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
 <html>

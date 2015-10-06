@@ -30,6 +30,7 @@ import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.web.RequestHelper;
@@ -110,7 +111,7 @@ public class ForumHelper {
   }
 
 
-  private static void displayMessageLine(Message message, JspWriter out, ResourceLocator resource,
+  private static void displayMessageLine(Message message, JspWriter out, LocalizationBundle resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view, int depth,
       boolean simpleMode, String call, ForumsSessionController fsc, MultiSilverpeasBundle resources,
       final boolean isSubscriberByInheritance) {
@@ -301,7 +302,7 @@ public class ForumHelper {
     }
   }
 
-  public static void displayMessagesList(JspWriter out, ResourceLocator resource, String userId,
+  public static void displayMessagesList(JspWriter out, LocalizationBundle resource, String userId,
       boolean admin, boolean moderator, boolean reader, boolean view, int currentForumId,
       boolean simpleMode, String call, ForumsSessionController fsc, MultiSilverpeasBundle resources,
       boolean isSubscriberByInheritance) {
@@ -325,7 +326,7 @@ public class ForumHelper {
     }
   }
 
-  public static void displaySingleMessageList(JspWriter out, ResourceLocator resource,
+  public static void displaySingleMessageList(JspWriter out, LocalizationBundle resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view,
       int currentForumId, int messageId, boolean simpleMode, String call,
       ForumsSessionController fsc, MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
@@ -380,7 +381,7 @@ public class ForumHelper {
     }
   }
 
-  private static void scanMessage(Message[] messages, JspWriter out, ResourceLocator resource,
+  private static void scanMessage(Message[] messages, JspWriter out, LocalizationBundle resource,
       String userId, int currentPage, boolean admin, boolean moderator, boolean reader,
       boolean view, int currentMessageId, int depth, int maxDepth, boolean simpleMode, String call,
       ForumsSessionController fsc, MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
@@ -407,7 +408,7 @@ public class ForumHelper {
     }
   }
 
-  private static void displayOneMessage(Message[] messages, JspWriter out, ResourceLocator resource,
+  private static void displayOneMessage(Message[] messages, JspWriter out, LocalizationBundle resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view,
       int currentMessageId, int depth, boolean simpleMode, String call, ForumsSessionController fsc,
       MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {

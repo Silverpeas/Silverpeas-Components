@@ -56,7 +56,7 @@ String notice= request.getParameter("notice");
 String nbAnswersNeeded = request.getParameter("nbAnswersNeeded");
 String nbAnswersMax = request.getParameter("nbAnswersMax");
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 //Icons
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";

@@ -260,7 +260,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (StringUtil.getBooleanValue(getSettings().getString("massiveDragAndDropAllowed"))) {
       isDragAndDropEnableByUser = isDragAndDropEnableByUser();
     }
-    componentManageable = GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true);
+    componentManageable = ResourceLocator.getGeneralSettingBundle().getBoolean(
+        "AdminFromComponentEnable", true);
     if (componentManageable) {
       componentManageable =
           getOrganisationController().isComponentManageable(getComponentId(), getUserId());

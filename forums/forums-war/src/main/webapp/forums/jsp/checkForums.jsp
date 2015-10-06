@@ -41,7 +41,6 @@
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
@@ -133,14 +132,14 @@
 
       if (fsc == null) {
         // No forums session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString(
             "sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request,
             response);
         return;
       }
 
-      String context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      String context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
       GraphicElementFactory graphicFactory = (GraphicElementFactory) session.getAttribute(
           "SessionGraphicElementFactory");

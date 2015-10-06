@@ -28,7 +28,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -111,8 +111,7 @@ public class JdbcFieldDisplayer {
     }
 
     if (listRes != null && listRes.size() > 0) {
-      String mContext =
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      String mContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       int zindex = (fieldsContext.getLastFieldIndex() -
           Integer.parseInt(fieldsContext.getCurrentFieldIndex())) * 9000;
 

@@ -28,7 +28,6 @@
 <%@ page import="com.silverpeas.gallery.model.Media" %>
 <%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
@@ -51,7 +50,7 @@
 
 
 <%
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 List<Media> mediaList = (List) request.getAttribute("MediaList");
 String language = (String) request.getAttribute("Language");

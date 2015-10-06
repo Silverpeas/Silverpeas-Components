@@ -77,7 +77,7 @@
 <%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
 <%@ page import="com.stratelia.webactiv.webSites.siteManage.model.IconDetail"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>

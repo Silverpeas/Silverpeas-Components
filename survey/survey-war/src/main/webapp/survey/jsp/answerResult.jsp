@@ -1,5 +1,4 @@
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -35,7 +34,7 @@ Collection<String> 	users 	= (Collection<String>) request.getAttribute("Users");
 QuestionContainerDetail survey = (QuestionContainerDetail) request.getAttribute("Survey");
 
 Button close = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
-String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
+String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

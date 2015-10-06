@@ -70,7 +70,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.silverpeas.whitePages.control.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -84,7 +84,7 @@ WhitePagesSessionController scc = (WhitePagesSessionController) request.getAttri
 if (scc == null)
 {
     // No whitePages session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
@@ -107,7 +107,7 @@ String returnURL = (String) request.getAttribute("ReturnURL");
 String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("whitePages", spaceId, componentId);
 
 String language = scc.getLanguage();
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 String pdcUtilizationSrc = m_context + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
 

@@ -64,7 +64,6 @@ import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
@@ -476,7 +475,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @return
    */
   public String initUserPanel() {
-    String mContext = GeneralPropertiesManager.getString("ApplicationURL");
+    String mContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
@@ -529,7 +528,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public String initGroupPanel() {
-    String mContext = GeneralPropertiesManager.getString("ApplicationURL");
+    String mContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];

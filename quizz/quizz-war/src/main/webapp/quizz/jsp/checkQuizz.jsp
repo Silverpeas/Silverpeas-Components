@@ -61,7 +61,6 @@
 <%@ page import="org.silverpeas.util.FileServerUtils"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.score.model.ScoreDetail"%>
@@ -99,7 +98,7 @@
   MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
   if (quizzScc == null) {
     String sessionTimeout =
-        GeneralPropertiesManager.getString("sessionTimeout");
+        ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(
         request, response);
     return;

@@ -36,7 +36,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:out value="${error}"/>
 
 <%@ page import="com.silverpeas.components.organizationchart.control.OrganizationChartSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%
@@ -44,10 +43,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 	
 	if (organizationChartScc == null) {
 	    // No session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	
 %>

@@ -73,7 +73,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.silverpeas.rssAgregator.control.RssAgregatorSessionController"%>
@@ -93,12 +92,12 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 if (rssSC == null) {
     // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
 */
-String context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();

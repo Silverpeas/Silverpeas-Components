@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%--
@@ -64,7 +63,7 @@
 	
 	if (connecteurJDBC == null) {
 		// No connecteurJDBC session controller in the request -> security exception
-		String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}
@@ -73,7 +72,7 @@
   	window = gef.getWindow();
 %>
 <%
-String graphicPath                            = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String graphicPath                            = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String m_context                              = graphicPath;
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

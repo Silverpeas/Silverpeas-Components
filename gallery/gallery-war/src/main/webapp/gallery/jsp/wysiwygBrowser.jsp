@@ -31,14 +31,13 @@
 	response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 	response.setStatus( HttpServletResponse.SC_CREATED );
 %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 
 <%
 String componentId 	= request.getParameter("ComponentId");
 String language 	= request.getParameter("Language");
 String fieldName    = request.getParameter("FieldName");
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
 <html>

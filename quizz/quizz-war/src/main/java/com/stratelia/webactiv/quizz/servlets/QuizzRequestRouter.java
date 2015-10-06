@@ -24,26 +24,24 @@
 
 package com.stratelia.webactiv.quizz.servlets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.stratelia.webactiv.question.model.Question;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.question.model.Question;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.quizz.control.QuizzSessionController;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
 
@@ -174,7 +172,8 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       }
 
       if (profileError) {
-        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+        String sessionTimeout =
+            ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
         destination = sessionTimeout;
       }
     } catch (Exception e) {

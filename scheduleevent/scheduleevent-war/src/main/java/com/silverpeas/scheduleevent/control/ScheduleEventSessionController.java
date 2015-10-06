@@ -25,7 +25,6 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserCallAgainNotification;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
 import com.silverpeas.scheduleevent.service.CalendarEventEncoder;
@@ -46,6 +45,7 @@ import com.silverpeas.scheduleevent.view.OptionDateVO;
 import com.silverpeas.scheduleevent.view.ScheduleEventDetailVO;
 import com.silverpeas.scheduleevent.view.ScheduleEventVO;
 import com.silverpeas.scheduleevent.view.TimeVO;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -53,12 +53,12 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -132,7 +132,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         "ScheduleEventSessionController.initSelectUsersPanel()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
 
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
+    String m_context = ResourceLocator.getGeneralSettingBundle()
         .getString("ApplicationURL");
     Pair<String, String> hostComponentName = new Pair<>(getComponentName(), "");
     Pair<String, String>[] hostPath = new Pair[1];

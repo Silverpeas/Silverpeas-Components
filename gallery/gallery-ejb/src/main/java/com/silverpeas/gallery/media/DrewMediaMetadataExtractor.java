@@ -72,7 +72,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       Metadata metadata = ImageMetadataReader.readMetadata(image);
       ExifIFD0Directory exifDirectory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
       ExifIFD0Descriptor descriptor = new ExifIFD0Descriptor(exifDirectory);
-      String value = null;
+      String value;
       if (exifDirectory != null) {
         for (ExifProperty property : imageProperties) {
           // rechercher la valeur de la metadata "label"

@@ -38,7 +38,7 @@
 <%
 String nextAction = "";
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 int nbZone = 4; // nombre de zones � contr�ler
 List<ComponentInstLight> galleries = quizzScc.getGalleries();

@@ -47,7 +47,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 String    profile     = (String) request.getAttribute("Profile");
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 String exportSrc = m_context + "/util/icons/export.gif";
 String copySrc = m_context + "util/icons/copy.gif";

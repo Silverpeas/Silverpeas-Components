@@ -23,19 +23,31 @@ package com.silverpeas.dataWarning.control;
 import com.silverpeas.dataWarning.DataWarningDBDriver;
 import com.silverpeas.dataWarning.DataWarningDBDrivers;
 import com.silverpeas.dataWarning.DataWarningException;
-import com.silverpeas.dataWarning.model.*;
-import org.silverpeas.util.EncodeHelper;
-import com.stratelia.silverpeas.peasCore.*;
+import com.silverpeas.dataWarning.model.DataWarning;
+import com.silverpeas.dataWarning.model.DataWarningGroup;
+import com.silverpeas.dataWarning.model.DataWarningQuery;
+import com.silverpeas.dataWarning.model.DataWarningScheduler;
+import com.silverpeas.dataWarning.model.DataWarningUser;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Properties;
 
 public class DataWarningSessionController extends AbstractComponentSessionController {
 
@@ -113,8 +125,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
       }
     }
     try {
-      String curContext =
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      String curContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       String hostUrl =
           curContext + URLManager.getURL(getSpaceId(), getComponentId()) + "SaveNotification";
       String cancelUrl =

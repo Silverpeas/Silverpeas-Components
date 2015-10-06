@@ -53,7 +53,7 @@
 	
 	if (dataWarningSC == null) {
 		// No DataWarning session controller in the request -> security exception
-		String sessionTimeout = ResourceLocator.getGeneralBundle().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}

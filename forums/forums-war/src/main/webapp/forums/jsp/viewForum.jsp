@@ -44,7 +44,6 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
@@ -55,7 +54,7 @@
     MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
     if (fsc == null) {
         // No forums session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+        String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout)
             .forward(request, response);
         return;

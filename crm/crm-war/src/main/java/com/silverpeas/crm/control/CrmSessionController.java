@@ -33,20 +33,20 @@ import com.silverpeas.crm.vo.ContactVO;
 import com.silverpeas.crm.vo.DeliveryVO;
 import com.silverpeas.crm.vo.EventVO;
 import com.silverpeas.crm.vo.ParticipantVO;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -419,8 +419,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
   }
 
   protected Selection communInitUserPanel(String compoName, String operation) {
-    String m_context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
         m_context + getComponentUrl() + compoName);

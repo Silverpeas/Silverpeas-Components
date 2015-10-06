@@ -26,33 +26,32 @@ package com.stratelia.webactiv.almanach.servlets;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
+import static org.silverpeas.calendar.CalendarViewType.*;
 import static org.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.StringUtil.isInteger;
-import static org.silverpeas.calendar.CalendarViewType.*;
 
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
@@ -211,7 +210,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/createEvent.jsp";
         } else {
-          destination = GeneralPropertiesManager.getString("sessionTimeout");
+          destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
         }
       } else if (function.equals("ReallyAddEvent")) {
 
@@ -333,7 +332,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/editEvent.jsp";
         } else {
-          destination = GeneralPropertiesManager.getString("sessionTimeout");
+          destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
         }
       } else if (function.equals("ReallyUpdateEvent")) {
         String action = request.getParameter("Action");// ReallyUpdateOccurence

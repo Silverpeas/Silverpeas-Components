@@ -62,7 +62,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
@@ -84,7 +83,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   if (quickinfo == null) {
       // No quickinfo session controller in the request -> security exception
-      String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+      String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
       getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
       return;
   }

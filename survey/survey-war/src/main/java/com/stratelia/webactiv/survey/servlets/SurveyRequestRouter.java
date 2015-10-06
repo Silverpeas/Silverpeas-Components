@@ -24,33 +24,31 @@
 
 package com.stratelia.webactiv.survey.servlets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.survey.SurveyException;
-import com.stratelia.webactiv.survey.control.SurveySessionController;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.survey.SurveyException;
+import com.stratelia.webactiv.survey.control.SurveySessionController;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
 
@@ -370,7 +368,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     }
 
     if (profileError) {
-      destination = GeneralPropertiesManager.getString("sessionTimeout");
+      destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     }
     return destination;
   }
