@@ -33,7 +33,6 @@ public class GroupDetail extends Group implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private int totalUsers = 0;
   private List<UserDetail> users = new ArrayList<>();
   private List<GroupDetail> subGroups = new ArrayList<>();
 
@@ -77,19 +76,14 @@ public class GroupDetail extends Group implements java.io.Serializable {
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 47 * hash + this.totalUsers;
+    int hash = super.hashCode();
     hash = 47 * hash + (this.users != null ? this.users.hashCode() : 0);
     hash = 47 * hash + (this.subGroups != null ? this.subGroups.hashCode() : 0);
     return hash;
   }
 
   public int getTotalUsers() {
-    return totalUsers;
-  }
-
-  public void setTotalUsers(int totalUsers) {
-    this.totalUsers = totalUsers;
+    return super.getTotalNbUsers();
   }
 
 }
