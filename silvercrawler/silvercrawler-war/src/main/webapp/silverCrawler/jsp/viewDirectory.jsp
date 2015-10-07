@@ -27,41 +27,40 @@
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="com.stratelia.webactiv.SilverpeasRole" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/silverCrawler" prefix="silverCrawler" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<c:set var="greatestUserRole" value='<%=SilverpeasRole.from((String)request.getAttribute("Profile"))%>'/>
 
 <%@ include file="check.jsp" %>
 <%
 FileFolder folder = (FileFolder) request.getAttribute("Folder");
 boolean folderIsWritable = folder.isWritable();
 String profile = (String) request.getAttribute("Profile");
-String userId = (String) request.getAttribute("UserId");
 boolean download = (Boolean) request.getAttribute("IsDownload");
-Collection path = (Collection) request.getAttribute("Path");
 boolean isRootPath = (Boolean) request.getAttribute("IsRootPath");
 boolean allowedNav = (Boolean) request.getAttribute("IsAllowedNav");
 String rootPath = (String) request.getAttribute("RootPath");
 String maxDirectories = (String) request.getAttribute("MaxDirectories");
 String maxFiles = (String) request.getAttribute("MaxFiles");
-String language = (String) request.getAttribute("Language");
 boolean readWriteActivated = (Boolean) request.getAttribute("isReadWriteActivated");
 boolean userAllowedToSetRWAccess = (Boolean) request.getAttribute("userAllowedToSetRWAccess");
 boolean userAllowedToLANAccess = (Boolean) request.getAttribute("userAllowedToLANAccess");
 String errorMessage = (String) request.getAttribute("errorMessage");
 String successMessage = (String) request.getAttribute("successMessage");
-
-String sRequestURL = request.getRequestURL().toString();
-String m_sAbsolute =
-    sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 
 int nbDirectories = 10;
 if (maxDirectories != null && Integer.parseInt(maxDirectories) != 0)
@@ -74,44 +73,17 @@ boolean nav = true;
 if ("user".equals(profile) && !allowedNav)
 	nav = false;
 
-//création du chemin :
-String 		chemin 		= "";
-if (path != null)
-{
-	String 		namePath	= "";
-	boolean 	suivant 	= false;
-	Iterator 	itPath 		= (Iterator) path.iterator();
-
-	while (itPath.hasNext())
-	{
-		String directory = (String) itPath.next();
-		if (directory != null)
-		{
-			if (suivant)
-			{
-				chemin = chemin + " > ";
-				namePath = " > " + namePath;
-			}
-			if (nav)
-				chemin = chemin + "<a href=\"GoToDirectory?DirectoryPath="+ directory + "\">" + EncodeHelper.javaStringToHtmlString(directory)+"</a>";
-			else
-				chemin = chemin + EncodeHelper.javaStringToHtmlString(directory);
-
-			namePath = namePath + directory;
-			suivant = itPath.hasNext();
-		}
-	}
-}
-
 %>
+
+<c:set var="folderIsWritable" value="<%=folderIsWritable%>"/>
+<c:set var="readWriteActivated" value="<%=readWriteActivated%>"/>
+<c:set var="dragAndDropEnable" value="${greatestUserRole.isGreaterThanOrEquals(publisherRole) and folderIsWritable and readWriteActivated}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
-<script type="text/javascript" src="<%=m_context%>/silverCrawler/javaScript/dragAndDrop.js"></script>
+<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
 <script type="text/javascript">
 
 var downloadWindow = window;
@@ -350,16 +322,6 @@ function hideSuccessMsg() {
 	$("#successMsg").hide(500);
 }
 
-function showDnD() {
-	<%
-	long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
-	if (profile.equals("publisher")) { %>
-		showHideDragDrop('<%=httpServerBase+m_context%>/SilverCrawlerDragAndDrop/?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
-	<% } else { %>
-		showHideDragDrop('<%=httpServerBase+m_context%>/SilverCrawlerDragAndDrop/?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
-	<% } %>
-}
-
 function processDnD() {
 	document.folderDetailForm.action = "ProcessDragAndDrop";
     document.folderDetailForm.submit();
@@ -382,13 +344,10 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
+<silverCrawler:browseBar navigationAuthorized="<%=nav%>" />
 <%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "Main");
-browseBar.setPath(chemin);
 
 // mettre les opération si on est à la racine
-String name = folder.getName();
 if ("admin".equals(profile))
 {
 	if (isRootPath)
@@ -490,26 +449,15 @@ Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();
     </form>
 </center>
 </view:board>
-<br/>
 <view:areaOfOperationOfCreation/>
-<% if ( ( ("admin".equals(profile)) || ("publisher".equals(profile)) ) && folderIsWritable && readWriteActivated ) { %>
-<div id="DnD">
-<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
-<a href="javascript:showDnD()" id="dNdActionLabel"><%=resource.getString("GML.DragNDropExpand")%></a>
-</td></tr></table>
-<table width="100%" border="0" id="DropZone">
-<tr>
-	<td>
-		<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
-	</td>
-</tr></table>
-</div>
-<% }  %>
 
 <% if (userAllowedToLANAccess && readWriteActivated) {%>
 <div id="physical-path"><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</div>
 <% } %>
 
+  <div class="dragAndDropUpload">
+    <view:board>
+      <div style="margin: 25px 0 25px 0">
 <form name="liste_dir" action="#" method="POST">
 <%
 
@@ -737,6 +685,9 @@ if (nav || (!nav && !isRootPath))
 }
 %>
 </form>
+      </div>
+    </view:board>
+  </div>
 </view:frame>
 <%
 out.println(window.printAfter());
@@ -749,5 +700,21 @@ out.println(window.printAfter());
 <input type="hidden" name="FileName"/>
 </form>
 <view:progressMessage/>
+<c:if test="${dragAndDropEnable}">
+  <c:set var="ignoreFolders" value="${not greatestUserRole.isGreaterThanOrEquals(adminRole)}"/>
+  <c:url var="uploadCompletedUrl" value="/SilverCrawlerDragAndDrop">
+    <c:param name="ComponentId" value="${componentId}"/>
+    <c:if test="${ignoreFolders}">
+      <c:param name="IgnoreFolders" value="1"/>
+    </c:if>
+  </c:url>
+  <viewTags:commonDragAndDrop domSelector=".dragAndDropUpload"
+                              domHelpHighlightSelector=".tableBoard"
+                              componentInstanceId="${componentId}"
+                              greatestUserRole="${greatestUserRole}"
+                              uploadCompletedUrl="${uploadCompletedUrl}"
+                              uploadCompletedUrlSuccess="processDnD"
+                              ignoreFolders="${ignoreFolders}"/>
+</c:if>
 </body>
 </html>

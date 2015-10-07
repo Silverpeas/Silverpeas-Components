@@ -1,19 +1,19 @@
 $if(albumPart)$
-  Dieses Album enthält noch keine sub-Alben.<br/>
-  Um einen hinzuzufügen, verwenden Sie eine der folgenden Lösungen:
+  This album contains no albums yet.<br/>
+  To add some, use:
   <ul>
-    $if(dragAndDropEnable)$<li>einen Ordner in der Drag and Drop Zone verschieben</li>$endif$
-    <li>der Vorgang <a href="$albumUrl$">$albumOperation$</a></li>
+    $if(dragAndDropEnable)$<li class="dragAndDropUploadCheck"><b>this zone</b> to perform a <b>drag&drop</b> of folders</li>$endif$
+    <li>the operation <a href="$albumUrl$">$albumOperation$</a></li>
   </ul><br/><br/>
 $endif$
-Dieses Album enthält noch keine Medien.
+This album contains no media yet.
 $if(mediaPart)$<br/>
-  Um eine hinzuzufügen, verwenden Sie eine der folgenden Lösungen:
+  To add one, use:
   <ul>
-    $if(dragAndDropEnable)$<li>Die Drag and Drop Zone</li>$endif$
-    <li>der Vorgang <a href="$photoUrl$">$photoOperation$</a></li>
-    <li>der Vorgang <a href="$videoUrl$">$videoOperation$</a></li>
-    <li>der Vorgang <a href="$soundUrl$">$soundOperation$</a></li>
-    <li>der Vorgang <a href="$streamingUrl$">$streamingOperation$</a></li>
+    $if(dragAndDropEnable)$<li class="dragAndDropUploadCheck"><b>this zone</b> to perform a <b>drag&drop</b> of media</li>$endif$
+    <li>the operation <a href="$photoUrl$">$photoOperation$</a></li>
+    <li>the operation <a href="$videoUrl$">$videoOperation$</a></li>
+    <li>the operation <a href="$soundUrl$">$soundOperation$</a></li>
+    <li>the operation <a href="$streamingUrl$">$streamingOperation$</a></li>
   </ul>
 $endif$

@@ -102,7 +102,7 @@ public class DefaultSuggestionBoxService
         .unsubscribeByResource(ComponentSubscriptionResource.from(box.getComponentInstanceId()));
 
     // Deleting all user ratings
-    RatingService.getInstance().deleteComponentRatings(box.getComponentInstanceId());
+    RatingService.get().deleteComponentRatings(box.getComponentInstanceId());
   }
 
   @Override

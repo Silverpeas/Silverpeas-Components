@@ -629,6 +629,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return ServiceProvider.getService(KmeliaPublicationExporter.class);
   }
 
+  @Override
+  public SilverpeasRole getHighestSilverpeasUserRole() {
+    SilverpeasRole userRole = SilverpeasRole.from(getProfile());
+    return userRole != null ? userRole : super.getHighestSilverpeasUserRole();
+  }
+
   public String getProfile() {
     return getUserTopicProfile();
   }
@@ -2028,15 +2034,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * @param fileUploaded : File uploaded in temp directory
    * @param fileType
-   * @param topicId
    * @param importMode
    * @param draftMode
    * @param versionType
    * @return a report of the import
    * @throws ImportExportException
    */
-  public ImportReport importFile(File fileUploaded, String fileType, String topicId,
-      String importMode, boolean draftMode, int versionType) throws ImportExportException {
+  public ImportReport importFile(File fileUploaded, String fileType, String importMode,
+      boolean draftMode, int versionType) throws ImportExportException {
     SilverTrace.debug("kmelia", "KmeliaSessionController.importFile()", "root.MSG_GEN_ENTER_METHOD",
         "fileUploaded = " + fileUploaded.getAbsolutePath() + " fileType=" + fileType +
             " importMode=" + importMode + " draftMode=" + draftMode + " versionType=" +
@@ -3562,7 +3567,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
     } //Massive mode, one publication
     else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)) {
-      UnitReport unitReport = componentRpt.getListUnitReports().get(0);
+      MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
+      UnitReport unitReport = massiveReport.getListUnitReports().get(0);
       if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
         return null;
       } else if (unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {

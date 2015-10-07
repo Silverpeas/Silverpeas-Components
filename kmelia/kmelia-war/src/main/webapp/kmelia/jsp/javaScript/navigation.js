@@ -778,11 +778,10 @@ function emptyTrash() {
 }
 
 function checkDnD(id, operations) {
-  //alert("checkDnD : "+displayIt);
   if (operations.addPubli == true) {
-    $("#DnD").css({'display': 'block'});
+    activateDragAndDrop();
   } else {
-    $("#DnD").css({'display': 'none'});
+    muteDragAndDrop();
   }
 }
 

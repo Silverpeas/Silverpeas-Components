@@ -212,7 +212,7 @@ public class Forum implements Rateable, Serializable {
   @Override
   public ContributionRating getRating() {
     if (contributionRating == null) {
-      contributionRating = RatingService.getInstance()
+      contributionRating = RatingService.get()
           .getRating(new ContributionRatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE));
     }
     return contributionRating;
