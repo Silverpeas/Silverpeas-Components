@@ -43,8 +43,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 import static java.io.File.separator;
 import static org.silverpeas.util.Charsets.UTF_8;
@@ -157,10 +155,9 @@ public class FileImport {
   public void writeImportToLog(ImportReport importReport, MultiSilverpeasBundle resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
-      ResourceBundle resources = FileUtil.loadBundle(
-          "org.silverpeas.silvertrace.settings.silverTrace",
-              new Locale("", ""));
-      String reportLogPath = resources.getString("ErrorDir");
+      SettingBundle silverTraceSettings =
+          ResourceLocator.getSettingBundle("org.silverpeas.silvertrace.settings.silverTrace");
+      String reportLogPath = silverTraceSettings.getString("ErrorDir");
       File file = new File(reportLogPath + separator + reportLogFile);
       Writer fileWriter = null;
       try {
