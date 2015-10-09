@@ -25,10 +25,10 @@ package com.silverpeas.dataWarning;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.XMLConfigurationStore;
+import org.silverpeas.util.XmlSettingBundle;
 
-import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class DataWarningDBDrivers extends Object {
 
@@ -36,41 +36,27 @@ public final class DataWarningDBDrivers extends Object {
   static protected Map<String, DataWarningDBDriver> allDBDrivers = new HashMap<>();
   static protected DataWarningDBDriver[] sortedDBDrivers = null;
 
+  private static final String XML_SETTING_PATH =
+      "org.silverpeas.dataWarning.settings.dataWarningSettings";
+
   public DataWarningDBDrivers() {
     loadDrivers();
   }
 
   public void loadDrivers() {
     try {
-      InputStream configFileInputStream;
-      String configFileStr = "settings/dataWarningSettings";
-      String[] driversUniqueIds;
-
-      configFileInputStream =
-          ResourceLocator.getResourceAsStream(this, null, configFileStr, ".xml");
-
-      XMLConfigurationStore curXMLConfig =
-          new XMLConfigurationStore(null, configFileInputStream, "DataWarning-configuration");
-      driversUniqueIds = curXMLConfig.getValues("Drivers");
-      configFileInputStream.close();
+      XmlSettingBundle xmlConfig = ResourceLocator.getXmlSettingBundle(XML_SETTING_PATH);
+      String[] driversUniqueIds = xmlConfig.getStringArray("DataWarning-configuration.Drivers");
 
       sortedDBDrivers = new DataWarningDBDriver[driversUniqueIds.length];
       for (int j = 0; j < driversUniqueIds.length; j++) {
-        SilverTrace
-            .info("dataWarning", "DataWarningDBDrivers.loadDrivers", "DataWarning.MSG_DRIVER_NAME",
-                "DriverUniqueId=" + driversUniqueIds[j]);
-
-        configFileInputStream =
-            ResourceLocator.getResourceAsStream(this, null, configFileStr, ".xml");
-        curXMLConfig = new XMLConfigurationStore(null, configFileInputStream,
-            driversUniqueIds[j] + "-configuration");
+        XmlSettingBundle.SettingSection section =
+            xmlConfig.getSettingSection(driversUniqueIds[j] + "-configuration");
         sortedDBDrivers[j] =
-            new DataWarningDBDriver(driversUniqueIds[j], curXMLConfig.getString("DriverName"),
-                curXMLConfig.getString("ClassName"), curXMLConfig.getString("Description"),
-                curXMLConfig.
-                    getString("JDBCUrl"));
+            new DataWarningDBDriver(driversUniqueIds[j], section.getString("DriverName"),
+                section.getString("ClassName"), section.getString("Description"),
+                section.getString("JDBCUrl"));
         allDBDrivers.put(driversUniqueIds[j], sortedDBDrivers[j]);
-        configFileInputStream.close();
       }
     } catch (Exception e) {
       SilverTrace.error("dataWarning", "DataWarningDBDrivers.loadDrivers",

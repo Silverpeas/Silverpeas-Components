@@ -24,27 +24,29 @@
 
 package org.silverpeas.mydb.control;
 
-import java.io.InputStream;
+import com.silverpeas.mydb.data.datatype.DataType;
+import com.silverpeas.mydb.data.datatype.DataTypeList;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.XmlSettingBundle;
+import org.w3c.dom.Node;
+
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.w3c.dom.Node;
-
-import com.silverpeas.mydb.data.datatype.DataType;
-import com.silverpeas.mydb.data.datatype.DataTypeList;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.XMLConfigurationStore;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Database driver manager. All available drivers are described in MyDB setting file.
  * @author Antoine HEDIN
  */
 public class DriverManager {
+
+  private static final String XML_SETTING_PATH =
+      "org.silverpeas.mydb.control.settings.myDBSettings";
 
   // Current driver.
   private Driver driver = null;
@@ -74,57 +76,38 @@ public class DriverManager {
    */
   private void loadDrivers() {
     try {
-      String configFileStr = "settings/myDBSettings";
-      InputStream configFileInputStream = ResourceLocator.getResourceAsStream(
-          this, null, configFileStr, ".xml");
-      XMLConfigurationStore xmlConfig = new XMLConfigurationStore(null,
-          configFileInputStream, "MyDB-configuration");
-      driversNames = xmlConfig.getValues("Drivers");
-      configFileInputStream.close();
-
+      XmlSettingBundle xmlConfig = ResourceLocator.getXmlSettingBundle(XML_SETTING_PATH);
+      driversNames = xmlConfig.getStringArray("MyDB-configuration.Drivers");
       driversCount = driversNames.length;
       driversDisplayNames = new String[driversCount];
       driversClassNames = new String[driversCount];
       driversDescriptions = new String[driversCount];
       databaseKeywordsLists = new ArrayList[driversCount];
       dataTypesLists = new DataTypeList[driversCount];
-      driversUrls = new ArrayList<String[]>();
-      String rootString;
+      driversUrls = new ArrayList<>();
 
       String[] dataTypesKeys = { "name", "sqlType", "javaType", "length" };
       int dataTypesKeysCount = dataTypesKeys.length;
 
       for (int i = 0; i < driversCount; i++) {
-        SilverTrace.info("myDB", "DriverManager.loadDrivers()",
-            "myDB.MSG_DRIVER_NAME", "DriverName=" + driversNames[i]);
-        rootString = driversNames[i] + "-configuration";
-        configFileInputStream = ResourceLocator.getResourceAsStream(this, null,
-            configFileStr, ".xml");
-        xmlConfig = new XMLConfigurationStore(null, configFileInputStream,
-            rootString);
+        String sectionName = driversNames[i] + "-configuration";
+        XmlSettingBundle.SettingSection section = xmlConfig.getSettingSection(sectionName);
+        driversDisplayNames[i] = section.getString("DriverName");
+        driversClassNames[i] = section.getString("ClassName");
+        driversDescriptions[i] = section.getString("Description");
+        driversUrls.add(section.getStringArray("JDBCUrls"));
+        String[] keywords = section.getStringArray("DatabaseKeywords");
+        databaseKeywordsLists[i] = new ArrayList<>(Arrays.asList(keywords));
 
-        driversDisplayNames[i] = xmlConfig.getString("DriverName");
-        driversClassNames[i] = xmlConfig.getString("ClassName");
-        driversDescriptions[i] = xmlConfig.getString("Description");
-        driversUrls.add(xmlConfig.getValues("JDBCUrls"));
-        String[] keywords = xmlConfig.getValues("DatabaseKeywords");
-        databaseKeywordsLists[i] = new ArrayList<String>(Arrays.asList(keywords));
-
-        Node configurationNode = xmlConfig.findNodes(rootString)[0];
-        Node[] dataTypes = xmlConfig.findNodes(configurationNode, "DataType");
-        Node dataType;
-        int dataTypesCount = (dataTypes != null ? dataTypes.length : 0);
-        dataTypesLists[i] = new DataTypeList(dataTypesCount);
-        String[] values;
-        for (int j = 0; j < dataTypesCount; j++) {
-          values = new String[dataTypesKeysCount];
-          dataType = dataTypes[j];
-          for (int k = 0; k < dataTypesKeysCount; k++) {
-            values[k] = xmlConfig.getAttributeValue(dataType, dataTypesKeys[k]);
+        List<XmlSettingBundle.SettingSection> dataTypes = section.getAllSettingSection("DataType");
+        dataTypesLists[i] = new DataTypeList(dataTypes.size());
+        for (XmlSettingBundle.SettingSection dataType : dataTypes) {
+          String[] attrValues = new String[dataTypesKeysCount];
+          for(int j = 0; j < dataTypesKeysCount; j++) {
+            attrValues[j] = dataType.getAttribute(dataTypesKeys[j]);
           }
-          dataTypesLists[i].add(new DataType(values));
+          dataTypesLists[i].add(new DataType(attrValues));
         }
-        configFileInputStream.close();
       }
     } catch (Exception e) {
       SilverTrace.warn("myDB", "DriverManager.loadDrivers()",
