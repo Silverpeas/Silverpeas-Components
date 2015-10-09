@@ -23,20 +23,6 @@
  */
 package com.silverpeas.processManager;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
@@ -46,13 +32,14 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.fieldType.DateField;
+import com.silverpeas.form.fieldType.MultipleUserField;
+import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
 import com.silverpeas.processManager.record.QuestionRecord;
 import com.silverpeas.processManager.record.QuestionTemplate;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowEngine;
@@ -68,16 +55,7 @@ import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
-import com.silverpeas.workflow.api.model.Action;
-import com.silverpeas.workflow.api.model.Item;
-import com.silverpeas.workflow.api.model.Participant;
-import com.silverpeas.workflow.api.model.ProcessModel;
-import com.silverpeas.workflow.api.model.QualifiedUsers;
-import com.silverpeas.workflow.api.model.RelatedGroup;
-import com.silverpeas.workflow.api.model.RelatedUser;
-import com.silverpeas.workflow.api.model.Role;
-import com.silverpeas.workflow.api.model.State;
-import com.silverpeas.workflow.api.model.UserInRole;
+import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.api.user.UserInfo;
@@ -86,7 +64,6 @@ import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.model.ItemImpl;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -96,6 +73,19 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
@@ -428,11 +418,28 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             // Process folder item
             Item item = relatedUser.getFolderItem();
             if (item != null) {
-              String userId = currentProcessInstance.getField(item.getName()).getStringValue();
-              if (userId != null) {
-                UserDetail user = getUserDetail(userId);
-                if (user != null) {
-                  role += user.getDisplayedName();
+              Field field = currentProcessInstance.getField(item.getName());
+              if (field instanceof UserField) {
+                String userId = field.getStringValue();
+                if (userId != null) {
+                  UserDetail user = getUserDetail(userId);
+                  if (user != null) {
+                    role += user.getDisplayedName();
+                  }
+                }
+              } else if (field instanceof MultipleUserField) {
+                MultipleUserField multipleUserField = (MultipleUserField) field;
+                String[] userIds = multipleUserField.getUserIds();
+                for (String userId : userIds) {
+                  if (userId != null) {
+                    UserDetail user = getUserDetail(userId);
+                    if (user != null) {
+                      if (role.length() > 0) {
+                        role += ", ";
+                      }
+                      role += user.getDisplayedName();
+                    }
+                  }
                 }
               }
             }
@@ -551,8 +558,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       Item item = relatedUser.getFolderItem();
       if (item != null) {
         try {
-          String userId = currentProcessInstance.getField(item.getName()).getStringValue();
-          users.add(userId);
+          Field field = currentProcessInstance.getField(item.getName());
+          if (field instanceof UserField) {
+            users.add(field.getStringValue());
+          } else if (field instanceof MultipleUserField) {
+            MultipleUserField multipleUserField = (MultipleUserField) field;
+            String[] userIds = multipleUserField.getUserIds();
+            users.addAll(Arrays.asList(userIds));
+          }
         } catch (WorkflowException we) {
           // ignore it.
         }
