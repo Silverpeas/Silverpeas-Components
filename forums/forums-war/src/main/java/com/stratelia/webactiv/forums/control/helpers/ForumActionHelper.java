@@ -256,27 +256,27 @@ public class ForumActionHelper {
           case UNSUBSCRIBE_FORUM: {
             Forum forum = fsc.unsubscribeForum(params);
             NotifierUtil.addSuccess(
-                resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
+                resource.getStringWithParams("forums.forum.unsubscribe.success", forum.getName()));
             break;
           }
           case SUBSCRIBE_FORUM: {
             Forum forum = fsc.subscribeForum(params);
             NotifierUtil.addSuccess(
-                resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
+                resource.getStringWithParams("forums.forum.subscribe.success", forum.getName()));
             break;
           }
           case UNSUBSCRIBE_THREAD: {
             Message message = fsc.unsubscribeMessage(params);
             String bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                 "forums.message.unsubscribe.success";
-            NotifierUtil.addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
+            NotifierUtil.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
             break;
           }
           case SUBSCRIBE_THREAD: {
             Message message = fsc.subscribeMessage(params);
             String bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                 "forums.message.subscribe.success";
-            NotifierUtil.addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
+            NotifierUtil.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
             break;
           }
           case UPDATE_MESSAGE: {
