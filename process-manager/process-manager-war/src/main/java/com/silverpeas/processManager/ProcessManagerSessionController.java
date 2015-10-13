@@ -42,12 +42,15 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.fieldType.DateField;
+import com.silverpeas.form.fieldType.MultipleUserField;
+import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
 import com.silverpeas.processManager.record.QuestionRecord;
 import com.silverpeas.processManager.record.QuestionTemplate;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -429,11 +432,28 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             // Process folder item
             Item item = relatedUser.getFolderItem();
             if (item != null) {
-              String userId = currentProcessInstance.getField(item.getName()).getStringValue();
-              if (userId != null) {
-                UserDetail user = getUserDetail(userId);
-                if (user != null) {
-                  role += user.getDisplayedName();
+              Field field = currentProcessInstance.getField(item.getName());
+              if (field instanceof UserField) {
+                String userId = field.getStringValue();
+                if (userId != null) {
+                  UserDetail user = getUserDetail(userId);
+                  if (user != null) {
+                    role += user.getDisplayedName();
+                  }
+                }
+              } else if (field instanceof MultipleUserField) {
+                MultipleUserField multipleUserField = (MultipleUserField) field;
+                String[] userIds = multipleUserField.getUserIds();
+                for (String userId : userIds) {
+                  if (userId != null) {
+                    UserDetail user = getUserDetail(userId);
+                    if (user != null) {
+                      if (role.length() > 0) {
+                        role += ", ";
+                      }
+                      role += user.getDisplayedName();
+                    }
+                  }
                 }
               }
             }
@@ -552,8 +572,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       Item item = relatedUser.getFolderItem();
       if (item != null) {
         try {
-          String userId = currentProcessInstance.getField(item.getName()).getStringValue();
-          users.add(userId);
+          Field field = currentProcessInstance.getField(item.getName());
+          if (field instanceof UserField) {
+            users.add(field.getStringValue());
+          } else if (field instanceof MultipleUserField) {
+            MultipleUserField multipleUserField = (MultipleUserField) field;
+            String[] userIds = multipleUserField.getUserIds();
+            users.addAll(Arrays.asList(userIds));
+          }
         } catch (WorkflowException we) {
           // ignore it.
         }
