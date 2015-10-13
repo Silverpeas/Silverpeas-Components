@@ -774,6 +774,14 @@
 
 	</div>
 
+    <% if (kmeliaScc.isReminderUsed()) {%>
+    <div class="table">
+      <div class="cell">
+        <view:dateReminder resourceId="<%=id %>" resourceType="<%=PublicationDetail.getResourceType() %>" userId="<%= kmeliaScc.getUserId()%>" language="<%= language%>"/>
+      </div>
+    </div>
+    <% } %>
+
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
           	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>

@@ -336,6 +336,24 @@
           </help>
         </parameter>
         <parameter>
+          <name>useReminder</name>
+          <label>
+            <message lang="fr">Rappel</message>
+            <message lang="en">Reminder</message>
+            <message lang="de">Reminder</message>
+          </label>
+          <order>53</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ajout d'une date et d'une note pour rappeler (via notification automatique) aux contributeurs de mettre à jour leur publication.</message>
+            <message lang="en">Adding a date and a note to remind (automatic notification) contributors to update their publication.</message>
+            <message lang="de">Addieren Sie ein Datum und eine Notiz zu erinnern (automatische Benachrichtigung) Mitwirkende deren Veröffentlichung zu aktualisieren.</message>
+          </help>
+        </parameter>
+        <parameter>
             <name>tabContent</name>
             <label>
               <message lang="fr">Contenu</message>

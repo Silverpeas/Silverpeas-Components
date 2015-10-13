@@ -1053,6 +1053,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String newPubId = kmelia.createPublication(pubDetail, withClassification);
+
+        if(kmelia.isReminderUsed()) {
+          PublicationDetail pubDetailCreated = kmelia.getPublicationDetail(newPubId);
+          kmelia.addPublicationReminder(pubDetailCreated, parameters);
+        }
+
         // create thumbnail if exists
         boolean newThumbnail = ThumbnailController
             .processThumbnail(new ForeignPK(newPubId, kmelia.getComponentId()),
@@ -1082,15 +1088,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<FileItem> parameters = request.getFileItems();
 
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
-        String id = pubDetail.getPK().getId();
-        ThumbnailController.processThumbnail(new ForeignPK(id, kmelia.getComponentId()),
+        String pubId = pubDetail.getPK().getId();
+        ThumbnailController.processThumbnail(new ForeignPK(pubId, kmelia.getComponentId()),
             PublicationDetail.getResourceType(), parameters);
 
         kmelia.updatePublication(pubDetail);
 
+        if(kmelia.isReminderUsed()) {
+          kmelia.updatePublicationReminder(pubId, parameters);
+        }
+
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
-          KmeliaPublication kmeliaPublication = kmelia.getPublication(id);
+          KmeliaPublication kmeliaPublication = kmelia.getPublication(pubId);
           String position = FileUploadUtil.getParameter(parameters, "Position");
           setWizardParams(request, kmelia);
           request.setAttribute("Position", position);
@@ -1101,7 +1111,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           if (kmelia.getSessionClone() != null) {
             destination = getDestination("ViewClone", kmelia, request);
           } else {
-            request.setAttribute("PubId", id);
+            request.setAttribute("PubId", pubId);
             request.setAttribute("CheckPath", "1");
             destination = getDestination("ViewPublication", kmelia, request);
           }
