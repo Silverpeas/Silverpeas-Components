@@ -226,8 +226,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     for (Group subGroup1 : subGroups) {
       subGroup = subGroup1;
       subGroupDetail = new GroupDetail(subGroup);
-      subGroupDetail.setTotalUsers(getOrganisationController().
-          getAllSubUsersNumber(subGroup.getId()));
       groupDetail.addSubGroup(subGroupDetail);
     }
 
