@@ -51,7 +51,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
     .getUserNotificationDisplayLiveTimeForLongMessage;
@@ -68,6 +67,9 @@ public class SuggestionBoxWebServiceProvider {
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
   private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER =
       new SuggestionBoxWebServiceProvider();
+
+  private final static List<SilverpeasRole> MODERATOR_ROLES =
+      CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
 
   public static SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SUGGESTION_BOX_WEB_SERVICE_PROVIDER;
@@ -156,7 +158,7 @@ public class SuggestionBoxWebServiceProvider {
    * hence the persistence level.
    * <p/>
    * The user asking for the suggestions is required in the criteria as some caching is performed
-   * for the given user for better performence.
+   * for the given user for better performance.
    * @param suggestionBox the suggestion box the current user is working on.
    * @param criteria the criteria the suggestions to return must match.
    * @return the published suggestion entities matching the specified criteria.
@@ -229,10 +231,13 @@ public class SuggestionBoxWebServiceProvider {
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
-    if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
-        getValidation().isRefused() ||
-        (suggestion.getValidation().isValidated() && fromUser.isAccessAdmin()))) {
-      checkAdminAccessOrUserIsCreator(fromUser, suggestion);
+    SilverpeasRole highestRole = getHighestUserRoleFrom(fromUser, suggestionBox);
+    if (suggestion.isDefined() &&
+        (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused() ||
+            ((suggestion.getValidation().isPendingValidation() ||
+                suggestion.getValidation().isValidated()) &&
+                (fromUser.isAccessAdmin() || SilverpeasRole.admin == highestRole)))) {
+      checkAdminAccessOrAdminRoleOrUserIsCreator(fromUser, suggestion);
       boolean removed = suggestionBox.getSuggestions().remove(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
       if (removed) {
@@ -378,20 +383,46 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
+   * Centralization of checking if the specified user is the creator of the specified suggestion.
+   * @param user the user to verify.
+   * @param suggestion the suggestion to check.
+   */
+  public static void checkAdminAccessOrAdminRoleOrUserIsCreator(UserDetail user,
+      Suggestion suggestion) {
+    assertSuggestionIsDefined(suggestion);
+    if (!user.isAccessAdmin() && !user.equals(suggestion.getCreator())) {
+      SilverpeasRole highestRole = getHighestUserRoleFrom(user, suggestion.getSuggestionBox());
+      if (SilverpeasRole.admin != highestRole) {
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
+    }
+  }
+
+  /**
    * Centralization of checking if the specified user is a moderator of the specified suggestion.
    * @param user the user to verify.
    * @param suggestionBox the suggestion box the user is working on.
    */
   public static void checkAdminAccessOrUserIsModerator(UserDetail user,
       SuggestionBox suggestionBox) {
-    Set<String> moderatorIds = CollectionUtil.asSet(
-        OrganisationControllerFactory.getOrganisationController()
-            .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
-                CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
-    );
-    if (!user.isAccessAdmin() && !moderatorIds.contains(user.getId())) {
+    SilverpeasRole highestRole = getHighestUserRoleFrom(user, suggestionBox);
+    if (!user.isAccessAdmin() && !MODERATOR_ROLES.contains(highestRole)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
+  }
+
+  /**
+   * Gets the highest role the given user has on the given suggestion box.
+   * @param user the user for which the highest role is requested.
+   * @param suggestionBox the suggestion box from which the roles must be searched for.
+   * @return a {@link SilverpeasRole} that represents the highest role the user has on the
+   * suggestion box.
+   */
+  private static SilverpeasRole getHighestUserRoleFrom(UserDetail user,
+      SuggestionBox suggestionBox) {
+    return SilverpeasRole.getGreatestFrom(SilverpeasRole.from(
+        OrganisationControllerFactory.getOrganisationController()
+            .getUserProfiles(user.getId(), suggestionBox.getComponentInstanceId())));
   }
 
   /**

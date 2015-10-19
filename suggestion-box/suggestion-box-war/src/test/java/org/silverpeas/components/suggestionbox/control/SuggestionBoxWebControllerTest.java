@@ -26,7 +26,6 @@ package org.silverpeas.components.suggestionbox.control;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
@@ -41,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
@@ -54,6 +54,7 @@ import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.upload.UploadedFile;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -115,7 +116,7 @@ public class SuggestionBoxWebControllerTest {
 
     ArgumentCaptor<Suggestion> suggestionArgument = ArgumentCaptor.forClass(Suggestion.class);
     verify(box.getSuggestions(), times(1)).
-        add(suggestionArgument.capture(), anyCollection());
+        add(suggestionArgument.capture(), anyCollectionOf(UploadedFile.class));
     Suggestion suggestion = suggestionArgument.getValue();
     assertThat(suggestion.getTitle(), is(title));
     assertThat(suggestion.getContent(), is(content));
@@ -396,11 +397,11 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{"otherId"});
+    setHighestUserProfile(context, SilverpeasRole.writer);
 
     controller.editSuggestion(context);
+
+    verifyHighestUserProfileCalls(context);
   }
 
   @Test
@@ -411,13 +412,12 @@ public class SuggestionBoxWebControllerTest {
     Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(theSuggestion);
     String userId = context.getUser().getId();
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{userId});
+    setHighestUserProfile(context, SilverpeasRole.publisher);
 
     controller.editSuggestion(context);
 
     verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
+    verifyHighestUserProfileCalls(context);
   }
 
   @Test(expected = WebApplicationException.class)
@@ -427,12 +427,11 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.VALIDATED);
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
-    String userId = context.getUser().getId();
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{userId});
+    setHighestUserProfile(context, SilverpeasRole.publisher);
 
     controller.editSuggestion(context);
+
+    verifyHighestUserProfileCalls(context);
   }
 
   @Test
@@ -512,6 +511,48 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.VALIDATED);
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+
+    controller.deleteSuggestion(context);
+  }
+
+  @Test
+  public void deleteASuggestionPendingValidationFromAdminAccess() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+    context.getUser().setAccessLevel(UserAccessLevel.ADMINISTRATOR);
+
+    controller.deleteSuggestion(context);
+
+    verify(box.getSuggestions(), times(1)).remove(suggestion);
+  }
+
+  @Test
+  public void deleteASuggestionPendingValidationFromAdminRole() throws Exception {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    when(suggestion.getSuggestionBox()).thenReturn(box);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+    setHighestUserProfile(context, SilverpeasRole.admin);
+
+    controller.deleteSuggestion(context);
+
+    verify(box.getSuggestions(), times(1)).remove(suggestion);
+    verifyHighestUserProfileCalls(context, 2);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void deleteASuggestionPendingValidationFromPublisher() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+    setHighestUserProfile(context, SilverpeasRole.publisher);
 
     controller.deleteSuggestion(context);
   }
@@ -600,16 +641,13 @@ public class SuggestionBoxWebControllerTest {
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
     when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class)))
         .thenReturn(suggestion);
-    String userId = context.getUser().getId();
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{
-            (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
+    setHighestUserProfile(context, userRoleAccess);
 
     controller.approveSuggestion(context);
 
     verify(box.getSuggestions(), times(1))
         .validate(eq(suggestion), any(ContributionValidation.class));
+    verifyHighestUserProfileCalls(context);
   }
 
   @Test(expected = WebApplicationException.class)
@@ -675,16 +713,13 @@ public class SuggestionBoxWebControllerTest {
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
     when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class)))
         .thenReturn(suggestion);
-    String userId = context.getUser().getId();
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{
-            (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
+    setHighestUserProfile(context, userRoleAccess);
 
     controller.refuseSuggestion(context);
 
     verify(box.getSuggestions(), times(1))
         .validate(eq(suggestion), any(ContributionValidation.class));
+    verifyHighestUserProfileCalls(context);
   }
 
   @Test(expected = WebApplicationException.class)
@@ -695,6 +730,26 @@ public class SuggestionBoxWebControllerTest {
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.refuseSuggestion(context);
+  }
+
+  private void setHighestUserProfile(final SuggestionBoxWebRequestContext context,
+      SilverpeasRole userRoleAccess) {
+    when(getOrganisationController().getUserProfiles(context.getUser().getId(),
+        context.getSuggestionBox().getComponentInstanceId())).thenReturn(
+        (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ?
+            new String[]{SilverpeasRole.writer.name(), userRoleAccess.name()} :
+            new String[]{SilverpeasRole.writer.name()}));
+  }
+
+  private void verifyHighestUserProfileCalls(SuggestionBoxWebRequestContext context) {
+    verifyHighestUserProfileCalls(context, 1);
+  }
+
+  private void verifyHighestUserProfileCalls(SuggestionBoxWebRequestContext context, int nbCalls) {
+    verify(getOrganisationController(), times(nbCalls)).getUserProfiles(context.getUser().getId(),
+        context.getSuggestionBox().getComponentInstanceId());
+    verify(getOrganisationController(), times(0))
+        .getUsersIdsByRoleNames(anyString(), anyListOf(String.class));
   }
 
   private SuggestionBoxWebRequestContext prepareViewSuggestionTest(SilverpeasRole greaterUserRole,
