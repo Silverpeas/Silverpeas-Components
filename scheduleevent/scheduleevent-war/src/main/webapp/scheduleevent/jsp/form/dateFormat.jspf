@@ -1,3 +1,3 @@
-<%--<fmt:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="generalMultilang" />
+<%--<fmt:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalMultilang" />
 <fmt:message key="GML.dateFormat" var="gmlDateFormat" bundle="${generalMultilang}" />--%>
 <c:set var="gmlDateFormat">EEEEE dd MMM yyyy</c:set>

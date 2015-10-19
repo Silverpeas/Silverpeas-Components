@@ -34,7 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.stratelia.webactiv.quizz.multilang.quizz"/>
+<view:setBundle basename="org.silverpeas.quizz.multilang.quizz"/>
 <%
 String nextAction = "";
 

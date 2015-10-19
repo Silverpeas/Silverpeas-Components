@@ -37,8 +37,8 @@
 %>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle basename="com.stratelia.webactiv.kmelia.multilang.kmeliaBundle"/>
-<view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle" var="pdcBundle"/>
+<view:setBundle basename="org.silverpeas.kmelia.multilang.kmeliaBundle"/>
+<view:setBundle basename="org.silverpeas.pdcPeas.multilang.pdcBundle" var="pdcBundle"/>
 <fmt:message key="GML.validate" var="done"/>
 <fmt:message key="kmelia.publiClassification" var="classification"/>
 <c:set var="importedPublications" value="${requestScope['PublicationsDetails']}"/>

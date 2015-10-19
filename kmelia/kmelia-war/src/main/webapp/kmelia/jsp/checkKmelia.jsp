@@ -135,5 +135,5 @@
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));
 	boolean kmeliaMode 	= (componentId != null && componentId.startsWith("kmelia"));
 
-	SettingBundle settings = ResourceLocator.getSettingBundle("com.stratelia.webactiv.kmelia.settings.kmeliaSettings");
+	SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 %>

@@ -34,8 +34,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
-<view:setBundle basename="com.silverpeas.importExportPeas.multilang.importExportPeasBundle"/>
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="general"/>
+<view:setBundle basename="org.silverpeas.importExportPeas.multilang.importExportPeasBundle"/>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="general"/>
 <fmt:message key="importExportPeas.Export" var="page_title" />
 <fmt:message key="GML.close" var="close_button" bundle="${general}" />
 

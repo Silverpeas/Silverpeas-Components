@@ -56,7 +56,7 @@
 <%@ include file="checkScc.jsp" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.selection.multilang.selectionBundle" />
+<view:setBundle basename="org.silverpeas.selection.multilang.selectionBundle" />
 
 <c:url var="checkformjs" value="/util/javaScript/checkForm.js"/>
 <c:url var="mandatoryField" value="/util/icons/mandatoryField.gif"/>

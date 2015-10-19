@@ -30,7 +30,7 @@
 
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
-<view:setBundle basename="com.silverpeas.crm.multilang.crmBundle"/>
+<view:setBundle basename="org.silverpeas.crm.multilang.crmBundle"/>
 
 <html>
 <head>

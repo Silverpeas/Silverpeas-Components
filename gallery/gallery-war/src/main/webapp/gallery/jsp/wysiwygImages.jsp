@@ -43,7 +43,7 @@
 <c:set var="language" value="${requestScope.Language}"/>
 
 <fmt:setLocale value="${language}" />
-<view:setBundle basename="com.silverpeas.gallery.multilang.galleryBundle"/>
+<view:setBundle basename="org.silverpeas.gallery.multilang.galleryBundle"/>
 
 <c:set var="instanceId" value="${requestScope.ComponentId}"/>
 <c:set var="medias" value="${requestScope.MediaList}" />

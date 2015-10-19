@@ -38,7 +38,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
-<view:setBundle basename="com.stratelia.webactiv.forums.multilang.forumsBundle"/>
+<view:setBundle basename="org.silverpeas.forums.multilang.forumsBundle"/>
 
 <%
   int messageId = getIntParameter(request, "params");
