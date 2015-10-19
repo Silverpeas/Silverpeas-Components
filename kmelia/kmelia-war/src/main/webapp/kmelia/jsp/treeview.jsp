@@ -933,7 +933,7 @@ $(document).ready(
 
 	$.i18n.properties({
         name: 'kmeliaBundle',
-        path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+        path: webContext + '/services/bundles/org/silverpeas/kmelia/multilang/',
         language: '<%=language%>',
         mode: 'map'
     });
