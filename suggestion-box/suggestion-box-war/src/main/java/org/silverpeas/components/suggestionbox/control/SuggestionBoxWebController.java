@@ -470,7 +470,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/delete")
-  @RedirectToInternal("Main")
+  @RedirectToPreviousNavigationStep
   @LowestRoleAccess(SilverpeasRole.writer)
   public void deleteSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
