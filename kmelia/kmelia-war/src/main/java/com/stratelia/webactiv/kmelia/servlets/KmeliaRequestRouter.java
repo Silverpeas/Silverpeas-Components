@@ -596,6 +596,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               ServiceProvider.getService(PublicationAccessController.class);
           if (!publicationAccessController
               .isUserAuthorized(kmelia.getUserId(), kmeliaPublication.getPk())) {
+            SilverTrace
+                .warn("kmelia", "KmeliaRequestRouter.getDestination", "function ViewPublication",
+                    "Security alert from " + kmelia.getUserId() + " with publication " + id);
             return "/admin/jsp/accessForbidden.jsp";
           }
           kmelia.setSessionPublication(kmeliaPublication);
@@ -1457,6 +1460,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           id = (String) request.getAttribute("NodeId");
         }
         if (!kmelia.isTopicAdmin(id)) {
+          SilverTrace.warn("kmelia", "KmeliaRequestRouter.getDestination",
+              "function ViewTopicProfiles", "Security alert from " + kmelia.getUserId());
           return "/admin/jsp/accessForbidden.jsp";
         }
         request.setAttribute("Profiles", kmelia.getTopicProfiles(id));

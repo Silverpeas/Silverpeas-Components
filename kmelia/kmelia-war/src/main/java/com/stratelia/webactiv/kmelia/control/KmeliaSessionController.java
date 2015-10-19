@@ -780,6 +780,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (isTopicAdmin(nd.getNodePK().getId())) {
       return getKmeliaBm().updateTopic(nd, alertType);
     }
+    SilverTrace.warn("kmelia", "KmeliaSessionControl.updateTopicHeader",
+        "Security alert from " + getUserId());
     return null;
   }
 
@@ -2598,6 +2600,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       PublicationSelection pubSelect = new PublicationSelection(pub);
       addClipboardSelection(pubSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.copyPublication",
+          "Security alert from user " + getUserId() + ", trying to copy publication " + pubId);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose, access to publication is forbidden");
     }
@@ -2630,6 +2634,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(pubSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.cutPublication",
+          "Security alert from user " + getUserId() + ", trying to cut publication " + pubId);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose, access to publication is forbidden");
     }
@@ -2658,6 +2664,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(nodeSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.copyTopic",
+          "Security alert from user " + getUserId() + ", trying to copy topic " + id);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose : access to node is forbidden");
     }
@@ -2674,6 +2682,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(nodeSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.cutTopic",
+          "Security alert from user " + getUserId() + ", trying to cut topic " + id);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose : access to node is forbidden");
     }

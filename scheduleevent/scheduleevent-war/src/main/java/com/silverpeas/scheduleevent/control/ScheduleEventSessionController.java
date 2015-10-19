@@ -167,7 +167,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     } else {
       SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.initSelectUsersPanel",
           "Security alert from user " + getUserId());
-      NotifierUtil.addError(getString("GML.security.access"));
       return "/admin/jsp/accessForbidden.jsp";
     }
   }
@@ -348,7 +347,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     } else {
       SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.switchState",
           "Security alert from user " + getUserId());
-      NotifierUtil.addError(getString("GML.security.access"));
     }
   }
 
@@ -363,7 +361,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     } else {
       SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.delete",
           "Security alert from user " + getUserId());
-      NotifierUtil.addError(getString("GML.security.access"));
     }
   }
 
