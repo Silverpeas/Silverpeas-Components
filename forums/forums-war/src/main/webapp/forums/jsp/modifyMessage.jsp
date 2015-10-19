@@ -78,7 +78,7 @@
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main", -1, forumId));
-    browseBar.setPath(ForumListHelper.navigationBar(forumId, resource, fsc));
+    browseBar.setPath(ForumListHelper.navigationBar(forumId, fsc));
 
     out.println(window.printBefore());
     out.println(frame.printBefore());

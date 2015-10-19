@@ -42,6 +42,7 @@
 
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
@@ -68,7 +69,7 @@ String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaSc
 	return userName;
 }
 
-void displaySameSubjectPublications(Collection pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, boolean checkboxAllowed, ResourcesWrapper resources, JspWriter out) throws IOException {
+void displaySameSubjectPublications(Collection pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, boolean checkboxAllowed, MultiSilverpeasBundle resources, JspWriter out) throws IOException {
 
     PublicationDetail 	pub;
     KmeliaPublication 	kmeliaPub;
@@ -139,7 +140,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 out.println("</table>");
 }
 
-void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, ResourcesWrapper resources, JspWriter out) throws IOException, java.text.ParseException {
+void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, MultiSilverpeasBundle resources, JspWriter out) throws IOException, java.text.ParseException {
 
     NumberFormat				percent		= NumberFormat.getPercentInstance();
 	UserDetail					user		= null;

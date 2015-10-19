@@ -1,7 +1,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
 <%!
 
-void displayTabs(boolean updateQ, boolean pdc, String id, ResourcesWrapper resource, GraphicElementFactory gef, String action, String routerUrl, JspWriter out) throws IOException 
+void displayTabs(boolean updateQ, boolean pdc, String id, MultiSilverpeasBundle resource, GraphicElementFactory gef, String action, String routerUrl, JspWriter out) throws IOException
 {
       TabbedPane tabbedPane = gef.getTabbedPane();
       if (updateQ)

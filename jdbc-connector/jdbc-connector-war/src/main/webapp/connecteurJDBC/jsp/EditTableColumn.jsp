@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.*" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%--
 
@@ -26,7 +25,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="imports.jsp" %>

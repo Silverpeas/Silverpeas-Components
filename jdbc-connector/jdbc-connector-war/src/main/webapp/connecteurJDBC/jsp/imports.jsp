@@ -26,6 +26,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>

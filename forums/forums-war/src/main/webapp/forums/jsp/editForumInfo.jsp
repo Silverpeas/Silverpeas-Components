@@ -41,7 +41,7 @@
 <view:setBundle basename="org.silverpeas.forums.multilang.forumsBundle"/>
 
 <%!
-public String navigationBar(int forumId, LocalizationBundle resource, ForumsSessionController fsc)
+public String navigationBar(int forumId, ForumsSessionController fsc)
     throws ForumsException
 {
     String navigation = "";
@@ -262,7 +262,7 @@ $(document).ready(function() {
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
-    browseBar.setPath(navigationBar(forumId, resource, fsc));
+    browseBar.setPath(navigationBar(forumId, fsc));
     browseBar.setExtraInformation(resource.getString("creatnewForum"));
 
     if (!isReader)

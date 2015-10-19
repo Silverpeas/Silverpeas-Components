@@ -42,8 +42,7 @@ import java.util.Date;
  */
 public class ForumListHelper {
 
-  public static String navigationBar(int forumId, ResourceLocator resource,
-      ForumsSessionController fsc) {
+  public static String navigationBar(int forumId, ForumsSessionController fsc) {
     boolean loop = false;
     String result = "";
     int currentId = forumId;

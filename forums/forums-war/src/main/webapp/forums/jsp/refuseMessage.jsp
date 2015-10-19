@@ -68,7 +68,7 @@
   </script>
 </head>
 <body>
-<view:browseBar path="<%=ForumListHelper.navigationBar(forumId, resource, fsc)%>"/>
+<view:browseBar path="<%=ForumListHelper.navigationBar(forumId, fsc)%>"/>
 <view:window>
   <view:frame>
     <view:board>

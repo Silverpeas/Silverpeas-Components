@@ -33,6 +33,7 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");

@@ -25,6 +25,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="org.silverpeas.util.ResourceLocator"%>
+<%@page import="org.silverpeas.util.LocalizationBundle"%>
 
 <%!
 	GraphicElementFactory gef;

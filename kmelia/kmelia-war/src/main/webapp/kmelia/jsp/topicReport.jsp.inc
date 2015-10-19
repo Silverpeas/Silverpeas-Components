@@ -68,7 +68,7 @@ String displayPath(Collection path, int beforeAfter) {
       return displayPath(path, true, beforeAfter);
 }
 
-TopicDetail displaySessionTopicsToUsers(KmeliaSessionController kmeliaScc, TopicDetail currentTopic, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, RemoteException {
+TopicDetail displaySessionTopicsToUsers(KmeliaSessionController kmeliaScc, TopicDetail currentTopic, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException, RemoteException {
 
 	NodeDetail nodeDetail = currentTopic.getNodeDetail();
       
@@ -82,7 +82,7 @@ TopicDetail displaySessionTopicsToUsers(KmeliaSessionController kmeliaScc, Topic
     return currentTopic;
 }
 
-void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail nodeDetail, String folderSrc, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, RemoteException {
+void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail nodeDetail, String folderSrc, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException, RemoteException {
 
 		boolean		displayLinks	= URLManager.displayUniversalLinks();
     	String		linkIcon		= resources.getIcon("kmelia.link");
@@ -132,7 +132,7 @@ void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail
       }
 }
 
-void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail nodeDetail, String folderSrc, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, RemoteException {
+void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail nodeDetail, String folderSrc, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException, RemoteException {
 
 		boolean		displayLinks	= URLManager.displayUniversalLinks();
 		String		linkIcon		= resources.getIcon("kmelia.link");

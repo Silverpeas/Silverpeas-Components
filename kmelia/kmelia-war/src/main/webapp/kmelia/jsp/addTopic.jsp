@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

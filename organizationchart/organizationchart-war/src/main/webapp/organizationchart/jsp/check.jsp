@@ -36,6 +36,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:out value="${error}"/>
 
 <%@ page import="com.silverpeas.components.organizationchart.control.OrganizationChartSessionController"%>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%

@@ -168,7 +168,7 @@ function validateMessage() {
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
-    browseBar.setPath(ForumListHelper.navigationBar(forumId, resource, fsc));
+    browseBar.setPath(ForumListHelper.navigationBar(forumId, fsc));
 
     out.println(window.printBefore());
     Frame frame=graphicFactory.getFrame();
