@@ -108,8 +108,6 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import org.silverpeas.dateReminder.exception.DateReminderValidationException;
-import org.silverpeas.publication.dateReminder.PublicationNoteReference;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -149,9 +147,10 @@ import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.dateReminder.exception.DateReminderException;
 import org.silverpeas.dateReminder.persistent.DateReminderDetail;
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
-import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
 import org.silverpeas.dateReminder.persistent.service.DateReminderServiceFactory;
+import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.publication.dateReminder.PublicationNoteReference;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -834,6 +833,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (isTopicAdmin(nd.getNodePK().getId())) {
       return getKmeliaBm().updateTopic(nd, alertType);
     }
+    SilverTrace.warn("kmelia", "KmeliaSessionControl.updateTopicHeader",
+        "Security alert from " + getUserId());
     return null;
   }
 
@@ -2725,6 +2726,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(pubSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.copyPublication",
+          "Security alert from user " + getUserId() + ", trying to copy publication " + pubId);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose, access to publication is forbidden");
     }
@@ -2755,6 +2758,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(pubSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.cutPublication",
+          "Security alert from user " + getUserId() + ", trying to cut publication " + pubId);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose, access to publication is forbidden");
     }
@@ -2781,6 +2786,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(nodeSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.copyTopic",
+          "Security alert from user " + getUserId() + ", trying to copy topic " + id);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose : access to node is forbidden");
     }
@@ -2795,6 +2802,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(nodeSelect);
     } else {
+      SilverTrace.warn("kmelia", "KmeliaSessionController.cutTopic",
+          "Security alert from user " + getUserId() + ", trying to cut topic " + id);
       throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
           "Security purpose : access to node is forbidden");
     }
@@ -3938,7 +3947,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @return true if current user has admin access on topic given in parameter
    */
   public boolean isTopicAdmin(final String nodeId) {
-    return SilverpeasRole.getGreaterFrom(SilverpeasRole.from(getUserTopicProfile(nodeId)))
+    return SilverpeasRole.getGreatestFrom(SilverpeasRole.from(getUserTopicProfile(nodeId)))
         .isGreaterThanOrEquals(SilverpeasRole.admin);
   }
 }
