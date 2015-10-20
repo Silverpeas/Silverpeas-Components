@@ -33,7 +33,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.NotifierUtil;
