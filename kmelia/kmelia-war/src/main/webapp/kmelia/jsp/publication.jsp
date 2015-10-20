@@ -39,7 +39,7 @@
 %>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="topicReport.jsp.inc" %>
+<%@ include file="topicReport.jsp" %>
 
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="com.silverpeas.kmelia.SearchContext"%>

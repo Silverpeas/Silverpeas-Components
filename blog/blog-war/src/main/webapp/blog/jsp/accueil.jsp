@@ -233,7 +233,7 @@ function hideStyleSheetFile() {
       <h2><a href="<%="Main"%>"><%=componentLabel%></a></h2>
     </div>
     <div id="navBlog">
-      <%@ include file="colonneDroite.jsp.inc" %>
+      <%@ include file="colonneDroite.jsp" %>
     </div>
     <div id="postsList">
       <%

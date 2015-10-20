@@ -138,7 +138,7 @@ out.println(window.printBefore());
          %>
 		 
 		  <div id="navBlog">
-			<%@ include file="colonneDroite.jsp.inc" %>
+			<%@ include file="colonneDroite.jsp" %>
 		  </div>
 		 
 		  <div id="<%=blocClass%>">

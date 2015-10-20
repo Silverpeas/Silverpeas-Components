@@ -30,7 +30,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuestionReply.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@ include file="tabManager.jsp" %>
 <%
 	String		profil		= (String) request.getAttribute("Flag");
 	Question 	question 	= (Question) request.getAttribute("question");

@@ -32,7 +32,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="topicReport.jsp.inc" %>
+<%@ include file="topicReport.jsp" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

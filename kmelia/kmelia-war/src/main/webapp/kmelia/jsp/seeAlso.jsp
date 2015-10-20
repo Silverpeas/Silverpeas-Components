@@ -35,7 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="publicationsList.jsp.inc" %>
+<%@ include file="publicationsList.jsp" %>
 
 <%!
  //Icons

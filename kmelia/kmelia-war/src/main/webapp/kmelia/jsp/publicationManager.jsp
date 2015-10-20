@@ -39,8 +39,8 @@
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <%@include file="checkKmelia.jsp" %>
-<%@include file="publicationsList.jsp.inc" %>
-<%@include file="topicReport.jsp.inc" %>
+<%@include file="publicationsList.jsp" %>
+<%@include file="topicReport.jsp" %>
 
 
 <%!  //Icons

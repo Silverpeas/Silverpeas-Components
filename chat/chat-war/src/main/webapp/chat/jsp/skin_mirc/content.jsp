@@ -154,4 +154,4 @@ else if ( (dMode == Conf.BUFFEREDFRAMED) && (buffering == null) )
 /** Content of chatroom. */
 /**----------------------*/
 else
-{%><%@ include file="chatroom_display.jsp.inc" %><%}%>
+{%><%@ include file="chatroom_display.jsp" %><%}%>
