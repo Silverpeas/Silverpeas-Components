@@ -101,10 +101,10 @@
 <form name="formCollapse" action="viewHistory">
 <input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
 	<tr>
-		<td class="intfdcolor4" nowrap="nowrap">
+		<td class="intfdcolor4">
 			<table cellpadding="0" cellspacing="0" border="0" width="100%">
 				<tr>
-					<td class="intfdcolor" rowspan="2" nowrap width="100%">
+					<td class="intfdcolor" rowspan="2" width="100%">
 						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
 						<span class="txtNav">
 						<% 
@@ -119,7 +119,7 @@
 				</tr>
 				<tr>
 					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.boxAngleLeft") %>"/></td>
-					<td align="center" valign="bottom" nowrap="nowrap">
+					<td align="center" valign="bottom">
 						<%
 						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )
 						{
