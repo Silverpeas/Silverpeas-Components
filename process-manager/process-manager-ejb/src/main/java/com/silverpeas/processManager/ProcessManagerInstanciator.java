@@ -59,14 +59,15 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     try {
-      Workflow.getProcessModelManager().deleteProcessModel(componentId);
-
       ProcessInstance[] processInstances = Workflow.getProcessInstanceManager().getProcessInstances(
           componentId, null, "supervisor");
       for (ProcessInstance instance : processInstances) {
         ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).
             removeProcessInstance(instance.getInstanceId());
       }
+
+      Workflow.getProcessModelManager().deleteProcessModel(componentId);
+
       new SimpleDocumentInstanciator().delete(componentId);
       TodoBackboneAccess tbba = new TodoBackboneAccess();
       tbba.removeEntriesByInstanceId(componentId);
