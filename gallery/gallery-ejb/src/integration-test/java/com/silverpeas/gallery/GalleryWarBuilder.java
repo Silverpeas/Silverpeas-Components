@@ -23,12 +23,12 @@
  */
 package com.silverpeas.gallery;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.BasicCoreWarBuilder;
 
 /**
  * @author ebonnet
  */
-public class GalleryWarBuilder extends BasicWarBuilder{
+public class GalleryWarBuilder extends BasicCoreWarBuilder {
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
@@ -37,6 +37,11 @@ public class GalleryWarBuilder extends BasicWarBuilder{
    */
   protected <T> GalleryWarBuilder(final Class<T> test) {
     super(test);
+    addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
+    addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
+    addMavenDependencies("org.silverpeas.core.ejb-core:comment");
+    addAsResource("org/silverpeas/gallery/multilang/galleryBundle.properties");
+    addAsResource("org/silverpeas/gallery/settings/gallerySettings.properties");
   }
 
   /**
@@ -47,22 +52,7 @@ public class GalleryWarBuilder extends BasicWarBuilder{
    * @return a basic builder of the war archive.
    */
   public static <T> GalleryWarBuilder onWarForTestClass(Class<T> test) {
-    GalleryWarBuilder warBuilder = new GalleryWarBuilder(test);
-    warBuilder.addMavenDependencies("javax.jcr:jcr");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:comment");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-    warBuilder.addMavenDependencies("org.apache.tika:tika-core");
-    warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
-    warBuilder.addAsResource("org/silverpeas/gallery/multilang/galleryBundle.properties");
-    warBuilder.addAsResource("org/silverpeas/gallery/settings/gallerySettings.properties");
-    return warBuilder;
+    return new GalleryWarBuilder(test);
   }
 
 }

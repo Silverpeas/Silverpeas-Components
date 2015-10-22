@@ -31,16 +31,17 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
 
-public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListener {
+public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListener,
+    Initialization {
 
   @Inject
   private Scheduler scheduler;
@@ -55,8 +56,8 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   private SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.classifieds.settings.classifiedsSettings");
 
-  @PostConstruct
-  public void initialize() {
+  @Override
+  public void init() throws Exception{
     try {
       String cron = settings.getString("cronScheduledDeleteClassifieds");
       scheduler.unscheduleJob(CLASSIFIEDSENGINE_JOB_NAME);
