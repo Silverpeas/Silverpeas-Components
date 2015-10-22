@@ -24,7 +24,6 @@
 package com.ecyrd.jspwiki.attachment;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,11 +38,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ecyrd.jspwiki.ui.WikiRequestWrapper;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.ProgressListener;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
@@ -65,11 +62,11 @@ import com.ecyrd.jspwiki.dav.methods.PropFindMethod;
 import com.ecyrd.jspwiki.filters.RedirectException;
 import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 import com.ecyrd.jspwiki.providers.ProviderException;
-import com.ecyrd.jspwiki.ui.progress.ProgressItem;
 import com.ecyrd.jspwiki.util.HttpUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * This is the chief JSPWiki attachment management servlet. It is used for both uploading new
@@ -506,29 +503,18 @@ public class SilverpeasAttachmentServlet extends WebdavServlet {
     // stuff
     String nextPage = errorPage;
 
-    String progressId = req.getParameter("progressid");
-
     // Check that we have a file upload request
     if (!ServletFileUpload.isMultipartContent(req)) {
       throw new RedirectException("Not a file upload", errorPage);
     }
 
     try {
-      FileItemFactory factory = new DiskFileItemFactory();
-
       // Create the context _before_ Multipart operations, otherwise
       // strict servlet containers may fail when setting encoding.
       WikiContext context = m_engine.createContext(req, WikiContext.ATTACH);
 
-      UploadListener pl = new UploadListener();
-
-      m_engine.getProgressManager().startProgress(pl, progressId);
-
-      ServletFileUpload upload = new ServletFileUpload(factory);
-      upload.setHeaderEncoding("UTF-8");
-      upload.setFileSizeMax(m_maxSize);
-      upload.setProgressListener(pl);
-      List<FileItem> items = upload.parseRequest(req);
+      WikiRequestWrapper wikiRequest = (WikiRequestWrapper) req;
+      List<FileItem> items = ((HttpRequest) wikiRequest.getRequest()).getFileItems();
 
       String wikipage = null;
       String changeNote = null;
@@ -593,17 +579,6 @@ public class SilverpeasAttachmentServlet extends WebdavServlet {
       log.warn(msg + " (attachment: " + attName + ")", e);
 
       throw e;
-    } catch (FileUploadException e) {
-      // Show the submit page again, but with a bit more
-      // intimidating output.
-      msg = "Upload failure: " + e.getMessage();
-      log.warn(msg + " (attachment: " + attName + ")", e);
-
-      throw new IOException(msg);
-    } finally {
-      m_engine.getProgressManager().stopProgress(progressId);
-      // FIXME: In case of exceptions should absolutely
-      // remove the uploaded file.
     }
 
     return nextPage;
@@ -723,28 +698,6 @@ public class SilverpeasAttachmentServlet extends WebdavServlet {
     }
 
     return created;
-  }
-
-  /**
-   * Provides tracking for upload progress.
-   * @author Janne Jalkanen
-   */
-  private static class UploadListener
-      extends ProgressItem
-      implements ProgressListener {
-
-    public long m_currentBytes;
-    public long m_totalBytes;
-    public String m_uid;
-
-    public void update(long recvdBytes, long totalBytes, int item) {
-      m_currentBytes = recvdBytes;
-      m_totalBytes = totalBytes;
-    }
-
-    public int getProgress() {
-      return (int) (((float) m_currentBytes / m_totalBytes) * 100 + 0.5);
-    }
   }
 
   /**
