@@ -499,7 +499,12 @@ public class ProcessManagerRequestRouter
         }
       }
 
-      session.resetCurrentProcessInstance(processId);
+      try {
+        session.resetCurrentProcessInstance(processId);
+      } catch (ProcessManagerException e) {
+        return "/admin/jsp/documentNotFound.jsp";
+      }
+
       if (!session.isUserAllowedOnActiveStates()) {
         // user is not allowed to act on or view current process instance
         // redirect him on home page
