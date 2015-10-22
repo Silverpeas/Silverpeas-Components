@@ -76,8 +76,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
       String[] instanceIds = organizationController.getCompoId("classifieds");
 
       // Get default expiration delay from properties
-      int defaultExpirationDelay = Integer.parseInt(
-          settings.getString("nbDaysForDeleteClassifieds"));
+      int defaultExpirationDelay = settings.getInteger("nbDaysForDeleteClassifieds");
       SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
           "root.MSG_GEN_PARAM_VALUE", "defaultExpirationDelay = " + defaultExpirationDelay);
 

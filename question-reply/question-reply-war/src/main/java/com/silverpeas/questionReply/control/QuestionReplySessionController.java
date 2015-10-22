@@ -841,7 +841,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     SettingBundle settings = ResourceLocator.getSettingBundle(
         "org.silverpeas.questionReply.settings.questionReplySettings");
     try {
-      String chemin = (settings.getString("mappingDir"));
+      String chemin = settings.getString("mappingDir");
       if (chemin.startsWith("file:")) {
         chemin = chemin.substring(8);
       }

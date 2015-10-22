@@ -139,7 +139,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     hostPath[0] = new Pair<>(getString("scheduleevent.form.selectContributors"), "");
 
     sel.resetAll();
-    sel.setHostSpaceName(this.getString("domainName"));
+    sel.setHostSpaceName("");
     sel.setHostComponentName(hostComponentName);
     sel.setHostPath(hostPath);
 

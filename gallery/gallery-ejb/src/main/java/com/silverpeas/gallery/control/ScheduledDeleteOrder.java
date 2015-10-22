@@ -65,7 +65,7 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       // recherche du nombre de jours avant suppression
-      int nbDays = Integer.parseInt(resources.getString("nbDaysForDeleteOrder"));
+      int nbDays = resources.getInteger("nbDaysForDeleteOrder");
       // rechercher toutes les demandes arrivant à échéance
       List<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledDeleteOrder()",

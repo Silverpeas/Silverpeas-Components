@@ -77,7 +77,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
     try {
       // recherche du nombre de jours
-      int nbDays = Integer.parseInt(resources.getString("nbDaysForAlertUser"));
+      int nbDays = resources.getInteger("nbDaysForAlertUser");
 
       // rechercher la liste des photos arrivant à échéance
       Collection<Media> mediaList = getMediaService().getAllMediaThatWillBeNotVisible(nbDays);
