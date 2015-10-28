@@ -1,1 +1,0 @@
-Le forum <b>$title$</b> a été créé.

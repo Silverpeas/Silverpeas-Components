@@ -45,8 +45,8 @@ public class ForumsForumSubscriptionUserNotification extends AbstractForumsForum
    * Default constructor.
    * @param resource
    */
-  public ForumsForumSubscriptionUserNotification(final ForumDetail resource) {
-    super(resource);
+  public ForumsForumSubscriptionUserNotification(final ForumDetail resource, final NotifAction action) {
+    super(resource, action);
   }
 
   @Override
@@ -57,17 +57,15 @@ public class ForumsForumSubscriptionUserNotification extends AbstractForumsForum
 
   @Override
   protected String getBundleSubjectKey() {
-    return "forums.forum.notification.subject";
+    return "GML.subscription";
   }
 
   @Override
   protected String getFileName() {
-    return "forumNotification";
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return NotifAction.CREATE;
+    if (NotifAction.CREATE.equals(getAction())) {
+      return "subscriptionNotificationOnForumCreate";
+    }
+    return "subscriptionNotificationOnForumUpdate";
   }
 
   @Override
