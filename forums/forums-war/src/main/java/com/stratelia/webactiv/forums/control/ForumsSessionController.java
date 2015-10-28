@@ -32,6 +32,7 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -230,7 +231,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
             forumCreator, forumParent, currentCategoryId, keywords);
 
     // Send notification
-    sendForumNotification(getForumsService().getForumDetail(getForumPK(forumId)));
+    sendForumNotification(getForumsService().getForumDetail(getForumPK(forumId)), NotifAction.CREATE);
 
     // Classify content here
     classifyContent(forumPK);
@@ -257,7 +258,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         truncateTextArea(forumDescription), forumParent, categoryId, keywords);
 
     // Send notification
-    sendForumNotification(getForumsService().getForumDetail(getForumPK(forumId)));
+    sendForumNotification(getForumsService().getForumDetail(getForumPK(forumId)), NotifAction.UPDATE);
   }
 
   /**
@@ -423,7 +424,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
     // Send notification to subscribers
     if (STATUS_VALIDATE.equals(status)) {
-      sendMessageNotification(getMessage(messageId));
+      sendMessageNotification(getMessage(messageId), NotifAction.CREATE);
     } else {
       // Send notification only if message to validate
       sendMessageNotificationToValidate(getMessage(messageId));
@@ -468,7 +469,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
     // Send notification to subscribers
     if (STATUS_VALIDATE.equals(currentStatus)) {
-      sendMessageNotification(getMessage(messageId));
+      sendMessageNotification(getMessage(messageId), NotifAction.UPDATE);
     } else if (STATUS_FOR_VALIDATION.equals(currentStatus)) {
       // envoie notification si demande de validation
       sendMessageNotificationToValidate(getMessage(messageId));
@@ -495,12 +496,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return external;
   }
 
-  private void sendForumNotification(ForumDetail forum) {
-    UserNotificationHelper.buildAndSend(new ForumsForumSubscriptionUserNotification(forum));
+  private void sendForumNotification(ForumDetail forum, NotifAction action) {
+    UserNotificationHelper.buildAndSend(new ForumsForumSubscriptionUserNotification(forum, action));
   }
 
-  private void sendMessageNotification(Message message) {
-    UserNotificationHelper.buildAndSend(new ForumsMessageSubscriptionUserNotification(message));
+  private void sendMessageNotification(Message message, NotifAction action) {
+    UserNotificationHelper.buildAndSend(new ForumsMessageSubscriptionUserNotification(message, action));
   }
 
   private void sendMessageNotificationToValidate(Message message) {
@@ -824,7 +825,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     sendMessageNotificationAfterValidation(message);
     // envoie une notification aux abonnés si le message vient juste de passer à l'état validé
     if (!STATUS_VALIDATE.equals(statusBeforeUpdate)) {
-      sendMessageNotification(message);
+      sendMessageNotification(message, NotifAction.CREATE);
     }
   }
 

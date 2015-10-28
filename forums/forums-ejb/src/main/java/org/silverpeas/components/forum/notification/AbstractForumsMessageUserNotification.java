@@ -24,6 +24,7 @@
 package org.silverpeas.components.forum.notification;
 
 import com.silverpeas.usernotification.model.NotificationResourceData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.webactiv.forums.models.Message;
@@ -39,12 +40,22 @@ import java.util.MissingResourceException;
 public abstract class AbstractForumsMessageUserNotification
     extends AbstractForumsUserNotification<Message> {
 
+  private NotifAction action = null;
+
   /**
-   * Default constructor.
    * @param resource
    */
   public AbstractForumsMessageUserNotification(final Message resource) {
     super(resource);
+  }
+
+  /**
+   * @param resource
+   * @param action
+   */
+  public AbstractForumsMessageUserNotification(final Message resource, final NotifAction action) {
+    super(resource);
+    this.action = action;
   }
 
   @Override
@@ -70,6 +81,11 @@ public abstract class AbstractForumsMessageUserNotification
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(resource.getResourceType());
     notificationResourceData.setResourceName(resource.getTitle());
+  }
+
+  @Override
+  protected NotifAction getAction() {
+    return action;
   }
 
   @Override
