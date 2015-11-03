@@ -77,12 +77,20 @@
                 " <fmt:message key="quickinfo.blocking.news.days"/>";
           }
           $(".date").text(dateLabel);
+
           $("#richContent").html(news.content);
+
           if (news.thumbnailURL && news.thumbnailURL.length > 0) {
             $("#illustration img").attr("src", news.thumbnailURL);
             $("#illustration img").show();
           } else {
             $("#illustration img").hide();
+          }
+
+          if(news.numberOfAttachments > 0) {
+            var newsAttachments = $("<div>").appendTo("#attachments");
+            newsAttachments.load("<c:url value='/attachment/jsp/displayAttachedFiles.jsp?Context=attachment' />&ComponentId=" +
+            news.componentId + "&Id=" + news.id);
           }
         }
       });
@@ -134,7 +142,9 @@
 
       <div class="rightContent">
         <div id="illustration"><img alt="" src=""/></div>
+        <div id="attachments"></div>
       </div>
+
       <div class="principalContent">
         <h2 class="actuality-title"></h2>
 
@@ -142,6 +152,7 @@
         <p class="quickInfo-description"></p>
 
         <div id="richContent"></div>
+
       </div>
     </div>
   </div>

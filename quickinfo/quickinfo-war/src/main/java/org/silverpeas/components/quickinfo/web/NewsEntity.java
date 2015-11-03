@@ -56,6 +56,10 @@ public class NewsEntity implements Exposable {
 
   @XmlElement
   @NotNull
+  private String componentId;
+
+  @XmlElement
+  @NotNull
   private String title;
 
   @XmlElement
@@ -73,6 +77,10 @@ public class NewsEntity implements Exposable {
   @XmlElement
   @NotNull
   private String permalink;
+
+  @XmlElement
+  @NotNull
+  private int numberOfAttachments;
   
   public static NewsEntity fromNews(News news) {
     NewsEntity entity = new NewsEntity();
@@ -82,11 +90,13 @@ public class NewsEntity implements Exposable {
     entity.setPermalink(news.getPermalink());
     entity.setId(news.getId());
     entity.setPublicationId(news.getPublicationId());
+    entity.setComponentId(news.getComponentInstanceId());
     entity.setContent(news.getContent());
     ThumbnailDetail thumbnail = news.getThumbnail();
     if (thumbnail != null) {
       entity.setThumbnailURL(thumbnail.getURL());
     }
+    entity.setNumberOfAttachments(news.getNumberOfAttachments());
     return entity;
   }
   
@@ -150,6 +160,14 @@ public class NewsEntity implements Exposable {
   public String getPublicationId() {
     return publicationId;
   }
+
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
+
+  public String getComponentId() {
+    return componentId;
+  }
   
   @XmlElement
   public String getPublishedFor() {
@@ -186,5 +204,12 @@ public class NewsEntity implements Exposable {
     return thumbnailURL;
   }
 
+  public void setNumberOfAttachments(int numberOfAttachments) {
+    this.numberOfAttachments = numberOfAttachments;
+  }
+
+  public int getNumberOfAttachments() {
+    return numberOfAttachments;
+  }
 
 }

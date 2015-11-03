@@ -48,10 +48,12 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
+import org.silverpeas.upload.UploadedFile;
 
 import javax.ejb.EJBException;
 import javax.xml.bind.JAXBException;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -207,9 +209,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param id the identifier of the news (used to load previous data).
    * @param updatedNews the data to save.
    * @param pdcPositions the pdc positions.
+   * @param uploadedFiles the files uploaded in the aim to be attached to the news.
    * @param forcePublish true to indicate a publish action, false otherwise.
    */
-  public void update(String id, News updatedNews, String pdcPositions, boolean forcePublish) {
+  public void update(String id, News updatedNews, String pdcPositions,
+      Collection<UploadedFile> uploadedFiles, boolean forcePublish) {
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
@@ -224,7 +228,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       news.setPublished();
     }
 
-    getService().update(news, getPositionsFromJSON(pdcPositions), forcePublish);
+    getService().update(news, getPositionsFromJSON(pdcPositions), uploadedFiles, forcePublish);
   }
 
   /**

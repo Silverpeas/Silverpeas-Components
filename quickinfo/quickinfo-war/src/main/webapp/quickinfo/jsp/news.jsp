@@ -112,6 +112,7 @@ function submitOnHomepage() {
 	<c:if test="${not empty news.thumbnail}">
 		<div id="illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x"/></div>
 	</c:if>
+
 	<div class="bgDegradeGris" id="actualityInfoPublication">
 		<c:if test="${not news.draft}">
 			<p id="statInfo">
@@ -130,10 +131,23 @@ function submitOnHomepage() {
 			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.publicationId}"/>" onmouseup="return false" onfocus="select();" />
 		</p>
 	</div>
+
+  <!--  Attachments -->
+  <%
+    out.flush();
+    String role = (String) pageContext.getAttribute("role");
+    News news = (News) pageContext.getAttribute("news");
+
+    String profile = (!"user".equals(role)) ? "admin" : "user";
+    getServletConfig().getServletContext().getRequestDispatcher(
+        "/attachment/jsp/displayAttachedFiles.jsp?Id=" + news.getId() + "&Profile=" + profile +
+            "&ComponentId=" + news.getComponentInstanceId() + "&Context=attachment&addFileMenu=true")
+        .include(request, response);
+  %>
                           
-    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
+  <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
     
-    <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
+  <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
 </div>
 
 <div class="principalContent" >

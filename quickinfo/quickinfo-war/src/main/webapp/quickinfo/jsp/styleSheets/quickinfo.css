@@ -136,6 +136,14 @@
 	right:0.5em;
 }
 
+#list-news .news-nb-attached-files img {
+  vertical-align: text-top;
+}
+#list-news .news-nb-attached-files {
+  color:#000;
+  font-size: 9pt;
+}
+
 .quickInfo-title {
     color: #333333;
     font-size: 130%;

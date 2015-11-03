@@ -185,8 +185,13 @@ function unsubscribe() {
 			<div class="news-info-fonctionality">
 				<c:if test="${appSettings.commentsEnabled}">
 					<a href="View?Id=${news.id}#commentaires" class="news-nb-comments"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a>
-					<span class="sep"> | </span> 
 				</c:if>
+        <c:if test="${news.numberOfAttachments > 0}">
+          <span class="news-nb-attached-files">
+            <img src="/silverpeas/util/icons/attachedFiles.gif" alt="fichiers"> ${news.numberOfAttachments}
+          </span>
+        </c:if>
+        <span class="sep"> | </span>
 				<span class="creationInfo" ><fmt:message key="GML.publishedAt"/> ${silfn:formatDateAndHour(news.onlineDate, _language)} </span>
 				<c:if test="${news.updatedAfterBePublished}">
 					<span class="lastModificationInfo" >- <fmt:message key="GML.updatedAt"/> ${silfn:formatDate(news.updateDate, _language)} </span>

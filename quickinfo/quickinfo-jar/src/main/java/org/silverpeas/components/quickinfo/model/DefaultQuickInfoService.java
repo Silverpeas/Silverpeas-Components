@@ -33,6 +33,7 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -66,6 +67,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.annotation.PostConstruct;
@@ -73,6 +75,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -253,12 +256,21 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
 
   @Override
-  public void update(final News news, List<PdcPosition> positions, final boolean forcePublishing) {
+  public void update(final News news, List<PdcPosition> positions,
+      Collection<UploadedFile> uploadedFiles, final boolean forcePublishing) {
     final PublicationDetail publication = news.getPublication();
 
     // saving WYSIWYG content
     WysiwygController.save(news.getContent(), news.getComponentInstanceId(),
         news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
+
+    // Attach uploaded files
+    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile.registerAttachment(news.getPK(), I18NHelper.defaultLanguage, false);
+      }
+    }
 
     // Updating the publication
     if (news.isDraft()) {
