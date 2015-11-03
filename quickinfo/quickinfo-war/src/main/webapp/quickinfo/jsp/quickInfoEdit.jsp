@@ -42,7 +42,6 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
 
 <%
@@ -102,6 +101,7 @@ if (quickInfoDetail != null) {
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
@@ -268,7 +268,7 @@ $(document).ready(function() {
 		      		<label for="BeginDate" class="txtlibform"><fmt:message key="GML.dateBegin" /></label>
 		      		<div class="champs">
 		        		<input type="text" class="dateToPick" id="BeginDate" name="BeginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-		        		<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
+		        		<span class="txtsublibform">&nbsp;<%=resources.getString("quickinfo.ToHour")%>&nbsp;</span>
 						<input id="beginHour" class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 		      		</div>
 	    		</div>
@@ -276,7 +276,7 @@ $(document).ready(function() {
 	      			<label for="EndDate" class="txtlibform"><fmt:message key="GML.dateEnd" /></label>
 	      			<div class="champs">
 	        			<input type="text" class="dateToPick" id="EndDate" name="EndDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-	        			<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
+	        			<span class="txtsublibform">&nbsp;<%=resources.getString("quickinfo.ToHour")%>&nbsp;</span>
 						<input id="endHour" class="inputHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 	      			</div>
 	    		</div>
@@ -295,6 +295,10 @@ $(document).ready(function() {
 		</fieldset>
 	</div>
 </div>
+
+<c:if test="${newOneInProgress}">
+  <view:fileUpload fieldset="true" jqueryFormSelector="form[name='newsForm']" />
+</c:if>
 
 <c:choose>
 <c:when test="${empty curQuickInfo.taxonomyPositions}">

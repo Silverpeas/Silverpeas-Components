@@ -50,22 +50,27 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.authentication.UserAuthenticationListener;
+import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -73,6 +78,7 @@ import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -81,13 +87,35 @@ import java.util.List;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 @Singleton
-public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News> {
+public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News>,
+    Initialization {
 
   @Inject
   private NewsRepository newsRepository;
 
   @Inject
   private CommentService commentService;
+
+  private UserAuthenticationListener userAuthenticationListener;
+
+  /**
+   * Initializes the component by setting some transversal core services for their
+   * use by the component instances. One of these services is the user comment notification.
+   */
+  @Override
+  public void init() throws Exception {
+    userAuthenticationListener = new QuickInfoUserAuthenticationListener();
+    UserAuthenticationListenerRegistration.register(userAuthenticationListener);
+  }
+
+  /**
+   * Releases the uses of the transverse core services that were used by the instances of the
+   * component.
+   */
+  @Override
+  public void release() throws Exception {
+    UserAuthenticationListenerRegistration.unregister(userAuthenticationListener);
+  }
 
   @Override
   public News getContentById(String contentId) {
@@ -257,13 +285,22 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
   @Override
-  public void update(final News news, List<PdcPosition> positions, final boolean forcePublishing) {
+  public void update(final News news, List<PdcPosition> positions,
+      Collection<UploadedFile> uploadedFiles, final boolean forcePublishing) {
     final PublicationDetail publication = news.getPublication();
 
     // saving WYSIWYG content
     WysiwygController
         .save(news.getContent(), news.getComponentInstanceId(), news.getPublicationId(),
             publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
+
+    // Attach uploaded files
+    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile.registerAttachment(news.getForeignPK(), I18NHelper.defaultLanguage, false);
+      }
+    }
 
     // Updating the publication
     if (news.isDraft()) {
