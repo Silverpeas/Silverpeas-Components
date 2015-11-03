@@ -36,7 +36,7 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.stratelia.webactiv.kmelia.multilang.kmeliaBundle"/>
 <view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle" var="pdcBundle"/>
 <fmt:message key="GML.validate" var="done"/>
