@@ -27,12 +27,13 @@ import com.stratelia.webactiv.calendar.model.HolidayDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+
 import javax.ejb.EJBHome;
 import javax.ejb.EJBObject;
 import javax.ejb.Handle;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class StubSilverpeasCalendarBm implements SilverpeasCalendar {
 
@@ -170,6 +171,12 @@ public class StubSilverpeasCalendarBm implements SilverpeasCalendar {
 
   @Override
   public Collection getNotCompletedToDosForUser(String userId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<String> getAllToDoForUser(final String userId) {
     // TODO Auto-generated method stub
     return null;
   }
