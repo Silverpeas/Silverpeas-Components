@@ -395,6 +395,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public void deleteContact(String contactId) {
+    getKSCEJB().getContactDetail(getContactPK(contactId));
     getKSCEJB().deleteContact(getContactPK(contactId), getCurrentTopic().getNodePK());
     resetCurrentFullCompleteUsers();
   }

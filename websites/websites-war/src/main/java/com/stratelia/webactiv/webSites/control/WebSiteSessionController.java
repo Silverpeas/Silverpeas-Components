@@ -33,6 +33,7 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.ZipManager;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -55,7 +56,6 @@ import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
-import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -617,12 +617,9 @@ public class WebSiteSessionController extends AbstractComponentSessionController
      * cheminFichierZip = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\toto.zip
      */
     try {
-      Expand exp = new Expand();
       File zip = new File(cheminFichierZip);
       File dest = new File(cheminDirResultat);
-      exp.setSrc(zip);
-      exp.setDest(dest);
-      exp.execute();
+      ZipManager.extract(zip, dest);
     } catch (Exception e) {
       throw new WebSitesException("WebSiteSessionController.unzip()",
           SilverpeasException.ERROR, "webSites.EX_UNZIP_FILE_FAIL", e);

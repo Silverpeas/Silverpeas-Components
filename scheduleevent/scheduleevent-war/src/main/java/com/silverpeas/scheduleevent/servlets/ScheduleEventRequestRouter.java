@@ -24,35 +24,15 @@
 
 package com.silverpeas.scheduleevent.servlets;
 
-import java.util.HashMap;
-
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddDateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackwardRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCallAgainRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCancelRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmUsersRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDateNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteDateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDetailRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventExportRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventMainRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventModifyStateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventOpenUserRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventSimpleFormRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventTimeNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventValidResponseRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.*;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import org.silverpeas.servlet.HttpRequest;
+
+import java.util.HashMap;
 
 public class ScheduleEventRequestRouter extends
     ComponentRequestRouter<ScheduleEventSessionController> {
@@ -163,7 +143,7 @@ public class ScheduleEventRequestRouter extends
     actions.put("ConfirmModifyUsers", modifyUsersRequestHandler);
     actions.put("Confirm", confirmRequestHandler);
     actions.put("CallAgain", callAgainRequestHandler);
-  };
+  }
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session

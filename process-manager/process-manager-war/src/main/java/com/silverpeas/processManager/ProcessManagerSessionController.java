@@ -820,8 +820,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public DataRecord getEmptyCreationRecord() throws ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction(currentRole);
-      return processModel.getNewActionRecord(creation.getName(), currentRole,
-          getLanguage(), null);
+      return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.UNKNOWN_ACTION", e);
@@ -1757,13 +1756,40 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void removeProcess(String processId) throws ProcessManagerException {
     try {
-      ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
-          .removeProcessInstance(
-          processId);
+      if (checkUserIsInstanceSupervisor(processId)) {
+        UpdatableProcessInstanceManager pim =
+            (UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager();
+        pim.removeProcessInstance(processId);
+      } else {
+        SilverTrace.warn("processManager", "ProcessManagerSessionController.removeProcess()",
+            "root.MSG_GEN_PARAM_VALUE", "Security alert from " + getUserId() + " on " + processId);
+      }
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.REMOVE_PROCESS_FAILED", we);
     }
+  }
+
+  private boolean checkUserIsInstanceSupervisor(String processId) throws ProcessManagerException {
+    if ("supervisor".equalsIgnoreCase(getCurrentRole())) {
+      try {
+        ProcessInstance processInstance =
+            Workflow.getProcessInstanceManager().getProcessInstance(processId);
+        List<User> users = processInstance.getUsersInRole("supervisor");
+        if (users != null && !users.isEmpty()) {
+          for (User user : users) {
+            if (user.getUserId().equals(getUserId())) {
+              return true;
+            }
+          }
+        }
+      } catch (WorkflowException e) {
+        throw new ProcessManagerException("ProcessManagerSessionController",
+            "checkUserIsInstanceSupervisor", e);
+      }
+
+    }
+    return false;
   }
 
   /**

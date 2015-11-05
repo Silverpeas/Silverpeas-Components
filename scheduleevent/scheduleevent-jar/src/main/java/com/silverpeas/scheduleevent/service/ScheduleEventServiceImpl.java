@@ -27,12 +27,13 @@ import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 @Service("scheduleEventService")
 public class ScheduleEventServiceImpl implements ScheduleEventService {
@@ -72,9 +73,8 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
-  public void deleteScheduleEvent(String scheduleEventId) {
-    ScheduleEvent event = scheduleEventDao.getScheduleEvent(scheduleEventId);
-    scheduleEventDao.deleteScheduleEvent(event);
+  public void deleteScheduleEvent(ScheduleEvent scheduleEvent) {
+    scheduleEventDao.deleteScheduleEvent(scheduleEvent);
   }
 
   @Override

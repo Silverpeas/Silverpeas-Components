@@ -24,9 +24,9 @@
 
 package com.silverpeas.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ScheduleEventOpenUserRequestHandler implements ScheduleEventRequestHandler {
 
