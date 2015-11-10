@@ -90,7 +90,7 @@
           if(news.numberOfAttachments > 0) {
             var newsAttachments = $("<div>").appendTo("#attachments");
             newsAttachments.load("<c:url value='/attachment/jsp/displayAttachedFiles.jsp?Context=attachment' />&ComponentId=" +
-            news.componentId + "&Id=" + news.id);
+            news.componentId + "&Id=" + news.publicationId);
           }
         }
       });

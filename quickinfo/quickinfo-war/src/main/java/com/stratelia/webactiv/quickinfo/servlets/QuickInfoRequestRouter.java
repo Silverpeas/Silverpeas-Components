@@ -236,9 +236,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
         PublicationDetail.getResourceType(), items);
 
-    //process files
-    Collection<UploadedFile> uploadedFiles = FileUploadManager
-        .getUploadedFiles(request, quickInfo.getUserDetail());
+    // process files
+    Collection<UploadedFile> uploadedFiles = request.getUploadedFiles();
 
     quickInfo.update(id, news, positions, uploadedFiles, publish);
 

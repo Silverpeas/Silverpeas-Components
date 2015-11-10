@@ -132,18 +132,14 @@ function submitOnHomepage() {
 		</p>
 	</div>
 
-  <!--  Attachments -->
-  <%
-    out.flush();
-    String role = (String) pageContext.getAttribute("role");
-    News news = (News) pageContext.getAttribute("news");
-
-    String profile = (!"user".equals(role)) ? "admin" : "user";
-    getServletConfig().getServletContext().getRequestDispatcher(
-        "/attachment/jsp/displayAttachedFiles.jsp?Id=" + news.getId() + "&Profile=" + profile +
-            "&ComponentId=" + news.getComponentInstanceId() + "&Context=attachment&addFileMenu=true")
-        .include(request, response);
-  %>
+  <%-- Attachments --%>
+  <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
+    <c:param name="Id">${news.publicationId}</c:param>
+    <c:param name="Profile" value="${role eq 'user' ? 'user' : 'admin'}" />
+    <c:param name="ComponentId">${news.componentInstanceId}</c:param>
+    <c:param name="Context" value="${'attachment'}" />
+    <c:param name="addFileMenu" value="${'true'}" />
+  </c:import>
                           
   <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
     

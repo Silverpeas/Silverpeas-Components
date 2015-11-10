@@ -361,12 +361,9 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   }
 
   public int getNumberOfAttachments() {
-
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(new ForeignPK(getId(), getComponentInstanceId()),
-            DocumentType.valueOf("attachment"),
+        listDocumentsByForeignKeyAndType(getForeignPK(), DocumentType.attachment,
             I18NHelper.defaultLanguage);
-
     return attachments.size();
   }
   

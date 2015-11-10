@@ -268,7 +268,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     if (CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
         // Register attachment
-        uploadedFile.registerAttachment(news.getPK(), I18NHelper.defaultLanguage, false);
+        uploadedFile.registerAttachment(news.getForeignPK(), I18NHelper.defaultLanguage, false);
       }
     }
 
