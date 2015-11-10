@@ -14,7 +14,12 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
@@ -353,6 +358,13 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
       return getVisibilityPeriod().getBeginDate();
     }
     return getPublishDate();
+  }
+
+  public int getNumberOfAttachments() {
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(getForeignPK(), DocumentType.attachment,
+            I18NHelper.defaultLanguage);
+    return attachments.size();
   }
   
 }

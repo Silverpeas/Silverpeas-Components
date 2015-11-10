@@ -112,6 +112,7 @@ function submitOnHomepage() {
 	<c:if test="${not empty news.thumbnail}">
 		<div id="illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x"/></div>
 	</c:if>
+
 	<div class="bgDegradeGris" id="actualityInfoPublication">
 		<c:if test="${not news.draft}">
 			<p id="statInfo">
@@ -130,10 +131,19 @@ function submitOnHomepage() {
 			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.publicationId}"/>" onmouseup="return false" onfocus="select();" />
 		</p>
 	</div>
+
+  <%-- Attachments --%>
+  <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
+    <c:param name="Id">${news.publicationId}</c:param>
+    <c:param name="Profile" value="${role eq 'user' ? 'user' : 'admin'}" />
+    <c:param name="ComponentId">${news.componentInstanceId}</c:param>
+    <c:param name="Context" value="${'attachment'}" />
+    <c:param name="addFileMenu" value="${'true'}" />
+  </c:import>
                           
-    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
+  <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
     
-    <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
+  <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
 </div>
 
 <div class="principalContent" >

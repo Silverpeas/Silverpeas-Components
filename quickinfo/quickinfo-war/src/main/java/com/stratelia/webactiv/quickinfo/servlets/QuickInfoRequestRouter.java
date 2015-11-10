@@ -34,6 +34,8 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.date.Period;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.WysiwygException;
 
 import com.silverpeas.thumbnail.control.ThumbnailController;
@@ -96,13 +98,11 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           infos = quickInfo.getVisibleQuickInfos();
         }
         request.setAttribute("ListOfNews", infos);
-        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         request.setAttribute("IsSubscriberUser", quickInfo.isSubscriberUser());
         destination = "/quickinfo/jsp/home.jsp";
       } else if (function.startsWith("portlet")) {
         List<News> infos = quickInfo.getVisibleQuickInfos();
         request.setAttribute("infos", infos);
-        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/portlets/jsp/quickInfos/portlet.jsp";
       } else if ("Save".equals(function)) {
         String id = saveQuickInfo(quickInfo, request, false);
@@ -127,7 +127,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           request.setAttribute("News", quickInfo.getNews(id, true));
         }
         String anchor = request.getParameter("Anchor");
-        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/news.jsp";
         if (StringUtil.isDefined(anchor)) {
           destination += "#"+anchor;
@@ -212,7 +211,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    *
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
-   * @param action a string representation of an action
+   * @param publish
    * @throws Exception
    * @throws RemoteException
    * @throws CreateException
@@ -237,7 +236,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
         PublicationDetail.getResourceType(), items);
 
-    quickInfo.update(id, news, positions, publish);
+    // process files
+    Collection<UploadedFile> uploadedFiles = request.getUploadedFiles();
+
+    quickInfo.update(id, news, positions, uploadedFiles, publish);
 
     return id;
   }
@@ -291,17 +293,4 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     return Period.from(begin, end);
   }
 
-  private String getFlag(String[] profiles) {
-    String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
-      // if admin, return it, we won't find a better profile
-      if ("admin".equals(profiles[i])) {
-        return profiles[i];
-      }
-      if ("publisher".equals(profiles[i])) {
-        flag = profiles[i];
-      }
-    }
-    return flag;
-  }
 }

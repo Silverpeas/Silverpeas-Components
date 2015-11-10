@@ -42,7 +42,6 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%
 News news = (News) request.getAttribute("info");
@@ -101,6 +100,7 @@ if (quickInfoDetail != null) {
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
@@ -294,6 +294,10 @@ $(document).ready(function() {
 		</fieldset>
 	</div>
 </div>
+
+<c:if test="${newOneInProgress}">
+  <view:fileUpload fieldset="true" jqueryFormSelector="form[name='newsForm']" />
+</c:if>
 
 <c:choose>
 <c:when test="${empty curQuickInfo.taxonomyPositions}">
