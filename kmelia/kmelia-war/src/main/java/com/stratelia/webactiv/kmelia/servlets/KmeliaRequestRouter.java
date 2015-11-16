@@ -1469,7 +1469,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (!StringUtil.isDefined(id)) {
           id = (String) request.getAttribute("NodeId");
         }
-        if (!kmelia.isTopicAdmin(id)) {
+        if (!(kmelia.isTopicAdmin(id) || kmelia.isUserComponentAdmin())) {
           SilverTrace.warn("kmelia", "KmeliaRequestRouter.getDestination",
               "function ViewTopicProfiles", "Security alert from " + kmelia.getUserId());
           return "/admin/jsp/accessForbidden.jsp";
@@ -1521,8 +1521,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] groupIds =
             StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
 
-        if (kmelia.isTopicAdmin(nodeId)) {
+        if (kmelia.isTopicAdmin(nodeId) || kmelia.isUserComponentAdmin()) {
           kmelia.updateTopicRole(role, nodeId, groupIds, userIds);
+        } else {
+          SilverTrace.warn("kmelia", "KmeliaRequestRouter.getDestination",
+              "fct TopicProfileSetUsersAndGroups", "Security alert from " + kmelia.getUserId());
         }
         destination = getDestination("ViewTopicProfiles", kmelia, request);
       } else if (function.equals("CloseWindow")) {
