@@ -921,6 +921,19 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   }
 
   @Override
+  public void removeGroup(String groupId) {
+    Connection con = getConnection();
+    try {
+      GroupDAO.removeGroup(con, groupId);
+    } catch (Exception e) {
+      throw new YellowpagesRuntimeException("YellowpagesBmEJB.removeGroup()",
+          SilverpeasRuntimeException.ERROR, "yellowpages.EX_REMOVE_GROUP_FAILED", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
   public void removeGroup(String groupId, NodePK nodePK) {
     try (Connection con = getConnection()) {
       GroupDAO.removeGroup(con, groupId, nodePK.getId(), nodePK.getInstanceId());
