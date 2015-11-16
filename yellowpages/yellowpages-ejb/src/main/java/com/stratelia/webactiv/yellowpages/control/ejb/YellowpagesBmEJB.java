@@ -31,6 +31,10 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.formTemplate.dao.ModelDAO;
@@ -265,6 +269,11 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       return new NodePK("-1");
     } else {
       try {
+        // register form to current app
+        String xmlFormName = subTopic.getModelId();
+        if (StringUtil.isDefined(xmlFormName)) {
+          registerTemplate(xmlFormName, father.getNodePK().getInstanceId());
+        }
         return nodeBm.createNode(subTopic, father);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.addToTopic()",
@@ -329,6 +338,11 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       return new NodePK("-1");
     } else {
       try {
+        // register form to current app
+        String xmlFormName = topic.getModelId();
+        if (StringUtil.isDefined(xmlFormName)) {
+          registerTemplate(xmlFormName, topic.getNodePK().getInstanceId());
+        }
         nodeBm.setDetail(topic);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.updateTopic()",
@@ -1080,6 +1094,16 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     Collection<ContactDetail> contacts = contactBm.getDetailsByFatherPK(pk);
     for (ContactDetail contact : contacts) {
       contactBm.index(contact.getPK());
+    }
+  }
+
+  private void registerTemplate(String xmlFormName, String instanceId)
+      throws PublicationTemplateException {
+    // register form to current app
+    if (StringUtil.isDefined(xmlFormName)) {
+      String key = instanceId + ":" + FilenameUtils.getBaseName(xmlFormName);
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
     }
   }
 }

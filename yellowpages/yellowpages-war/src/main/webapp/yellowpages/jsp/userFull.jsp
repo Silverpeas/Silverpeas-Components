@@ -24,7 +24,10 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -36,17 +39,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%										
 UserFull user = (UserFull) request.getAttribute("UserFull");
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-</HEAD>
-<BODY>
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
+</head>
+<body class="userFull">
 <%
 Window window = gef.getWindow();
-Frame frame = gef.getFrame();
-Board board = gef.getBoard();
-        
+
 OperationPane operationPane = window.getOperationPane();
 operationPane.addOperation(resources.getIcon("yellowpages.contactPrint"), resources.getString("GML.print"), "javaScript:window.print();");
 
@@ -57,44 +60,13 @@ browseBar.setPath(resources.getString("BBarconsultManager"));
 browseBar.setClickable(false);
 
 out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
 %>
-
-<center>
-<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=100%>
-<tr>
-	<td class=txtlibform width="100"><%=resources.getString("Contact")%> :</td>
-	<td align=left class=txtnav><%=user.getDisplayedName()%></td>
-</tr>
-<tr>
-	<td valign=baseline align=left class=txtlibform><%=resources.getString("GML.eMail")%> :</td>
-	<td align=left><a href=mailto:<%=EncodeHelper.javaStringToHtmlString(user.geteMail())%>><%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToHtmlString(user.geteMail()))%></A></td>
-</tr>
+<fieldset id="identity-base" class="skinFieldset">
+  <legend class="without-img"><%=user.getDisplayedName()%></legend>
+  <viewTags:displayUserExtraProperties user="<%=user%>" readOnly="true" includeEmail="true" linear="true"/>
+</fieldset>
 <%
-  String[] properties = user.getPropertiesNames();
-	String property = null;
-	for (int p=0; p<properties.length; p++)
-	{
-		property = properties[p];
-		if (!property.startsWith("password"))
-		{
-			%>
-			<tr>
-				<td valign="baseline" align=left class="txtlibform"><%=user.getSpecificLabel(resources.getLanguage(), property) %> :</td>
-				<td align="left" valign="baseline"><%=EncodeHelper.javaStringToHtmlString(user.getValue(property))%></td>     
-			</tr>
-			<%
-		}
-	}
-%>
-</table>
-
-<%
-	out.println(board.printAfter());
-	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
-</BODY>
-</HTML>
+</body>
+</html>

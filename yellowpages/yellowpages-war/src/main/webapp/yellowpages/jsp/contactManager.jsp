@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -45,24 +46,15 @@ String email = "";
 String phone = "";
 String fax = "";
 String userId = "";
-String creatorName = yellowpagesScc.getUserDetail().getDisplayedName();
-String creationDate = resources.getOutputDate(new Date());
-String topicId = "";
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 browseBar.setComponentId(componentId);
 
 OperationPane operationPane = window.getOperationPane();
-Board board = gef.getBoard();
-Frame frame = gef.getFrame();
-
-//Vrai si le user connecte est le createur de ce contact ou si il est admin
-boolean isOwner = false;
 
 String id = null;
 
-String profile = (String) request.getAttribute("Profile");
 CompleteContact contactComplete = (CompleteContact) request.getAttribute("Contact");
 ContactDetail contactDetail = contactComplete.getContactDetail();
 boolean creation = !StringUtil.isDefined(contactDetail.getPK().getId());
@@ -77,12 +69,6 @@ if (!creation) {
   phone = contactDetail.getPhone();
   fax = contactDetail.getFax();
   userId = contactDetail.getUserId();
-  creationDate = resources.getOutputDate(contactDetail.getCreationDate());
-  if (StringUtil.isDefined(contactDetail.getCreatorId())) {
-      creatorName = UserDetail.getById(contactDetail.getCreatorId()).getDisplayedName();
-  } else {
-      creatorName = yellowpagesScc.getString("UnknownAuthor");
-  }
 }
 
 if (creation) {
@@ -91,10 +77,6 @@ if (creation) {
 } else {
   browseBar.setPath(resources.getString("ContactUpdate"));
   operationPane.addOperation(resources.getIcon("yellowpages.contactTopicLink"), resources.getString("TopicLink"), "javascript:topicAddGoTo();");
-	
-  if (profile.equals("admin") || yellowpagesScc.getUserId().equals(contactDetail.getCreatorId())) {
-      isOwner = true;
-  }
 }
 
 Form formUpdate = contactComplete.getUpdateForm();
@@ -103,11 +85,13 @@ if (context != null) {
   context.setBorderPrinted(false);
 }
 
-String linkedPathString = yellowpagesScc.getPath();
+String readOnly = "";
+if (StringUtil.isDefined(userId)) {
+  readOnly = " readonly=\"readonly\"";
+}
 
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "topicManager.jsp", false);
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onclick=sendContactData();", false);
-
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -115,6 +99,7 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
@@ -181,41 +166,48 @@ out.println(window.printBefore());
 <view:frame>
 <view:areaOfOperationOfCreation/>
 <form name="contactForm" action="ContactSave" method="post" enctype="multipart/form-data">
-<view:board>
-<table cellpadding="5" cellspacing="0" border="0">
-<% if (StringUtil.isDefined(userId)) { %>
-  <tr><td class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</td>
-      <td><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly="readonly"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
-  <tr><td class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</td>
-      <td><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" readonly="readonly"/></td></tr>
-  <tr><td class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</td>
-      <td><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly="readonly"/></td></tr>
-<% } else { %>
-  <tr><td class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</td>
-      <td><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
-  <tr><td class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</td>
-      <td><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60"/></td></tr>
-  <tr><td class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</td>
-      <td><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100"/></td></tr>
-<% } %>
-  <tr><td class="txtlibform"><%=resources.getString("GML.phoneNumber")%>&nbsp;:</td>
-      <td><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></td></tr>
-  <tr><td class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:</td>
-      <td><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"/></td></tr>
-<% if (formUpdate == null) { %>
-  <tr><td colspan="2"><img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%></td></tr>
-<% } %>
-  </table>
+
+  <fieldset id="identity-extra" class="skinFieldset">
+    <legend class="without-img"><%=resources.getString("GML.bloc.information.principals")%></legend>
+
+  <div class="oneFieldPerLine">
+    <div class="field" id="lastName">
+      <label class="txtlibform"><%=resources.getString("GML.name")%></label>
+      <div class="champs"><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" <%=readOnly%>/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></div>
+    </div>
+    <div class="field" id="firstName">
+      <label class="txtlibform"><%=resources.getString("GML.surname")%></label>
+      <div class="champs"><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" <%=readOnly%>/></div>
+    </div>
+    <div class="field" id="email">
+      <label class="txtlibform"><%=resources.getString("GML.eMail")%></label>
+      <div class="champs"><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="60" <%=readOnly%>/></div>
+    </div>
+    <div class="field" id="phone">
+      <label class="txtlibform"><%=resources.getString("GML.phoneNumber")%></label>
+      <div class="champs"><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></div>
+    </div>
+    <div class="field" id="fax">
+      <label class="txtlibform"><%=resources.getString("GML.faxNumber")%></label>
+      <div class="champs"><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"/></div>
+    </div>
+  </div>
+
   <input type="hidden" name="ContactId" value="<%=id%>"/>
   <input type="hidden" name="UserId" value="<%=EncodeHelper.javaStringToHtmlString(userId)%>"/>
 
-<%
-if (formUpdate != null) {
-    formUpdate.display(out, context);
-}
-%>
+   </fieldset>
+
+<% if (formUpdate != null) { %>
+  <fieldset id="identity-extra" class="skinFieldset">
+    <legend class="without-img"><%=resources.getString("GML.bloc.further.information")%></legend>
+    <%
+      formUpdate.display(out, context);
+    %>
+  </fieldset>
+<% } %>
+
   
-</view:board>
 </form>
 
 <br/>

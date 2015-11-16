@@ -170,6 +170,11 @@ function consult() {
 }
 
 function toAddOrUpdateFolder(action, id) {
+  var dialogTitle = '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>';
+  if (action === 'ToUpdateFolder') {
+    dialogTitle = '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>';
+  }
+
 	$.ajax({
 		url: webContext+'<%=URLManager.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
 		async: false,
@@ -177,15 +182,11 @@ function toAddOrUpdateFolder(action, id) {
 		dataType: "html",
 		success: function(data) {
 			  $('#folderDialog').html(data);
-			  if (action === 'ToUpdateFolder') {
-			  	$('#folderDialog').attr('title', '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>');
-			  } else {
-				$('#folderDialog').attr('title', '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>');
-			  }
-			}
-		});
-	
+		}
+	});
+
 	$('#folderDialog').popup('validation', {
+      title : dialogTitle,
 	    callback : function() {
 	      if (isCorrectForm()) {
 			  window.document.AddAndUpdateFolderForm.submit();
@@ -211,9 +212,9 @@ function toAddOrUpdateFolder(action, id) {
     browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
 	browseBar.setPath(resources.getString("GML.management")+" > "+linkedPathString);
-    
+
     OperationPane operationPane = window.getOperationPane();
-    if (profile.equals("admin")) 
+    if (profile.equals("admin"))
     {
 		if (!id.equals(TRASHCAN_ID)){
 			operationPane.addOperation(resources.getIcon("yellowpages.modelUsed"), resources.getString("yellowpages.ModelUsed"), "ModelUsed");
@@ -227,7 +228,7 @@ function toAddOrUpdateFolder(action, id) {
 			operationPane.addOperation(resources.getIcon("yellowpages.basketDelete"), resources.getString("yellowpages.DeleteBasketContent"), "javascript:onClick=deleteBasketContent()");
 		}
     }
-    
+
 	// Si nous sommes dans la corbeille, alors nous ne pouvons cr�er un contact dedans !!
 	if (!id.equals(TRASHCAN_ID)){
 		operationPane.addOperationOfCreation(resources.getIcon("yellowpages.contactAdd"), yellowpagesScc.getString("ContactCreer"), "javascript:onClick=contactAdd()");
@@ -240,7 +241,7 @@ function toAddOrUpdateFolder(action, id) {
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(yellowpagesScc.getString("Consultation"),"javascript:consult();",false);
     tabbedPane.addTab(resources.getString("GML.management"),"#",true);
-          
+
     out.println(window.printBefore());
     out.println(tabbedPane.print());
 %>
@@ -256,7 +257,7 @@ function toAddOrUpdateFolder(action, id) {
     }
 
 	out.println("<br/>");
-    
+
     if (!id.equals(TRASHCAN_ID))
     	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
     else
@@ -279,7 +280,7 @@ function toAddOrUpdateFolder(action, id) {
 </form>
 <form name="refreshList" action="topicManager"></form>
 
-<div id="folderDialog" style="display:none" title="">
+<div id="folderDialog" style="display:none" title="hgj hjg ">
 </div>
 
 </body>
