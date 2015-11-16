@@ -142,7 +142,7 @@ public class DisplayContactsHelper {
       String nodeName = contactFather.getNodeName();
       String fatherId = contactFather.getNodeId();
       if ("0".equals(fatherId)) {
-        nodeName = EncodeHelper.javaStringToHtmlString(componentLabel);
+        nodeName = componentLabel;
       } else if ("1".equals(fatherId)) {
         continue;
       }
