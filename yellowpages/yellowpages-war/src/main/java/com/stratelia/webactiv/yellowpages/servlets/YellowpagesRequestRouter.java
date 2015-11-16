@@ -305,9 +305,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         destination = scc.initUserPanel();
       } else if (function.startsWith("saveUser")) {
         // retour du userPanel
-        scc.setContactUserSelected();
-        request.setAttribute("Profile", flag);
-        destination = manageContact("ContactNewFromUser", request, scc);
+        boolean userSelected = scc.setContactUserSelected();
+        if (userSelected) {
+          request.setAttribute("Profile", flag);
+          destination = manageContact("ContactNewFromUser", request, scc);
+        } else {
+          destination = getDestination("ContactNew", scc, request);
+        }
       } else if (function.equals("ToChooseGroup")) {
         destination = scc.initGroupPanel();
       } else if (function.equals("AddGroup")) {
