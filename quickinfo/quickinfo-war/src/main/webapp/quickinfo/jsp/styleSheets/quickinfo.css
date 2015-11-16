@@ -337,7 +337,6 @@ fieldset#news-thumbnail legend {
 }
 
 .alert-quickInfo #illustration img {
-  position: fixed;
   max-width:310px;
   max-height:282px;
   width: auto;
