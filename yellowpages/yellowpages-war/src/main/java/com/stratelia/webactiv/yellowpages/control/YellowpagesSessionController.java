@@ -480,7 +480,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("UserCreer"), "");
     String hostUrl = mContext + URLManager.getURL(null, getComponentId()) + "saveUser";
-    String cancelUrl = mContext + URLManager.getURL(null, getComponentId()) + "/saveUser";
+    String cancelUrl = mContext + URLManager.getURL(null, getComponentId()) + "ContactNew";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -501,8 +501,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   /**
    * Put selected user into session using userPanel
+   * @return true if a user is selected
    */
-  public void setContactUserSelected() {
+  public boolean setContactUserSelected() {
     String selUser = getSelection().getFirstSelectedElement();
     if (StringUtil.isDefined(selUser)) {
       UserDetail selectedUser = getOrganisationController().getUserDetail(selUser);
@@ -523,7 +524,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           new ContactDetail("X", firstName, lastName, email, phone, fax, userId, null, null);
       CompleteContact contactComplete = new CompleteContact(contactDetail, null);
       setCurrentContact(contactComplete);
-    } // fin if
+      return true;
+    }
+    return false;
   }
 
   public String initGroupPanel() {
