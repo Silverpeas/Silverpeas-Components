@@ -57,7 +57,7 @@
   <jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
   <c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
 
-    <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage) && not silfn:booleanValue(param.notI18n)}"/>
+    <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
 
     <view:componentParam var="publicationAlwaysVisiblePramValue" componentId="${componentInstanceId}" parameter="publicationAlwaysVisible"/>
     <view:componentParam var="isComponentVersioned" componentId="${componentInstanceId}" parameter="versionControl"/>
