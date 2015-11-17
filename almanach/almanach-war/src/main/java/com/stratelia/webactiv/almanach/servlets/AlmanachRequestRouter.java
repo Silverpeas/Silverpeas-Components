@@ -312,7 +312,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
       } else if (function.startsWith("editEvent")) {
         String id = request.getParameter("Id"); // peut etre null en cas de
         // création
-        String eventDate = request.getParameter("Date"); // peut etre null
+        String eventDate = request.getParameter("EventStartDate"); // peut etre null
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getEventDetail(id);
 
