@@ -24,6 +24,8 @@
 package com.silverpeas.mailinglist.control;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.silverpeas.mailinglist.model.MailingListComponent;
 import com.silverpeas.mailinglist.service.job.MessageChecker;
@@ -70,30 +72,36 @@ public class MailCheckerInitialize {
   public void registerAll() {
     SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
         "mailinglist.initialization.start");
-    MessageChecker checker = getMessageChecker();
     try {
-      SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
-          "mailinglist.initialization.start", " " + checker);
       SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
       Scheduler scheduler = schedulerFactory.getScheduler();
       if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
         scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
-      JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
-      scheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, checker);
-      List<MailingList> mailingLists = getMailingListService().listAllMailingLists();
-      SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
-          "mailinglist.initialization.existing.lists", " " + mailingLists.size());
-      for (MailingList list : mailingLists) {
-        SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
-            "mailinglist.initialization.start", " : " + list.getSubscribedAddress() + " "
-            + list.getDescription());
-        MailingListComponent component = new MailingListComponent(list.getComponentId());
-        checker.addMessageListener(component);
+      if (hasToCheckForNewMails()) {
+        Logger.getLogger("mailingList").log(Level.INFO, "Check mails from mailing lists every "
+        + getFrequency() + " minutes");
+        MessageChecker checker = getMessageChecker();
+        JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
+        scheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, checker);
+        List<MailingList> mailingLists = getMailingListService().listAllMailingLists();
+        for (MailingList list : mailingLists) {
+          MailingListComponent component = new MailingListComponent(list.getComponentId());
+          checker.addMessageListener(component);
+        }
       }
     } catch (SchedulerException e) {
       SilverTrace.error("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.error", e);
     }
+  }
+
+  /**
+   * Does new mails have to be checked regularly? Mails checking is performed only if a frequency
+   * is defined at startup time.
+   * @return true if new mails from mailing lists has to be checked regularly, false otherwise.
+   */
+  public boolean hasToCheckForNewMails() {
+    return getFrequency() > 0;
   }
 }
