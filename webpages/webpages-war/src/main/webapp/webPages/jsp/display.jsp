@@ -56,6 +56,8 @@
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 </head>
 <body>
 <%
