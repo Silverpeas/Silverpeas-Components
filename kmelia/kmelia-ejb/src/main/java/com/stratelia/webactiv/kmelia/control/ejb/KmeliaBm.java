@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.Local;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.upload.UploadedFile;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -634,6 +635,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public Collection<Alias> getAlias(PublicationPK pubPK);
 
   public void setAlias(PublicationPK pubPK, List<Alias> alias);
+
+  public void addUploadedFilesToPublication(PublicationDetail pubDetail, Collection<UploadedFile> uploadedFiles);
 
   public void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);
