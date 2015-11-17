@@ -27,15 +27,14 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
-<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="org.silverpeas.util.URLUtils"%>
 <%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>
+
+<c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 
 <%@include file="checkKmelia.jsp" %>
 <%@include file="publicationsList.jsp.inc" %>
@@ -104,9 +103,9 @@
 
     String resultThumbnail =  request.getParameter("resultThumbnail");
     boolean errorThumbnail = false;
-	if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
-		errorThumbnail = true;
-	}
+    if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
+      errorThumbnail = true;
+    }
 
     SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION pubManager = " + action);
 
@@ -773,6 +772,10 @@
 		<% } %>
 
 	</div>
+
+  <c:if test="${attachmentsEnabled}">
+    <view:fileUpload fieldset="true" jqueryFormSelector="form[name='pubForm']" />
+  </c:if>
 
   <% if (kmeliaScc.isReminderUsed()) {%>
   <div class="table">

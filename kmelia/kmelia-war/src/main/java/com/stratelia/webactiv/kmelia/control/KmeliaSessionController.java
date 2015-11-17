@@ -157,6 +157,7 @@ import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.subscription.SubscriptionContext;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.wysiwyg.WysiwygException;
@@ -942,6 +943,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     SilverTrace.spy("kmelia", "KmeliaSessionController.createPublication(pubDetail)", getSpaceId(),
         getComponentId(), result, getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
     return result;
+  }
+
+  /**
+   * attach uploaded files to the specified publication
+   *
+   * @param pubDetail publication on which you want to attach files
+   * @param uploadedFiles list of uploaded files
+   * @throws RemoteException
+   */
+  public synchronized void addUploadedFilesToPublication(PublicationDetail pubDetail, Collection<UploadedFile> uploadedFiles) throws RemoteException {
+    getKmeliaBm().addUploadedFilesToPublication(pubDetail, uploadedFiles);
   }
 
   public synchronized void updatePublication(PublicationDetail pubDetail) throws RemoteException {

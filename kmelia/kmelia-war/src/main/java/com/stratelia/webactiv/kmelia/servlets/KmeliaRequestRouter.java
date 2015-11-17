@@ -83,6 +83,8 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -391,6 +393,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("publicationManager.jsp".equals(function)) {
         String action = (String) request.getAttribute("Action");
         if ("UpdateView".equals(action)) {
+          request.setAttribute("AttachmentsEnabled", false);
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
           request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
@@ -398,6 +401,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
               kmelia.getSessionPubliOrClone().getDetail());
         } else if ("New".equals(action)) {
+          // Attachments area must be displayed or not ?
+          request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
           request.setAttribute("TaxonomyOK", true);
           request.setAttribute("ValidatorsOK", true);
         }
@@ -1084,6 +1089,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (newThumbnail && pubDetail.isIndexable()) {
           kmelia.getPublicationBm().createIndex(pubDetail.getPK());
         }
+
+        //process files
+        Collection<UploadedFile> uploadedFiles = FileUploadManager
+            .getUploadedFiles(request, kmelia.getUserDetail());
+        kmelia.addUploadedFilesToPublication(pubDetail, uploadedFiles);
+
         request.setAttribute("PubId", newPubId);
         processPath(kmelia, newPubId);
         String wizard = kmelia.getWizard();
