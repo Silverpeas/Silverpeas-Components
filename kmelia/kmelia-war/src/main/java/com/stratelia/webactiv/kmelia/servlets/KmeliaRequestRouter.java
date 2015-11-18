@@ -698,6 +698,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("PublicationSharingAllowed",
               kmelia.isPublicationSharingEnabled() && kmeliaPublication.getDetail().isValid());
 
+          // Subscription management
+          setupRequestForSubscriptionNotificationSending(request,
+              highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
+              kmeliaPublication.getDetail());
+
           destination = rootDestination + "publication.jsp";
         }
       } else if (function.equals("PreviousPublication")) {

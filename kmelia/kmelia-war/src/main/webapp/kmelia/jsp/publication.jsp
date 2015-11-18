@@ -615,8 +615,6 @@
 			          /*********************************************************************************************************************/
 			          boolean showTitle = resources.getSetting("showTitle", true);
 			          boolean showFileSize = resources.getSetting("showFileSize", true);
-			          boolean showDownloadEstimation = resources.getSetting("showDownloadEstimation",
-			              true);
 			          boolean showInfo = resources.getSetting("showInfo", true);
 			          boolean showIcon = true;
 
@@ -628,23 +626,29 @@
 
 			            out.println("<a name=\"attachments\"></a>");
 			          }
-			          try {
-			            out.flush();
-			            String attProfile = kmeliaScc.getProfile();
-                  if (!attachmentsUpdatable) {
-                    attProfile = "user";
-                  }
-                  getServletConfig().getServletContext().getRequestDispatcher(
-                      "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
-                          getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
-                          "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
-                          getURL("useless", componentId) + "ViewPublication&IndexIt=" + indexIt + "&ShowMenuNotif=" + true).
-                      include(request, response);
-			          } catch (Exception e) {
-			            throw new KmeliaException(
-			                "JSPpublicationManager.displayUserModelAndAttachmentsView()",
-			                SilverpeasException.ERROR, "root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
-			          }
+                out.flush();
+                String attProfile = kmeliaScc.getProfile();
+                if (!attachmentsUpdatable) {
+                  attProfile = "user";
+                }
+                %>
+        <c:set var="attachmentPosition"><%=resources.getSetting("attachmentPosition")%></c:set>
+        <c:set var="callbackUrl"><%=URLManager.getURL("useless", componentId) + "ViewPublication"%></c:set>
+        <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
+                                     componentInstanceIdAlias="<%=alias%>"
+                                     resourceId="<%=id%>"
+                                     contentLanguage="<%=language%>"
+                                     greatestUserRole="<%=SilverpeasRole.from(attProfile)%>"
+                                     reloadCallbackUrl="${callbackUrl}"
+                                     hasToBeIndexed="<%=StringUtil.getBooleanValue(indexIt)%>"
+                                     attachmentPosition="${attachmentPosition}"
+                                     showIcon="<%=showIcon%>"
+                                     showTitle="<%=showTitle%>"
+                                     showDescription="<%=showInfo%>"
+                                     showFileSize="<%=showFileSize%>"
+                                     showMenuNotif="${true}"
+                                     subscriptionManagementContext="${requestScope.subscriptionManagementContext}"/>
+        <%
 
 			        }
 
