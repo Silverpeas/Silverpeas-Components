@@ -74,7 +74,7 @@
 	 }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
@@ -104,13 +104,18 @@ function eventDeleteConfirm() {
     }
 }
 
+function editEvent() {
+  document.eventForm.action = "editEvent.jsp";
+  document.eventForm.submit();
+}
+
 function sendEvent(mainAction, action) {
 	document.eventForm.action = mainAction;
 	document.eventForm.Action.value = action;
 	document.eventForm.submit();
 }
 
-function closeMessage()
+function closeDialog()
 {
 	$("#modalDialogOnDelete").dialog("close");
 }
@@ -147,19 +152,11 @@ $(document).ready(function(){
     if (!"user".equals(user))
     {
       operationPane.addLine();
+      operationPane.addOperation(null, almanach.getString("GML.modify"), "javascript:onclick=editEvent()");
       operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("GML.delete"), "javascript:onclick=eventDeleteConfirm()");
     }
 
     out.println(window.printBefore());
-
-    if (!"user".equals(user))
-    {
-    	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
-		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, true);
-		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, false);
-		out.println(tabbedPane.print());
-    }
-
     out.println(frame.printBefore());
 %>
 
@@ -398,7 +395,7 @@ $(document).ready(function(){
 	%>
 	<form name="eventForm" action="RemoveEvent" method="post">
 		<input type="hidden" name="Action"/>
-   		<input type="hidden" name="Id" value="<%=id%>"/>
+   	<input type="hidden" name="Id" value="<%=id%>"/>
    		<% if (periodicity != null) { %>
    			<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
    			<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
@@ -409,7 +406,7 @@ $(document).ready(function(){
 	ButtonPane buttonPaneOnDelete = graphicFactory.getButtonPane();
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
-	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
+	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeDialog()", false));
 	%>
 	<table><tr><td align="center"><br/><%=resources.getString("eventsToDelete") %>
 	<br/><br/>

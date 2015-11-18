@@ -34,8 +34,6 @@
 <%@ include file="checkAlmanach.jsp" %>
 
 <%
-	String language = almanach.getLanguage();
-
 	EventDetail event = (EventDetail) request.getAttribute("Event");
 	Date startDate = (Date) request.getAttribute("EventStartDate");
 	Date endDate = (Date) request.getAttribute("EventEndDate");
@@ -370,7 +368,7 @@ $(document).ready(function(){
 	
 	changeUnity();
 	
-	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${false}"/>
 });
 //-->
 </script>
@@ -379,8 +377,6 @@ $(document).ready(function(){
   <%
     Window 		window 		= graphicFactory.getWindow();
     Frame 		frame		= graphicFactory.getFrame();
-    Board 		board 		= graphicFactory.getBoard();
-    TabbedPane 	tabbedPane 	= graphicFactory.getTabbedPane();
 
     OperationPane operationPane = window.getOperationPane();
 
@@ -389,13 +385,9 @@ $(document).ready(function(){
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
 	browseBar.setExtraInformation(event.getTitle());
 
-    operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("GML.delete"), "javascript:onClick=eventDeleteConfirm()");
-    out.println(window.printBefore());
+  operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("GML.delete"), "javascript:onClick=eventDeleteConfirm()");
+  out.println(window.printBefore());
 
-	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, false);
-	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, true);
-
-	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
 %>
 <form name="eventForm" action="ReallyUpdateEvent" method="post">
@@ -452,7 +444,7 @@ $(document).ready(function(){
 			</div>
 			
 			<div class="field" id="eventPriorityArea">
-				<label for="eventPriority" class="txtlibform"><fmt:message key='GML.priority'/></label>
+				<label for="eventPriority" class="txtlibform"><fmt:message key='event.important'/></label>
 				<div class="champs">
 					<input type="checkbox" class="checkbox" name="Priority" id="eventPriority" value="checkbox" <%if (event.getPriority() != 0) out.print("checked=\"checked\"");%>/>
 				</div>
