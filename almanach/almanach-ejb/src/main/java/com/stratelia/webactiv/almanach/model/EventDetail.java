@@ -270,6 +270,14 @@ public class EventDetail extends AbstractBean
   }
 
   public String getWysiwyg() {
+    return getWysiwyg(true);
+  }
+
+  public String getWysiwyg(boolean readOnly) {
+    if (readOnly) {
+      return WysiwygController
+          .loadForReadOnly(getPK().getComponentName(), getPK().getId(), getLanguage());
+    }
     return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
 

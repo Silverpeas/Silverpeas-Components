@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.servlet.HttpRequest;
@@ -201,6 +202,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
             event.setStartHour(startDay[1]);
           }
         }
+        almanach.prepareNewEvent(event);
         request.setAttribute("Day", startDay);
         request.setAttribute("Event", event);
         request.setAttribute("Language", almanach.getLanguage());
@@ -225,6 +227,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         String place = request.getParameter("Place");
         String eventUrl = request.getParameter("EventUrl");
         String priority = request.getParameter("Priority");
+        String volatileId = request.getParameter("Id");
 
         int unity = 0;
         String unit = request.getParameter("Unity");
@@ -244,6 +247,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         String monthDayWeek = request.getParameter("MonthDayWeek");
         String periodicityUntilDate = request.getParameter("PeriodicityUntilDate");
 
+        event.setPK(new EventPK(volatileId, null, almanach.getComponentId()));
         event.setTitle(title);
         event.setNameDescription(description);
         event.setStartDate(DateUtil.stringToDate(startDate, almanach.getLanguage()));
@@ -313,8 +317,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
 
         destination = getDestination("almanach", almanach, request);
       } else if (function.startsWith("editEvent")) {
-        String id = request.getParameter("Id"); // peut etre null en cas de
-        // création
+        String id = request.getParameter("Id");
         String eventDate = request.getParameter("Date"); // peut etre null
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getEventDetail(id);

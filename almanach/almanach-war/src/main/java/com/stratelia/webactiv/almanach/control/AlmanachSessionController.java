@@ -54,12 +54,14 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
@@ -89,6 +91,8 @@ import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfCon
 import static org.silverpeas.calendar.CalendarViewType.*;
 import static org.silverpeas.util.DateUtil.parse;
 import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.cache.service.CacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
@@ -327,6 +331,15 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         "root.MSG_GEN_EXIT_METHOD");
   }
 
+  public void prepareNewEvent(EventDetail event) {
+    String volatileId =
+        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString();
+    EventPK pk = new EventPK(volatileId);
+    pk.setComponentName(getComponentId());
+    event.setPK(pk);
+    getSessionVolatileResourceCacheService().addComponentResource(event);
+  }
+
   /**
    * Adds the specified event into the underlying almanach.
    * @param eventDetail the detail of the event to add.
@@ -349,10 +362,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
   public EventPK addEvent(EventDetail eventDetail, Collection<UploadedFile> uploadedFiles,
-      PdcClassificationEntity classification)
-      throws AlmanachBadParamException, AlmanachException, WysiwygException {
-    SilverTrace
-        .info("almanach", "AlmanachSessionController.addEvent()", "root.MSG_GEN_ENTER_METHOD");
+      PdcClassificationEntity classification) throws AlmanachBadParamException, AlmanachException,
+      WysiwygException {
+    ForeignPK volatileAttachmentSourcePK = new ForeignPK(eventDetail.getId(), getComponentId());
     EventPK eventPK = new EventPK("", "useless", getComponentId());
     eventDetail.setPK(eventPK);
     eventDetail.setDelegatorId(getUserId());
@@ -371,7 +383,15 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     if (startDate != null) {
       setCurrentDay(startDate);
     }
-    // Add the wysiwyg content
+
+    // Attaching all documents linked to volatile news to the persisted news
+    List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
+        .moveAllDocuments(volatileAttachmentSourcePK, eventPK);
+    if (!movedDocumentPks.isEmpty()) {
+      // Change images path in wysiwyg
+      WysiwygController.wysiwygPlaceHaveChanged(getComponentId(),
+          volatileAttachmentSourcePK.getId(), getComponentId(), eventId);
+    }
 
     SilverTrace
         .info("almanach", "AlmanachSessionController.addEvent()", "root.MSG_GEN_EXIT_METHOD");
