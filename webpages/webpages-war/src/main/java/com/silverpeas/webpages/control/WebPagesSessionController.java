@@ -58,6 +58,8 @@ import java.util.List;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
 
+  String usedTemplate = null;
+
   /**
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
@@ -70,16 +72,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
             "com.silverpeas.webpages.multilang.webPagesBundle",
             "com.silverpeas.webpages.settings.webPagesIcons");
 
-    if (isXMLTemplateUsed()) {
-      // register xmlForm to component
-      try {
-        PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(getComponentId()
-                + ":" + getUsedXMLTemplateShortname(), getUsedXMLTemplate());
-      } catch (PublicationTemplateException e) {
-        SilverTrace.error("webPages", "WebPagesSessionController()", "", "template = "
-                + getUsedXMLTemplate(), e);
-      }
-    }
+    registerXMLForm();
   }
 
   /**
@@ -170,6 +163,9 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   private PublicationTemplate getXMLTemplate() throws WebPagesException {
+    if (isTemplateChanged()) {
+      registerXMLForm();
+    }
     try {
       PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance().
               getPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname());
@@ -295,6 +291,25 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     } catch (FormException e) {
       throw new WebPagesException("WebPagesSessionController.indexForm()",
               SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
+    }
+  }
+
+  private boolean isTemplateChanged() {
+    return isXMLTemplateUsed() && !getUsedXMLTemplate().equals(usedTemplate);
+  }
+
+  private void registerXMLForm() {
+    if (isXMLTemplateUsed()) {
+      // register xmlForm to component
+      try {
+        PublicationTemplateManager.getInstance()
+            .addDynamicPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname(),
+                getUsedXMLTemplate());
+        usedTemplate = getUsedXMLTemplate();
+      } catch (PublicationTemplateException e) {
+        SilverTrace.error("webPages", "WebPagesSessionController.registerXMLForm()", "",
+            "template = " + getUsedXMLTemplate(), e);
+      }
     }
   }
 }
