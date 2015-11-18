@@ -939,8 +939,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       GroupDAO.removeGroup(con, groupId, nodePK.getId(), nodePK.getInstanceId());
     } catch (Exception e) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.removeGroup()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_UNREFERENCE_ORPHEAN_CONTACTS_FAILED",
-          e);
+          SilverpeasRuntimeException.ERROR, "yellowpages.EX_REMOVE_GROUP_FAILED", e);
     }
   }
 
