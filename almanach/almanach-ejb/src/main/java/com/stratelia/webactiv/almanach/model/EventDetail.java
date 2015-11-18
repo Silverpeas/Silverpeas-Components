@@ -45,6 +45,7 @@ import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.Serializable;
@@ -266,6 +267,14 @@ public class EventDetail extends AbstractBean
   }
 
   public String getWysiwyg() {
+    return getWysiwyg(true);
+  }
+
+  public String getWysiwyg(boolean readOnly) {
+    if (readOnly) {
+      return WysiwygController
+          .loadForReadOnly(getPK().getComponentName(), getPK().getId(), getLanguage());
+    }
     return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
 

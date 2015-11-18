@@ -226,7 +226,7 @@ $(document).ready(function() {
 	$('#eventFrequencyArea').hide();
 	$('.eventPeriodicityDateArea').hide();
 	
-	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${true}" objectId="${event.id}" componentId="${event.instanceId}"/>
 });
 </script>
 </head>
@@ -398,7 +398,7 @@ $(document).ready(function() {
 		</div>
 		
 		<input type="hidden" name="Action"/>
-        <input type="hidden" name="Id"/>
+        <input type="hidden" name="Id" value="${event.id}"/>
         <input type="hidden" name="Positions"/>
       </form>
     <br/>

@@ -45,8 +45,9 @@
 	String description = "";
 	String id = event.getPK().getId();
 	String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
-	if (StringUtil.isDefined(event.getWysiwyg())) {
-		description = event.getWysiwyg();
+  String wysiwyg = event.getWysiwyg(false);
+	if (StringUtil.isDefined(wysiwyg)) {
+		description = wysiwyg;
 	} else if (StringUtil.isDefined(event.getDescription())) {
 		description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 	}
@@ -367,8 +368,8 @@ $(document).ready(function(){
         width: 650});
 	
 	changeUnity();
-	
-	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${false}"/>
+
+	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${true}" objectId="<%=event.getId()%>" componentId="<%=event.getInstanceId()%>"/>
 });
 //-->
 </script>
@@ -385,7 +386,8 @@ $(document).ready(function(){
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
 	browseBar.setExtraInformation(event.getTitle());
 
-  operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("GML.delete"), "javascript:onClick=eventDeleteConfirm()");
+  operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif",
+      almanach.getString("GML.delete"), "javascript:onClick=eventDeleteConfirm()");
   out.println(window.printBefore());
 
 	out.println(frame.printBefore());
