@@ -371,4 +371,14 @@ public class KmeliaPublication implements SilverpeasContent {
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
     }
   }
+
+  /**
+   * Get the number of comments on this publication
+   *
+   * @return the number.
+   */
+  public int getNumberOfComments() {
+    return getCommentService().getCommentsCountOnPublication(PublicationDetail.getResourceType(),
+        getPk());
+  }
 }

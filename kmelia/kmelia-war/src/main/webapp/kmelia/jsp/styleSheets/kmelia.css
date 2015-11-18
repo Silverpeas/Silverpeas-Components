@@ -904,3 +904,8 @@ a.button.refuse span {
 	text-decoration:underline;
 	clear: both;
 }
+
+#commentInfo a {
+  background:transparent url(/silverpeas/util/icons/talk2user.gif) 0 0 no-repeat;
+  padding-left:20px;
+}
