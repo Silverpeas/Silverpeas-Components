@@ -365,4 +365,14 @@ public class KmeliaPublication implements SilverpeasContent {
   public int getRank() {
     return rank;
   }
+
+  /**
+   * Get the number of comments on this publication
+   *
+   * @return the number.
+   */
+  public int getNumberOfComments() {
+    return getCommentService().getCommentsCountOnPublication(PublicationDetail.getResourceType(),
+        getPk());
+  }
 }
