@@ -126,6 +126,10 @@ function fileUpload() {
     document.fupload.submit();
 }
 
+function getPubIdToHighlight() {
+	return "<%=pubIdToHighlight%>";
+}
+
 function topicWysiwyg() {
 	closeWindows();
 	document.topicDetailForm.action = "ToTopicWysiwyg";
