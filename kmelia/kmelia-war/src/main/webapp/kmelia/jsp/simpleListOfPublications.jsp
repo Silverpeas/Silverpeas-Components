@@ -130,14 +130,8 @@ function fileUpload() {
     document.fupload.submit();
 }
 
-function displayPublications(id) {
-	//display publications of topic
-	var pubIdToHighlight = "<%=pubIdToHighlight%>";
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',PubIdToHighlight:pubIdToHighlight,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-			},"html");
+function getPubIdToHighlight() {
+	return "<%=pubIdToHighlight%>";
 }
 
 function topicWysiwyg() {

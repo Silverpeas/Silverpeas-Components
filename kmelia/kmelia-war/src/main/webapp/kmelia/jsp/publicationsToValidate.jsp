@@ -57,6 +57,10 @@ function getToValidateFolderId() {
 	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
 
+function getPubIdToHighlight() {
+	return "";
+}
+
 $(document).ready(function() {
 	setCurrentNodeId(getToValidateFolderId());
 	displayPublications(getToValidateFolderId());
