@@ -29,9 +29,9 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webPages</name>
   <label>
-    <message lang="fr">Designer de pages web</message>
-    <message lang="en">WebPage Designer</message>
-    <message lang="de">Webpage-Designer</message>
+    <message lang="fr">Page web</message>
+    <message lang="en">Webpage</message>
+    <message lang="de">Webpage</message>
   </label>
   <description>
     <message lang="fr">Cette application permet de faciliter la gestion de
