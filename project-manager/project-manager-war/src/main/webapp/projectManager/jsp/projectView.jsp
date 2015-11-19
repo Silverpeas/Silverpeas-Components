@@ -27,6 +27,7 @@
 <%@page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -110,8 +111,9 @@ out.println(board.printAfter());
             String title = attachmentDetail.getTitle();
             String info = attachmentDetail.getDescription();
             String author = "";
-            if (attachmentDetail.getAuthor() != null && attachmentDetail.getAuthor().length() > 0) {
-              author = "<br/><i>" + attachmentDetail.getAuthor() + "</i>";
+            if (attachmentDetail.getCreatedBy() != null && attachmentDetail.getCreatedBy().length() > 0) {
+              UserDetail userDetail = UserDetail.getById(attachmentDetail.getCreatedBy());
+              author = "<br/><i>" + userDetail.getDisplayedName() + "</i>";
             }
             out.println("<tr>");
             out.println("<td><img alt=\"\" src=\"" + FileRepositoryManager.
