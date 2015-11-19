@@ -33,6 +33,9 @@ public final class DataWarningDBDrivers extends Object {
   static protected Map<String, DataWarningDBDriver> allDBDrivers =
       new HashMap<String, DataWarningDBDriver>(); // This one is there for optimized research
   static protected DataWarningDBDriver[] sortedDBDrivers = null;
+  private static final String CONFIGURATION_FILE =
+      "org.silverpeas.dataWarning.settings.dataWarningSettings".replace('.',
+          File.separatorChar);
 
   public DataWarningDBDrivers() {
     loadDrivers();
@@ -41,11 +44,10 @@ public final class DataWarningDBDrivers extends Object {
   public void loadDrivers() {
     try {
       InputStream configFileInputStream;
-      String configFileStr = "settings/dataWarningSettings";
       String[] driversUniqueIds;
 
       //    configFileInputStream = ResourceLocator.getResourceAsStream(new DataWarningSchedulerTable(),null,configFileStr,".xml");
-      configFileInputStream = ResourceLocator.getResourceAsStream(this, null, configFileStr, ".xml");
+      configFileInputStream = ResourceLocator.getResourceAsStream(this, null, CONFIGURATION_FILE, ".xml");
 
       XMLConfigurationStore m_XMLConfig = new XMLConfigurationStore(null, configFileInputStream,
           "DataWarning-configuration");
@@ -57,7 +59,7 @@ public final class DataWarningDBDrivers extends Object {
         SilverTrace.info("dataWarning", "DataWarningDBDrivers.loadDrivers",
             "DataWarning.MSG_DRIVER_NAME", "DriverUniqueId=" + driversUniqueIds[j]);
 
-        configFileInputStream = ResourceLocator.getResourceAsStream(this, null, configFileStr,
+        configFileInputStream = ResourceLocator.getResourceAsStream(this, null, CONFIGURATION_FILE,
             ".xml");
         m_XMLConfig = new XMLConfigurationStore(null, configFileInputStream, driversUniqueIds[j]
             + "-configuration");
