@@ -28,6 +28,7 @@
 <%@page import="com.silverpeas.form.Form"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
@@ -53,6 +54,7 @@ boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("Exter
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <style type="text/css">
 <% if (externalView) { %>
 .cellBrowseBar, .cellOperation {
@@ -68,40 +70,44 @@ boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("Exter
 </view:operationPane>
 <view:window popup="true">
 <view:frame>
-<view:board>
 
-<table cellpadding="5" cellspacing="0" border="0">
-   <tr>
-   	<td class="txtlibform"><%=resources.getString("Contact") %> :</td>
-   	<td class="txtnav"><%=EncodeHelper.javaStringToHtmlString(contact.getFirstName()) %> <%= EncodeHelper.javaStringToHtmlString(contact.getLastName()) %></td>
-   </tr>
-   <% if (StringUtil.isDefined(contact.getPhone())) { %>
-   	<tr>
-   		<td class="txtlibform"><%=resources.getString("GML.phoneNumber") %> :</td>
-   		<td><%=EncodeHelper.javaStringToHtmlString(contact.getPhone()) %></td>
-   	</tr>
-   <% } %>
-   <% if (StringUtil.isDefined(contact.getFax())) { %>
-   <tr>
-   	<td class="txtlibform"><%=resources.getString("GML.faxNumber") %> :</td>
-   	<td><%=EncodeHelper.javaStringToHtmlString(contact.getFax()) %></td>
-   </tr>
-   <% } %>
-   <% if (StringUtil.isDefined(contact.getEmail())) { %>
-   <tr>
-   	<td class="txtlibform"><%=resources.getString("GML.eMail") %> :</td>
-   	<td><a href=mailto:"<%=EncodeHelper.javaStringToHtmlString(contact.getEmail()) %>"><%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToHtmlString(contact.getEmail())) %></a></td>
-   </tr>
-   <% } %>
-</table>
+  <fieldset id="identity-base" class="skinFieldset">
+    <legend class="without-img"><%=EncodeHelper.javaStringToHtmlString(contact.getFirstName()) %> <%= EncodeHelper.javaStringToHtmlString(
+        contact.getLastName()) %>
+    </legend>
 
-<%
-if (formView != null) {
-	formView.display(out, context);
-}
-%>
+    <div class="oneFieldPerLine">
+      <% if (StringUtil.isDefined(contact.getEmail())) { %>
+      <div class="field" id="email">
+        <label class="txtlibform"><%=resources.getString("GML.eMail")%></label>
+        <div class="champs"><a href=mailto:"<%=EncodeHelper.javaStringToHtmlString(contact.getEmail()) %>"><%=EncodeHelper.javaStringToHtmlString(
+            EncodeHelper.javaStringToHtmlString(contact.getEmail())) %></a></div>
+      </div>
+      <% } %>
+      <% if (StringUtil.isDefined(contact.getPhone())) { %>
+      <div class="field" id="phone">
+        <label class="txtlibform"><%=resources.getString("GML.phoneNumber")%></label>
+        <div class="champs"><%=EncodeHelper.javaStringToHtmlString(contact.getPhone()) %></div>
+      </div>
+      <% } %>
+      <% if (StringUtil.isDefined(contact.getFax())) { %>
+      <div class="field" id="fax">
+        <label class="txtlibform"><%=resources.getString("GML.faxNumber")%></label>
+        <div class="champs"><%=EncodeHelper.javaStringToHtmlString(contact.getFax()) %></div>
+      </div>
+      <% } %>
+    </div>
+  </fieldset>
 
-</view:board>
+<% if (formView != null) { %>
+  <fieldset id="identity-extra" class="skinFieldset">
+  <legend class="without-img"><%=resources.getString("GML.bloc.further.information")%></legend>
+        <%
+	        formView.display(out, context);
+	      %>
+  </fieldset>
+<% } %>
+
 </view:frame>
 </view:window>
 </body>
