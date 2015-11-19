@@ -33,8 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.util.ForeignPK;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
@@ -91,6 +93,8 @@ import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfCon
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.DateUtil.parse;
 import static org.silverpeas.calendar.CalendarViewType.*;
+import static org.silverpeas.cache.service.CacheServiceFactory
+    .getSessionVolatileResourceCacheService;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
@@ -340,6 +344,15 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         "root.MSG_GEN_EXIT_METHOD");
   }
 
+  public void prepareNewEvent(EventDetail event) {
+    String volatileId =
+        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString();
+    EventPK pk = new EventPK(volatileId);
+    pk.setComponentName(getComponentId());
+    event.setPK(pk);
+    getSessionVolatileResourceCacheService().addComponentResource(event);
+  }
+
   /**
    * Adds the specified event into the underlying almanach.
    *
@@ -368,6 +381,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
+    ForeignPK volatileAttachmentSourcePK = new ForeignPK(eventDetail.getId(), getComponentId());
     EventPK eventPK = new EventPK("", "useless", getComponentId());
     eventDetail.setPK(eventPK);
     eventDetail.setDelegatorId(getUserId());
@@ -386,7 +400,15 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     if (startDate != null) {
       setCurrentDay(startDate);
     }
-    // Add the wysiwyg content
+
+    // Attaching all documents linked to volatile news to the persisted news
+    List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceFactory.getAttachmentService()
+        .moveAllDocuments(volatileAttachmentSourcePK, eventPK);
+    if (!movedDocumentPks.isEmpty()) {
+      // Change images path in wysiwyg
+      WysiwygController.wysiwygPlaceHaveChanged(getComponentId(),
+          volatileAttachmentSourcePK.getId(), getComponentId(), eventId);
+    }
 
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()", "root.MSG_GEN_EXIT_METHOD");
     return eventPK;

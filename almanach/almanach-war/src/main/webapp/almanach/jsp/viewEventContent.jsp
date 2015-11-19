@@ -61,8 +61,9 @@
 			title = title.substring(0,30) + "....";
 		}
 		link = event.getPermalink();
-		if (StringUtil.isDefined(event.getWysiwyg())) {
-			description = event.getWysiwyg();
+    String wysiwyg = event.getWysiwyg();
+		if (StringUtil.isDefined(wysiwyg)) {
+			description = wysiwyg;
 		}
 		else if (StringUtil.isDefined(event.getDescription())) {
 			description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
@@ -396,6 +397,7 @@ $(document).ready(function(){
 	<form name="eventForm" action="RemoveEvent" method="post">
 		<input type="hidden" name="Action"/>
    	<input type="hidden" name="Id" value="<%=id%>"/>
+    <input type="hidden" name="Date" value="<%=startDateString%>"/>
    		<% if (periodicity != null) { %>
    			<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
    			<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
