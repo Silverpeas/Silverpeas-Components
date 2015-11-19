@@ -232,6 +232,7 @@
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
 
+<c:set var="kmeliaPubli" value="<%=kmeliaPublication%>"/>
 <c:set var="publication" value="<%=pubDetail%>"/>
 <jsp:useBean id="publication" type="com.stratelia.webactiv.util.publication.model.PublicationDetail"/>
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
@@ -606,8 +607,16 @@
       			<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></b>
       			<% if (ratingsAllowed) { %>
             		<viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
-				<% } %>
-			</p>
+				    <% } %>
+			    </p>
+
+          <% if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 { %>
+            <p id="commentInfo">
+              <fmt:message key="GML.comment.number"/><br />
+              <a href="#commentaires">${kmeliaPubli.numberOfComments}</a>
+            </p>
+          <% } %>
+
 
 		    <% if (URLManager.displayUniversalLinks()) {
 		            String link = null;
@@ -621,8 +630,8 @@
 		        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
 		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
 		        </p>
-	            <% }%>
-      	</div>
+        <% }%>
+        </div>
       <%
 
         /*********************************************************************************************************************/
