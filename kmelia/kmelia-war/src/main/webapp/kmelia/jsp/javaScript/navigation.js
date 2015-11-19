@@ -587,8 +587,6 @@ function displayTopicInformation(id) {
 function writeInConsole(text) {
   if (typeof console !== 'undefined') {
     console.log(text);
-  } else {
-    alert(text);
   }
 }
 
