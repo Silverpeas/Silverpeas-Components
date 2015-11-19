@@ -140,14 +140,14 @@
                 <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
 
                 <div class="champs">
-                  <input id="title" type="text" name="title" size="70%" maxlength="2000" value="<c:out value='${suggestion.title}'/>" style="width: auto"/>
+                  <input id="title" type="text" name="title" maxlength="2000" value="<c:out value='${suggestion.title}'/>" />
                 </div>
               </div>
             </div>
           </fieldset>
         </div>
         <c:if test="${suggestion == null}">
-          <div style="width: 50%" class="cell">
+          <div class="cell">
             <view:fileUpload fieldset="true" jqueryFormSelector="form[name='suggestion']"/>
           </div>
         </c:if>
