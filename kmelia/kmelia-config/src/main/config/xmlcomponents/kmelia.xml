@@ -298,6 +298,7 @@
             <message lang="en">A publication in draft mode is visible only to the author, so he can work on it.</message>
             <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
           </help>
+          <personalSpaceValue>no</personalSpaceValue>
         </parameter>
         <parameter>
           <name>codification</name>
@@ -462,6 +463,7 @@
               <message lang="en">Shows the last 4 users who viewed the publication</message>
               <message lang="de">Zeigt die letzten 4 Benutzer, die die Publikation angesehen</message>
             </help>
+            <personalSpaceValue>no</personalSpaceValue>
           </parameter>
           <parameter>
             <name>notifications</name>
@@ -672,6 +674,7 @@
               <message lang="en">This feature allows to display the attached files to each publications directly in the publications list.</message>
               <message lang="de">Diese Funktion erlaubt es, die angehängten Dateien zu jeder Veröffentlichung direkt in der Publikation anzuzeigen.</message>
             </help>
+            <personalSpaceValue>yes</personalSpaceValue>
           </parameter>
           <parameter>
             <name>openSingleAttachment</name>
