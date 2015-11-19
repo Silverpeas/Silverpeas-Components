@@ -69,10 +69,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String pubValidateSrc	= m_context + "/util/icons/publicationValidate.gif";
 	String pubUnvalidateSrc	= m_context + "/util/icons/publicationUnvalidate.gif";
 	String deletePubliSrc	= m_context + "/util/icons/publicationDelete.gif";
-	String inDraftSrc		= m_context + "/util/icons/masque.gif";
-	String outDraftSrc		= m_context + "/util/icons/visible.gif";
-	String validateSrc		= m_context + "/util/icons/ok.gif";
-	String refusedSrc		= m_context + "/util/icons/wrong.gif";
 	String pubDraftOutSrc	= m_context + "/util/icons/publicationDraftOut.gif";
 
 	String screenMessage = "";
@@ -126,9 +122,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         }
 	}
 
-  	String author 	= pubDetail.getAuthor();
+  if (isOwner && kmeliaScc.isDraftEnabled() && pubDetail.isDraft()) {
+    screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
+        "kmelia.publication.draft.info") + "</div>";
+  }
 
-  	String creatorId = pubDetail.getCreatorId();
+  String author 	= pubDetail.getAuthor();
+  String creatorId = pubDetail.getCreatorId();
 	String updaterId = pubDetail.getUpdaterId();
 %>
 
@@ -349,22 +349,6 @@ $(function() {
 	        out.print("<h2 class=\"publiName\">");
 
 	        out.print(pubDetail.getName());
-
-	     	if (!"user".equals(profile)) {
-	          if (pubDetail.isValidationRequired()) {
-	            out.println(" <img src=\"" + outDraftSrc + "\" alt=\"" + resources.getString(
-	                "PubStateToValidate") + "\"  id=\"status\"/>");
-	          } else if (pubDetail.isDraft()) {
-	            out.println(
-	                " <img src=\"" + inDraftSrc + "\" alt=\"" + resources.getString("PubStateDraft") + "\"  id=\"status\"/>");
-	          } else if (pubDetail.isValid()) {
-	            out.println(" <img src=\"" + validateSrc + "\" alt=\"" + resources.getString(
-	                "PublicationValidated") + "\"  id=\"status\"/>");
-	          } else if (pubDetail.isRefused()) {
-	            out.println(" <img src=\"" + refusedSrc + "\" alt=\"" + resources.getString(
-	                "PublicationRefused") + "\"  id=\"status\"/>");
-	          }
-			}
 
 	        out.println("</h2>");
 
