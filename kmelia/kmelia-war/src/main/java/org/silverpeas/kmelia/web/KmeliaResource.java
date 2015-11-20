@@ -20,16 +20,6 @@
  */
 package org.silverpeas.kmelia.web;
 
-import java.net.URI;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -40,6 +30,18 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import org.silverpeas.publication.web.PublicationEntity;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+
 import static com.stratelia.webactiv.util.JNDINames.KMELIABM_EJBHOME;
 
 /**
@@ -104,7 +106,13 @@ public class KmeliaResource extends RESTWebService {
   public Response updatePublication(final PublicationEntity publicationEntity) {
     try {
       PublicationDetail publication = publicationEntity.toPublicationDetail();
-            
+
+      // Publication status is a mandatory data into the context of publication update.
+      // As this data is not handled by this service, it is retrieved from the silverpeas data
+      // before performing the update.
+      publication.setStatus(getKmeliaBm().getPublicationDetail(publication.getPK()).getStatus());
+
+      // Now, the update can be performed
       getKmeliaBm().updatePublication(publication);
       
       URI publicationURI = getUriInfo().getRequestUriBuilder().path(publication.getPK().getId())
