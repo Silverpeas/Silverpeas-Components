@@ -104,7 +104,13 @@ public class KmeliaResource extends RESTWebService {
   public Response updatePublication(final PublicationEntity publicationEntity) {
     try {
       PublicationDetail publication = publicationEntity.toPublicationDetail();
-            
+
+      // Publication status is a mandatory data into the context of publication update.
+      // As this data is not handled by this service, it is retrieved from the silverpeas data
+      // before performing the update.
+      publication.setStatus(getKmeliaBm().getPublicationDetail(publication.getPK()).getStatus());
+
+      // Now, the update can be performed
       getKmeliaBm().updatePublication(publication);
       
       URI publicationURI = getUriInfo().getRequestUriBuilder().path(publication.getPK().getId())
