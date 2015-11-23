@@ -29,6 +29,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.mockito.Mockito;
 
@@ -92,34 +93,33 @@ public class SubscriptionServiceMock implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getByResource(SubscriptionResource resource) {
+  public SubscriptionList getByResource(SubscriptionResource resource) {
     return mock.getByResource(resource);
   }
 
   @Override
-  public Collection<Subscription> getByResource(SubscriptionResource resource,
-      SubscriptionMethod method) {
+  public SubscriptionList getByResource(SubscriptionResource resource, SubscriptionMethod method) {
     return mock.getByResource(resource, method);
   }
 
   @Override
-  public Collection<Subscription> getByUserSubscriber(String userId) {
+  public SubscriptionList getByUserSubscriber(String userId) {
     return mock.getByUserSubscriber(userId);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriber(SubscriptionSubscriber subscriber) {
+  public SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber) {
     return mock.getBySubscriber(subscriber);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
+  public SubscriptionList getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
       String instanceId) {
     return mock.getBySubscriberAndComponent(subscriber, instanceId);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+  public SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
       SubscriptionResource resource) {
     return mock.getBySubscriberAndResource(subscriber, resource);
   }
