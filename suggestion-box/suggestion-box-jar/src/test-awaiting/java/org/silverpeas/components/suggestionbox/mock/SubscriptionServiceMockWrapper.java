@@ -28,6 +28,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.mockito.Mockito;
 
@@ -91,35 +92,35 @@ public class SubscriptionServiceMockWrapper implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getByResource(final SubscriptionResource resource) {
+  public SubscriptionList getByResource(final SubscriptionResource resource) {
     return mock.getByResource(resource);
   }
 
   @Override
-  public Collection<Subscription> getByResource(final SubscriptionResource resource,
+  public SubscriptionList getByResource(final SubscriptionResource resource,
       final SubscriptionMethod method) {
     return mock.getByResource(resource, method);
   }
 
   @Override
-  public Collection<Subscription> getByUserSubscriber(final String userId) {
+  public SubscriptionList getByUserSubscriber(final String userId) {
     return mock.getByUserSubscriber(userId);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriber(final SubscriptionSubscriber subscriber) {
+  public SubscriptionList getBySubscriber(final SubscriptionSubscriber subscriber) {
     return mock.getBySubscriber(subscriber);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndComponent(
-      final SubscriptionSubscriber subscriber, final String instanceId) {
+  public SubscriptionList getBySubscriberAndComponent(final SubscriptionSubscriber subscriber,
+      final String instanceId) {
     return mock.getBySubscriberAndComponent(subscriber, instanceId);
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndResource(
-      final SubscriptionSubscriber subscriber, final SubscriptionResource resource) {
+  public SubscriptionList getBySubscriberAndResource(final SubscriptionSubscriber subscriber,
+      final SubscriptionResource resource) {
     return mock.getBySubscriberAndResource(subscriber, resource);
   }
 
