@@ -266,8 +266,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     if (albums != null) {
       Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       if (media != null) {
-        SilverTrace.debug("gallery", "GallerySessionController.setMediaToAlbums()",
-            "root.MSG_GEN_PARAM_VALUE", "mediaId = " + mediaId);
         media.setToAlbums(albums);
         NotifierUtil.addSuccess(getString("gallery.media.path.choose.success"));
       }
@@ -278,8 +276,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     if (albums != null) {
       Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       if (media != null) {
-        SilverTrace.debug("gallery", "GallerySessionController.addMediaToAlbums()",
-            "root.MSG_GEN_PARAM_VALUE", "mediaId = " + mediaId);
         media.addToAlbums(albums);
       }
     }
@@ -631,9 +627,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours
     // présenté en popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
-    SilverTrace
-        .debug("gallery", "GallerySessionController.initAlertUser()", "root.MSG_GEN_PARAM_VALUE",
-            "name = " + hostComponentName + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(mediaId)); // set
     // NotificationMetaData contenant les informations à notifier fin initialisation de
     // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
@@ -1015,9 +1008,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         }
       }
     }
-    SilverTrace
-        .debug("gallery", "GallerySessionController.addToBasket()", "root.MSG_GEN_PARAM_VALUE",
-            "listSelected = " + listSelected.toString() + " basket = " + basket.toString());
     // clear list of selected media
     clearListSelected();
     return isOnlyPhotoSelection;

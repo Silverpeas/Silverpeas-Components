@@ -160,8 +160,6 @@ public class KmeliaImportExport extends GEDImportExport {
           return header.getNodePK();
         }
       } catch (Exception ex) {
-        SilverTrace.debug("importExport", "KmeliaImportExport.addSubTopicToTopic()",
-            "root.EX_NO_MESSAGE", ex);
       }
       // S'il n'existe pas encore, on le crée et on le configure
       NodePK parentTopicPk = new NodePK(Integer.toString(topicId), getCurrentComponentId());

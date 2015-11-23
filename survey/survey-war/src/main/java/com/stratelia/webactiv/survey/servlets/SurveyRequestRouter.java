@@ -196,10 +196,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       request.setAttribute("ListDocument", listDocument);
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
     } else if ("ToAlertUser".equals(function)) {
-      SilverTrace
-          .debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-              "function = " + function + " spaceId=" +
-                  surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
       String surveyId = request.getParameter("SurveyId");
       try {
         destination = surveySC.initAlertUser(surveyId);
@@ -207,11 +203,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
       }
-
-      SilverTrace
-          .debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-              "function = " + function + "=> destination=" +
-                  destination);
     } else if ("ExportCSV".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
       String csvFilename = surveySC.exportSurveyCSV(surveyId);

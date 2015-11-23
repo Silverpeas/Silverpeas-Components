@@ -109,15 +109,11 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     if ("link".equals(typeUpload)) {
       type = Statistic.FILE;
       fileStat = fileToSend = FileUtils.getFile(rootPath, sourceFile);
-      SilverTrace.debug("silverCrawler", "FileServer", "root.MSG_GEN_PARAM_VALUE",
-          "file, type = " + type + " file = " + fileStat);
     } else {
       type = Statistic.DIRECTORY;
       fileToSend =
           FileUtils.getFile(FileRepositoryManager.getTemporaryPath(null, componentId), sourceFile);
       fileStat = FileUtils.getFile(rootPath, path);
-      SilverTrace.debug("silverCrawler", "FileServer", "root.MSG_GEN_PARAM_VALUE",
-          "directory, type = " + type + " file = " + fileStat);
     }
 
     sendFile(res, fileToSend);
@@ -132,14 +128,9 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     response.setContentType(FileUtil.getMimeType(file.getName()));
     response.setHeader("Content-Length", String.valueOf(file.length()));
     response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-    SilverTrace.debug("peasUtil", "SilverCrawlerFileServer.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-        " file: " + file.getAbsolutePath());
     try {
       FileUtils.copyFile(file, response.getOutputStream());
       response.getOutputStream().flush();
-      SilverTrace
-          .debug("peasUtil", "SilverCrawlerFileServer.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-              " File was sent");
     } catch (IOException e) {
       SilverTrace.error("peasUtil", "SilverCrawlerFileServer.sendFile", "root.EX_CANT_READ_FILE",
           " file: " + file.getAbsolutePath(), e);

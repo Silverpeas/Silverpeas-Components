@@ -48,7 +48,6 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
 
   @Override
   public void paste(PasteDetail pasteDetail) throws RuntimeException {
-    SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_ENTER_METHOD");
     String fromComponentId = pasteDetail.getFromComponentId();
     String toComponentId = pasteDetail.getToComponentId();
 
@@ -79,7 +78,6 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
         kmeliaBm.copyNode(copyDetail);
       }
     }
-    SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_EXIT_METHOD");
   }
 
 }

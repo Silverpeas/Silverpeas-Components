@@ -606,20 +606,11 @@ public class ResourcesManagerRequestRouter
         }
       } else if ("FromUserSelect".equals(function)) {
         // récupération des valeurs de userPanel
-        SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "FromUserSelect:");
         Selection sel = resourcesManagerSC.getSelection();
         // Get users selected in User Panel
         String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
-        SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "userIds:" + Arrays.toString(userIds));
         if (userIds.length != 0) {
-          SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userIds.length():" + userIds.length);
-
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
-          SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userDetails:" + Arrays.toString(userDetails));
           request.setAttribute("Managers", Arrays.asList(userDetails));
         }
         destination = root + "refreshFromUserSelect.jsp";

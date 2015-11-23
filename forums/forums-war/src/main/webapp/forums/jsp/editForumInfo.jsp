@@ -117,11 +117,6 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
     int params = getIntParameter(request, "params");
 
     int action = getIntParameter(request, "action", 1);
-
-    SilverTrace.debug("forums", "JSPeditForumInfo", "root.MSG_GEN_PARAM_VALUE",
-        "isAdmin=" + isAdmin + " ; " + "forumId=" + forumId + " ; " + "call=" + call
-        + " ; " + "params=" + params + " ; " + "action=" + action);
-
     int parentId = 0;
     boolean update = false;
   	if (action == 1) {

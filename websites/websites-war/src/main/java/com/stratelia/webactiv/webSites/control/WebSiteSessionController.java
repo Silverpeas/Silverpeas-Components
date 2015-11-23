@@ -914,20 +914,11 @@ public class WebSiteSessionController extends AbstractComponentSessionController
 
       /* verif que le nom de la page principale est correcte */
       Collection<File> collPages = getAllWebPages2(getWebSitePathById(descriptionSite.getId()));
-      SilverTrace
-          .debug("webSites", "RequestRouter.EffectiveUploadSiteZip", "root.MSG_GEN_PARAM_VALUE",
-              collPages.size() + " files in zip");
-      SilverTrace
-          .debug("webSites", "RequestRouter.EffectiveUploadSiteZip", "root.MSG_GEN_PARAM_VALUE",
-              "nomPage = " + descriptionSite.getContent());
       Iterator<File> j = collPages.iterator();
       boolean searchOk = false;
       File f;
       while (j.hasNext()) {
         f = j.next();
-        SilverTrace
-            .debug("webSites", "RequestRouter.EffectiveUploadSiteZip", "root.MSG_GEN_PARAM_VALUE",
-                "f.getName() = " + f.getName());
         if (f.getName().equals(descriptionSite.getContent())) {
           searchOk = true;
           break;

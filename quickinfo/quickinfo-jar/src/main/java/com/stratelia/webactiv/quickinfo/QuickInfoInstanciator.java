@@ -46,19 +46,13 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.debug("quickinfo", "QuickInfoInstanciator.create()",
-        "QuickInfoInstanciator.create called with: space=" + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.quickinfo");
     pub.create(con, spaceId, componentId, userId);
-    SilverTrace.debug("quickinfo", "QuickInfoInstanciator.create()",
-        "QuickInfoInstanciator.create finished");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
-        "delete called with: space=" + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.quickinfo");
     pub.delete(con, spaceId, componentId, userId);
 
@@ -71,9 +65,6 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
 
     // deleting stats
     getStatisticService().deleteStatsOfComponent(componentId);
-
-    SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
-        "QuickInfoInstanciator.delete finished");
   }
 
   private StatisticService getStatisticService() {

@@ -67,9 +67,6 @@ public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionControl
 
   public String getDestination(String function,
       ChatSessionController chatSC, HttpRequest request) {
-    SilverTrace.debug("chat", "ChatRequestRouter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD", "function = " + function);
-
     String flag = getFlag(chatSC.getUserRoles());
     String destination = "";
     String chat_fullName = "";
@@ -178,20 +175,7 @@ public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionControl
 
         destination = "/chat/jsp/admin/" + function;
       } else if (function.startsWith("ToUserPanel")) {
-
-        SilverTrace.debug("chat", "ChatRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function);
-        SilverTrace.debug("chat", "ChatRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function
-            + " spaceId=" + chatSC.getSpaceId() + " componentId="
-            + chatSC.getComponentId() + " room="
-            + chatSC.getCurrentSilverObjectId());
-
         destination = chatSC.initUserPanel();
-
-        SilverTrace.debug("chat", "ChatRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function
-            + "=> destination=" + destination);
       } else if (function.startsWith("close.jsp")) {
         destination = "/chat/jsp/" + function;
       }

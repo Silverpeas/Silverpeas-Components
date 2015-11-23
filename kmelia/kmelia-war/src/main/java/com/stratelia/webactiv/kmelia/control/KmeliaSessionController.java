@@ -2113,13 +2113,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     boolean isPublicationDeleted = false;
     try {
       Collection<Collection<NodeDetail>> pathList = getPathList(pk);
-      SilverTrace.debug("kmelia", "KmeliaSessionController.isPublicationDeleted()",
-          "root.MSG_GEN_PARAM_VALUE", "pathList = " + pathList);
       if (pathList.size() == 1) {
         for (Collection<NodeDetail> path : pathList) {
           for (NodeDetail nodeInPath : path) {
-            SilverTrace.debug("kmelia", "KmeliaSessionController.isPublicationDeleted()",
-                "root.MSG_GEN_PARAM_VALUE", "nodeInPath = " + nodeInPath);
             if (nodeInPath.getNodePK().isTrash()) {
               isPublicationDeleted = true;
             }
@@ -2130,8 +2126,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       throw new KmeliaRuntimeException("KmeliaSessionController.isPublicationDeleted()",
           SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
     }
-    SilverTrace.debug("kmelia", "KmeliaSessionController.isPublicationDeleted()",
-        "root.MSG_GEN_PARAM_VALUE", "isPublicationDeleted=" + isPublicationDeleted);
     return isPublicationDeleted;
   }
 

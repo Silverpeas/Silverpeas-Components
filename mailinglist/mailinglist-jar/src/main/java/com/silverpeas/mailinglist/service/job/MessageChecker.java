@@ -415,8 +415,6 @@ public class MessageChecker implements SchedulerEventListener {
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("mailingList", "MessageChecker.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

@@ -203,15 +203,11 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledAlertUser();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

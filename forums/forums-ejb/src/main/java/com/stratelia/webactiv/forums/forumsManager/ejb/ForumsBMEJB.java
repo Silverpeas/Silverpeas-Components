@@ -223,8 +223,6 @@ public class ForumsBMEJB implements ForumsBM {
 
   @Override
   public List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId) {
-    SilverTrace
-        .debug("forums", "ForumsBMEJB.getForumsByCategory()", "", "categoryId = " + categoryId);
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumsListByCategory(con, forumPK, categoryId);
     } catch (SQLException e) {

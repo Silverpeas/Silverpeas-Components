@@ -154,10 +154,6 @@ public class SimpleNotificationHelper implements NotificationHelper {
    * @throws MessagingException
    */
   public void notifyExternals(Message message, MailingList list) throws MessagingException {
-
-    SilverTrace
-        .debug("mailingList", this.getClass().getName(), "mailinglist.notification.external.start");
-
     MailSending mail = MailSending.from(eMail(list.getSubscribedAddress()));
     String subject = notificationFormatter
         .formatTitle(message, list.getName(), DisplayI18NHelper.getDefaultLanguage(), false);
@@ -179,9 +175,6 @@ public class SimpleNotificationHelper implements NotificationHelper {
     } else {
       mail.withContent(of(message.getBody()).withContentType(message.getContentType()));
     }
-    SilverTrace
-        .debug("mailingList", this.getClass().getName(), "mailinglist.notification.external.mail",
-            subject);
     sendMail(mail, list.getExternalSubscribers());
   }
 

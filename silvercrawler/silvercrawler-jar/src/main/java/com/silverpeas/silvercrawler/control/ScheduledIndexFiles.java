@@ -106,15 +106,11 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("silverCrawler", "ScheduledIndexFiles.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledIndex();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("silverCrawler", "ScheduledIndexFiles.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

@@ -59,10 +59,6 @@ public class RSSServiceImpl implements RSSService {
       throws RssAgregatorException {
     List<SPChannel> channels = getAllChannels(applicationId);
     List<RSSItem> items = buildRSSItemList(channels, agregateContent);
-    for (RSSItem item : items) {
-      SilverTrace.debug("module", "RssAgregator", "Item title = " + item.getItemTitle() +
-          ", item date=" + item.getItemDate());
-    }
     return items;
   }
 
@@ -78,8 +74,6 @@ public class RSSServiceImpl implements RSSService {
     for (SPChannel dbChannel : channelsFromDB) {
       channelPK = (SPChannelPK) dbChannel.getPK();
       if (cache.isContentNeedToRefresh(channelPK)) {
-        SilverTrace.debug("rssAgregator", "RSSServiceImpl.getAllChannels",
-              "Refresh channel content", "channelPK = " + channelPK.toString());
         try {
           rssChannel = getChannelFromUrl(dbChannel.getUrl());
         } catch (Exception e) {
@@ -92,8 +86,6 @@ public class RSSServiceImpl implements RSSService {
           cache.addChannelToCache(dbChannel);
         }
       } else {
-        SilverTrace.debug("rssAgregator", "RSSServiceImpl.getChannels",
-            "Use cache", "channelPK = " + channelPK.toString());
         dbChannel = cache.getChannelFromCache(channelPK);
       }
       channels.add(dbChannel);
@@ -108,8 +100,6 @@ public class RSSServiceImpl implements RSSService {
    * @throws RssAgregatorException if MalformedURL or Parse or IO problem occur
    */
   protected Channel getChannelFromUrl(String sUrl) throws RssAgregatorException {
-    SilverTrace.debug("rssAgregator", "RSSServiceImpl.getChannelFromUrl",
-        "root.MSG_GEN_ENTER_METHOD", "sUrl = " + sUrl);
     Channel channel = null;
     try {
       if (StringUtil.isDefined(sUrl)) {
@@ -126,8 +116,6 @@ public class RSSServiceImpl implements RSSService {
       throw new RssAgregatorException("RSSServiceImpl.getChannelFromUrl",
           SilverpeasException.WARNING, "RssAgregator.EX_RSS_BAD_FORMAT", e);
     }
-    SilverTrace.debug("rssAgregator", "RSSServiceImpl.getChannelFromUrl",
-        "root.MSG_GEN_EXIT_METHOD");
     return channel;
   }
 

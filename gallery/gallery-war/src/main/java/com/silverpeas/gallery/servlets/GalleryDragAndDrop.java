@@ -109,8 +109,6 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       importRepository(uploadSession.getRootFolder(), userDetail.getId(), componentId, albumId);
 
     } catch (Exception e) {
-      SilverTrace
-          .debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       SilverpeasTransverseErrorUtil
           .throwTransverseErrorIfAny(e, userDetail.getUserPreferences().getLanguage());
     } finally {

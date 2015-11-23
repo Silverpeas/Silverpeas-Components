@@ -129,7 +129,6 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       }
 
     } catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       throw new ServletException(e);
     } finally {
       uploadSession.clear();

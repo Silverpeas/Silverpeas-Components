@@ -135,9 +135,6 @@ public class SanselanMediaMetadataExtractor extends AbstractMediaMetadataExtract
             MetaData metaData = new MetaData(value.replaceAll("\\s", " ").trim());
             metaData.setLabel(property.getLabel(lang));
             metaData.setProperty(property.getProperty() + "");
-            SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
-                "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
-                    + " value = " + value);
             result.add(metaData);
           }
         }
@@ -254,9 +251,6 @@ public class SanselanMediaMetadataExtractor extends AbstractMediaMetadataExtract
               metaData.setDateValue(getDateValue(value));
             }
             result.add(metaData);
-            SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
-                "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
-                    + " value = " + value);
           }
         }
       }

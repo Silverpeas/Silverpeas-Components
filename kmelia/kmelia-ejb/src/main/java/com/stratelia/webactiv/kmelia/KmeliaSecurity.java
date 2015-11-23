@@ -348,8 +348,6 @@ public class KmeliaSecurity implements ComponentSecurity {
       for (NodePK nodePK : nodePKs) {
         NodeDetail node = getNodeService().getHeader(nodePK);
         if (node != null) {
-          SilverTrace.debug("kmelia", "KmeliaSecurity.getProfile",
-              "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString());
           if (!node.haveRights()) {
             lProfiles.addAll(Arrays.asList(getAppProfiles(userId, pubPK.getInstanceId())));
           } else {

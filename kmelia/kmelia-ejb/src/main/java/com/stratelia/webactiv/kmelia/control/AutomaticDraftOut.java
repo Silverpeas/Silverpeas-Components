@@ -75,15 +75,11 @@ public class AutomaticDraftOut implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doAutomaticDraftOut();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

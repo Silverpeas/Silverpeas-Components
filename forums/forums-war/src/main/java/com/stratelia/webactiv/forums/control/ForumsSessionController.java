@@ -136,13 +136,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public Forum[] getForumsListByCategory(String categoryId) {
-    SilverTrace.debug("forums", "ForumsSessionController.getForumsListByCategory()", "",
-        "categoryId = " + categoryId);
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
     List<Forum> forums = getForumsService().getForumsByCategory(forumPK, categoryId);
     Forum[] result = forums.toArray(new Forum[forums.size()]);
-    SilverTrace.debug("forums", "ForumsSessionController.getForumsListByCategory()", "",
-        "retour = " + Arrays.toString(result));
     return result;
   }
 
@@ -336,9 +332,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
     if (message != null) {
       UserDetail user = getUserDetail(message.getAuthor());
-      SilverTrace
-          .debug("forums", "ForumsSessioncontroller.getLastMessage()", "root.MSG_GEN_ENTER_METHOD",
-              "message = " + message.toString());
       return new Object[]{String.valueOf(message.getId()), message.getDate(),
           (user != null ? user.getDisplayedName() : "Unknown")};
     }

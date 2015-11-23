@@ -225,16 +225,12 @@ public class EventDAO {
       throw new SQLException("Missing instance identifiers");
     }
 
-    SilverTrace
-        .debug("almanach", "EventDAO.findAllEvents()", "paramInstanceIds=" + paramInstanceIds);
     try {
       String selectQuery =
           "select distinct * " + " from " + EventPK.TABLE_NAME + " left outer join " +
               Periodicity.getTableName() + " on " + EventPK.TABLE_NAME + ".eventId = " +
               Periodicity.getTableName() + ".eventId" + paramInstanceIds +
               " order by eventStartDay";
-
-      SilverTrace.debug("almanach", "EventDAO.getAllEvents()", "selectQuery=" + selectQuery);
 
       selectStmt = connection.createStatement();
       rs = selectStmt.executeQuery(selectQuery);

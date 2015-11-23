@@ -91,14 +91,9 @@ public class FileFolder implements java.io.Serializable {
     folders = new ArrayList<>(0);
 
     try {
-      SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
-          "Starting constructor for FileFolder. Path = " + path);
       // Check security access : cannot browse inside rootPath
       FileUtil.validateFilename(path, rootPath);
       File f = new File(path);
-
-      SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
-          "isExists " + f.exists() + " isFile=" + f.isFile());
 
       writable = f.canWrite();
 
@@ -120,9 +115,6 @@ public class FileFolder implements java.io.Serializable {
         }
         if (children != null && children.length > 0) {
           for (File childFile : children) {
-            SilverTrace
-                .debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
-                    "Name = " + childFile.getName());
             isIndexed = false;
             if (isAdmin) {
               // rechercher si le répertoire (ou le fichier) est indexé
@@ -133,10 +125,6 @@ public class FileFolder implements java.io.Serializable {
                 pathIndex = pathIndex + "LinkedFile" + "|";
               }
               pathIndex = pathIndex + FilenameUtils.separatorsToUnix(childFile.getPath());
-              SilverTrace
-                  .debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
-                      "pathIndex = " + pathIndex);
-
               Term term = new Term("key", pathIndex);
               if (reader != null && reader.docFreq(term) == 1) {
                 isIndexed = true;

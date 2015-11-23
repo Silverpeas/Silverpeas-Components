@@ -173,8 +173,6 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         destination = getDestination("ViewCategory", forumsSC, request);
       } else if ("DeleteCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
-        SilverTrace.debug("forums", "ForumsRequestRouter", "root.MSG_GEN_PARAM_VALUE",
-            "categoryId = " + categoryId);
         forumsSC.deleteCategory(categoryId);
         destination = getDestination("ViewCategory", forumsSC, request);
       } else if (function.startsWith("searchResult")) {

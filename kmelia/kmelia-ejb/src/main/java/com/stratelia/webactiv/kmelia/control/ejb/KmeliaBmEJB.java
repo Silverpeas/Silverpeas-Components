@@ -658,21 +658,15 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()", "root.MSG_GEN_ENTER_METHOD",
-        "nodeId = " + nodeId);
     int index = 0;
     if (nodes != null) {
       for (NodeDetail node : nodes) {
         if (nodeId.equals(node.getNodePK().getId())) {
-          SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()", "root.MSG_GEN_EXIT_METHOD",
-              "index = " + index);
           return index;
         }
         index++;
       }
     }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()", "root.MSG_GEN_EXIT_METHOD",
-        "index = " + index);
     return index;
   }
 
@@ -922,21 +916,15 @@ public class KmeliaBmEJB implements KmeliaBm {
       NodeTree nodeTree = findNode(node, tree);
       if (nodeTree != null) {
         int nbPublis = countNbPublis(nodeTree);
-        SilverTrace.debug("kmelia", "KmeliaBmEJB.countPublisInNodes", "root.MSG_GEN_PARAM_VALUE",
-            nbPublis + " pubs in node " + node.getNodePK().getId());
         node.setNbObjects(nbPublis);
       }
     }
   }
 
   private NodeTree findNode(NodeDetail node, NodeTree tree) {
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_ENTER_METHOD",
-        "looking for node " + node.getNodePK().getId());
     String path = node.getFullPath();
     if (path.length() > 1) {
       path = path.substring(1, path.length() - 1); // remove starting and ending slash
-      SilverTrace
-          .debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_PARAM_VALUE", " path = " + path);
       ArrayList<String> pathItems = new ArrayList<String>(Arrays.asList(path.split("/")));
       pathItems.remove(0); // remove root
       NodeTree current = tree;
@@ -946,8 +934,6 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
       }
       if (current != null) {
-        SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
-            "node " + current.getKey().getId() + " found");
         return current;
       }
     }
@@ -979,8 +965,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     for (NodeTree node : tree.getChildren()) {
       nb += countNbPublis(node);
     }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_EXIT_METHOD",
-        nb + " pubs in node " + tree.getKey().getId());
     return nb;
   }
 
@@ -2288,9 +2272,6 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public List<String> getAllValidators(PublicationPK pubPK) {
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators", "root.MSG_GEN_ENTER_METHOD",
-        "pubId = " + pubPK.getId());
-
     // get all users who have to validate
     List<String> allValidators = new ArrayList<String>();
     if (isTargetedValidationEnabled(pubPK.getInstanceId())) {
@@ -2317,8 +2298,6 @@ public class KmeliaBmEJB implements KmeliaBm {
           nodePK = nodePKs.get(n);
           node = getNodeHeader(nodePK);
           if (node != null) {
-            SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators", "root.MSG_GEN_PARAM_VALUE",
-                "nodePK = " + nodePK.toString());
             if (!node.haveRights()) {
               allValidators.addAll(Arrays.asList(getOrganisationController()
                   .getUsersIdsByRoleNames(pubPK.getInstanceId(), roles)));
@@ -2332,8 +2311,6 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
       }
     }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators", "root.MSG_GEN_EXIT_METHOD",
-        "pubId = " + pubPK.getId() + ", allValidators = " + allValidators.toString());
     return allValidators;
   }
 
@@ -4731,8 +4708,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     NodePK nodePKToCopy = copyDetail.getFromNodePK();
     NodePK targetPK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.copyNode()", "root.MSG_GEN_ENTER_METHOD", "from = " +
-        nodePKToCopy.toString() + ", to = " + targetPK.toString());
     NodeDetail nodeToCopy = nodeService.getDetail(nodePKToCopy);
     NodeDetail father = getNodeHeader(targetPK);
 

@@ -262,8 +262,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en
     // popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
-    SilverTrace.debug("blog", "BlogSessionController.initAlertUser()", "root.MSG_GEN_PARAM_VALUE",
-        "name = " + hostComponentName + " componentId=" + getComponentId());
     // set NotificationMetaData contenant les informations à notifier fin initialisation de
     // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     sel.setNotificationMetaData(getAlertNotificationMetaData(postId));

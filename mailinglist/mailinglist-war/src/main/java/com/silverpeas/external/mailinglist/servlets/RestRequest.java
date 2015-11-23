@@ -58,19 +58,13 @@ public class RestRequest implements MailingListRoutage {
     if (pathInfo.startsWith("/")) {
       pathInfo = pathInfo.substring(1);
     }
-    SilverTrace
-        .debug("mailingList", "RestRequest()", "root.MSG_GEN_ENTER_METHOD", "Parsing:" + pathInfo);
     StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/", false);
     String element = tokenizer.nextToken();
     String id = tokenizer.nextToken();
     if ("RmailingList".equalsIgnoreCase(element)) {
       componentId = id;
-      SilverTrace
-          .debug("mailingList", "RestRequest()", "root.MSG_GEN_ENTER_METHOD", "componentId=" + id);
     } else if (id != null) {
       elements.put(element, id);
-      SilverTrace
-          .debug("mailingList", "RestRequest()", "root.MSG_GEN_ENTER_METHOD", element + '=' + id);
     }
     boolean isKey = true;
     String key = null;
@@ -82,8 +76,6 @@ public class RestRequest implements MailingListRoutage {
         isKey = false;
       } else {
         elements.put(key, value);
-        SilverTrace
-            .debug("mailingList", "RestRequest()", "root.MSG_GEN_ENTER_METHOD", key + '=' + value);
         isKey = true;
       }
     }

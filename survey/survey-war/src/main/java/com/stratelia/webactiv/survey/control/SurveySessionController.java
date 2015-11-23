@@ -678,9 +678,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     // popup => pas de lien sur nom du composant)
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
-    SilverTrace
-        .debug("Survey", "SurveySessionController.initAlertUser()", "root.MSG_GEN_PARAM_VALUE",
-            "name = " + hostComponentName + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId)); // set NotificationMetaData
     // contenant les informations à notifier
     // fin initialisation de AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et
@@ -696,8 +693,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     String senderName = curUser.getDisplayedName();
     QuestionContainerDetail questionDetail = getSurvey(surveyId);
     String url = getSurveyUrl(questionDetail);
-    SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
-        "root.MSG_GEN_PARAM_VALUE", "survey = " + questionDetail.toString());
     String htmlPath = getQuestionContainerService().getHTMLQuestionPath(questionDetail);
 
     // Get default resource bundle
@@ -707,9 +702,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     Map<String, SilverpeasTemplate> templates = new HashMap<>();
     String subject = message.getString("survey.notifSubject");
-
-    SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
-        "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject);
 
     NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "alertSurvey");

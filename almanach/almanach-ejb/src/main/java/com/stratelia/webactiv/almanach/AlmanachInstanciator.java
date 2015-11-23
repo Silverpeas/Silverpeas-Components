@@ -42,7 +42,6 @@ public class AlmanachInstanciator extends SQLRequest implements ComponentsInstan
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("almanach", "AlmanachInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override

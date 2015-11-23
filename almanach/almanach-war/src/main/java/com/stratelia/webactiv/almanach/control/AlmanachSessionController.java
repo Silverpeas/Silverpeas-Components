@@ -631,8 +631,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     instanceIds = getOrganisationController()
         .getAllComponentIdsRecur(getSpaceId(), getUserId(), getComponentRootName(), inCurrentSpace,
             inAllSpaces);
-    SilverTrace.debug("almanach", "AlmanachSessionController.getOthersAlmanachs()",
-        "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId=" + getSpaceId());
     for (int i = 0; i < instanceIds.length; i++) {
       String instanceId = instanceIds[i];
       if (!instanceId.equals(getComponentId())) {
@@ -707,9 +705,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     sel.setHostComponentId(getComponentId());
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
-    SilverTrace
-        .debug("almanach", "AlmanachSessionController.initAlertUser()", "root.MSG_GEN_PARAM_VALUE",
-            "name = " + hostComponentName + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationEvent(eventId));
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
@@ -721,8 +716,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
     EventDetail eventDetail = getAlmanachBm().getEventDetail(eventPK);
-    SilverTrace.debug("alamanch", "AlmanachSessionController.getAlertNotificationEvent()",
-        "root.MSG_GEN_PARAM_VALUE", "event = " + eventDetail.toString());
 
     // recherche de l’emplacement de l’évènement
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
@@ -744,9 +737,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
       subject = getNotificationSubject(message);
       body = getNotificationBody(eventDetail, htmlPath, message, senderName);
-      SilverTrace.debug("almanach", "AlmanachSessionController.getAlertNotificationEvent()",
-          "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
-
       notifMetaData.addLanguage(language, subject, body);
 
       String url = getObjectUrl(eventDetail);

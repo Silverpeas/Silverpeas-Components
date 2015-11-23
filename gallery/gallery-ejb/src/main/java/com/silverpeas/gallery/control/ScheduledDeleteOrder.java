@@ -86,17 +86,11 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("gallery",
-        "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledDeleteOrder();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("gallery",
-        "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

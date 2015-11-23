@@ -46,12 +46,7 @@ public class ForumsRssServlet extends RssServlet {
   @Override
   public Collection getListElements(String instanceId, int nbReturned)
       throws RemoteException {
-    // récupération de la liste des 15 derniers messages des forums
     Collection events = getForumsService().getLastMessageRSS(instanceId, nbReturned);
-
-    SilverTrace.debug("forums", "ForumsRssServlet.getListElements()",
-        "root.MSG_GEN_PARAM_VALUE", "events = " + events);
-
     return events;
   }
 
@@ -62,11 +57,6 @@ public class ForumsRssServlet extends RssServlet {
   @Override
   public String getElementTitle(Object element, String userId) {
     List message = (List) element;
-
-    SilverTrace.debug("forums", "ForumsRssServlet.getElementTitle()",
-        "root.MSG_GEN_PARAM_VALUE", "message.get(1) = "
-        + message.get(1));
-
     return (String) message.get(1);
   }
 
@@ -80,10 +70,6 @@ public class ForumsRssServlet extends RssServlet {
     String messageUrl = URLManager.getApplicationURL() + "/ForumsMessage/"
         + message.get(0) + "?ForumId="
         + message.get(4);
-
-    SilverTrace.debug("forums", "ForumsRssServlet.getElementLink()",
-        "root.MSG_GEN_PARAM_VALUE", "messageUrl = " + messageUrl);
-
     return messageUrl;
   }
 
@@ -95,11 +81,6 @@ public class ForumsRssServlet extends RssServlet {
   @Override
   public String getElementDescription(Object element, String userId) {
     List message = (List) element;
-
-    SilverTrace.debug("forums", "ForumsRssServlet.getElementDescription()",
-        "root.MSG_GEN_PARAM_VALUE", "message.get(6) = "
-        + message.get(1));
-
     return (String) message.get(1);
   }
 
@@ -112,10 +93,6 @@ public class ForumsRssServlet extends RssServlet {
     List message = (List) element;
     // Date messageCreationDate = new Date(Long.parseLong((String) message.get(3)));
     Date messageCreationDate = (Date) message.get(3);
-    SilverTrace.debug("forums", "ForumsRssServlet.getElementDate()",
-        "root.MSG_GEN_PARAM_VALUE", "messageCreationDate = "
-        + messageCreationDate);
-
     return messageCreationDate;
   }
 
