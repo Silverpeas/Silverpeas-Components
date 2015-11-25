@@ -464,8 +464,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       displayFilePreviewJavascript(kmeliaScc.getComponentId(), language, out);
       displayFileViewJavascript(kmeliaScc.getComponentId(), language, out);
       out.write(board.printAfter());
-    } else if (showNoPublisMessage &&
-        (toSearch || kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId.equals("0"))) {
+    } else if (showNoPublisMessage) {
       String noPublications = kmeliaScc.getString("PubAucune");
       if (toSearch) {
         noPublications = kmeliaScc.getString("NoPubFound");
