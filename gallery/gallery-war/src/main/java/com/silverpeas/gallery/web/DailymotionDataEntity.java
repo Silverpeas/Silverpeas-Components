@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,20 +15,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import com.silverpeas.gallery.model.Streaming;
+import org.json.JSONObject;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -36,39 +35,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
-  private static final long serialVersionUID = 2338157869917224281L;
-
-  @XmlElement
-  private StreamingProvider provider;
+public class DailymotionDataEntity extends StreamingProviderDataEntity {
+  private static final long serialVersionUID = 6909168681705256783L;
 
   /**
-   * Creates a new streaming entity from the specified streaming.
-   * @param streaming
+   * Creates a dailymotion provider data entity from specified OEmbed data.
+   * @param oembedDailymotionData the oembed data ({@literal http://oembed.com}) as JSON format.
    * @return the entity representing the specified streaming.
    */
-  public static StreamingEntity createFrom(final Streaming streaming) {
-    return new StreamingEntity(streaming);
+  public static DailymotionDataEntity fromOembed(final JSONObject oembedDailymotionData) {
+    return new DailymotionDataEntity(oembedDailymotionData);
   }
 
   /**
    * Default hidden constructor.
    */
-  private StreamingEntity(final Streaming streaming) {
-    super(streaming);
-    provider = streaming.getProvider();
+  private DailymotionDataEntity(final JSONObject oembedDailymotionData) {
+    super(StreamingProvider.dailymotion, oembedDailymotionData);
   }
 
   @SuppressWarnings("UnusedDeclaration")
-  protected StreamingEntity() {
+  protected DailymotionDataEntity() {
     super();
-  }
-
-  public StreamingProvider getProvider() {
-    return provider;
-  }
-
-  public void setProvider(final StreamingProvider provider) {
-    this.provider = provider;
   }
 }
