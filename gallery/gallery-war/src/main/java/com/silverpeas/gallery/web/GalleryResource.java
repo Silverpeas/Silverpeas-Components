@@ -228,6 +228,17 @@ public class GalleryResource extends AbstractGalleryResource {
               getJSonFromUrl("http://vimeo.com/api/oembed.json?url=" + "http://vimeo.com/" +
                   streamingProvider.extractStreamingId(url)));
           break;
+        case dailymotion:
+          entity = DailymotionDataEntity
+              .fromOembed(getJSonFromUrl("http://www.dailymotion.com/services/oembed?url=" +
+                  "http://www.dailymotion.com/video/" +
+                  streamingProvider.extractStreamingId(url)));
+          break;
+        case soundcloud:
+          entity = SoundcloudDataEntity.fromOembed(
+              getJSonFromUrl("https://soundcloud.com/oembed?url=http://soundcloud.com/" +
+                  streamingProvider.extractStreamingId(url) + "&format=json"));
+          break;
       }
       checkNotFoundStatus(entity);
       if (getHttpRequest().isSecure()) {

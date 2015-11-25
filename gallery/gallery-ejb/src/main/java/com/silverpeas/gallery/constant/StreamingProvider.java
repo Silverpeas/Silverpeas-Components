@@ -40,7 +40,11 @@ import java.util.regex.Pattern;
  * @author: Yohann Chastagnier
  */
 public enum StreamingProvider {
-  unknown(null), youtube("(?i)(\\?|&)v=([a-z0-9]+)", "youtu"), vimeo("(?i)(/|=)([0-9]+)");
+  unknown(null),
+  youtube("(?i)(\\?|&)v=([a-z0-9]+)", "youtu"),
+  vimeo("(?i)(/|=)([0-9]+)"),
+  dailymotion("(?i)(/video/)([a-z0-9]+)_"),
+  soundcloud("(?i)(soundcloud.com/)(.+)");
 
   public static final Set<StreamingProvider> ALL_VALIDS;
 

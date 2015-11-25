@@ -462,8 +462,12 @@
             currentMediaData.big = media.thumbUrl;
             break;
           case $.gallerySlider.mediaType.streaming :
-            currentMediaData.video = media.url;
-            currentMediaData.thumb = null;
+            if(media.provider === 'vimeo') {
+              currentMediaData.video = media.url;
+              currentMediaData.thumb = null;
+            } else {
+              currentMediaData = null;
+            }
             break;
           default:
             currentMediaData = null;
