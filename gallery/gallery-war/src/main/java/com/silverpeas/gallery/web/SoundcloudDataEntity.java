@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,11 +24,10 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import com.silverpeas.gallery.model.Streaming;
+import org.json.JSONObject;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -36,39 +35,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
-  private static final long serialVersionUID = 2338157869917224281L;
-
-  @XmlElement
-  private StreamingProvider provider;
+public class SoundcloudDataEntity extends StreamingProviderDataEntity {
+  private static final long serialVersionUID = 6909168681705256783L;
 
   /**
-   * Creates a new streaming entity from the specified streaming.
-   * @param streaming
+   * Creates a dailymotion provider data entity from specified OEmbed data.
+   * @param oembedSoundcloudData the oembed data ({@literal http://oembed.com}) as JSON format.
    * @return the entity representing the specified streaming.
    */
-  public static StreamingEntity createFrom(final Streaming streaming) {
-    return new StreamingEntity(streaming);
+  public static SoundcloudDataEntity fromOembed(final JSONObject oembedSoundcloudData) {
+    return new SoundcloudDataEntity(oembedSoundcloudData);
   }
 
   /**
    * Default hidden constructor.
    */
-  private StreamingEntity(final Streaming streaming) {
-    super(streaming);
-    provider = streaming.getProvider();
+  private SoundcloudDataEntity(final JSONObject oembedSoundcloudData) {
+    super(StreamingProvider.soundcloud, oembedSoundcloudData);
   }
 
   @SuppressWarnings("UnusedDeclaration")
-  protected StreamingEntity() {
+  protected SoundcloudDataEntity() {
     super();
-  }
-
-  public StreamingProvider getProvider() {
-    return provider;
-  }
-
-  public void setProvider(final StreamingProvider provider) {
-    this.provider = provider;
   }
 }

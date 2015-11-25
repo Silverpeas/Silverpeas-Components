@@ -40,6 +40,7 @@ public class StreamingProviderTest {
     assertThat(StreamingProvider.from(" youtube"), is(StreamingProvider.unknown));
     assertThat(StreamingProvider.from("youtube"), is(StreamingProvider.youtube));
     assertThat(StreamingProvider.from("vImeO"), is(StreamingProvider.vimeo));
+    assertThat(StreamingProvider.from("dAilyMotion"), is(StreamingProvider.dailymotion));
   }
 
   @Test
@@ -51,5 +52,19 @@ public class StreamingProviderTest {
     assertThat(StreamingProvider.fromUrl("youtube"), is(StreamingProvider.youtube));
     assertThat(StreamingProvider.fromUrl("vImeO"), is(StreamingProvider.vimeo));
     assertThat(StreamingProvider.fromUrl("http://vImeO.be/123456789"), is(StreamingProvider.vimeo));
+    assertThat(StreamingProvider.fromUrl("http://www.dailymotion.com/video/x3fd843_bever"),
+        is(StreamingProvider.dailymotion));
+  }
+
+  @Test
+  public void testExtractStreamingId() {
+    assertThat(StreamingProvider.dailymotion.extractStreamingId(
+        "http://www.dailymotion.com/video/x3fd843_beverly-piegee-par-l-incroyable-strategie-de" +
+            "-gilles_tv"), is("x3fd843"));
+    assertThat(StreamingProvider.soundcloud.extractStreamingId(
+        "https://soundcloud.com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien" +
+            "-vermalle?in=benjamin-roux-10/sets/lazy-compagny"),
+        is("empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in=benjamin" +
+            "-roux-10/sets/lazy-compagny"));
   }
 }
