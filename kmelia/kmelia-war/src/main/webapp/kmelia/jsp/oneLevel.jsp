@@ -71,17 +71,16 @@ String userId = kmeliaScc.getUserId();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
-<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+<view:looknfeel withCheckFormScript="true"/>
+<view:script src="/util/javaScript/browseBarComplete.js"/>
 <view:includePlugin name="datepicker" />
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
 
-<script type="text/javascript" src="javaScript/navigation.js"></script>
-<script type="text/javascript" src="javaScript/searchInTopic.js"></script>
-<script type="text/javascript" src="javaScript/publications.js"></script>
+<view:script src="javaScript/navigation.js"/>
+<view:script src="javaScript/searchInTopic.js"/>
+<view:script src="javaScript/publications.js"/>
 
 <style type="text/css">
 .invisibleTopic {

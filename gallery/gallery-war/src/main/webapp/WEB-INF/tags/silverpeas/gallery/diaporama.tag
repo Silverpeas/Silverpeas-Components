@@ -40,11 +40,11 @@
 <c:set var="wait" value="${requestScope.wait}"/>
 <c:set var="currentUserSort" value="${requestScope.Sort}"/>
 
-<link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
+<view:link href="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>
 <view:includePlugin name="qtip"/>
-<script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.4.2.min.js"/>" type="text/javascript"></script>
-<script src="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>" type="text/javascript"></script>
-<script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>
+<view:script src="/gallery/jsp/javaScript/slider/galleria-1.4.2.min.js"/>
+<view:script src="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>
+<view:script src="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>
 <script type="text/JavaScript">
   function startSlideshow(fromMediaId) {
     $.popup.showWaiting();
