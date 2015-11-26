@@ -62,8 +62,7 @@ if (!StringUtil.isDefined(id)) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel />
-<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">

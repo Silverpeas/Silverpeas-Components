@@ -48,9 +48,8 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <Head>
 <TITLE><%=connecteurJDBC.getString("windowTitleParametrageRequete")%></TITLE>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">
 	function processUpdate()
 	{

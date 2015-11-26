@@ -96,12 +96,10 @@ if (quickInfoDetail != null) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - Edition</title>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-<view:looknfeel/>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {

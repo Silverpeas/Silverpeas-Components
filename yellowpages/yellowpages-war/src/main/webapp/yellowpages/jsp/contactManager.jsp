@@ -98,13 +98,11 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function topicGoTo(id) {
     document.topicDetailForm.Action.value = "Search";

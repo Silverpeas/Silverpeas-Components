@@ -84,8 +84,7 @@ if (folderDetail != null) {
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function isCorrect(nom) {
 

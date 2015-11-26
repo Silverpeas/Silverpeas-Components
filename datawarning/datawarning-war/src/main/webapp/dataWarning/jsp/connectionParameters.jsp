@@ -34,9 +34,8 @@ DataWarningDBDriver currentDBDriver = (DataWarningDBDriver)request.getAttribute(
 %>
 <HTML>
 <HEAD>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </HEAD>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">
     function selectDriver()
     {

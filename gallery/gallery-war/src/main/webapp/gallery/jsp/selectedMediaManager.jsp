@@ -71,11 +71,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <view:looknfeel/>
-  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
+  <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="datepicker"/>
   <view:includePlugin name="wysiwyg"/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
   <c:if test="${not empty formUpdate}">
     <%formUpdate.displayScripts(out, context);%>
   </c:if>

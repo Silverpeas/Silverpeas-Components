@@ -55,9 +55,8 @@ String m_context                              = graphicPath;
 <html xmlns="http://www.w3.org/1999/xhtml">
 <Head>
   <TITLE><%=connecteurJDBC.getString("windowTitleParametrageConnection")%> </TITLE>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">
 
 	// constructeur d'un objet Driver

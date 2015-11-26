@@ -81,7 +81,7 @@
 <c:set var="isNewMediaCase" value="${empty media.id}"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
 
-<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+<view:script src="/util/javaScript/checkForm.js"/>
 <script type="text/javascript">
 
   // Form validation

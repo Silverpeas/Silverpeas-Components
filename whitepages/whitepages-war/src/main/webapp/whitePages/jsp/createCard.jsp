@@ -57,8 +57,7 @@
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 <%
    updateForm.displayScripts(out, context);
 %>

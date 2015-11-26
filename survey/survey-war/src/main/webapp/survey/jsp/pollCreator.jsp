@@ -200,15 +200,13 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title></title>
-    <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-    <view:looknfeel/>
+    <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <style type="text/css">
       .thumbnailPreviewAndActions {
         display: none;
       }
     </style>
     <view:includePlugin name="datepicker"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
   function sendData()
   {

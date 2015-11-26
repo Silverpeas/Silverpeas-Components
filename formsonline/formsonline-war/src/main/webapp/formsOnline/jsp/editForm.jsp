@@ -45,9 +45,7 @@
 <c:set var="m_listGroupReceivers" value="${form.receiversAsGroups}"/>
 <c:set var="m_listUserReceivers" value="${form.receiversAsUsers}"/>
 
-<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
 <c:url var="iconMandatory" value="/util/icons/mandatoryField.gif"/>
-<c:url var="jsCheckForm" value="/util/javaScript/checkForm.js"/>
 
 <fmt:message key="formsOnline.senders" var="labelSenders"/>
 <fmt:message key="formsOnline.receivers" var="labelReceivers"/>
@@ -60,9 +58,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel/>
-<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
-<script type="text/javascript" src="${jsCheckForm}"></script>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript">
 
 function isCorrectForm() {

@@ -34,8 +34,7 @@
 <html>
 <head>
 	<title><fmt:message key="GML.popupTitle"/></title>
-	<view:looknfeel/>
-	<script type="text/javascript" src="${context}/util/javaScript/checkForm.js"></script>
+	<view:looknfeel withCheckFormScript="true"/>
 	<script type="text/javascript">
 		function openSPWindow(url, windowName) {
 			var form = document.forms["newParticipant"];

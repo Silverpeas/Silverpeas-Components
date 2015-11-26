@@ -70,9 +70,8 @@
   %>
   <html>
     <head>
-      <view:looknfeel />
+      <view:looknfeel withCheckFormScript="true"/>
       <title><fmt:message key="GML.popupTitle" /></title>
-      <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
       <script type="text/javascript" src="<c:url value="/util/javaScript/i18n.js" />"></script>
       <script language="JavaScript" type="text/javascript">
         function topicGoTo(id)

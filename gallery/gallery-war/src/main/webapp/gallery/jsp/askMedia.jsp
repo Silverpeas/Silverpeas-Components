@@ -49,9 +49,8 @@
 
 <html>
 <head>
-  <view:looknfeel/>
+  <view:looknfeel withCheckFormScript="true"/>
   <title></title>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
   <script type="text/javascript">
 
     function sendData() {
