@@ -34,8 +34,7 @@
 <html>
 <head>
 	<title><fmt:message key="GML.popupTitle"/></title>
-	<view:looknfeel/>
-	<script type="text/javascript" src="${context}/util/javaScript/checkForm.js"></script>
+	<view:looknfeel withCheckFormScript="true"/>
 	<c:if test="${admin}">
 		<script type="text/javascript">
 			function editParticipant(participantId) {

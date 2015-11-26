@@ -34,9 +34,8 @@
 <html>
 <head>
 	<title><fmt:message key="GML.popupTitle"/></title>
-	<view:looknfeel/>
+	<view:looknfeel withCheckFormScript="true"/>
     <view:includePlugin name="datepicker"/>
-	<script type="text/javascript" src="${context}/util/javaScript/checkForm.js"></script>
 	<script type="text/javascript">
 		function openSPWindow(url, windowName) {
 			var form = document.forms["newDelivery"];

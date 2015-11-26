@@ -50,9 +50,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="messageme"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <%
 boolean main = false;

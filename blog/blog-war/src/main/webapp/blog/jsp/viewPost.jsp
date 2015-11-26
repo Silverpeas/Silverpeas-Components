@@ -79,7 +79,7 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <% if(wallPaper != null) { %>
 <style type="text/css">
 #blog #blogContainer #bandeau {
@@ -93,7 +93,6 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   <%=styleSheet.getContent()%>
 </style>
 <% } %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 	var notifyWindow = window;
 		

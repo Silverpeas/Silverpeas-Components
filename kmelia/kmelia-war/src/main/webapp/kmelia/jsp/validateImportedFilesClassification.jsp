@@ -50,8 +50,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><c:out value="${classification}"/></title>
-    <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-    <view:looknfeel />
+    <view:looknfeel withFieldsetStyle="true"/>
     <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-pdc-widgets.js'/>"></script>
     <script type="text/javascript">
       //<![CDATA[

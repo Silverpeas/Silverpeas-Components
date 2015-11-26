@@ -49,8 +49,7 @@ if ("user".equals(profile) && !allowedNav)
 
 <html>
 <head>
-<view:looknfeel/>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script language="javascript">
 
 var downloadWindow = window;

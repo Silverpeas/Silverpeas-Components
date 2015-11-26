@@ -116,9 +116,7 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
 <head>
   <title><%=resources.getString("GML.popupTitle")%></title>
 
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 
 <script type="text/javascript">
 

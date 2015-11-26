@@ -61,8 +61,7 @@ Button validateButton = gef.getFormButton(generalMessage.getString("GML.validate
 <HTML>
 <HEAD>
 <TITLE><%=kmeliaScc.getString("ComponentCreationTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {

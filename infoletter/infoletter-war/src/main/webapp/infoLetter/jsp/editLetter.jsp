@@ -45,9 +45,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
-  <view:looknfeel/>
+  <view:looknfeel withCheckFormScript="true"/>
   <view:includePlugin name="wysiwyg"/>
-<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <script type="text/javascript">
   function goHeaders() {
     document.headerParution.submit();

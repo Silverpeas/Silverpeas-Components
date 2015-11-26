@@ -42,7 +42,6 @@
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
-<c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
@@ -67,11 +66,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <view:looknfeel/>
+  <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="popup"/>
-  <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet"/>
-  <script type="text/javascript" src="${formValidator}"></script>
   <script type="text/javascript">
     $(document).ready(function() {
       <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>

@@ -35,9 +35,8 @@
 
 <fmt:message var="mandatoryIconPath" key="rss.mandatoryField" bundle="${icons}"/>
 <c:url var="mandatoryIcon"      value="${mandatoryIconPath}" />
-<c:url var="formCheckingScript" value="/util/javaScript/checkForm.js"/>
 
-<script type="text/javascript" src="${formCheckingScript}"></script>
+<view:script src="/util/javaScript/checkForm.js"/>
 <script type="text/javascript">
 function addChannel() {
 	  $("#modal-newchannel").popup({

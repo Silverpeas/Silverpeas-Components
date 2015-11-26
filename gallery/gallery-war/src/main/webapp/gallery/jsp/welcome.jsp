@@ -89,10 +89,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <view:looknfeel/>
+  <view:looknfeel withCheckFormScript="true"/>
   <view:includePlugin name="qtip"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <script type="text/javascript">
 <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">

@@ -198,12 +198,10 @@
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <view:looknfeel />
+    <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
     <view:includePlugin name="rating" />
-    <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-    <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/viewMessage.js'/>" ></script>
     <script type="text/javascript">

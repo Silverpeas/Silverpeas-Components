@@ -56,9 +56,8 @@
 <html>
 <head>
 <title><fmt:message key="kmelia.stat.title" /></title>
-<view:looknfeel />
+<view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="datepicker"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function filterStat() {
   if (isCorrectForm()) {

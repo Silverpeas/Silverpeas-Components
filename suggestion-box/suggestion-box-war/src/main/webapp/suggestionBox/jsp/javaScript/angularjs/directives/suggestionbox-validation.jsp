@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
-<c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
+<view:script src="/util/javaScript/checkForm.js"/>
 
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${language}"/>

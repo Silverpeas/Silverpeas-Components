@@ -39,8 +39,7 @@
   <head>
     <title><fmt:message key="GML.popupTitle"/></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <view:looknfeel />
-    <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+    <view:looknfeel withCheckFormScript="true"/>
     <script LANGUAGE="JavaScript" TYPE="text/javascript">
     </script>
   </head>

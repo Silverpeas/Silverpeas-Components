@@ -79,11 +79,10 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=componentLabel%></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <% if (StringUtil.isDefined(rssURL)) { %>
 <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <!--
 function openSPWindow(fonction, windowName) {

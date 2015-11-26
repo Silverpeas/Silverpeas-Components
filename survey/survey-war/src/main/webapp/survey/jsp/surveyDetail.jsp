@@ -267,8 +267,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel />
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 </head>
 <body>
     <%
@@ -302,8 +301,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 </head>
 <body>
 <%
@@ -327,9 +325,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel />
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript">
 function sendVote(roundId) {
   if (isCorrectForm()) {
@@ -509,8 +505,7 @@ function clipboardCopy() {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel />
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
 
