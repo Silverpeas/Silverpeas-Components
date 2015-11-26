@@ -44,8 +44,7 @@
 	}
 %>
 
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
 function SubmitWithVerif(verifParams) {
     var csvFilefld = stripInitialWhitespace(document.csvFileForm.file_upload.value);

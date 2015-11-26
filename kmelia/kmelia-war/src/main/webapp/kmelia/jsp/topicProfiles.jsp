@@ -35,8 +35,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
-
 <%
 List<ProfileInst>		profiles = (List<ProfileInst>) request.getAttribute("Profiles");
 NodeDetail 	node			= (NodeDetail) request.getAttribute("NodeDetail");
@@ -56,8 +54,7 @@ if ("ThisTopic".equals(rightsDependsOn)) {
 %>
 <html>
 <head>
-<view:looknfeel/>
-<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 <script type="text/javascript">
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;

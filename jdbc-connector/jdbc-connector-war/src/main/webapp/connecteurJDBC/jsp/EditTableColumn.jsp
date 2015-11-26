@@ -257,9 +257,8 @@ String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src
 <html xmlns="http://www.w3.org/1999/xhtml">
 <Head>
 <TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">
 	function getColumnList()
 	{

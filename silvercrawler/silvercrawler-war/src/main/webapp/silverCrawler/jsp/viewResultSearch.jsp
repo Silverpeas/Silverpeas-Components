@@ -40,8 +40,7 @@ String word 				= (String) request.getAttribute("Word");
 
 <html>
 <head>
-<view:looknfeel/>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
 
 var downloadWindow = window;

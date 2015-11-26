@@ -56,8 +56,7 @@ if (action.equals("View")) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 
 <script type="text/javascript">
 function isCorrect(nom) {

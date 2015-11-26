@@ -81,8 +81,7 @@ if (action == null) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript">
 <!--

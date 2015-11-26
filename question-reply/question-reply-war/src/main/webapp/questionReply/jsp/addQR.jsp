@@ -47,8 +47,7 @@
 %>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-<view:looknfeel />
+<view:looknfeel withFieldsetStyle="true"/>
 <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">

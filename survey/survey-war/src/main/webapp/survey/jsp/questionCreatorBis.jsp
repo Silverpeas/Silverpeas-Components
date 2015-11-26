@@ -159,9 +159,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title></title>
-<view:looknfeel />
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<c:out value="${ctxPath}" />/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<c:out value="${ctxPath}" />/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 
 function sendData() {

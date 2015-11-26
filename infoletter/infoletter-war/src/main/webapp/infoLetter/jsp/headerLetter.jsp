@@ -41,12 +41,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
-<link type="text/css" href='<c:url value="/util/styleSheets/fieldset.css" />' rel="stylesheet" />
-<view:looknfeel />
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <%
 String parution = (String) request.getAttribute("parution");
 %>
-<script type="text/javascript" src='<c:url value="/util/javaScript/checkForm.js" />' ></script>
 <script type="text/javascript">
   function goEditContent (){
     document.editParution.submit();

@@ -39,7 +39,7 @@ UserFull user = (UserFull) request.getAttribute("UserFull");
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
+<view:looknfeel withFieldsetStyle="true"/>
 </HEAD>
 <BODY>
 <%

@@ -174,9 +174,8 @@ while (itemIter.hasNext()) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript1.2">
 function sendData() {
     if (isCorrectForm()) {

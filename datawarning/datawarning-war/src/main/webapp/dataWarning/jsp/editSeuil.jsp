@@ -35,10 +35,9 @@
 <HTML>
 <HEAD>
 <TITLE><%=messages.getString("operationPaneSeuil")%></TITLE>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </HEAD>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js">
 </script>
 <script language="JavaScript">
 	function ClosePopup_onValider()

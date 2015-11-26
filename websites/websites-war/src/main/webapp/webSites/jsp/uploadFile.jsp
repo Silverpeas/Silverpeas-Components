@@ -75,8 +75,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       <HTML>
       <HEAD>
       <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-      <view:looknfeel/>
-      <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+      <view:looknfeel withCheckFormScript="true"/>
       <Script language="JavaScript">
       <%
 			if (uploadOk != null && uploadOk.equals(Boolean.FALSE)) {

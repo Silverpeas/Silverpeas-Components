@@ -32,10 +32,9 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("operationPaneParamGen")%></TITLE>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </HEAD>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload=document.form.SQLReqDescription.focus()>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js">
 </script>
 <script language="JavaScript">
 	function isValidText(input, textFieldLength) 

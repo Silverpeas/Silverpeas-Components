@@ -254,9 +254,7 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript">
 
 function isCorrectName(nom) {

@@ -58,8 +58,7 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {
   if (isCorrectForm()) {

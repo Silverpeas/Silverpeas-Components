@@ -127,7 +127,7 @@ browseBar.setComponentName(componentLabel, "Main");
 
 %>
 <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
+<view:script src="/util/javaScript/checkForm.js"/>
 <%!
 String displayIcon(String source, String messageAlt)
 {

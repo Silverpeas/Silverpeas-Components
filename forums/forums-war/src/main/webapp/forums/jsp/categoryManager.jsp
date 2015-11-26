@@ -57,8 +57,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<view:looknfeel />
-<script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
 <script type="text/javascript">
 // fonctions de controle des zones du formulaire avant validation

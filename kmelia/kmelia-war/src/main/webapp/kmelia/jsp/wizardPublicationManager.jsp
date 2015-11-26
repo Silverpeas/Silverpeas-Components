@@ -114,10 +114,8 @@ if (isEnd) {
 <html>
 <head>
 <title></title>
-<view:looknfeel/>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;

@@ -85,14 +85,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css"/>" rel="stylesheet" />
-<view:looknfeel/>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <c:if test="${not empty formUpdate}">
 	<%
   	formUpdate.displayScripts(out, context);
 	%>
 </c:if>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 
 <fmt:message var="GML_title" key="GML.title"/>
 <fmt:message var="GML_MustBeFilled" key="GML.MustBeFilled"/>

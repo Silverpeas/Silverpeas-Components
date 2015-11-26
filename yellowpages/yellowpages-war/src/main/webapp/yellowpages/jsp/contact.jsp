@@ -52,7 +52,7 @@ boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("Exter
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
+<view:looknfeel withFieldsetStyle="true"/>
 <style type="text/css">
 <% if (externalView) { %>
 .cellBrowseBar, .cellOperation {

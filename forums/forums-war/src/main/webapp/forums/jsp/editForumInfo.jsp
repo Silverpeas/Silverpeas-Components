@@ -148,9 +148,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-<link type="text/css" href="<%=context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-<view:looknfeel/>
-<script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
 <script type="text/javascript">
 <%

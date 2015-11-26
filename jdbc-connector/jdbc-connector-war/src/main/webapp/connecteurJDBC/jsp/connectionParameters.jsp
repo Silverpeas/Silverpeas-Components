@@ -18,8 +18,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><fmt:message key="windowTitleParametrageConnection"/></title>
-  <view:looknfeel/>
-<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
+  <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
   var dataSources = [];
   <c:forEach items="${availableDataSources}" var="dataSource">

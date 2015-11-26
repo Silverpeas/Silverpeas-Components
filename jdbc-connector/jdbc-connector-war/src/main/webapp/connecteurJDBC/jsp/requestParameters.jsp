@@ -46,9 +46,8 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 <html xmlns="http://www.w3.org/1999/xhtml">
 <Head>
 <title><%=connecteurJDBC.getString("windowTitleParametrageRequete")%></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 	function processUpdate()
 	{

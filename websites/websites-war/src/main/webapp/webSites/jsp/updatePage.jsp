@@ -58,7 +58,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.selection.multilang.selectionBundle" />
 
-<c:url var="checkformjs" value="/util/javaScript/checkForm.js"/>
 <c:url var="mandatoryField" value="/util/icons/mandatoryField.gif"/>
 
 <c:set var="action" value="${param.Action}"/>
@@ -90,8 +89,7 @@
 <HTML>
 <HEAD>
   <TITLE><fmt:message key="GML.popupTitle"/></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="${checkformjs}"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
 
 /************************************************************************************/

@@ -34,9 +34,8 @@
 %>
 <HTML>
 <HEAD>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 </HEAD>
-<script type="text/javascript"	src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
 	function openNotificationSender() {
 		SP_openWindow('Notification', 'NotificationSender', '700', '760',
