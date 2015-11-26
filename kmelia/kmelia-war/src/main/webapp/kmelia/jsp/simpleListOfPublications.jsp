@@ -81,9 +81,9 @@ boolean userCanSeeStats =
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
 
-<script type="text/javascript" src="javaScript/navigation.js"></script>
-<script type="text/javascript" src="javaScript/searchInTopic.js"></script>
-<script type="text/javascript" src="javaScript/publications.js"></script>
+<view:script src="javaScript/navigation.js"/>
+<view:script src="javaScript/searchInTopic.js"/>
+<view:script src="javaScript/publications.js"/>
 <script type="text/javascript">
 <% if (!profile.equals("user")) { %>
 function updateChain() {
