@@ -77,21 +77,19 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
   <title></title>
-  <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.jstree.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
-
-<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+  <view:looknfeel withCheckFormScript="true"/>
+<view:script src="/util/javaScript/browseBarComplete.js"/>
+<view:script src="/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"/>
+<view:script src="/util/javaScript/jquery/jquery.jstree.js"/>
+<view:script src="/util/javaScript/jquery/jquery.cookie.js"/>
 
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
 
-<script type="text/javascript" src="javaScript/navigation.js"></script>
-<script type="text/javascript" src="javaScript/searchInTopic.js"></script>
-<script type="text/javascript" src="javaScript/publications.js"></script>
+<view:script src="javaScript/navigation.js"/>
+<view:script src="javaScript/searchInTopic.js"/>
+<view:script src="javaScript/publications.js"/>
 <script type="text/javascript">
 function topicGoTo(id) {
     closeWindows();
