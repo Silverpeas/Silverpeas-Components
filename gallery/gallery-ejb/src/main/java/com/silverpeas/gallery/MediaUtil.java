@@ -71,10 +71,8 @@ import com.silverpeas.gallery.processing.Size;
 import com.silverpeas.gallery.processing.Watermarker;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -264,7 +262,7 @@ public class MediaUtil {
       iMedia.setFileName(fileForData.getName());
       iMedia.setFileMimeType(mediaMimeType);
       iMedia.setFileSize(fileForData.length());
-      MetadataExtractor metadataExtractor = ServiceProvider.getService(MetadataExtractor.class);
+      MetadataExtractor metadataExtractor = MetadataExtractor.get();
       org.silverpeas.util.MetaData metaData =
           metadataExtractor.extractMetadata(handledImageFile.getFile());
       switch (iMedia.getType()) {

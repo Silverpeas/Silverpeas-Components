@@ -1002,9 +1002,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(permalink) && isUserAllowedToDownloadFile) {
         result.append("&#160;<a href=\"").append(permalink)
             .append("\" target=\"_blank\"><img src=\"").append(resources.getIcon("kmelia.link"))
-            .append("\" border=\"0\" valign=\"absmiddle\" alt=\"")
-            .append(resources.getString("toolbox.CopyFileLink")).append("\" title=\"")
-            .append(resources.getString("toolbox.CopyFileLink")).append("\"/></a>");
+            .append("\" border=\"0\" valign=\"absmiddle\" alt=\"").append("\" title=\"")
+            .append("\"/></a>");
       }
 
       result.append("<br/>");
