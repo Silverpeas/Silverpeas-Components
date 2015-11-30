@@ -38,6 +38,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.ForeignPK;
 
 import java.util.Collection;
@@ -588,6 +589,8 @@ public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
   public Collection<Alias> getAlias(PublicationPK pubPK);
 
   public void setAlias(PublicationPK pubPK, List<Alias> alias);
+
+  public void addUploadedFilesToPublication(PublicationDetail pubDetail, Collection<UploadedFile> uploadedFiles);
 
   public void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);

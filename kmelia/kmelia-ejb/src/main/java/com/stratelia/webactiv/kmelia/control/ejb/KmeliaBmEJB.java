@@ -111,6 +111,7 @@ import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.publication.notification.PublicationEventNotifier;
 import org.silverpeas.publication.dateReminder.PublicationNoteReference;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.*;
 import org.silverpeas.util.annotation.Action;
 import org.silverpeas.util.annotation.SourcePK;
@@ -3958,6 +3959,17 @@ public class KmeliaBmEJB implements KmeliaBm {
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     sendSubscriptionsNotification(pubDetail, NotifAction.PUBLISHED, true);
+  }
+
+  @Override
+  public void addUploadedFilesToPublication(PublicationDetail pubDetail, Collection<UploadedFile> uploadedFiles) {
+    // Attach uploaded files
+    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(), false);
+      }
+    }
   }
 
   @Override
