@@ -24,18 +24,36 @@
 
 package org.silverpeas.components.quickinfo;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.UserAuthenticationListener;
+import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.initialization.Initialization;
 
-public class QuickInfoUserAuthenticationListener implements UserAuthenticationListener {
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
+
+/**
+ * This listener handles the blocking news about Quick Info application.<br/>
+ * Just after a successful user authentication, blocking news are displayed to the user if any.
+ */
+@Singleton
+public class QuickInfoUserAuthenticationListener
+    implements UserAuthenticationListener, Initialization {
+
+  @Override
+  public void init() throws Exception {
+    UserAuthenticationListenerRegistration.register(this);
+  }
+
+  @Override
+  public void release() throws Exception {
+    UserAuthenticationListenerRegistration.unregister(this);
+  }
 
   @Override
   public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, UserDetail user,

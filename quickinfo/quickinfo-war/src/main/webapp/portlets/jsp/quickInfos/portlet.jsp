@@ -142,7 +142,10 @@ $(document).ready(function() {
 						<span class="actuality-source"><fmt:message key="GML.by"/></span><view:componentPath componentId="${news.componentInstanceId}"/></span>
 					</c:if>
 				</span>
-				<a href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a> 
+        <view:componentParam var="isCommentEnabled" componentId="${news.componentInstanceId}" parameter="comments"/>
+        <c:if test="${silfn:booleanValue(isCommentEnabled)}">
+          <a href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire"/> ${news.numberOfComments}</a>
+        </c:if>
 			</div>
 			<p class="actuality-teasing">${news.description}</p>
 		</li>

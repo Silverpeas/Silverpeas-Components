@@ -24,12 +24,14 @@
 
 package org.silverpeas.components.quickinfo.model;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.silverpeas.ApplicationService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 
 import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.ServiceProvider;
 
 public interface QuickInfoService extends ApplicationService<News> {
@@ -42,7 +44,8 @@ public interface QuickInfoService extends ApplicationService<News> {
 
   public void publish(String id, String userId);
 
-  public void update(final News news, List<PdcPosition> positions, final boolean forcePublishing);
+  public void update(final News news, List<PdcPosition> positions,
+      Collection<UploadedFile> uploadedFiles, final boolean forcePublishing);
 
   public void removeNews(String id);
 

@@ -46,6 +46,10 @@ import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -377,4 +381,10 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return getPublishDate();
   }
 
+  public int getNumberOfAttachments() {
+    List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
+        listDocumentsByForeignKeyAndType(getForeignPK(), DocumentType.attachment,
+            I18NHelper.defaultLanguage);
+    return attachments.size();
+  }
 }
