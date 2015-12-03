@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import org.json.JSONObject;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,14 +42,14 @@ public class SoundcloudDataEntity extends StreamingProviderDataEntity {
    * @param oembedSoundcloudData the oembed data ({@literal http://oembed.com}) as JSON format.
    * @return the entity representing the specified streaming.
    */
-  public static SoundcloudDataEntity fromOembed(final JSONObject oembedSoundcloudData) {
+  public static SoundcloudDataEntity fromOembed(final OembedDataEntity oembedSoundcloudData) {
     return new SoundcloudDataEntity(oembedSoundcloudData);
   }
 
   /**
    * Default hidden constructor.
    */
-  private SoundcloudDataEntity(final JSONObject oembedSoundcloudData) {
+  private SoundcloudDataEntity(final OembedDataEntity oembedSoundcloudData) {
     super(StreamingProvider.soundcloud, oembedSoundcloudData);
   }
 

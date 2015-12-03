@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import org.json.JSONObject;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,14 +42,14 @@ public class DailymotionDataEntity extends StreamingProviderDataEntity {
    * @param oembedDailymotionData the oembed data ({@literal http://oembed.com}) as JSON format.
    * @return the entity representing the specified streaming.
    */
-  public static DailymotionDataEntity fromOembed(final JSONObject oembedDailymotionData) {
+  public static DailymotionDataEntity fromOembed(final OembedDataEntity oembedDailymotionData) {
     return new DailymotionDataEntity(oembedDailymotionData);
   }
 
   /**
    * Default hidden constructor.
    */
-  private DailymotionDataEntity(final JSONObject oembedDailymotionData) {
+  private DailymotionDataEntity(final OembedDataEntity oembedDailymotionData) {
     super(StreamingProvider.dailymotion, oembedDailymotionData);
   }
 

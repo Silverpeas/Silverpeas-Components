@@ -231,13 +231,13 @@ public class GalleryResource extends AbstractGalleryResource {
           break;
         case dailymotion:
           entity = DailymotionDataEntity
-              .fromOembed(getJSonFromUrl("http://www.dailymotion.com/services/oembed?url=" +
+              .fromOembed(getOembedEntityFromUrl("http://www.dailymotion.com/services/oembed?url=" +
                   "http://www.dailymotion.com/video/" +
                   streamingProvider.extractStreamingId(url)));
           break;
         case soundcloud:
           entity = SoundcloudDataEntity.fromOembed(
-              getJSonFromUrl("https://soundcloud.com/oembed?url=http://soundcloud.com/" +
+              getOembedEntityFromUrl("https://soundcloud.com/oembed?url=http://soundcloud.com/" +
                   streamingProvider.extractStreamingId(url) + "&format=json"));
           break;
       }
