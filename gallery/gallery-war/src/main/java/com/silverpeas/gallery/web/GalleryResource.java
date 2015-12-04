@@ -237,7 +237,7 @@ public class GalleryResource extends AbstractGalleryResource {
           break;
         case soundcloud:
           entity = SoundcloudDataEntity.fromOembed(
-              getOembedEntityFromUrl("https://soundcloud.com/oembed?url=http://soundcloud.com/" +
+              getOembedEntityFromUrl("http://soundcloud.com/oembed?url=http://soundcloud.com/" +
                   streamingProvider.extractStreamingId(url) + "&format=json"));
           break;
       }
