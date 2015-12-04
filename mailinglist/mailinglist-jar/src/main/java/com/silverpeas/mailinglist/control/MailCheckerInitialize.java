@@ -24,8 +24,6 @@
 package com.silverpeas.mailinglist.control;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.silverpeas.mailinglist.model.MailingListComponent;
 import com.silverpeas.mailinglist.service.job.MessageChecker;
@@ -36,10 +34,10 @@ import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.TimeUnit;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 
@@ -71,15 +69,13 @@ public class MailCheckerInitialize implements Initialization {
 
   @Override
   public void init() throws Exception {
-    SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
-        "mailinglist.initialization.start");
     try {
       Scheduler scheduler = SchedulerProvider.getScheduler();
       if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
         scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
       if (hasToCheckForNewMails()) {
-        Logger.getLogger("mailingList").log(Level.INFO, "Check mails from mailing lists every "
+        SilverLogger.getLogger("mailingList").info("Check mails from mailing lists every "
         + getFrequency() + " minutes");
         MessageChecker checker = getMessageChecker();
         JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
@@ -90,9 +86,8 @@ public class MailCheckerInitialize implements Initialization {
           checker.addMessageListener(component);
         }
       }
-    } catch (SchedulerException e) {
-      SilverTrace.error("mailingList", "MailCheckerInitialize.Initialize",
-          "mailinglist.initialization.error", e);
+    } catch (SchedulerException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
   }
 

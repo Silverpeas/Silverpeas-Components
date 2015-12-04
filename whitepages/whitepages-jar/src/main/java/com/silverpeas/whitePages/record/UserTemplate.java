@@ -35,9 +35,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.util.logging.SilverLogger;
 
 public class UserTemplate implements RecordTemplate {
 
@@ -52,8 +50,8 @@ public class UserTemplate implements RecordTemplate {
         "org.silverpeas.whitePages.multilang.whitePagesBundle", language);
     try {
       this.viewForm = new HtmlForm(this);
-    } catch (FormException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage());
+    } catch (FormException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     viewForm.setFileName(fileName);
   }
@@ -93,8 +91,8 @@ public class UserTemplate implements RecordTemplate {
       fieldTemplates[6] = getFieldTemplate("Mail");
       fieldTemplates[7] = getFieldTemplate("AccessLevel");
       fieldTemplates[8] = getFieldTemplate("SpecificDetails");
-    } catch (FormException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage());
+    } catch (FormException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return fieldTemplates;
   }

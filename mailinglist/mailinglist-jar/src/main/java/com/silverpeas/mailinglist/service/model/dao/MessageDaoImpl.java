@@ -31,6 +31,7 @@ import com.silverpeas.mailinglist.service.util.OrderBy;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -40,8 +41,6 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Repository("messageDao")
 @Singleton
@@ -102,7 +101,7 @@ public class MessageDaoImpl implements MessageDao {
     try {
       result = query.getSingleResult();
     } catch (NoResultException ex) {
-      Logger.getLogger(MessageDao.class.getSimpleName()).log(Level.FINER, ex.getMessage());
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return result;
   }
@@ -214,8 +213,8 @@ public class MessageDaoImpl implements MessageDao {
           file.delete();
         }
       }
-    } catch (UtilException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
+    } catch (UtilException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
   }
 

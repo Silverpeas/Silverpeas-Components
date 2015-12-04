@@ -9,8 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +22,7 @@ import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import org.silverpeas.util.ClientBrowserUtil;
 
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.util.logging.SilverLogger;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
 import static org.silverpeas.util.StringUtil.isDefined;
@@ -63,7 +62,7 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
         exportInDocument(request, response);
       }
     } catch (Exception ex) {
-      Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       request.setAttribute("javax.servlet.jsp.jspException", ex);
       getServletConfig().getServletContext().getRequestDispatcher(
           "/admin/jsp/errorpageMain.jsp").forward(request, response);
