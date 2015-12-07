@@ -130,7 +130,7 @@ public class MessageProcessor implements MailingListRoutage {
       MailingListServicesProvider.getNotificationHelper().notify(message, list);
     } catch (Exception e) {
       SilverTrace
-          .error("mailingList", "MailSender.sendMail", "mailinglist.external.notification.send", e);
+          .error("mailinglist", "MailSender.sendMail", "mailinglist.external.notification.send", e);
     }
   }
 }

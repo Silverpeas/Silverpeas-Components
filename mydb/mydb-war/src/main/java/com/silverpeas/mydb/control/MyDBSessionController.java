@@ -177,7 +177,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         setTableName("");
       }
     } catch (MyDBException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.checkTableName()",
+      SilverTrace.warn("mydb", "MyDBSessionController.checkTableName()",
           "myDB.MSG_TABLE_NAME_CHECK_FAILED", "TableName=" + tableName, e);
     }
     return false;
@@ -205,19 +205,19 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           myDBDetail = i.next();
         }
       } catch (MyDBException e) {
-        SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
+        SilverTrace.error("mydb", "myDBSessionController.initMyDB()",
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
         throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
             SilverpeasException.FATAL,
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
       } catch (PersistenceException e) {
-        SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
+        SilverTrace.error("mydb", "myDBSessionController.initMyDB()",
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
         throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
             SilverpeasException.FATAL,
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
       } catch (MyDBRuntimeException e) {
-        SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
+        SilverTrace.error("mydb", "myDBSessionController.initMyDB()",
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
         throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
             SilverpeasException.FATAL,
@@ -427,7 +427,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       try {
         connection = getConnection();
       } catch (SQLException e) {
-        SilverTrace.warn("myDB", "MyDBSessionController.startConnection()",
+        SilverTrace.warn("mydb", "MyDBSessionController.startConnection()",
             "myDB.MSG_CONNECTION_NOT_STARTED", e);
         connection = null;
       }
@@ -452,7 +452,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         connection = null;
       }
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.closeConnection()",
+      SilverTrace.warn("mydb", "MyDBSessionController.closeConnection()",
           "myDB.MSG_CONNECTION_NOT_CLOSED", e);
     }
   }
@@ -469,7 +469,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         driverManager.resetDriver();
       }
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.checkConnection()",
+      SilverTrace.warn("mydb", "MyDBSessionController.checkConnection()",
           "myDB.MSG_CONNECTION_NOT_CHECKED", e);
     } finally {
       closeConnection();
@@ -484,7 +484,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
     Vector<String> tableVector = new Vector<String>();
     startConnection();
     if (connection == null) {
-      SilverTrace.warn("myDB", "MyDBSessionController.getTableNames()",
+      SilverTrace.warn("mydb", "MyDBSessionController.getTableNames()",
           "myDB.MSG_CONNECTION_NOT_STARTED");
     } else {
       try {
@@ -804,7 +804,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDB", "MyDBSessionController.getLineCreationErrorMessage()",
+        SilverTrace.warn("mydb", "MyDBSessionController.getLineCreationErrorMessage()",
             "myDB.MSG_CANNOT_CHECK_LINE_CREATION", e);
       } finally {
         closeConnection();
@@ -852,7 +852,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       prepStmt.executeUpdate();
     } catch (SQLException e) {
       SilverTrace.
-          warn("myDB", "MyDBSessionController.createDbLine()", "myDB.MSG_CANNOT_CREATE_LINE", e);
+          warn("mydb", "MyDBSessionController.createDbLine()", "myDB.MSG_CANNOT_CREATE_LINE", e);
       return MessageFormat.format(resources.getString("LineCreationError"), e.getMessage());
     } finally {
       closeConnection();
@@ -913,7 +913,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       prepStmt.executeUpdate();
     } catch (SQLException e) {
       SilverTrace.
-          warn("myDB", "MyDBSessionController.updateDbData()", "myDB.MSG_CANNOT_UPDATE_LINE", e);
+          warn("mydb", "MyDBSessionController.updateDbData()", "myDB.MSG_CANNOT_UPDATE_LINE", e);
       return MessageFormat.format(resources.getString("LineUpdateError"), e.getMessage());
     } finally {
       closeConnection();
@@ -993,7 +993,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDB", "MyDBSessionController.getLineDeletionErrorMessage()",
+        SilverTrace.warn("mydb", "MyDBSessionController.getLineDeletionErrorMessage()",
             "myDB.MSG_CANNOT_CHECK_LINE_DELETION", e);
       } finally {
         closeConnection();
@@ -1032,7 +1032,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       prepStmt.executeUpdate();
       closeConnection();
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.deleteDbData()",
+      SilverTrace.warn("mydb", "MyDBSessionController.deleteDbData()",
           "myDB.MSG_CANNOT_DELETE_LINE", e);
       return MessageFormat.format(resources.getString("LineDeletionError"), e.getMessage());
     } finally {
@@ -1148,7 +1148,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
       return true;
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.createTable()",
+      SilverTrace.warn("mydb", "MyDBSessionController.createTable()",
           "myDB.MSG_CANNOT_CREATE_TABLE", e);
       tableManager.setErrorLabel(MessageFormat.format(resources.getString("TableCreationError"), 
           e.getMessage()));
@@ -1179,7 +1179,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       }
       return true;
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.dropTable()",
+      SilverTrace.warn("mydb", "MyDBSessionController.dropTable()",
           "myDB.MSG_CANNOT_DELETE_TABLE", e);
       tableManager.setErrorLabel(MessageFormat.format(resources.getString("TableDeletionError"), 
           e.getMessage()));
@@ -1308,7 +1308,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           try {
             prepStmt.setDate(index, dateFormatter.stringToSql(value));
           } catch (ParseException e) {
-            SilverTrace.warn("myDB", "MyDBSessionController.setValueByType()",
+            SilverTrace.warn("mydb", "MyDBSessionController.setValueByType()",
                 "myDB.MSG_CANNOT_PARSE_DATE", "Date=" + value, e);
             prepStmt.setNull(index, Types.DATE);
           }

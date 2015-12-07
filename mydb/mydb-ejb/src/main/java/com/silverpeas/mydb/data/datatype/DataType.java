@@ -66,7 +66,7 @@ public class DataType {
         Class clazz = Class.forName(className);
         this.sqlType = clazz.getDeclaredField(fieldName).getInt(null);
       } catch (Exception e) {
-        SilverTrace.warn("myDB", "DataType.setSqlType()",
+        SilverTrace.warn("mydb", "DataType.setSqlType()",
             "myDB.MSG_CANNOT_SET_SQL_TYPE", "Type=" + sqlType, e);
       }
     }
@@ -76,7 +76,7 @@ public class DataType {
     try {
       this.javaType = Class.forName(javaType);
     } catch (ClassNotFoundException e) {
-      SilverTrace.warn("myDB", "DataType.setJavaType()",
+      SilverTrace.warn("mydb", "DataType.setJavaType()",
           "myDB.MSG_CANNOT_SET_JAVA_TYPE", "Type=" + javaType, e);
     }
   }

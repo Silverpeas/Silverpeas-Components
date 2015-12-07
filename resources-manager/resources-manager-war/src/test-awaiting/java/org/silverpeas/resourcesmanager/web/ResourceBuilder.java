@@ -23,8 +23,8 @@
  */
 package org.silverpeas.resourcesmanager.web;
 
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.model.ResourceStatus;
+import org.silverpeas.resourcesmanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.ResourceStatus;
 
 /**
  * @author Yohann Chastagnier

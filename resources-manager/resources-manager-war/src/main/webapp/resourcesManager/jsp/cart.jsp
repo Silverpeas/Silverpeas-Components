@@ -27,8 +27,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
-<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
+<%@ page import="org.silverpeas.resourcesmanager.model.Resource"%>
+<%@ page import="org.silverpeas.resourcesmanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ include file="check.jsp" %>

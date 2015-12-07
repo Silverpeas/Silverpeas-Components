@@ -45,7 +45,7 @@ public class MyDBException extends SilverpeasException {
   }
 
   public String getModule() {
-    return "myDB";
+    return "mydb";
   }
 
 }

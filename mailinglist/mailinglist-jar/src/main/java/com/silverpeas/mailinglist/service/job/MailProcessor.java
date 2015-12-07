@@ -223,7 +223,7 @@ public class MailProcessor {
     }
     message.setTitle(mail.getSubject());
     SilverTrace
-        .info("mailingList", "MailProcessor.prepareMessage()", "mailinglist.notification.error",
+        .info("mailinglist", "MailProcessor.prepareMessage()", "mailinglist.notification.error",
             "Processing message " + mail.getSubject());
     Object content = mail.getContent();
     if (content instanceof Multipart) {
@@ -239,7 +239,7 @@ public class MailProcessor {
       ContentType type = new ContentType(contentType);
       return type.getBaseType();
     } catch (ParseException e) {
-      SilverTrace.error("mailingList", "MailProcessor.extractContentType()",
+      SilverTrace.error("mailinglist", "MailProcessor.extractContentType()",
           "mailinglist.notification.error", e);
     }
     return contentType;

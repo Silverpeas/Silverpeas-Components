@@ -81,7 +81,7 @@ public class MailingListServiceImpl implements MailingListService {
         if (!componentId.equalsIgnoreCase(currentId)) {
           String param = organisationController.getComponentParameterValue(id, PARAM_ADDRESS);
           if (param != null && param.equalsIgnoreCase(subscribedAddress)) {
-            SilverTrace.error("mailingList", "MailingListServiceImpl.createMailingList",
+            SilverTrace.error("mailinglist", "MailingListServiceImpl.createMailingList",
                 "mailinglist.creation.existingAddress", subscribedAddress);
             throw new MailingListRuntimeException(
                 "com.silverpeas.mailinglist.service.model.MailingListServiceImpl",

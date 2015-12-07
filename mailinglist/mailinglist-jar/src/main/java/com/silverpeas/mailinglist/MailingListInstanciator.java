@@ -39,13 +39,13 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("mailingList", "MailingListInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("mailinglist", "MailingListInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     MailingList mailingList = new MailingList();
     mailingList.setComponentId(componentId);
-    SilverTrace.info("mailingList", "MailingListInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("mailinglist", "MailingListInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
     MailingListServicesProvider.getMailingListService().createMailingList(mailingList);
-    SilverTrace.info("mailingList", "MailingListInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("mailinglist", "MailingListInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
     //mailingList = mailingListServicesProvider.getMailingListService().findMailingList(componentId);
     MailingListComponent component = new MailingListComponent(componentId);
     MailingListServicesProvider.getMessageChecker().addMessageListener(component);
@@ -54,10 +54,10 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("mailingList", "MailingListInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("mailinglist", "MailingListInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     MailingListServicesProvider.getMailingListService().deleteMailingList(componentId);
-    SilverTrace.info("mailingList", "MailingListInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("mailinglist", "MailingListInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
     MailingListServicesProvider.getMessageChecker().removeListener(componentId);
   }
 }

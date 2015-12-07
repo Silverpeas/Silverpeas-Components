@@ -109,7 +109,7 @@ public class SurveyContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("Survey", "SurveyContentManager.getContentManager()",
+        SilverTrace.fatal("survey", "SurveyContentManager.getContentManager()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }

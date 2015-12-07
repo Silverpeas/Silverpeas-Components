@@ -40,12 +40,11 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.resourcemanager.ResourcesManagerProvider;
-import org.silverpeas.resourcemanager.control.ResourcesManagerRuntimeException;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.model.ResourceValidator;
+import org.silverpeas.resourcesmanager.ResourcesManagerProvider;
+import org.silverpeas.resourcesmanager.model.Category;
+import org.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;
@@ -60,7 +59,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
+import static org.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 public class ResourcesManagerSessionController extends AbstractComponentSessionController {
 

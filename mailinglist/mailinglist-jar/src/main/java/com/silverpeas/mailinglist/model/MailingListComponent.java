@@ -68,7 +68,7 @@ public class MailingListComponent implements MessageListener {
         try {
           helper.notify(message, list);
         } catch (Exception e) {
-          SilverTrace.error("mailingList", "MailingListComponent.onMessage",
+          SilverTrace.error("mailinglist", "MailingListComponent.onMessage",
               "mailinglist.notification.error", e);
         }
       }

@@ -26,10 +26,10 @@ package org.silverpeas.resourcesmanager.web;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.model.ResourceStatus;
+import org.silverpeas.resourcesmanager.model.Category;
+import org.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.ResourceStatus;
 
 import java.util.Iterator;
 

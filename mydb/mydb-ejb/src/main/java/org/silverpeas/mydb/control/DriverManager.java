@@ -110,7 +110,7 @@ public class DriverManager {
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("myDB", "DriverManager.loadDrivers()",
+      SilverTrace.warn("mydb", "DriverManager.loadDrivers()",
           "myDB.MSG_DRIVERS_LOADING_FAILED", e);
     }
   }
@@ -126,12 +126,12 @@ public class DriverManager {
         if (!StringUtil.isDefined(currentDriver)) {
           currentDriver = driversNames[0];
           SilverTrace
-              .info("myDB", "DriverManager.getDriver()", "myDB.MSG_DRIVER_UNDEFINED",
+              .info("mydb", "DriverManager.getDriver()", "myDB.MSG_DRIVER_UNDEFINED",
               "driverName undefined ! default one used instead = " + currentDriver);
         }
         driver = registerAndInstanciateDriver(currentDriver);
       } catch (Exception e) {
-        SilverTrace.warn("myDB", "DriverManager.getDriver()",
+        SilverTrace.warn("mydb", "DriverManager.getDriver()",
             "myDB.MSG_DRIVER_INIT_FAILED", "DriverName=" + currentDriver, e);
       }
     }
@@ -217,10 +217,10 @@ public class DriverManager {
   private Driver registerAndInstanciateDriver(String driverName)
       throws ClassNotFoundException, InstantiationException,
       IllegalAccessException {
-    SilverTrace.info("myDB",
+    SilverTrace.info("mydb",
         "MyDBSessionController.registerAndInstanciateDriver()",
         "root.MSG_GEN_ENTER_METHOD", "driverName=" + driverName);
-    SilverTrace.info("myDB",
+    SilverTrace.info("mydb",
         "MyDBSessionController.registerAndInstanciateDriver()",
         "root.MSG_GEN_PARAM_VALUE", "driversClassNames.length=" + driversCount);
 
@@ -232,7 +232,7 @@ public class DriverManager {
    * @return The index of the driver corresponding to the name given as parameter.
    */
   private int searchDriverIndex(String driverName) {
-    SilverTrace.info("myDB", "DriverManager.searchDriverIndex()",
+    SilverTrace.info("mydb", "DriverManager.searchDriverIndex()",
         "myDB.MSG_DRIVER_NAME", "DriverName=" + driverName);
     int i = 0;
     while (i < driversCount) {
@@ -241,7 +241,7 @@ public class DriverManager {
       }
       i++;
     }
-    SilverTrace.warn("myDB", "DriverManager.searchDriverIndex()",
+    SilverTrace.warn("mydb", "DriverManager.searchDriverIndex()",
         "myDB.MSG_DRIVER_NOT_FOUND", "DriverName=" + driverName);
     return -1;
   }

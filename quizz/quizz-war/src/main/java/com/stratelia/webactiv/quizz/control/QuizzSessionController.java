@@ -720,7 +720,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyAction",
+        SilverTrace.error("survey", "SurveySessionController.sendNewSurveyAction",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {

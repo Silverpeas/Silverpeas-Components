@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.util.ResourceUtil;
+import org.silverpeas.resourcesmanager.model.Resource;
+import org.silverpeas.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.servlet.HttpRequest;
 
@@ -64,7 +64,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
       try {
         Long reservationId = requestWrapper.getParameterAsLong("reservationId");
         SilverTrace
-            .info("resourcesManager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
+            .info("resourcesmanager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
                 "reservationId=" + reservationId);
         String beginDate = req.getParameter("beginDate");
         String beginHour = req.getParameter("beginHour");
@@ -88,7 +88,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         }
 
         SilverTrace
-            .info("resourcesManager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
+            .info("resourcesmanager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
                 " avant concaténation listResourceName= " + resourceNames);
         if (resourceNames.length() > 0) {
           resourceNames
@@ -96,7 +96,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         }
 
         SilverTrace
-            .info("resourcesManager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
+            .info("resourcesmanager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
                 "listResourceName= " + resourceNames.toString());
         res.setHeader("charset", "UTF-8");
 
@@ -104,7 +104,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         writer.write(resourceNames.toString());
       } catch (Exception e) {
         SilverTrace
-            .error("resourcesManager", "AjaxResourcesManagerServlet", "exception in doPost method",
+            .error("resourcesmanager", "AjaxResourcesManagerServlet", "exception in doPost method",
                 e);
       }
     }

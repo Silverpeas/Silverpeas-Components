@@ -240,7 +240,7 @@ public class FormManager {
           try {
             field.setStringValue(dateFormatter.stringToFormString(data[i][1]));
           } catch (ParseException e) {
-            SilverTrace.warn("myDB", "FormManager.fillDataRecord()",
+            SilverTrace.warn("mydb", "FormManager.fillDataRecord()",
                 "myDB.MSG_CANNOT_FORMAT_DATE", "Date=" + data[i][1], e);
             field.setStringValue("");
           }

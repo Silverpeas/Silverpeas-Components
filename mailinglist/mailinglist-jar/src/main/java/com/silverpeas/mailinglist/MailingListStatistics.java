@@ -53,7 +53,7 @@ public class MailingListStatistics implements ComponentStatisticsProvider {
       myCouple.setCountVolume(totalNumberOfMessages);
     } else {
       SilverTrace
-          .warn("mailingList", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
+          .warn("mailinglist", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
               "space = " + spaceId + ", componentId = " + componentId +
                   " doesn't look like a mailinglist");
       myCouple.setCountVolume(0);
