@@ -43,11 +43,11 @@
 
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="com.silverpeas.kmelia.SearchContext"%>
-<%@ page import="com.silverpeas.form.*"%>
+<%@page import="com.silverpeas.form.*"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
-<%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
-<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
+<%@page import="org.silverpeas.rating.web.RaterRatingEntity" %>
+<%@page import="org.silverpeas.util.exception.SilverpeasException" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -123,13 +123,8 @@
   String alertSrc = m_context + "/util/icons/alert.gif";
   String deletePubliSrc = m_context + "/util/icons/publicationDelete.gif";
   String pdfSrc = m_context + "/util/icons/publication_to_pdf.gif";
-  String inDraftSrc = m_context + "/util/icons/masque.gif";
-  String outDraftSrc = m_context + "/util/icons/visible.gif";
-  String validateSrc = m_context + "/util/icons/ok.gif";
-  String refusedSrc = m_context + "/util/icons/wrong.gif";
   String pubDraftInSrc = m_context + "/util/icons/publicationDraftIn.gif";
   String pubDraftOutSrc = m_context + "/util/icons/publicationDraftOut.gif";
-  String exportSrc = m_context + "/util/icons/exportComponent.gif";
   String favoriteAddSrc = m_context + "/util/icons/addFavorit.gif";
 
   String screenMessage = "";
@@ -180,6 +175,11 @@
 
     //modification pour acceder e l'onglet voir aussi
     kmeliaScc.setSessionOwner(isOwner && validatorsOK);
+  }
+
+  if (!toolboxMode && isOwner && kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone() && pubDetail.isDraft()) {
+    screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
+        "kmelia.publication.draft.info") + "</div>";
   }
 
   if (SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
@@ -765,20 +765,7 @@
 				        /*********************************************************************************************************************/
 				        out.print("<h2 class=\"publiName\">");
 
-						   out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
-
-				     		   if (!"user".equals(profile)) {
-						          if (pubDetail.isValidationRequired()) {
-						            out.println(" <img src=\"" + outDraftSrc + "\" alt=\"" + resources.getString(
-						                "PubStateToValidate") + "\"  id=\"status\"/>");
-						          } else if (pubDetail.isDraft()) {
-						            out.println(" <img src=\"" + inDraftSrc + "\" alt=\"" + resources.getString("PubStateDraft") + "\"  id=\"status\"/>");
-						          } else if (pubDetail.isValid()) {
-						            out.println(" <img src=\"" + validateSrc + "\" alt=\"" + resources.getString("PublicationValidated") + "\"  id=\"status\"/>");
-						          } else if (pubDetail.isRefused()) {
-						            out.println(" <img src=\"" + refusedSrc + "\" alt=\"" + resources.getString("PublicationRefused") + "\"  id=\"status\"/>");
-						          }
-						        }
+						    out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
 
 				        out.println("</h2>");
 
