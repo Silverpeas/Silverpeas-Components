@@ -32,13 +32,13 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.notification
     .FormsOnlinePendingValidationRequestUserNotification;
@@ -49,7 +49,6 @@ import org.silverpeas.components.formsonline.notification
 import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -79,25 +78,25 @@ public class DefaultFormsOnlineService
   private List<UserDetail> getSendersAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
     List<String> userIds = getDAO().getSendersAsUsers(pk);
     UserDetail[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
-    return Arrays.asList(details);
+    return CollectionUtil.asList(details);
   }
 
   private List<Group> getSendersAsGroups(FormPK pk) throws FormsOnlineDatabaseException {
     List<String> groupIds = getDAO().getSendersAsGroups(pk);
     Group[] groups = organizationController.getGroups(groupIds.toArray(new String[0]));
-    return Arrays.asList(groups);
+    return CollectionUtil.asList(groups);
   }
 
   private List<UserDetail> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
     List<String> userIds = getDAO().getReceiversAsUsers(pk);
     UserDetail[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
-    return Arrays.asList(details);
+    return CollectionUtil.asList(details);
   }
 
   private List<Group> getReceiversAsGroups(FormPK pk) throws FormsOnlineDatabaseException {
     List<String> groupIds = getDAO().getReceiversAsGroups(pk);
     Group[] groups = organizationController.getGroups(groupIds.toArray(new String[0]));
-    return Arrays.asList(groups);
+    return CollectionUtil.asList(groups);
   }
 
   private boolean isValidator(FormPK pk, String userId) throws FormsOnlineDatabaseException {
