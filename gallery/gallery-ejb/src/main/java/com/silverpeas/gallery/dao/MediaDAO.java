@@ -644,7 +644,7 @@ public class MediaDAO {
   }
 
   /**
-   * get my SocialInformationGallery according to the type of data base used(PostgresSQL,Oracle,
+   * get my SocialInformationGallery according to the type of data base used (PostgresSQL,Oracle,
    * MMS).
    * @param userId the identifier of a user.
    * @param period the period on which the data are requested.
@@ -653,7 +653,7 @@ public class MediaDAO {
    */
   public static List<SocialInformation> getAllMediaIdByUserId(String userId, Period period)
       throws SQLException {
-    return createSelect(
+    return create(
         "(select createDate AS dateinformation, mediaId, 'new' as type from SC_Gallery_Media " +
             "where createdBy = ? and createDate >= ? and createDate <= ? ) " +
             "union (select lastUpdateDate AS dateinformation, mediaId , " +

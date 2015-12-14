@@ -122,7 +122,7 @@ public class GalleryBmEJB implements GalleryBm {
       }
       return albums;
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllAlbum()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllAlbums()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
     }
   }
@@ -186,7 +186,7 @@ public class GalleryBmEJB implements GalleryBm {
       return MediaDAO.getByCriteria(MediaCriteria.fromComponentInstanceId(mediaPK.getInstanceId())
               .identifierIsOneOf(mediaPK.getId()).withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getPhoto()", SilverpeasRuntimeException.ERROR,
+      throw new GalleryRuntimeException("GalleryBmEJB.getMedia()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -203,7 +203,7 @@ public class GalleryBmEJB implements GalleryBm {
       return MediaDAO.findByCriteria(
           MediaCriteria.fromComponentInstanceId(instanceId).withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -223,7 +223,7 @@ public class GalleryBmEJB implements GalleryBm {
           MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
               .withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -241,7 +241,7 @@ public class GalleryBmEJB implements GalleryBm {
       final String instanceId = nodePK.getInstanceId();
       return PhotoDAO.getAllPhoto(albumId, instanceId, visibility);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -373,7 +373,7 @@ public class GalleryBmEJB implements GalleryBm {
       }
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBm.deletePhoto()",
+      throw new GalleryRuntimeException("GalleryBm.deleteMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_DELETE", e);
     }
   }
@@ -385,7 +385,7 @@ public class GalleryBmEJB implements GalleryBm {
           .orderedBy(CREATE_DATE_DESC, IDENTIFIER_DESC)
           .limitResultTo(GalleryComponentSettings.getNbMediaDisplayedPerPage()));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getLastRegisteredMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -394,7 +394,7 @@ public class GalleryBmEJB implements GalleryBm {
     try {
       return DBUtil.openConnection();
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.initCon()", SilverpeasException.ERROR,
+      throw new GalleryRuntimeException("GalleryBmEJB.openConnection()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
@@ -426,7 +426,7 @@ public class GalleryBmEJB implements GalleryBm {
     try {
       MediaDAO.deleteAllMediaPath(media);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.deleteAllMediaPath()",
+      throw new GalleryRuntimeException("GalleryBmEJB.removeMediaFromAllAlbums()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
     }
   }
@@ -438,7 +438,7 @@ public class GalleryBmEJB implements GalleryBm {
         MediaDAO.saveMediaPath(media, albumId);
       }
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.deleteAllMediaPath()",
+      throw new GalleryRuntimeException("GalleryBmEJB.addMediaToAlbums()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
     }
   }
@@ -604,13 +604,13 @@ public class GalleryBmEJB implements GalleryBm {
 
             if (media != null) {
               SilverTrace
-                  .info("gallery", "GalleryBmEJB.getResultSearch()", "root.MSG_GEN_ENTER_METHOD",
+                  .info("gallery", "GalleryBmEJB.search()", "root.MSG_GEN_ENTER_METHOD",
                       "media = " + media.getMediaPK().getId());
               mediaList.add(media);
             }
           });
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getResultSearch()",
+      throw new GalleryRuntimeException("GallerySessionController.search()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
     }
     return mediaList;
@@ -622,7 +622,7 @@ public class GalleryBmEJB implements GalleryBm {
       return MediaDAO.findByCriteria(MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(nbDays)
           .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllMediaThatWillBeNotVisible()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -685,7 +685,7 @@ public class GalleryBmEJB implements GalleryBm {
     try {
       return OrderDAO.findByCriteria(MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(nbDays));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllOrderToDelete()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
     }
   }
@@ -698,7 +698,7 @@ public class GalleryBmEJB implements GalleryBm {
         OrderDAO.deleteOrder(order);
       }
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.deleteOrder()",
+      throw new GalleryRuntimeException("GalleryBmEJB.deleteOrders()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
     }
   }
@@ -718,7 +718,7 @@ public class GalleryBmEJB implements GalleryBm {
     try {
       return MediaDAO.getAllMediaIdByUserId(userId, period);
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllMediaByUserId()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
@@ -736,7 +736,7 @@ public class GalleryBmEJB implements GalleryBm {
       return MediaDAO
           .getSocialInformationListOfMyContacts(listOfUserId, availableComponent, period);
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
+      throw new GalleryRuntimeException("GalleryBmEJB.getSocialInformationListOfMyContacts()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
