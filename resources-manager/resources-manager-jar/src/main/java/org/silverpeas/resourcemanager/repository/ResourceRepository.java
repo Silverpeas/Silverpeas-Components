@@ -37,7 +37,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   @Query("from Resource resource WHERE resource.category.id = :categoryId")
   public List<Resource> findAllResourcesByCategory(@Param("categoryId") Long categoryId);
 
-  @Query("from Resource resource WHERE resource.instanceId = :instanceId AND resource.bookable = 1 AND resource.category.bookable = 1")
+  @Query("from Resource resource WHERE resource.instanceId = :instanceId AND resource.bookable = 1 AND resource.category.bookable = 1 ORDER BY resource.name")
   public List<Resource> findAllBookableResources(@Param("instanceId") String instanceId);
 
   @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :reservationId")
