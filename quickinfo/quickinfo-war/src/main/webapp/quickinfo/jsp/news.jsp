@@ -24,6 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.components.quickinfo.model.News"%>
+<%@page import="com.stratelia.webactiv.SilverpeasRole" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -35,11 +36,16 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="news" value="${requestScope['News']}"/>
+<jsp:useBean id="news" type="org.silverpeas.components.quickinfo.model.News"/>
 <c:set var="role" value="${requestScope['Role']}"/>
+<jsp:useBean id="role" type="java.lang.String"/>
+<c:set var="greatestUserRole" value="<%=SilverpeasRole.from(role)%>"/>
+<jsp:useBean id="greatestUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
 <c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
-<c:set var="viewOnly" value="${requestScope['ViewOnly']}"/>
+<c:set var="viewOnly" value="${not empty requestScope['ViewOnly'] ? requestScope['ViewOnly'] : false}"/>
+<jsp:useBean id="viewOnly" type="java.lang.Boolean"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%
@@ -133,13 +139,12 @@ function submitOnHomepage() {
 	</div>
 
   <%-- Attachments --%>
-  <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
-    <c:param name="Id">${news.publicationId}</c:param>
-    <c:param name="Profile" value="${role eq 'user' ? 'user' : 'admin'}" />
-    <c:param name="ComponentId">${news.componentInstanceId}</c:param>
-    <c:param name="Context" value="${'attachment'}" />
-    <c:param name="addFileMenu" value="${'true'}" />
-  </c:import>
+  <c:set var="callbackUrl"><%=URLManager.getURL("useless", news.getComponentInstanceId()) + (viewOnly ? "ViewOnly" : "View") + "?Id=" + news.getId()%></c:set>
+  <c:set var="greatestUserRoleForAttachments" value="<%=greatestUserRole == SilverpeasRole.user ? SilverpeasRole.user : SilverpeasRole.admin%>"/>
+  <viewTags:displayAttachments componentInstanceId="${news.componentInstanceId}"
+                               resourceId="${news.publicationId}"
+                               greatestUserRole="${greatestUserRoleForAttachments}"
+                               reloadCallbackUrl="${callbackUrl}"/>
                           
   <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
     
