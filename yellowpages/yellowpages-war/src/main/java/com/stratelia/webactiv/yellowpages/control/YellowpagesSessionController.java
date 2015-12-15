@@ -88,6 +88,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
@@ -1050,15 +1051,18 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<String> getArrayHeaders() {
     List<String> arrayHeaders = new ArrayList<>();
     List<String> properties = getProperties();
-    String nameHeader;
     for (String nameProperty : properties) {
-      if (nameProperty.startsWith("domain.")) {
-        // on recherche une propriété du domaine
-        String property = nameProperty.substring(7);
-        nameHeader = getDomainMultilang().getString(property);
-      } else {
-        // on recherche une propriété classique
-        nameHeader = getMultilang().getString("yellowpages.column." + nameProperty);
+      String nameHeader = null;
+      try {
+        if (nameProperty.startsWith("domain.")) {
+          // on recherche une propriété du domaine
+          String property = nameProperty.substring(7);
+          nameHeader = getDomainMultilang().getString(property);
+        } else {
+          // on recherche une propriété classique
+          nameHeader = getMultilang().getString("yellowpages.column." + nameProperty);
+        }
+      } catch (MissingResourceException ignore) {
       }
       arrayHeaders.add(nameHeader);
     }

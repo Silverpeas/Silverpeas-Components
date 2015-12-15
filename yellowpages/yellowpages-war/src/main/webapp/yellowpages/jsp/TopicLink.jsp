@@ -129,7 +129,7 @@ function B_VALIDER_ONCLICK() {
     arrayPane.setVisibleLineNumber(1000);
     ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(yellowpagesScc.getString("NomThemes"));
     arrayColumnTopic.setSortable(false);
-    ArrayColumn arrayColumnContact = arrayPane.addArrayColumn(yellowpagesScc.getString("Contactlier"));
+    ArrayColumn arrayColumnContact = arrayPane.addArrayColumn("");
     arrayColumnContact.setSortable(false);
 
     String resultat = afficheArbo(arrayPane, "0", yellowpagesScc, 0, yellowpagesScc.getContactFathers(contactId),currentTopic.getNodeDetail().getNodePK().getId());

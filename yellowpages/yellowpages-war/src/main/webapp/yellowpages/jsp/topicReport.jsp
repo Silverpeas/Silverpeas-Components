@@ -4,7 +4,7 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
       String linkedPathString = new String();
       String pathString = new String();
 	  String nodeName = "";
-	  String bundleName = "";
+	  String bundleName = null;
       int nbItemInPath = path.size();
       Iterator iterator = path.iterator();
       boolean alreadyCut = false;
@@ -13,8 +13,11 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
             NodeDetail nodeInPath = (NodeDetail) iterator.next();
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
 				nodeName = EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
-				bundleName = Scc.getString(nodeName);
-				// V�rifie que le nom n'est pas Corbeille
+        try {
+          bundleName = Scc.getString(nodeName);
+        } catch (Exception ignore) {
+        }
+				// Vérifie que le nom n'est pas Corbeille
 				if (bundleName != null){
 					nodeName = bundleName;
 				}
