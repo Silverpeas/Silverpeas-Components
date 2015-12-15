@@ -31,7 +31,7 @@
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
-<%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%
 	boolean isSubscriber = ((Boolean) request.getAttribute("IsSubscriber")).booleanValue();
 
