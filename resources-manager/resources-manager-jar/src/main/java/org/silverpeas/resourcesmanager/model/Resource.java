@@ -42,7 +42,7 @@ import static org.silverpeas.resourcesmanager.model.ResourceStatus.*;
     query = "SELECT resource FROM Resource resource WHERE resource.category.id = :categoryId"),
     @NamedQuery(name = "resource.findAllBookableResources",
         query = "SELECT resource FROM Resource resource WHERE resource.instanceId = :instanceId " +
-            "AND resource.bookable = 1 AND resource.category.bookable = 1"),
+            "AND resource.bookable = 1 AND resource.category.bookable = 1 ORDER BY resource.name"),
     @NamedQuery(name = "resource.deleteResourcesFromCategory",
         query = "DELETE Resource resource WHERE resource.category.id = :categoryId")
 })

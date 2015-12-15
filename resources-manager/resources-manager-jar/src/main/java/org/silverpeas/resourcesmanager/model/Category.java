@@ -42,7 +42,7 @@ import java.util.List;
 @Entity
 @Table(name = "sc_resources_category")
 @NamedQueries({@NamedQuery(name = "category.findByInstanceId",
-    query = "SELECT category FROM Category category WHERE category.instanceId = :instanceId")})
+    query = "SELECT category FROM Category category WHERE category.instanceId = :instanceId ORDER BY category.name")})
 public class Category extends AbstractJpaCustomEntity<Category, UniqueLongIdentifier> {
   private static final long serialVersionUID = 4947144625712662946L;
 
