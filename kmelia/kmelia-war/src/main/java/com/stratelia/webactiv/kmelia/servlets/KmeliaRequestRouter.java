@@ -28,6 +28,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.record.GenericDataRecord;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.SearchContext;
@@ -1300,7 +1301,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (!StringUtil.isDefined(xmlFormName)) {
           xmlFormName = request.getParameter("Name");
         }
-        setXMLForm(request, kmelia, xmlFormName);
+        setXMLUpdateForm(request, kmelia, xmlFormName);
         // put current publication
         request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
             getDetail());
@@ -1356,7 +1357,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         Form form = pub.getUpdateForm();
         String language = checkLanguage(kmelia, pubDetail);
         DataRecord data = set.getRecord(pubId, language);
-        if (data == null) {
+        if (data == null || (language != null && !language.equals(data.getLanguage()))) {
+          // This publication haven't got any content at all or for requested language
           data = set.getEmptyRecord();
           data.setId(pubId);
           data.setLanguage(language);
@@ -2155,8 +2157,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     kmelia.setWizardRow("0");
   }
 
-  private void setXMLForm(HttpRequest request, KmeliaSessionController kmelia, String xmlFormName)
-      throws PublicationTemplateException, FormException {
+  private void setXMLUpdateForm(HttpRequest request, KmeliaSessionController kmelia,
+      String xmlFormName) throws PublicationTemplateException, FormException {
     PublicationDetail pubDetail = kmelia.getSessionPubliOrClone().getDetail();
     String pubId = pubDetail.getPK().getId();
 
@@ -2181,9 +2183,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String language = checkLanguage(kmelia, pubDetail);
 
     DataRecord data = recordSet.getRecord(pubId, language);
-    if (data == null) {
+    if (data == null || (language != null && !language.equals(data.getLanguage()))) {
+      // This publication haven't got any content at all or for requested language
       data = recordSet.getEmptyRecord();
       data.setId(pubId);
+      data.setLanguage(language);
     }
 
     request.setAttribute("Form", formUpdate);
