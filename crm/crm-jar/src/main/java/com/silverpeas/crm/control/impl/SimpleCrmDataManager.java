@@ -77,9 +77,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
   @Override
   public void createCrm(Crm crm) {
     try {
-      SilverTrace.debug("crm", "SimpleCrmDataManager.createCrm()", "crm=" + crm);
       WAPrimaryKey pk = crmDAO.add(crm);
-      SilverTrace.debug("crm", "SimpleCrmDataManager.createCrm()", "add ok=");
       crm.setPK(pk);
     } catch (PersistenceException pe) {
       throw new CrmException(SimpleCrmDataManager.class.getName(),
@@ -205,9 +203,6 @@ public class SimpleCrmDataManager implements CrmDataManager {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     ComponentInst ci = oc.getComponentInst(componentId);
     Crm crm = new Crm();
-    SilverTrace.debug("crm", "SimpleCrmDataManager.createCrm()",
-        "spaceId=" + spaceId + " ; componentId=" + componentId + " ; ci.getLabel()=" +
-        ci.getLabel());
     crm.setInstanceId(componentId);
     crm.setClientName(ci.getLabel());
     createCrm(crm);

@@ -35,14 +35,13 @@ import org.odftoolkit.odfdom.pkg.OdfPackage;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.draw.Frame;
 import org.odftoolkit.simple.draw.Image;
+import org.silverpeas.util.logging.SilverLogger;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.net.URI;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -307,8 +306,8 @@ class ODTDocumentsMerging extends TextDocument {
       String imagePath = imageFinder.findImageReferenceddBy(href);
       imageURI = URI.create(imagePath);
     } catch (Exception ex) {
-      Logger.getLogger(ODTDocumentsMerging.class.getName()).log(Level.SEVERE, "Cannot find "
-              + "the image referenced by the href='" + href + "'", ex);
+      SilverLogger.getLogger(this)
+          .error("Cannot find the image referenced by the href=''{0}''", new String[]{href}, ex);
     }
     return imageURI;
   }

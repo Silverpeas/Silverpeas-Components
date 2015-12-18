@@ -43,9 +43,6 @@ public class BackToSearchResultsHandler extends FunctionHandler {
 
     // Retrieves search query
     String wordSearch = request.getParameter("WordSearch");
-    SilverTrace.debug("silverCrawler", "SearchHandler.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "wordSearch : " + wordSearch);
-
     // Retrieves last results
     Collection<FileDetail> docs = sessionController.getCurrentResultSearch();
 

@@ -40,7 +40,7 @@ public class SurveyInstanciator extends Object implements ComponentsInstanciator
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("Survey", "SurveyInstanciator.create", "Survey.MSG_ENTRY_METHOD");
+    SilverTrace.info("survey", "SurveyInstanciator.create", "Survey.MSG_ENTRY_METHOD");
     QuestionInstanciator questionInst = new QuestionInstanciator("org.silverpeas.survey");
     questionInst.create(con, spaceId, componentId, userId);
     QuestionContainerInstanciator questionContainerInst = new QuestionContainerInstanciator(
@@ -51,7 +51,7 @@ public class SurveyInstanciator extends Object implements ComponentsInstanciator
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("Survey", "SurveyInstanciator.delete", "Survey.MSG_ENTRY_METHOD");
+    SilverTrace.info("survey", "SurveyInstanciator.delete", "Survey.MSG_ENTRY_METHOD");
     QuestionInstanciator questionInst = new QuestionInstanciator("org.silverpeas.survey");
     questionInst.delete(con, spaceId, componentId, userId);
     QuestionContainerInstanciator questionContainerInst = new QuestionContainerInstanciator(

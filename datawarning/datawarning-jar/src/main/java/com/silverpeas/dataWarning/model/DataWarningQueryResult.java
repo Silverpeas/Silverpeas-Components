@@ -255,19 +255,9 @@ public class DataWarningQueryResult extends Object {
     if (isPersoEnabled()) {
       // Translate user Id to user Perso Value
       String userPersoValue = returnPersoValue(userId);
-      SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
-          "root.MSG_GEN_PARAM_VALUE", "userPersoValue = " + userPersoValue);
       List<List> valret = new ArrayList<>();
       for (int i = 0; i < values.size(); i++) {
         List valeur = (List) getValues().get(i);
-        SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
-            "root.MSG_GEN_PARAM_VALUE", "valeur = " + valeur);
-        SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
-            "root.MSG_GEN_PARAM_VALUE", "valeur.size = " + valeur.size());
-        SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
-            "root.MSG_GEN_PARAM_VALUE", "persoColumnNumber = " + persoColumnNumber);
-        SilverTrace.debug("dataWarning", "DataWarningQueryResult.getValues(userId)",
-            "root.MSG_GEN_PARAM_VALUE", "userPersoValue = " + userPersoValue);
         if (valeur.size() > 1) {
           if (valeur.get(persoColumnNumber).equals(userPersoValue)) {
             valret.add(valeur);

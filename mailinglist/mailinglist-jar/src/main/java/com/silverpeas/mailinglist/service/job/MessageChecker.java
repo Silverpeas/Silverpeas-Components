@@ -206,11 +206,11 @@ public class MessageChecker implements SchedulerEventListener {
           }
         } catch (MessagingException mex) {
           SilverTrace
-              .error("mailingList", "MessageChecker.checkNewMessages", "mail.processing.error",
+              .error("mailinglist", "MessageChecker.checkNewMessages", "mail.processing.error",
                   mex);
         } catch (IOException ioex) {
           SilverTrace
-              .error("mailingList", "MessageChecker.checkNewMessages", "mail.io.error", ioex);
+              .error("mailinglist", "MessageChecker.checkNewMessages", "mail.io.error", ioex);
         }
       }
       for (final Map.Entry<MessageListener, MessageEvent> entry : eventsMap.entrySet()) {
@@ -219,7 +219,7 @@ public class MessageChecker implements SchedulerEventListener {
       }
     } catch (Exception mex) {
       SilverTrace
-          .error("mailingList", "MessageChecker.checkNewMessages", "mail.processing.error", mex);
+          .error("mailinglist", "MessageChecker.checkNewMessages", "mail.processing.error", mex);
     } finally {
       // -- Close down nicely --
       try {
@@ -231,7 +231,7 @@ public class MessageChecker implements SchedulerEventListener {
         }
       } catch (Exception ex2) {
         SilverTrace
-            .error("mailingList", "MessageChecker.checkNewMessages", "mail.processing.error", ex2);
+            .error("mailinglist", "MessageChecker.checkNewMessages", "mail.processing.error", ex2);
       }
     }
 
@@ -402,26 +402,24 @@ public class MessageChecker implements SchedulerEventListener {
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     final String jobName = anEvent.getJobExecutionContext().getJobName();
     if (this.listeners != null && !this.listeners.isEmpty()) {
-      SilverTrace.info("mailingList", "MessageChecker.handleSchedulerEvent",
+      SilverTrace.info("mailinglist", "MessageChecker.handleSchedulerEvent",
           "The job '" + jobName + "' executing ....");
       this.checkNewMessages(new Date());
-      SilverTrace.info("mailingList", "MessageChecker.handleSchedulerEvent",
+      SilverTrace.info("mailinglist", "MessageChecker.handleSchedulerEvent",
           "The job '" + jobName + "' done!!");
     } else {
-      SilverTrace.info("mailingList", "MessageChecker.handleSchedulerEvent",
+      SilverTrace.info("mailinglist", "MessageChecker.handleSchedulerEvent",
           "The job '" + jobName + "' has no listeners ....");
     }
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("mailingList", "MessageChecker.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("mailingList", "MessageChecker.handleSchedulerEvent",
+    SilverTrace.error("mailinglist", "MessageChecker.handleSchedulerEvent",
         "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

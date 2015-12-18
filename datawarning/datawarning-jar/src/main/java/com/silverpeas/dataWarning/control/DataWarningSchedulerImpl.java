@@ -199,13 +199,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
           //Conditional Query Type (Trigger)
           for (final String idAllUniqueUser : idAllUniqueUsers) {
             StringBuilder msgByUser = new StringBuilder();
-            SilverTrace
-                .debug("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                    "root.MSG_GEN_PARAM_VALUE", "Nb Rows = " + dwqr.getNbRows(idAllUniqueUser));
             if (dwr.getTriggerEnabled(idAllUniqueUser)) {
-              SilverTrace
-                  .debug("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-                      "root.MSG_GEN_PARAM_VALUE", "idAllUniqueUsers[j]=" + idAllUniqueUser);
               msgByUser.append(messages.getString("resultatSeuilValeur")).append(" : ").append(dwr.
                   getTriggerActualValue(idAllUniqueUser)).append("\n\n");
               msgByUser.append(buildResultForMessage(dwqr, nbRowMax, idAllUniqueUser));
@@ -277,17 +271,10 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
       ArrayList theRow = (ArrayList) vals.get(j);
       //Do not send persoColumn if necessary
       if (dwqr.isPersoEnabled() && theRow.get(dwqr.getPersoColumnNumber()).equals(userPersoValue)) {
-        SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "dwqr.getPersoColumnNumber()=" + dwqr.
-                getPersoColumnNumber() + " userPersoValue=" + userPersoValue);
         theRow.remove(dwqr.getPersoColumnNumber());
       }
       for (int k = 0; k < nbCols; k++) {
-        SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "theRow=" + theRow);
         msgToSend.append((String) theRow.get(k));
-        SilverTrace.debug("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "msgToSend boucle=" + msgToSend);
         if (k + 1 < nbCols) {
           msgToSend.append(" | ");
         }
@@ -317,20 +304,14 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("dataWarning", "DataWarning_TimeoutManagerImpl.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
     doDataWarningSchedulerImpl();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("dataWarning", "DataWarning_TimeoutManagerImpl.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("dataWarning", "DataWarning_TimeoutManagerImpl.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

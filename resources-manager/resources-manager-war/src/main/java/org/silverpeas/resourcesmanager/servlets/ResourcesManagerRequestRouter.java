@@ -41,10 +41,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.util.ResourceUtil;
+import org.silverpeas.resourcesmanager.model.Category;
+import org.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Resource;
+import org.silverpeas.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.resourcesmanager.control.ResourceManagerDataViewType;
 import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -138,12 +138,12 @@ public class ResourcesManagerRequestRouter
       String lieu = request.getParameter("lieu");
       Reservation reservation = new Reservation(evenement, dateDebut, dateFin, raison, lieu);
       SilverTrace
-          .info("resourcesManager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
+          .info("resourcesmanager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
               "root.MSG_GEN_PARAM_VALUE", "reservation=" + reservation);
       return reservation;
     } catch (ParseException e) {
       SilverTrace
-          .error("resourcesManager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
+          .error("resourcesmanager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
               "root.MSG_GEN_PARAM_VALUE", e);
     }
     return null;
@@ -350,7 +350,7 @@ public class ResourcesManagerRequestRouter
         if (reservationId != null) {
           resourcesOfReservation = resourcesManagerSC.getResourcesofReservation(reservationId);
           reservableResources.removeAll(resourcesOfReservation);
-          SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
+          SilverTrace.info("resourcesmanager", "ResourcesManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "dans le if,idReservation=" + reservationId);
 
           if (unavailableReservationResources == null) {
@@ -382,7 +382,7 @@ public class ResourcesManagerRequestRouter
                 .put(resourceReservable.getCategoryId(), resourceReservables);
           }
         }
-        SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
+        SilverTrace.info("resourcesmanager", "ResourcesManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable=" + reservableResources.size());
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
@@ -601,25 +601,16 @@ public class ResourcesManagerRequestRouter
         try {
           destination = resourcesManagerSC.initUserSelect(currentManagers);
         } catch (Exception e) {
-          SilverTrace.warn("resourcesManager", "resourcesManagerRequestRouter.getDestination()",
+          SilverTrace.warn("resourcesmanager", "resourcesManagerRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
       } else if ("FromUserSelect".equals(function)) {
         // récupération des valeurs de userPanel
-        SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "FromUserSelect:");
         Selection sel = resourcesManagerSC.getSelection();
         // Get users selected in User Panel
         String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
-        SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "userIds:" + Arrays.toString(userIds));
         if (userIds.length != 0) {
-          SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userIds.length():" + userIds.length);
-
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
-          SilverTrace.debug("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userDetails:" + Arrays.toString(userDetails));
           request.setAttribute("Managers", Arrays.asList(userDetails));
         }
         destination = root + "refreshFromUserSelect.jsp";
@@ -660,7 +651,7 @@ public class ResourcesManagerRequestRouter
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
+    SilverTrace.info("resourcesmanager", "ResourcesManagerRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }

@@ -51,9 +51,6 @@ public class SearchHandler extends FunctionHandler {
 
     // Retrieves search query
     String wordSearch = request.getParameter("WordSearch");
-    SilverTrace.debug("silverCrawler", "SearchHandler.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "wordSearch : " + wordSearch);
-
     // Performs search
     Collection<FileDetail> docs = sessionController.getResultSearch(wordSearch);
 

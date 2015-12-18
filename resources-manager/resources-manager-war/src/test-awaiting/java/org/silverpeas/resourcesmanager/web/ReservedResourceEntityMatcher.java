@@ -26,7 +26,7 @@ package org.silverpeas.resourcesmanager.web;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.Resource;
 
 /**
  * @author Yohann Chastagnier

@@ -44,16 +44,6 @@
       String wizardRow = (String) request.getAttribute("WizardRow");
       String currentLang = (String) request.getAttribute("Language");
       boolean changingTemplateAllowed = ((Boolean) request.getAttribute("IsChangingTemplateAllowed")).booleanValue();
-
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "formUpdate is null ? " + (formUpdate == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "data is null ? " + (data == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "pubDetail is null ? " + (pubDetail == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "xmlFormName is null ? " + (xmlFormName == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "wizardLast is null ? " + (wizardLast == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "wizard is null ? " + (wizard == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "wizardRow is null ? " + (wizardRow == null));
-      SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "currentLang is null ? " + (currentLang == null));
-
       String pubId = pubDetail.getPK().getId();
       String pubName = pubDetail.getName(currentLang);
 

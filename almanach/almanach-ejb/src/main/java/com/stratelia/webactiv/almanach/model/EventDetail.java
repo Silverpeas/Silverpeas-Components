@@ -49,14 +49,13 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -286,7 +285,7 @@ public class EventDetail extends AbstractBean
       AlmanachBm almanachService = ServiceProvider.getService(AlmanachBm.class);
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
-      Logger.getLogger(EventDetail.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger("attachment").error(ex.getMessage(), ex);
       throw new AlmanachRuntimeException("EventDetail.getAttachments()",
           SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS",
           ex);

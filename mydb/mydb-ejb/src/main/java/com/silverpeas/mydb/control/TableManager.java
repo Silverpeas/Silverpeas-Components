@@ -251,7 +251,7 @@ public class TableManager {
           method = clazz.getMethod("parse", new Class[]{String.class});
         }
       } catch (Exception e) {
-        SilverTrace.warn("myDB", "TableManager.isValidColumnDefaultValue()",
+        SilverTrace.warn("mydb", "TableManager.isValidColumnDefaultValue()",
             "myDB.MSG_CANNOT_GET_CONSTRUCTOR_OR_METHOD", "Class="
             + clazz.getName(), e);
       }

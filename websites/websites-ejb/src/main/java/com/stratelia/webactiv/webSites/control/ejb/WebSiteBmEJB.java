@@ -261,21 +261,15 @@ public class WebSiteBmEJB implements WebSiteBm {
    * @return
    */
   private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
-    SilverTrace.debug("webSites", "WebSiteBmEJB.getIndexOfNode()", "root.MSG_GEN_ENTER_METHOD",
-        "nodeId = " + nodeId);
     int index = 0;
     if (nodes != null) {
       for (NodeDetail node : nodes) {
         if (nodeId.equals(node.getNodePK().getId())) {
-          SilverTrace.debug("webSites", "WebSiteBmEJB.getIndexOfNode()", "root.MSG_GEN_EXIT_METHOD",
-              "index = " + index);
           return index;
         }
         index++;
       }
     }
-    SilverTrace.debug("webSites", "WebSiteBmEJB.getIndexOfNode()", "root.MSG_GEN_EXIT_METHOD",
-        "index = " + index);
     return index;
   }
 

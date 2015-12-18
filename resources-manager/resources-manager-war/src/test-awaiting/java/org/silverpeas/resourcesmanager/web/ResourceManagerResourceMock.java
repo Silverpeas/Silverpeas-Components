@@ -28,11 +28,11 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.resourcemanager.control.ResourcesManager;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.model.ResourceStatus;
+import org.silverpeas.resourcesmanager.control.ResourcesManager;
+import org.silverpeas.resourcesmanager.model.Category;
+import org.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.ResourceStatus;
 
 import javax.ws.rs.Path;
 import java.util.ArrayList;

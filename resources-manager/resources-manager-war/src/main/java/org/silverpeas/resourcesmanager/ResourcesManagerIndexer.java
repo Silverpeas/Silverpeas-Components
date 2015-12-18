@@ -26,7 +26,7 @@ package org.silverpeas.resourcesmanager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.resourcemanager.control.ResourcesManager;
+import org.silverpeas.resourcesmanager.control.ResourcesManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,7 +41,7 @@ public class ResourcesManagerIndexer implements ComponentIndexation {
 
   @Override
   public void index(ComponentInst componentInst) throws Exception {
-    SilverTrace.info("resourcesManager", "ResourcesManagerIndexer.index()",
+    SilverTrace.info("resourcesmanager", "ResourcesManagerIndexer.index()",
         "root.MSG_GEN_PARAM_VALUE", "index, context.getCurrentComponentId() = " +
             componentInst.getId());
     resourcesManager.indexResourceManager(componentInst.getId());

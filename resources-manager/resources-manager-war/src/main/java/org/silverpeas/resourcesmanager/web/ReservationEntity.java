@@ -26,7 +26,7 @@ package org.silverpeas.resourcesmanager.web;
 import com.silverpeas.calendar.DateTime;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.calendar.web.AbstractEventEntity;
-import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Reservation;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

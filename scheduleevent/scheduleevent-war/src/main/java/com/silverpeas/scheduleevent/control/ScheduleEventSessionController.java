@@ -211,9 +211,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       }
       if (!foundAlreadyCreated) {
         addContributor(recordedContributors, detail.getId());
-        SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.addContributors()",
-            "Contributor '" + getUserDetail(detail.getId()).getDisplayedName()
-                + "' added to event '" + currentScheduleEvent.getTitle() + "'");
       }
     }
     if (!foundCreator) {
@@ -243,11 +240,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       }
       if (!found) {
         recordedContributorIt.remove();
-
-        SilverTrace.debug("scheduleevent",
-            "ScheduleEventSessionController.deleteRecordedContributors()",
-            "Contributor '" + currentContributor.getUserName() + "' deleted from event '"
-                + currentScheduleEvent.getTitle() + "'");
       }
     }
   }

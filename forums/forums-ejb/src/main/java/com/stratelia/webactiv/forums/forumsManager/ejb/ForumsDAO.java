@@ -308,11 +308,6 @@ public class ForumsDAO {
     String selectQuery = (StringUtil.isDefined(categoryId) ?
         QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NOT_NULL_CATEGORY :
         QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NULL_CATEGORY);
-    SilverTrace.debug("forums", "ForumsDAO.getForumsListByCategory()", "root.MSG_GEN_PARAM_VALUE",
-        "categoryId = " + categoryId);
-    SilverTrace.info("forums", "ForumsDAO.getForumsListByCategory()", "root.MSG_GEN_PARAM_VALUE",
-        "selectQuery = " + selectQuery);
-
     List<Forum> forums = new ArrayList<>();
     try (PreparedStatement selectStmt = con.prepareStatement(selectQuery)) {
       selectStmt.setString(1, forumPK.getComponentName());
@@ -1183,16 +1178,12 @@ public class ForumsDAO {
     } finally {
       DBUtil.close(rs, selectStmt);
     }
-    SilverTrace.debug("forums", "ForumsDAO.getLastMessage()", "root.MSG_GEN_PARAM_VALUE",
-        "messageId = " + messageId);
 
     Message message = null;
     if (!messageId.equals("")) {
       MessagePK messagePK = new MessagePK(forumPK.getComponentName(), messageId);
       message = getMessage(con, messagePK);
     }
-    SilverTrace.debug("forums", "ForumsDAO.getLastMessage()", "root.MSG_GEN_PARAM_VALUE",
-        "message = " + message);
     return message;
   }
 

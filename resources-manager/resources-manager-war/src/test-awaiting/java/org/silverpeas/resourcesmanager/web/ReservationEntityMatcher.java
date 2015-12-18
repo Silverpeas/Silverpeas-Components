@@ -27,7 +27,7 @@ import com.silverpeas.calendar.DateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Reservation;
 
 /**
  * @author Yohann Chastagnier

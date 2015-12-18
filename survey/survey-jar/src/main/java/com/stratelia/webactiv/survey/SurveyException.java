@@ -62,7 +62,7 @@ public class SurveyException extends SilverpeasException {
    * @return the name of this module
    */
   public String getModule() {
-    return "Survey";
+    return "survey";
   }
 
 }

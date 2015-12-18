@@ -473,9 +473,6 @@ public class CrmSessionController extends AbstractComponentSessionController {
       setFilterLib(getOrganisationController().getUserDetail(user).getLastName());
       setParticipantEmail(getOrganisationController().getUserDetail(user).geteMail());
     }
-
-    SilverTrace.debug("crm", "CrmSessionController.userPanelReturn()",
-        "filterId=" + filterId + " ; filterLib=" + filterLib);
   }
 
   public void setParticipantId(String participantId) {

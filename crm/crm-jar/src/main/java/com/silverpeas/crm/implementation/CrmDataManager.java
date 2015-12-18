@@ -51,9 +51,7 @@ public class CrmDataManager implements CrmDataInterface {
    */
   public void createCrm(Crm crm) {
     try {
-      SilverTrace.debug("crm", "CrmDataManager.createCrm()", "crm=" + crm);
       WAPrimaryKey pk = crmDAO.add(crm);
-      SilverTrace.debug("crm", "CrmDataManager.createCrm()", "add ok=");
       crm.setPK(pk);
     } catch (PersistenceException pe) {
       throw new CrmException(CrmDataManager.class.getName(),
@@ -175,9 +173,6 @@ public class CrmDataManager implements CrmDataInterface {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     com.stratelia.webactiv.beans.admin.ComponentInst ci = oc.getComponentInst(componentId);
     Crm crm = new Crm();
-
-    SilverTrace.debug("crm", "CrmDataManager.createCrm()",
-      "spaceId=" + spaceId + " ; componentId=" + componentId + " ; ci.getLabel()=" + ci.getLabel());
     crm.setInstanceId(componentId);
     crm.setClientName(ci.getLabel());
     createCrm(crm);

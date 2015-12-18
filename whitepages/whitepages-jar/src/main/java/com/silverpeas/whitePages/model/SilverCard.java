@@ -30,11 +30,10 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SilverCard implements SilverpeasContent {
 
@@ -51,8 +50,8 @@ public class SilverCard implements SilverpeasContent {
     creatorId = Integer.toString(card.getCreatorId());
     try {
       creationDate = DateUtil.parse(card.getCreationDate());
-    } catch (ParseException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
+    } catch (ParseException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     silverpeasContentId = Integer.toString(silverContentId);
   }

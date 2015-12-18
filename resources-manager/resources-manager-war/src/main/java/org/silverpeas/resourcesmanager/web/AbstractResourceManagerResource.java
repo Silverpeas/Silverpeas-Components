@@ -25,11 +25,11 @@ package org.silverpeas.resourcesmanager.web;
 
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import com.silverpeas.web.RESTWebService;
-import org.silverpeas.resourcemanager.ResourcesManagerProvider;
-import org.silverpeas.resourcemanager.control.ResourcesManager;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcesmanager.ResourcesManagerProvider;
+import org.silverpeas.resourcesmanager.control.ResourcesManager;
+import org.silverpeas.resourcesmanager.model.Category;
+import org.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Resource;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;

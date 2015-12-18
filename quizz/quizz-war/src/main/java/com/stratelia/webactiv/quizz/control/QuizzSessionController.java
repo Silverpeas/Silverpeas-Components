@@ -598,9 +598,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       while (itA.hasNext()) {
         Answer answer = itA.next();
         String physicalName = answer.getImage();
-        SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-            "physicalName = " + physicalName + " answer = " + answer.getLabel());
-
         if (StringUtil.isDefined(physicalName)) {
           // copy image
           SettingBundle srvSettings =
@@ -609,8 +606,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
               physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
               Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
-          SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-              "newPhysicalName = " + newPhysicalName + " answer = " + answer.getLabel());
           attachmentSuffix = attachmentSuffix + 1;
 
           if (quizz.getHeader().getInstanceId().equals(getComponentId())) {
@@ -619,9 +614,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
             String dir =
                 absolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
-            SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                " same component : from = " + dir + physicalName + " to = " + dir +
-                    newPhysicalName);
           } else {
             // in other component
             String fromAbsolutePath =
@@ -632,14 +624,9 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
             String toDir =
                 toAbsolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(fromDir + physicalName, toDir + newPhysicalName);
-            SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                " other component : from = " + fromDir + physicalName + " to = " + toDir +
-                    newPhysicalName);
           }
           // update answer
           answer.setImage(newPhysicalName);
-          SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-              " newPhysicalName = " + newPhysicalName + " answer = " + answer.getLabel());
         }
       }
     }
@@ -733,7 +720,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyAction",
+        SilverTrace.error("survey", "SurveySessionController.sendNewSurveyAction",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {

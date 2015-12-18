@@ -47,16 +47,13 @@ public class MailingListStatistics implements ComponentStatisticsProvider {
     myCouple.setUserId("-2"); // unknown userId
     MailingList ml =
         MailingListServicesProvider.getMailingListService().findMailingList(componentId);
-    SilverTrace
-        .debug("mailingList", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
-            "space = " + spaceId + ", componentId = " + componentId);
     if (ml != null) {
       long totalNumberOfMessages =
           MailingListServicesProvider.getMessageService().getTotalNumberOfMessages(ml);
       myCouple.setCountVolume(totalNumberOfMessages);
     } else {
       SilverTrace
-          .warn("mailingList", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
+          .warn("mailinglist", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
               "space = " + spaceId + ", componentId = " + componentId +
                   " doesn't look like a mailinglist");
       myCouple.setCountVolume(0);

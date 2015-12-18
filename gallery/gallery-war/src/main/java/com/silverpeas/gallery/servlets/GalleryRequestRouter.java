@@ -140,9 +140,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("IsExportEnable", gallerySC.isExportEnable());
     request.setAttribute("Sort", gallerySC.getSort());
 
-    SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestUserRole);
-
     try {
       if (function.startsWith("Main")) {
         // récupération des albums de 1er niveau
@@ -406,10 +403,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("SearchKeyWord", request.getParameter("SearchKeyWord"));
           request.setAttribute("Rang", gallerySC.getRang());
           request.setAttribute("NbMedia", gallerySC.goToAlbum().getMedia().size());
-
-          SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()", "", "rang = " +
-              gallerySC.getRang() + " nb media = " + gallerySC.goToAlbum().getMedia().size());
-
           request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
           request.setAttribute("IsWatermark", gallerySC.isMakeWatermark());
           request.setAttribute("ImageResolutionPreview", gallerySC.getImageResolutionPreview(media));
@@ -1072,9 +1065,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("MediaList", mediaList);
         destination = rootDest + "portlet.jsp";
       } else if ("copy".equals(function)) {
-        SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
-            "copy process start");
-
         String objectType = request.getParameter("Object");
         String objectId = request.getParameter("Id");
         if (StringUtil.isDefined(objectType) && "Node".equalsIgnoreCase(objectType)) {
@@ -1082,13 +1072,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           gallerySC.copyMedia(objectId);
         }
-
-        SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
-            "objectType = " + objectType + " objectId = " + objectId);
-        SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
-            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
-                "Idle.jsp?message=REFRESHCLIPBOARD");
-
         destination =
             URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
                 "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -1105,9 +1088,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // Get back to current album view
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if ("cut".startsWith(function)) {
-        SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
-            "cut process start");
-
         String objectType = request.getParameter("Object");
         String objectId = request.getParameter("Id");
         if (StringUtil.isDefined(objectType) && "Node".equalsIgnoreCase(objectType)) {
@@ -1115,13 +1095,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           gallerySC.cutMedia(objectId);
         }
-
-        SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
-            "objectType = " + objectType + " objectId = " + objectId);
-        SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
-            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
-                "Idle.jsp?message=REFRESHCLIPBOARD");
-
         destination =
             URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
                 "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -1136,8 +1109,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // Get back to current album view
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if (function.startsWith("paste")) {
-        SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
-            "past process start");
         gallerySC.paste();
         gallerySC.loadCurrentAlbum();
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);

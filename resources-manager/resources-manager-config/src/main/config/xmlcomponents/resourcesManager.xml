@@ -49,7 +49,7 @@
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
-  <instanceClassName>org.silverpeas.resourcemanager.ResourcesManagerInstanciator</instanceClassName>
+  <instanceClassName>org.silverpeas.resourcesmanager.ResourcesManagerInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

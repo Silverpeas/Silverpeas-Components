@@ -24,8 +24,8 @@
 package org.silverpeas.resourcesmanager.web;
 
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcesmanager.model.Resource;
 
 import java.text.ParseException;
 import java.util.ArrayList;

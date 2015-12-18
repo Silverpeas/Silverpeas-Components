@@ -75,11 +75,7 @@ public class KmeliaTransversal implements PublicationHelper {
 
   @Override
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis) {
-    SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = " + nbPublis);
     List<String> componentIds = getAvailableComponents(spaceId);
-    SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_PARAM_VALUE", "componentIds = " + componentIds.toString());
     List<PublicationPK> publicationPKs = null;
     try {
       publicationPKs = (List<PublicationPK>) getPublicationService().getPublicationPKsByStatus(
@@ -113,12 +109,7 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
-    SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = " + nbPublis);
     List<String> componentIds = getAvailableComponents(spaceId);
-    SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_PARAM_VALUE", "componentIds = " + componentIds.toString());
-
     List<PublicationPK> publicationPKs = null;
     try {
       publicationPKs = (List<PublicationPK>) getPublicationService().getUpdatedPublicationPKsByStatus(
@@ -149,8 +140,6 @@ public class KmeliaTransversal implements PublicationHelper {
       componentIds.addAll(Arrays.asList(cIds));
     } else {
       String[] cIds = getOrganizationControl().getAvailCompoIds(spaceId, userId);
-      SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-          "root.MSG_GEN_PARAM_VALUE", "#cIds = " + cIds.length);
       for (String id : cIds) {
         if (id.startsWith("kmelia") || id.startsWith("toolbox") || id.startsWith("kmax")) {
           componentIds.add(id);

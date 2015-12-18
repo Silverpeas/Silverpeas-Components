@@ -54,7 +54,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
 
   private static final long serialVersionUID = -1921269596127652643L;
 
-  private static final String COMPONENT_NAME = "Survey";
+  private static final String COMPONENT_NAME = "survey";
 
   /**
    * @param profiles
@@ -158,7 +158,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
             "root.MSG_GEN_PARAM_VALUE", "function = " + function, e);
       }
       request.setAttribute("Users", users);
-      request.setAttribute("Survey", surveySC.getSessionSurvey());
+      request.setAttribute("survey", surveySC.getSessionSurvey());
       destination = rootDest + "answerResult.jsp";
     } else if ("ViewAllUsers".equals(function)) {
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
@@ -170,7 +170,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
             "root.MSG_GEN_PARAM_VALUE", "function = " + function, e);
       }
       request.setAttribute("Users", users);
-      request.setAttribute("Survey", survey);
+      request.setAttribute("survey", survey);
       destination = rootDest + "answerResult.jsp";
     } else if ("UserResult".equals(function)) {
       String userId = request.getParameter("UserId");
@@ -196,10 +196,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       request.setAttribute("ListDocument", listDocument);
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
     } else if ("ToAlertUser".equals(function)) {
-      SilverTrace
-          .debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-              "function = " + function + " spaceId=" +
-                  surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
       String surveyId = request.getParameter("SurveyId");
       try {
         destination = surveySC.initAlertUser(surveyId);
@@ -207,11 +203,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
       }
-
-      SilverTrace
-          .debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-              "function = " + function + "=> destination=" +
-                  destination);
     } else if ("ExportCSV".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
       String csvFilename = surveySC.exportSurveyCSV(surveyId);

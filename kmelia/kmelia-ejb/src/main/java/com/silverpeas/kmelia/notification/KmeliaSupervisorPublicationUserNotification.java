@@ -65,8 +65,6 @@ public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaP
     final List<String> supervisors =
         new ArrayList<String>(Arrays.asList(getOrganisationController().getUsersIdsByRoleNames(
             getResource().getPK().getInstanceId(), roles)));
-    SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
-        "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");
     return supervisors;
   }
 

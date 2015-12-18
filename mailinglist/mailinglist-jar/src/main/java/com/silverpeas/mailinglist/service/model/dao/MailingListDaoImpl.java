@@ -25,10 +25,9 @@ package com.silverpeas.mailinglist.service.model.dao;
 
 import com.silverpeas.annotation.Repository;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -70,7 +69,7 @@ public class MailingListDaoImpl implements MailingListDao {
     try {
       result = query.getSingleResult();
     } catch (NoResultException ex) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, ex.getMessage());
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return result;
   }

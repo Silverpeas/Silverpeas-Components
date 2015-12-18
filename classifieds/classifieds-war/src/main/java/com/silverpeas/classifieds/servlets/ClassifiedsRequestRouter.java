@@ -89,10 +89,6 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     request.setAttribute("InstanceId", classifiedsSC.getComponentId());
     request.setAttribute("Language", classifiedsSC.getLanguage());
     request.setAttribute("isWysiwygHeaderEnabled", classifiedsSC.isWysiwygHeaderEnabled());
-
-    SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestRole);
-
     try {
       // Delegate to specific Handler
       FunctionHandler handler = HandlerProvider.getHandler(function);

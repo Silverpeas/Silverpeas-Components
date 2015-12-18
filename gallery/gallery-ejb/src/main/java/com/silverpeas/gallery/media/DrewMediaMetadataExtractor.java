@@ -114,9 +114,6 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
             MetaData metaData = new MetaData(value);
             metaData.setLabel(property.getLabel(lang));
             metaData.setProperty(property.getProperty() + "");
-            SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
-                "root.MSG_GEN_ENTER_METHOD",
-                "METADATA EXIF label = " + property.getLabel() + " value = " + value);
             result.add(metaData);
           }
         }

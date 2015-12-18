@@ -32,6 +32,7 @@ import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,8 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Singleton
 @Transactional
@@ -168,8 +167,8 @@ public class MessageServiceImpl implements MessageService {
             }
           }
         }
-      } catch (CalendarRuntimeException e) {
-        Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage(), e);
+      } catch (CalendarRuntimeException ex) {
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       }
     }
   }
@@ -194,8 +193,8 @@ public class MessageServiceImpl implements MessageService {
           }
         }
       }
-    } catch (CalendarRuntimeException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage(), e);
+    } catch (CalendarRuntimeException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
   }
 

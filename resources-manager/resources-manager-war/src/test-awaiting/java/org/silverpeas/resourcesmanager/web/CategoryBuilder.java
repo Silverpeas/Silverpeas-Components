@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcesmanager.web;
 
-import org.silverpeas.resourcemanager.model.Category;
+import org.silverpeas.resourcesmanager.model.Category;
 
 /**
  * @author Yohann Chastagnier

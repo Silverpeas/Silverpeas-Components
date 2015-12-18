@@ -81,10 +81,10 @@ public class TestZimbraConnection {
       profile.add(FetchProfile.Item.FLAGS);
       inbox.fetch(msgs, profile);
     } catch (MessagingException mex) {
-      SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
+      SilverTrace.error("mailinglist", "MessageChecker.checkNewMessages",
           "mail.processing.error", mex);
     } catch (Exception mex) {
-      SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
+      SilverTrace.error("mailinglist", "MessageChecker.checkNewMessages",
           "mail.processing.error", mex);
     } finally {
       // -- Close down nicely --
@@ -96,7 +96,7 @@ public class TestZimbraConnection {
           mailAccount.close();
         }
       } catch (Exception ex2) {
-        SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
+        SilverTrace.error("mailinglist", "MessageChecker.checkNewMessages",
             "mail.processing.error", ex2);
       }
     }

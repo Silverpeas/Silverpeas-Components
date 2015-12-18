@@ -305,19 +305,12 @@ public class ClassifiedsDAO {
    */
   public static List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays,
       String instanceId) throws SQLException {
-    SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
-        "root.MSG_GEN_PARAM_VALUE", "nbDays = " + nbDays);
-    // récupérer toutes les petites annonces arrivant à échéance
     ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
 
     // calcul de la date de fin
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
     calendar.add(Calendar.DATE, -nbDays);
     Date date = calendar.getTime();
-
-    SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
-        "root.MSG_GEN_PARAM_VALUE", "date = " + Long.toString(date.getTime()));
-
     String query =
         "select * from SC_Classifieds_Classifieds where ( (updateDate is null and creationDate < " +
             "?) or (updateDate is not null and updateDate < ?) ) and instanceId = ? and status = " +
@@ -333,11 +326,6 @@ public class ClassifiedsDAO {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         ClassifiedDetail classified = recupClassified(rs);
-        SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
-            "root.MSG_GEN_PARAM_VALUE", "classifiedId = " + classified.getClassifiedId());
-        SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
-            "root.MSG_GEN_PARAM_VALUE", "classifiedTitle = " + classified.getTitle());
-
         listClassifieds.add(classified);
       }
     } finally {
@@ -356,7 +344,6 @@ public class ClassifiedsDAO {
    */
   public static String createSubscribe(Connection con, Subscribe subscribe)
       throws SQLException, UtilException {
-    // Création d'un abonnement
     String id = "";
     PreparedStatement prepStmt = null;
     try {

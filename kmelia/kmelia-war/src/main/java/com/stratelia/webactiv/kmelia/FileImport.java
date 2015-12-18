@@ -25,7 +25,6 @@ import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.MassiveReport;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
@@ -37,6 +36,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import static java.io.File.separator;
 import static org.silverpeas.util.Charsets.UTF_8;
 
 /**
@@ -88,7 +87,6 @@ public class FileImport {
    * @return a report of the import
    */
   public ImportReport importFiles(boolean draft) {
-    SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_ENTER_METHOD");
     ImportReport importReport = null;
     try {
       File tempFolder = unzipUploadedFile();
@@ -100,7 +98,7 @@ public class FileImport {
           .setName(settings.getPublicationName(fileUploaded.getName()));
       importReport = MassiveDocumentImport.get().importDocuments(settings, new MassiveReport());
     } catch (Exception e) {
-      SilverTrace.warn("kmelia", "FileImport.importFiles()", "root.EX_LOAD_ATTACHMENT_FAILED", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e,
           UserDetail.getCurrentRequester().getUserPreferences().getLanguage());
     }
@@ -114,11 +112,7 @@ public class FileImport {
     if (!tempFolder.exists()) {
       FileRepositoryManager.createGlobalTempPath(tempFolderName);
     }
-    SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
-        "nbFiles = " + nbFiles);
     ZipUtil.extract(fileUploaded, tempFolder);
-    SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
-        "tempFolderPath.getPath() = " + tempFolder.getPath());
     return tempFolder;
   }
 
@@ -127,7 +121,6 @@ public class FileImport {
    * @return a report of the import
    */
   public ImportReport importFilesMultiPubli(boolean draft) {
-    SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()", "root.MSG_GEN_ENTER_METHOD");
     ImportReport importReport = null;
     try {
       File tempFolder = unzipUploadedFile();
@@ -139,13 +132,10 @@ public class FileImport {
       ImportSettings settings = getImportSettings(tempFolder.getPath(), draft);
       importReport = MassiveDocumentImport.get().importDocuments(settings, new MassiveReport());
     } catch (Exception e) {
-      SilverTrace
-          .warn("kmelia", "FileImport.importFilesMultiPubli()", "root.EX_LOAD_ATTACHMENT_FAILED",
-              e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e,
           UserDetail.getCurrentRequester().getUserPreferences().getLanguage());
     }
-    SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()", "root.MSG_GEN_EXIT_METHOD");
     return importReport;
   }
 
@@ -155,10 +145,7 @@ public class FileImport {
   public void writeImportToLog(ImportReport importReport, MultiSilverpeasBundle resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
-      SettingBundle silverTraceSettings =
-          ResourceLocator.getSettingBundle("org.silverpeas.silvertrace.settings.silverTrace");
-      String reportLogPath = silverTraceSettings.getString("ErrorDir");
-      File file = new File(reportLogPath + separator + reportLogFile);
+      File file = new File(reportLogFile);
       Writer fileWriter = null;
       try {
         if (!file.exists()) {
@@ -167,7 +154,7 @@ public class FileImport {
         fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), UTF_8);
         fileWriter.write(importReport.writeToLog(resource));
       } catch (IOException ex) {
-        SilverTrace.error("kmelia", "FileImport.writeImportToLog()", "root.EX_CANT_WRITE_FILE", ex);
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       } finally {
         IOUtils.closeQuietly(fileWriter);
       }

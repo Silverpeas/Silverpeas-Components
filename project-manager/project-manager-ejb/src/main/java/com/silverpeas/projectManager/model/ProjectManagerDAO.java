@@ -78,9 +78,6 @@ public class ProjectManagerDAO {
 
   public static int addTask(Connection con, TaskDetail task)
       throws SQLException {
-    SilverTrace.debug("projectManager", "ProjectManagerDAO.addTask()",
-        "root.MSG_GEN_ENTER_METHOD", task.toString());
-
     //insertStatement query
     StringBuilder insertStatement = new StringBuilder();
     insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_TASKS_TABLENAME);
@@ -153,8 +150,6 @@ public class ProjectManagerDAO {
 
   public static int addResource(Connection con, TaskResourceDetail resource)
       throws SQLException {
-    SilverTrace.debug("projectManager", "ProjectManagerDAO.addResources()",
-        "root.MSG_GEN_ENTER_METHOD", resource.toString());
     StringBuilder insertStatement = new StringBuilder();
     insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_RESOURCES_TABLENAME);
     insertStatement
@@ -178,9 +173,6 @@ public class ProjectManagerDAO {
 
   public static void updateTask(Connection con, TaskDetail task)
       throws SQLException, UtilException {
-    SilverTrace.debug("projectManager", "ProjectManagerDAO.updateAction()",
-        "root.MSG_GEN_ENTER_METHOD", task.toString());
-
     StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("UPDATE ").append(PROJECTMANAGER_TASKS_TABLENAME);
     updateQuery.append(" SET nom = ? , description = ? , responsableId = ? , charge = ? , ");
@@ -248,10 +240,6 @@ public class ProjectManagerDAO {
 
   public static void actionEstDecomposee(Connection con, int id,
       int estDecomposee) throws SQLException {
-    SilverTrace.debug("projectManager",
-        "ProjectManagerDAO.actionEstDecomposee()", "root.MSG_GEN_ENTER_METHOD",
-        "id = " + id + ", estDecomposee = " + estDecomposee);
-
     StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("update ").append(PROJECTMANAGER_TASKS_TABLENAME);
     updateQuery.append(" set estDecomposee = ? ");

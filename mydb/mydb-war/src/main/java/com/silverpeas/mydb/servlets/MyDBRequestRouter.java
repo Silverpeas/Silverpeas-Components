@@ -83,7 +83,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    */
   public String getDestination(String function, MyDBSessionController myDBSC, HttpRequest request) {
     String destination = "";
-    SilverTrace.info("myDB", "MyDBRequestRouter.getDestination()",
+    SilverTrace.info("mydb", "MyDBRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myDBSC.getUserId()
         + ", Function=" + function);
 
@@ -132,7 +132,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("myDB", "MyDBRequestRouter.getDestination()",
+    SilverTrace.info("mydb", "MyDBRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
@@ -181,7 +181,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
           rowLimit);
       myDBSC.initJdbcConnectorSetting();
     } catch (Exception e) {
-      SilverTrace.warn("myDB", "MyDBRequestRouter.getDestination()",
+      SilverTrace.warn("mydb", "MyDBRequestRouter.getDestination()",
           "myDB.MSG_CONNECTION_NOT_STARTED", e);
     }
     if (myDBSC.checkConnection()) {

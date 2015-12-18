@@ -573,16 +573,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
     }
 
-    SilverTrace.debug("processManager", "ProcessManagerSessionController.getDestination",
-        "root.MSG_GEN_PARAM_VALUE", "current Role : " + currentRole);
-
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     for (final UserInRole userInRole : userInRoles) {
       roles.add(userInRole.getRoleName());
     }
-
-    SilverTrace.debug("processManager", "ProcessManagerSessionController.getDestination",
-        "root.MSG_GEN_PARAM_VALUE", "roles avant élagage : " + roles);
 
     if (useCurrentRole) {
       if (roles.contains(currentRole)) {
@@ -591,8 +585,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       } else {
         roles.clear();
       }
-      SilverTrace.debug("processManager", "ProcessManagerSessionController.getDestination",
-          "root.MSG_GEN_PARAM_VALUE", "roles après élagage : " + roles);
     }
 
     String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);

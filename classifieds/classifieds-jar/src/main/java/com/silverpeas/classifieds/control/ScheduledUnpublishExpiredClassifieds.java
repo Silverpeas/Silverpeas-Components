@@ -117,20 +117,14 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("classifieds", "ScheduledUnpublishExpiredClassifieds.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
     doScheduledDeleteClassifieds();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("classifieds", "ScheduledUnpublishExpiredClassifieds.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("classifieds", "ScheduledUnpublishExpiredClassifieds.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

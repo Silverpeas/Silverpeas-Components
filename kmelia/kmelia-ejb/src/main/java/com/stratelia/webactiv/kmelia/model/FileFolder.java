@@ -70,22 +70,13 @@ public class FileFolder implements java.io.Serializable {
     children = new ArrayList(0);
 
     try {
-      SilverTrace.debug("kmelia", "FileFolder.FileFolder()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "Starting constructor for FileFolder. Path = " + path);
       File f = new File(path);
       File fChild;
-
-      SilverTrace.debug("kmelia", "FileFolder.FileFolder()",
-          "root.MSG_GEN_PARAM_VALUE", "isExists " + f.exists() + " isFile="
-          + f.isFile());
       if (f.exists()) {
         this.name = f.getName();
         String[] children_name = f.list();
 
         for (int i = 0; children_name != null && i < children_name.length; i++) {
-          SilverTrace.debug("kmelia", "FileFolder.FileFolder()",
-              "root.MSG_GEN_PARAM_VALUE", "Name = " + children_name[i]);
           fChild = new File(path + File.separator + children_name[i]);
           children.add(new FileDetail(fChild.getName(), fChild.getPath(),
               fChild.length(), fChild.isDirectory()));

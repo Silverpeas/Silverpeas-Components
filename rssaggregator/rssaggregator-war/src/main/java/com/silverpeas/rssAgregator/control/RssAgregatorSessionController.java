@@ -115,9 +115,6 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         if (oneChannelLoaded) {
           channel = null;
         } else {
-          SilverTrace
-              .debug("rssAgregator", "RssAgregatorSessionController.getChannels", "Update cache",
-                  "channelPK = " + channelPK.toString());
           try {
             rssChannel = getChannelFromUrl(channel.getUrl());
           } catch (Exception e) {
@@ -130,8 +127,6 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         }
         oneChannelLoaded = true;
       } else {
-        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels", "Use cache",
-            "channelPK = " + channelPK.toString());
         channel = cache.getChannelFromCache(channelPK);
       }
       channels.add(channel);
@@ -150,11 +145,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
     boolean urlHaveChanged = true;
-    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.updateChannel",
-        "root.MSG_GEN_PARAM_VALUE", "channelPK = " + channel.getPK().getId());
     if (currentChannel != null && currentChannel.getPK().getId().equals(channel.getPK().getId())) {
-      SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.updateChannel",
-          "root.MSG_GEN_PARAM_VALUE", "channelPK = " + currentChannel.getPK().getId());
       urlHaveChanged = !currentChannel.getUrl().equals(channel.getUrl());
       if (urlHaveChanged) {
         currentChannel.setUrl(channel.getUrl());
@@ -196,8 +187,6 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   private Channel getChannelFromUrl(String sUrl) throws RssAgregatorException {
-    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannelFromUrl",
-        "root.MSG_GEN_ENTER_METHOD", "sUrl = " + sUrl);
     Channel channel = null;
     try {
       if (sUrl != null && !sUrl.equals("")) {
@@ -214,8 +203,6 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
       throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
           SilverpeasException.WARNING, "RssAgregator.EX_RSS_BAD_FORMAT", e);
     }
-    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannelFromUrl",
-        "root.MSG_GEN_EXIT_METHOD");
     return channel;
   }
 

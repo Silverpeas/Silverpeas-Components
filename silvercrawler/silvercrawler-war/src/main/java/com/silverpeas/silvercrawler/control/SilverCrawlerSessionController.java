@@ -199,10 +199,6 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // mise à jour de la collection des chemins
     paths.clear();
     // décomposer le chemin pour créer le path
-    SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "separator = " + File.separator + " path = " + pathFile.getPath());
-
     while (pathFile != null && pathFile.getName().length() > 0) {
       paths.add(pathFile.getName());
       pathFile = pathFile.getParentFile();
@@ -241,20 +237,12 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     File zipFile = FileUtils
         .getFile(FileRepositoryManager.getTemporaryPath(), folderName + "_" + date + ".zip");
 
-    SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.zipFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "fileZip = " + zipFile.getName());
-
     long sizeMax = UnitUtil.convertTo(getSizeMax(), MemoryUnit.MB, MemoryUnit.B);
     long zipSize = 0;
     String url = "";
-    SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.zipFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "sizeMax = " + sizeMax);
 
     // rechercher si la taille du répertoire est < à la taille maxi
     boolean sizeOk = getSize(downloadPath.getPath(), sizeMax);
-
-    SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.zipFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "sizeOk = " + sizeOk);
 
     // si la taille est inferieur à celle autorisée :
     if (sizeOk) {
@@ -783,16 +771,12 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     String[] profiles = getUserRoles();
     String bestProfile = ProfileHelper.getBestProfile(profiles);
     if ((!bestProfile.equals("admin")) && (!bestProfile.equals("publisher"))) {
-      SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.checkUserLANAccess()",
-          "root.MSG_GEN_PARAM_VALUE", "user is only reader => no LAN access");
       return false;
     }
 
     // Step 2 - Checks component parameter value
     boolean allowAccessByLAN =
         StringUtil.getBooleanValue(getComponentParameterValue("allowAccessByLAN"));
-    SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.checkUserLANAccess()",
-        "root.MSG_GEN_PARAM_VALUE", "allowAccessByLAN = " + allowAccessByLAN);
     if (!allowAccessByLAN) {
       return false;
     }
@@ -800,11 +784,6 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // Step 3 - Test remoteIPAddress over LAN subnetwork masks
     String subnetworkMasks = getComponentParameterValue("LANMasks");
     boolean ipElligible = IPMaskHelper.isIPElligible(remoteIPAdress, subnetworkMasks);
-    SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.checkUserLANAccess()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "remoteIP = " + remoteIPAdress + ", masks = " + subnetworkMasks + ", elligible :" +
-            ipElligible);
-
     return ipElligible;
   }
 }

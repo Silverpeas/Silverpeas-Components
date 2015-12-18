@@ -235,8 +235,6 @@ public class SendInKmelia extends ExternalActionImpl {
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (String fieldName : record.getFieldNames()) {
-        SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields",
-            "Process fieldName =" + fieldName);
         Object fieldValue = null;
         try {
           Field fieldOfFolder = currentProcessInstance.getField(fieldName);
@@ -247,12 +245,7 @@ public class SendInKmelia extends ExternalActionImpl {
             fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
           }
         } catch (WorkflowException e) {
-          SilverTrace
-              .debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" + fieldName,
-                  e);
         }
-        SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" +
-            fieldName + " with value " + fieldValue);
         record.getField(fieldName).setObjectValue(fieldValue);
       }
       // Update

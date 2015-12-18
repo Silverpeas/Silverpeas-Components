@@ -26,7 +26,7 @@ package org.silverpeas.resourcesmanager.web;
 import com.silverpeas.web.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcesmanager.model.Resource;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

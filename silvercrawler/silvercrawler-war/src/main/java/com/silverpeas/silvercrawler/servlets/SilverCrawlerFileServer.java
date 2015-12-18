@@ -26,7 +26,6 @@ package com.silverpeas.silvercrawler.servlets;
 import com.silverpeas.silvercrawler.statistic.Statistic;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.OrganizationController;
@@ -36,6 +35,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -63,7 +63,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("silverCrawler", "FileServer.init()", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverLogger.getLogger(this).error("SilverCrawler File Server Initialization Failure", se);
     }
   }
 
@@ -76,7 +76,6 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("silverCrawler", "FileServer.doPost()", "root.MSG_GEN_ENTER_METHOD");
     String sourceFile = req.getParameter("SourceFile");
     String componentId = req.getParameter("ComponentId");
     String typeUpload = req.getParameter("TypeUpload");
@@ -109,40 +108,29 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     if ("link".equals(typeUpload)) {
       type = Statistic.FILE;
       fileStat = fileToSend = FileUtils.getFile(rootPath, sourceFile);
-      SilverTrace.debug("silverCrawler", "FileServer", "root.MSG_GEN_PARAM_VALUE",
-          "file, type = " + type + " file = " + fileStat);
     } else {
       type = Statistic.DIRECTORY;
       fileToSend =
           FileUtils.getFile(FileRepositoryManager.getTemporaryPath(null, componentId), sourceFile);
       fileStat = FileUtils.getFile(rootPath, path);
-      SilverTrace.debug("silverCrawler", "FileServer", "root.MSG_GEN_PARAM_VALUE",
-          "directory, type = " + type + " file = " + fileStat);
     }
 
     sendFile(res, fileToSend);
 
     // ajout dans la table des téléchargements
     Statistic.addStat(userId, fileStat, componentId, type);
-    SilverTrace.info("silverCrawler", "FileServer.doPost()", "root.MSG_GEN_ENTER_METHOD",
-        " addStat : fileStat = " + fileStat);
   }
 
   private void sendFile(HttpServletResponse response, File file) throws IOException {
     response.setContentType(FileUtil.getMimeType(file.getName()));
     response.setHeader("Content-Length", String.valueOf(file.length()));
     response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-    SilverTrace.debug("peasUtil", "SilverCrawlerFileServer.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-        " file: " + file.getAbsolutePath());
     try {
       FileUtils.copyFile(file, response.getOutputStream());
       response.getOutputStream().flush();
-      SilverTrace
-          .debug("peasUtil", "SilverCrawlerFileServer.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-              " File was sent");
     } catch (IOException e) {
-      SilverTrace.error("peasUtil", "SilverCrawlerFileServer.sendFile", "root.EX_CANT_READ_FILE",
-          " file: " + file.getAbsolutePath(), e);
+      SilverLogger.getLogger(this)
+          .error("Cannot send file {0}", new String[]{file.getAbsolutePath()}, e);
       displayWarningHtmlCode(response);
     }
   }
@@ -157,9 +145,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
       IOUtils.copy(sr, out);
       out.flush();
     } catch (IOException e) {
-      SilverTrace
-          .warn("silverCrawler", "FileServer.displayWarningHtmlCode", "root.EX_CANT_READ_FILE",
-              "warning properties");
+      SilverLogger.getLogger(this).error("Error while displaying warning HTML Code", e);
     } finally {
       IOUtils.closeQuietly(sr);
       IOUtils.closeQuietly(out);

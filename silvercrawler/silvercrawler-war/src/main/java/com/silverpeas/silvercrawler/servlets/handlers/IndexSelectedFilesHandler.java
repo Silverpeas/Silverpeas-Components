@@ -43,9 +43,6 @@ public class IndexSelectedFilesHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
 
-    SilverTrace.debug("silverCrawler", "SilverCrawlerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "IndexSelectedFiles");
-
     // checks that users has admin profile
     String userHighestRole = getUserHighestRole(sessionController);
     if (!userHighestRole.equals("admin")) {
