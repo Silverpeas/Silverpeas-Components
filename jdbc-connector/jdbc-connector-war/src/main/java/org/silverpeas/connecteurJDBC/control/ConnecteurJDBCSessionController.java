@@ -144,8 +144,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public void startConnection(String request) {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.startConnection()",
-        "root.MSG_GEN_ENTER_METHOD", "temp : " + request);
+
     rowNumber = 0;
 
     if (!connectionOpened && (currentConnectionInfo != null)) {
@@ -171,8 +170,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    * @param validreq
    */
   public void setValidRequest(String validreq) {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.setValidRequest()",
-        "root.MSG_GEN_ENTER_METHOD", "validreq : " + validreq);
+
     this.validreq = validreq;
   }
 
@@ -188,8 +186,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    * set the full request
    */
   public void setFullRequest(String fullreq) {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.setFullRequest()",
-        "root.MSG_GEN_ENTER_METHOD", "fullreq : " + fullreq);
+
     this.fullreq = fullreq;
   }
 
@@ -469,8 +466,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public String checkRequest(String request) {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.checkRequest()",
-        "root.MSG_GEN_ENTER_METHOD", "request : " + request);
+
     String temp = request.trim();
 
     try {

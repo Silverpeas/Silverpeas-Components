@@ -46,8 +46,7 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
       ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
 
   public void initialize() {
-    SilverTrace.info("gallery", "ScheduledDeleteOrder.initialize()",
-        "Initializing the scheduler", "ENTREE");
+
     try {
       String cron = resources.getString("cronScheduledDeleteOrder");
       Scheduler scheduler = SchedulerProvider.getScheduler();
@@ -61,23 +60,20 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
   }
 
   public void doScheduledDeleteOrder() {
-    SilverTrace.info("gallery", "ScheduledDeleteOrder.doScheduledDeleteOrder()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       // recherche du nombre de jours avant suppression
       int nbDays = resources.getInteger("nbDaysForDeleteOrder");
       // rechercher toutes les demandes arrivant à échéance
       List<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
-      SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledDeleteOrder()",
-          "root.MSG_GEN_PARAM_VALUE", "Demandes = " + orders);
+
       getGalleryBm().deleteOrders(orders);
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledDeleteOrder.doScheduledDeleteOrder()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
-    SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private GalleryBm getGalleryBm() {

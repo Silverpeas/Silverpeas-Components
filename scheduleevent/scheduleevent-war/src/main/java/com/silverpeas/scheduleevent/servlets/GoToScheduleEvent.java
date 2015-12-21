@@ -17,8 +17,7 @@ public class GoToScheduleEvent extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
 
-    SilverTrace.info("scheduleevent", "GoToScheduleEvent.getDestination",
-        "root.MSG_GEN_PARAM_VALUE", "objectId = " + objectId);
+
 
     String gotoURL =  URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT)
         + "Detail?scheduleEventId=" + objectId;

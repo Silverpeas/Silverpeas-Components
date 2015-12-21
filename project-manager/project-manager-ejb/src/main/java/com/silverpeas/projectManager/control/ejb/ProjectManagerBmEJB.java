@@ -82,8 +82,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public List<TaskDetail> getProjects(String instanceId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getProjects()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1, null);
@@ -98,15 +97,13 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksByMotherId()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     return getTasksByMotherId(instanceId, motherId, null);
   }
 
   @Override
   public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksByMotherId()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
@@ -122,8 +119,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   @Override
   public List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
       Filtre filtre) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksNotCancelledByMotherId()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
@@ -139,9 +135,6 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   @Override
   public List<TaskDetail> getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
       int previousId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksByMotherIdAndPreviousId()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId + ", motherId=" + motherId
-        + ", previousId=" + previousId);
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.
@@ -158,8 +151,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public List<TaskDetail> getAllTasks(String instanceId, Filtre filtre) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getAllTasks()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
@@ -174,8 +166,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public TaskDetail getTask(int id) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTask()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id);
+
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getTask(con, id);
@@ -189,8 +180,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public TaskDetail getTaskByTodoId(String todoId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTaskByTodoId()",
-        "root.MSG_GEN_ENTER_METHOD", "todoId = " + todoId);
+
     Connection con = getConnection();
     String actionId = null;
     try {
@@ -208,8 +198,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public TaskDetail getMostDistantTask(String instanceId, int taskId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getMostDistantTask()",
-        "root.MSG_GEN_ENTER_METHOD", "taskId = " + taskId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
@@ -224,8 +213,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public int addTask(TaskDetail task) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTask()", "root.MSG_GEN_ENTER_METHOD",
-        "task=" + task);
+
     Connection con = getConnection();
     try {
       // insertion de la task en BdD
@@ -262,8 +250,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public void removeTask(int id, String instanceId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTask()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       TaskDetail actionASupprimer = ProjectManagerDAO.getTask(con, id);
@@ -300,8 +287,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   }
 
   private void removeTask(Connection con, int id, String instanceId) throws SQLException {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTask(Connection)",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
+
     // suppression de la tâche en BdD
     ProjectManagerDAO.removeTask(con, id);
     // suppression de la tâche associée
@@ -321,8 +307,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public void updateTask(TaskDetail task, String userId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.updateTask()",
-        "root.MSG_GEN_ENTER_METHOD", "taskId=" + task.getId());
+
     Connection con = getConnection();
     try {
       Date beginDate = task.getDateDebut();
@@ -745,8 +730,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public List<Date> getHolidayDates(String instanceId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getHolidayDates()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId);
@@ -761,8 +745,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public List<Date> getHolidayDates(String instanceId, Date beginDate, Date endDate) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getHolidayDates()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId, beginDate, endDate);
@@ -777,8 +760,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public void addHolidayDate(HolidayDetail holiday) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addHolidayDate()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDate=" + holiday.getDate());
+
     Connection con = getConnection();
     try {
       ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
@@ -793,8 +775,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public void addHolidayDates(List<HolidayDetail> holidayDates) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addHolidayDates()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()=" + holidayDates.size());
+
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
@@ -810,8 +791,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public void removeHolidayDate(HolidayDetail holiday) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeHolidayDate()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDate=" + holiday.getDate());
+
     Connection con = getConnection();
     try {
       ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
@@ -826,8 +806,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   @Override
   public void removeHolidayDates(List<HolidayDetail> holidayDates) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeHolidayDates()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()=" + holidayDates.size());
+
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
@@ -855,35 +834,30 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   }
 
   private TodoDetail getTodo(String todoId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTodo()", "root.MSG_GEN_ENTER_METHOD",
-        "todoId=" + todoId);
+
     return todoAccessor.getEntry(todoId);
   }
 
   private void addTodo(TaskDetail task) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTodo()", "root.MSG_GEN_ENTER_METHOD",
-        "actionId=" + task.getId());
+
     TodoDetail todo = task.toTodoDetail();
     todoAccessor.addEntry(todo);
   }
 
   private void removeTodo(int id, String instanceId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTodo()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
+
     todoAccessor.removeEntriesFromExternal("useless", instanceId, Integer.toString(id));
   }
 
   private void updateTodo(TaskDetail task) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.updateTodo()",
-        "root.MSG_GEN_ENTER_METHOD", "actionId=" + task.getId());
+
     todoAccessor.removeEntriesFromExternal("useless", task.getInstanceId(), Integer.
         toString(task.getId()));
     todoAccessor.addEntry(task.toTodoDetail());
   }
 
   private void createIndex(TaskDetail task) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "actionId=" + task.getId());
+
     FullIndexEntry indexEntry = null;
     // Index the Composed Task
     indexEntry = new FullIndexEntry(task.getInstanceId(), "Action", Integer.toString(task.getId()));
@@ -893,8 +867,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   }
 
   private void removeIndex(int id, String instanceId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "actionId=" + id);
+
     IndexEntryPK indexEntry = new IndexEntryPK(instanceId, "Action", Integer.toString(id));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

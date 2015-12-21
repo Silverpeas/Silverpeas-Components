@@ -81,8 +81,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   public String getDestination(String function, FormsOnlineSessionController formsOnlineSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("formsOnline", "FormsOnlineRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + formsOnlineSC.getUserId() + " Function=" + function);
+
 
     try {
       if ("Main".equals(function)) {
@@ -295,8 +294,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("formsOnline", "FormsOnlineRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

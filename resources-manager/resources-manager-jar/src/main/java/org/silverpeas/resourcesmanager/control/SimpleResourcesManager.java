@@ -316,8 +316,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   private void createCategoryIndex(Category category) {
-    SilverTrace.info("resourceManager", "resourceManagerBmEJB.createIndex_Category()",
-        "root.MSG_GEN_ENTER_METHOD", "category = " + category);
+
     if (category != null) {
       FullIndexEntry indexEntry = new FullIndexEntry(category.getInstanceId(), "Category", category.
           getIdAsString());
@@ -335,10 +334,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private void createResourceIndex(Resource resource) {
     if (resource != null) {
-      SilverTrace.info("resourceManager", "resourceManagerBmEJB.createIndex_Resource()",
-          "root.MSG_GEN_ENTER_METHOD", "resource = " + resource.getManagers().toString());
-      SilverTrace.info("resourceManager", "resourceManagerBmEJB.createIndex_Resource()",
-          "root.MSG_GEN_ENTER_METHOD", "resource = " + resource.toString());
+
+
       // Index the Reservation
       FullIndexEntry indexEntry =
           new FullIndexEntry(resource.getInstanceId(), "Resource", resource.getIdAsString());

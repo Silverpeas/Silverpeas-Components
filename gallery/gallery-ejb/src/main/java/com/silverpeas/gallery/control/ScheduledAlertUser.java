@@ -72,8 +72,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   }
 
   public void doScheduledAlertUser() {
-    SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     try {
       // recherche du nombre de jours
@@ -81,8 +80,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
       // rechercher la liste des photos arrivant à échéance
       Collection<Media> mediaList = getMediaService().getAllMediaThatWillBeNotVisible(nbDays);
-      SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-          "root.MSG_GEN_PARAM_VALUE", "MediaList=" + mediaList.toString());
+
 
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
 
@@ -104,8 +102,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
           // le corps du message)
           messageBody.append(message.getString("gallery.notifName")).append(" : ").append(media.
               getName()).append("\n");
-          SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-              "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+
         } else {
           if (currentInstanceId != null) {
             // Création du message à envoyer aux admins
@@ -120,8 +117,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
           }
           currentInstanceId = media.getInstanceId();
           String nameInstance = orga.getComponentInst(currentInstanceId).getLabel();
-          SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-              "root.MSG_GEN_PARAM_VALUE", "currentInstanceId = " + currentInstanceId);
+
 
           // initialisation du corps du message avec la première photo de
           // l'instance en cours
@@ -130,8 +126,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
           messageBody.append(message.getString("gallery.notifName")).append(" : ")
               .append(media.getName()).append("\n");
 
-          SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-              "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+
         }
       }
 
@@ -151,8 +146,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
-    SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private void createMessageByLanguage(String url, NotificationMetaData notifMetaData) {

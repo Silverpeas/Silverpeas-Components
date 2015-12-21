@@ -61,8 +61,7 @@ public class ChatContentManager implements ContentInterface {
 
   public int getSilverObjectId(String chatRoomId, String peasId)
       throws ChatException {
-    SilverTrace.info("chat", "ChatContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "chatRoomId = " + chatRoomId);
+
     try {
       return getContentManager().getSilverContentId(chatRoomId, peasId);
     } catch (Exception e) {
@@ -81,9 +80,6 @@ public class ChatContentManager implements ContentInterface {
   public int createSilverContent(Connection con, ChatRoomDetail chatRoom)
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility();
-    SilverTrace.info("chat", "ChatContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
     return getContentManager().addSilverContent(con, chatRoom.getId(),
         chatRoom.getInstanceId(), chatRoom.getCreatorId(), scv);
   }
@@ -99,9 +95,6 @@ public class ChatContentManager implements ContentInterface {
     int contentId = getContentManager().getSilverContentId(chatRoomId,
         componentId);
     if (contentId != -1) {
-      SilverTrace.info("chat", "ChatContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "chatRoomId = " + chatRoomId
-          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }

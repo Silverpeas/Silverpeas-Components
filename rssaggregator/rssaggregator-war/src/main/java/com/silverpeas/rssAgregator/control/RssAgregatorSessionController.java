@@ -118,8 +118,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
           try {
             rssChannel = getChannelFromUrl(channel.getUrl());
           } catch (Exception e) {
-            SilverTrace.info("rssAgregator", "RssAgregatorSessionController.getChannelsContent()",
-                "Update cache", "channelPK = " + channelPK.toString());
+
           } finally {
             channel._setChannel(rssChannel);
             cache.addChannelToCache(channel);

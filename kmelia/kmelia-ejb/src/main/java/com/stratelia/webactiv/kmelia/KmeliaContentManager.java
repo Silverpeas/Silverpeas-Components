@@ -65,8 +65,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
-    SilverTrace.info("kmelia", "KmeliaContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
+
     try {
       return getContentManager().getSilverContentId(pubId, peasId);
     } catch (Exception e) {
@@ -89,9 +88,6 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
       String userId) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(pubDetail
         .getBeginDate(), pubDetail.getEndDate(), isVisible(pubDetail));
-    SilverTrace.info("kmelia", "KmeliaContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
     return getContentManager().addSilverContent(con, pubDetail.getPK().getId(),
         pubDetail.getPK().getComponentName(), userId, scv);
   }
@@ -132,10 +128,6 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
         pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(pubDetail
         .getBeginDate(), pubDetail.getEndDate(), isVisible);
-    SilverTrace.info("kmelia",
-        "KmeliaContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
     updateSilverContentVisibility(scv, pubDetail, silverContentId);
   }
 
@@ -150,9 +142,6 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     int contentId = getContentManager().getSilverContentId(pubPK.getId(),
         pubPK.getComponentName());
     if (contentId != -1) {
-      SilverTrace.info("kmelia", "KmeliaContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
-          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           pubPK.getComponentName());
     }

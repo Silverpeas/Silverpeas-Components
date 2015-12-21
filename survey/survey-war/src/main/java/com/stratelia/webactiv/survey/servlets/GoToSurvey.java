@@ -49,8 +49,7 @@ public class GoToSurvey extends GoTo {
     if (survey != null) {
       String componentId = survey.getInstanceId();
 
-      SilverTrace.info("survey", "GoToSurvey.getDestination", "root.MSG_GEN_PARAM_VALUE",
-          "survey = " + survey.getId() + "componentId = " + componentId);
+
 
       String gotoURL = URLManager.getURL(null, componentId) + survey.getURL();
 

@@ -46,8 +46,7 @@ public class GoToImage extends GoTo {
     MediaPK mediaPK = new MediaPK(objectId);
     Media media = getGalleryBm().getMedia(mediaPK);
     String componentId = media.getMediaPK().getInstanceId();
-    SilverTrace.info("gallery", "GoToImage.doPost", "root.MSG_GEN_PARAM_VALUE", "componentId = " +
-        componentId + "mediaId = " + objectId);
+
     String gotoURL = URLManager.getURL(null, componentId) + media.getURL();
 
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);

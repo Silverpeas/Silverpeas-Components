@@ -43,8 +43,7 @@ public class GoToQuestion extends GoTo {
     Question question = QuestionManagerProvider.getQuestionManager().getQuestion(Long.parseLong(
         objectId));
     String componentId = question.getInstanceId();
-    SilverTrace.info("questionReply", "GoToQuestion.doPost", "root.MSG_GEN_PARAM_VALUE",
-        "componentId = " + componentId);
+
     String gotoURL = URLManager.getURL(null, componentId) + question._getURL();
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }

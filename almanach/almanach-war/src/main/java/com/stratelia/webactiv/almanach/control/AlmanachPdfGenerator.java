@@ -70,8 +70,7 @@ public class AlmanachPdfGenerator {
   static public void buildPdf(String name, AlmanachSessionController almanach,
       String mode) throws AlmanachRuntimeException {
     try {
-      SilverTrace.info("almanach", "AlmanachPdfGenerator.buildPdf()",
-          "root.MSG_GEN_ENTER_METHOD");
+
 
       String fileName = FileRepositoryManager.getTemporaryPath(almanach
           .getSpaceId(), almanach.getComponentId())
@@ -134,8 +133,7 @@ public class AlmanachPdfGenerator {
       }
 
       document.close();
-      SilverTrace.info("almanach", "AlmanachPdfGenerator.buildPdf()",
-          "root.MSG_GEN_EXIT_METHOD");
+
 
     } catch (Exception e) {
       throw new AlmanachRuntimeException("PdfGenerator.generate",

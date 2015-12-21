@@ -62,8 +62,7 @@ public final class DataWarningEngine {
     DataWarningQuery theQuery = null;
     DataWarningQueryResult theResult = null;
 
-    SilverTrace.info("dataWarning", "DataWarningEngine.run()", "root.MSG_GEN_ENTER_METHOD",
-        "componentId=" + componentId);
+
     switch (dataWarning.getAnalysisType()) {
       case DataWarning.INCONDITIONAL_QUERY:
         valret = new DataWarningResult(false);

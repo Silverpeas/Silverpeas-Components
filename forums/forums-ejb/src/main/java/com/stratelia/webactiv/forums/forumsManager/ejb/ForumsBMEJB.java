@@ -535,8 +535,7 @@ public class ForumsBMEJB implements ForumsBM {
     for (String messagesId : messagesIds) {
       // pour ce message on recherche la date de la dernière visite
       messageParentId = Integer.parseInt(messagesId);
-      SilverTrace.info("forums", "ForumsBMEJB.isNewMessageByForum()", "root.MSG_GEN_PARAM_VALUE",
-          "messageParentId = " + messageParentId);
+
       if (isNewMessage(userId, forumPK, messageParentId, status)) {
         return true;
       }
@@ -556,8 +555,7 @@ public class ForumsBMEJB implements ForumsBM {
       Message message = getLastMessage(forumPK, messagesIds, status);
       // date du dernier message de la discussion
       Date dateLastMessageBySubject = (message != null ? message.getDate() : null);
-      SilverTrace.info("forums", "ForumsBMEJB.isNewMessage()", "root.MSG_GEN_PARAM_VALUE",
-          "date du dernier message du sujet = " + dateLastMessageBySubject);
+
 
       // recherche sur tous les messages de la date de visite la plus ancienne
       // date de la dernière visite pour un message
@@ -1066,8 +1064,7 @@ public class ForumsBMEJB implements ForumsBM {
 
   @Override
   public int getSilverObjectId(ForumPK forumPK) {
-    SilverTrace.info("forums", "ForumsBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "forumPK = " + forumPK);
+
     int silverObjectId = -1;
     try {
       int forumId = Integer.parseInt(forumPK.getId());

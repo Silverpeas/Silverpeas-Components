@@ -79,8 +79,7 @@ public class CrmRequestRouter extends ComponentRequestRouter<CrmSessionControlle
    */
   public String getDestination(String function, CrmSessionController crmSC, HttpRequest request) {
     String destination = "";
-    SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "User=" + crmSC.getUserId() + " Function=" + function);
+
 
     try {
       resetContainerContext(crmSC, request);
@@ -435,8 +434,7 @@ public class CrmRequestRouter extends ComponentRequestRouter<CrmSessionControlle
     request.setAttribute("context",
         ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL"));
 
-    SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "Destination=" + destination);
+
     return destination;
   }
 

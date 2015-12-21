@@ -66,8 +66,7 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
   public String getDestination(String function, SpaceMembersSessionController spaceMembersSCC,
       HttpRequest request) {
 
-    SilverTrace.info("spaceMembers", "SpaceMembersRequestRooter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function = " + function);
+
     
     String destination = "";
 
@@ -85,8 +84,7 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
       destination = "/Rdirectory/jsp/"+function;
     }
     
-    SilverTrace.info("spaceMembers", "SpaceMembersRequestRooter.getDestination()",
-        "root.MSG_GEN_RETURN_VALUE", "destination = " + destination);
+
     return destination;
   }
 }

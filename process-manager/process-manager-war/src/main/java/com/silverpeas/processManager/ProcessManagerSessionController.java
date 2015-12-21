@@ -112,8 +112,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     peasId = context.getCurrentComponentId();
     processModel = getProcessModel(peasId);
 
-    SilverTrace.info("processManager", "ProcessManagerSessionController.constructor()",
-        "root.MSG_GEN_PARAM_VALUE", "après getProcessModel()");
+
     // the current user is given by the main session controller.
     currentUser = getUser(mainSessionCtrl.getUserId());
     // the user roles are given by the context.
@@ -126,8 +125,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
     // Reset the user rights for creation
     resetCreationRights();
-    SilverTrace.info("processManager", "ProcessManagerSessionController.constructor()",
-        "root.MSG_GEN_PARAM_VALUE", "après resetCreationRights()");
+
 
     // Load user informations
     try {
@@ -138,8 +136,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
               we);
     }
 
-    SilverTrace.info("processManager", "ProcessManagerSessionController.constructor()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

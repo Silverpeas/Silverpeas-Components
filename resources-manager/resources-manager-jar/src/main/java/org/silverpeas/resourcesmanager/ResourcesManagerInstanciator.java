@@ -38,9 +38,6 @@ public class ResourcesManagerInstanciator implements ComponentsInstanciatorIntf 
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("resourcesmanager", "ResourcesManagerInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
   }
 
   @Override
@@ -51,8 +48,5 @@ public class ResourcesManagerInstanciator implements ComponentsInstanciatorIntf 
     CommentServiceProvider.getCommentService()
         .deleteAllCommentsByComponentInstanceId(componentId);
 
-    SilverTrace.info("resourcesmanager", "ResourcesManagerInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD","space = " + spaceId + ", componentId = " + componentId
-        + ", userId =" + userId);
   }
 }

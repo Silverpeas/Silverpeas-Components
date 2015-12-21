@@ -42,14 +42,12 @@ public class SpaceMembersInstanciator extends Object implements ComponentsInstan
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("spaceMembers", "SpaceMembersInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
-        "space = " + spaceId);
+
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("spaceMembers", "SpaceMembersInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
-        "space = " + spaceId);
+
   }
 }

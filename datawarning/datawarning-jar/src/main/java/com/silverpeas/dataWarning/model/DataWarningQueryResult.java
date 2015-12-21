@@ -147,12 +147,10 @@ public class DataWarningQueryResult extends Object {
   }
 
   public long returnTriggerValueFromResult() throws DataWarningException {
-    SilverTrace.info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       if (isPersoEnabled()) {
-        SilverTrace.info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult()",
-            "root.MSG_GEN_PARAM_VALUE", "persoColumnNumber=" + persoColumnNumber);
+
         long maxVal = 0;
         long theVal;
         int theCol;
@@ -235,14 +233,8 @@ public class DataWarningQueryResult extends Object {
   public long returnTriggerValueFromResult(String userId) throws DataWarningException {
     try {
       if (isPersoEnabled()) {
-        SilverTrace.info("dataWarning",
-            "DataWarningQueryResult.returnTriggerValueFromResult(userId,persoEnabled)",
-            "root.MSG_GEN_PARAM_VALUE", "maxVal = " + getValue(userId, 0, 0));
         return Long.parseLong(getValue(userId, 0, 0));
       } else {
-        SilverTrace
-            .info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult(userId)",
-                "root.MSG_GEN_PARAM_VALUE", "maxVal = " + Long.parseLong(getValue(0, 0)));
         return Long.parseLong(getValue(0, 0));
       }
     } catch (Exception e) {
@@ -265,8 +257,7 @@ public class DataWarningQueryResult extends Object {
         }
       }
 
-      SilverTrace.info("dataWarning", "DataWarningQueryResult.getValues(userId)",
-          "root.MSG_GEN_PARAM_VALUE", "Taille valret = " + valret.size());
+
       return valret;
     } else {
       return getValues();
@@ -276,8 +267,7 @@ public class DataWarningQueryResult extends Object {
   protected ArrayList getRow(String userId, int row) {
     if (isPersoEnabled()) {
       List al = getValues(userId);
-      SilverTrace.info("dataWarning", "DataWarningQueryResult.getRow(userId, row)",
-          "root.MSG_GEN_PARAM_VALUE", "userId=" + userId + " row=" + row + " al=" + al);
+
       if (al.size() > row) {
         return (ArrayList) al.get(row);
       } else {
@@ -294,11 +284,9 @@ public class DataWarningQueryResult extends Object {
 
   public String getValue(String userId, int row, int col) {
 
-    SilverTrace.info("dataWarning", "DataWarningQueryResult.getValue(userId, row, col)",
-        "root.MSG_GEN_PARAM_VALUE", "UserId=" + userId + " Row=" + row + " Col=" + col);
+
     ArrayList al = getRow(userId, row);
-    SilverTrace.info("dataWarning", "DataWarningQueryResult.getValue(userId, row, col)",
-        "root.MSG_GEN_PARAM_VALUE", "al=" + al);
+
     if (al.size() > col) {
       return (String) (al.get(col));
     } else {

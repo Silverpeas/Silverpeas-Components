@@ -91,15 +91,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
         throwHttpForbiddenError();
       }
 
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " albumId = " + albumId + " userId = " +
-              userDetail.getId());
-
       for (File filePath : uploadSession.getRootFolderFiles()) {
-
-        SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
-            "full path = " + filePath);
-
         // Cas du zip
         if (FileUtil.isArchive(filePath.getName())) {
           ZipUtil.extract(filePath, filePath.getParentFile());

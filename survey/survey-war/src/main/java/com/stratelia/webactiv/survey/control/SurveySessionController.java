@@ -289,8 +289,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @throws SurveyException
    */
   public QuestionContainerDetail getSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.getSurvey", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       QuestionContainerDetail qc = questionContainerService.getQuestionContainer(qcPK, getUserId());
@@ -304,8 +303,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public QuestionContainerPK createSurvey(QuestionContainerDetail surveyDetail)
       throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.createSurvey", "Survey.MSG_ENTRY_METHOD",
-        "title = " + surveyDetail.getHeader().getTitle());
+
     QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
     try {
       qcPK = questionContainerService.createQuestionContainer(qcPK, surveyDetail, getUserId());
@@ -342,8 +340,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public QuestionContainerPK createSurvey(QuestionContainerDetail surveyDetail, String componentId)
       throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.createSurvey", "Survey.MSG_ENTRY_METHOD",
-        "title = " + surveyDetail.getHeader().getTitle());
+
     QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
     //encodeForHtml(surveyDetail.getHeader());
     try {
@@ -374,8 +371,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public void updateQuestions(Collection<Question> questions, String surveyId)
       throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.updateQuestions", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerService.updateQuestions(qcPK, questions);
@@ -386,8 +382,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void deleteSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.deleteSurvey", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerService.deleteQuestionContainer(qcPK);
@@ -398,8 +393,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void deleteVotes(String surveyId) throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.deleteVotes", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerService.deleteVotes(qcPK);
@@ -410,8 +404,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void deleteResponse(String surveyId) throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.deleteResponse", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerService.deleteQuestionContainer(qcPK);
@@ -471,8 +464,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void closeSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.closeSurvey", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerService.closeQuestionContainer(qcPK);
@@ -483,8 +475,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void openSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.openSurvey", "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId);
+
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerService.openQuestionContainer(qcPK);

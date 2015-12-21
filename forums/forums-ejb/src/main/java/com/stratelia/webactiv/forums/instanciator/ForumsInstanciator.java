@@ -66,8 +66,7 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("forums", "ForumsInstanciator.delete()", "forums.MSG_DELETE_WITH_SPACE",
-        "spaceId : " + spaceId);
+
 
     // Forums
     final Collection<Forum> forumRoots = getForumsService().getForumRootList(componentId);

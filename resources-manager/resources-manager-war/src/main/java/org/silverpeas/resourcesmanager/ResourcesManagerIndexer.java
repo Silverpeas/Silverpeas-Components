@@ -41,9 +41,6 @@ public class ResourcesManagerIndexer implements ComponentIndexation {
 
   @Override
   public void index(ComponentInst componentInst) throws Exception {
-    SilverTrace.info("resourcesmanager", "ResourcesManagerIndexer.index()",
-        "root.MSG_GEN_PARAM_VALUE", "index, context.getCurrentComponentId() = " +
-            componentInst.getId());
     resourcesManager.indexResourceManager(componentInst.getId());
   }
 }

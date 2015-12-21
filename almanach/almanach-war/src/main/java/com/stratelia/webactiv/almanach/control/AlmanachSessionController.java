@@ -316,8 +316,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public void removeOccurenceEvent(EventDetail eventDetail, String startDate)
       throws ParseException, AlmanachException {
-    SilverTrace.info("almanach", "AlmanachSessionController.removeOccurenceEvent()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     PeriodicityException periodicityException = new PeriodicityException();
     periodicityException
@@ -327,8 +326,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     // add exception periodicity in DB
     getAlmanachBm().addPeriodicityException(periodicityException);
-    SilverTrace.info("almanach", "AlmanachSessionController.removeOccurenceEvent()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   public void prepareNewEvent(EventDetail event) {
@@ -546,12 +544,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         .getAllComponentIdsRecur(getSpaceId(), getUserId(), getComponentRootName(), inCurrentSpace,
             inAllSpaces);
 
-    SilverTrace.info("almanach", "AlmanachSessionController.getAccessibleInstances()",
-        "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId=" + getSpaceId());
+
     if (instanceIds.length > 1) {
       for (String instanceId : instanceIds) {
-        SilverTrace.info("almanach", "AlmanachSessionController.getAccessibleInstances()",
-            "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceId);
+
         ComponentInstLight almanachInst =
             getOrganisationController().getComponentInstLight(instanceId);
 
@@ -794,15 +790,13 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public void updateEventOccurence(final EventDetail event, final String dateDebutIteration,
       final String dateFinIteration)
       throws AlmanachBadParamException, AlmanachException, WysiwygException, ParseException {
-    SilverTrace.info("almanach", "AlmanachSessionController.updateEventOccurence()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     // Supprime l'occurence : exception dans la série
     removeOccurenceEvent(event, dateDebutIteration);
     // Ajoute un nouvel événement indépendant
     event.setPeriodicity(null);
     addEvent(event, null);
-    SilverTrace.info("almanach", "AlmanachSessionController.updateEventOccurence()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

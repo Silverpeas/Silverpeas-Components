@@ -248,8 +248,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       groupPath.add(group);
     } else {
       int index = groupPath.indexOf(group);
-      SilverTrace.info("yellowpages", "YellowpagesSessionController.processGroupPath()",
-          "root.MSG_GEN_PARAM_VALUE", "index = " + index);
+
       if (index == -1) {
         groupPath.add(group);
       } else {
@@ -271,8 +270,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public NodePK updateTopicHeader(NodeDetail nd) {
-    SilverTrace.info("yellowpages", "YellowpagesSessionController.updateTopicHeader()",
-        "root.MSG_GEN_PARAM_VALUE", "id = " + nd.getNodePK().getId());
+
     nd.setFatherPK(getCurrentTopic().getNodePK());
     nd.getNodePK().setComponentName(getComponentId());
     return getYellowpagesService().updateTopic(nd);
@@ -289,8 +287,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public void deleteTopic(String topicId) {
-    SilverTrace.info("yellowpages", "YellowpagesSessionController.deleteTopic()",
-        "root.MSG_GEN_PARAM_VALUE", "topicId = " + topicId);
+
 
     getYellowpagesService().deleteTopic(getNodePK(topicId));
     resetCurrentFullCompleteUsers();
@@ -1023,15 +1020,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public void deleteBasketContent() throws FormException, PublicationTemplateException {
-    SilverTrace.info("yellowpages", "YellowpagesSessionControl.deleteBasketContent",
-        "root.MSG_ENTER_METHOD");
+
     TopicDetail td = getCurrentTopic();
     Collection<UserContact> pds = td.getContactDetails();
-    SilverTrace.info("yellowpages", "YellowpagesSessionControl.deleteBasketContent",
-        "root.MSG_PARAM_VALUE", "NbContacts=" + pds.size());
+
     for (UserContact userContact : pds) {
-      SilverTrace.info("yellowpages", "YellowpagesSessionControl.deleteBasketContent",
-          "root.MSG_PARAM_VALUE", "Deleting Contact #" + userContact.getContact().getPK().getId());
+
       deleteContact(userContact.getContact().getPK().getId());
     }
   }
@@ -1204,8 +1198,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @throws com.stratelia.webactiv.yellowpages.YellowpagesException
    */
   public ImportReport importCSV(FileItem filePart, String modelId) throws YellowpagesException {
-    SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     ImportReport report = new ImportReport();
     try {
@@ -1266,8 +1259,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       report.addError(e.getMessage());
     }
 
-    SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
-        "root.MSG_GEN_EXIT_METHOD");
+
 
     return report;
   }

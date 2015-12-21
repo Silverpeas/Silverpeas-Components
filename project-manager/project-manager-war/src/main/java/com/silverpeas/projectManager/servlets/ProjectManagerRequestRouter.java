@@ -446,8 +446,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 
@@ -522,8 +521,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         resource.setCharge(charge);
         resource.setUserId(userId);
         resources.add(resource);
-        SilverTrace.info(COMPONENT_NAME, "ProjectManagerRequestRouter.request2Resources()",
-            "root.MSG_GEN_PARAM_VALUE", "Resource=" + resource.toString());
+
       }
     }
     return resources;

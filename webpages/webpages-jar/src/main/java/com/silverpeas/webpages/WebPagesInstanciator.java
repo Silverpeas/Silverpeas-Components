@@ -49,8 +49,7 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("webPages", "WebPagesInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "componentId = " + componentId + ", userId =" + userId);
+
     removeWysiwygContent(componentId);
     removeXMLContent(componentId);
 

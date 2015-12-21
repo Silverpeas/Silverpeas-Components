@@ -64,8 +64,7 @@ public class QuickInfoContentManager implements ContentInterface {
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
-    SilverTrace.info("quickinfo", "QuickInfoContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
+
     try {
       return getContentManager().getSilverContentId(pubId, peasId);
     } catch (Exception e) {
@@ -82,8 +81,7 @@ public class QuickInfoContentManager implements ContentInterface {
    */
   public int createSilverContent(Connection con, PublicationDetail pubDetail, String userId,
       boolean isVisible) throws ContentManagerException {
-    SilverTrace.info("quickinfo", "QuickInfoContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", String.valueOf(pubDetail));
+
     SilverContentVisibility scv =
         new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
     return getContentManager()
@@ -103,8 +101,7 @@ public class QuickInfoContentManager implements ContentInterface {
     if (silverContentId != -1) {
       SilverContentVisibility scv =
           new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
-      SilverTrace.info("quickinfo", "QuickInfoContentManager.updateSilverContentVisibility()",
-          "root.MSG_GEN_ENTER_METHOD", String.valueOf(scv));
+
       getContentManager()
           .updateSilverContentVisibilityAttributes(scv, pubDetail.getPK().getComponentName(),
               silverContentId);
@@ -123,8 +120,7 @@ public class QuickInfoContentManager implements ContentInterface {
       throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pubPK.getId(), pubPK.getComponentName());
     if (contentId != -1) {
-      SilverTrace.info("quickinfo", "QuickInfoContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId() + ", contentId = " + contentId);
+
       getContentManager().removeSilverContent(con, contentId, pubPK.getComponentName());
     }
   }

@@ -83,8 +83,7 @@ public class WhitePagesContentManager implements ContentInterface {
   }
 
   public int getSilverObjectId(String id, String peasId) throws WhitePagesException {
-    SilverTrace.info("whitePages", "WhitePagesContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id);
+
     try {
       return getContentManager().getSilverContentId(id, peasId);
     } catch (Exception e) {
@@ -101,8 +100,7 @@ public class WhitePagesContentManager implements ContentInterface {
    */
   public int createSilverContent(Connection con, Card card) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
-    SilverTrace.info("whitePages", "WhitePagesContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     return getContentManager()
         .addSilverContent(con, card.getPK().getId(), card.getInstanceId(), card.getUserId(), scv);
   }
@@ -116,8 +114,7 @@ public class WhitePagesContentManager implements ContentInterface {
     int silverContentId = getContentManager()
         .getSilverContentId(card.getPK().getId(), card.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
-    SilverTrace.info("whitePages", "WhitePagesContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     getContentManager()
         .updateSilverContentVisibilityAttributes(scv, card.getPK().getComponentName(),
             silverContentId);
@@ -131,8 +128,7 @@ public class WhitePagesContentManager implements ContentInterface {
    */
   public void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pk.getId(), pk.getComponentName());
-    SilverTrace.info("whitePages", "WhitePagesContentManager.deleteSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = " + contentId);
+
     getContentManager().removeSilverContent(con, contentId, pk.getComponentName());
   }
 

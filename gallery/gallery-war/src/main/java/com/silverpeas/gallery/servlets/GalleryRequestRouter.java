@@ -126,8 +126,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     String destination = "";
     String rootDest = "/gallery/jsp/";
     request.setAttribute("gallerySC", gallerySC);
-    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + gallerySC.getUserId() + " Function=" + function);
+
 
     // Set common parameters
     SilverpeasRole highestUserRole = gallerySC.getHighestSilverpeasUserRole();
@@ -1328,8 +1327,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

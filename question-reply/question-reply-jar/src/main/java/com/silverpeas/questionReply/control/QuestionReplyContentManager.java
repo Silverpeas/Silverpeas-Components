@@ -93,8 +93,7 @@ public class QuestionReplyContentManager implements ContentInterface {
   }
 
   public int getSilverObjectId(String id, String peasId) throws QuestionReplyException {
-    SilverTrace.info("questionReply", "QuestionReplyContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id);
+
     try {
       return this.contentManager.getSilverContentId(id, peasId);
     } catch (Exception e) {
@@ -112,8 +111,7 @@ public class QuestionReplyContentManager implements ContentInterface {
    */
   public int createSilverContent(Connection con, Question question) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
-    SilverTrace.info("questionReply", "QuestionReplyContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     return this.contentManager
         .addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
             question.getCreatorId(), scv);
@@ -128,8 +126,7 @@ public class QuestionReplyContentManager implements ContentInterface {
     int silverContentId = this.contentManager
         .getSilverContentId(question.getPK().getId(), question.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
-    SilverTrace.info("questionReply", "QuestionReplyContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     this.contentManager
         .updateSilverContentVisibilityAttributes(scv, question.getPK().getComponentName(),
             silverContentId);
@@ -144,8 +141,7 @@ public class QuestionReplyContentManager implements ContentInterface {
    */
   public void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     int contentId = this.contentManager.getSilverContentId(pk.getId(), pk.getComponentName());
-    SilverTrace.info("questionReply", "QuestionReplyContentManager.deleteSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = " + contentId);
+
     this.contentManager.removeSilverContent(con, contentId, pk.getComponentName());
   }
 

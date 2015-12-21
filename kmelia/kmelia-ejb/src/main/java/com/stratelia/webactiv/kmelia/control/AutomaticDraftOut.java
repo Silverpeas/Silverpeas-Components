@@ -57,11 +57,9 @@ public class AutomaticDraftOut implements SchedulerEventListener {
   }
 
   public void doAutomaticDraftOut() {
-    SilverTrace.info("kmelia", "AutomaticDraftOut.doAutomaticDraftOut()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     getKmeliaBm().doAutomaticDraftOut();
-    SilverTrace.info("kmelia", "AutomaticDraftOut.doAutomaticDraftOut()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private KmeliaBm getKmeliaBm() {

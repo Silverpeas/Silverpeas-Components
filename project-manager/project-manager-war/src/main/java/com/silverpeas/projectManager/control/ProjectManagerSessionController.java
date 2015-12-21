@@ -128,9 +128,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   private List<TaskDetail> buildArbo(List<TaskDetail> arbo, TaskDetail task, TaskDetail actionMere,
       int level) {
-    SilverTrace.info("projectManager", "ProjectManagerSessionController.buildArbo()",
-        "root.MSG_GEN_ENTER_METHOD", "arbo.size()=" + arbo.size() + ", actionId = " + task.getId()
-        + ", level = " + level);
     enrichirTask(task);
 
     // fichiers joint à la tâche
@@ -366,8 +363,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public void removeTask(String id) {
-    SilverTrace.info("projectManager", "ProjectManagerSessionController.removeTask()",
-        "root.MSG_GEN_ENTER_METHOD", "id=" + id);
+
     getProjectManagerBm().removeTask(Integer.parseInt(id), getComponentId());
     currentTask = null;
   }
@@ -558,8 +554,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public void changeDayOfWeekStatus(String year, String month, String day) throws ParseException {
-    SilverTrace.info("projectManager", "ProjectManagerSessionController.changeDayOfWeekStatus()",
-        "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month + ", day=" + day);
+
     int iMonth = Integer.parseInt(month);
     getCalendar().set(Calendar.YEAR, Integer.parseInt(year));
     getCalendar().set(Calendar.MONTH, iMonth);
@@ -570,8 +565,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       getCalendar().add(Calendar.DATE, 1);
     }
     Date date = getCalendar().getTime();
-    SilverTrace.info("projectManager", "ProjectManagerSessionController.changeDayOfWeekStatus()",
-        "root.MSG_GEN_PARAM_VALUE", "date=" + date);
+
     HolidayDetail holidayDate = new HolidayDetail(date, getCurrentProject().getId(),
         getComponentId());
     boolean isHoliday = getProjectManagerBm().isHolidayDate(holidayDate);

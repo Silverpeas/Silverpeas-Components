@@ -102,9 +102,6 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
     int contentId =
         getContentManager().getSilverContentId(mediaPK.getId(), mediaPK.getComponentName());
     if (contentId != -1) {
-      SilverTrace.info("gallery", "GalleryContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD",
-          "mediaId = " + mediaPK.getId() + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId, mediaPK.getComponentName());
     }
   }

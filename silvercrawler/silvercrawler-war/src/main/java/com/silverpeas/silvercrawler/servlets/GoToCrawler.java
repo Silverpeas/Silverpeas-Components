@@ -39,8 +39,7 @@ public class GoToCrawler extends GoTo {
       throws Exception {
     String componentId = objectId;
     String path = req.getParameter("Path");
-    SilverTrace.info("formManager", "GoToCrawler.getDestination", "root.MSG_GEN_PARAM_VALUE",
-        "componentId = " + componentId);
+
     String gotoURL =
         URLManager.getURL(null, componentId) + "SubDirectoryFromResult?DirectoryPath=" + path;
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");

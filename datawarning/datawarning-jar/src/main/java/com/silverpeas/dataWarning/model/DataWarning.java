@@ -165,8 +165,7 @@ public class DataWarning extends SilverpeasBean {
 
     DataWarningDBDriver dbDriver = dataWarningDBDrivers.getDBDriver(jdbcDriverName);
     Connection con;
-    SilverTrace.info("dataWarning", "DataWarning.openConnection()", "root.MSG_GEN_PARAM_VALUE", "jdbcDriverName="
-        + jdbcDriverName + " | login=" + login);
+
     try {
       Class.forName(dbDriver.getClassName());
       con = DriverManager.getConnection(dbDriver.getJdbcUrl(), login, pwd);

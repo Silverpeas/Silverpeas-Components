@@ -329,8 +329,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public Collection<PostDetail> getResultSearch(String word) {
-    SilverTrace.info("blog", "BlogSessionController.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
-        "word =" + word);
+
     return getBlogService().getResultSearch(word, getUserId(), getSpaceId(), getComponentId());
   }
 

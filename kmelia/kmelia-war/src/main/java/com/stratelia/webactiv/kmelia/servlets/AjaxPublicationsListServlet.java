@@ -164,8 +164,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(sort)) {
         kmeliaSC.setSortValue(sort);
       }
-      SilverTrace.info("kmelia", "AjaxPublicationsListServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "Request parameters = " + req.getQueryString());
+
 
       boolean sortAllowed = true;
       boolean linksAllowed = true;
@@ -431,8 +430,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             try {
               displayThumbnail(pub, kmeliaScc, publicationSettings, out);
             } catch (ThumbnailException e) {
-              SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayPublications()",
-                  "root.MSG_GEN_ENTER_METHOD", "exception = " + e);
+
             }
             out.write("</span>");
           } else {

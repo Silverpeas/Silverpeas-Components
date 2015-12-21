@@ -151,8 +151,7 @@ public class Statistic {
 
   public static Collection<HistoryDetail> getHistoryByObjectAndUser(String path, String userId,
       String componentId) {
-    SilverTrace.info("silverCrawler", "Statistic.getHistoryByObjectAndUser()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try (Connection con = getConnection()) {
       Collection<HistoryDetail> result = HistoryDAO
           .getHistoryDetailByObjectAndUser(con, historyTableName, path, userId, componentId);

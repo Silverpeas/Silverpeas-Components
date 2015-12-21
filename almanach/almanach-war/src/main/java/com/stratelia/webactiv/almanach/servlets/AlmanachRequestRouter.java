@@ -103,8 +103,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
   public String getDestination(String function, AlmanachSessionController almanach,
           HttpRequest request) {
 
-    SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-            "root.MSG_GEN_ENTER_METHOD");
+
 
     setGlobalInfo(almanach, request);
 
@@ -497,14 +496,12 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         destination = getDestination("Main", almanach, request);
       } else if (function.equals("UpdateAgregation")) {
         String[] instanceIds = request.getParameterValues("chk_almanach");
-        SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
+
         almanach.updateAgregatedAlmanachs(instanceIds);
         destination = getDestination("almanach", almanach, request);
       } else if (function.equals("ToAlertUser")) {
         String id = request.getParameter("Id");
-        SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+
         try {
           destination = almanach.initAlertUser(id);
         } catch (Exception e) {
@@ -532,8 +529,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           request.setAttribute("icsName", icsFile);
           request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
         } catch (NoDataToExportException ex) {
-          SilverTrace.info("almanach", getClass().getSimpleName() + ".getDestination()",
-                  "root.EX_NO_MESSAGE", ex.getMessage());
+
           request.setAttribute("messageKey", "almanach.export.ical.empty");
         } catch (ExportException ex) {
           SilverTrace.error("almanach", getClass().getSimpleName() + ".getDestination()",
@@ -549,8 +545,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
       return "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-            "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
+
     return destination;
   }
 

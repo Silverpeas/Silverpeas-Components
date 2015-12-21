@@ -44,8 +44,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("blog", "BlogInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
 
     // create publication component
     PublicationInstanciator pub = new PublicationInstanciator("com.silverpeas.blog");
@@ -62,8 +61,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("blog", "BlogInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
     // delete posts
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.delete(con, spaceId, componentId, userId);

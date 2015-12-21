@@ -51,10 +51,6 @@ public class ProjectManagerCalendarDAO {
 
   public static void addHolidayDate(Connection con, HolidayDetail holiday)
       throws SQLException, UtilException {
-    SilverTrace.info("projectManager",
-        "ProjectManagerCalendarDAO.addHolidayDate()",
-        "root.MSG_GEN_ENTER_METHOD", holiday.getDate().toString());
-
     if (!isHolidayDate(con, holiday)) {
       StringBuilder insertStatement = new StringBuilder(128);
       insertStatement.append("INSERT INTO ").append(
@@ -108,10 +104,6 @@ public class ProjectManagerCalendarDAO {
     query.append(" and fatherId = ? ");
     query.append(" and instanceId = ? ");
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerCalendarDAO.isHolidayDate()",
-        "root.MSG_GEN_PARAM_VALUE", "date = " + holiday.getDate().toString());
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -139,10 +131,6 @@ public class ProjectManagerCalendarDAO {
     query.append(" WHERE instanceId = ? ");
     query.append("ORDER BY holidayDate ASC");
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerCalendarDAO.getHolidayDates()",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId = " + instanceId);
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -169,10 +157,6 @@ public class ProjectManagerCalendarDAO {
     query.append(" AND ? <= holidayDate ");
     query.append(" AND holidayDate <= ? ");
     query.append("ORDER BY holidayDate ASC");
-
-    SilverTrace.info("projectManager", "ProjectManagerCalendarDAO.getHolidayDates()",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId = " + instanceId + ", beginDate=" +
-            beginDate.toString() + ", endDate=" + endDate.toString());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;

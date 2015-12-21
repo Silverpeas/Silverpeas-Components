@@ -134,8 +134,7 @@ public class YellowpagesStatistics implements ComponentStatisticsProvider {
         }
       } catch (Exception ex) {
         topic = null;
-        SilverTrace.info("silverstatistics", "YellowpagesStatistics.getContacts()",
-            "root.MSG_GEN_PARAM_VALUE", ex);
+
       }
       // treatment of the nodes of current topic
       if (topic != null) {

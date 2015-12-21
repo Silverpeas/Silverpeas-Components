@@ -199,8 +199,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   }
 
   private String getParsedDestination(String sDestination, String sKeyword, String sValue) {
-    SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getParsedDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "sDestination = " + sDestination);
+
     String destination = sDestination;
     int nLoginIndex = sDestination.indexOf(sKeyword);
     while (nLoginIndex != -1) {
@@ -213,8 +212,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       destination = sParsed;
       nLoginIndex = destination.indexOf(sKeyword);
     }
-    SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getParsedDestination()",
-        "root.MSG_GEN_RETURN_VALUE", "sDestination = " + destination);
+
     return destination;
   }
 

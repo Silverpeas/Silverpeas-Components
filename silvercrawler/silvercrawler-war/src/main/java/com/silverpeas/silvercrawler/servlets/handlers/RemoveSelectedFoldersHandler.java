@@ -49,8 +49,7 @@ public class RemoveSelectedFoldersHandler extends FunctionHandler {
     String[] selectedFolders = request.getParameterValues("checkedDir");
     if (selectedFolders != null) {
       Collection<String> listFolderToRemove = Arrays.asList(selectedFolders);
-      SilverTrace.info("silverCrawler", "RemoveSelectedFoldersHandler.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "listFolderToRemove = " + listFolderToRemove);
+
 
       // Un-index selected folders
       for (String folder : listFolderToRemove) {

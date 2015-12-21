@@ -63,13 +63,11 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
    */
   public String getDestination(String function, MailingListSessionController componentSC,
       HttpRequest request) {
-    SilverTrace.info("mailinglist", "MailingListRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+
 
     String destination = "/mailinglist/jsp/welcome.jsp";
 
-    SilverTrace.info("mailinglist", "MailingListRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

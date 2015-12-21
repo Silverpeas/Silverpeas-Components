@@ -375,8 +375,7 @@ public class ForumHelper {
       try {
         out.println("ERROR");
       } catch (IOException ioe2) {
-        SilverTrace.info("forums", "JSPmessagesListManager.displaySingleMessageList()",
-            "root.EX_NO_MESSAGE", null, ioe2);
+
       }
     }
   }

@@ -43,16 +43,14 @@ public class RssAgregatorInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("RssAgregator", "RssAgregatorInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
+
 
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("RssAgregator", "RssAgregatorInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
+
     RssAgregatorBm rss = new RssAgregatorBmImpl();
     try {
       rss.deleteChannels(componentId);

@@ -90,8 +90,7 @@ public class ProcessManagerRequestRouter
   @Override
   public ProcessManagerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    SilverTrace.info("kmelia", "ProcessManagerRequestRouter.createComponentSessionController()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return new ProcessManagerSessionController(mainSessionCtrl, componentContext);
     } catch (ProcessManagerException e) {
@@ -108,8 +107,7 @@ public class ProcessManagerRequestRouter
   @Override
   public String getDestination(String function, ProcessManagerSessionController sessionController,
       HttpRequest request) {
-    SilverTrace.info("processManager", "ProcessManagerRequestRouter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD", "function = " + function);
+
     FunctionHandler handler = getHandlerMap().get(function);
     Exception error = sessionController.getFatalException();
     if (handler != null && error == null) {
@@ -140,8 +138,7 @@ public class ProcessManagerRequestRouter
   }
 
   private Map<String, FunctionHandler> getHandlerMap() {
-    SilverTrace.info("processManager", "ProcessManagerRequestRouter.getHandlerMap()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     if (handlerMap == null) {
       initHandlers();
     }

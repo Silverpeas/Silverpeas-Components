@@ -40,15 +40,13 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
 
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) {
-    SilverTrace.info("classifieds", "classifiedsInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
 
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) {
-    SilverTrace.info("classifieds", "classifiedsInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
     try {
       ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
       service.deleteAllClassifieds(componentId);

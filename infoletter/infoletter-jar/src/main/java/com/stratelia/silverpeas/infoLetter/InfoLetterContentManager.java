@@ -63,8 +63,7 @@ public class InfoLetterContentManager implements ContentInterface {
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
-    SilverTrace.info("infoletter", "InfoLetterContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
+
     try {
       return getContentManager().getSilverContentId(pubId, peasId);
     } catch (Exception e) {
@@ -83,8 +82,7 @@ public class InfoLetterContentManager implements ContentInterface {
   public int createSilverContent(Connection con, InfoLetterPublicationPdC ilPub, String userId)
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
-    SilverTrace.info("infoletter", "InfoLetterContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     return getContentManager()
         .addSilverContent(con, ilPub.getId(), ilPub.getInstanceId(), userId, scv);
   }
@@ -99,8 +97,7 @@ public class InfoLetterContentManager implements ContentInterface {
     int silverContentId =
         getContentManager().getSilverContentId(ilPub.getId(), ilPub.getInstanceId());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
-    SilverTrace.info("infoletter", "InfoLetterContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     if (silverContentId == -1) {
       createSilverContent(null, ilPub, ilPub.getCreatorId());
     } else {
@@ -122,8 +119,7 @@ public class InfoLetterContentManager implements ContentInterface {
       throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pubId, componentId);
     if (contentId != -1) {
-      SilverTrace.info("infoletter", "InfoLetterContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId + ", contentId = " + contentId);
+
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }

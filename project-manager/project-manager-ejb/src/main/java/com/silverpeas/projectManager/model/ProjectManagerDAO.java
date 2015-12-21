@@ -310,11 +310,7 @@ public class ProjectManagerDAO {
     query.append("SELECT id, taskId, resourceId, charge, instanceId FROM ");
     query.append(PROJECTMANAGER_RESOURCES_TABLENAME);
     query.append(" WHERE taskId = ? AND instanceId = ? ");
-    SilverTrace.info("projectManager", "ProjectManagerDAO.getResources()",
-        "root.MSG_GEN_PARAM_VALUE", query.toString());
-    SilverTrace.info("projectManager", "ProjectManagerDAO.getResources()",
-        "root.MSG_GEN_PARAM_VALUE", "taskId = " + taskId + " instanceId = "
-            + instanceId);
+
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
@@ -345,8 +341,7 @@ public class ProjectManagerDAO {
       }
     }
     query.append(" ORDER BY path ASC");
-    SilverTrace.info("projectManager", "ProjectManagerDAO.getAllActions()",
-        "root.MSG_GEN_PARAM_VALUE", query.toString());
+
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -496,10 +491,6 @@ public class ProjectManagerDAO {
     }
     query.append("order by dateDebut ASC");
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getTasksByMotherId()", "root.MSG_GEN_ENTER_METHOD",
-        query.toString());
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -545,10 +536,6 @@ public class ProjectManagerDAO {
 
     query.append("order by dateDebut ASC");
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getTasksNotCancelledByMotherId()",
-        "root.MSG_GEN_ENTER_METHOD", query.toString());
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -579,10 +566,6 @@ public class ProjectManagerDAO {
     query.append(" and previousId = ? ");
     query.append(" and instanceId = ? ");
     query.append("order by dateDebut ASC");
-
-    SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getTasksByMotherIdAndPreviousId()",
-        "root.MSG_GEN_ENTER_METHOD", query.toString());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -623,10 +606,8 @@ public class ProjectManagerDAO {
     }
     query.append("GROUP BY res.resourceId");
 
-    SilverTrace.info("projectManager", "ProjectManagerDAO.getOccupationByUser()",
-        "root.MSG_GEN_ENTER_METHOD", query.toString());
-    SilverTrace.info("projectManager", "ProjectManagerDAO.getOccupationByUser()",
-        "root.MSG_GEN_ENTER_METHOD", "dateDebut < " + dateDeb + " and dateFin > " + dateFin);
+
+
 
     PreparedStatement stmt = null;
     ResultSet rs = null;

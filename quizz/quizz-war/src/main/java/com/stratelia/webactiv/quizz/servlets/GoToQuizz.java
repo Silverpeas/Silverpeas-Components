@@ -47,8 +47,7 @@ public class GoToQuizz extends GoTo {
 
     if (quizz != null) {
       String componentId = quizz.getInstanceId();
-      SilverTrace.info("quizz", "GoToQuizz.getDestination", "root.MSG_GEN_PARAM_VALUE",
-          "quizz = " + quizz.getId() + "componentId = " + componentId);
+
 
       String gotoURL = URLManager.getURL(null, componentId) + quizz.getURL();
       return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");

@@ -90,8 +90,7 @@ public class AlmanachContentManager implements ContentInterface {
   public void deleteSilverContent(Connection con, EventPK eventPK) throws ContentManagerException {
     int contentId =
         getContentManager().getSilverContentId(eventPK.getId(), eventPK.getComponentName());
-    SilverTrace.info("almanach", "AlmanachContentManager.deleteSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + eventPK.getId() + ", contentId = " + contentId);
+
     if (contentId != -1) {
       getContentManager().removeSilverContent(con, contentId, eventPK.getComponentName());
     }
@@ -106,8 +105,7 @@ public class AlmanachContentManager implements ContentInterface {
     int silverContentId = getContentManager()
         .getSilverContentId(eventDetail.getPK().getId(), eventDetail.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility();
-    SilverTrace.info("almanach", "AlmanachContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv);
+
 
     if (silverContentId == -1) {
       createSilverContent(null, eventDetail, eventDetail.getDelegatorId());

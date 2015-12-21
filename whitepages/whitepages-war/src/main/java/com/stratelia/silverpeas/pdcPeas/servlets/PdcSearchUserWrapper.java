@@ -65,8 +65,7 @@ public class PdcSearchUserWrapper
    */
   public String getDestination(String function,
       PdcSearchUserWrapperSessionController pdcSearchUserWrapperScc, HttpRequest request) {
-    SilverTrace.info("pdcPeas", "PdcSearchUserWrapper.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
+
     try {
       if ("Open".equals(function)) {
         pdcSearchUserWrapperScc.setFormName(request.getParameter("formName"));

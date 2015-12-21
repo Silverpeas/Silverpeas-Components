@@ -163,8 +163,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   @Override
   public void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId) {
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.createInfoLetterPublication()",
-        "root.MSG_GEN_ENTER_METHOD", "ilp = " + ilp.toString() + " userId=" + userId);
+
     Connection con = openConnection();
 
     try {
@@ -248,8 +247,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   @Override
   public int getSilverObjectId(String pubId, String componentId) {
-    SilverTrace.info("infoLetter", "InfoLetterDataManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
+
     try {
       int silverObjectId = infoLetterContentManager.getSilverObjectId(pubId, componentId);
       if (silverObjectId == -1) {
@@ -307,8 +305,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       String selectQuery = "SELECT * FROM " + TABLE_EXTERNAL_EMAILS;
       selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
       selectQuery += " and letter = " + letterPK.getId() + " ";
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.getEmailsExternalsSuscribers()",
-          "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
+
       try (Statement selectStmt = con.createStatement()) {
         try (ResultSet rs = selectStmt.executeQuery(selectQuery)) {
           while (rs.next()) {
@@ -331,8 +328,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       String query = "DELETE FROM " + TABLE_EXTERNAL_EMAILS;
       query += " where instanceId = '" + letter.getInstanceId() + "' ";
       query += " and letter = " + letterPK.getId() + " ";
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.setEmailsExternalsSuscribers()",
-          "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+
       try (Statement stmt = con.createStatement()) {
         stmt.executeUpdate(query);
       }
@@ -414,8 +410,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       // For Displaying images in the mail
       mbp.setFileName(attachment.getFilename());
       mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.attachFilesToMail()",
-          "root.MSG_GEN_PARAM_VALUE", "Content-ID= " + mbp.getContentID());
+
 
       // create the Multipart and its parts to it
       mp.addBodyPart(mbp);
@@ -464,10 +459,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     Set<String> emailErrors = new LinkedHashSet<>();
 
     if (listEmailDest.size() > 0) {
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
-      SilverTrace.info("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-          "root.MSG_GEN_PARAM_VALUE", "from = " + emailFrom);
+
+
 
       try {
         // create the Multipart and its parts to it

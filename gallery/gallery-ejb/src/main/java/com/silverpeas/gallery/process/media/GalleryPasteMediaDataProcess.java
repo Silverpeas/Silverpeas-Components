@@ -211,8 +211,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
           }
         }
       } catch (final PublicationTemplateException e) {
-        SilverTrace.info("gallery", "GalleryPasteMediaDataProcess.processPasteCommons()",
-            "gallery.DIFERENT_FORM_COMPONENT", e);
+
       }
     }
   }

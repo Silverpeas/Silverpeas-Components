@@ -139,17 +139,13 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
    */
   public synchronized void doDataWarningSchedulerImpl() {
     DataWarningResult dwr = dataWarningEngine.run();
-    SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-        "root.MSG_GEN_ENTER_METHOD", "hasError=" + dwr.hasError() + "-" + dwr.getQueryResult().
-            getErrorFullText());
     if (!dwr.hasError()) {
       try {
         OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
         StringBuilder msgForManager = new StringBuilder();
         DataWarningQueryResult dwqr = dwr.getQueryResult();
         String descriptionRequete = dwr.getDataQuery().getDescription();
-        SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-            "root.MSG_GEN_PARAM_VALUE", "descriptionRequete=" + descriptionRequete);
+
         StringBuilder msgToSend = new StringBuilder();
         int nbRowMax = dataWarningEngine.getDataWarning().getRowLimit();
         //Request Description
@@ -163,10 +159,6 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
         profilesList.add("admin");
         profilesList.add("publisher");
         String[] managerIds = oc.getUsersIdsByRoleNames(instanceId, profilesList);
-        SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-            "root.MSG_GEN_PARAM_VALUE", "managerIds :" + managerIds.length + " - " +
-                Arrays.toString(managerIds));
-
         //Inconditional Query Type
         if (dataWarningEngine.getDataWarning().getAnalysisType() ==
             DataWarning.INCONDITIONAL_QUERY) {
@@ -225,8 +217,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
         // Notification for the Managers:
         for (int i = 0; i < managerDestIds.size(); i++) {
-          SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.doDataWarningSchedulerImpl()",
-              "root.MSG_GEN_PARAM_VALUE", "managerId :" + managerIds[i]);
+
           sendMessage(messages.getString("titreMail"),
               msgToSend.toString() + msgForManager.toString(), managerDestIds.get(i));
         }
@@ -246,8 +237,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
     List cols = dwqr.getColumns(userId);
     int nbCols = cols.size();
-    SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-        "root.MSG_GEN_ENTER_METHOD", "nbCols=" + nbCols);
+
     Iterator it = cols.iterator();
 
     while (it.hasNext()) {
@@ -264,8 +254,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
     }
 
     msgToSend.append("\n");
-    SilverTrace.info("dataWarning", "DataWarningSchedulerImpl.buildResultForMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "msgToSend=" + msgToSend);
+
     List vals = dwqr.getValues(userId);
     for (int j = 0; (j < vals.size()) && ((nbRowMax <= 0) || (j < nbRowMax)); j++) {
       ArrayList theRow = (ArrayList) vals.get(j);

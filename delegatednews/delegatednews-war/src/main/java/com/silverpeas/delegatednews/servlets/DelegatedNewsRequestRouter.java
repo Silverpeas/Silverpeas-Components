@@ -75,8 +75,7 @@ public class DelegatedNewsRequestRouter
   public String getDestination(String function, DelegatedNewsSessionController newsSC,
       HttpRequest request) {
 
-    SilverTrace.info("delegatednews", "DelegatedNewsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + newsSC.getUserId() + " Function=" + function);
+
 
     String destination = "";
     try {
@@ -151,8 +150,7 @@ public class DelegatedNewsRequestRouter
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("delegatednews", "DelegatedNewsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

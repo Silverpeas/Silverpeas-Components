@@ -51,7 +51,6 @@ import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
@@ -74,6 +73,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
@@ -113,8 +113,8 @@ public class SendInKmelia extends ExternalActionImpl {
         ForeignPK pk = (ForeignPK) explorer.getObjectValue();
         targetId = pk.getInstanceId();
         topicId = pk.getId();
-      } catch (WorkflowException e1) {
-        SilverTrace.error("processManager", "SendInKmelia.execute", "err.CANT_GET_TOPIC", e1);
+      } catch (WorkflowException e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     } else {
       targetId = getTriggerParameter("targetComponentId").getValue();
@@ -125,7 +125,7 @@ public class SendInKmelia extends ExternalActionImpl {
               getProcessInstance().getAllDataRecord(role, "fr"), "fr");
           topicId = getNodeId(path);
         } catch (WorkflowException e) {
-          SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
           topicId = "0";
         }
       } else {
@@ -165,7 +165,7 @@ public class SendInKmelia extends ExternalActionImpl {
         pubName = DataRecordUtil
             .applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(role, "fr"), "fr");
       } catch (WorkflowException e) {
-        SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     String desc = "";
@@ -174,7 +174,7 @@ public class SendInKmelia extends ExternalActionImpl {
         desc = DataRecordUtil
             .applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role, "fr"), "fr");
       } catch (WorkflowException e) {
-        SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     userId = getBestUserDetail().getId();
@@ -252,8 +252,7 @@ public class SendInKmelia extends ExternalActionImpl {
       pubTemplate.getRecordSet().save(record);
 
     } catch (PublicationTemplateException | FormException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.populateFields()",
-          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -284,7 +283,7 @@ public class SendInKmelia extends ExternalActionImpl {
       }
 
     } catch (AttachmentException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.copyFiles", "CANNOT_PASTE_FILES", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return fileIds;
   }
@@ -313,7 +312,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
       return baos.toByteArray();
     } catch (Exception e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.generatePDF()", "root.MSG_GEN_ERROR", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return null;
   }
@@ -373,8 +372,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
       document.add(pTable);
     } catch (Exception e) {
-      SilverTrace
-          .error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -446,15 +444,13 @@ public class SendInKmelia extends ExternalActionImpl {
             cell.setPaddingBottom(5);
             tableContent.addCell(cell);
           } catch (Exception e) {
-            SilverTrace.warn("workflowEngine", "SendInKmelia.generatePDFStep()",
-                "CANT_DISPLAY_DATA_OF_STEP", e);
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
         }
         document.add(tableContent);
       }
     } catch (Exception e) {
-      SilverTrace
-          .error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -530,9 +526,8 @@ public class SendInKmelia extends ExternalActionImpl {
         existingNode =
             getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
       } catch (Exception e) {
-        SilverTrace.info("workflowEngine", "SendInKmelia.getNodeId()", "root.MSG_GEN_PARAM_VALUE",
-            "node named '" + name + "' in path '" +
-                explicitPath + "' does not exist");
+        SilverLogger.getLogger(this).warn("Node named {0} in path {1} doesn't exist", name,
+            explicitPath);
       }
       if (existingNode != null) {
         // topic exists
@@ -548,10 +543,8 @@ public class SendInKmelia extends ExternalActionImpl {
         try {
           newNodePK = getNodeBm().createNode(newNode);
         } catch (Exception e) {
-          SilverTrace
-              .error("workflowEngine", "SendInKmelia.getNodeId()", "root.MSG_GEN_PARAM_VALUE",
-                  "Can't create node named '" + name + "' in path '" +
-                      explicitPath + "'", e);
+          SilverLogger.getLogger(this).error("Cannot create node {0} in path {1}",
+              new String[] {name, explicitPath}, e);
           return "-1";
         }
         parentId = newNodePK.getId();

@@ -122,15 +122,11 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
           metaDataStr = metaDataStr + " " + value;
         }
         indexEntry.addTextContent(metaDataStr);
-        SilverTrace.info("gallery", "GalleryIndexPhotoDataProcess.onSuccessful()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "metaData = " + metaDataStr + " indexEntry = " + indexEntry.toString());
         // indexation des méta données (une donnée par champ d'index)
         for (final String property : properties) {
           metaData = photo.getMetaData(property);
           final String value = metaData.getValue();
-          SilverTrace.info("gallery", "GalleryIndexMediaDataProcess.onSuccessful()",
-              "root.MSG_GEN_ENTER_METHOD", "property = " + property + " value = " + value);
+
           if (metaData.isDate()) {
             indexEntry.addField("IPTC_" + property, metaData.getDateValue());
           } else {
@@ -143,8 +139,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
       // indexation du contenu du formulaire XML
       final String xmlFormName = getOrganisationController()
           .getComponentParameterValue(getMedia().getInstanceId(), "XMLFormName");
-      SilverTrace.info("gallery", "GalleryIndexMediaDataProcess.onSuccessful()",
-          "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
+
       if (StringUtil.isDefined(xmlFormName)) {
         final String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -154,11 +149,9 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
               .getPublicationTemplate(getMedia().getInstanceId() + ":" + xmlFormShortName);
           final RecordSet set = pubTemplate.getRecordSet();
           set.indexRecord(getMedia().getMediaPK().getId(), xmlFormShortName, indexEntry);
-          SilverTrace.info("gallery", "GalleryIndexMediaDataProcess.onSuccessful()",
-              "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
+
         } catch (final Exception e) {
-          SilverTrace.info("gallery", "GalleryIndexMediaDataProcess.onSuccessful()",
-              "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
+
         }
       }
 

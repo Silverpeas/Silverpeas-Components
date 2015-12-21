@@ -57,8 +57,7 @@ public class RssAgregatorRequestRouter
   public String getDestination(String function, RssAgregatorSessionController rssSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info(getSessionControlBeanName(), "rssAgregatorRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + rssSC.getUserId() + " Function=" + function);
+
 
     String action = request.getParameter("action");
     if (StringUtil.isDefined(action)) {
@@ -113,9 +112,6 @@ public class RssAgregatorRequestRouter
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info(getSessionControlBeanName(),
-        RssAgregatorRequestRouter.class.getName() + "getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "Destination=" + destination);
     return destination;
   }
 
@@ -183,12 +179,6 @@ public class RssAgregatorRequestRouter
     String refreshRate = request.getParameter("RefreshRate");
     String nbItems = request.getParameter("NbItems");
     String displayImage = request.getParameter("DisplayImage");
-
-    SilverTrace.info(getSessionControlBeanName(),
-        RssAgregatorRequestRouter.class.getName() + ".buildSPChannelFromRequest",
-        "root.MSG_GEN_PARAM_VALUE", "Id = " + id + ", url = " + url +
-        ", refreshRate = " + refreshRate + ", nbItems = " + nbItems + ", displayImage = " +
-        displayImage);
 
     // Return object declaration
     SPChannel channel;

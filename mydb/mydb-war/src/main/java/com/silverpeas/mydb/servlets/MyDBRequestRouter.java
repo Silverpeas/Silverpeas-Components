@@ -83,10 +83,6 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    */
   public String getDestination(String function, MyDBSessionController myDBSC, HttpRequest request) {
     String destination = "";
-    SilverTrace.info("mydb", "MyDBRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + myDBSC.getUserId()
-        + ", Function=" + function);
-
     // User's best role.
     request.setAttribute("userRoleLevel", myDBSC.getUserRoleLevel());
 
@@ -132,8 +128,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("mydb", "MyDBRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

@@ -77,8 +77,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         String userCharge = req.getParameter("UserCharge");
         String sBeginDate = req.getParameter("BeginDate");
         String sEndDate = req.getParameter("EndDate");
-        SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-            "userId = " + userId + ", charge = " + userCharge);
+
         Date beginDate = null;
         try {
           beginDate = projectManagerSC.uiDate2Date(sBeginDate);
@@ -91,8 +90,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         } catch (ParseException ignored) {
         }
 
-        SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-            "beginDate = " + beginDate + ", endDate = " + endDate);
+
         int occupation = projectManagerSC.checkOccupation(taskId, userId, beginDate, endDate);
         occupation += Integer.parseInt(userCharge);
         if (occupation > 100) {
@@ -112,16 +110,14 @@ public class AjaxProjectManagerServlet extends HttpServlet {
           beginDate = projectManagerSC.uiDate2Date(sBeginDate);
         } catch (ParseException ignored) {
         }
-        SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-            "userId = " + userId + ", charge = " + userCharge);
+
 
         Date endDate = null;
         try {
           endDate = projectManagerSC.uiDate2Date(sEndDate);
         } catch (ParseException ignored) {
         }
-        SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-            "beginDate = " + beginDate + ", endDate = " + endDate);
+
 
         int occupation = projectManagerSC.checkOccupation(userId, beginDate, endDate);
         occupation = occupation + Integer.parseInt(userCharge);
@@ -182,8 +178,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
           return jsonResult;
         });
       }
-      SilverTrace.info("projectManager", "AjaxProjectManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-          "output = " + output);
+
       res.setContentType(FileUtil.XML_MIME_TYPE);
       res.setHeader("charset", CharEncoding.UTF_8);
       Writer writer = res.getWriter();

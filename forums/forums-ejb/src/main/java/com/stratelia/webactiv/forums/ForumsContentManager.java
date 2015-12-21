@@ -108,8 +108,7 @@ public class ForumsContentManager implements ContentInterface {
       createSilverContent(null, forumPK, userId);
     } else {
       SilverContentVisibility scv = new SilverContentVisibility(isVisible(forumPK));
-      SilverTrace.info("forums", "ForumsContentManager.updateSilverContentVisibility()",
-          "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
       getContentManager().updateSilverContentVisibilityAttributes(scv, forumPK.getComponentName(),
           silverContentId);
       ClassifyEngine.clearCache();

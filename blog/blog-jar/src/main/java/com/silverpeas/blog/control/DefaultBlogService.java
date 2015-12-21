@@ -372,8 +372,7 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public Collection<PostDetail> getPostsByCategory(String categoryId, String instanceId) {
-    SilverTrace.info("blog", "DefaultBlogService.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
-        "categoryId =" + categoryId);
+
     NodePK pk = new NodePK(categoryId, null, instanceId);
     Collection<PostDetail> posts = new ArrayList<>();
     try (Connection con = openConnection()) {
@@ -421,8 +420,7 @@ public class DefaultBlogService implements BlogService {
   @Override
   public Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
       String instanceId) {
-    SilverTrace.info("blog", "DefaultBlogService.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
-        "dates =" + beginDate + "-" + endDate);
+
 
     PublicationPK pubPK = new PublicationPK("useless", instanceId);
     Collection<PostDetail> posts = new ArrayList<>();
@@ -443,8 +441,7 @@ public class DefaultBlogService implements BlogService {
           }
         }
       }
-      SilverTrace.info("blog", "DefaultBlogService.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
-          "posts =" + posts.toString());
+
       return posts;
     } catch (Exception e) {
       throw new BlogRuntimeException("DefaultBlogService.getPostsByArchive()",
@@ -457,18 +454,15 @@ public class DefaultBlogService implements BlogService {
       String instanceId) {
     Collection<PostDetail> posts = new ArrayList<>();
     List<String> postIds = new ArrayList<>();
-    SilverTrace.info("blog", "DefaultBlogService.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
-        "word =" + word + " userId = " + userId + " instanceId = " + instanceId);
+
     QueryDescription query = new QueryDescription(word);
     query.setSearchingUser(userId);
     query.addSpaceComponentPair(spaceId, instanceId);
-    SilverTrace.info("blog", "DefaultBlogService.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
-        "query =" + query.getQuery());
+
     try (Connection con = openConnection()) {
       List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
-      SilverTrace.info("blog", "DefaultBlogService.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
-          "result =" + result.size());
+
 
       // création des billets à partir des résultats
       // rechercher la liste des posts trié par date
@@ -764,8 +758,7 @@ public class DefaultBlogService implements BlogService {
 
 
   private int getSilverObjectId(PublicationPK pubPK) {
-    SilverTrace.info("blog", "DefaultBlogService.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "pubId = " + pubPK.getId());
+
     int silverObjectId;
     PublicationDetail pubDetail;
     try {

@@ -85,10 +85,8 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
   public int createSilverContent(Connection con, SiteDetail siteDetail, String userId,
       String prefixTableName, String componentId) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(siteDetail));
-    SilverTrace.info("webSites", "WebSitesContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
-    SilverTrace.info("webSites", "WebSitesContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "siteDetail = " + siteDetail.toString());
+
+
     return getContentManager()
         .addSilverContent(con, siteDetail.getSitePK().getId(), componentId, userId, scv);
   }
@@ -105,8 +103,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
     int silverContentId =
         getContentManager().getSilverContentId(siteDetail.getSitePK().getId(), componentId);
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(siteDetail));
-    SilverTrace.info("webSites", "WebSitesContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     if (silverContentId == -1) {
       createSilverContent(null, siteDetail, siteDetail.getCreatorId(), prefixTableName,
           componentId);
@@ -129,8 +126,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
       String componentId) throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(sitePK.getId(), componentId);
     if (contentId != -1) {
-      SilverTrace.info("webSites", "WebSitesContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "siteId = " + sitePK.getId() + ", contentId = " + contentId);
+
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }
@@ -166,8 +162,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    */
   private List<SiteDetail> getHeaders(List<String> siteIds, String componentId) {
     List<SiteDetail> headers = new ArrayList<>();
-    SilverTrace.info("webSites", "WebSitesContentManager.getHeaders()", "root.MSG_GEN_ENTER_METHOD",
-        "siteIds = " + siteIds);
+
     try {
       List<SiteDetail> siteDetails = getWebSiteBm().getWebSites(componentId, siteIds);
       for (SiteDetail siteDetail : siteDetails) {

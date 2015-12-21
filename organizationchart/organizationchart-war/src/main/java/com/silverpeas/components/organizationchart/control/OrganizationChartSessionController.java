@@ -439,8 +439,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
         if (roleDetails.length == 2) {
           listRoles.add(new OrganizationalRole(roleDetails[0], roleDetails[1]));
         } else {
-          SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getRole()",
-              "root.MSG_GEN_PARAM_VALUE", "bad format for a role " + role);
+
         }
       }
     }

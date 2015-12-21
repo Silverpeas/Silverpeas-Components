@@ -97,14 +97,12 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   public synchronized void removeSubscription() {
-    SilverTrace.info("webPages", "WebPagesSessionController.unsubscribeFromNode()",
-            "root.MSG_GEN_ENTER_METHOD");
+
     getSubscribeService().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public synchronized void addSubscription() {
-    SilverTrace.info("webPages", "WebPagesSessionController.addSubscription()",
-            "root.MSG_GEN_ENTER_METHOD");
+
     if (isSubscriber()) {
       return;
     }
@@ -112,8 +110,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isSubscriber() {
-    SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
-            "root.MSG_GEN_ENTER_METHOD");
+
     return getSubscribeService().existsSubscription(
         new ComponentSubscription(getUserId(), getComponentId()));
   }

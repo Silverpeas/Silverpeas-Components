@@ -989,8 +989,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           .search(getSpaceId(), getComponentId(), getUserId(), query, pdcContext, xmlFields,
               xmlTemplate, fieldsQuery, getLanguage());
     } catch (Exception e) {
-      SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult",
-          "whitePages.EX_SEARCH_GETRESULT", e);
+
     }
 
     if (contents != null) {
@@ -1022,8 +1021,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         }
 
       } catch (Exception e) {
-        SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult",
-            "whitePages.EX_SEARCH_GETCARDS", e);
+
       }
     }
     return cards;

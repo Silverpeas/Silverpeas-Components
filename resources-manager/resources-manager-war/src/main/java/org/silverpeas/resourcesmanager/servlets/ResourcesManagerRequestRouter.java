@@ -350,8 +350,7 @@ public class ResourcesManagerRequestRouter
         if (reservationId != null) {
           resourcesOfReservation = resourcesManagerSC.getResourcesofReservation(reservationId);
           reservableResources.removeAll(resourcesOfReservation);
-          SilverTrace.info("resourcesmanager", "ResourcesManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "dans le if,idReservation=" + reservationId);
+
 
           if (unavailableReservationResources == null) {
             // When update process, verify resource collisions with other reservations to warn
@@ -382,8 +381,7 @@ public class ResourcesManagerRequestRouter
                 .put(resourceReservable.getCategoryId(), resourceReservables);
           }
         }
-        SilverTrace.info("resourcesmanager", "ResourcesManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable=" + reservableResources.size());
+
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
         request.setAttribute("objectView", request.getParameter("objectView"));
@@ -651,8 +649,7 @@ public class ResourcesManagerRequestRouter
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("resourcesmanager", "ResourcesManagerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

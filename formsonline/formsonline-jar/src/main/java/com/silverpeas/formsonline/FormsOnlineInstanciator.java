@@ -46,18 +46,11 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId +
-            ", userId =" + userId);
-
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId +
-            ", userId =" + userId);
     deleteFormsData(con, componentId);
     deleteDataOfInstance(con, componentId, "UserRights");
     deleteDataOfInstance(con, componentId, "GroupRights");

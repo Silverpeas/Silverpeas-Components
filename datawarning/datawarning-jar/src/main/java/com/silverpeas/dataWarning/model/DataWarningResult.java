@@ -88,8 +88,7 @@ public class DataWarningResult extends Object {
   }
 
   public long getTriggerActualValue(String userId) {
-    SilverTrace.info("dataWarning", "DataWarningResult.getTriggerActualValue(userId)",
-        "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
+
     if (triggerResult.isPersoEnabled()) {
       try {
         return triggerResult.returnTriggerValueFromResult(userId);
@@ -112,8 +111,7 @@ public class DataWarningResult extends Object {
   }
 
   public boolean getTriggerEnabled(String userId) {
-    SilverTrace.info("dataWarning", "DataWarningResult.getTriggerEnabled(userId)",
-        "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
+
     if (triggerResult.isPersoEnabled()) {
       if (triggerResult.getNbRows(userId) > 0) {
         try {
@@ -149,12 +147,10 @@ public class DataWarningResult extends Object {
   }
 
   public void computeTriggerResult(DataWarning dataWarning) {
-    SilverTrace.info("dataWarning", "DataWarningResult.computeTriggerResult(datawarning)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     triggerResult = triggerQuery.executeQuery(dataWarning);
 
-    SilverTrace.info("dataWarning", "DataWarningResult.computeTriggerResult(datawarning)",
-        "root.MSG_GEN_PARAM_VALUE", "triggerResult nb de lignes =" + triggerResult.getNbRows());
+
 
     if (!triggerResult.hasError()) {
       try {

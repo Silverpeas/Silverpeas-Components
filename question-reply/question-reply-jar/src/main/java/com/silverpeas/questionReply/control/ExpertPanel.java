@@ -125,8 +125,7 @@ public class ExpertPanel extends PanelProvider {
 
   public PanelLine getElementInfos(String id) {
     UserDetail theUser = allUserDetails.get(id);
-    SilverTrace.info("questionReply", "ExpertPanel.getElementInfos()", "root.GEN_MSG_PARAM_VALUE",
-        "id=" + id);
+
     String[] theValues = new String[2];
     theValues[COL_LASTNAME] = theUser.getLastName();
     theValues[COL_FIRSTNAME] = theUser.getFirstName();

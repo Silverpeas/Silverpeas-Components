@@ -64,8 +64,7 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
   }
 
   public void doScheduledIndex() {
-    SilverTrace.info("silverCrawler", "ScheduledIndexFiles.doScheduledIndex()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     try {
       // indexation des fichiers du composant
@@ -100,8 +99,7 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
-    SilverTrace.info("silverCrawler", "ScheduledIndexFiles.doScheduledIndex()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override

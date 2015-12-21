@@ -99,8 +99,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
   @Override
   public String getDestination(String function, BlogSessionController blogSC, HttpRequest request) {
     String destination = "";
-    SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "User=" + blogSC.getUserId() + " Function=" + function);
+
     String rootDest = "/blog/jsp/";
 
     // paramètres généraux
@@ -244,8 +243,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // récupération des paramètres
         String day = request.getParameter("Day");
         String date = DateUtil.date2SQLDate(day, blogSC.getLanguage());
-        SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "date =" + date);
+
         // récupération des billets par archive
         request.setAttribute("Posts", blogSC.postsByDate(date));
         setCommonParam(blogSC, request);
@@ -312,13 +310,11 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         }
       } else if ("Search".equals(function)) {
         String wordSearch = request.getParameter("WordSearch");
-        SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "word =" + wordSearch);
+
 
         Collection<PostDetail> posts = blogSC.getResultSearch(wordSearch);
         request.setAttribute("Posts", posts);
-        SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "posts =" + posts);
+
         setCommonParam(blogSC, request);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
@@ -328,13 +324,11 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // traiter les recherches
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
-        SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "Type=" + type);
+
 
         if ("Publication".equals(type)) {
           // traitement des billets
-          SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-              "Id=" + id);
+
           request.setAttribute("PostId", id);
           destination = getDestination("ViewPost", blogSC, request);
         } else if ("Node".equals(type) || "Topic".equals(type)) {
@@ -412,8 +406,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "Destination=" + destination);
+
     return destination;
   }
 

@@ -155,8 +155,7 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
    */
   private List<OrganizationalUnit> getSubOrganizationUnits(Group group) {
     List<? extends Group> subgroups = group.getSubGroups();
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()",
-        "root.MSG_GEN_PARAM_VALUE", "services retrieved !");
+
     List<OrganizationalUnit> units = new ArrayList<>(subgroups.size());
     for (Group subgroup : subgroups) {
       OrganizationalUnit unit = new OrganizationalUnit(subgroup.getName(), subgroup.getId());

@@ -71,8 +71,7 @@ public class OrganizationChartRequestRouter
   public String getDestination(String function, OrganizationChartSessionController orgaSC,
       HttpRequest request) {
 
-    SilverTrace.info("organizationchart", "OrganizationChartRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + orgaSC.getUserId() + " Function=" + function);
+
 
     String destination;
     request.setAttribute("DisplayLabels", orgaSC.displayLabels());
@@ -91,8 +90,7 @@ public class OrganizationChartRequestRouter
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("organizationchart", "OrganizationChartRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

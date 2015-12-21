@@ -70,8 +70,7 @@ public class BlogContentManager implements ContentInterface, Serializable {
   }
 
   public int getSilverObjectId(String postId, String peasId) {
-    SilverTrace.info("blog", "BlogContentManager.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "postId = " + postId);
+
     try {
       return getContentManager().getSilverContentId(postId, peasId);
     } catch (Exception e) {
@@ -192,8 +191,7 @@ public class BlogContentManager implements ContentInterface, Serializable {
         .getSilverContentId(pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
     SilverContentVisibility scv =
         new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
-    SilverTrace.info("blog", "BlogContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     updateSilverContentVisibility(scv, pubDetail, silverContentId);
   }
 

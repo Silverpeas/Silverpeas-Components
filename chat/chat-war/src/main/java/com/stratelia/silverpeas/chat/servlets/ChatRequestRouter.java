@@ -204,8 +204,7 @@ public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionControl
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("chat", "ChatRequestRooter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "destination" + destination);
+
     return destination;
 
   }

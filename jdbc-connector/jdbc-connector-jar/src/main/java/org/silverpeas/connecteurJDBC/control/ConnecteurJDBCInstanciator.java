@@ -56,8 +56,7 @@ public class ConnecteurJDBCInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCInstanciator.delete()",
-        "connecteurJDBC.MSG_DELETE_CALLED_FOR_SPACE_ID", "spaceId : " + spaceId);
+
     DataSourceConnectionInfo.removeFromComponentInstance(componentId);
   }
 }

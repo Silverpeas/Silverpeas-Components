@@ -118,8 +118,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
         File fileName = new File(file.getPath().substring(rootUploadFolderPathLength));
 
         // Logging the name of the file
-        SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-            "fileName = " + fileName.getName());
+
 
         // Save info into report
         UploadItem uploadItem = new UploadItem();

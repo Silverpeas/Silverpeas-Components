@@ -211,8 +211,7 @@ public class SuggestionRepository implements
    * @param suggestion the suggestion for which the indexation must be performed.
    */
   public void index(Suggestion suggestion) {
-    SilverTrace.info("suggestionBox", "suggestionBoxService.createSuggestionIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "suggestion id = " + suggestion.getId());
+
     if (suggestion != null && suggestion.getValidation().isValidated()) {
       FullIndexEntry indexEntry =
           new FullIndexEntry(suggestion.getComponentInstanceId(), Suggestion.TYPE,

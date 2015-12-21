@@ -75,10 +75,6 @@ public class SilverCrawlerRequestRouter
   public String getDestination(String function, SilverCrawlerSessionController silverCrawlerSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("silverCrawler", "SilverCrawlerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "User=" + silverCrawlerSC.getUserId() + " Function=" + function);
-
     String flag = getFlag(silverCrawlerSC.getUserRoles());
     request.setAttribute("Profile", flag);
     request.setAttribute("UserId", silverCrawlerSC.getUserId());
@@ -88,8 +84,7 @@ public class SilverCrawlerRequestRouter
     FunctionHandler handler = HandlerProvider.getHandler(function);
     destination = handler.computeDestination(silverCrawlerSC, request);
 
-    SilverTrace.info("silverCrawler", "SilverCrawlerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
 
     return destination;
   }

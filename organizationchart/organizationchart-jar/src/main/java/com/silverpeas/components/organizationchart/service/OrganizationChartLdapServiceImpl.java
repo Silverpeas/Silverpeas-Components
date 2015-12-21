@@ -70,8 +70,7 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
 
   @Override
   public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type) {
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()",
-        "root.MSG_GEN_ENTER_METHOD", "baseOu = " + baseOu + ", type = " + type);
+
 
     Map<String, String> env = config.getEnv();
 
@@ -174,16 +173,14 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
   }
 
   private OrganizationalUnit getParentOU(String ou) {
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getParentOU()",
-        "root.MSG_GEN_ENTER_METHOD", "ou = " + ou);
+
 
     //OU=DGA2,OU=DGS,OU=Ailleurs
     String parentOu = ou.substring(ou.indexOf(',') + 1);
     // DGA2
     String parentName = parentOu.substring(3, parentOu.indexOf(','));
 
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getParentOU()",
-        "root.MSG_GEN_EXIT_METHOD", "parentOu = " + parentOu + ", parentName = " + parentName);
+
     return new OrganizationalUnit(parentName, parentOu);
   }
 
@@ -203,8 +200,7 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
 
     NamingEnumeration<SearchResult> results =
         ctx.search(rootOu, "(objectclass=" + config.getLdapClassPerson() + ")", ctls);
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()",
-        "root.MSG_GEN_PARAM_VALUE", "users retrieved !");
+
 
     int i = 0;
 
@@ -240,8 +236,7 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
     NamingEnumeration<SearchResult> results =
         ctx.search(rootOu, "(objectclass=" + config.getLdapClassUnit() + ")", ctls);
 
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()",
-        "root.MSG_GEN_PARAM_VALUE", "services retrieved !");
+
 
     while (results != null && results.hasMore()) {
       SearchResult entry = results.next();
@@ -324,8 +319,7 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
   private String getSpecificCSSClass(DirContext ctx, SearchControls ctls, OrganizationalUnit unit)
       throws NamingException {
     String cssClass = unit.getSpecificCSSClass();
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getSpecificCSSClass()",
-        "root.MSG_GEN_PARAM_VALUE", "ou = " + unit.getCompleteName() + ", cssClass = " + cssClass);
+
     if (!StringUtil.isDefined(cssClass) && !isRoot(unit.getCompleteName())) {
       // get specific CSS class on parents
       String ou = unit.getCompleteName();
@@ -343,8 +337,7 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
         }
       }
     }
-    SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getSpecificCSSClass()",
-        "root.MSG_GEN_EXIT_METHOD", "ou = " + unit.getCompleteName() + ", cssClass = " + cssClass);
+
     return cssClass;
   }
 

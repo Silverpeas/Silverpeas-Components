@@ -54,8 +54,7 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("kmelia", "KmeliaInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
-        "Space = " + spaceId);
+
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.create(con, spaceId, componentId, userId);
     NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
@@ -67,8 +66,7 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("kmelia", "KmeliaInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
-        "Space = " + spaceId);
+
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.delete(con, spaceId, componentId, userId);
     TodoBackboneAccess todoBBA = ServiceProvider.getService(TodoBackboneAccess.class);

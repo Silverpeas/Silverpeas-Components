@@ -217,13 +217,6 @@ public class DriverManager {
   private Driver registerAndInstanciateDriver(String driverName)
       throws ClassNotFoundException, InstantiationException,
       IllegalAccessException {
-    SilverTrace.info("mydb",
-        "MyDBSessionController.registerAndInstanciateDriver()",
-        "root.MSG_GEN_ENTER_METHOD", "driverName=" + driverName);
-    SilverTrace.info("mydb",
-        "MyDBSessionController.registerAndInstanciateDriver()",
-        "root.MSG_GEN_PARAM_VALUE", "driversClassNames.length=" + driversCount);
-
     return (Driver) Class.forName(getDriverClassName(driverName)).newInstance();
   }
 
@@ -232,8 +225,7 @@ public class DriverManager {
    * @return The index of the driver corresponding to the name given as parameter.
    */
   private int searchDriverIndex(String driverName) {
-    SilverTrace.info("mydb", "DriverManager.searchDriverIndex()",
-        "myDB.MSG_DRIVER_NAME", "DriverName=" + driverName);
+
     int i = 0;
     while (i < driversCount) {
       if (driversNames[i].equals(driverName)) {

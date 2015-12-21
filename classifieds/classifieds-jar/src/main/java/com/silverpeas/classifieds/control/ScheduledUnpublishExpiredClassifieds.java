@@ -70,16 +70,14 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   }
 
   public void doScheduledDeleteClassifieds() {
-    SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       // Retrieves all classifieds instances
       String[] instanceIds = organizationController.getCompoId("classifieds");
 
       // Get default expiration delay from properties
       int defaultExpirationDelay = settings.getInteger("nbDaysForDeleteClassifieds");
-      SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
-          "root.MSG_GEN_PARAM_VALUE", "defaultExpirationDelay = " + defaultExpirationDelay);
+
 
       // Iterate over all instances
       for (String instanceId : instanceIds) {
@@ -94,8 +92,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
         // search for expired classifieds
         Collection<ClassifiedDetail> classifieds =
             classifiedService.getAllClassifiedsToUnpublish(expirationDelay, instanceId);
-        SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
-            "root.MSG_GEN_PARAM_VALUE", "Petites annonces = " + classifieds.toString());
+
 
         // iterate over classified to unpublished them
         if (classifieds != null) {
@@ -111,8 +108,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
           "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    SilverTrace.info("classifieds", "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override

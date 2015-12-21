@@ -75,8 +75,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
       HttpRequest request) {
     String destination = "";
     String rootDest = "/classifieds/jsp/";
-    SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + classifiedsSC.getUserId() + " Function=" + function);
+
 
     // Common parameters
     ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS :
@@ -102,8 +101,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
       return "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

@@ -199,8 +199,7 @@ public class ScheduleEventRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("scheduleevent", "ScheduleEventRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 }

@@ -77,8 +77,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     String componentId = request.getParameter("ComponentId");
     String albumId = request.getParameter("AlbumId");
@@ -91,8 +90,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     boolean isViewInWysiwyg = "yes".equalsIgnoreCase(getOrganisationController()
         .getComponentParameterValue(componentId, "viewInWysiwyg"));
     if (isViewInWysiwyg) {
-      SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " albumId = " + albumId);
+
 
       String rootDest = "/gallery/jsp/";
       String destination = "";
@@ -170,8 +168,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
     String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
-    SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()",
-        "root.MSG_GEN_ENTER_METHOD", "filePath = " + filePath);
+
     try {
       input = new BufferedInputStream(new FileInputStream(filePath));
       read = input.read();

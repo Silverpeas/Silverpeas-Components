@@ -49,8 +49,7 @@ public class RemoveSelectedFilesHandler extends FunctionHandler {
     String[] selectedFiles = request.getParameterValues("checkedFile");
     if (selectedFiles != null) {
       Collection<String> listFilesToRemove = Arrays.asList(selectedFiles);
-      SilverTrace.info("silverCrawler", "RemoveSelectedFilesHandler.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "listFilesToRemove = " + listFilesToRemove);
+
 
       // Un-index requested file
       for (String fileName : listFilesToRemove) {

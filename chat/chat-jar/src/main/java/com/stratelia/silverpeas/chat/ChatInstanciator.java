@@ -41,21 +41,18 @@ public class ChatInstanciator extends Object implements ComponentsInstanciatorIn
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("chat", "ChatInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
-        "spaceId = " + spaceId + " , componentId = " + componentId);
+
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("chat", "ChatInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
-        "spaceId = " + spaceId + " , componentId = " + componentId);
+
     ChatDataAccess chatDAO = new ChatDataAccess(componentId);
     try {
       chatDAO.DeleteChatInstance();
     } catch (Exception e) {
-      SilverTrace.info("chat", "ChatInstanciator.delete()", "root.EX_RECORD_DELETE_FAILED",
-          "componentId " + componentId);
+
     }
   }
 }

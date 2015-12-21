@@ -100,20 +100,17 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public FileFolder getCurrentFolder(boolean isAdmin) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getCurrentFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "path = " + currentPath);
+
     return new FileFolder(getRootPath(), getCurrentPath(), isAdmin, getComponentId());
   }
 
   public FileFolder getCurrentFolder() {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getCurrentFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "path = " + currentPath);
+
     return getCurrentFolder(false);
   }
 
   public boolean isRootPath() {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.isRootPath()",
-        "root.MSG_GEN_PARAM_VALUE", "currentPath = " + currentPath + " rootPath = " + rootPath);
+
     return currentPath.equals(rootPath);
   }
 
@@ -265,8 +262,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     zipInfo.setMaxiSize(getSizeMaxString());
     zipInfo.setUrl(url);
 
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.zipFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "fileZip = " + zipFile.getName());
+
 
     return zipInfo;
   }
@@ -287,8 +283,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void unindexPath(String folderName) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.unindexPath()",
-        "root.MSG_GEN_ENTER_METHOD", "folderName = " + folderName);
+
 
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
     String pathRepository = getFullPath(folderName);
@@ -297,8 +292,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void unindexFile(String fileName) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.unindexFile()",
-        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+
 
     File path = FileUtils.getFile(currentPath, fileName);
 
@@ -307,8 +301,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void indexPath(String folderName) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.indexPath()",
-        "root.MSG_GEN_ENTER_METHOD", "folderName = " + folderName);
+
 
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
     String pathRepository = getFullPath(folderName);
@@ -317,8 +310,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void indexFile(String fileName) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.indexFile()",
-        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+
 
     File path = FileUtils.getFile(currentPath, fileName);
 
@@ -327,42 +319,35 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void indexPathSelected(Collection<String> dirToIndex) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.indexPathSelected()",
-        "root.MSG_GEN_ENTER_METHOD", "dirToIndex = " + dirToIndex.size());
+
 
     for (final String name : dirToIndex) {
-      SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.indexPathSelected()",
-          "root.MSG_GEN_ENTER_METHOD", "name = " + name);
+
       indexPath(name);
     }
   }
 
   public void indexSelectedFiles(Collection<String> fileToIndex) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.indexSelectedFiles()",
-        "root.MSG_GEN_ENTER_METHOD", "fileToIndex = " + fileToIndex.size());
+
 
     for (final String name : fileToIndex) {
-      SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.indexSelectedFiles()",
-          "root.MSG_GEN_ENTER_METHOD", "name = " + name);
+
       indexFile(name);
     }
   }
 
   public Collection<FileDetail> getResultSearch(String word) {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
-        "root.MSG_GEN_PARAM_VALUE", "word =" + word);
+
     Collection<FileDetail> docs = new ArrayList<>();
     try {
       if (word != null && !"*".equals(word.trim()) && !word.trim().isEmpty()) {
         QueryDescription query = new QueryDescription(word);
         query.setSearchingUser(getUserId());
         query.addSpaceComponentPair(getSpaceId(), getComponentId());
-        SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
-            "root.MSG_GEN_PARAM_VALUE", "query =" + query.getQuery());
+
         List<MatchingIndexEntry> result =
             SearchEngineProvider.getSearchEngine().search(query).getEntries();
-        SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
-            "root.MSG_GEN_PARAM_VALUE", "result =" + result.size());
+
 
         FileDetail file;
         for (MatchingIndexEntry matchIndex : result) {
@@ -382,13 +367,11 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
                   new FileDetail(matchIndex.getTitle(), path, absolutePath, fileOnServer.length(),
                       false);
               docs.add(file);
-              SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
-                  "root.MSG_GEN_PARAM_VALUE", "fichier = " + path);
+
             } else if ("LinkedDir".equals(type)) {//Directory
               file = new FileDetail(matchIndex.getTitle(), path, absolutePath, 0, true);
               docs.add(file);
-              SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
-                  "root.MSG_GEN_PARAM_VALUE", "répertoire = " + path);
+
             }
           } else {
             // l'objet n'existe plus, suppression de son index
@@ -397,8 +380,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         }
       }
     } catch (Exception e) {
-      SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
-          "silverCrawler.EX_CAN_SEARCH_QUERY", "query : " + word, e);
+
     }
     currentResultSearch.clear();
     currentResultSearch.addAll(docs);
@@ -559,8 +541,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
    */
   public void removeSubFolder(String folderName, boolean isAdmin)
       throws SilverCrawlerForbiddenActionException {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.removeSubFolder()",
-        "root.MSG_GEN_ENTER_METHOD", "folderName = " + folderName);
+
 
     // 1st check : user must have admin profile for this component instance
     if (!isAdmin) {
@@ -578,8 +559,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
     // Get Full Path
     String fullPath = getFullPath(folderName);
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.removeSubFolder()",
-        "root.MSG_GEN_PARAM_VALUE", "fullPath = " + fullPath);
+
     FileFolderManager.deleteFolder(fullPath);
   }
 
@@ -638,8 +618,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void removeFile(String fileName, boolean isAdminOrPublisher)
       throws SilverCrawlerForbiddenActionException {
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.removeFile()",
-        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+
 
     // 1st check : user must have admin or publisher profile for this component instance
     if (!isAdminOrPublisher) {
@@ -655,8 +634,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
     // Get Full Path
     String fullPath = getFullPath(fileName);
-    SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.removeFile()",
-        "root.MSG_GEN_PARAM_VALUE", "fullPath = " + fullPath);
+
     FileFolderManager.deleteFile(fullPath);
   }
 

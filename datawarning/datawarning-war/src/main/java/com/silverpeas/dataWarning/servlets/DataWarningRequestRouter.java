@@ -80,8 +80,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
   public String getDestination(String function, DataWarningSessionController dataWarningSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + dataWarningSC.getUserId() + " Function=" + function);
+
 
     String flag = dataWarningSC.getUserRoleLevel();
     try {
@@ -177,16 +176,11 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       else if ("requestParameters".equals(function)) {
         DataWarningQuery dataQuery = dataWarningSC.getCurrentQuery();
         DataWarning data = dwe.getDataWarning();
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE",
-            "Query Type = " + Integer.toString(dataWarningSC.getCurrentQueryType()));
         if (dataQuery == null) {
-          SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "dataQuery IS NULL");
+
         }
         if (data == null) {
-          SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "data IS NULL");
+
         }
 
         request.setAttribute("dataQuery", dataQuery);
@@ -196,12 +190,8 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       }
 /********************** changement de la requete *****************************************/
       else if ("changeQuery".equals(function)) {
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().changeQuery",
-            "root.MSG_GEN_PARAM_VALUE", "Type requete=" + request.getParameter("typeRequete"));
+
         dataWarningSC.setCurrentQueryType(Integer.parseInt(request.getParameter("typeRequete")));
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().changeQuery",
-            "root.MSG_GEN_PARAM_VALUE",
-            "Type requete sortie=" + dataWarningSC.getCurrentQueryType());
         destination = getDestination("requestParameters", dataWarningSC, request);
       }
 /********************** edition des parametres de seuil
@@ -224,8 +214,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
           dataQuery.setTheTriggerCondition(condition);
           dataQuery.setTheTrigger(seuil);
         }
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "PersoValid=" + request.getParameter("PersoValid"));
+
         if ((request.getParameter("PersoValid") != null) &&
             (request.getParameter("PersoValid").length() > 0)) {
           dataQuery.setPersoValid(DataWarningQuery.QUERY_PERSO_VALID);
@@ -248,8 +237,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
  * *****************************************************/
       else if (function.equals("SaveRequete")) {
         String requete = request.getParameter("SQLReq");
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().SaveRequete",
-            "root.MSG_GEN_PARAM_VALUE", "requete=" + requete);
+
         DataWarning data = dwe.getDataWarning();
         DataWarningQuery dataQuery = dataWarningSC.getCurrentQuery();
         dataQuery.setQuery(requete);
@@ -283,8 +271,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
  * *****************************************************/
       else if (function.equals("PreviewReq")) {
         String requete = request.getParameter("SQLReq");
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().PreviewReq",
-            "root.MSG_GEN_PARAM_VALUE", "requete=" + requete);
+
         DataWarning data = dwe.getDataWarning();
         DataWarningQuery dataQuery = dataWarningSC.getCurrentQuery();
 
@@ -293,8 +280,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
           DataWarningQueryResult dwqr = dataQuery.executeQuery(data);
           request.setAttribute("resultQuery", dwqr);
         } catch (Exception e) {
-          SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "Error Testing Query=" + requete, e);
+
         }
         destination = "previewReq.jsp";
       }
@@ -487,8 +473,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       else if (function.startsWith("AddCriter")) {
         String[] columns = dataWarningSC.getColumns();
         String req = request.getParameter("SQLReq");
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().AddCriter",
-            "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
+
         String critere = request.getParameter("critere");
         String sizeString = request.getParameter("critereSize");
         int size;
@@ -515,8 +500,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       else if (function.startsWith("DelCriter")) {
         String[] columns = dataWarningSC.getColumns();
         String req = request.getParameter("SQLReq");
-        SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination().DelCriter",
-            "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
+
         String sizeString = request.getParameter("critereSize");
         int size;
         List<String> criteres = new ArrayList<>();
@@ -552,8 +536,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("dataWarning", "DataWarningRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

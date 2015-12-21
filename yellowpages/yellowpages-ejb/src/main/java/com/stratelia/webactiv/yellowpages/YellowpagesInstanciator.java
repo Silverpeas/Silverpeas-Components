@@ -74,8 +74,7 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
       throws InstanciationException {
     SilverTrace
         .info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
-        "spaceId = " + spaceId + " , componentId = " + componentId);
+
     ContactInstanciator pub = new ContactInstanciator("org.silverpeas.yellowpages");
     pub.delete(con, spaceId, componentId, userId);
     NodeInstanciator node = new NodeInstanciator("org.silverpeas.yellowpages");

@@ -156,8 +156,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         getPublicationTemplateManager()
             .addDynamicPublicationTemplate(getComponentId() + ':' + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
-        SilverTrace.info("gallery", "GallerySessionController()", "root.EX_CANT_GET_REMOTE_OBJECT",
-            "xmlFormName = " + getXMLFormName(), e);
+
       }
     }
 
@@ -326,8 +325,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // Getting current album identifiers with which the media is linked.
     Collection<String> albumIds = getMediaService().getAlbumIdsOf(media);
 
-    SilverTrace.info("gallery", "GallerySessionController.getMedia", "root.MSG_GEN_PARAM_VALUE",
-        "albumIds = " + albumIds + ", currentAlbumId =  " + getCurrentAlbumId());
+
 
     // regarder si l'album courant est dans la liste des albums
     boolean inAlbum = albumIds.contains(currentAlbumId);
@@ -336,8 +334,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       setCurrentAlbumId(firstAlbumId);
     }
 
-    SilverTrace.info("gallery", "GallerySessionController.getMedia", "root.MSG_GEN_PARAM_VALUE",
-        "currentAlbumId fin = " + currentAlbumId);
+
 
     // Updating the rank of the media.
     List<Media> mediaOfCurrentAlbum = currentAlbum.getMedia();
@@ -747,8 +744,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public Collection<String> getListSelected() {
     // restitution de la collection des médias selectionnés
-    SilverTrace.info("gallery", "GallerySessionControler.getListSelected()", "",
-        "listSelected (taille) = (" + listSelected.size() + ") " + listSelected.toString());
+
     return listSelected;
   }
 
@@ -830,8 +826,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public void copyMedia(String mediaId) throws ClipboardException {
     Media media = getMedia(mediaId);
     MediaSelection mediaSelect = new MediaSelection(media);
-    SilverTrace.info("gallery", "GallerySessionController.copyMedia()", "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+
     addClipboardSelection(mediaSelect);
   }
 
@@ -840,18 +835,15 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     MediaSelection mediaSelect = new MediaSelection(media);
     mediaSelect.setCutted(true);
 
-    SilverTrace.info("gallery", "GallerySessionController.cutMedia()", "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+
     addClipboardSelection(mediaSelect);
   }
 
   public void copyAlbum(String albumId) throws ClipboardException {
     AlbumDetail album = getAlbum(albumId);
     NodeSelection nodeSelect = new NodeSelection(album);
-    SilverTrace.info("gallery", "GallerySessionController.copyAlbum()", "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
-    SilverTrace.info("gallery", "GallerySessionController.copyAlbum()", "root.MSG_GEN_PARAM_VALUE",
-        "nodeSelect = " + nodeSelect.toString() + "' albumId =" + album.getId());
+
+
     addClipboardSelection(nodeSelect);
   }
 
@@ -859,16 +851,14 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     NodeSelection nodeSelect = new NodeSelection(getAlbum(albumId));
     nodeSelect.setCutted(true);
 
-    SilverTrace.info("gallery", "GallerySessionController.cutAlbum()", "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+
     addClipboardSelection(nodeSelect);
   }
 
   public void paste() throws ClipboardException {
     try {
       GalleryPasteDelegate delegate = new GalleryPasteDelegate(currentAlbum);
-      SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
-          "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
+
 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       Map<Object, ClipboardSelection> clipObjectPerformed =
@@ -883,8 +873,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
           AlbumDetail album =
               (AlbumDetail) clipObject.getTransferData(NodeSelection.NodeDetailFlavor);
-          SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
-              "albumId = " + album.getId());
+
 
           delegate.addAlbum(album, clipObject.isCutted());
           clipObjectPerformed.put(album.getNodePK(), clipObject);

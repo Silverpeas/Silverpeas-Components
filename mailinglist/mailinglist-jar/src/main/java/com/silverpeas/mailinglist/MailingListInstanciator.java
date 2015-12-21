@@ -39,8 +39,7 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("mailinglist", "MailingListInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
     MailingList mailingList = new MailingList();
     mailingList.setComponentId(componentId);
 
@@ -54,8 +53,7 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("mailinglist", "MailingListInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
     MailingListServicesProvider.getMailingListService().deleteMailingList(componentId);
 
     MailingListServicesProvider.getMessageChecker().removeListener(componentId);

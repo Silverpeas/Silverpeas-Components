@@ -554,8 +554,7 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public int getSilverObjectId(final MediaPK mediaPK) {
-    SilverTrace.info("gallery", "GalleryBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "photoId = " + mediaPK.getId());
+
     int silverObjectId;
     try {
       silverObjectId = getGalleryContentManager().getSilverObjectId(mediaPK.getId(), mediaPK
@@ -578,8 +577,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   private int createSilverContent(final Connection con, final Media media, final String creatorId) {
-    SilverTrace.info("gallery", "GalleryBmEJB.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-        "photoId = " + media.getMediaPK().getId());
+
     try {
       return getGalleryContentManager().createSilverContent(con, media, creatorId);
     } catch (final Exception e) {

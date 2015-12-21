@@ -82,8 +82,7 @@ public class HistoryDAO {
 
   public static Collection<HistoryDetail> getHistoryDetailByObjectAndUser(Connection con,
       String tableName, String path, String userId, String componentId) throws SQLException {
-    SilverTrace.info("silverCrawler", "HistoryDAO.getHistoryDetailByObjectAndUser()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     String selectStatement =
         "select * from " + tableName + " where path = ? and componentId = ? and userId = ? " +
             " order by dateDownload desc";

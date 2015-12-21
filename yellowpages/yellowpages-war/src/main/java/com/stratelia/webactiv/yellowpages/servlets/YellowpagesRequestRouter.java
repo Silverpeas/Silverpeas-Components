@@ -87,10 +87,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
   @Override
   public String getDestination(String function, YellowpagesSessionController scc,
       HttpRequest request) {
-    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function = " + function);
+
+
 
     String destination = "";
     String rootDestination = "/yellowpages/jsp/";
@@ -358,8 +356,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       request.setAttribute("javax.servlet.jsp.jspException", ex);
       return "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
-        "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
+
     return destination;
   }
 

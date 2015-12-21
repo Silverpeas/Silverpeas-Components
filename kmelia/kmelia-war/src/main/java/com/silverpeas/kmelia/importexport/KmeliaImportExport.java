@@ -205,8 +205,7 @@ public class KmeliaImportExport extends GEDImportExport {
       nodePK = getNodeService().getDetailByNameAndFatherId(new NodePK("unKnown", null,
           getCurrentComponentId()), nodeDetail.getName(), topicId).getNodePK();
     } catch (Exception ex) {
-      SilverTrace.info("importExport", "GEDImportExport.addSubTopicToTopic()",
-          "root.EX_NO_MESSAGE", ex);
+
     }
     if (nodePK == null) {
       try {

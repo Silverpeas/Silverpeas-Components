@@ -54,8 +54,7 @@ public class IndexSelectedFoldersHandler extends FunctionHandler {
     String[] selectedFolders = request.getParameterValues("checkedDir");
     if (selectedFolders != null) {
       Collection<String> listFolderToIndex = Arrays.asList(selectedFolders);
-      SilverTrace.info("silverCrawler", "IndexSelectedFoldersHandler.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "listFolderToIndex = " + listFolderToIndex);
+
 
       // index selected folders
       sessionController.indexPathSelected(listFolderToIndex);

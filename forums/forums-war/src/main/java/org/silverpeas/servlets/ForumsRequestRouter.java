@@ -119,8 +119,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
           if (message == null) {
             return ROOT_DEST + "messageNotFound";
           }
-          SilverTrace.info("forums", "ForumsRequestRouter", "root.MSG_GEN_PARAM_VALUE",
-              "messageId (pour last visite) = " + messageId);
+
           forumsSC.setLastVisit(forumsSC.getUserId(), Integer.parseInt(messageId));
         }
         destination = ROOT_DEST + "viewMessage.jsp";

@@ -37,8 +37,7 @@ public class DataWarningSchedulerTable {
    * Add a scheduler
    */
   public static void addScheduler(String instanceId) {
-    SilverTrace.info("dataWarning", "DataWarningSchedulerTable.addScheduler()",
-        "root.MSG_GEN_PARAM_VALUE", "Add Scheduler : " + instanceId);
+
     //test if connector already exist
     DataWarningSchedulerImpl theScheduler = getScheduler(instanceId);
     if (theScheduler != null) {
@@ -58,8 +57,7 @@ public class DataWarningSchedulerTable {
    * Remove a scheduler with the instance id
    */
   public static void removeScheduler(String instanceId) {
-    SilverTrace.info("dataWarning", "DataWarningSchedulerTable.removeScheduler()",
-        "root.MSG_GEN_PARAM_VALUE", "Remove Scheduler : " + instanceId);
+
     try {
       DataWarningSchedulerImpl theScheduler = getScheduler(instanceId);
       if (theScheduler != null) {

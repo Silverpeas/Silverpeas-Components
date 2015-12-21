@@ -402,14 +402,11 @@ public class MessageChecker implements SchedulerEventListener {
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     final String jobName = anEvent.getJobExecutionContext().getJobName();
     if (this.listeners != null && !this.listeners.isEmpty()) {
-      SilverTrace.info("mailinglist", "MessageChecker.handleSchedulerEvent",
-          "The job '" + jobName + "' executing ....");
+
       this.checkNewMessages(new Date());
-      SilverTrace.info("mailinglist", "MessageChecker.handleSchedulerEvent",
-          "The job '" + jobName + "' done!!");
+
     } else {
-      SilverTrace.info("mailinglist", "MessageChecker.handleSchedulerEvent",
-          "The job '" + jobName + "' has no listeners ....");
+
     }
   }
 

@@ -46,8 +46,7 @@ public class GoToEvent extends GoTo {
     EventDetail event = getAlmanachBm().getEventDetail(eventPK);
     String componentId = event.getPK().getInstanceId();
 
-    SilverTrace.info("gallery", "GoToImage.doPost", "root.MSG_GEN_PARAM_VALUE",
-        "componentId = " + componentId);
+
 
     // Set GEF and look helper space identifier
     setGefSpaceId(req, componentId);

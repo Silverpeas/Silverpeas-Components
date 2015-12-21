@@ -245,8 +245,7 @@ public class SiteDAO {
             "' AND pubVersion = '" + idSite + "'";
 
     try (Statement stmt = dbConnection.createStatement()) {
-      SilverTrace.info("webSites", "SiteDAO.DAOgetIdPublication()", "root.MSG_GEN_PARAM_VALUE",
-          "queryStr1 = " + queryStr1);
+
       try (ResultSet rs1 = stmt.executeQuery(queryStr1)) {
         if (rs1.next()) {
           idPub = Integer.toString(rs1.getInt(1));
@@ -273,8 +272,7 @@ public class SiteDAO {
             componentId + "'" + " order by siteid";
 
     try {
-      SilverTrace.info("webSites", "SiteDAO.DAOgetAllWebSite()", "root.MSG_GEN_PARAM_VALUE",
-          "queryStr1 = " + queryStr1);
+
       stmt = dbConnection.createStatement();
       rs1 = stmt.executeQuery(queryStr1);
 
@@ -317,8 +315,7 @@ public class SiteDAO {
 
     try {
 
-      SilverTrace.info("webSites", "SiteDAO.DAOgetWebSite()", "root.MSG_GEN_PARAM_VALUE",
-          "queryStr1 = " + queryStr1);
+
       stmt = dbConnection.createStatement();
       rs1 = stmt.executeQuery(queryStr1);
 
@@ -377,8 +374,7 @@ public class SiteDAO {
         queryStr1.append(" where").append("(").append(paramBuffer).append(")");
         queryStr1.append(" and instanceId = '").append(componentId).append("'");
 
-        SilverTrace.info("webSites", "SiteDAO.DAOgetWebSites()", "root.MSG_GEN_PARAM_VALUE",
-            "queryStr1 = " + queryStr1.toString());
+
 
         stmt = dbConnection.createStatement();
         rs = stmt.executeQuery(queryStr1.toString());
@@ -425,8 +421,7 @@ public class SiteDAO {
         .append(tableSiteIconsName).append(".iconsId");
 
     try {
-      SilverTrace.info("webSites", "SiteDAO.DAOgetIcons()", "root.MSG_GEN_PARAM_VALUE",
-          "queryStr1 = " + queryStr1.toString());
+
       stmt = dbConnection.createStatement();
       rs1 = stmt.executeQuery(queryStr1.toString());
       while (rs1.next()) {
@@ -468,8 +463,7 @@ public class SiteDAO {
 
     try {
 
-      SilverTrace.info("webSites", "SiteDAO.DAOgetAllIcons()", "root.MSG_GEN_PARAM_VALUE",
-          "queryStr1 = " + queryStr1);
+
       stmt = dbConnection.createStatement();
       rs1 = stmt.executeQuery(queryStr1);
       while (rs1.next()) {
@@ -492,8 +486,7 @@ public class SiteDAO {
    * @throws SQLException
    */
   private void daoCreateWebSite(SiteDetail site) throws SQLException {
-    SilverTrace.info("webSites", "SiteDAO.DAOcreateWebSite()", "root.MSG_GEN_PARAM_VALUE",
-        "site = " + site.toString());
+
 
     String queryStr = "insert into " + tableSiteName + " values (?,?,?,?,?,?,?,?,?,?)";
 
@@ -536,9 +529,6 @@ public class SiteDAO {
       stmt.setInt(1, Integer.parseInt(id));
       for (final String idIcon : liste) {
         stmt.setInt(2, Integer.parseInt(idIcon));
-        SilverTrace.info("webSites", "SiteDAO.DAOassociateIcons()", "root.MSG_GEN_PARAM_VALUE",
-            "queryStr= " + queryStr + ", idSite= " + id + ", idIcon= " + idIcon + " instanceId= " +
-                componentId);
         int resultCount = stmt.executeUpdate();
         if (resultCount != 1) {
           SilverTrace.error("webSites", "SiteDAO.DAOassociateIcons()",
@@ -565,8 +555,7 @@ public class SiteDAO {
       stmt.setInt(1, state);
       stmt.setInt(2, Integer.parseInt(id));
 
-      SilverTrace.info("webSites", "SiteDAO.DAOpublishDepublishSite()", "root.MSG_GEN_PARAM_VALUE",
-          "queryStr = " + queryStr + ", idSite= " + id);
+
       int resultCount = stmt.executeUpdate();
       if (resultCount != 1) {
         SilverTrace.error("webSites", "SiteDAO.DAOpublishDepublishSite()",
@@ -605,8 +594,7 @@ public class SiteDAO {
   private void daoDeleteAssociateIcons(SitePK pk) throws SQLException {
     String deleteStr = "delete from " + tableSiteIconsName + " where siteId = ?";
 
-    SilverTrace.info("webSites", "SiteDAO.DAOdeleteAssociateIcons()", "root.MSG_GEN_PARAM_VALUE",
-        "queryStr = " + deleteStr + ", idSite= " + pk.getId());
+
     PreparedStatement prepStmt = null;
 
     try {
@@ -626,8 +614,7 @@ public class SiteDAO {
     daoDeleteAssociateIcons(pk);
     String deleteStr = "delete from " + tableSiteName + " where siteId = ?";
 
-    SilverTrace.info("webSites", "SiteDAO.DAOdeleteWebSite()", "root.MSG_GEN_PARAM_VALUE",
-        "deleteStr= " + deleteStr + ", idSite= " + pk.getId());
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = dbConnection.prepareStatement(deleteStr);
@@ -652,8 +639,7 @@ public class SiteDAO {
     int i = 0;
     while (i < array.size()) {
       String id = array.get(i);
-      SilverTrace.info("webSites", "SiteDAO.DAOdeleteWebSites()", "root.MSG_GEN_PARAM_VALUE",
-          "id = " + id);
+
       SitePK s = new SitePK(id, componentId);
       daoDeleteWebSite(s);
       i++;
@@ -672,8 +658,7 @@ public class SiteDAO {
             "sitePage = ?, " + "siteAuthor = ?, " + "siteDate = ?, " + "siteState = ?, " +
             "popup = ? " + " where siteId = ?";
 
-    SilverTrace.info("webSites", "SiteDAO.DAOupdateWebSite()", "root.MSG_GEN_PARAM_VALUE",
-        "updateStr= " + updateStr + ", Site= " + description.toString());
+
     PreparedStatement prepStmt = null;
     try {
       int i = 1;

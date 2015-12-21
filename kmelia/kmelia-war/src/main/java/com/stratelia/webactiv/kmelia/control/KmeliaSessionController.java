@@ -618,8 +618,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return the generated document as a File instance.
    */
   public File generateDocument(final DocumentFormat inFormat, String fromPubId) {
-    SilverTrace.info("kmelia", "KmeliaSessionControl.KmeliaSessionController.generateDocument()",
-        "root.MSG_ENTRY_METHOD");
+
     if (!isFormatSupported(inFormat.name())) {
       throw new KmeliaRuntimeException("kmelia", SilverTrace.TRACE_LEVEL_ERROR,
           "kmelia.EX_EXPORT_FORMAT_NOT_SUPPORTED");
@@ -790,12 +789,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     setSessionTopic(td);
     Collection<KmeliaPublication> pds = td.getKmeliaPublications();
     Iterator<KmeliaPublication> ipds = pds.iterator();
-    SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_PARAM_VALUE",
-        "NbPubli=" + pds.size());
+
     while (ipds.hasNext()) {
       String theId = (ipds.next()).getDetail().getPK().getId();
-      SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_PARAM_VALUE",
-          "Deleting Publi #" + theId);
+
       deletePublication(theId);
     }
     indexOfFirstPubToDisplay = 0;
@@ -914,8 +911,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
     }
 
-    SilverTrace.info("kmelia", "KmeliaSessionController.createPublication(pubDetail)",
-        "Kmelia.MSG_ENTRY_METHOD");
+
     SilverTrace.spy("kmelia", "KmeliaSessionController.createPublication(pubDetail)", getSpaceId(),
         getComponentId(), result, getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
     return result;
@@ -1393,8 +1389,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     Collection<PublicationDetail> result = getPublicationBm().
         getDetailsByFatherIdsAndStatus(fatherIds, pubPK, "P.pubUpdateDate desc, P.pubId desc",
             PublicationDetail.VALID);
-    SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsByTopic()",
-        "root.MSG_PARAM_VALUE", "publis=" + Arrays.toString(result.toArray()));
+
     return result;
   }
 
@@ -1406,8 +1401,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public List<WAAttributeValuePair> getAllVisiblePublications() throws RemoteException {
     List<WAAttributeValuePair> allVisiblesPublications = new ArrayList<>();
     Collection<PublicationDetail> allPublications = getAllPublications();
-    SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublications()",
-        "root.MSG_PARAM_VALUE", "NbPubli=" + allPublications.size());
+
     for (PublicationDetail pubDetail : allPublications) {
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
         allVisiblesPublications.add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.
@@ -1429,13 +1423,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
     // création de pubPK
     PublicationPK pubPK = getPublicationPK("useless");
-    SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublicationsByTopic()",
-        "root.MSG_PARAM_VALUE", "fatherIds =" + fatherIds.toString());
-    SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublicationsByTopic()",
-        "root.MSG_PARAM_VALUE", "pubPK =" + pubPK.toString());
+
+
     Collection<PublicationDetail> allPublications = getAllPublicationsByTopic(pubPK, fatherIds);
-    SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublicationsByTopic()",
-        "root.MSG_PARAM_VALUE", "NbPubli=" + allPublications.size());
+
     for (PublicationDetail pubDetail : allPublications) {
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
         allVisiblesPublications.add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.
@@ -1579,8 +1570,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized void draftOutPublication() throws RemoteException {
-    SilverTrace.info("kmelia", "KmeliaSessionController.draftOutPublication()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + getSessionPublication().getId());
+
     NodePK currentFolderPK = getCurrentFolderPK();
     if (isKmaxMode) {
       currentFolderPK = null;
@@ -2268,8 +2258,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public synchronized NodePK addPosition(String fatherId, NodeDetail position)
       throws RemoteException {
-    SilverTrace.info("kmax", "KmeliaSessionController.addPosition()", "root.MSG_GEN_PARAM_VALUE",
-        "fatherId = " + fatherId + " And position = " + position);
+
     return getKmeliaBm().addPosition(fatherId, position, getComponentId(), getUserId());
   }
 
@@ -2316,8 +2305,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public List<WAAttributeValuePair> getCurrentPublicationsList() throws RemoteException {
     List<WAAttributeValuePair> currentPublications = new ArrayList<>();
     Collection<KmeliaPublication> allPublications = getSessionPublicationsList();
-    SilverTrace.info("kmelia", "KmeliaSessionController.getCurrentPublicationsList()",
-        "root.MSG_PARAM_VALUE", "NbPubli=" + allPublications.size());
+
     for (KmeliaPublication aPubli : allPublications) {
       PublicationDetail pubDetail = aPubli.getDetail();
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
@@ -2362,8 +2350,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return Collection of combination
    */
   public List<String> getCombination(String axisValuesStr) {
-    SilverTrace.info("kmelia", "KmeliaSessionController.getCombination(String)",
-        "root.MSG_GEN_PARAM_VALUE", "axisValuesStr=" + axisValuesStr);
+
     return convertStringCombination2List(axisValuesStr);
   }
 
@@ -2662,9 +2649,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       PublicationSelection pubSelect = new PublicationSelection(pub);
       pubSelect.setCutted(true);
 
-      SilverTrace.info("kmelia", "KmeliaSessionController.cutPublication()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
       addClipboardSelection(pubSelect);
     } else {
       SilverTrace.warn("kmelia", "KmeliaSessionController.cutPublication",
@@ -2693,8 +2677,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         ServiceProvider.getService(NodeAccessController.class);
     if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
-      SilverTrace.info("kmelia", "KmeliaSessionController.copyTopic()", "root.MSG_GEN_PARAM_VALUE",
-          "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+
       addClipboardSelection(nodeSelect);
     } else {
       SilverTrace.warn("kmelia", "KmeliaSessionController.copyTopic",
@@ -2711,8 +2694,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
       nodeSelect.setCutted(true);
-      SilverTrace.info("kmelia", "KmeliaSessionController.cutTopic()", "root.MSG_GEN_PARAM_VALUE",
-          "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+
       addClipboardSelection(nodeSelect);
     } else {
       SilverTrace.warn("kmelia", "KmeliaSessionController.cutTopic",
@@ -2734,8 +2716,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private List<Object> paste(NodeDetail folder) throws ClipboardException {
     List<Object> pastedItems = new ArrayList<Object>();
     try {
-      SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
-          "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
+
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {

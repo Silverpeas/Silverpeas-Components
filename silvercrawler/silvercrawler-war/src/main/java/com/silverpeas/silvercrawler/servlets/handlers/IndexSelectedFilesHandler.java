@@ -54,8 +54,7 @@ public class IndexSelectedFilesHandler extends FunctionHandler {
     String[] selectedFiles = request.getParameterValues("checkedFile");
     if (selectedFiles != null) {
       Collection<String> listFilesToIndex = Arrays.asList(selectedFiles);
-      SilverTrace.info("silverCrawler", "IndexSelectedFilesHandler.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "listFilesToIndex = " + listFilesToIndex);
+
 
       // index selected folders
       sessionController.indexSelectedFiles(listFilesToIndex);

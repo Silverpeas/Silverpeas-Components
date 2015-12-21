@@ -280,8 +280,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   @Override
   public void changeTopicsOrder(String way, NodePK topicPK, NodePK fatherPK) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.changeTopicsOrder()", "root.MSG_GEN_ENTER_METHOD",
-        "way = " + way + ", topicPK = " + topicPK.toString());
+
 
     List<NodeDetail> subTopics = (List<NodeDetail>) nodeService.getChildrenDetails(fatherPK);
 
@@ -305,8 +304,7 @@ public class WebSiteBmEJB implements WebSiteBm {
       for (int i = 0; i < subTopics.size(); i++) {
         NodeDetail nodeDetail = subTopics.get(i);
 
-        SilverTrace.info("webSites", "WebSiteBmEJB.changeTopicsOrder()", "root.MSG_GEN_PARAM_VALUE",
-            "updating Node : nodeId = " + nodeDetail.getNodePK().getId() + ", order = " + i);
+
         try {
           nodeDetail.setOrder(i);
           nodeService.setDetail(nodeDetail);
@@ -343,8 +341,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public String createPublication(String componentId, PublicationDetail pubDetail) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.createPublication()", "root.MSG_GEN_PARAM_VALUE",
-        "pubDetail = " + pubDetail);
+
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setStatus(PublicationDetail.VALID);
     try {
@@ -381,8 +378,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void deletePublication(PublicationPK pubPK) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.deletePublication()", "root.MSG_GEN_PARAM_VALUE",
-        "pubId = " + pubPK);
+
     try {
       publicationService.removeAllFather(pubPK);
       publicationService.removePublication(pubPK);
@@ -494,8 +490,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   @Override
   public void changePubsOrder(PublicationPK pubPK, NodePK nodePK, int direction) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.changePubsOrder()", "root.MSG_GEN_ENTER_METHOD",
-        "pubId = " + pubPK + ", nodePK = " + nodePK.toString() + ", direction = " + direction);
+
     publicationService.changePublicationOrder(pubPK, nodePK, direction);
   }
 
@@ -662,10 +657,8 @@ public class WebSiteBmEJB implements WebSiteBm {
       // register the new publication as a new content to content manager
       for (String siteId : liste) {
         SitePK sitePK = new SitePK(siteId, componentId);
-        SilverTrace.info("webSites", "WebSiteBmEJB.deleteWebSites()", "root.MSG_GEN_PARAM_VALUE",
-            "siteId =" + siteId);
-        SilverTrace.info("webSites", "WebSiteBmEJB.deleteWebSites()", "root.MSG_GEN_PARAM_VALUE",
-            "componentId =" + componentId);
+
+
         deleteSilverContent(con, sitePK, componentId);
       }
     } catch (Exception e) {
@@ -713,8 +706,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * ContentManager utilization to use PDC *
    */
   public int getSilverObjectId(String componentId, String id) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "id = " + id);
+
     int silverObjectId;
     try {
       silverObjectId = getWebSitesContentManager().getSilverObjectId(id, componentId);
@@ -731,8 +723,7 @@ public class WebSiteBmEJB implements WebSiteBm {
 
   private int createSilverContent(Connection con, SiteDetail siteDetail, String creator,
       String prefixTableName, String componentId) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-        "siteId = " + siteDetail.getSitePK().getId());
+
     try {
       return getWebSitesContentManager()
           .createSilverContent(con, siteDetail, creator, prefixTableName, componentId);
@@ -748,8 +739,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * @param componentId
    */
   private void deleteSilverContent(Connection con, SitePK sitePK, String componentId) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.deleteSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-        "siteId = " + sitePK.getId());
+
     try {
       getWebSitesContentManager().deleteSilverContent(con, sitePK, null, componentId);
     } catch (Exception e) {

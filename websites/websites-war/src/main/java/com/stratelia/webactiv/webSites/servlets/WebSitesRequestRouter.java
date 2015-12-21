@@ -222,8 +222,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         destination += "&ReturnUrl=" + URLEncoder.encode(URLManager.getApplicationURL() +
             URLManager.getURL(scc.getSpaceId(), scc.getComponentId()) + "FromWysiwyg?path=" + path +
             "&name=" + name + "&nameSite=" + nameSite + "&profile=" + flag + "&id=" + id, "UTF-8");
-        SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination().ToWysiwyg",
-            "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
+
       } else if (function.startsWith("FromWysiwyg")) {
         String path = request.getParameter("path");
         scc.checkPath(path);
@@ -233,8 +232,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         request.setAttribute("Site", site);
 
         destination = "/webSites/jsp/design.jsp?Action=design&path=" + path + "&Id=" + id;
-        SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination().FromWysiwyg",
-            "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
+
       } else if ("TopicUp".equals(function)) {
         String topicId = request.getParameter("Id");
 
@@ -1479,18 +1477,15 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
         /* finChemin = rep/coucou.html">... */
         finChemin = code.substring(index + 9 + 3);
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE",
-            "finChemin = " + finChemin);
+
 
         /* traitement */
         int indexGuillemet = finChemin.indexOf("\"");
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE",
-            "indexGuillemet = " + Integer.toString(indexGuillemet));
+
 
         /* absolute = rep/coucou.html */
         String absolute = finChemin.substring(0, indexGuillemet);
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE",
-            "absolute = " + absolute);
+
 
         /* apres = ">... */
         apres = finChemin.substring(indexGuillemet);
@@ -1498,8 +1493,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
             info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "apres = " + apres);
 
         int indexSlash = absolute.lastIndexOf("\\");
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE",
-            "indexSlash = " + Integer.toString(indexSlash));
+
 
         if (indexSlash == -1) {
           // pas d'arborescence, le fichier du lien est sur la racine

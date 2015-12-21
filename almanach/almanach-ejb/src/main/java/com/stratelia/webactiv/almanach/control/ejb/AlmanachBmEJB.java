@@ -292,8 +292,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public void createIndex(EventDetail detail) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "PK=" + detail.getPK());
+
     try {
       FullIndexEntry indexEntry;
       indexEntry =
@@ -318,8 +317,7 @@ public class AlmanachBmEJB implements AlmanachBm {
       EventDetail eventDetail) {
     EventPK eventPK = eventDetail.getPK();
     if (eventPK != null) {
-      SilverTrace.info("almanach", "AlmanachBmEJB.updateIndexEntryWithWysiwygContent()",
-          "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry + ", eventPK = " + eventPK);
+
       WysiwygController.addToIndex(indexEntry, new ForeignPK(eventPK), eventDetail.getLanguage());
     }
 
@@ -330,8 +328,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @param eventPK the event primary key
    */
   private void deleteIndex(EventPK eventPK) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.deleteIndex()", "almanach.MSG_GEN_ENTER_METHOD",
-        "PK=" + eventPK.toString());
+
     IndexEntryPK indexEntry =
         new IndexEntryPK(eventPK.getComponentName(), "Event", eventPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
@@ -436,8 +433,6 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public void addPeriodicityException(PeriodicityException periodicityException) {
-    SilverTrace
-        .info("almanach", "AlmanachBmEJB.addPeriodicityException()", "root.MSG_GEN_ENTER_METHOD");
     try {
       IdPK pk = new IdPK();
       periodicityException.setPK(pk);
@@ -453,8 +448,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @return
    */
   public Collection<PeriodicityException> getListPeriodicityException(String periodicityId) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getListPeriodicityException()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       IdPK pk = new IdPK();
       return getPeriodicityExceptionDAO().findByWhereClause(pk, "periodicityId = " + periodicityId);
@@ -468,8 +462,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @param periodicityId the periodicity identifier
    */
   public void removeAllPeriodicityException(String periodicityId) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.removeAllPeriodicityException()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       IdPK pk = new IdPK();
       getPeriodicityExceptionDAO().removeWhere(pk, "periodicityId = " + periodicityId);
@@ -532,8 +525,6 @@ public class AlmanachBmEJB implements AlmanachBm {
   @Override
   public Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
       java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope) {
-    SilverTrace
-        .info("almanach", "AlmanachBmEJB.getListRecurrentEvent()", "root.MSG_GEN_ENTER_METHOD");
     java.util.Calendar today = currentDay;
 
     // transformation des VEvent du Calendar ical4j en EventDetail
@@ -555,10 +546,6 @@ public class AlmanachBmEJB implements AlmanachBm {
       firstDayMonth.set(java.util.Calendar.MONTH, 0);
     }
 
-    SilverTrace
-        .info("almanach", "AlmanachBmEJB.getListRecurrentEvent()", "root.MSG_GEN_PARAM_VALUE",
-            "start = " + firstDayMonth.getTime());
-
     java.util.Calendar lastDayMonth = java.util.Calendar.getInstance();
     lastDayMonth.setTime(firstDayMonth.getTime());
     if (yearScope) {
@@ -574,10 +561,6 @@ public class AlmanachBmEJB implements AlmanachBm {
     lastDayMonth.set(java.util.Calendar.MINUTE, 0);
     lastDayMonth.set(java.util.Calendar.SECOND, 0);
     lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
-
-    SilverTrace
-        .info("almanach", "AlmanachBmEJB.getListRecurrentEvent()", "root.MSG_GEN_PARAM_VALUE",
-            "end = " + lastDayMonth.getTime());
 
     Period monthPeriod =
         new Period(new DateTime(firstDayMonth.getTime()), new DateTime(lastDayMonth.getTime()));
@@ -626,8 +609,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public int getSilverObjectId(EventPK eventPK) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "eventPK = " + eventPK.toString());
+
     int silverObjectId;
     EventDetail detail;
     try {
@@ -651,8 +633,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @return
    */
   private int createSilverContent(Connection con, EventDetail eventDetail, String creatorId) {
-    SilverTrace.info("Almanach", "AlmanachBmEJB.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-        "eventId = " + eventDetail.getPK().getId());
+
     try {
       return getAlmanachContentManager().createSilverContent(con, eventDetail, creatorId);
     } catch (Exception e) {
@@ -666,8 +647,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @param eventPK the event primary key
    */
   private void deleteSilverContent(Connection con, EventPK eventPK) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.deleteSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-        "eventId = " + eventPK.getId());
+
     try {
       getAlmanachContentManager().deleteSilverContent(con, eventPK);
     } catch (Exception e) {
@@ -705,13 +685,11 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public Collection<SimpleDocument> getAttachments(EventPK eventPK) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
-        "eventId = " + eventPK.getId());
+
     try {
       Collection<SimpleDocument> attachmentList = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKey(eventPK, null);
-      SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-          "attachmentList.size() = " + attachmentList.size());
+
       return attachmentList;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAttachments()",

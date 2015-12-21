@@ -60,9 +60,6 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("websites", "WebSitesInstanciator.create()",
-        "webSites.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
-        "space : " + spaceId + "component : " + componentId);
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.webSites");
     pub.create(con, spaceId, componentId, userId);
     NodeInstanciator node = new NodeInstanciator("org.silverpeas.webSites");
@@ -82,8 +79,7 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("websites", "WebSitesInstanciator.delete()", "webSites.MSG_DELETE_WITH_SPACE",
-        "spaceId : " + spaceId);
+
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "siteIcons");
     deleteDataOfInstance(con, componentId, "site");
@@ -137,9 +133,6 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
 
   private void createAttachmentsAndImagesDirectory(String spaceId, String componentId)
       throws java.lang.Exception {
-    SilverTrace.info("websites", "WebSitesInstanciator.createAttachmentsAndImagesDirectory()",
-        "webSites.MSG_CREATE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT",
-        "space : " + spaceId + "component : " + componentId);
     File spaceDirectory = new File(uploadSettings.getString("uploadsPath"));
     if (spaceDirectory.exists()) {
       FileFolderManager.createFolder(uploadSettings.getString("uploadsPath") + File.separator +
@@ -153,9 +146,6 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
 
   private void deleteAttachmentsAndImagesDirectory(String spaceId, String componentId)
       throws java.lang.Exception {
-    SilverTrace.info("websites", "WebSitesInstanciator.deleteAttachmentsAndImagesDirectory()",
-        "webSites.MSG_DELETE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT", "space : " + spaceId +
-            "component : " + componentId);
     FileFolderManager.deleteFolder(uploadSettings.getString("uploadsPath") + File.separator +
         componentId);
   }

@@ -37,16 +37,10 @@ public class OrganizationChartInstanciator implements ComponentsInstanciatorIntf
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("organizationchart", "OrganizationChartInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("organizationchart", "OrganizationChartInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
   }
 }

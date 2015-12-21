@@ -58,8 +58,7 @@ public class CrmInstanciator extends SQLRequest implements ComponentsInstanciato
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
 
-    SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
-        "space = " + spaceId);
+
     CrmDataManager dataManager = ServiceFactory.getCrmData();
     Crm crm = dataManager.createDefaultCrm(spaceId, componentId);
     FullIndexEntry indexEntry = new FullIndexEntry(componentId, "crm", crm.getPK().getId());
@@ -73,8 +72,7 @@ public class CrmInstanciator extends SQLRequest implements ComponentsInstanciato
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
 
-    SilverTrace.info("crm", "CrmInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
-        "space = " + spaceId);
+
 
     CrmDataManager dataManager = ServiceFactory.getCrmData();
     List<Crm> listCrms = dataManager.listAllCrms(componentId);
@@ -135,8 +133,7 @@ public class CrmInstanciator extends SQLRequest implements ComponentsInstanciato
       throws InstanciationException {
     // get the delete query from the external file
     String deleteQuery = getDeleteQuery(componentId, suffixName);
-    SilverTrace.info("crm", "CrmInstanciator.deleteDataOfInstance()", "root.MSG_GEN_PARAM_VALUE",
-        "deleteQuery = " + deleteQuery);
+
 
     // execute the delete query
     Statement stmt = null;

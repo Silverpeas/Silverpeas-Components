@@ -302,8 +302,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void validateClassified(String classifiedId, String userId) {
-    SilverTrace.info("classified", "DefaultClassifiedService.validateClassified()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
       if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
@@ -317,14 +316,12 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.validateClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.EX_ERR_VALIDATE_CLASSIFIED", e);
     }
-    SilverTrace.info("classified", "DefaultClassifiedService.validateClassified()",
-        "root.MSG_GEN_EXIT_METHOD", "classifiedId = " + classifiedId);
+
   }
 
   @Override
   public void refusedClassified(String classifiedId, String userId, String refusalMotive) {
-    SilverTrace.info("classified", "DefaultClassifiedService.refusedClassified()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
       classified.setStatus(ClassifiedDetail.REFUSED);
@@ -369,8 +366,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) {
     Connection con = openConnection();
-    SilverTrace.info("classifieds", "DefaultClassifiedService.getAllClassifiedsToUnpublish()",
-        "root.MSG_GEN_ENTER_METHOD", "nbDays = " + nbDays);
+
     try {
       return ClassifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
     } catch (Exception e) {
@@ -395,8 +391,7 @@ public class DefaultClassifiedService implements ClassifiedService {
           ClassifiedDetail classified = this.getContentById(matchIndex.getObjectId());
           if (classified != null && ClassifiedDetail.VALID.equals(classified.getStatus())) {
             classifieds.add(classified);
-            SilverTrace.info("classifieds", "DefaultClassifiedService.search()",
-                "root.MSG_GEN_PARAM_VALUE", "classified = " + classified.getTitle());
+
           }
         }
       }
@@ -473,9 +468,6 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   public void deleteIndex(ClassifiedDetail classified) {
-    SilverTrace.info("classifieds", "DefaultClassifiedService.deleteIndex()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "ClassifiedId = " + classified.toString());
     IndexEntryPK indexEntry =
         new IndexEntryPK(classified.getInstanceId(), "Classified", Integer.toString(classified
         .getClassifiedId()));

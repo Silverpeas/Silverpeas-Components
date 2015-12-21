@@ -42,8 +42,7 @@ public class SuggestionBoxIndexer implements ComponentIndexation {
 
   @Override
   public void index(ComponentInst componentInst) throws Exception {
-    SilverTrace.info("suggestionBox", "SuggestionBoxIndexer.index()", "root.MSG_GEN_PARAM_VALUE",
-        "index, context.getCurrentComponentId() = " + componentInst.getId());
+
 
     // Getting the suggestion box entity
     SuggestionBox suggestionBoxToIndex =

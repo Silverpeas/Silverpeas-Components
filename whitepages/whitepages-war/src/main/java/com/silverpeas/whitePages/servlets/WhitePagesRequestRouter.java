@@ -479,8 +479,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
     String returnURL = request.getParameter("ReturnURL");
 
     if (returnURL != null && returnURL.length() > 0) {
-      SilverTrace.info("whitePages", "WhitePagesRequestRouter.resetReturnURL()",
-          "root.MSG_GEN_PARAM_VALUE", "returnURL != null");
+
       scc.setReturnURL(returnURL);
     } else {
       returnURL = scc.getReturnURL();

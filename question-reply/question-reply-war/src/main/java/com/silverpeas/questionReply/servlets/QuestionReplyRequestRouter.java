@@ -90,8 +90,7 @@ public class QuestionReplyRequestRouter
     ContainerContext containerContext = (ContainerContext) request.getAttribute("ContainerContext");
 
     if (containerContext != null) {
-      SilverTrace.info("questionReply", "QuestionReplyRequestRouter.resetContainerContext()",
-          "root.MSG_GEN_PARAM_VALUE", "returnURL != null");
+
       scc.setContainerContext(containerContext);
     } else {
       containerContext = scc.getContainerContext();
@@ -102,8 +101,7 @@ public class QuestionReplyRequestRouter
   private void resetReturnURL(QuestionReplySessionController scc, HttpServletRequest request) {
     String returnURL = request.getParameter("ReturnURL");
     if (StringUtil.isDefined(returnURL)) {
-      SilverTrace.info("questionReply", "QuestionReplyRequestRouter.resetReturnURL()",
-          "root.MSG_GEN_PARAM_VALUE", "returnURL != null");
+
       scc.setReturnURL(returnURL);
     } else {
       returnURL = scc.getReturnURL();
@@ -123,13 +121,11 @@ public class QuestionReplyRequestRouter
   @Override
   public String getDestination(String function, QuestionReplySessionController scc,
       HttpRequest request) {
-    SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", function);
+
     String destination;
     String flag = scc.getUserProfil();
     SilverpeasRole role = scc.getUserRole();
-    SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "flag = " + flag);
+
     try {
       resetContainerContext(scc, request);
       resetReturnURL(scc, request);
@@ -218,8 +214,7 @@ public class QuestionReplyRequestRouter
         if (questionId == null) {
           questionId = scc.getCurrentQuestion().getPK().getId();
         }
-        SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId);
+
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
         request.setAttribute("QuestionId", questionId);
@@ -439,8 +434,7 @@ public class QuestionReplyRequestRouter
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
 
-        SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "type = " + type + " id = " + id);
+
 
         if ("Question".equals(type)) {
           // traitement des questions
@@ -452,8 +446,7 @@ public class QuestionReplyRequestRouter
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
 
-          SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId + " replyId = " + id);
+
 
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Publication")) {
@@ -461,11 +454,6 @@ public class QuestionReplyRequestRouter
           Reply reply = scc.getReply(Long.valueOf(id));
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
-
-          SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId +
-                  " replyId = " + id);
-
           destination = getDestination("Main", scc, request);
         } else {
           destination = getDestination("Main", scc, request);
@@ -490,8 +478,7 @@ public class QuestionReplyRequestRouter
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
-    SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "destination " + destination);
+
     return destination;
   }
 

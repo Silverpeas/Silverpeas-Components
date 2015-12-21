@@ -212,8 +212,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
 
   private GlobalSilverContent matchingIndexEntry2SilverContent(MatchingIndexEntry mie,
       String language) throws Exception {
-    SilverTrace.info("searchEngine", "MixedSearchServiceImpl.matchingIndexEntry2SilverContent()",
-        "root.MSG_GEN_PARAM_VALUE", "mie = " + mie.toString());
+
     GlobalSilverContent silverContent;
     silverContent =
         new GlobalSilverContent(mie.getTitle(language), mie.getPreview(language), mie.getObjectId(),
@@ -254,8 +253,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
       MatchingIndexEntry mie = getMatchingIndexEntry(ie, objectId);
       if (mie != null) {
         result.add(mie);
-        SilverTrace.info("searchEngine", "MixedSearchServiceImpl.mixedSearch()",
-            "root.MSG_GEN_PARAM_VALUE", "common objectId = " + mie.getObjectId());
+
       }
     }
     Collections.sort(result, ScoreComparator.comparator);

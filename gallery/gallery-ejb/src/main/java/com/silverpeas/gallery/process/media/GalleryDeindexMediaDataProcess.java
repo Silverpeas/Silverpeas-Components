@@ -71,8 +71,7 @@ public class GalleryDeindexMediaDataProcess extends AbstractGalleryDataProcess {
   public void onSuccessful() throws Exception {
     super.onSuccessful();
 
-    SilverTrace.info("gallery", "GalleryDeindexMediaDataProcess.onSuccessful()",
-        "root.MSG_GEN_ENTER_METHOD", "MediaPK = " + getMedia().getMediaPK().toString());
+
 
     final IndexEntryPK indexEntry = new IndexEntryPK(getMedia().getMediaPK().getComponentName(),
         getMedia().getContributionType(), getMedia().getMediaPK().getId());

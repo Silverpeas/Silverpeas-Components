@@ -676,8 +676,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isNewMessage(String userId, int forumId, int messageId) {
     boolean isNewMessage =
         getForumsService().isNewMessage(userId, getForumPK(forumId), messageId, STATUS_VALIDATE);
-    SilverTrace.info("forums", "ForumsSessionController.isNewMessage()", "root.MSG_GEN_PARAM_VALUE",
-        "isNewMessage = " + isNewMessage);
+
     return isNewMessage;
   }
 

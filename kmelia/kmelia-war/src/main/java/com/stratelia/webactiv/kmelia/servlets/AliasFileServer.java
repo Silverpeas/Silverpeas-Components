@@ -134,8 +134,7 @@ public class AliasFileServer extends HttpServlet {
    */
   private void display(HttpServletResponse res, String filePath) throws IOException {
     File file = new File(filePath);
-    SilverTrace.info("kmelia", "AliasFileServer.display()",
-        "root.MSG_GEN_ENTER_METHOD", "filePath = " + filePath);
+
     try {
       if (!file.exists()) {
         displayWarningHtmlCode(res);

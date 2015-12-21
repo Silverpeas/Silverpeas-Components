@@ -517,8 +517,7 @@ public class ChatDataAccess {
   }
 
   public int getSilverObjectId(String chatRoomId) throws ChatException {
-    SilverTrace.info("chat", "ChatDataAccess.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "chatRoomId = " + chatRoomId);
+
     int silverObjectId = -1;
     ChatRoomDetail chatRoom = null;
     try {
