@@ -24,6 +24,8 @@
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
 import com.silverpeas.formTemplate.dao.ModelDAO;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -41,10 +43,12 @@ import com.stratelia.webactiv.yellowpages.dao.GroupDAO;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -244,6 +248,11 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       return new NodePK("-1");
     } else {
       try {
+        // register form to current app
+        String xmlFormName = subTopic.getModelId();
+        if (StringUtil.isDefined(xmlFormName)) {
+          registerTemplate(xmlFormName, father.getNodePK().getInstanceId());
+        }
         return nodeService.createNode(subTopic, father);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.addToTopic()",
@@ -299,6 +308,11 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       return new NodePK("-1");
     } else {
       try {
+        // register form to current app
+        String xmlFormName = topic.getModelId();
+        if (StringUtil.isDefined(xmlFormName)) {
+          registerTemplate(xmlFormName, topic.getNodePK().getInstanceId());
+        }
         nodeService.setDetail(topic);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.updateTopic()",
@@ -990,6 +1004,16 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     Collection<ContactDetail> contacts = contactBm.getDetailsByFatherPK(pk);
     for (ContactDetail contact : contacts) {
       contactBm.index(contact.getPK());
+    }
+  }
+
+  private void registerTemplate(String xmlFormName, String instanceId)
+      throws PublicationTemplateException {
+    // register form to current app
+    if (StringUtil.isDefined(xmlFormName)) {
+      String key = instanceId + ":" + FilenameUtils.getBaseName(xmlFormName);
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
     }
   }
 }

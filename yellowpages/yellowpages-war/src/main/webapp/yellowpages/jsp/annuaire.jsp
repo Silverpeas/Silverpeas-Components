@@ -246,7 +246,7 @@ function exportCSV(){
 				out.print(searchCriteria);
 			}%>"/>
 						</td>
-						<td valign="middle">
+						<td valign="middle" id="searchButton">
 						<%
 						  ButtonPane buttonPane = gef.getButtonPane();
 						  buttonPane.addButton(gef.getFormButton("Ok", "javaScript:search()", false));
