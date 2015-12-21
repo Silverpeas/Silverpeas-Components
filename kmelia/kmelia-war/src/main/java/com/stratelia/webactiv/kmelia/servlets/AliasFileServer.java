@@ -70,7 +70,7 @@ public class AliasFileServer extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse response)
       throws ServletException, IOException {
-    SilverTrace.info("kmelia", "AliasFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+
 
     String userId = "undefined";
     HttpSession session = req.getSession(true);

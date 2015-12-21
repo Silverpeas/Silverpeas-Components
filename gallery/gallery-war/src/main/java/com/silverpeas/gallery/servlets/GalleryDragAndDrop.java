@@ -78,7 +78,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     UserDetail userDetail = UserDetail.getCurrentRequester();
     HttpRequest request = HttpRequest.decorate(req);
     UploadSession uploadSession = UploadSession.from(request);

@@ -287,9 +287,9 @@ public class ForumActionHelper {
           }
         }
       } catch (NumberFormatException nfe) {
-        SilverTrace.info("forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, nfe);
+
       } catch (IOException ioe) {
-        SilverTrace.info("forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, ioe);
+
       }
     }
     if (!fsc.isComponentSubscriptionInfoDisplayed() && fsc.isComponentSubscriber()) {

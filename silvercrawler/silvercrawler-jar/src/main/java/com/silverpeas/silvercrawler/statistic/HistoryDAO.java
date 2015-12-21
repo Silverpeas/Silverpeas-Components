@@ -50,7 +50,7 @@ public class HistoryDAO {
 
   public static void add(Connection con, String tableName, String userId, String path,
       String componentId, String objectType) throws SQLException {
-    SilverTrace.info("silverCrawler", "HistoryDAO.add()", "root.MSG_GEN_ENTER_METHOD");
+
 
     String insertStatement = "insert into " + tableName + " values (?, ?, ?, ?, ?)";
     Date date = new Date();

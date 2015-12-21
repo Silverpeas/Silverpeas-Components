@@ -234,7 +234,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @throws SurveyException
    */
   public Collection<QuestionContainerHeader> getSurveys() throws SurveyException {
-    SilverTrace.info("survey", "SurveySessionController.getSurveys", "Survey.MSG_ENTRY_METHOD");
+
     if (getViewType() == OPENED_SURVEYS_VIEW) {
       return getOpenedSurveys();
     }

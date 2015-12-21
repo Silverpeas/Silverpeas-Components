@@ -76,7 +76,7 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
           "webSites.EX_CREATE_ATACHMENTS_AND_IMAGES_DIRECTORY_FAIL",
           "spaceId = " + spaceId + " componentId = " + componentId, e);
     }
-    SilverTrace.info("websites", "WebSitesInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
@@ -98,7 +98,7 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
           "webSites.EX_DELETE_ATACHMENTS_AND_IMAGES_DIRECTORY_FAIL",
           "spaceId = " + spaceId + " componentId = " + componentId, e);
     }
-    SilverTrace.info("websites", "WebSitesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

@@ -57,7 +57,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
     node.create(con, spaceId, componentId, userId);
     insertRootNode(con, componentId, userId);
     insertAlbumNode(con, componentId, userId);
-    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
@@ -68,7 +68,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
     getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId,
         new NodePK(NodePK.ROOT_NODE_ID, componentId));
     FileUtil.deleteEmptyDir(new File(FileRepositoryManager.getAbsolutePath(componentId)));
-    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private void insertRootNode(Connection con, String componentId, String userId) throws

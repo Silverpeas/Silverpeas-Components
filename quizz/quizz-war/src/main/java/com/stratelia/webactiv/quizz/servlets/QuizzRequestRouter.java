@@ -140,7 +140,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
-        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "", "id = " + id);
+
 
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = rootDest + "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;

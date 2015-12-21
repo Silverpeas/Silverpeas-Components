@@ -184,7 +184,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       SilverTrace.warn("gallery", "GalleryInWysiwygRouter.doPost", "root.EX_CANT_READ_FILE",
           "filePath = " + filePath);
     } finally {
-      SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()", "", " finally ");
+
       // we must close the in and out streams
       try {
         if (input != null) {

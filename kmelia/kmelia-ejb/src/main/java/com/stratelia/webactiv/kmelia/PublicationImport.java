@@ -304,7 +304,7 @@ public class PublicationImport {
 
     NodePK nodePK = new NodePK(topicId, spaceId, componentId);
     String result = kmeliaBm.createPublicationIntoTopic(pubDetail, nodePK);
-    SilverTrace.info("kmelia", "PublicationImport.createPublication()", "Kmelia.MSG_ENTRY_METHOD");
+
     return result;
   }
 

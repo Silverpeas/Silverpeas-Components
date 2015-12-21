@@ -1396,7 +1396,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         return processModel.getPresentationForm(step.getAction(), currentRole, getLanguage());
       }
     } catch (WorkflowException e) {
-      SilverTrace.info("processManager", "sessionController", "processManager.ILL_DATA_STEP", e);
+
       return null;
     }
   }
@@ -1447,7 +1447,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         return step.getActionRecord();
       }
     } catch (WorkflowException e) {
-      SilverTrace.info("processManager", "sessionController", "processManager.ILL_DATA_STEP", e);
+
       return null;
     }
   }

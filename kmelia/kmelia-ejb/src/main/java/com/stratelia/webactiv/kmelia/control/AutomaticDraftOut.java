@@ -41,7 +41,7 @@ public class AutomaticDraftOut implements SchedulerEventListener {
       ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 
   public void initialize() {
-    SilverTrace.info("kmelia", "AutomaticDraftOut.initialize()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       String cron = resources.getString("cronAutomaticDraftOut", "");
       Scheduler scheduler = SchedulerProvider.getScheduler();

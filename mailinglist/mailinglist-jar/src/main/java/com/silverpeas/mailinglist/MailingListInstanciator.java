@@ -43,9 +43,9 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     MailingList mailingList = new MailingList();
     mailingList.setComponentId(componentId);
-    SilverTrace.info("mailinglist", "MailingListInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
     MailingListServicesProvider.getMailingListService().createMailingList(mailingList);
-    SilverTrace.info("mailinglist", "MailingListInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
     //mailingList = mailingListServicesProvider.getMailingListService().findMailingList(componentId);
     MailingListComponent component = new MailingListComponent(componentId);
     MailingListServicesProvider.getMessageChecker().addMessageListener(component);
@@ -57,7 +57,7 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("mailinglist", "MailingListInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     MailingListServicesProvider.getMailingListService().deleteMailingList(componentId);
-    SilverTrace.info("mailinglist", "MailingListInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
     MailingListServicesProvider.getMessageChecker().removeListener(componentId);
   }
 }

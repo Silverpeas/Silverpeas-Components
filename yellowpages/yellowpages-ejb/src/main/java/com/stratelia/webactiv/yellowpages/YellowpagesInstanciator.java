@@ -66,7 +66,7 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
       throw new InstanciationException("YellowpagesInstanciator.create()",
           InstanciationException.ERROR, "root.CREATING_DATA_DIRECTORY_FAILED", e);
     }
-    SilverTrace.info("yellowpages", "YellowpagesInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
@@ -80,7 +80,7 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
     pub.delete(con, spaceId, componentId, userId);
     NodeInstanciator node = new NodeInstanciator("org.silverpeas.yellowpages");
     node.delete(con, spaceId, componentId, userId);
-    SilverTrace.info("yellowpages", "YellowpagesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private void insertSpecialNode(Connection con, String componentId, String userId)

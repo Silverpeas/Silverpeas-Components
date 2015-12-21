@@ -104,7 +104,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public Collection<EventDetail> getAllEvents(EventPK pk) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getAllEvents()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       Collection<EventDetail> events = getEventDAO().findAllEvents(pk.getInstanceId());
       return events;
@@ -122,7 +122,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getAllEvents()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       String[] almanachIds = Arrays.copyOf(instanceIds, instanceIds.length + 1);
       almanachIds[instanceIds.length] = pk.getInstanceId();
@@ -141,7 +141,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public Collection<EventDetail> getEvents(Collection<EventPK> pks) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getEvents()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       Collection<EventDetail> events = getEventDAO().findAllEventsByPK(pks);
       return events;
@@ -158,7 +158,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public EventDetail getEventDetail(EventPK pk) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getEventDetail()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return getEventDAO().findEventByPK(pk);
     } catch (Exception e) {
@@ -180,7 +180,7 @@ public class AlmanachBmEJB implements AlmanachBm {
   @Override
   public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles,
       PdcClassification classification) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.addEvent()", "root.MSG_GEN_ENTER_METHOD");
+
     checkEventDates(event);
     Connection connection = null;
     try {
@@ -225,7 +225,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public void updateEvent(EventDetail event) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.updateEvent()", "root.MSG_GEN_ENTER_METHOD");
+
     checkEventDates(event);
     try {
       getEventDAO().updateEvent(event);
@@ -264,7 +264,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public void removeEvent(EventPK pk) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.removeEvent()", "root.MSG_GEN_ENTER_METHOD");
+
     Connection connection = null;
     try {
       connection = DBUtil.openConnection();
@@ -357,7 +357,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @param periodicity the periodicity identifier
    */
   private void addPeriodicity(Periodicity periodicity) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.addPeriodicity()", "root.MSG_GEN_ENTER_METHOD");
+
 
     try {
       IdPK pk = new IdPK();
@@ -374,7 +374,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @return periodicity
    */
   private Periodicity getPeriodicity(String eventId) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getPeriodicity()", "root.MSG_GEN_ENTER_METHOD");
+
     Periodicity periodicity = null;
     try {
       IdPK pk = new IdPK();
@@ -390,7 +390,7 @@ public class AlmanachBmEJB implements AlmanachBm {
   }
 
   private void removePeriodicity(Periodicity periodicity) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.removePeriodicity()", "root.MSG_GEN_ENTER_METHOD");
+
 
     try {
       IdPK pk = new IdPK();
@@ -403,7 +403,7 @@ public class AlmanachBmEJB implements AlmanachBm {
   }
 
   private void updatePeriodicity(Periodicity periodicity) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.updatePeriodicity()", "root.MSG_GEN_ENTER_METHOD");
+
 
     try {
       getEventPeriodicityDAO().update(periodicity);
@@ -481,7 +481,7 @@ public class AlmanachBmEJB implements AlmanachBm {
 
   @Override
   public Calendar getICal4jCalendar(Collection<EventDetail> events, String language) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getICal4jCalendar()", "root.MSG_GEN_ENTER_METHOD");
+
     Calendar calendarAlmanach = new Calendar();
     calendarAlmanach.getProperties().add(CalScale.GREGORIAN);
     for (EventDetail evtDetail : events) {

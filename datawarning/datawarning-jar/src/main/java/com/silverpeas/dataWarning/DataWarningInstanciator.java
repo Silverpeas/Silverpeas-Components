@@ -59,7 +59,7 @@ public class DataWarningInstanciator implements ComponentsInstanciatorIntf {
       throw new InstanciationException("DataWarningInstanciator.create()",
           SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", dwe);
     }
-    SilverTrace.info("dataWarning", "DataWarningInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
 
   }
 
@@ -79,6 +79,6 @@ public class DataWarningInstanciator implements ComponentsInstanciatorIntf {
       throw new InstanciationException("DataWarningInstanciator.delete()",
           SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", dwe);
     }
-    SilverTrace.info("dataWarning", "DataWarningInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 }

@@ -134,7 +134,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    */
   @Override
   public TopicDetail goTo(NodePK pk, String userId) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.goTo()", "root.MSG_GEN_ENTER_METHOD");
+
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     List<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
     try {
@@ -175,7 +175,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       }
 
       List<Integer> nbContactsByTopic = getRecursiveNbContact(nodeDetail);
-      SilverTrace.info("yellowpages", "YellowpagesBmEJB.goTo()", "root.MSG_GEN_EXIT_METHOD");
+
       return new TopicDetail(newPath, nodeDetail, contactDetails2userPubs(contactDetailsR),
           nbContactsByTopic);
     } catch (Exception re) {
@@ -293,7 +293,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    */
   @Override
   public NodePK updateTopic(NodeDetail topic) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.addSubTopic()", "root.MSG_GEN_ENTER_METHOD");
+
     if (isSameTopicSameLevelOnUpdate(topic)) {
       // a subtopic of same name already exists
       return new NodePK("-1");
@@ -307,7 +307,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       }
       SilverTrace.info("yellowpages", "YellowpagesBmEJB.addSubTopic()", "root.MSG_GEN_RETURN_VALUE",
           "topic.getNodePK() = " + topic.getNodePK());
-      SilverTrace.info("yellowpages", "YellowpagesBmEJB.addSubTopic()", "root.MSG_GEN_EXIT_METHOD");
+
       return topic.getNodePK();
     }
   }
@@ -350,7 +350,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
           SilverpeasRuntimeException.ERROR, "root.EX_DELETE_TOPIC_FAILED",
           "pk = " + pkToDelete.toString(), re);
     }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteTopic()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -530,7 +530,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    */
   @Override
   public List<Collection<NodeDetail>> getPathList(ContactPK contactPK) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.getPathList()", "root.MSG_GEN_ENTER_METHOD");
+
     Collection<NodePK> fatherPKs;
     try {
       // get all nodePK whick contains this contact
@@ -549,7 +549,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
           pathList.add(path);
         }
       }
-      SilverTrace.info("yellowpages", "YellowpagesBmEJB.getPathList()", "root.MSG_GEN_EXIT_METHOD");
+
       return pathList;
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.getPathList()",
@@ -613,7 +613,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.updateContact()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_UPDATE_CONTACT_FAILED", re);
     }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.updateContact()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -644,7 +644,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       // this contact is not deleted from the database but only send to the basket
       sendContactToBasket(contactPK);
     }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -823,7 +823,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    */
   @Override
   public Collection<UserContact> getContacts(Collection<String> contactIds, String instanceId) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.getContacts()", "root.MSG_GEN_ENTER_METHOD");
+
     List<ContactPK> contactPKs = new ArrayList<>();
     List<ContactDetail> contactDetailsR = new ArrayList<>();
     for (String contactId : contactIds) {
@@ -861,7 +861,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.getContacts()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_ALL_CONTACTS_FAILED", re);
     }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.getContacts()", "root.MSG_GEN_EXIT_METHOD");
+
     return contactDetails2userPubs(contactDetailsR);
   }
 

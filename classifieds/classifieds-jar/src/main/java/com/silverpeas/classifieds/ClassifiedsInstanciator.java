@@ -42,7 +42,7 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
   public void create(Connection con, String spaceId, String componentId, String userId) {
     SilverTrace.info("classifieds", "classifiedsInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-    SilverTrace.info("classifieds", "classifiedsInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
@@ -59,6 +59,6 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
       throw new ClassifiedsRuntimeException("ClassifiedsInstanciator.delete()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    SilverTrace.info("classifieds", "ClassifiedsInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 }

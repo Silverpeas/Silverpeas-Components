@@ -241,7 +241,7 @@ public class SendInKmelia extends ExternalActionImpl {
           fieldValue = fieldOfFolder.getObjectValue();
           // Check file attachment in order to put them inside form
           if (fieldOfFolder instanceof FileField) {
-            SilverTrace.info("workflowEngine", "SendInKmelia.populateFields", "Process file copy");
+
             fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
           }
         } catch (WorkflowException e) {

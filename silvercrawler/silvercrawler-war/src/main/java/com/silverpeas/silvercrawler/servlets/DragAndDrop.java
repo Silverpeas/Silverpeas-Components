@@ -67,7 +67,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("silverCrawler", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding("UTF-8");
 

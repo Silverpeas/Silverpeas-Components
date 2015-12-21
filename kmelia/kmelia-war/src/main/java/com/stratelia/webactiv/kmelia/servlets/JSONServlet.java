@@ -52,7 +52,7 @@ public class JSONServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("kmelia", "JSONServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     res.setContentType("application/json");
 
     String id = req.getParameter("Id");

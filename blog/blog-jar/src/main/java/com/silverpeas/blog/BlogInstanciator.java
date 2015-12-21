@@ -56,7 +56,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
     // inserer les 1er noeuds = racines
     insertRootNodeCategories(con, componentId, userId);
     insertRootNodeArchives(con, componentId, userId);
-    SilverTrace.info("blog", "BlogInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
@@ -74,7 +74,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
     // delete links
     MyLinksInstanciator links = new MyLinksInstanciator();
     links.delete(con, spaceId, componentId, userId);
-    SilverTrace.info("blog", "BlogInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private void insertRootNodeCategories(Connection con, String componentId, String userId)

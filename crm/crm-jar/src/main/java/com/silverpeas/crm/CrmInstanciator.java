@@ -57,7 +57,7 @@ public class CrmInstanciator extends SQLRequest implements ComponentsInstanciato
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
+
     SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
         "space = " + spaceId);
     CrmDataManager dataManager = ServiceFactory.getCrmData();
@@ -66,13 +66,13 @@ public class CrmInstanciator extends SQLRequest implements ComponentsInstanciato
     indexEntry.setTitle(crm.getClientName());
     IndexEngineProxy.addIndexEntry(indexEntry);
 
-    SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("crm", "CrmInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
+
     SilverTrace.info("crm", "CrmInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
         "space = " + spaceId);
 
@@ -122,7 +122,7 @@ public class CrmInstanciator extends SQLRequest implements ComponentsInstanciato
     deleteDataOfInstance(con, componentId, "CRMPARTICIPANTS");
     deleteDataOfInstance(con, componentId, "CRMINFOS");
 
-    SilverTrace.info("crm", "CrmInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

@@ -783,7 +783,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized void flushTrashCan() throws RemoteException {
-    SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_ENTRY_METHOD");
+
     TopicDetail td = getKmeliaBm()
         .goTo(getNodePK(NodePK.BIN_NODE_ID), getUserId(), false, getUserTopicProfile("1"),
             isRightsOnTopicsEnabled());

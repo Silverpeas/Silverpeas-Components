@@ -53,7 +53,7 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
         "componentId = " + componentId + ", userId =" + userId);
     removeWysiwygContent(componentId);
     removeXMLContent(componentId);
-    SilverTrace.info("webPages", "WebPagesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private void removeWysiwygContent(String componentId) throws InstanciationException {

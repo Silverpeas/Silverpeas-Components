@@ -47,11 +47,9 @@ public class AlmanachInstanciator extends SQLRequest implements ComponentsInstan
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("almanach", "AlmanachInstanciator.delete()", "almanach.MSG_DELETE_WITH_SPACE",
-        "spaceId : " + spaceId);
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "Event");
-    SilverTrace.info("almanach", "AlmanachInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private void deleteDataOfInstance(Connection con, String componentId, String suffixName) throws

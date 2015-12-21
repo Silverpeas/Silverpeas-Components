@@ -48,7 +48,7 @@ public class AlmanachIndexer implements ComponentIndexation {
 
   @Override
   public void index(ComponentInst inst) throws Exception {
-    SilverTrace.info("almanach", "AlmanachIndexer.index", "root.MSG_GEN_ENTER_METHOD");
+
     EventPK pk = new EventPK("", inst.getSpaceId(), inst.getId());
     Collection<EventDetail> allEvents = almanach.getAllEvents(pk);
     for (EventDetail event : allEvents) {

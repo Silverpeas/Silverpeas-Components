@@ -152,7 +152,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   }
 
   public NodePK addToFolder(NodePK fatherId, NodeDetail subTopic) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.addToFolder()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       NodeDetail father = nodeService.getDetail(fatherId);
       return nodeService.createNode(subTopic, father);
@@ -185,7 +185,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     subFolder.setCreatorId(currentUser.getId());
     // add new topic to current topic
     NodePK pk = addToFolder(fatherId, subFolder);
-    SilverTrace.info("webSites", "WebSiteBmEJB.addFolder()", "root.MSG_GEN_EXIT_METHOD");
+
     return pk;
   }
 
@@ -231,7 +231,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void deleteFolder(NodePK pkToDelete) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.deleteFolder()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       // get all nodes which will be deleted
       Collection<NodePK> nodesToDelete = nodeService.getDescendantPKs(pkToDelete);
@@ -364,7 +364,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   @Override
   public void updatePublication(PublicationDetail pubDetail, String componentId) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.updatePublication()", "root.MSG_GEN_ENTER_METHOD");
+
     pubDetail.getPK().setComponentName(componentId);
     try {
       publicationService.setDetail(pubDetail);
@@ -429,7 +429,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   @Override
   public Collection<NodePK> getAllFatherPK(PublicationPK pubPK) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getAllFatherPK()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return publicationService.getAllFatherPK(pubPK);
     } catch (Exception re) {
@@ -444,7 +444,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   @Override
   public String getIdPublication(String componentId, String idSite) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getIdPublication()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getIdPublication(idSite);
@@ -504,7 +504,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   @Override
   public Collection<SiteDetail> getAllWebSite(String componentId) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getAllWebSite()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getAllWebSite();
@@ -520,7 +520,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * @return
    */
   public SiteDetail getWebSite(String componentId, String id) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getWebSite()", "root.MSG_GEN_ENTER_METHOD");
+
     SitePK pk = new SitePK(id, componentId);
     try {
       SiteDAO dao = new SiteDAO(componentId);
@@ -536,7 +536,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * @return
    */
   public List<SiteDetail> getWebSites(String componentId, List<String> ids) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getWebSites()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getWebSites(ids);
@@ -550,7 +550,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * getIcons
    */
   public Collection<IconDetail> getIcons(String componentId, String id) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getIcons()", "root.MSG_GEN_ENTER_METHOD");
+
     SitePK pk = new SitePK(id, componentId);
     try {
       SiteDAO dao = new SiteDAO(componentId);
@@ -563,7 +563,7 @@ public class WebSiteBmEJB implements WebSiteBm {
 
   @Override
   public String getNextId(String componentId) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getNextId()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getNextId();
@@ -575,7 +575,7 @@ public class WebSiteBmEJB implements WebSiteBm {
 
   @Override
   public Collection<IconDetail> getAllIcons(String componentId) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.getAllIcons()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getAllIcons();
@@ -587,7 +587,7 @@ public class WebSiteBmEJB implements WebSiteBm {
 
   @Override
   public String createWebSite(String componentId, SiteDetail description, UserDetail currentUser) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.createWebSite()", "root.MSG_GEN_ENTER_METHOD");
+
     try (Connection con = getConnection()) {
       SiteDAO dao = new SiteDAO(componentId);
       dao.createWebSite(description);
@@ -605,7 +605,7 @@ public class WebSiteBmEJB implements WebSiteBm {
 
   @Override
   public void associateIcons(String componentId, String id, Collection<String> liste) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.associateIcons()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       dao.associateIcons(id, liste);
@@ -617,7 +617,7 @@ public class WebSiteBmEJB implements WebSiteBm {
 
   @Override
   public void publish(String componentId, Collection<String> liste) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.publish()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       dao.publish(liste);
@@ -636,7 +636,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * dePublish
    */
   public void dePublish(String componentId, Collection<String> liste) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.dePublish()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       dao.dePublish(liste);
@@ -655,7 +655,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * deleteWebSites
    */
   public void deleteWebSites(String componentId, Collection<String> liste) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.deleteWebSites()", "root.MSG_GEN_ENTER_METHOD");
+
     try (Connection con = getConnection()) {
       SiteDAO dao = new SiteDAO(componentId);
       dao.deleteWebSites(liste);
@@ -698,7 +698,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    * updateWebSite
    */
   public void updateWebSite(String componentId, SiteDetail description) {
-    SilverTrace.info("webSites", "WebSiteBmEJB.updateWebSite()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SiteDAO dao = new SiteDAO(componentId);
       dao.updateWebSite(description);

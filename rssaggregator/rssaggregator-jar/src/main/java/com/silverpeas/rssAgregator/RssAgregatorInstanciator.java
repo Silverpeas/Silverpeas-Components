@@ -45,7 +45,7 @@ public class RssAgregatorInstanciator implements ComponentsInstanciatorIntf {
       InstanciationException {
     SilverTrace.info("RssAgregator", "RssAgregatorInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
-    SilverTrace.info("RssAgregator", "RssAgregatorInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override
@@ -59,6 +59,6 @@ public class RssAgregatorInstanciator implements ComponentsInstanciatorIntf {
     } catch (Exception e) {
       throw new InstanciationException("RssAgregatorInstanciator", SilverpeasException.ERROR, "", e);
     }
-    SilverTrace.info("RssAgregator", "RssAgregatorInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 }

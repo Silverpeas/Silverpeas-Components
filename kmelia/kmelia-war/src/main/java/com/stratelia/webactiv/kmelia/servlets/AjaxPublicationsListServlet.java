@@ -1104,7 +1104,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
 
     }
-    SilverTrace.info("kmelia", "JSPattachmentUtils.displayFile()", "root.MSG_GEN_EXIT_METHOD");
+
     return result.toString();
 
   }

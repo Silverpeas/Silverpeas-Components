@@ -59,7 +59,7 @@ public class Statistic {
   }
 
   public static void addStat(String userId, File path, String componentId, String objectType) {
-    SilverTrace.info("silverCrawler", "Statistic.addStat()", "root.MSG_GEN_ENTER_METHOD");
+
     try (Connection con = getConnection()) {
       // ajout dans les stats de l'objet
       HistoryDAO
@@ -132,12 +132,12 @@ public class Statistic {
       }
     }
 
-    SilverTrace.info("silverCrawler", "Statistic.getHistoryByObject()", "root.MSG_GEN_EXIT_METHOD");
+
     return statByUser;
   }
 
   public static Collection<HistoryDetail> getHistoryByAction(String path, String componentId) {
-    SilverTrace.info("silverCrawler", "Statistic.getHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
+
     try (Connection con = getConnection()) {
       Collection<HistoryDetail> result =
           HistoryDAO.getHistoryDetailByObject(con, historyTableName, path, componentId);

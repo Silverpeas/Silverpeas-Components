@@ -70,7 +70,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
    * control bean name to be put in the request object ex : for whitePages, returns "whitePages"
    */
   public String getSessionControlBeanName() {
-    SilverTrace.info("whitePages", "WhitePagesRequestRouter.getSessionControlBeanName()", "", "");
+
     return "whitePages";
   }
 
