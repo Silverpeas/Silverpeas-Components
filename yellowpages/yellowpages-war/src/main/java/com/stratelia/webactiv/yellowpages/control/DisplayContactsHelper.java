@@ -42,6 +42,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
+import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneStatusBean;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
@@ -122,20 +123,30 @@ public class DisplayContactsHelper {
       IOException {
 
     ArrayPane arrayPane = null;
+    String nameArrayPane = "tableau1";
     if (id != null) {
-      arrayPane = gef.getArrayPane("tableau1", "GoTo?Id=" + id, request, session);
+      arrayPane = gef.getArrayPane(nameArrayPane, "GoTo?Id=" + id, request, session);
       arrayPane.setVisibleLineNumber(yellowpagesScc.getNbContactPerPage());
     } else {
-      arrayPane = gef.getArrayPane("tableau1", "PrintList", request, session);
+      arrayPane = gef.getArrayPane(nameArrayPane, "PrintList", request, session);
       arrayPane.setVisibleLineNumber(-1);
     }
+    ArrayPaneStatusBean stateArrayPane = (ArrayPaneStatusBean) session.getAttribute(nameArrayPane);
 
     // recherche des colonnes a afficher
     List<String> arrayHeaders = yellowpagesScc.getArrayHeaders();
+    List<String> properties = yellowpagesScc.getProperties();
+    int indexColumn = 0;
     for (String nameHeader : arrayHeaders) {
-      arrayPane.addArrayColumn(nameHeader);
+      ArrayColumn arrayColumn = arrayPane.addArrayColumn(nameHeader);
+      String nameColumn = properties.get(indexColumn);
+      if (nameColumn.startsWith("domain.")) {
+        arrayColumn.setSortable(false);
+      }
+      indexColumn++;
     }
 
+    int indexLine = 0;
     for (ContactFatherDetail contactFather : contacts) {
       ContactDetail contact = contactFather.getContactDetail();
       UserFull userFull = contact.getUserFull();
@@ -162,12 +173,14 @@ public class DisplayContactsHelper {
       Icon carte = iconPane.addIcon();
       carte.setProperties(icon, "", link);
 
-      List<String> properties = yellowpagesScc.getProperties();
       for (String nameColumn : properties) {
         if (nameColumn.startsWith("domain.")) {
           String property = nameColumn.substring(7);
+
           // rechercher la valeur dans UserFull
-          if (userFull != null) {
+          if (userFull != null
+              && indexLine >= stateArrayPane.getFirstVisibleLine()
+              && indexLine <= stateArrayPane.getFirstVisibleLine() + stateArrayPane.getMaximumVisibleLine() - 1) {
             ligne.addArrayCellText(EncodeHelper.javaStringToHtmlString(userFull.getValue(property)));
           }
         } else {
@@ -195,6 +208,7 @@ public class DisplayContactsHelper {
           }
         }
       }
+      indexLine++;
     }
     out.println(arrayPane.print());
   }
