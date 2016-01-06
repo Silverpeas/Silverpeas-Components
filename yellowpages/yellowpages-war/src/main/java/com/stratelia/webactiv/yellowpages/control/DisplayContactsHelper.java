@@ -23,14 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages.control;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.JspWriter;
-
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -45,6 +37,16 @@ import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
+import org.silverpeas.util.Function;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.JspWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DisplayContactsHelper {
 
@@ -121,24 +123,75 @@ public class DisplayContactsHelper {
       ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out) throws
       IOException {
 
-    ArrayPane arrayPane = null;
+    ArrayPane arrayPane;
+    String nameArrayPane = "tableau1";
     if (id != null) {
-      arrayPane = gef.getArrayPane("tableau1", "GoTo?Id=" + id, request, session);
+      arrayPane = gef.getArrayPane(nameArrayPane, "GoTo?Id=" + id, request, session);
       arrayPane.setVisibleLineNumber(yellowpagesScc.getNbContactPerPage());
     } else {
-      arrayPane = gef.getArrayPane("tableau1", "PrintList", request, session);
+      arrayPane = gef.getArrayPane(nameArrayPane, "PrintList", request, session);
       arrayPane.setVisibleLineNumber(-1);
     }
 
     // recherche des colonnes a afficher
     List<String> arrayHeaders = yellowpagesScc.getArrayHeaders();
+    List<String> properties = yellowpagesScc.getProperties();
+    Map<String, Function<ContactDetail, String>> contactTextFunctions =
+        new HashMap<String, Function<ContactDetail, String>>();
+    int indexColumn = 0;
     for (String nameHeader : arrayHeaders) {
       arrayPane.addArrayColumn(nameHeader);
+      String nameColumn = properties.get(indexColumn);
+      if (nameColumn.startsWith("domain.")) {
+        final String property = nameColumn.substring(7);
+        contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
+          @Override
+          public String apply(final ContactDetail contactDetail) {
+            UserFull userFull = contactDetail.getUserFull();
+            return (userFull != null) ? userFull.getValue(property) : "";
+          }
+        });
+      } else if ("lastname".equals(nameColumn)) {
+        contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
+          @Override
+          public String apply(final ContactDetail contactDetail) {
+            return contactDetail.getLastName();
+          }
+        });
+      } else if ("firstname".equals(nameColumn)) {
+        contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
+          @Override
+          public String apply(final ContactDetail contactDetail) {
+            return contactDetail.getFirstName();
+          }
+        });
+      } else if ("email".equals(nameColumn)) {
+        contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
+          @Override
+          public String apply(final ContactDetail contactDetail) {
+            return contactDetail.getEmail();
+          }
+        });
+      } else if ("phone".equals(nameColumn)) {
+        contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
+          @Override
+          public String apply(final ContactDetail contactDetail) {
+            return contactDetail.getPhone();
+          }
+        });
+      } else if ("fax".equals(nameColumn)) {
+        contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
+          @Override
+          public String apply(final ContactDetail contactDetail) {
+            return contactDetail.getFax();
+          }
+        });
+      }
+      indexColumn++;
     }
 
     for (ContactFatherDetail contactFather : contacts) {
       ContactDetail contact = contactFather.getContactDetail();
-      UserFull userFull = contact.getUserFull();
       String nodeName = contactFather.getNodeName();
       String fatherId = contactFather.getNodeId();
       if ("0".equals(fatherId)) {
@@ -162,36 +215,18 @@ public class DisplayContactsHelper {
       Icon carte = iconPane.addIcon();
       carte.setProperties(icon, "", link);
 
-      List<String> properties = yellowpagesScc.getProperties();
       for (String nameColumn : properties) {
-        if (nameColumn.startsWith("domain.")) {
-          String property = nameColumn.substring(7);
-          // rechercher la valeur dans UserFull
-          if (userFull != null) {
-            ligne.addArrayCellText(EncodeHelper.javaStringToHtmlString(userFull.getValue(property)));
-          }
+        if (nameColumn.equals("icon")) {
+          ligne.addArrayCellIconPane(iconPane);
+        } else if ("topic".equals(nameColumn)) {
+          ligne.addArrayCellText(EncodeHelper.javaStringToHtmlString(nodeName));
         } else {
-          String value;
-          // recherche la valeur dans ContactDetail
-          if (nameColumn.equals("icon")) {
-            ligne.addArrayCellIconPane(iconPane);
+          Function<ContactDetail, String> contactDetailStringFunction =
+              contactTextFunctions.get(nameColumn);
+          if (contactDetailStringFunction != null) {
+            ligne.addArrayCellText(contact, contactDetailStringFunction);
           } else {
-            if ("lastname".equals(nameColumn)) {
-              value = contact.getLastName();
-            } else if ("firstname".equals(nameColumn)) {
-              value = contact.getFirstName();
-            } else if ("email".equals(nameColumn)) {
-              value = contact.getEmail();
-            } else if ("phone".equals(nameColumn)) {
-              value = contact.getPhone();
-            } else if ("fax".equals(nameColumn)) {
-              value = contact.getFax();
-            } else if ("topic".equals(nameColumn)) {
-              value = nodeName;
-            } else {
-              value = "";
-            }
-            ligne.addArrayCellText(EncodeHelper.javaStringToHtmlString(value));
+            ligne.addArrayEmptyCell();
           }
         }
       }
