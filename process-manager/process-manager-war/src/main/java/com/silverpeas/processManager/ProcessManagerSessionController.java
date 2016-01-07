@@ -705,12 +705,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Form form = getPresentationForm("presentationForm");
       if (form != null) {
+        form.setViewForm(true);
         return form;
       }
 
       XmlForm xmlForm = new XmlForm(
           processModel.getDataFolder().toRecordTemplate(currentRole, getLanguage(), true));
       xmlForm.setTitle(getString("processManager.folder"));
+      xmlForm.setViewForm(true);
       return xmlForm;
     } catch (FormException | WorkflowException e) {
       throw new ProcessManagerException("SessionController",
