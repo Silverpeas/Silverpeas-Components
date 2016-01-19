@@ -26,7 +26,6 @@ package com.stratelia.webactiv.quickinfo;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.util.ServiceProvider;
 
@@ -48,10 +47,6 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-
-    // deleting thumbnails
-    ThumbnailInstanciator thumbnails = new ThumbnailInstanciator();
-    thumbnails.delete(con, spaceId, componentId, userId);
 
     // deleting stats
     getStatisticService().deleteStatsOfComponent(componentId);
