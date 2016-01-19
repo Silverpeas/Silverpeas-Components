@@ -90,11 +90,6 @@ public class DefaultSuggestionBoxService
     suggestionBoxRepository.delete(box);
     suggestionBoxRepository.flush();
 
-    // TODO the deletion of comments, attachments are now taken automatically account when an
-    // application instance is deleted. See to remove these instructions below
-    // Deletion of comments
-    commentService.deleteAllCommentsByComponentInstanceId(box.getComponentInstanceId());
-
     // Deletion of all attachments, WYSIWYG comprised.
     AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
     attachmentService.deleteAllAttachments(box.getComponentInstanceId());

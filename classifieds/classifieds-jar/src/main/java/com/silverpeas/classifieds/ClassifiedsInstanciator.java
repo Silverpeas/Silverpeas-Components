@@ -51,8 +51,6 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
       ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
       service.deleteAllClassifieds(componentId);
       service.deleteAllSubscribes(componentId);
-      CommentServiceProvider.getCommentService()
-          .deleteAllCommentsByComponentInstanceId(componentId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsInstanciator.delete()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

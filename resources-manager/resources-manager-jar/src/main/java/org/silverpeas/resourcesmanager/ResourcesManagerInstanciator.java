@@ -44,9 +44,5 @@ public class ResourcesManagerInstanciator implements ComponentsInstanciatorIntf 
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
 
-    // Delete all comments related to the component instance id
-    CommentServiceProvider.getCommentService()
-        .deleteAllCommentsByComponentInstanceId(componentId);
-
   }
 }

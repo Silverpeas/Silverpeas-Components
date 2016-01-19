@@ -75,8 +75,6 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
     node.delete(con, spaceId, componentId, userId);
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);
-    // delete all comments related to the component instance id (also any indexes)
-    CommentServiceProvider.getCommentService().deleteAllCommentsByComponentInstanceId(componentId);
   }
 
   private void insertSpecialNode(Connection con, String componentId, String userId)

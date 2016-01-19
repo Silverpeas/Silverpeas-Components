@@ -60,9 +60,6 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
     ThumbnailInstanciator thumbnails = new ThumbnailInstanciator();
     thumbnails.delete(con, spaceId, componentId, userId);
 
-    // deleting comments
-    CommentServiceProvider.getCommentService().deleteAllCommentsByComponentInstanceId(componentId);
-
     // deleting stats
     getStatisticService().deleteStatsOfComponent(componentId);
   }
