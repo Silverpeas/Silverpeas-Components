@@ -66,8 +66,8 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import com.stratelia.webactiv.calendar.backbone.TodoDetail;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.coordinates.control.CoordinatesService;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
@@ -166,7 +166,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Inject
   private AdminController adminController;
   @Inject
-  private TodoBackboneAccess todoAccessor;
+  private SilverpeasCalendar calendar;
   @Inject
   private PdcClassificationService pdcClassificationService;
   @Inject
@@ -2879,7 +2879,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     todo.setExternalId(pubDetail.getPK().getId());
 
-    return todoAccessor.addEntry(todo);
+    return calendar.addToDo(todo);
   }
 
   /*
@@ -2887,11 +2887,11 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @param pubDetail corresponding publication
    */
   private void removeAllTodosForPublication(PublicationPK pubPK) {
-    todoAccessor.removeEntriesFromExternal("useless", pubPK.getInstanceId(), pubPK.getId());
+    calendar.removeToDoFromExternal("useless", pubPK.getInstanceId(), pubPK.getId());
   }
 
   private void removeTodoForPublication(PublicationPK pubPK, String userId) {
-    todoAccessor.removeAttendeeToEntryFromExternal(pubPK.getInstanceId(), pubPK.getId(), userId);
+    calendar.removeAttendeeInToDoFromExternal(pubPK.getInstanceId(), pubPK.getId(), userId);
   }
 
   private void sendValidationAlert(final PublicationDetail pubDetail, final String[] users) {

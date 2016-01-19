@@ -30,10 +30,7 @@ import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.SimpleDocumentService;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -72,8 +69,6 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
       Workflow.getProcessModelManager().deleteProcessModel(componentId);
 
       AttachmentService.get().deleteAllAttachments(componentId);
-      TodoBackboneAccess tbba = ServiceProvider.getService(TodoBackboneAccess.class);
-      tbba.removeEntriesByInstanceId(componentId);
     } catch (WorkflowException e) {
       throw new InstanciationException("ProcessManagerInstanciator", SilverpeasException.ERROR,
           "processManager.PROCESS_MODEL_DELETE_FAILED", "peasId=" + componentId, e);

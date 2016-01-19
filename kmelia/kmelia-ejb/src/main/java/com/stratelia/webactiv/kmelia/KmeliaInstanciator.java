@@ -25,15 +25,11 @@ package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -69,8 +65,6 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
 
     PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
     pub.delete(con, spaceId, componentId, userId);
-    TodoBackboneAccess todoBBA = ServiceProvider.getService(TodoBackboneAccess.class);
-    todoBBA.removeEntriesByInstanceId(componentId);
     NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
     node.delete(con, spaceId, componentId, userId);
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();

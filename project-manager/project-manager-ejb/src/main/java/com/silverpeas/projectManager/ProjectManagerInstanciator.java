@@ -26,9 +26,7 @@ package com.silverpeas.projectManager;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,9 +61,6 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace
         .info("projectManager", "ProjectManagerInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-
-    TodoBackboneAccess tbba = ServiceProvider.getService(TodoBackboneAccess.class);
-    tbba.removeEntriesByInstanceId(componentId);
     PreparedStatement stmt = null;
     try {
       String deleteStatement = PROJECTMANAGER_DELETE_COMPONENT_TASKS;
