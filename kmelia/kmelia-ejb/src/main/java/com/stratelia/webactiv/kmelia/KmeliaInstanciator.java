@@ -27,8 +27,6 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.node.NodeInstanciator;
-import com.stratelia.webactiv.publication.PublicationInstanciator;
 import org.silverpeas.util.DateUtil;
 
 import java.sql.Connection;
@@ -51,10 +49,6 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
 
-    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
-    pub.create(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
-    node.create(con, spaceId, componentId, userId);
     setInsertQueries();
     insertSpecialNode(con, componentId, userId);
   }
@@ -63,10 +57,6 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
 
-    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.kmelia");
-    pub.delete(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("org.silverpeas.kmelia");
-    node.delete(con, spaceId, componentId, userId);
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);
   }

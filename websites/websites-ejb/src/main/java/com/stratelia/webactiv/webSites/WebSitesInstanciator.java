@@ -23,23 +23,20 @@
  */
 package com.stratelia.webactiv.webSites;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.node.NodeInstanciator;
-import com.stratelia.webactiv.publication.PublicationInstanciator;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Implements ComponentsInstanciatorIntf for specific websites component.
@@ -60,10 +57,6 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.webSites");
-    pub.create(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("org.silverpeas.webSites");
-    node.create(con, spaceId, componentId, userId);
     setInsertQueries();
     insertSpecialNode(con, componentId, userId);
     try {
@@ -83,10 +76,6 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "siteIcons");
     deleteDataOfInstance(con, componentId, "site");
-    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.webSites");
-    pub.delete(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("org.silverpeas.webSites");
-    node.delete(con, spaceId, componentId, userId);
     try {
       deleteAttachmentsAndImagesDirectory(spaceId, componentId);
     } catch (Exception e) {

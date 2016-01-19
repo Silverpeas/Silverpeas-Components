@@ -26,9 +26,7 @@ package com.silverpeas.gallery;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
@@ -52,8 +50,6 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
 
-    NodeInstanciator node = new NodeInstanciator("com.silverpeas.gallery");
-    node.create(con, spaceId, componentId, userId);
     insertRootNode(con, componentId, userId);
     insertAlbumNode(con, componentId, userId);
 

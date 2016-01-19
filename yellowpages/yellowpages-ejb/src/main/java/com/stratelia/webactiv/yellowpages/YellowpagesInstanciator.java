@@ -25,17 +25,15 @@ package com.stratelia.webactiv.yellowpages;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SQLRequest;
+import com.stratelia.webactiv.contact.ContactInstanciator;
+import org.silverpeas.util.DateUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.contact.ContactInstanciator;
-import com.stratelia.webactiv.node.NodeInstanciator;
-import org.silverpeas.util.DateUtil;
 
 public class YellowpagesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -58,8 +56,6 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
 
       ContactInstanciator pub = new ContactInstanciator("org.silverpeas.yellowpages");
       pub.create(con, spaceId, componentId, userId);
-      NodeInstanciator node = new NodeInstanciator("org.silverpeas.yellowpages");
-      node.create(con, spaceId, componentId, userId);
       setInsertQueries();
       insertSpecialNode(con, componentId, userId);
     } catch (Exception e) {
@@ -77,8 +73,6 @@ public class YellowpagesInstanciator extends SQLRequest implements ComponentsIns
 
     ContactInstanciator pub = new ContactInstanciator("org.silverpeas.yellowpages");
     pub.delete(con, spaceId, componentId, userId);
-    NodeInstanciator node = new NodeInstanciator("org.silverpeas.yellowpages");
-    node.delete(con, spaceId, componentId, userId);
 
   }
 

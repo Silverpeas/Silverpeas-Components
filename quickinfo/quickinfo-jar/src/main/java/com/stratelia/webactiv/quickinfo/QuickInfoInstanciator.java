@@ -26,10 +26,7 @@ package com.stratelia.webactiv.quickinfo;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.publication.PublicationInstanciator;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.util.ServiceProvider;
 
@@ -46,15 +43,11 @@ public class QuickInfoInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.quickinfo");
-    pub.create(con, spaceId, componentId, userId);
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    PublicationInstanciator pub = new PublicationInstanciator("org.silverpeas.quickinfo");
-    pub.delete(con, spaceId, componentId, userId);
 
     // deleting thumbnails
     ThumbnailInstanciator thumbnails = new ThumbnailInstanciator();
