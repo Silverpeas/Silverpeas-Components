@@ -136,7 +136,7 @@
       out.println(frame.printBefore());
 
       //Tableau
-      ArrayPane arrayPane = gef.getArrayPane("ResultSet", "", request, session);
+      ArrayPane arrayPane = gef.getArrayPane("ResultSet", "Main", request, session);
       arrayPane.setSortable(true);
       arrayPane.setExportData(true);
       arrayPane.setVisibleLineNumber(15);
