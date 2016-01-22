@@ -3517,7 +3517,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   @Override
   public String getPublicationExportFileName(KmeliaPublication publication, String language) {
     String lang = getLanguage();
-    String pubId = publication.getPk().getId();
     StringBuilder fileName = new StringBuilder(250);
 
     fileName.append(getUserDetail().getLogin()).append('-');
@@ -3531,15 +3530,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     fileName.append(getComponentLabel());
 
     if (!isKmaxMode) {
-      try {
-        TopicDetail topic = getPublicationTopic(pubId);
-        Collection<NodeDetail> path = topic.getPath();
-        for (NodeDetail node : path) {
-          fileName.append('-').append(node.getName(lang));
-        }
-      } catch (RemoteException ex) {
-        SilverTrace.error("kmelia", getClass().getSimpleName() + ".getPublicationExportFileName()",
-            "root.EX_NO_MESSAGE", ex);
+      List<NodeDetail> path =
+          (List<NodeDetail>) getNodeBm().getPath(getCurrentFolder().getNodePK());
+      Collections.reverse(path);
+      path.remove(0); // remove root folder
+      for (NodeDetail node : path) {
+        fileName.append('-').append(node.getName(lang));
       }
     }
 
