@@ -8,14 +8,13 @@ C'est une manière de décrire le contenu d'un site : événements, articles, in
 
 <div class="inlineMessage">
     <p>
-    <strong>La disponibilité de flux d'informations RSS est généralement matérialisée par l'icone suivante <img border="0" src="<%=context%>/util/icons/rss.gif" alt="RSS" /></strong><br />
+    <strong>La disponibilité de flux d'informations RSS est généralement matérialisée par l'icone suivante <img border="0" src="/silverpeas/util/icons/rss.gif" alt="RSS" /></strong><br />
     La présence de ces icones indique aux webmasters qui le désirent qu'il est possible d'exploiter un fil d'actualités en provenance de ce site.
   </p>
 </div>
 
 <p>
-Malheureusement, tous les sites ne mettent pas à disposition un fil RSS.<br />
-Certains sites "agrégateurs" proposent ausi des fils mais ne sont pas producteurs des informations qu'ils contiennent : voir <a target="_blank" href="http://www.newsisfree.com/">NewsIsFree</a>, <a target="_blank" href="http://www.syndic8.com/">Syndic8</a>.<br /><br />
+Malheureusement, tous les sites ne mettent pas à disposition un fil RSS.
 </p>
 
 <div class="txtlibform">Voici quelques fils RSS :</div>

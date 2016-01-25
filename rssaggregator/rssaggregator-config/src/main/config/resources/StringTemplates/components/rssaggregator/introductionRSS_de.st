@@ -8,14 +8,13 @@ Es handelt sich um eine Art und Weise der Beschreibung des Inhalts einer Site: E
 
 <div class="inlineMessage">
     <p>
-    <strong>Die Verfügbarkeit von RSS-Informations-Flows wird in der Regel durch eines der beiden folgenden Icons verkörpert  <img border="0" src="<%=context%>/util/icons/rss.gif" alt="RSS" /></strong><br />
+    <strong>Die Verfügbarkeit von RSS-Informations-Flows wird in der Regel durch eines der beiden folgenden Icons verkörpert  <img border="0" src="/silverpeas/util/icons/rss.gif" alt="RSS" /></strong><br />
     Das Vorhandensein dieser Icons zeigt den Webmasters, die es wünschen, an, dass es möglich ist, einen Aktualitäten-Wire von dieser Site zu nutzen.
   </p>
 </div>
 
 <p>
-Leider stellen nicht alle Sites einen RSS-Wire zur Verfügung.<br />
-Bestimmte "Aggregator"-Sites bieten ebenfalls Wires an, sind jedoch nicht Produzenten der Informationen, die diese enthalten: siehe  <a target="_blank" href="http://www.newsisfree.com/">NewsIsFree</a>, <a target="_blank" href="http://www.syndic8.com/">Syndic8</a>.<br /><br />
+Leider stellen nicht alle Sites einen RSS-Wire zur Verfügung.
 </p>
 
 <div class="txtlibform">Hier einige RSS-Wires:</div>

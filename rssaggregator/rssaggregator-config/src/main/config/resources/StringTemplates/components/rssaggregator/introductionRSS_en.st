@@ -8,14 +8,13 @@ It is typically used by news sites to provide information concerning the latest 
 
 <div class="inlineMessage">
     <p>
-    <strong>Generally, the availability of an RSS feed is represented by the following icon  <img border="0" src="<%=context%>/util/icons/rss.gif" alt="RSS" /></strong><br />
+    <strong>Generally, the availability of an RSS feed is represented by the following icon  <img border="0" src="/silverpeas/util/icons/rss.gif" alt="RSS" /></strong><br />
     These icons tell webmasters they are able to run RSS feed from the website.
   </p>
 </div>
 
 <p>
-Unfortunately, every website does not provide RSS feeds.<br />
-Some "agregator" websites provide RSS feeds but are not the producer of the information: see <a target="_blank" href="http://www.newsisfree.com/">NewsIsFree</a>, <a target="_blank" href="http://www.syndic8.com/">Syndic8</a>.<br /><br />
+Unfortunately, every website does not provide RSS feeds.
 </p>
 
 <div class="txtlibform">Here are some examples of RSS feeds:</div>
