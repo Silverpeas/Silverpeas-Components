@@ -23,24 +23,21 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.MediaServiceProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.date.Period;
 import org.silverpeas.file.SilverpeasFile;
-import org.springframework.context.ApplicationContext;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.DateUtil;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -51,8 +48,10 @@ import static org.mockito.Mockito.*;
 
 public class MediaTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   private GalleryBm mediaServiceMock;
-  private ApplicationContext accessControllerProviderSave;
   private UserDetail userForTest = new UserDetail();
   private UserDetail lastUpdaterForTest = new UserDetail();
   private Date createDate = Timestamp.valueOf("2013-02-12 14:56:38.452");
@@ -63,25 +62,21 @@ public class MediaTest {
   @SuppressWarnings("unchecked")
   @Before
   public void setup() {
+
     mediaServiceMock = mock(GalleryBm.class);
-    MediaServiceProvider.getInstance().setMediaService(mediaServiceMock);
-    AccessController<String> componentAccessController = mock(AccessController.class);
+    ComponentAccessControl componentAccessController = mock(ComponentAccessControl.class);
     when(componentAccessController.isUserAuthorized("userIdAccessTest", "instanceIdForTest"))
         .thenReturn(true);
-    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
-    when(applicationContextMock.getBean("componentAccessController"))
-        .thenReturn(componentAccessController);
-    accessControllerProviderSave = (ApplicationContext) ReflectionTestUtils
-        .getField(AccessControllerProvider.getInstance(), "context");
-    AccessControllerProvider.getInstance().setApplicationContext(applicationContextMock);
-    ReflectionTestUtils
-        .setField(AccessControllerProvider.getInstance(), "context", applicationContextMock);
+
+    commonAPI4Test.injectIntoMockedBeanContainer(mediaServiceMock);
+    commonAPI4Test.injectIntoMockedBeanContainer(componentAccessController);
 
     // A user for tests
     userForTest.setId("userIdAccessTest");
     userForTest.setLastName("LastName");
     userForTest.setFirstName("FirstName");
     userForTest.setAccessLevel(UserAccessLevel.USER);
+
     // A last updater for tests
     lastUpdaterForTest.setId("lastUpdaterId");
     lastUpdaterForTest.setLastName("Updater");
@@ -89,15 +84,8 @@ public class MediaTest {
     lastUpdaterForTest.setAccessLevel(UserAccessLevel.USER);
   }
 
-  @After
-  public void tearDown() {
-    // For all other tests...
-    AccessControllerProvider.getInstance().setApplicationContext(accessControllerProviderSave);
-    MediaServiceProvider.getInstance().setMediaService(null);
-  }
-
   @Test
-  public void justInstancedTest() {
+  public void justInstantiatedTest() {
     Media media = new MediaForTest();
     assertThat(media.getMediaPK(), notNullValue());
     assertThat(media.getMediaPK().getId(), nullValue());
@@ -325,7 +313,7 @@ public class MediaTest {
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);
   }
 
-  private class MediaForTest extends Media {
+  private static class MediaForTest extends Media {
     private static final long serialVersionUID = 7114643185671416374L;
 
     @Override
@@ -348,5 +336,4 @@ public class MediaTest {
       return null;
     }
   }
-
 }

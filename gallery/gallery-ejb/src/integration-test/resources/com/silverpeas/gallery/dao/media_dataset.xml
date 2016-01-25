@@ -139,7 +139,7 @@
 
   <sb_node_node nodeid="1" nodename="Homepage" nodedescription="The homepage"
                 nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/" nodelevelnumber="1"
-                nodefatherid="-1" modelid="" nodestatus="Visible" instanceid="instanceId_A"
+                nodefatherid="-1" modelid="[NULL]" nodestatus="Visible" instanceid="instanceId_A"
                 ordernumber="0" rightsdependson="-1" lang="[NULL]" type="[NULL]"/>
   <sb_node_node nodeid="2" nodename="Nerd" nodedescription="Nerd description"
                 nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2"

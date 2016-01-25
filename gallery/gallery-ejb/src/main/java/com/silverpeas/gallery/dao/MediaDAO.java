@@ -627,7 +627,7 @@ public class MediaDAO {
    */
   public static void deleteAllMediaPath(Media media) throws SQLException {
     createDeleteFor("SC_Gallery_Path")
-        .where("mediaId = ? and instanceId = ?", media.getId(), media.getInstanceId());
+        .where("mediaId = ? and instanceId = ?", media.getId(), media.getInstanceId()).execute();
   }
 
   /**

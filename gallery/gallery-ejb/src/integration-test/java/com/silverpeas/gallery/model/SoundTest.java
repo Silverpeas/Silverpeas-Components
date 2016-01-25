@@ -23,7 +23,6 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryWarBuilder;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
@@ -46,13 +45,7 @@ public class SoundTest extends AbstractMediaTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(SoundTest.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addClasses(GalleryComponentSettings.class);
-          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
-          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
-          warBuilder.addAsResource("maven.properties");
-        }).build();
+    return GalleryWarBuilder.onWarForTestClass(SoundTest.class).build();
   }
 
   @Test

@@ -73,11 +73,6 @@ CREATE TABLE SC_Gallery_OrderDetail (
   downloadDecision VARCHAR(50) NULL
 );
 
-CREATE TABLE UniqueId (
-  maxId     INT          NOT NULL,
-  tableName VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE sb_node_node
 (
   nodeId           INT              NOT NULL,

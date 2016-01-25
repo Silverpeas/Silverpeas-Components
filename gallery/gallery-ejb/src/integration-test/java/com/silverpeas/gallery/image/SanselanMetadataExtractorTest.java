@@ -61,9 +61,6 @@ public class SanselanMetadataExtractorTest {
           warBuilder.addMavenDependencies("org.apache.sanselan:sanselan");
           warBuilder.addClasses(MediaMetadataExtractor.class, SanselanMediaMetadataExtractor.class,
               AbstractMediaMetadataExtractor.class);
-          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
-          warBuilder.addPackages(true, "com.silverpeas.gallery.media");
-          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
           warBuilder.addAsResource(
               "org/silverpeas/gallery/settings/metadataSettings_gallery52.properties");
           warBuilder.addAsResource("org/silverpeas/gallery/settings/metadataSettings.properties");

@@ -24,14 +24,12 @@
 
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryWarBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.BasicWarBuilder;
 
 import static com.silverpeas.gallery.constant.StreamingProvider.getOembedUrl;
 import static org.hamcrest.Matchers.hasSize;
@@ -43,11 +41,7 @@ public class StreamingProviderTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(StreamingProviderTest.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addClasses(GalleryComponentSettings.class);
-          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
-        }).build();
+    return GalleryWarBuilder.onWarForTestClass(StreamingProviderTest.class).build();
   }
 
   @Test

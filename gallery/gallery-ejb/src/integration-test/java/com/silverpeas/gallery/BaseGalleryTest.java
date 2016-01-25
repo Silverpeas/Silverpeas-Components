@@ -24,30 +24,47 @@
 package com.silverpeas.gallery;
 
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.DBUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.silverpeas.DataSetTest;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.persistence.dao.DAOBasedTest;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.silverpeas.util.ServiceProvider;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.silverpeas.test.rule.DbSetupRule.getActualDataSet;
 
 /**
  * Base class for tests in the gallery component.
  * It prepares the database to use in tests.
  */
-public abstract class BaseGalleryTest extends DAOBasedTest {
+@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
+@RunWith(Arquillian.class)
+public abstract class BaseGalleryTest extends DataSetTest {
+
+  private static final String TABLE_CREATION_SCRIPT =
+      "/com/silverpeas/gallery/dao/create-media-database.sql";
+  private static final String DATASET_XML_SCRIPT = "/com/silverpeas/gallery/dao/media_dataset.xml";
 
   protected static final String GALLERY0 = "gallery25";
   protected static final String GALLERY1 = "gallery26";
@@ -73,27 +90,27 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   protected UserDetail writerUser;
   protected UserDetail userUser;
 
-  private OrganizationController organisationControllerMock;
-
-  @Override
-  public String[] getApplicationContextPath() {
-    return new String[]{"/spring-media-embbed-datasource.xml"};
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return GalleryWarBuilder.onWarForTestClass(BaseGalleryTest.class)
+        .addClasses(StubbedOrganizationController.class)
+        .addAsResource(TABLE_CREATION_SCRIPT.substring(1))
+        .addAsResource(DATASET_XML_SCRIPT.substring(1)).build();
   }
 
   @Override
-  public String getDataSetPath() {
-    return "com/silverpeas/gallery/dao/media_dataset.xml";
+  protected String getDbSetupTableCreationSqlScript() {
+    return TABLE_CREATION_SCRIPT;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
+  protected String getDbSetupInitializations() {
+    return DATASET_XML_SCRIPT;
+  }
+
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
-    organisationControllerMock = mock(OrganizationController.class);
-    ReflectionTestUtils
-        .setField(OrganizationControllerProvider.getFactory(), "organisationController",
-            organisationControllerMock);
-    DBUtil.getInstanceForTest(getDataSource().getConnection());
-
 
     verifyDataBeforeTest();
 
@@ -128,43 +145,65 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
     }
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
-    try {
-      super.tearDown();
-      OrganizationControllerProvider.getFactory().clearFactory();
-      CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
-    } finally {
-      DBUtil.clearTestInstance();
-    }
+    CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
   }
 
   protected OrganizationController getOrganisationControllerMock() {
-    return organisationControllerMock;
+    return StubbedOrganizationController.getMock();
   }
 
   /**
    * Verifying the data before a test.
    */
   protected void verifyDataBeforeTest() throws Exception {
-    IDataSet actualDataSet = getActualDataSet();
-    ITable mediaTable = actualDataSet.getTable("SC_Gallery_Media");
-    assertThat(mediaTable.getRowCount(), is(MEDIA_ROW_COUNT));
-    ITable internalTable = actualDataSet.getTable("SC_Gallery_Internal");
-    assertThat(internalTable.getRowCount(), is(MEDIA_INTERNAL_ROW_COUNT));
-    ITable photoTable = actualDataSet.getTable("SC_Gallery_Photo");
-    assertThat(photoTable.getRowCount(), is(MEDIA_PHOTO_ROW_COUNT));
-    ITable videoTable = actualDataSet.getTable("SC_Gallery_Video");
-    assertThat(videoTable.getRowCount(), is(MEDIA_VIDEO_ROW_COUNT));
-    ITable soundTable = actualDataSet.getTable("SC_Gallery_Sound");
-    assertThat(soundTable.getRowCount(), is(MEDIA_SOUND_ROW_COUNT));
-    ITable streamingTable = actualDataSet.getTable("SC_Gallery_Streaming");
-    assertThat(streamingTable.getRowCount(), is(MEDIA_STREAMING_ROW_COUNT));
-    ITable pathTable = actualDataSet.getTable("SC_Gallery_Path");
-    assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT));
-    ITable orderTable = actualDataSet.getTable("SC_Gallery_Order");
-    assertThat(orderTable.getRowCount(), is(MEDIA_ORDER_ROW_COUNT));
-    ITable orderDetailTable = actualDataSet.getTable("SC_Gallery_OrderDetail");
-    assertThat(orderDetailTable.getRowCount(), is(MEDIA_ORDER_DETAIL_ROW_COUNT));
+    try (Connection connection = getConnection()) {
+      IDataSet actualDataSet = getActualDataSet(connection);
+      ITable mediaTable = actualDataSet.getTable("SC_Gallery_Media");
+      assertThat(mediaTable.getRowCount(), is(MEDIA_ROW_COUNT));
+      ITable internalTable = actualDataSet.getTable("SC_Gallery_Internal");
+      assertThat(internalTable.getRowCount(), is(MEDIA_INTERNAL_ROW_COUNT));
+      ITable photoTable = actualDataSet.getTable("SC_Gallery_Photo");
+      assertThat(photoTable.getRowCount(), is(MEDIA_PHOTO_ROW_COUNT));
+      ITable videoTable = actualDataSet.getTable("SC_Gallery_Video");
+      assertThat(videoTable.getRowCount(), is(MEDIA_VIDEO_ROW_COUNT));
+      ITable soundTable = actualDataSet.getTable("SC_Gallery_Sound");
+      assertThat(soundTable.getRowCount(), is(MEDIA_SOUND_ROW_COUNT));
+      ITable streamingTable = actualDataSet.getTable("SC_Gallery_Streaming");
+      assertThat(streamingTable.getRowCount(), is(MEDIA_STREAMING_ROW_COUNT));
+      ITable pathTable = actualDataSet.getTable("SC_Gallery_Path");
+      assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT));
+      ITable orderTable = actualDataSet.getTable("SC_Gallery_Order");
+      assertThat(orderTable.getRowCount(), is(MEDIA_ORDER_ROW_COUNT));
+      ITable orderDetailTable = actualDataSet.getTable("SC_Gallery_OrderDetail");
+      assertThat(orderDetailTable.getRowCount(), is(MEDIA_ORDER_DETAIL_ROW_COUNT));
+    }
+  }
+
+  /**
+   * @author Yohann Chastagnier
+   */
+  @Singleton
+  @Alternative
+  @Priority(APPLICATION + 10)
+  public static class StubbedOrganizationController extends DefaultOrganizationController {
+
+    private OrganizationController mock = mock(OrganizationController.class);
+
+    static OrganizationController getMock() {
+      return ((StubbedOrganizationController) ServiceProvider
+          .getService(OrganizationController.class)).mock;
+    }
+
+    @Override
+    public UserDetail getUserDetail(final String sUserId) {
+      return mock.getUserDetail(sUserId);
+    }
+
+    @Override
+    public String[] getUserProfiles(final String userId, final String componentId) {
+      return mock.getUserProfiles(userId, componentId);
+    }
   }
 }

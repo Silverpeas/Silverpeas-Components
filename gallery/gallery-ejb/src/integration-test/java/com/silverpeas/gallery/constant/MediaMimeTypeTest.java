@@ -24,14 +24,12 @@
 
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryWarBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.BasicWarBuilder;
 
 import java.io.File;
 import java.util.HashSet;
@@ -45,12 +43,7 @@ public class MediaMimeTypeTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(MediaMimeTypeTest.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addAsResource("org/silverpeas/util/attachment/mime_types.properties");
-          warBuilder.addClasses(GalleryComponentSettings.class);
-          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
-        }).build();
+    return GalleryWarBuilder.onWarForTestClass(MediaMimeTypeTest.class).build();
   }
 
   @Test
