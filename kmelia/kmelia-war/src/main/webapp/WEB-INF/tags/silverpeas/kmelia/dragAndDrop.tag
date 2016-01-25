@@ -292,7 +292,7 @@
                     </c:if>
                   }
                 }
-                fileUpload.uploadSession.uploadInstance.context.onCompletedUrl = uploadCompletedUrl;
+                fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;
 
                 if (!SilverpeasError.show()) {
                   $publicationName.val('');
