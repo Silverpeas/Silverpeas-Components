@@ -4,7 +4,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
-<view:script src="/util/javaScript/checkForm.js"/>
 
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${language}"/>
@@ -24,7 +23,7 @@
 <fmt:message var="refuseCommentLabel" key="GML.contribution.validation.refuse.note"/>
 
 <div style="display: none">
-  <script type="text/javascript" src="${formValidator}"></script>
+  <view:script src="/util/javaScript/checkForm.js"/>
 
   <span id="suggestionValidationApproveMsg" style="display: none">${approveSuggestionConfirmMessage}</span>
   <span id="suggestionValidationRefuseMsg" style="display: none">${refuseSuggestionConfirmMessage}</span>
