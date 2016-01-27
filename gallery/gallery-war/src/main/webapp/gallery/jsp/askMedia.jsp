@@ -55,9 +55,7 @@
 
     function sendData() {
       if (isCorrectForm()) {
-        document.askMediaForm.action = "SendAsk";
         document.askMediaForm.submit();
-        window.close();
       }
     }
 
