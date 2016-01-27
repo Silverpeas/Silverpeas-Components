@@ -32,6 +32,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-  @Query(value = "from Category category WHERE category.instanceId = :instanceId")
+  @Query(value = "from Category category WHERE category.instanceId = :instanceId ORDER BY name")
   public List<Category> findCategoriesByInstanceId(@Param("instanceId")String instanceId);
 }

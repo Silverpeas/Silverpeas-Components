@@ -309,14 +309,10 @@ public class ResourceServiceTest {
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
-    assertThat(result, contains(new Resource(1L, firstCategory, "Salle Chartreuse",
-        "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true),
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes", "5", "5", "resourcesManager42",
-        true), new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-        "Twingo verte 4 places 5 portes",
-        "5", "5", "resourcesManager42", true)));
-
-
+    assertThat(result, contains(new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes", "5", "5", "resourcesManager42",
+                    true),new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true),
+            new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
+        "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
   }
 
   @Test
@@ -328,12 +324,9 @@ public class ResourceServiceTest {
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
-    assertThat(result, contains(new Resource(1L, firstCategory, "Salle Chartreuse",
-        "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true),
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes", "5", "5", "resourcesManager42", true),
-        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
-
+    assertThat(result, contains(new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes", "5", "5", "resourcesManager42", true),
+            new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true),
+            new Resource(3L, secondCategory, "Twingo verte - 156 VV 38", "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
   }
 
   @Test
@@ -356,11 +349,9 @@ public class ResourceServiceTest {
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
-    assertThat(result, contains(new Resource(1L, firstCategory, "Salle Chartreuse",
-        "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true),
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes", "5", "5", "resourcesManager42", true),
-        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes", "5", "5", "resourcesManager42", true),
+            new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true),
+            new Resource(3L, secondCategory, "Twingo verte - 156 VV 38", "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
   }
 
   /**
