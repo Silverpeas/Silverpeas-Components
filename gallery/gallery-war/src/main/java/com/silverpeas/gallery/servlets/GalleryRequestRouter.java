@@ -504,6 +504,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // String title = request.getParameter("Title");
         String description = request.getParameter("Description");
         gallerySC.sendAskMedia(description);
+        destination = rootDest + "closeWindow.jsp";
       } else if ("ChoiceSize".equals(function)) {
         // traitement du choix des tailles
         String choix = request.getParameter("Choice");
