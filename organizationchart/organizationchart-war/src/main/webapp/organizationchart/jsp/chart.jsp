@@ -79,10 +79,10 @@
         $(document).ready(function() {
         	chartinit();
         	$("a").click(function() {
-        		if ($(this).attr("target") != "_blank" && $(this).attr("href") != "javascript:window.print();") {
-            		$.progressMessage();
+        		if ($(this).attr("target") != "_blank" && !$(this).attr("href").startsWith("javascript:")) {
+              $.progressMessage();
         		}
-            });
+          });
         });
         
         function activateUserZoom() {
