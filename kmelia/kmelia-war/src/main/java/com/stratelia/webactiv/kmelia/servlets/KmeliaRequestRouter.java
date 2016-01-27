@@ -859,7 +859,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.equals("DeleteClone")) {
         kmelia.deleteClone();
-
+        request.setAttribute("ForcedId", kmelia.getSessionPublication().getId());
         destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ViewValidationSteps")) {
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
