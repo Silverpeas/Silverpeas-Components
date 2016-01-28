@@ -39,7 +39,8 @@
 <c:set var="listNewsJSON" value="${requestScope.ListNewsJSON}"/>
   
 <%
-  List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews"); //List<DelegatedNews>
+  List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews");
+  boolean isAdmin = newsScc.isAdmin();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -305,15 +306,19 @@
     </script>
   </head>  
   <body>
-    <fmt:message key="delegatednews.icons.delete" var="deleteIcon" bundle="${icons}" />
-    <fmt:message key="delegatednews.action.delete" var="deleteAction" />
-    <view:operationPane>
-      <view:operation altText="${deleteAction}" icon="${deleteIcon}" action="javascript:onClick=deleteSelectedDelegatedNews();" />
-    </view:operationPane>
+    <% if (isAdmin) { %>
+      <fmt:message key="delegatednews.icons.delete" var="deleteIcon" bundle="${icons}" />
+      <fmt:message key="delegatednews.action.delete" var="deleteAction" />
+      <view:operationPane>
+        <view:operation altText="${deleteAction}" icon="${deleteIcon}" action="javascript:onClick=deleteSelectedDelegatedNews();" />
+      </view:operationPane>
+    <% } %>
     <view:window>
       <view:frame>
-      <div class="inlineMessage"><fmt:message key="delegatednews.homePageMessage"/></div>
-      <br clear="all"/>
+        <% if (isAdmin) { %>
+          <div class="inlineMessage"><fmt:message key="delegatednews.homePageMessage"/></div>
+          <br clear="all"/>
+        <% } %>
       <form name="tabForm" method="post">
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
@@ -327,9 +332,8 @@
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.state"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityBeginDate"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityEndDate"));
-    
-    boolean isAdmin = newsScc.isAdmin();
-      if(isAdmin) {
+
+    if(isAdmin) {
       ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
       arrayColumnOp.setSortable(false);
       arrayPane.addArrayColumn("");
