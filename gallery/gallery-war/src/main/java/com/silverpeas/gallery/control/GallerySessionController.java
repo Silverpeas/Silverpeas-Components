@@ -34,6 +34,7 @@ import java.util.Properties;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
@@ -162,36 +163,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public GallerySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, MULTILANG_GALLERY_BUNDLE,
-        "com.silverpeas.gallery.settings.galleryIcons",
-        "com.silverpeas.gallery.settings.gallerySettings");
-
-    // affectation du formulaire à la médiathèque
-    String xmlFormName = getXMLFormName();
-    if (StringUtil.isDefined(xmlFormName)) {
-      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1,
-          xmlFormName.indexOf('.'));
-      try {
-        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ':'
-            + xmlFormShortName, xmlFormName);
-      } catch (PublicationTemplateException e) {
-        SilverTrace.info("gallery", "GallerySessionController()",
-            "root.EX_CANT_GET_REMOTE_OBJECT", "xmlFormName = " + getXMLFormName(), e);
-      }
-    }
-
-    // affectation du formulaire associé aux demandes de médias
-    String xmlOrderFormName = getOrderForm();
-    if (StringUtil.isDefined(xmlOrderFormName)) {
-      String xmlOrderFormShortName = xmlOrderFormName.substring(xmlOrderFormName.indexOf('/') + 1,
-          xmlOrderFormName.indexOf('.'));
-      try {
-        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ':'
-            + xmlOrderFormShortName, xmlOrderFormName);
-      } catch (PublicationTemplateException e) {
-        throw new GalleryRuntimeException("GallerySessionController.super()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
+        "org.silverpeas.gallery.settings.galleryIcons",
+        "org.silverpeas.gallery.settings.gallerySettings");
   }
 
   public List<Media> getLastRegisteredMedia() {
@@ -1456,6 +1429,31 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     } else {
       return getImagePreviewSize();
     }
+  }
+
+  public PublicationTemplate getTemplate(boolean register) throws PublicationTemplateException {
+    return getTemplate(getXMLFormName(), register);
+  }
+
+  public PublicationTemplate getOrderTemplate(boolean register) throws PublicationTemplateException {
+    return getTemplate(getOrderForm(), register);
+  }
+
+  private PublicationTemplate getTemplate(String fileName, boolean register)
+      throws PublicationTemplateException {
+    if (StringUtil.isDefined(fileName)) {
+      String xmlFormShortName =
+          fileName.substring(fileName.indexOf("/") + 1, fileName.indexOf("."));
+      String registerId = getComponentId() + ":" + xmlFormShortName;
+      if (register) {
+        // affectation du formulaire à la médiathèque
+        getPublicationTemplateManager().addDynamicPublicationTemplate(registerId, fileName);
+      }
+      PublicationTemplate pub = getPublicationTemplateManager()
+          .getPublicationTemplate(registerId);
+      return pub;
+    }
+    return null;
   }
 
 }
