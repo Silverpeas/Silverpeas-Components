@@ -201,6 +201,11 @@
     screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
         "kmelia.publication.draft.info") + "</div>";
   }
+
+  //Attachments can be updated in both cases only :
+  //  - on clone (if "publication always visible" is used)
+  //  - if current user can modified publication
+  boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
   
   if (SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
     String selectUserLab = resources.getString("kmelia.SelectValidator");
@@ -218,19 +223,12 @@
     screenMessage += "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').submit();\" class=\"button\"><span>"+resources.getString("GML.validate")+"</span></a>";
     screenMessage += "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>"+resources.getString("GML.close")+"</span></a>";
     screenMessage += "</div>";
-    attachmentsEnabled = false;
+    attachmentsUpdatable = false;
   }
-
-  String author = pubDetail.getAuthor();
 
   String updaterId = pubDetail.getUpdaterId();
 
   boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
-
-  //Attachments can be updated in both cases only :
-  //  - on clone (if "publication always visible" is used)
-  //  - if current user can modified publication
-  boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
 
 <c:set var="kmeliaPubli" value="<%=kmeliaPublication%>"/>
