@@ -141,7 +141,7 @@
 		}
 		
 		$(document).ready(function() {
-			<view:wysiwyg replace="Content" language="${language}" width="90%" height="300" toolbar="blog" 
+			<view:wysiwyg replace="editor" language="${language}" width="90%" height="300" toolbar="blog"
 				spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=instanceId%>" componentName="<%=componentLabel%>" 
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>" />
 		
@@ -196,18 +196,18 @@
     </div>
     
     <div class="field" id="contentArea">
-		<label for="Content" class="txtlibform"><fmt:message key="blog.content"/></label>
+		<label for="editor" class="txtlibform"><fmt:message key="blog.content"/></label>
 		<div class="champs">
 			
 			<div class="container-wysiwyg wysiwyg-fileStorage">
 			
    				<viewTags:displayToolBarWysiwyg
-			        editorName="Content"
+			        editorName="editor"
 			        componentId="<%=instanceId%>" 
 			        objectId="<%=post.getId()%>" />
 			</div>
 			
-			<textarea rows="5" cols="10" name="Content" id="Content"><c:out value="<%=content%>" escapeXml="true"/></textarea>
+			<textarea rows="5" cols="10" name="editor" id="editor"><c:out value="<%=content%>" escapeXml="true"/></textarea>
 		</div>
 	</div>
     
