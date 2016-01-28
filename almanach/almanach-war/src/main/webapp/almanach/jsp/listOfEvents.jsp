@@ -18,6 +18,7 @@
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="componentLabel" value="${browseContext[1]}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
+<c:set var="language" value="${requestScope.resources.language}"/>
 
 <c:set var="function" value="${requestScope.Function}"/>
 <c:set var="rssUrl" value="${requestScope.RSSUrl}"/>
@@ -44,7 +45,8 @@
         <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
+    <view:script src="/util/javaScript/jquery/fullcalendar.min.js"/>
+    <view:script src="/util/javaScript/dateUtils.js"/>
     <script type="text/javascript">
       <c:if test="${calendarView.viewType.nextEventsView}">
         <!--
@@ -165,6 +167,17 @@
           return year + "/" + month + "/" + day;
         }
 
+        function formatToLocaleDateString(date, lang) {
+          var year = date.getFullYear(), month = date.getMonth()+1, day = date.getDate();
+          if (month < 10) month = "0" + month;
+          if (day < 10) day = "0" + day;
+          var sep = getDateSeparator(lang);
+          if (lang === "en") {
+            return month + sep + day + sep + year;
+          }
+          return day + sep + month + sep + year;
+        }
+
         /**
          * Formats the specified date and time into a string according the patterm 'HH:mm'.
          */
@@ -237,7 +250,7 @@
               startTime = "<fmt:message key='GML.at'/> " + formatTime(startDate);
             } else {
               if (eventStartDate < startDate) {
-                startTime = "<fmt:message key='GML.From'/> " + eventStartDate.toLocaleDateString();
+                startTime = "<fmt:message key='GML.From'/> " + formatToLocaleDateString(eventStartDate, '${language}');
               }
               if (event.startTimeDefined) {
                 if (startTime.length > 0) {
@@ -249,7 +262,7 @@
               }
               if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
                 endDate.getDate() > startDate.getDate()) {
-                endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString();
+                endTime = "<fmt:message key='GML.to'/> " + formatToLocaleDateString(endDate, '${language}');
               }
               if (event.endTimeDefined) {
                 endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
