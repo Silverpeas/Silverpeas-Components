@@ -159,7 +159,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } else if (function.startsWith("UpdatePost")) {
         String postId = request.getParameter("PostId");
         String title = request.getParameter("Title");
-        String content = request.getParameter("Content");
+        String content = request.getParameter("editor");
         String categoryId = request.getParameter("CategoryId");
         String date = request.getParameter("DateEvent");
         Date dateEvent;
