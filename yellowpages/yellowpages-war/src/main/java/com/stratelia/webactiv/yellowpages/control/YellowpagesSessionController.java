@@ -36,6 +36,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.Variant;
+import com.silverpeas.yellowpages.YellowpagesComponentSettings;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -85,6 +86,8 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GlobalContext;
+
+import static com.silverpeas.yellowpages.YellowpagesComponentSettings.areUserExtraDataRequired;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
@@ -643,32 +646,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   private ContactFatherDetail getContactFatherDetail(String userId, GroupDetail group) {
     ContactFatherDetail contactFather = null;
-    if (this.getSettings().getString("columns").contains("domain.")) {
-      UserFull user = getOrganisationController().getUserFull(userId);
-      if (user != null) {
-        ContactDetail cUser = new ContactDetail(new ContactPK("fromGroup",
-            getComponentId()), user.getFirstName(), user.getLastName(),
-            user.geteMail(), user.getValue("phone"), user.getValue("fax"), user.getId(), null,
-            null);
-        cUser.setUserFull(user);
+    UserDetail user = getOrganisationController().getUserDetail(userId);
+    if (user != null) {
+      ContactDetail cUser =
+          new ContactDetail(new ContactPK("fromGroup", getComponentId()), user.getFirstName(),
+              user.getLastName(), user.geteMail(), "", "", user.getId(), null, null);
+      cUser.setUserExtraDataRequired(areUserExtraDataRequired());
 
-        contactFather = new ContactFatherDetail(
-            cUser,
-            YellowpagesSessionController.GroupReferentielPrefix + group.getId(),
-            group.getName());
-      }
-    } else {
-      UserDetail user = getOrganisationController().getUserDetail(userId);
-      if (user != null) {
-        ContactDetail cUser = new ContactDetail(new ContactPK("fromGroup",
-            getComponentId()), user.getFirstName(), user.getLastName(),
-            user.geteMail(), "", "", user.getId(), null, null);
-
-        contactFather = new ContactFatherDetail(
-            cUser,
-            YellowpagesSessionController.GroupReferentielPrefix + group.getId(),
-            group.getName());
-      }
+      contactFather = new ContactFatherDetail(
+          cUser,
+          YellowpagesSessionController.GroupReferentielPrefix + group.getId(),
+          group.getName());
     }
     return contactFather;
   }
