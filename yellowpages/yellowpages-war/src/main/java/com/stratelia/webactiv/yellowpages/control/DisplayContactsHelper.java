@@ -161,6 +161,8 @@ public class DisplayContactsHelper {
       indexColumn++;
     }
 
+    final String userIcon = resources.getIcon("yellowpages.user");
+    final String contactIcon = resources.getIcon("yellowpages.contact");
     for (ContactFatherDetail contactFather : contacts) {
       ContactDetail contact = contactFather.getContactDetail();
       String nodeName = contactFather.getNodeName();
@@ -176,10 +178,10 @@ public class DisplayContactsHelper {
       String icon;
       String link;
       if ("fromGroup".equals(contact.getPK().getId())) {
-        icon = resources.getIcon("yellowpages.user");
+        icon = userIcon;
         link = "javaScript:goToUser('" + contact.getUserId() + "');";
       } else {
-        icon = resources.getIcon("yellowpages.contact");
+        icon = contactIcon;
         link = "javascript:onClick=contactGoToUserInTopic('" + contact.getPK().getId() + "','" +
             fatherId + "')";
       }
