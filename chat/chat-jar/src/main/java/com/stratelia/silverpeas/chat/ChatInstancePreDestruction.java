@@ -1,58 +1,47 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * Copyright (C) 2000 - 2015 Silverpeas
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.chat;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
- * @author PHiL
- * @version
+ * Deletes all the data in the chat room in being deleted.
+ * @author mmoquillon
  */
-public class ChatInstanciator extends Object implements ComponentsInstanciatorIntf {
-
-  public ChatInstanciator() {
-  }
-
+public class ChatInstancePreDestruction implements ComponentInstancePreDestruction {
+  /**
+   * Performs pre destruction tasks in the behalf of the specified chat instance.
+   * @param componentInstanceId the unique identifier of the chat instance.
+   */
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-
-  }
-
-  @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-
-    ChatDataAccess chatDAO = new ChatDataAccess(componentId);
+  public void preDestroy(final String componentInstanceId) {
+    ChatDataAccess chatDAO = new ChatDataAccess(componentInstanceId);
     try {
       chatDAO.DeleteChatInstance();
     } catch (Exception e) {
-
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 }
