@@ -49,11 +49,14 @@
 	{
 		context = new PagesContext("createForm", "0", resourcesManagerSC.getLanguage(), false, componentId, resourcesManagerSC.getUserId());
 		
-		if (details == null)
-			context.setCurrentFieldIndex("5");
-		else
-			context.setCurrentFieldIndex("6");
-	    context.setBorderPrinted(false);
+		if (details == null) {
+      context.setCurrentFieldIndex("5");
+    }
+		else {
+      context.setCurrentFieldIndex("6");
+      context.setObjectId(details.getIdAsString());
+    }
+    context.setBorderPrinted(false);
 	}
 	
 	String name = "";

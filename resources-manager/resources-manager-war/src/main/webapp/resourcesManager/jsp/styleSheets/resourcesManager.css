@@ -58,6 +58,9 @@ div.selected {
   max-width: 400px;
 }
 
+.qtip-no-max-width .qtip  {
+  max-width: none;
+}
 
 .sousNavBulle #others {
   position: absolute;
@@ -340,4 +343,10 @@ hr.clear {
   float: right;
   padding-right: 38px;
   margin: -4px 0 4px;
+}
+
+.resource-info-extra {
+  max-width: 1000px;
+  max-height: 600px;
+  overflow: auto;
 }

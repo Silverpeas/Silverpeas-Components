@@ -80,6 +80,7 @@
 <html>
 <head>
 <view:looknfeel/>
+<view:includePlugin name="preview"/>
 </head>
 <body>
 <%

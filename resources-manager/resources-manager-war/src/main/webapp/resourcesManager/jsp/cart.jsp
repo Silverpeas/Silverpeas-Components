@@ -25,6 +25,8 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ page import="org.silverpeas.resourcesmanager.model.Resource"%>
@@ -51,10 +53,14 @@ buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
 %>
 
+<c:set var="reservation" value="<%=reservation%>"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html>
   <head>
     <view:looknfeel />
+    <view:includePlugin name="qtip"/>
+    <view:includePlugin name="preview"/>
     <script type="text/javascript">
 	
       function ajouterRessource(resourceId, categoryId) {
@@ -171,9 +177,70 @@ buttonPane.addButton(cancelButton);
         });
       });
 
+      whenSilverpeasReady(function() {
+        [].slice.call(document.querySelectorAll(".resourceData"), 0).forEach(function(resource) {
+          var resourceId = resource.getAttribute("resource-id");
+          var resourceLabel = resource.getAttribute("resource-label");
+          var description = resource.getAttribute("description-data");
+          var formId = resource.getAttribute("form-id");
+          new Promise(function(resolve) {
+            if (formId.isDefined()) {
+              var url = "<c:url value="/services/contribution/${reservation.instanceId}/"/>" +
+                  resourceId + '/content/form/' + formId + '?renderView=true';
+              silverpeasAjax(url).then(function(request) {
+                var formData = JSON.parse(request.responseText);
+                resolve({
+                  "label" : resourceLabel,
+                  "text" : description,
+                  "form" : formData.renderedView
+                });
+              });
+            } else if (description.isDefined()) {
+              resolve({
+                "label" : resourceLabel, "text" : description, "form" : ""
+              });
+            }
+          }).then(function(description) {
+            var options = {};
+            if (description.form) {
+              options.hide = {
+                event : 'click unfocus'
+              };
+              options.common = {
+                style : {
+                  zindex : 0
+                }
+              };
+              options.content = {
+                "title" : description.label
+              };
+            }
+
+            var infoPanel = document.createElement('div');
+            infoPanel.classList.add('resource-info-panel');
+            if (description.text) {
+              var descriptionPanel = document.createElement('div');
+              descriptionPanel.classList.add('resource-info-description');
+              descriptionPanel.innerHTML = description.text;
+              infoPanel.appendChild(descriptionPanel);
+            }
+            if (description.form) {
+              var extraInfoPanel = document.createElement('div');
+              extraInfoPanel.classList.add('resource-info-extra');
+              extraInfoPanel.innerHTML = description.form;
+              infoPanel.appendChild(extraInfoPanel);
+            }
+
+            TipManager.simpleInfo(resource, function() {
+              return infoPanel;
+            }, options);
+          });
+        });
+      });
+
     </script>
   </head>
-  <body>
+  <body class="qtip-no-max-width">
     <%
     browseBar.setPath("<a href=\"javascript:retour()\">"+resource.getString("resourcesManager.reservationParametre")+"</a>");
     browseBar.setExtraInformation(resource.getString("resourcesManager.resourceSelection"));
@@ -186,7 +253,12 @@ buttonPane.addButton(cancelButton);
       <div class="inlineMessage-nok" style="text-align: left">
         <h4><fmt:message key="resourcesManager.resourceUnReservable"/></h4>
         <c:forEach items="${requestScope.unavailableReservationResources}" var="unavailableResource">
-          <span title="${unavailableResource.description}"><fmt:message key="resourcesManager.ressourceNom"/> : ${unavailableResource.name}</span><br/>
+          <span class="resourceData"
+                resource-id="${unavailableResource.id}"
+                resource-label="<c:out escapeXml="false" value="${unavailableResource.name}"/>"
+                form-id="${unavailableResource.category.form}"
+                description-data="<c:out escapeXml="false" value="${silfn:escapeHtmlWhitespaces(unavailableResource.description)}"/>">
+            <fmt:message key="resourcesManager.ressourceNom"/> : ${unavailableResource.name}</span><br/>
         </c:forEach>
       </div>
       <br clear="all"/>
@@ -235,7 +307,11 @@ buttonPane.addButton(cancelButton);
                       <div id="<c:out value ="${maResource.id}" />" onClick="switchResource(<c:out value ="${maResource.id}" />,'categ<c:out value ="${category.id}" />');" style="cursor: pointer;">
                       <table width="100%" cellspacing="0" cellpadding="0" border="0">
                         <tr>
-                          <td width="80%" nowrap><span title="${maResource.description}"> - ${maResource.name}</span></td>
+                          <td width="80%" nowrap><span class="resourceData"
+                                                       resource-id="${maResource.id}"
+                                                       resource-label="<c:out escapeXml="false" value="${maResource.name}"/>"
+                                                       form-id="${maResource.category.form}"
+                                                       description-data="<c:out escapeXml="false" value="${silfn:escapeHtmlWhitespaces(maResource.description)}"/>"> - ${maResource.name}</span></td>
                           <td><img src="<c:url value="/util/icons/ok.gif" />" id="image<c:out value ="${maResource.id}" />" align="middle"/></td>
                         </tr>
                       </table>
@@ -260,7 +336,11 @@ buttonPane.addButton(cancelButton);
                 <div id="${resource.id}" onClick="switchResource(${resource.id},'categ${resource.categoryId}');" style="cursor: pointer;">
                   <table width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td width="80%" nowrap><span title="${resource.description}"> - ${resource.name}</span></td>
+                      <td width="80%" nowrap><span class="resourceData"
+                                                   resource-id="${resource.id}"
+                                                   resource-label="<c:out escapeXml="false" value="${resource.name}"/>"
+                                                   form-id="${resource.category.form}"
+                                                   description-data="<c:out escapeXml="false" value="${silfn:escapeHtmlWhitespaces(resource.description)}"/>"> - ${resource.name}</span></td>
                       <td>
                         <img src="<c:url value="/util/icons/delete.gif" />" id="image${resource.id}" align="middle" alt=""/>
                       </td>
