@@ -25,8 +25,8 @@ package com.silverpeas.dataWarning;
 
 import com.silverpeas.dataWarning.control.DataWarningSchedulerTable;
 import com.silverpeas.dataWarning.model.DataWarningDataManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.initialization.Initialization;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class DataWarningInitialize implements Initialization {
         DataWarningSchedulerTable.addScheduler(scheduler);
       }
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningInitialize.initialize()", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 }

@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -69,7 +68,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,7 +85,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class AlmanachBmEJB implements AlmanachBm, ComponentInstancePreDestruction {
+public class AlmanachBmEJB implements AlmanachBm {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
@@ -824,19 +822,6 @@ public class AlmanachBmEJB implements AlmanachBm, ComponentInstancePreDestructio
       if (startHour > endHour || (startHour == endHour && startMinute > endMinute)) {
         throw new IllegalArgumentException("The event ends before its start!");
       }
-    }
-  }
-
-  /**
-   * Performs pre destruction tasks in the behalf of the specified Almanch instance.
-   * @param componentInstanceId the unique identifier of the Almanach instance.
-   */
-  @Override
-  public void preDestroy(final String componentInstanceId) {
-    try(Connection connection = DBUtil.openConnection()) {
-      getEventDAO().removeAllEvents(connection, componentInstanceId);
-    } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
     }
   }
 }

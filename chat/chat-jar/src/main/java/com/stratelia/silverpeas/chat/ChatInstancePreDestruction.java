@@ -26,10 +26,13 @@ package com.stratelia.silverpeas.chat;
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
 import org.silverpeas.util.logging.SilverLogger;
 
+import javax.inject.Named;
+
 /**
  * Deletes all the data in the chat room in being deleted.
  * @author mmoquillon
  */
+@Named
 public class ChatInstancePreDestruction implements ComponentInstancePreDestruction {
   /**
    * Performs pre destruction tasks in the behalf of the specified chat instance.

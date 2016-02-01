@@ -21,34 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.classifieds;
+package com.silverpeas.dataWarning;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.classifieds.control.ClassifiedService;
-import com.silverpeas.classifieds.control.ClassifiedServiceProvider;
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.dataWarning.model.DataWarningDataManager;
 import com.sun.star.uno.RuntimeException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
 /**
- * Deletes all the subscriptions and classifieds of the Classifieds instance that is being deleted.
+ * Before being deleted, clean up all the resources (data warning, scheduler, query, ...)
+ * used by the instance.
  * @author mmoquillon
  */
 @Named
-public class ClassifiedsInstancePreDestruction implements ComponentInstancePreDestruction {
+public class DataWarningInstancePreDestruction implements ComponentInstancePreDestruction {
   /**
-   * Performs pre destruction tasks in the behalf of the specified Classifieds instance.
-   * @param componentInstanceId the unique identifier of the Classifieds instance.
+   * Performs pre destruction tasks in the behalf of the specified DataWarning instance.
+   * @param componentInstanceId the unique identifier of the DataWarning instance.
    */
   @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
     try {
-      ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
-      service.deleteAllClassifieds(componentInstanceId);
-      service.deleteAllSubscribes(componentInstanceId);
-    } catch (Exception e) {
+      DataWarningDataManager dataManager = new DataWarningDataManager();
+      dataManager.deleteDataWarningUsers(componentInstanceId);
+      dataManager.deleteDataWarningGroups(componentInstanceId);
+      dataManager.deleteDataWarningQuery(componentInstanceId);
+      dataManager.deleteDataWarningScheduler(componentInstanceId);
+      dataManager.deleteDataWarning(componentInstanceId);
+    } catch (DataWarningException e) {
       throw new RuntimeException(e.getMessage(), e);
     }
   }
