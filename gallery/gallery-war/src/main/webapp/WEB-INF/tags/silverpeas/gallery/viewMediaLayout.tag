@@ -378,7 +378,7 @@
         <br/>
         <%
           PagesContext xmlContext =
-              new PagesContext("myForm", "0", _userLanguage, false, componentId, userId, albumId);
+              new PagesContext("mediaForm", "0", _userLanguage, false, componentId, userId, albumId);
           xmlContext.setObjectId(mediaId);
           xmlContext.setBorderPrinted(false);
           xmlContext.setIgnoreDefaultValues(true);
