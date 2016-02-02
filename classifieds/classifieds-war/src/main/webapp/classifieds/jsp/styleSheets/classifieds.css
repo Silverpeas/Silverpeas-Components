@@ -406,7 +406,7 @@ div.tableBoard {
 }
 
 .principalContent #classified_content_form .forms .fields {
-  margin-left: 255px;
+	width:auto;
 }
 
 #classified_contact_link {
@@ -559,14 +559,6 @@ div.tableBoard {
 .thumbnailPreview .thumbnail {
     height: 50px;
     border:1px solid #DDDDDD;
-}
-
-#pubThumb {
-    height: 90%;
-}
-
-#specifiedInfo {
-    height: 90%;
 }
 
 .classifiedForm .table {
