@@ -27,9 +27,6 @@
 }
 
 #infoFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 

@@ -28,6 +28,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
+import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
@@ -2704,19 +2705,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
   }
 
-  public List<Object> paste() throws ClipboardException, RemoteException {
-    return paste(getCurrentFolderId());
-  }
-
-  public List<Object> paste(String nodeId) throws ClipboardException, RemoteException {
+  public List<Object> paste(KmeliaPasteDetail pasteDetail) throws ClipboardException {
     resetSelectedPublicationPKs();
-    return paste(getNodeHeader(nodeId));
-  }
-
-  private List<Object> paste(NodeDetail folder) throws ClipboardException {
+    pasteDetail.setUserId(getUserId());
     List<Object> pastedItems = new ArrayList<Object>();
     try {
-
+      NodeDetail folder = getNodeHeader(pasteDetail.getToPK().getId());
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
@@ -2726,7 +2720,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             if (clipObject.isCutted()) {
               movePublication(pub.getPK(), folder.getNodePK());
             } else {
-              getKmeliaBm().copyPublication(pub, folder.getNodePK(), getUserId());
+              KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
+              getKmeliaBm().copyPublication(pub, copyDetail);
             }
             pastedItems.add(pub);
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
@@ -2741,9 +2736,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
                 getKmeliaBm().moveNode(node.getNodePK(), folder.getNodePK(), getUserId());
               } else {
                 // copy node
-                KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(getUserId());
+                KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
                 copyDetail.setFromNodePK(node.getNodePK());
-                copyDetail.setToNodePK(folder.getNodePK());
                 getKmeliaBm().copyNode(copyDetail);
               }
               pastedItems.add(node);
@@ -2757,6 +2751,29 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
     clipboardPasteDone();
     return pastedItems;
+  }
+
+  public boolean isClipboardContainsSomeCopiedItems() {
+    try {
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection clipObject : clipObjects) {
+        if (clipObject != null) {
+          if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+            if (!clipObject.isCutted()) {
+              return true;
+            }
+          } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
+            if (!clipObject.isCutted()) {
+              return true;
+            }
+          }
+        }
+      }
+    } catch (ClipboardException e) {
+      throw new KmeliaRuntimeException("KmeliaSessionController.paste()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_PASTE_ERROR", e);
+    }
+    return false;
   }
 
   private void movePublication(PublicationPK pubPK, NodePK nodePK) {

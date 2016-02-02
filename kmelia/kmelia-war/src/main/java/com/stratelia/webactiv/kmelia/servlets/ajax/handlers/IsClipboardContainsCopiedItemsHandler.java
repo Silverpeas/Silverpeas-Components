@@ -21,28 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
-fieldset#questionFieldset legend {
-  background:transparent url(../../../util/icons/component/questionReplySmall.gif) 11px 0px no-repeat;
-}
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
 
-fieldset#answerFieldset legend {
-  background:transparent url(../../../util/icons/answer.png) 11px 0px no-repeat;
-}
+import javax.servlet.http.HttpServletRequest;
 
-#questionFieldset .field, 
-#answerFieldset .field {
-  width: 98%;
-}
+public class IsClipboardContainsCopiedItemsHandler implements AjaxHandler {
 
-#questionFieldset #categoryArea select,
-#questionFieldset #questionArea input,
-#questionFieldset #contentArea input,
-#answerFieldset #answerArea input {
-  width: 46%;
-}
+  @Override
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
+    return Boolean.toString(controller.isClipboardContainsSomeCopiedItems());
+  }
 
-#answerFieldset #privateArea input,
-#answerFieldset #publicArea input {
-	width: 5%;
 }
