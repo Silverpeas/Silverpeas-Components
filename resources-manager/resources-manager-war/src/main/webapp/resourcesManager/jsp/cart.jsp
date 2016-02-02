@@ -214,17 +214,25 @@ buttonPane.addButton(cancelButton);
               options.content = {
                 "title" : description.label
               };
+              options.position = {
+                adjust : {
+                  method : "shift flipinvert"
+                }
+              }
             }
 
-            var infoPanel = document.createElement('div');
-            infoPanel.classList.add('resource-info-panel');
-            if (description.text) {
-              var descriptionPanel = document.createElement('div');
-              descriptionPanel.classList.add('resource-info-description');
-              descriptionPanel.innerHTML = description.text;
-              infoPanel.appendChild(descriptionPanel);
-            }
-            if (description.form) {
+            var infoPanel;
+            if (!description.form) {
+              infoPanel = description.text;
+            } else {
+              infoPanel = document.createElement('div');
+              infoPanel.classList.add('resource-info-panel');
+              if (description.text) {
+                var descriptionPanel = document.createElement('div');
+                descriptionPanel.classList.add('resource-info-description');
+                descriptionPanel.innerHTML = description.text;
+                infoPanel.appendChild(descriptionPanel);
+              }
               var extraInfoPanel = document.createElement('div');
               extraInfoPanel.classList.add('resource-info-extra');
               extraInfoPanel.innerHTML = description.form;
