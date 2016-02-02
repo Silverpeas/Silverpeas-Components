@@ -6,6 +6,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
 
@@ -16,6 +17,9 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   
   public final static String NODE_RIGHTS = PasteDetail.OPTION_PREFIX+"NodeRights";
 
+  private String publicationTargetValidatorIds;
+  private String publicationStatus;
+
   public KmeliaCopyDetail(String userId) {
     super(userId);
   }
@@ -23,6 +27,14 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   public KmeliaCopyDetail(PasteDetail pasteDetail) {
     setOptions(pasteDetail.getOptions());
     setUserId(pasteDetail.getUserId());
+  }
+
+  public static KmeliaCopyDetail fromPasteDetail(KmeliaPasteDetail pasteDetail) {
+    KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(pasteDetail.getUserId());
+    copyDetail.setToNodePK(pasteDetail.getToPK());
+    copyDetail.setPublicationStatus(pasteDetail.getStatus());
+    copyDetail.setPublicationTargetValidatorIds(pasteDetail.getTargetValidatorIds());
+    return copyDetail;
   }
 
   public void setFromNodePK(NodePK fromNodePK) {
@@ -40,7 +52,23 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   public NodePK getToNodePK() {
     return getToPK();
   }
-  
+
+  public String getPublicationValidatorIds() {
+    return publicationTargetValidatorIds;
+  }
+
+  public void setPublicationTargetValidatorIds(final String ids) {
+    this.publicationTargetValidatorIds = ids;
+  }
+
+  public String getPublicationStatus() {
+    return publicationStatus;
+  }
+
+  public void setPublicationStatus(final String publicationStatus) {
+    this.publicationStatus = publicationStatus;
+  }
+
   public void addOption(String key, String value) {
     if (getOptions() == null) {
       super.setOptions(new HashMap<String, String>());

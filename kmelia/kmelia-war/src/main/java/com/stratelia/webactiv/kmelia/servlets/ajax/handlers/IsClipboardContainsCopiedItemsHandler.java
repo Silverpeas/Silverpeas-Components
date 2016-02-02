@@ -23,36 +23,16 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.component.kmelia.KmeliaPasteDetail;
-import com.silverpeas.util.clipboard.ClipboardException;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
-public class PasteHandler implements AjaxHandler {
+public class IsClipboardContainsCopiedItemsHandler implements AjaxHandler {
 
   @Override
   public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
-    String id = request.getParameter("Id");
-    String state = request.getParameter("State");
-    String validatorIds = request.getParameter("ValidatorIds");
-    try {
-      NodePK toPK = new NodePK(id, controller.getComponentId());
-      KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(toPK);
-      pasteDetail.setStatus(state);
-      pasteDetail.setTargetValidatorIds(validatorIds);
-      controller.paste(pasteDetail);
-      return "ok";
-    } catch (ClipboardException e) {
-      SilverTrace.error("kmelia", "PasteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
+    return Boolean.toString(controller.isClipboardContainsSomeCopiedItems());
   }
+
 }
