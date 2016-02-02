@@ -820,18 +820,11 @@ function pasteFromOperations() {
 }
 
 function pasteNode(id) {
-  $.progressMessage();
+  checkOnPaste(id);
+}
 
-  var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.post(url, {ComponentId: getComponentId(), Action: 'Paste', Id: id, IEFix: new Date().getTime()},
-  function(data) {
-    $.closeProgressMessage();
-    if (data === "ok") {
-      reloadPage(id);
-    } else {
-      notyError(data);
-    }
-  }, 'text');
+function pasteDone(id) {
+  reloadPage(id);
 }
 
 function reloadPage(id) {
