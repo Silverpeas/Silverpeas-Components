@@ -42,6 +42,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
@@ -648,8 +649,6 @@ public class ForumsDAO {
     int forumId = Integer.parseInt(sForumId);
     PreparedStatement deleteStmt = null;
     try {
-
-
       deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_RIGHTS);
       deleteStmt.setString(1, sForumId);
       deleteStmt.executeUpdate();
@@ -663,6 +662,31 @@ public class ForumsDAO {
       deleteStmt.executeUpdate();
     } finally {
       DBUtil.close(deleteStmt);
+    }
+  }
+
+  private static final String FORUM_RIGHTS_DELETION = "delete from " + RIGHTS_TABLE + " where " +
+      FORUM_COLUMN_FORUM_ID + " in (select " + FORUM_COLUMN_FORUM_ID +
+      " from sc_forums_forum where " + FORUM_COLUMN_INSTANCE_ID + "= ?)";
+  private static final String FORUM_MESSAGES_DELETION = "delete from " + MESSAGE_TABLE + " where " +
+      FORUM_COLUMN_FORUM_ID + " in (select " + FORUM_COLUMN_FORUM_ID +
+      " from sc_forums_forum where " + FORUM_COLUMN_INSTANCE_ID + "= ?)";
+  private static final String FORUMS_DELETION = "delete from sc_forums_forum where " +
+      FORUM_COLUMN_INSTANCE_ID + "= ?";
+
+
+  public static void deleteAllForums(Connection con, String instanceId) throws SQLException {
+    try(PreparedStatement statement = con.prepareStatement(FORUM_RIGHTS_DELETION)) {
+      statement.setString(1, instanceId);
+      statement.execute();
+    }
+    try(PreparedStatement statement = con.prepareStatement(FORUM_MESSAGES_DELETION)) {
+      statement.setString(1, instanceId);
+      statement.execute();
+    }
+    try(PreparedStatement statement = con.prepareStatement(FORUMS_DELETION)) {
+      statement.setString(1, instanceId);
+      statement.execute();
     }
   }
 

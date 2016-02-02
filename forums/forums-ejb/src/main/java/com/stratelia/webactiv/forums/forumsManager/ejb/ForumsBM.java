@@ -49,145 +49,147 @@ public interface ForumsBM {
     return ServiceProvider.getService(ForumsBM.class);
   }
 
-  public Forum getForum(ForumPK forumPK);
+  Forum getForum(ForumPK forumPK);
 
-  public String getForumName(int forumId);
+  String getForumName(int forumId);
 
-  public boolean isForumActive(int forumId);
+  void deleteAll(String instanceId);
 
-  public int getForumParentId(int forumId);
+  boolean isForumActive(int forumId);
 
-  public String getForumInstanceId(int forumId);
+  int getForumParentId(int forumId);
 
-  public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs);
+  String getForumInstanceId(int forumId);
+
+  Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs);
 
   /**
    * @param forumPK forum primary key
    * @return a ForumDetail from the forum primary key identifier
    */
-  public ForumDetail getForumDetail(ForumPK forumPK);
+  ForumDetail getForumDetail(ForumPK forumPK);
 
-  public Collection<Forum> getForumRootList(String instanceId);
+  Collection<Forum> getForumRootList(String instanceId);
 
-  public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs);
+  Collection<Forum> getForumsList(Collection<ForumPK> forumPKs);
 
-  public Collection<Message> getThreadsList(Collection<MessagePK> messagePKs);
+  Collection<Message> getThreadsList(Collection<MessagePK> messagePKs);
 
-  public List<Forum> getForums(ForumPK forumPK);
+  List<Forum> getForums(ForumPK forumPK);
 
-  public List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId);
+  List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId);
 
-  public List<String> getForumSonsIds(ForumPK forumPK);
+  List<String> getForumSonsIds(ForumPK forumPK);
 
-  public int createForum(ForumPK forumPK, String forumName, String forumDescription,
+  int createForum(ForumPK forumPK, String forumName, String forumDescription,
       String forumCreator, int forumParent, String categoryId, String keywords);
 
-  public void updateForum(ForumPK forumPK, String forumName, String forumDescription,
+  void updateForum(ForumPK forumPK, String forumName, String forumDescription,
       int forumParent, String categoryId, String keywords);
 
-  public void lockForum(ForumPK forumPK, int level);
+  void lockForum(ForumPK forumPK, int level);
 
-  public int unlockForum(ForumPK forumPK, int level);
+  int unlockForum(ForumPK forumPK, int level);
 
-  public void deleteForum(ForumPK forumPK);
+  void deleteForum(ForumPK forumPK);
 
-  public Collection<Message> getMessages(ForumPK forumPK);
+  Collection<Message> getMessages(ForumPK forumPK);
 
-  public Message getMessage(MessagePK messagePK);
+  Message getMessage(MessagePK messagePK);
 
-  public String getMessageTitle(int messageId);
+  String getMessageTitle(int messageId);
 
-  public int getMessageParentId(int messageId);
+  int getMessageParentId(int messageId);
 
-  public Message getLastMessage(ForumPK forumPK, String status);
+  Message getLastMessage(ForumPK forumPK, String status);
 
-  public Message getLastMessage(ForumPK forumPK, int messageParentId, String status);
+  Message getLastMessage(ForumPK forumPK, int messageParentId, String status);
 
-  public Message getLastMessage(ForumPK forumPK, List<String> messageParentId, String status);
+  Message getLastMessage(ForumPK forumPK, List<String> messageParentId, String status);
 
-  public Collection getLastMessageRSS(String instanceId, int nbReturned);
+  Collection getLastMessageRSS(String instanceId, int nbReturned);
 
-  public int getNbMessages(int forumId, String type, String status);
+  int getNbMessages(int forumId, String type, String status);
 
-  public int getAuthorNbMessages(String userId, String status);
+  int getAuthorNbMessages(String userId, String status);
 
-  public int getNbResponses(int forumId, int messageId, String status);
+  int getNbResponses(int forumId, int messageId, String status);
 
-  public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status);
+  boolean isNewMessageByForum(String userId, ForumPK forumPK, String status);
 
-  public boolean isNewMessage(String userId, ForumPK forumPK, int messageId, String status);
+  boolean isNewMessage(String userId, ForumPK forumPK, int messageId, String status);
 
-  public void setLastVisit(String userId, int messageId);
+  void setLastVisit(String userId, int messageId);
 
-  public int createMessage(MessagePK messagePK, String messageTitle, String messageAuthor,
+  int createMessage(MessagePK messagePK, String messageTitle, String messageAuthor,
       Date messageCreationdate, int messageForum, int messageParent, String messageText,
       String keywords, String status);
 
-  public void updateMessage(MessagePK messagePK, String title, String message, String userId,
+  void updateMessage(MessagePK messagePK, String title, String message, String userId,
       String status);
 
-  public void updateMessageKeywords(MessagePK messagePK, String keywords);
+  void updateMessageKeywords(MessagePK messagePK, String keywords);
 
-  public void deleteMessage(MessagePK messagePK);
+  void deleteMessage(MessagePK messagePK);
 
-  public boolean isModerator(String userId, ForumPK forumPK);
+  boolean isModerator(String userId, ForumPK forumPK);
 
-  public void addModerator(ForumPK forumPK, String userId);
+  void addModerator(ForumPK forumPK, String userId);
 
-  public void removeModerator(ForumPK forumPK, String userId);
+  void removeModerator(ForumPK forumPK, String userId);
 
-  public void removeAllModerators(ForumPK forumPK);
+  void removeAllModerators(ForumPK forumPK);
 
-  public List<Moderator> getModerators(int forumId);
+  List<Moderator> getModerators(int forumId);
 
-  public void moveMessage(MessagePK messagePK, ForumPK forumPK);
+  void moveMessage(MessagePK messagePK, ForumPK forumPK);
 
-  public void subscribeMessage(MessagePK messagePK, String userId);
+  void subscribeMessage(MessagePK messagePK, String userId);
 
-  public void unsubscribeMessage(MessagePK messagePK, String userId);
+  void unsubscribeMessage(MessagePK messagePK, String userId);
 
-  public void subscribeForum(ForumPK forumPK, String userId);
+  void subscribeForum(ForumPK forumPK, String userId);
 
-  public void unsubscribeForum(ForumPK forumPK, String userId);
+  void unsubscribeForum(ForumPK forumPK, String userId);
 
-  public SubscriptionSubscriberList listAllSubscribers(MessagePK messagePK);
+  SubscriptionSubscriberList listAllSubscribers(MessagePK messagePK);
 
-  public SubscriptionSubscriberList listAllSubscribers(ForumPK forumPK);
+  SubscriptionSubscriberList listAllSubscribers(ForumPK forumPK);
 
-  public SubscriptionSubscriberList listAllSubscribers(String instanceId);
+  SubscriptionSubscriberList listAllSubscribers(String instanceId);
 
-  public boolean isSubscriber(MessagePK messagePK, String userId);
+  boolean isSubscriber(MessagePK messagePK, String userId);
 
-  public boolean isSubscriberByInheritance(MessagePK messagePK, String userId);
+  boolean isSubscriberByInheritance(MessagePK messagePK, String userId);
 
-  public boolean isSubscriber(ForumPK forumPK, String userId);
+  boolean isSubscriber(ForumPK forumPK, String userId);
 
-  public boolean isSubscriberByInheritance(ForumPK forumPK, String userId);
+  boolean isSubscriberByInheritance(ForumPK forumPK, String userId);
 
-  public boolean isSubscriber(String instanceId, String userId);
+  boolean isSubscriber(String instanceId, String userId);
 
-  public void createIndex(ForumPK forumPK);
+  void createIndex(ForumPK forumPK);
 
-  public void createIndex(MessagePK messagePK);
+  void createIndex(MessagePK messagePK);
 
-  public int getSilverObjectId(ForumPK forumPK);
+  int getSilverObjectId(ForumPK forumPK);
 
-  public String createCategory(NodeDetail category);
+  String createCategory(NodeDetail category);
 
-  public void deleteCategory(String categoryId, String instanceId);
+  void deleteCategory(String categoryId, String instanceId);
 
-  public void updateCategory(NodeDetail category);
+  void updateCategory(NodeDetail category);
 
-  public NodeDetail getCategory(NodePK nodePK);
+  NodeDetail getCategory(NodePK nodePK);
 
-  public Collection<NodeDetail> getAllCategories(String instanceId);
+  Collection<NodeDetail> getAllCategories(String instanceId);
 
-  public String getForumTags(ForumPK forumPK);
+  String getForumTags(ForumPK forumPK);
 
-  public String getMessageTags(MessagePK messagePK);
+  String getMessageTags(MessagePK messagePK);
 
 
-  public Collection<Message> getLastThreads(ForumPK forumPK, int count);
+  Collection<Message> getLastThreads(ForumPK forumPK, int count);
 
-  public Collection<Message> getNotAnsweredLastThreads(ForumPK forumPK, int count);
+  Collection<Message> getNotAnsweredLastThreads(ForumPK forumPK, int count);
 }
