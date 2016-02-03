@@ -24,3 +24,17 @@ CREATE TABLE SC_IL_ExtSus
 	email			varchar (1000)	NOT NULL ,
 	instanceId		varchar (50)	NOT NULL
 );
+
+ALTER TABLE SC_IL_Letter ADD
+	 CONSTRAINT PK_InfoLetter_Letter PRIMARY KEY
+	(
+		id
+	)
+;
+
+ALTER TABLE SC_IL_Publication ADD
+	 CONSTRAINT PK_InfoLetter_Publication PRIMARY KEY
+	(
+		id
+	)
+;
