@@ -28,6 +28,7 @@ import com.silverpeas.gallery.constant.StreamingProvider;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 /**
  * @author Yohann Chastagnier
@@ -38,20 +39,16 @@ public class YoutubeDataEntity extends StreamingProviderDataEntity {
   private static final long serialVersionUID = 6909168681705256783L;
 
   /**
-   * Creates a youtube provider data entity from specified OEmbed data.
-   * @param oembedYoutubeData the oembed data entity ({@literal http://oembed.com}) construct from
-   * JSON format.
-   * @return the entity representing the specified streaming.
-   */
-  public static YoutubeDataEntity fromOembed(final OembedDataEntity oembedYoutubeData) {
-    return new YoutubeDataEntity(oembedYoutubeData);
-  }
-
-  /**
    * Default hidden constructor.
    */
-  private YoutubeDataEntity(final OembedDataEntity oembedYoutubeData) {
+  YoutubeDataEntity(final OembedDataEntity oembedYoutubeData) {
     super(StreamingProvider.youtube, oembedYoutubeData);
+    if (getThumbnailUrl() != null) {
+      String thumbnailUrlPrefix = getThumbnailUrl().toString().replaceAll("[^/]+$", "");
+      for (int i = 1; i <= 3; i++) {
+        getThumbnailPreviewUrls().add(URI.create(thumbnailUrlPrefix + i + ".jpg"));
+      }
+    }
   }
 
   @SuppressWarnings("UnusedDeclaration")

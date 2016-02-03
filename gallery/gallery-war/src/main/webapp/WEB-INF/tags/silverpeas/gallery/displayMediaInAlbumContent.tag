@@ -47,16 +47,16 @@
 <c:set var="thumbnailChip" value=""/>
 <c:set var="classPreview" value="mediaPreview"/>
 <c:set var="contentTipUrl" value="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"/>
-<c:if test="${not isPortletDisplay and media.type.video}">
-  <c:if test="${fn:contains(contentTipUrl, '/thumbnail/')}">
-    <c:url var="thumbnailChipUrl" value="/gallery/jsp/icons/video_66x50.png"/>
+<c:if test="${not isPortletDisplay and (media.type.video or media.type.streaming)}">
+  <c:if test="${fn:contains(contentTipUrl, '/thumbnail/') or media.type.streaming}">
+    <c:url var="thumbnailChipUrl" value="/gallery/jsp/icons/${fn:toLowerCase(media.type.name)}_66x50.png"/>
     <c:set var="thumbnailChip">
       <img class="type-media" src="${thumbnailChipUrl}" alt=""/>
     </c:set>
   </c:if>
-  <c:set var="classPreview" value="mediaPreview videoPreview"/>
+  <c:set var="classPreview" value="mediaPreview ${fn:toLowerCase(media.type.name)}Preview"/>
 </c:if>
 ${thumbnailChip}
-<img id="imgId_${media.id}" class="${classPreview}" tipTitle="<c:out value="${silfn:truncate(media.title, 50)}"/>"
+<img id="mediaId_${media.id}" class="${classPreview}" tipTitle="<c:out value="${silfn:truncate(media.title, 50)}"/>"
      tipUrl="${contentTipUrl}" src="${media.getApplicationThumbnailUrl(mediaResolution)}"
      border="0" alt="<c:out value='${media.title}'/>" style="max-width:${mediaResolution.width}px"/>

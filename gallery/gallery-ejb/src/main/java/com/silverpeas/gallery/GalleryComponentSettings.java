@@ -29,6 +29,7 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.media.video.ThumbnailPeriod;
 
 /**
  * It gathers all the settings and i18n relative to the Gallery component.
@@ -135,5 +136,9 @@ public final class GalleryComponentSettings {
     String tmpValue =
         getSettings().getString("sizeWatermark" + bundlePartOfWaterwarkSizeLabel, null);
     return (StringUtil.isInteger(tmpValue)) ? Integer.valueOf(tmpValue) : null;
+  }
+
+  public static int getMaxNumberOfPreviewThumbnail() {
+    return ThumbnailPeriod.ALL_VALIDS.size();
   }
 }

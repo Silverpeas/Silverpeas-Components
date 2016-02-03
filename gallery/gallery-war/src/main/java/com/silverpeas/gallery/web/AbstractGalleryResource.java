@@ -25,7 +25,6 @@ package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.MediaServiceProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -35,9 +34,6 @@ import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.html.View;
@@ -45,7 +41,6 @@ import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.ThumbnailPeriod;
-import org.silverpeas.util.JSONCodec;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -398,43 +393,5 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    */
   protected GalleryBm getMediaService() {
     return MediaServiceProvider.getMediaService();
-  }
-
-  /**
-   * Perform an Http Get on url given in parameter
-   * @param url the url
-   * @return a {@link String}
-   */
-  protected OembedDataEntity getOembedEntityFromUrl(String url) {
-    try {
-      return JSONCodec.decode(getJSONStringFromUrl(url), OembedDataEntity.class);
-    } catch (Exception e) {
-      throw new WebApplicationException(e);
-    }
-  }
-
-  private String getJSONStringFromUrl(String url) throws Exception {
-    GetMethod httpGet = new GetMethod(url);
-    httpGet.setRequestHeader("User-Agent", getHttpRequest().getHeader("User-Agent"));
-    httpGet.addRequestHeader("Accept", "application/json");
-    try {
-      HttpClient client = new HttpClient();
-      int statusCode = client.executeMethod(httpGet);
-      if (statusCode != HttpStatus.SC_OK) {
-        throw new WebApplicationException(statusCode);
-      }
-      String jsonResponse = httpGet.getResponseBodyAsString();
-      for (StreamingProvider provider : StreamingProvider.values()) {
-        jsonResponse = jsonResponse.replaceAll("(?i)" + provider.name(), provider.name());
-      }
-      return jsonResponse;
-    } catch (WebApplicationException wae) {
-      throw wae;
-    } catch (Exception e) {
-      throw new WebApplicationException(e);
-    } finally {
-      httpGet.releaseConnection();
-    }
-
   }
 }

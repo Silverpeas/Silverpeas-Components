@@ -63,6 +63,15 @@ public class OembedDataEntity {
   @XmlElement
   private String version;
 
+  @XmlElement(name="thumbnail_url")
+  private String thumbnailUrl;
+
+  @XmlElement(name="thumbnail_width")
+  private String thumbnailWidth;
+
+  @XmlElement(name="thumbnail_height")
+  private String thumbnailHeight;
+
   /**
    * Constructor
    * @param streamingProvider the Silverpeas provider identifier.
@@ -141,5 +150,29 @@ public class OembedDataEntity {
 
   public void setVersion(final String version) {
     this.version = version;
+  }
+
+  public String getThumbnailUrl() {
+    return thumbnailUrl;
+  }
+
+  public void setThumbnailUrl(final String thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
+  }
+
+  public String getThumbnailWidth() {
+    return thumbnailWidth;
+  }
+
+  public void setThumbnailWidth(final String thumbnailWidth) {
+    this.thumbnailWidth = thumbnailWidth;
+  }
+
+  public String getThumbnailHeight() {
+    return thumbnailHeight;
+  }
+
+  public void setThumbnailHeight(final String thumbnailHeight) {
+    this.thumbnailHeight = thumbnailHeight;
   }
 }

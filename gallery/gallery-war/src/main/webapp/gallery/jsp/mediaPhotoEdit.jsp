@@ -42,7 +42,7 @@
     <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Photo"/>
     <jsp:useBean id="isNewMediaCase" scope="request" type="java.lang.Boolean"/>
     <c:if test="${not isNewMediaCase}">
-      <gallery:handlePhotoPreview jquerySelector="${'#photoPreview'}"/>
+      <gallery:handleMediaPreview jquerySelector="${'#photoPreview'}"/>
     </c:if>
   </jsp:attribute>
 
