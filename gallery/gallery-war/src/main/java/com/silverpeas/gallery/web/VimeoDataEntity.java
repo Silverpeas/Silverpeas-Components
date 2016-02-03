@@ -44,18 +44,9 @@ public class VimeoDataEntity extends StreamingProviderDataEntity {
   private static final long serialVersionUID = 724049725696379973L;
 
   /**
-   * Creates a vimeo provider data entity from specified OEmbed data.
-   * @param oembedVimeoData the oembed data ({@literal http://oembed.com}) as JSON format.
-   * @return the entity representing the specified streaming.
-   */
-  public static VimeoDataEntity fromOembed(final JSONObject oembedVimeoData) {
-    return new VimeoDataEntity(oembedVimeoData);
-  }
-
-  /**
    * Default hidden constructor.
    */
-  private VimeoDataEntity(final JSONObject oembedVimeoData) {
+  VimeoDataEntity(final JSONObject oembedVimeoData) {
     super(StreamingProvider.vimeo, oembedVimeoData);
 
     // As a specific way, vimeo is supplying additional information about the video streaming

@@ -28,6 +28,7 @@ import org.apache.commons.collections.set.UnmodifiableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -40,15 +41,18 @@ import java.util.regex.Pattern;
  * @author: Yohann Chastagnier
  */
 public enum StreamingProvider {
-  unknown(null),
-  youtube("(?i)(\\?|&)v=([a-z0-9]+)", "youtu"),
-  vimeo("(?i)(/|=)([0-9]+)"),
-  dailymotion("(?i)(/video/)([a-z0-9]+)_"),
-  soundcloud("(?i)(soundcloud.com/)(.+)");
+  unknown(null, null),
+  youtube("(?i)(\\?|&)v=([a-z0-9]+)", "http://www.youtube.com/oembed?url={0}&format=json", "youtu"),
+  vimeo("(?i)(/|=)([0-9]+)", "http://vimeo.com/api/oembed.json?url=http://vimeo.com/{0}"),
+  dailymotion("(?i)(/video/)([a-z0-9]+)_",
+      "http://www.dailymotion.com/services/oembed?url=http://www.dailymotion.com/video/{0}"),
+  soundcloud("(?i)(soundcloud.com/)(.+)",
+      "https://soundcloud.com/oembed?url=http://soundcloud.com/{0}&format=json");
 
   public static final Set<StreamingProvider> ALL_VALIDS;
 
   private final Pattern isExtractorPattern;
+  private final String oembedUrlPattern;
   private final List<String> regexpDetectionParts;
 
   static {
@@ -58,12 +62,14 @@ public enum StreamingProvider {
     ALL_VALIDS = UnmodifiableSet.decorate(allValids);
   }
 
-  StreamingProvider(final String idExtractorPattern, final String... regexpDetectionParts) {
+  StreamingProvider(final String idExtractorPattern, final String oembedUrlPattern,
+      final String... regexpDetectionParts) {
     if (StringUtil.isDefined(idExtractorPattern)) {
       isExtractorPattern = Pattern.compile(idExtractorPattern);
     } else {
       isExtractorPattern = null;
     }
+    this.oembedUrlPattern = oembedUrlPattern;
     this.regexpDetectionParts = new ArrayList<String>();
     this.regexpDetectionParts.add(name());
     Collections.addAll(this.regexpDetectionParts, regexpDetectionParts);
@@ -99,6 +105,28 @@ public enum StreamingProvider {
       }
     }
     return unknown;
+  }
+
+  /**
+   * Gets the oembed url from the homepage url of a streaming.<br/>
+   * @param homepageUrl the streaming home page url.
+   * @return the oembed url as string.
+   */
+  public static String getOembedUrl(String homepageUrl) {
+    StreamingProvider streamingProvider = StreamingProvider.fromUrl(homepageUrl);
+    if (streamingProvider != unknown) {
+      final String streamingId;
+      switch (streamingProvider) {
+        case youtube:
+          streamingId = homepageUrl;
+          break;
+        default:
+          streamingId = streamingProvider.extractStreamingId(homepageUrl);
+          break;
+      }
+      return MessageFormat.format(streamingProvider.oembedUrlPattern, streamingId);
+    }
+    return null;
   }
 
   @JsonValue

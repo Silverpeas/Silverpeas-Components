@@ -172,7 +172,7 @@ $(document).ready(function() {
   </c:if>
 });
 </script>
-<gallery:handlePhotoPreview jquerySelector="${'.imagePreview'}" />
+<gallery:handleMediaPreview jquerySelector="${'.imagePreview'}" />
 </head>
 <body class="gallery gallery-basket" id="${instanceId}">
 <fmt:message var="basketLabel" key="gallery.basket" />

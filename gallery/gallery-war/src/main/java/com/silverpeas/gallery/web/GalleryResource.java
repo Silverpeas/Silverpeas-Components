@@ -27,8 +27,9 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.constant.MediaResolution;
-import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.view.Viewable;
 
@@ -206,6 +207,32 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the provider data of a streamin from its url. If it doesn't exist, a 404 HTTP code is
    * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
+   * @param streamingId the identifier of the streaming
+   * @return the response to the HTTP GET request content of the asked streaming.
+   */
+  @GET
+  @Path(GALLERY_STREAMINGS_PART + "/{streamingId}/" + GALLERY_STREAMING_PROVIDER_DATA_PART)
+  @Produces(MediaType.APPLICATION_JSON)
+  public StreamingProviderDataEntity getStreamingProviderDataFromStreamingId(
+      @PathParam("streamingId") final String streamingId) {
+    try {
+      final Media media = getMediaService().getMedia(new MediaPK(streamingId, getComponentId()));
+      checkNotFoundStatus(media);
+      com.silverpeas.gallery.model.Streaming streaming = media.getStreaming();
+      checkNotFoundStatus(streaming);
+      verifyUserMediaAccess(streaming);
+      return getStreamingProviderDataFromUrl(streaming.getHomepageUrl());
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Gets the provider data of a streamin from its url. If it doesn't exist, a 404 HTTP code is
+   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
+   * when processing the request, a 503 HTTP code is returned.
    * @param url the url of the streaming
    * @return the response to the HTTP GET request content of the asked streaming.
    */
@@ -216,30 +243,7 @@ public class GalleryResource extends AbstractGalleryResource {
       @QueryParam("url") final String url) {
     try {
       checkNotFoundStatus(url);
-      StreamingProvider streamingProvider = StreamingProvider.fromUrl(url);
-      StreamingProviderDataEntity entity = null;
-      switch (streamingProvider) {
-        case youtube:
-          entity = YoutubeDataEntity.fromOembed(
-              getJSonFromUrl("http://www.youtube.com/oembed?url=" + url + "&format=json"));
-          break;
-        case vimeo:
-          entity = VimeoDataEntity.fromOembed(
-              getJSonFromUrl("http://vimeo.com/api/oembed.json?url=" + "http://vimeo.com/" +
-                  streamingProvider.extractStreamingId(url)));
-          break;
-        case dailymotion:
-          entity = DailymotionDataEntity
-              .fromOembed(getJSonFromUrl("http://www.dailymotion.com/services/oembed?url=" +
-                  "http://www.dailymotion.com/video/" +
-                  streamingProvider.extractStreamingId(url)));
-          break;
-        case soundcloud:
-          entity = SoundcloudDataEntity.fromOembed(
-              getJSonFromUrl("https://soundcloud.com/oembed?url=http://soundcloud.com/" +
-                  streamingProvider.extractStreamingId(url) + "&format=json"));
-          break;
-      }
+      StreamingProviderDataEntity entity = StreamingProviderDataEntity.from(url);
       checkNotFoundStatus(entity);
       if (getHttpRequest().isSecure()) {
         // Replacing HTTP scheme by HTTPS one

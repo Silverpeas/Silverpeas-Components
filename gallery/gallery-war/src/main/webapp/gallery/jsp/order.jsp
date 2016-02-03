@@ -70,7 +70,7 @@
     max-height: none;
   }
 </style>
-<gallery:handlePhotoPreview jquerySelector=".imagePreview"/>
+<gallery:handleMediaPreview jquerySelector=".imagePreview"/>
 <script type="text/javascript">
 
 var albumWindow = window;
