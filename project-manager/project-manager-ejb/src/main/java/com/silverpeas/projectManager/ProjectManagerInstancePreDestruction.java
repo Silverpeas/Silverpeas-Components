@@ -21,33 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.classifieds;
+package com.silverpeas.projectManager;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.classifieds.control.ClassifiedService;
-import com.silverpeas.classifieds.control.ClassifiedServiceProvider;
+import com.silverpeas.projectManager.model.ProjectManagerCalendarDAO;
+import com.silverpeas.projectManager.model.ProjectManagerDAO;
+import org.silverpeas.util.DBUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Deletes all the subscriptions and classifieds of the Classifieds instance that is being deleted.
+ * Deletes all the tasks, associated resources, and all the holiday dates that were registered for
+ * the ProjectManager that is being deleted.
  * @author mmoquillon
  */
 @Named
-public class ClassifiedsInstancePreDestruction implements ComponentInstancePreDestruction {
+public class ProjectManagerInstancePreDestruction implements ComponentInstancePreDestruction {
   /**
-   * Performs pre destruction tasks in the behalf of the specified Classifieds instance.
-   * @param componentInstanceId the unique identifier of the Classifieds instance.
+   * Performs pre destruction tasks in the behalf of the specified component instance.
+   * @param componentInstanceId the unique identifier of the component instance.
    */
   @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
-    try {
-      ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
-      service.deleteAllClassifieds(componentInstanceId);
-      service.deleteAllSubscribes(componentInstanceId);
-    } catch (Exception e) {
+    try (Connection connection = DBUtil.openConnection()) {
+      ProjectManagerCalendarDAO.removeAllHolidayDates(connection, componentInstanceId);
+      ProjectManagerDAO.removeAllTasks(connection, componentInstanceId);
+    } catch (SQLException e) {
       throw new RuntimeException(e.getMessage(), e);
     }
   }

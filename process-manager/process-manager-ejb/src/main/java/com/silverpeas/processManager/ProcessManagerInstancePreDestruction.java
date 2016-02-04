@@ -56,7 +56,6 @@ public class ProcessManagerInstancePreDestruction implements ComponentInstancePr
             removeProcessInstance(instance.getInstanceId());
       }
       Workflow.getProcessModelManager().deleteProcessModel(componentInstanceId);
-      AttachmentService.get().deleteAllAttachments(componentInstanceId);
     } catch (WorkflowException e) {
       throw new RuntimeException(e.getMessage(), e);
     }

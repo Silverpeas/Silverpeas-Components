@@ -24,13 +24,9 @@
 package com.silverpeas.dataWarning;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.dataWarning.model.DataWarningDataManager;
-import com.sun.star.uno.RuntimeException;
-import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
 /**

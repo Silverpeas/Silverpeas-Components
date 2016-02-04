@@ -95,6 +95,20 @@ public class ProjectManagerCalendarDAO {
     }
   }
 
+  /**
+   * Removes all the holiday dates that were saved for the specified ProjectManager instance.
+   * @param con a connection to the data source into which are stored the holiday dates.
+   * @param instanceId the unique identifier of a ProjectManager instance.
+   * @throws SQLException if an error occurs while deleting the holiday dates.
+   */
+  public static void removeAllHolidayDates(Connection con, String instanceId) throws SQLException {
+    final String sql = "delete from " + PROJECTMANAGER_CALENDAR_TABLENAME + " where instanceId = ?";
+    try (PreparedStatement deletion = con.prepareCall(sql)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
+  }
+
   public static boolean isHolidayDate(Connection con, HolidayDetail holiday)
       throws SQLException {
     StringBuilder query = new StringBuilder(128);
