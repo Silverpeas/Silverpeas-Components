@@ -30,10 +30,10 @@ import com.silverpeas.whitePages.model.SearchField;
 
 public interface SearchFieldDao {
 
-  public String createSearchField(SearchField searchField);
+  String createSearchField(SearchField searchField);
   
-  public void deleteSearchFieldsFor(String instanceId);
+  void deleteSearchFieldsFor(String instanceId);
   
-  public Set<SearchField> getSearchFields(String instanceId);
+  Set<SearchField> getSearchFields(String instanceId);
 
 }
