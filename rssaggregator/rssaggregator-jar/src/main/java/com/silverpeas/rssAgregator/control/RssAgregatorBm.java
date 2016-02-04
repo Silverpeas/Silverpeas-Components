@@ -34,16 +34,16 @@ import java.util.List;
  */
 public interface RssAgregatorBm {
 
-  public SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
+  SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
 
-  public void updateChannel(SPChannel channel) throws RssAgregatorException;
+  void updateChannel(SPChannel channel) throws RssAgregatorException;
 
-  public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
 
-  public void deleteChannels(String instanceId) throws RssAgregatorException;
+  void deleteChannels(String instanceId) throws RssAgregatorException;
 
-  public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
+  List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
 
-  public SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
 
 }
