@@ -181,7 +181,7 @@ function checkLuceneQuery(query) {
 }
   </script>
 <c:if test="${not empty mediaList}">
-  <gallery:handlePhotoPreview jquerySelector="${'.mediaPreview'}"/>
+  <gallery:handleMediaPreview jquerySelector="${'.mediaPreview'}"/>
 </c:if>
 </head>
 <body>

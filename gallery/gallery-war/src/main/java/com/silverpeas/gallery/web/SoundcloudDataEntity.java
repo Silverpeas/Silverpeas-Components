@@ -39,18 +39,9 @@ public class SoundcloudDataEntity extends StreamingProviderDataEntity {
   private static final long serialVersionUID = 6909168681705256783L;
 
   /**
-   * Creates a dailymotion provider data entity from specified OEmbed data.
-   * @param oembedSoundcloudData the oembed data ({@literal http://oembed.com}) as JSON format.
-   * @return the entity representing the specified streaming.
-   */
-  public static SoundcloudDataEntity fromOembed(final JSONObject oembedSoundcloudData) {
-    return new SoundcloudDataEntity(oembedSoundcloudData);
-  }
-
-  /**
    * Default hidden constructor.
    */
-  private SoundcloudDataEntity(final JSONObject oembedSoundcloudData) {
+  SoundcloudDataEntity(final JSONObject oembedSoundcloudData) {
     super(StreamingProvider.soundcloud, oembedSoundcloudData);
   }
 

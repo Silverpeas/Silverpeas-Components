@@ -39,18 +39,9 @@ public class DailymotionDataEntity extends StreamingProviderDataEntity {
   private static final long serialVersionUID = 6909168681705256783L;
 
   /**
-   * Creates a dailymotion provider data entity from specified OEmbed data.
-   * @param oembedDailymotionData the oembed data ({@literal http://oembed.com}) as JSON format.
-   * @return the entity representing the specified streaming.
-   */
-  public static DailymotionDataEntity fromOembed(final JSONObject oembedDailymotionData) {
-    return new DailymotionDataEntity(oembedDailymotionData);
-  }
-
-  /**
    * Default hidden constructor.
    */
-  private DailymotionDataEntity(final JSONObject oembedDailymotionData) {
+  DailymotionDataEntity(final JSONObject oembedDailymotionData) {
     super(StreamingProvider.dailymotion, oembedDailymotionData);
   }
 

@@ -20,35 +20,6 @@
  */
 package com.silverpeas.gallery;
 
-import static com.silverpeas.gallery.constant.MediaResolution.LARGE;
-import static com.silverpeas.gallery.constant.MediaResolution.MEDIUM;
-import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
-import static com.silverpeas.gallery.constant.MediaResolution.SMALL;
-import static com.silverpeas.gallery.constant.MediaResolution.TINY;
-import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
-
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.media.Definition;
-import org.silverpeas.media.video.VideoThumbnailExtractor;
-import org.silverpeas.media.video.VideoThumbnailExtractorFactory;
-import org.silverpeas.notification.message.MessageManager;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
@@ -69,10 +40,31 @@ import com.silverpeas.gallery.processing.Watermarker;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.media.Definition;
+import org.silverpeas.media.video.VideoThumbnailExtractor;
+import org.silverpeas.media.video.VideoThumbnailExtractorFactory;
+import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Set;
+
+import static com.silverpeas.gallery.constant.MediaResolution.*;
 
 public class MediaHelper {
 

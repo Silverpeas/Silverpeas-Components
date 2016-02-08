@@ -36,16 +36,11 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.view.Viewable;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.media.Definition;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.ThumbnailPeriod;
 
 import javax.ws.rs.PathParam;
@@ -53,7 +48,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -404,30 +398,5 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    */
   protected GalleryBm getMediaService() {
     return MediaServiceFactory.getMediaService();
-  }
-
-  /**
-   * Perform an Http Get
-   * @param url
-   * @return a {@link JSONObject}
-   */
-  protected JSONObject getJSonFromUrl(String url) {
-    GetMethod httpGet = new GetMethod(url);
-    httpGet.setRequestHeader("User-Agent", getHttpRequest().getHeader("User-Agent"));
-    httpGet.addRequestHeader("Accept", "application/json");
-    try {
-      HttpClient client = new HttpClient();
-      int statusCode = client.executeMethod(httpGet);
-      if (statusCode != HttpStatus.SC_OK) {
-        throw new WebApplicationException(statusCode);
-      }
-      return new JSONObject(new JSONTokener(httpGet.getResponseBodyAsString()));
-    } catch (WebApplicationException wae) {
-      throw wae;
-    } catch (Exception e) {
-      throw new WebApplicationException(e);
-    } finally {
-      httpGet.releaseConnection();
-    }
   }
 }

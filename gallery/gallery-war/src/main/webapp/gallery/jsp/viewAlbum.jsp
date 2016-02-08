@@ -339,7 +339,7 @@ function CutSelectedMedia() {
 </c:if>
   </script>
 <c:if test="${not empty currentAlbum.media}">
-  <gallery:handlePhotoPreview jquerySelector="${'.mediaPreview'}" />
+  <gallery:handleMediaPreview jquerySelector="${'.mediaPreview'}" />
 </c:if>
   <gallery:diaporama/>
 </head>

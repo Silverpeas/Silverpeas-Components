@@ -34,6 +34,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.silverpeas.gallery.constant.StreamingProvider.unknown;
+import static com.silverpeas.gallery.model.Streaming.getOembedAsJson;
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This entity ensures that all streaming data are formatted in a single way whatever the
@@ -67,6 +74,43 @@ public abstract class StreamingProviderDataEntity implements Exposable {
   @XmlElement
   private String embedHtml;
 
+  @XmlElement
+  private URI thumbnailUrl;
+
+  @XmlElement
+  private MediaDefinitionEntity thumbnailDefinition;
+
+  @XmlElement
+  private List<URI> thumbnailPreviewUrls = new ArrayList<URI>();
+
+  /**
+   * Creates a streaming provider data entity from specified homepage url.
+   * @param homepageUrl the streaming home page url.
+   * @return the streaming provider data entity representing the specified streaming.
+   */
+  public static StreamingProviderDataEntity from(final String homepageUrl) {
+    StreamingProviderDataEntity entity = null;
+    final StreamingProvider streamingProvider = StreamingProvider.fromUrl(homepageUrl);
+    if (streamingProvider != unknown) {
+      final JSONObject oembedData = getOembedAsJson(homepageUrl);
+      switch (streamingProvider) {
+        case youtube:
+          entity = new YoutubeDataEntity(oembedData);
+          break;
+        case vimeo:
+          entity = new VimeoDataEntity(oembedData);
+          break;
+        case dailymotion:
+          entity = new DailymotionDataEntity(oembedData);
+          break;
+        case soundcloud:
+          entity = new SoundcloudDataEntity(oembedData);
+          break;
+      }
+    }
+    return entity;
+  }
+
   public StreamingProviderDataEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
@@ -83,6 +127,17 @@ public abstract class StreamingProviderDataEntity implements Exposable {
     this.title = oembedData.getString("title");
     this.author = oembedData.getString("author_name");
     this.embedHtml = oembedData.getString("html");
+    String thumbnailUrl = oembedData.getString("thumbnail_url");
+    if (isDefined(thumbnailUrl)) {
+      this.thumbnailUrl = URI.create(thumbnailUrl);
+      String width = oembedData.optString("thumbnail_width");
+      String height = oembedData.optString("thumbnail_height");
+      if (isDefined(width) && isDefined(height)) {
+        this.thumbnailDefinition = MediaDefinitionEntity.createFrom(Definition
+            .of(Integer.valueOf(width.replaceAll("[^0-9].", "")),
+                Integer.valueOf(height.replaceAll("[^0-9].", ""))));
+      }
+    }
   }
 
   @SuppressWarnings("UnusedDeclaration")
@@ -144,5 +199,29 @@ public abstract class StreamingProviderDataEntity implements Exposable {
 
   public void setEmbedHtml(final String embedHtml) {
     this.embedHtml = embedHtml;
+  }
+
+  public URI getThumbnailUrl() {
+    return thumbnailUrl;
+  }
+
+  public void setThumbnailUrl(final URI thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
+  }
+
+  public MediaDefinitionEntity getThumbnailDefinition() {
+    return thumbnailDefinition;
+  }
+
+  public void setThumbnailDefinition(final MediaDefinitionEntity thumbnailDefinition) {
+    this.thumbnailDefinition = thumbnailDefinition;
+  }
+
+  public List<URI> getThumbnailPreviewUrls() {
+    return thumbnailPreviewUrls;
+  }
+
+  public void setThumbnailPreviewUrls(final List<URI> thumbnailPreviewUrls) {
+    this.thumbnailPreviewUrls = thumbnailPreviewUrls;
   }
 }
