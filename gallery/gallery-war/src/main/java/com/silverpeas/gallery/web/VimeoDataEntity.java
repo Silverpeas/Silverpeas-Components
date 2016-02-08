@@ -24,6 +24,8 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
+import org.silverpeas.media.Definition;
+import org.silverpeas.media.web.MediaDefinitionEntity;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.time.TimeUnit;
@@ -41,19 +43,9 @@ public class VimeoDataEntity extends StreamingProviderDataEntity {
   private static final long serialVersionUID = 724049725696379973L;
 
   /**
-   * Creates a vimeo provider data entity from specified OEmbed data.
-   * @param oembedVimeoData the oembed data entity ({@literal http://oembed.com}) construct from
-   * JSON format.
-   * @return the entity representing the specified streaming.
-   */
-  public static VimeoDataEntity fromOembed(final OembedDataEntity oembedVimeoData) {
-    return new VimeoDataEntity(oembedVimeoData);
-  }
-
-  /**
    * Default hidden constructor.
    */
-  private VimeoDataEntity(final OembedDataEntity oembedVimeoData) {
+  VimeoDataEntity(final OembedDataEntity oembedVimeoData) {
     super(StreamingProvider.vimeo, oembedVimeoData);
 
     // As a specific way, vimeo is supplying additional information about the video streaming
@@ -62,6 +54,15 @@ public class VimeoDataEntity extends StreamingProviderDataEntity {
       setFormattedDurationHMS(
           UnitUtil.getTimeData(Long.valueOf(oembedVimeoData.getDuration()), TimeUnit.SEC)
               .getFormattedDurationAsHMS());
+    }
+
+    // Similarly as the duration, the width and height supplied are those of the video and not
+    // those of the streaming player.
+    String width = oembedVimeoData.getWidth();
+    String height = oembedVimeoData.getHeight();
+    if (StringUtil.isInteger(width) && StringUtil.isInteger(height)) {
+      setDefinition(MediaDefinitionEntity
+          .createFrom(Definition.of(Integer.valueOf(width), Integer.valueOf(height))));
     }
   }
 

@@ -26,8 +26,15 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
-import org.silverpeas.util.StringUtil;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.util.StringUtil;
+
+import javax.ws.rs.WebApplicationException;
+
+import static com.silverpeas.gallery.constant.StreamingProvider.getOembedUrl;
 
 /**
  * This class represents a Streaming.
@@ -99,5 +106,34 @@ public class Streaming extends Media {
   @Override
   public String getApplicationEmbedUrl(final MediaResolution mediaResolution) {
     return "";
+  }
+
+  /**
+   * Gets OEMBED data as JSON string.<br/>
+   * WARNING: performances can be altered when called from a list treatments as it performs an
+   * HTTP request.
+   * @return a JSON structure as string that represents oembed data.
+   */
+  public static String getJsonOembedAsString(String homepageUrl) {
+    GetMethod httpGet = new GetMethod(getOembedUrl(homepageUrl));
+    httpGet.addRequestHeader("Accept", "application/json");
+    try {
+      HttpClient client = new HttpClient();
+      int statusCode = client.executeMethod(httpGet);
+      if (statusCode != HttpStatus.SC_OK) {
+        throw new WebApplicationException(statusCode);
+      }
+      String jsonResponse = httpGet.getResponseBodyAsString();
+      for (StreamingProvider provider : StreamingProvider.values()) {
+        jsonResponse = jsonResponse.replaceAll("(?i)" + provider.name(), provider.name());
+      }
+      return jsonResponse;
+    } catch (WebApplicationException wae) {
+      throw wae;
+    } catch (Exception e) {
+      throw new WebApplicationException(e);
+    } finally {
+      httpGet.releaseConnection();
+    }
   }
 }

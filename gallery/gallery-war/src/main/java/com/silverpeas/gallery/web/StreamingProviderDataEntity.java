@@ -27,13 +27,19 @@ import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.web.WebEntity;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.web.MediaDefinitionEntity;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.JSONCodec;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.silverpeas.gallery.constant.StreamingProvider.unknown;
+import static com.silverpeas.gallery.model.Streaming.getJsonOembedAsString;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This entity ensures that all streaming data are formatted in a single way whatever the
@@ -67,6 +73,44 @@ public class StreamingProviderDataEntity implements WebEntity {
   @XmlElement
   private String embedHtml;
 
+  @XmlElement
+  private URI thumbnailUrl;
+
+  @XmlElement
+  private MediaDefinitionEntity thumbnailDefinition;
+
+  @XmlElement
+  private List<URI> thumbnailPreviewUrls = new ArrayList<URI>();
+
+  /**
+   * Creates a streaming provider data entity from specified homepage url.
+   * @param homepageUrl the streaming home page url.
+   * @return the streaming provider data entity representing the specified streaming.
+   */
+  public static StreamingProviderDataEntity from(final String homepageUrl) {
+    StreamingProviderDataEntity entity = null;
+    final StreamingProvider streamingProvider = StreamingProvider.fromUrl(homepageUrl);
+    if (streamingProvider != unknown) {
+      final OembedDataEntity oembedData =
+          JSONCodec.decode(getJsonOembedAsString(homepageUrl), OembedDataEntity.class);
+      switch (streamingProvider) {
+        case youtube:
+          entity = new YoutubeDataEntity(oembedData);
+          break;
+        case vimeo:
+          entity = new VimeoDataEntity(oembedData);
+          break;
+        case dailymotion:
+          entity = new DailymotionDataEntity(oembedData);
+          break;
+        case soundcloud:
+          entity = new SoundcloudDataEntity(oembedData);
+          break;
+      }
+    }
+    return entity;
+  }
+
   public StreamingProviderDataEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
@@ -83,12 +127,17 @@ public class StreamingProviderDataEntity implements WebEntity {
     this.title = oembedData.getTitle();
     this.author = oembedData.getAuthor();
     this.embedHtml = oembedData.getHtml();
-    // The width and height supplied are those of the video and not those of the streaming player.
-    String width = oembedData.getWidth();
-    String height = oembedData.getHeight();
-    if (StringUtil.isInteger(width) && StringUtil.isInteger(height)) {
-      setDefinition(MediaDefinitionEntity
-          .createFrom(Definition.of(Integer.valueOf(width), Integer.valueOf(height))));
+
+    String thumbnailUrl = oembedData.getThumbnailUrl();
+    if (isDefined(thumbnailUrl)) {
+      this.thumbnailUrl = URI.create(thumbnailUrl);
+      String thumbnailWidth = oembedData.getThumbnailWidth();
+      String thumbnailHeight = oembedData.getThumbnailHeight();
+      if (isDefined(thumbnailWidth) && isDefined(thumbnailHeight)) {
+        this.thumbnailDefinition = MediaDefinitionEntity.createFrom(Definition
+            .of(Integer.valueOf(thumbnailWidth.replaceAll("[^0-9].", "")),
+                Integer.valueOf(thumbnailHeight.replaceAll("[^0-9].", ""))));
+      }
     }
   }
 
@@ -151,5 +200,29 @@ public class StreamingProviderDataEntity implements WebEntity {
 
   public void setEmbedHtml(final String embedHtml) {
     this.embedHtml = embedHtml;
+  }
+
+  public URI getThumbnailUrl() {
+    return thumbnailUrl;
+  }
+
+  public void setThumbnailUrl(final URI thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
+  }
+
+  public MediaDefinitionEntity getThumbnailDefinition() {
+    return thumbnailDefinition;
+  }
+
+  public void setThumbnailDefinition(final MediaDefinitionEntity thumbnailDefinition) {
+    this.thumbnailDefinition = thumbnailDefinition;
+  }
+
+  public List<URI> getThumbnailPreviewUrls() {
+    return thumbnailPreviewUrls;
+  }
+
+  public void setThumbnailPreviewUrls(final List<URI> thumbnailPreviewUrls) {
+    this.thumbnailPreviewUrls = thumbnailPreviewUrls;
   }
 }

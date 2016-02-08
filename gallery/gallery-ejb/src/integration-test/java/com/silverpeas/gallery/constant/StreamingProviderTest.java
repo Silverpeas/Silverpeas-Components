@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.BasicWarBuilder;
 
+import static com.silverpeas.gallery.constant.StreamingProvider.getOembedUrl;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -84,5 +85,36 @@ public class StreamingProviderTest {
             "-vermalle?in=benjamin-roux-10/sets/lazy-compagny"),
         is("empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in=benjamin" +
             "-roux-10/sets/lazy-compagny"));
+  }
+
+  @Test
+  public void getYoutubeOembedUrl() {
+    assertThat(getOembedUrl("https://youtu.be/6xN3hSEj21Q"),
+        is("http://www.youtube.com/oembed?url=https://youtu.be/6xN3hSEj21Q&format=json"));
+  }
+
+  @Test
+  public void getVimeoOembedUrl() {
+    assertThat(getOembedUrl("http://vimeo.com/21040307"),
+        is("http://vimeo.com/api/oembed.json?url=http://vimeo.com/21040307"));
+  }
+
+  @Test
+  public void getDailymotionOembedUrl() {
+    assertThat(getOembedUrl(
+        "http://www.dailymotion.com/video/x3fgyln_jeff-bezos-fait-atterrir-en-secret-la-premiere" +
+            "-fusee-reutilisable_tech"),
+        is("http://www.dailymotion.com/services/oembed?url=http://www.dailymotion" +
+            ".com/video/x3fgyln"));
+  }
+
+  @Test
+  public void getSoundCloudOembedUrl() {
+    assertThat(getOembedUrl(
+        "https://soundcloud.com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien" +
+            "-vermalle?in=benjamin-roux-10/sets/lazy-compagny"),
+        is("https://soundcloud.com/oembed?url=http://soundcloud" +
+            ".com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in" +
+            "=benjamin-roux-10/sets/lazy-compagny&format=json"));
   }
 }
