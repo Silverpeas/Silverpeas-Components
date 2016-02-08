@@ -55,6 +55,7 @@ public class BlogInstancePostConstruction implements ComponentInstancePostConstr
   private NodeDetail getCategoryRootNodeFor(String componentInstanceId) {
     NodeDetail rootCategory = new NodeDetail();
     rootCategory.setNodePK(new NodePK("0", componentInstanceId));
+    rootCategory.setFatherPK(null);
     rootCategory.setUseId(true);
     rootCategory.setName("Accueil Catégories");
     rootCategory.setDescription("Racine Catégories");
@@ -67,6 +68,7 @@ public class BlogInstancePostConstruction implements ComponentInstancePostConstr
   private NodeDetail getArchiveRootNodeFor(String componentInstanceId) {
     NodeDetail rootArchive = new NodeDetail();
     rootArchive.setNodePK(new NodePK("1", componentInstanceId));
+    rootArchive.setFatherPK(null);
     rootArchive.setUseId(true);
     rootArchive.setName("Accueil Archives");
     rootArchive.setDescription("Racine Archives");

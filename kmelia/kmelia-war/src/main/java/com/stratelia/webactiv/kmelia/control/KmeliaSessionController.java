@@ -2200,7 +2200,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       LocalizationBundle timeSettings =
           ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.timeAxisBundle",
               getLanguage());
-      Enumeration<String> keys = timeSettings.getKeys();
+      Enumeration<String> keys = timeSettings.getSpecificKeys();
       List<Integer> orderKeys = new ArrayList<>();
       while (keys.hasMoreElements()) {
         String keyStr = keys.nextElement();

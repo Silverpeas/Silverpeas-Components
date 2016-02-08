@@ -55,6 +55,7 @@ public class GalleryInstancePostConstruction implements ComponentInstancePostCon
   private NodeDetail getGalleryRootNodeFor(String componentInstanceId) {
     NodeDetail rootCategory = new NodeDetail();
     rootCategory.setNodePK(new NodePK("0", componentInstanceId));
+    rootCategory.setFatherPK(null);
     rootCategory.setUseId(true);
     rootCategory.setName("Accueil");
     rootCategory.setDescription("La Racine");
@@ -67,6 +68,7 @@ public class GalleryInstancePostConstruction implements ComponentInstancePostCon
   private NodeDetail getHomeGalleryNodeFor(String componentInstanceId, NodeDetail inRootNode) {
     NodeDetail rootArchive = new NodeDetail();
     rootArchive.setNodePK(new NodePK("1", componentInstanceId));
+    rootArchive.setFatherPK(null);
     rootArchive.setName("Mon album");
     rootArchive.setDescription("Racine Archives");
     rootArchive.setCreatorId(UserDetail.getCurrentRequester().getId());
