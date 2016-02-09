@@ -60,7 +60,7 @@ function notify()
 }
 </script>
 </head>
-<body  bgcolor="#ffffff" leftmargin="7" topmargin="0" marginwidth="7" marginheight="0">
+<body>
 <form name="formRefresh" id="formRefresh">
 </form>
 <%
