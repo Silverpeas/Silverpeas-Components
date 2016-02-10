@@ -24,14 +24,11 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
     super(userId);
   }
 
-  /**
-   * This constructor must be called from the back-office on an operation of copy / paste.
-   * @param pasteDetail
-   */
   public KmeliaCopyDetail(PasteDetail pasteDetail) {
-    setOptions(new HashMap<String, String>(pasteDetail.getOptions()));
+    setOptions(
+        pasteDetail.getOptions() != null ? new HashMap<String, String>(pasteDetail.getOptions()) :
+            null);
     setUserId(pasteDetail.getUserId());
-    getOptions().put(ADMINISTRATIVE_OPERATION, Boolean.TRUE.toString());
   }
 
   public static KmeliaCopyDetail fromPasteDetail(KmeliaPasteDetail pasteDetail) {
@@ -76,7 +73,7 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
 
   public void addOption(String key, String value) {
     if (getOptions() == null) {
-      super.setOptions(new HashMap<String, String>());
+      setOptions(new HashMap<String, String>());
     }
     getOptions().put(key, value);
   }
