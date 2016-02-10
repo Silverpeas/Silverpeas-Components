@@ -657,7 +657,7 @@ a.button.refuse span {
 
 #creationArea .profilPhoto, #updateArea .profilPhoto {
 	position:absolute;
-	top:0;
+	top:15px;
 	left:0;
 	width:30px;
 	height:30px;

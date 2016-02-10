@@ -758,9 +758,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("paste")) {
-        kmelia.paste();
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("ToAlertUserAttachment")) { // utilisation de alertUser et
         // alertUserPeas
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
@@ -1331,8 +1328,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (kmaxMode) {
           request.setAttribute("BrowseInfo", publication.getName());
         } else {
-          request.setAttribute("BrowseInfo", kmelia.getSessionPathString() + " > " + publication.
-              getName());
+          String browseInfo = kmelia.getSessionPathString();
+          if (StringUtil.isDefined(browseInfo)) {
+            browseInfo += " > ";
+          }
+          browseInfo += publication.getName(kmelia.getCurrentLanguage());
+          request.setAttribute("BrowseInfo", browseInfo);
         }
         request.setAttribute("ObjectId", publication.getId());
         request.setAttribute("Language", kmelia.getLanguage());
