@@ -32,9 +32,6 @@ fieldset#answerFieldset legend {
 
 #questionFieldset .field, 
 #answerFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 

@@ -272,9 +272,6 @@ input[type="radio"], input[type="checkbox"] {
 
 #infoFieldset .field, 
 #moderatorsFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 

@@ -43,9 +43,6 @@ fieldset#foldersFieldset legend {
 #infoFieldset .field, 
 #specificationsFieldset .field, 
 #foldersFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 

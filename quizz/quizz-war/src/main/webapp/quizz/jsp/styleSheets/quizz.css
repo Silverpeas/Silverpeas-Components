@@ -54,9 +54,6 @@ fieldset#answersFieldset legend {
 #datesFieldset .field,
 #questionFieldset .field,
 #answersFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 
