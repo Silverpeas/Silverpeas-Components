@@ -30,13 +30,8 @@
 
 <%
 	ProcessInstance 	process 			= (ProcessInstance) request.getAttribute("process");
-	String 				versionning 		= (String) request.getAttribute("isVersionControlled");
 	Boolean 			isHistoryTabEnable 	= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean				isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
-
-	boolean isVersionControlled = false;
-	if (versionning.equals("1"))
-		isVersionControlled = true;
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
@@ -52,32 +47,25 @@
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+</head>
+<body>
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
     out.flush();
-%>
-<CENTER>
-
-<br><br>
-
-<%
 
 String url = URLManager.getNewComponentURL(spaceId, componentId)+"attachmentManager";
 getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+
-    URLUtils.encodeQueryNameOrValue(process.getInstanceId())+"&SpaceId="+URLUtils.encodeQueryNameOrValue(spaceId)+"&ComponentId="URLUtils.encodeQueryNameOrValue(componentId)+"&Context=attachment"+"&Url="+URLUtils.encodeQueryNameOrValue(url)).include(request, response);
+    URLUtils.encodeQueryNameOrValue(process.getInstanceId())+"&ComponentId="+URLUtils.encodeQueryNameOrValue(componentId)+"&Url="+URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 
-%>
-</CENTER>
-<%
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-</BODY>
+</body>
+</html>
