@@ -32,6 +32,7 @@ import com.silverpeas.gallery.model.Photo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
@@ -164,13 +165,14 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       fileName = image.getFileName();
     }
     if (StringUtil.isDefined(size)) {
-      fileName = image.getId() + "_" + size + ".jpg";
+      fileName = size + File.separator + fileName;
     }
     String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
 
     try {
-      input = new BufferedInputStream(new FileInputStream(filePath));
+      input =
+          new BufferedInputStream(new FileInputStream(SilverpeasFileProvider.getFile(filePath)));
       read = input.read();
       while (read != -1) {
         // writes bytes into the response
