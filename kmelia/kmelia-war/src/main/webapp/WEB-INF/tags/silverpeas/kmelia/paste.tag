@@ -120,13 +120,16 @@
             <c:if test="${validationMandatory}">
               var userId = jQuery('#ValideurId', this).val();
               if (StringUtil.isNotDefined(userId)) {
-                alert("<fmt:message key="GML.thefield"/> '${ValidatorLabel}' <fmt:message key="GML.MustBeFilled"/>");
-                return;
+                SilverpeasError.add("<fmt:message key="GML.thefield"/> <b>${ValidatorLabel}</b> <fmt:message key="GML.MustBeFilled"/>");
+              } else {
+                extraParams += "&ValidatorIds=" + userId;
               }
-              extraParams += "&ValidatorIds="+userId;
             </c:if>
-            sendPasteAction(folderId, extraParams);
-            return true;
+
+            if (!SilverpeasError.show()) {
+              sendPasteAction(folderId, extraParams);
+              return true;
+            }
           },
           callbackOnClose : function() {
             jQuery('#ValideurId', this).val("");
@@ -148,7 +151,7 @@
           if (result === "ok") {
             pasteDone(folderId);
           } else {
-            notyError(result);
+            SilverpeasError.add(result).show();
           }
         });
       }

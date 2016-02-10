@@ -1328,8 +1328,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (kmaxMode) {
           request.setAttribute("BrowseInfo", publication.getName());
         } else {
-          request.setAttribute("BrowseInfo", kmelia.getSessionPathString() + " > " + publication.
-              getName());
+          String browseInfo = kmelia.getSessionPathString();
+          if (StringUtil.isDefined(browseInfo)) {
+            browseInfo += " > ";
+          }
+          browseInfo += publication.getName(kmelia.getCurrentLanguage());
+          request.setAttribute("BrowseInfo", browseInfo);
         }
         request.setAttribute("ObjectId", publication.getId());
         request.setAttribute("Language", kmelia.getLanguage());

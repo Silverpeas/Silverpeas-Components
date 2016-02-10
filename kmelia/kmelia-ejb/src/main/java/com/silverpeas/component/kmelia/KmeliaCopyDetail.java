@@ -6,7 +6,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
 
@@ -14,8 +13,9 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   public final static String PUBLICATION_CONTENT = PasteDetail.OPTION_PREFIX+"PublicationContent";
   public final static String PUBLICATION_FILES = PasteDetail.OPTION_PREFIX+"PublicationFiles";
   public final static String PUBLICATION_PDC = PasteDetail.OPTION_PREFIX+"PublicationPDC";
-  
   public final static String NODE_RIGHTS = PasteDetail.OPTION_PREFIX+"NodeRights";
+  public final static String ADMINISTRATIVE_OPERATION =
+      PasteDetail.OPTION_PREFIX + "AdministrativeOperation";
 
   private String publicationTargetValidatorIds;
   private String publicationStatus;
@@ -23,10 +23,15 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   public KmeliaCopyDetail(String userId) {
     super(userId);
   }
-  
+
+  /**
+   * This constructor must be called from the back-office on an operation of copy / paste.
+   * @param pasteDetail
+   */
   public KmeliaCopyDetail(PasteDetail pasteDetail) {
-    setOptions(pasteDetail.getOptions());
+    setOptions(new HashMap<String, String>(pasteDetail.getOptions()));
     setUserId(pasteDetail.getUserId());
+    getOptions().put(ADMINISTRATIVE_OPERATION, Boolean.TRUE.toString());
   }
 
   public static KmeliaCopyDetail fromPasteDetail(KmeliaPasteDetail pasteDetail) {
@@ -99,5 +104,10 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   
   private boolean isMustBeCopied(String optionName) {
     return getOptions() == null || StringUtil.getBooleanValue(getOptions().get(optionName));
+  }
+
+  public boolean isAdministrativeOperation() {
+    return getOptions() != null &&
+        StringUtil.getBooleanValue(getOptions().get(ADMINISTRATIVE_OPERATION));
   }
 }

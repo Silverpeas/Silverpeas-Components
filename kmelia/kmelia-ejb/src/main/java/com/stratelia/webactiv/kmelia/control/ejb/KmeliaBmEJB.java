@@ -23,7 +23,6 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
-import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -108,6 +107,7 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
@@ -4893,17 +4893,20 @@ public class KmeliaBmEJB implements KmeliaBm {
       // Handle duplication as a creation, ignore initial parameters
       PublicationDetail newPubli = new PublicationDetail();
       newPubli.setPk(toPubPK);
+      newPubli.setLanguage(publiToCopy.getLanguage());
       newPubli.setName(publiToCopy.getName());
       newPubli.setDescription(publiToCopy.getDescription());
       newPubli.setKeywords(publiToCopy.getKeywords());
-      newPubli.setTranslations(publiToCopy.getTranslations());
+      newPubli.setTranslations(publiToCopy.getClonedTranslations());
       newPubli.setAuthor(publiToCopy.getAuthor());
       newPubli.setCreatorId(userId);
+      newPubli.setBeginDate(publiToCopy.getBeginDate());
+      newPubli.setBeginHour(publiToCopy.getBeginHour());
       newPubli.setEndDate(publiToCopy.getEndDate());
       newPubli.setEndHour(publiToCopy.getEndHour());
       newPubli.setImportance(publiToCopy.getImportance());
-      if (!copyDetail.isPublicationContentMustBeCopied()) {
-        newPubli.setInfoId(null);
+      if (copyDetail.isPublicationContentMustBeCopied()) {
+        newPubli.setInfoId(publiToCopy.getInfoId());
       }
       // use validators selected via UI
       newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
@@ -4925,6 +4928,14 @@ public class KmeliaBmEJB implements KmeliaBm {
       String fromComponentId = publiToCopy.getPK().getInstanceId();
       ForeignPK fromForeignPK = new ForeignPK(publiToCopy.getPK().getId(), fromComponentId);
       PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
+
+      if (copyDetail.isAdministrativeOperation()) {
+        newPubli.setCreatorId(publiToCopy.getCreatorId());
+        newPubli.setCreationDate(publiToCopy.getCreationDate());
+        newPubli.setUpdaterId(publiToCopy.getUpdaterId());
+        newPubli.setUpdateDate(publiToCopy.getUpdateDate());
+        newPubli.setStatus(publiToCopy.getStatus());
+      }
 
       String id = createPublicationIntoTopic(newPubli, nodePK);
       // update id cause new publication is created
@@ -4965,7 +4976,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), fileIds);
         } else {
           // paste wysiwyg
-          fileIds = WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
+          WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
         }
       }
 
