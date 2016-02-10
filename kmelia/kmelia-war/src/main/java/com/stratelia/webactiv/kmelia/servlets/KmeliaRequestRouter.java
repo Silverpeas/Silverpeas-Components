@@ -758,9 +758,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("paste")) {
-        kmelia.paste();
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("ToAlertUserAttachment")) { // utilisation de alertUser et
         // alertUserPeas
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",

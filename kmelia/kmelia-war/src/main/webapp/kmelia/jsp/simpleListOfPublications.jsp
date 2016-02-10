@@ -138,18 +138,11 @@ function topicWysiwyg() {
 }
 
 function pasteFromOperations() {
-  $.progressMessage();
-  var ieFix = new Date().getTime();
-  var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.get(url, {ComponentId : getComponentId(), Action : 'Paste', Id : '0', IEFix : ieFix},
-      function(data) {
-        $.closeProgressMessage();
-        if (data === "ok") {
-          displayPublications("0");
-        } else {
-          notyError(data);
-        }
-      }, 'text');
+  checkOnPaste('0');
+}
+
+function pasteDone(folderId) {
+  displayPublications(folderId);
 }
 
 var searchInProgress = <%=searchContext != null%>;
@@ -289,6 +282,7 @@ $(document).ready(function() {
 
 <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
+<kmelia:paste greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" />
 <kmelia:dragAndDrop greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" forceIgnoreFolder="true" contentLanguage="<%=translation%>" />
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */

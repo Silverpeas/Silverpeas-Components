@@ -23,6 +23,7 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
+import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -3321,11 +3322,11 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private void removeExternalElementsOfPublications(PublicationPK pubPK) {
-    // remove attachments
+    // remove attachments and WYSIWYG
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listAllDocumentsByForeignKey(pubPK, null);
     for (SimpleDocument doc : documents) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc, false);
     }
     // remove comments
     try {
@@ -3333,14 +3334,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_COMMENTAIRES", e);
-    }
-
-    // remove Wysiwyg content
-    try {
-      WysiwygController.deleteWysiwygAttachments(pubPK.getInstanceId(), pubPK.getId());
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications",
-          ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);
     }
 
     // remove Thumbnail content
@@ -4598,7 +4591,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
   
   private boolean checkUserRoles(String componentId, String userId, String... roles) {
-    SilverpeasRole userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+    SilverpeasRole userProfile = SilverpeasRole.from(
+        KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
     boolean checked = userProfile.isInRole(roles);
 
     if (!checked && isRightsOnTopicsEnabled(componentId)) {
@@ -4887,42 +4881,52 @@ public class KmeliaBmEJB implements KmeliaBm {
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
-  public PublicationPK copyPublication(@SourcePK PublicationDetail publi, @TargetPK NodePK nodePK,
-      String userId) {
-    KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(userId);
-    copyDetail.setToNodePK(nodePK);
-    return copyPublication(publi, copyDetail);
-  }
-
-  private PublicationPK copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail) {
+  public PublicationPK copyPublication(@SourcePK PublicationDetail publiToCopy, @TargetPK
+      KmeliaCopyDetail copyDetail) {
     NodePK nodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
     try {
-      publi.setCloneId(null);
-      publi.setCloneStatus("");
-      String fromId = publi.getPK().getId();
-      String fromComponentId = publi.getPK().getInstanceId();
-
-      ForeignPK fromForeignPK = new ForeignPK(publi.getPK().getId(), fromComponentId);
-      PublicationPK fromPubPK = new PublicationPK(publi.getPK().getId(), fromComponentId);
-
       ForeignPK toForeignPK = new ForeignPK("unknown", nodePK);
       PublicationPK toPubPK = new PublicationPK("unknown", nodePK);
       String toComponentId = nodePK.getInstanceId();
 
-      publi.setUpdaterId(userId); // ignore initial parameters
-      publi.setPk(toPubPK);
-
-      if (KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile(nodePK, userId))) {
-        // in case of writers, status of new publication must be processed
-        publi.setStatus(null);
-      }
-
+      // Handle duplication as a creation, ignore initial parameters
+      PublicationDetail newPubli = new PublicationDetail();
+      newPubli.setPk(toPubPK);
+      newPubli.setName(publiToCopy.getName());
+      newPubli.setDescription(publiToCopy.getDescription());
+      newPubli.setKeywords(publiToCopy.getKeywords());
+      newPubli.setTranslations(publiToCopy.getTranslations());
+      newPubli.setAuthor(publiToCopy.getAuthor());
+      newPubli.setCreatorId(userId);
+      newPubli.setEndDate(publiToCopy.getEndDate());
+      newPubli.setEndHour(publiToCopy.getEndHour());
+      newPubli.setImportance(publiToCopy.getImportance());
       if (!copyDetail.isPublicationContentMustBeCopied()) {
-        publi.setInfoId(null);
+        newPubli.setInfoId(null);
+      }
+      // use validators selected via UI
+      newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
+
+      // manage status explicitly to bypass Draft mode
+      if (StringUtil.isDefined(copyDetail.getPublicationStatus())) {
+        String profile = getProfile(userId, nodePK);
+        if (!copyDetail.getPublicationStatus().equals(PublicationDetail.DRAFT)) {
+          if (SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+            newPubli.setStatus(PublicationDetail.VALID);
+          } else {
+            // case of writer
+            newPubli.setStatus(PublicationDetail.TO_VALIDATE);
+          }
+        }
       }
 
-      String id = createPublicationIntoTopic(publi, nodePK);
+      String fromId = publiToCopy.getPK().getId();
+      String fromComponentId = publiToCopy.getPK().getInstanceId();
+      ForeignPK fromForeignPK = new ForeignPK(publiToCopy.getPK().getId(), fromComponentId);
+      PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
+
+      String id = createPublicationIntoTopic(newPubli, nodePK);
       // update id cause new publication is created
       toPubPK.setId(id);
       toForeignPK.setId(id);
@@ -4930,26 +4934,23 @@ public class KmeliaBmEJB implements KmeliaBm {
       SilverTrace.spy("kmelia", "KmeliaBmEJB.copyPublication", "unknown", nodePK.getInstanceId(),
           id, userId, SilverTrace.SPY_ACTION_CREATE);
 
-      // paste vignette
+      // Copy thumbnail
       ThumbnailController.copyThumbnail(fromForeignPK, toForeignPK);
 
-      // Paste positions on Pdc
+      // Copy positions on Pdc
       if (copyDetail.isPublicationPositionsMustBeCopied()) {
         copyPdcPositions(fromPubPK, toPubPK);
       }
 
+      // Copy files
       Map<String, String> fileIds = new HashMap<String, String>();
-      if (copyDetail.isPublicationContentMustBeCopied()) {
-        // paste wysiwyg
-        fileIds = WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
-      }
-
       if (copyDetail.isPublicationFilesMustBeCopied()) {
         fileIds.putAll(copyFiles(fromPubPK, toPubPK));
       }
 
+      // Copy content
       if (copyDetail.isPublicationContentMustBeCopied()) {
-        String xmlFormShortName = publi.getInfoId();
+        String xmlFormShortName = newPubli.getInfoId();
         if (xmlFormShortName != null && !"0".equals(xmlFormShortName)) {
           // Content = XMLForm
           // register xmlForm to publication
@@ -4962,13 +4963,14 @@ public class KmeliaBmEJB implements KmeliaBm {
           RecordSet set = pubTemplate.getRecordSet();
 
           set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), fileIds);
+        } else {
+          // paste wysiwyg
+          fileIds = WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
         }
       }
 
-      // force the update
-      PublicationDetail newPubli = getPublicationDetail(toPubPK);
-      newPubli.setStatusMustBeChecked(false);
-      updatePublication(newPubli);
+      // Index publication to index its files and content
+      publicationBm.createIndex(toPubPK);
 
       return newPubli.getPK();
     } catch (Exception ex) {
