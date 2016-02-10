@@ -57,7 +57,7 @@ function auto_quit_chatroom()
 <html>
 <frameset rows="38,*" frameborder="NO" border="0" framespacing="0">
 	<frame src="head.jsp" name="header" id="header" frameborder="0" scrolling="No" noresize marginwidth="0" marginheight="0">
-	<frameset cols="*,70" frameborder="NO" border="0" framespacing="0">
+	<frameset cols="*,230" frameborder="NO" border="0" framespacing="0">
 		<frame src="roomFrameset.jsp" name="room" id="room" frameborder="0" scrolling="Auto" marginwidth="0" marginheight="0">
 		<frame src="actions.jsp" name="actions" id="actions" scrolling="No" marginwidth="0" marginheight="0">
 	</frameset>

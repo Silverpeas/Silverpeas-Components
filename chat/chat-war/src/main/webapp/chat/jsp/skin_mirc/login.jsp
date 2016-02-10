@@ -117,7 +117,9 @@
 		%><jsp:forward page="<%= response.encodeURL(jspDisplay) %>" /><%
 	}
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");
@@ -209,7 +211,7 @@ function ready()
 function enterPopup(identifiant)
 {
 	document.chat.chatrooms.value=identifiant;
-	manageWindow('open','redirect.jsp?chatrooms='+identifiant+'&name=<%= request.getAttribute("chat_fullName") %>','popupChat','650', '400', 'menubar=no,scrollbars=no,statusbar=no');
+	manageWindow('open','redirect.jsp?chatrooms='+identifiant+'&name=<%= request.getAttribute("chat_fullName") %>','popupChat','800', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
 </script>
 </head>

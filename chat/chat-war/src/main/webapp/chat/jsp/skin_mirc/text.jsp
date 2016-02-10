@@ -91,16 +91,16 @@ function fct_redirect()
   <table width="98%" border="0" cellspacing="1" cellpadding="0">
     <tr>
       <td>
-        <table width="98%" border="0" cellspacing="1" cellpadding="1" align="center">
+        <table width="98%" border="0" cellspacing="1" cellpadding="1" align="center" class="sendArea">
           <tr>
-            <td nowrap class="txtlibform"><%=resource.getString("chat.Message")%>&nbsp;:&nbsp;
+            <td nowrap><span class="txtlibform"><%=resource.getString("chat.Message")%></span>&nbsp;:&nbsp;
               <input type="text" name="msg" size="50" maxlength="120">
               <input type="hidden" name="to" value="ALL">
             </td>
 						<td align="left">
 <%
 						ButtonPane bouton = gef.getButtonPane();
-						bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:chat()", false));
+						bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:chat()", false));
 						out.println(bouton.print());
 %>
 						</td><input type="hidden" name="todo" value="chat">
