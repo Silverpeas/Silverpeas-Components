@@ -53,6 +53,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.file.SilverpeasFileProvider;
 
 /**
  * Class declaration
@@ -167,14 +168,15 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       fileName = image.getFileName();
     }
     if (StringUtil.isDefined(size)) {
-      fileName = image.getId() + "_" + size + ".jpg";
+      fileName = size + File.separator + fileName;
     }
     String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
     SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()",
         "root.MSG_GEN_ENTER_METHOD", "filePath = " + filePath);
     try {
-      input = new BufferedInputStream(new FileInputStream(filePath));
+      input =
+          new BufferedInputStream(new FileInputStream(SilverpeasFileProvider.getFile(filePath)));
       read = input.read();
       while (read != -1) {
         // writes bytes into the response
