@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas</groupId>
-    <artifactId>parent</artifactId>
-    <version>28-SNAPSHOT</version>
+    <artifactId>silverpeas-project</artifactId>
+    <version>1-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -38,13 +38,7 @@
   <description>The different applications that are deployed in standard in Silverpeas</description>
 
   <properties>
-    <!-- Default JDBC properties for test, can be overriden by -D arguments -->
-    <test.jdbc.driver>org.postgresql.Driver</test.jdbc.driver>
-    <test.jdbc.url>jdbc:postgresql://localhost:5432/SilverpeasV5</test.jdbc.url>
-    <test.jdbc.user>postgres</test.jdbc.user>
-    <test.jdbc.password>postgres</test.jdbc.password>
-    <!-- Version of Silverpeas-Core on which it depends -->
-    <core.version>6.0-SNAPSHOT</core.version>
+    <core.version>${project.version}</core.version>
   </properties>
 
   <dependencies>
