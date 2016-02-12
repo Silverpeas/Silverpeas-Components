@@ -32,7 +32,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -68,6 +67,7 @@
   }
 
   %>
+  <c:set var="userHasAdminAccess" value="<%=kmeliaScc.isTopicAdmin(node.getNodePK().getId())%>"/>
   <html>
     <head>
       <view:looknfeel withCheckFormScript="true"/>
@@ -236,12 +236,13 @@
               </table>
             </form>
           </view:board>
-          <br/><center>
+          <br/>
+          <c:if test="${userHasAdminAccess}">
             <view:buttonPane>
-              <view:button action="javascript:onClick=sendData();" label="${validateButtonLabel}" disabled="false" />
-              <view:button action="javascript:onClick=cancelData();" label="${cancelButtonLabel}" disabled="false" />
+              <view:button action="javascript:onClick=sendData();" label="${validateButtonLabel}" disabled="false"/>
+              <view:button action="javascript:onClick=cancelData();" label="${cancelButtonLabel}" disabled="false"/>
             </view:buttonPane>
-          </center>
+          </c:if>
         </view:frame>
       </view:window>
     </body>

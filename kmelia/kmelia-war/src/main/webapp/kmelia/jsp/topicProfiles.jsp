@@ -43,7 +43,6 @@ List<Group> 		groups 			= (List<Group>) request.getAttribute("Groups");
 List<UserDetail> 		users 			= (List<UserDetail>) request.getAttribute("Users");
 
 String rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
-String explainRightsDependsOn = resources.getString("kmelia.RightsDependsOn"+rightsDependsOn);
 String linkedPathString = (String) request.getAttribute("Path");
 String nodeId = node.getNodePK().getId();
 
@@ -52,6 +51,7 @@ if ("ThisTopic".equals(rightsDependsOn)) {
   updateCallback = "TopicProfileSelection?Role="+currentProfile.getName()+"&NodeId="+nodeId;
 }
 %>
+<c:set var="explainRightsDependsOn" value='<%=resources.getString("kmelia.RightsDependsOn"+rightsDependsOn)%>'/>
 <html>
 <head>
 <view:looknfeel withFieldsetStyle="true"/>
@@ -86,20 +86,22 @@ function backToFolder() {
     out.println(tabbedPane.print());
 %>
 <view:frame>
-  <div class="inlineMessage"><%=explainRightsDependsOn%></div>
+  <c:if test="${not empty explainRightsDependsOn}">
+    <div class="inlineMessage">${explainRightsDependsOn}</div>
+  </c:if>
 
   <form name="roleList" action="TopicProfileSetUsersAndGroups" method="post">
     <input type="hidden" name="Role" value="<%=currentProfile.getName()%>"/>
     <input type="hidden" name="NodeId" value="<%=nodeId%>"/>
     <fmt:message var="listLabel" key="GML.selection"/>
-    <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>" id="roleItems" label="${listLabel}" updateCallback="<%=updateCallback%>" />
+    <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>" id="roleItems"
+                                          label="${listLabel}" updateCallback="<%=updateCallback%>"
+                                          formSaveSelector="form[name=roleList]"/>
   </form>
   <view:buttonPane>
     <% if (StringUtil.isDefined(updateCallback)) { %>
-    <fmt:message var="buttonOK" key="GML.validate"/>
-    <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
-    <view:button label="${buttonCancel}" action="javascript:backToFolder()"/>
+    <fmt:message var="backButton" key="GML.back"/>
+    <view:button label="${backButton}" action="javascript:backToFolder()"/>
     <% } %>
   </view:buttonPane>
 </view:frame>
