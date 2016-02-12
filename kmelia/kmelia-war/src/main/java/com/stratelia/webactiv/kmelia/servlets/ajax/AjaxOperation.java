@@ -23,23 +23,8 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.ajax;
 
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.BindToPubliHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.CopyPublicationsHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.CutPublicationsHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.DeleteHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.DeletePublicationsHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.EmptyTrashHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetProfileHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetTopicWysiwygHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.IsSubscriberHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.MovePublicationHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.PasteHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.RenameTopicHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.SortTopicsHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.SubscribeHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UnbindToPubliHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UnsubscribeHandler;
-import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UpdateTopicStatusHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.*;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
@@ -62,7 +47,8 @@ public enum AjaxOperation {
   MovePublication(new MovePublicationHandler(), true),
   DeletePublications(new DeletePublicationsHandler(), true),
   CopyPublications(new CopyPublicationsHandler(), true),
-  CutPublications(new CutPublicationsHandler(), true);
+  CutPublications(new CutPublicationsHandler(), true),
+  IsClipboardContainsCopiedItems(new IsClipboardContainsCopiedItemsHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;

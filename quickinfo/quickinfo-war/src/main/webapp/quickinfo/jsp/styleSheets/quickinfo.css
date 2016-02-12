@@ -195,10 +195,7 @@ fieldset#news-thumbnail legend {
 #BeginDateArea,
 #EndDateArea,
 #thumb  {
-  clear: both;
   width: 98%;
-  display:block;
-  float:none;
 }
 
 #descriptionArea textarea {

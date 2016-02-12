@@ -512,9 +512,6 @@ div.tableBoard {
     background: url("../../../util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0 transparent;
 }
 #classifiedNumberArea, #classifiedNameArea, #descriptionArea, #creationDateArea, #updateDateArea, #validationDateArea, #mandatoryArea, .field.thumb {
-    clear: both;
-    display: block;
-    float: none;
     width: 98%;
 }
 #descriptionArea textarea, #classifiedNameArea input{

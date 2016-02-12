@@ -53,6 +53,7 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
 
     KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(pasteDetail);
     copyDetail.addOption(KmeliaCopyDetail.NODE_RIGHTS, "true");
+    copyDetail.addOption(KmeliaCopyDetail.ADMINISTRATIVE_OPERATION, Boolean.TRUE.toString());
 
     NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, fromComponentId);
     NodePK targetPK = new NodePK(NodePK.ROOT_NODE_ID, toComponentId);

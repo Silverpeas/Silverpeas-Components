@@ -411,6 +411,7 @@ function getString(key) {
 
 <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
+<kmelia:paste greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" />
 <kmelia:dragAndDrop greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" contentLanguage="<%=translation%>" />
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */

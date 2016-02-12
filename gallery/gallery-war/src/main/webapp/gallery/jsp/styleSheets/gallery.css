@@ -417,9 +417,6 @@ br.clear {
 
 /******** pour fieldset *************/
 #urlArea, #titleArea, #descriptionArea, #downloadArea,  #fileArea, #authorArea, #keywordArea, #generalArea, #fileNameArea {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 

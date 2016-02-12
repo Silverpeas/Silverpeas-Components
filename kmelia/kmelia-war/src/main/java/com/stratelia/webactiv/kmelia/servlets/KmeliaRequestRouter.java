@@ -28,7 +28,6 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.record.GenericDataRecord;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.SearchContext;
@@ -729,9 +728,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("paste")) {
-        kmelia.paste();
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("ToAlertUserAttachment")) { // utilisation de alertUser et
         // alertUserPeas
         try {
@@ -1261,8 +1257,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (kmaxMode) {
           request.setAttribute("BrowseInfo", publication.getName());
         } else {
-          request.setAttribute("BrowseInfo", kmelia.getSessionPathString() + " > " + publication.
-              getName());
+          String browseInfo = kmelia.getSessionPathString();
+          if (StringUtil.isDefined(browseInfo)) {
+            browseInfo += " > ";
+          }
+          browseInfo += publication.getName(kmelia.getCurrentLanguage());
+          request.setAttribute("BrowseInfo", browseInfo);
         }
         request.setAttribute("ObjectId", publication.getId());
         request.setAttribute("Language", kmelia.getLanguage());

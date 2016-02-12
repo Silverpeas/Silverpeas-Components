@@ -110,9 +110,6 @@ fieldset#answers legend {
 #info .field, 
 #dates .field,
 #answers .field {
-  clear: both;
-    display: block;
-    float: none;
     width: 98%;
 }
 

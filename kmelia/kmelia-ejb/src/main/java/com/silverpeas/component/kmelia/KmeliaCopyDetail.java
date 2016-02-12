@@ -36,16 +36,30 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   public final static String PUBLICATION_CONTENT = PasteDetail.OPTION_PREFIX + "PublicationContent";
   public final static String PUBLICATION_FILES = PasteDetail.OPTION_PREFIX + "PublicationFiles";
   public final static String PUBLICATION_PDC = PasteDetail.OPTION_PREFIX + "PublicationPDC";
-
   public final static String NODE_RIGHTS = PasteDetail.OPTION_PREFIX + "NodeRights";
+  public final static String ADMINISTRATIVE_OPERATION =
+      PasteDetail.OPTION_PREFIX + "AdministrativeOperation";
+
+  private String publicationTargetValidatorIds;
+  private String publicationStatus;
 
   public KmeliaCopyDetail(String userId) {
     super(userId);
   }
 
   public KmeliaCopyDetail(PasteDetail pasteDetail) {
-    setOptions(pasteDetail.getOptions());
+    setOptions(
+        pasteDetail.getOptions() != null ? new HashMap<>(pasteDetail.getOptions()) :
+            null);
     setUserId(pasteDetail.getUserId());
+  }
+
+  public static KmeliaCopyDetail fromPasteDetail(KmeliaPasteDetail pasteDetail) {
+    KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(pasteDetail.getUserId());
+    copyDetail.setToNodePK(pasteDetail.getToPK());
+    copyDetail.setPublicationStatus(pasteDetail.getStatus());
+    copyDetail.setPublicationTargetValidatorIds(pasteDetail.getTargetValidatorIds());
+    return copyDetail;
   }
 
   public void setFromNodePK(NodePK fromNodePK) {
@@ -64,11 +78,20 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
     return getToPK();
   }
 
-  public void addOption(String key, String value) {
-    if (getOptions() == null) {
-      super.setOptions(new HashMap<>());
-    }
-    getOptions().put(key, value);
+  public String getPublicationValidatorIds() {
+    return publicationTargetValidatorIds;
+  }
+
+  public void setPublicationTargetValidatorIds(final String ids) {
+    this.publicationTargetValidatorIds = ids;
+  }
+
+  public String getPublicationStatus() {
+    return publicationStatus;
+  }
+
+  public void setPublicationStatus(final String publicationStatus) {
+    this.publicationStatus = publicationStatus;
   }
 
   public boolean isPublicationHeaderMustBeCopied() {
@@ -94,5 +117,10 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
 
   private boolean isMustBeCopied(String optionName) {
     return getOptions() == null || StringUtil.getBooleanValue(getOptions().get(optionName));
+  }
+
+  public boolean isAdministrativeOperation() {
+    return getOptions() != null &&
+        StringUtil.getBooleanValue(getOptions().get(ADMINISTRATIVE_OPERATION));
   }
 }

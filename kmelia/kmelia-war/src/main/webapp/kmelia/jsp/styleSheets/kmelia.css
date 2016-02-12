@@ -657,7 +657,7 @@ a.button.refuse span {
 
 #creationArea .profilPhoto, #updateArea .profilPhoto {
 	position:absolute;
-	top:0;
+	top:5px;
 	left:0;
 	width:30px;
 	height:30px;
@@ -685,9 +685,6 @@ a.button.refuse span {
 
 #codificationArea, #pubNameArea, #descriptionArea , #keywordsArea, #authorArea, #draftOutArea, #endArea, #beginArea, #thumb, #validatorArea{
 	width:98%;
-	clear:both;
-	display:block;
-	float:none;
 }
 
 #stateArea img, #languageArea img {

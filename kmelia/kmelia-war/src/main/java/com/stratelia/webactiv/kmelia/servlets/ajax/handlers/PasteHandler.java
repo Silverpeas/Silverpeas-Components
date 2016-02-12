@@ -23,29 +23,32 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.util.clipboard.ClipboardException;
+import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
+import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.logging.SilverLogger;
 
 public class PasteHandler implements AjaxHandler {
 
   @Override
   public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
     String id = request.getParameter("Id");
+    String state = request.getParameter("State");
+    String validatorIds = request.getParameter("ValidatorIds");
     try {
-      controller.paste(id);
+      NodePK toPK = new NodePK(id, controller.getComponentId());
+      KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(toPK);
+      pasteDetail.setStatus(state);
+      pasteDetail.setTargetValidatorIds(validatorIds);
+      controller.paste(pasteDetail);
       return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "PasteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }catch (ClipboardException e) {
-      SilverTrace.error("kmelia", "PasteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
+    } catch (ClipboardException e) {
+      SilverLogger.getLogger(this).error("error during paste operation", e);
       return e.getMessage();
     }
   }
