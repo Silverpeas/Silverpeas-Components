@@ -166,7 +166,7 @@ public class EventDAO {
     PreparedStatement stmt3 = connection.prepareStatement(deleteEvents)) {
       stmt1.setString(1, instanceId);
       stmt2.setString(1, instanceId);
-      stmt2.setString(1, instanceId);
+      stmt3.setString(1, instanceId);
       stmt1.execute();
       stmt2.execute();
       stmt3.execute();
