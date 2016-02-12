@@ -39,7 +39,7 @@ import javax.transaction.Transactional;
  * @author mmoquillon
  */
 @Named
-public class YellowPagesInstancePostConstruction implements ComponentInstancePostConstruction {
+public class YellowpagesInstancePostConstruction implements ComponentInstancePostConstruction {
 
   @Transactional
   @Override
@@ -58,6 +58,7 @@ public class YellowPagesInstancePostConstruction implements ComponentInstancePos
   private NodeDetail getContactsNodeFor(String componentInstanceId) {
     NodeDetail root = new NodeDetail();
     root.setNodePK(new NodePK("0", componentInstanceId));
+    root.setFatherPK(null);
     root.setUseId(true);
     root.setName("Accueil");
     root.setDescription("");
@@ -69,24 +70,24 @@ public class YellowPagesInstancePostConstruction implements ComponentInstancePos
   private NodeDetail getBinNodeFor(String componentInstanceId, NodeDetail root) {
     NodeDetail bin = new NodeDetail();
     bin.setNodePK(new NodePK("1", componentInstanceId));
+    bin.setFatherPK(root.getFatherPK());
     bin.setUseId(true);
     bin.setName("Corbeille");
     bin.setDescription("Vous trouvez ici les contacts que vous avez supprimé");
     bin.setCreatorId(UserDetail.getCurrentRequester().getId());
     bin.setLevel(2);
-    bin.setFatherPK(root.getFatherPK());
     return bin;
   }
 
   private NodeDetail getDzNodeFor(String componentInstanceId, NodeDetail root) {
     NodeDetail dz = new NodeDetail();
     dz.setNodePK(new NodePK("2", componentInstanceId));
+    dz.setFatherPK(root.getFatherPK());
     dz.setUseId(true);
     dz.setName("Déclassées");
     dz.setDescription("Vos contacts inaccessibles se retrouvent ici");
     dz.setCreatorId(UserDetail.getCurrentRequester().getId());
     dz.setLevel(2);
-    dz.setFatherPK(root.getFatherPK());
     return dz;
   }
 }
