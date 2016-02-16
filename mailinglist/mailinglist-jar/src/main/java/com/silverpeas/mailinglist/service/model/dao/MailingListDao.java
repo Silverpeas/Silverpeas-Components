@@ -33,15 +33,15 @@ public interface MailingListDao {
     return ServiceProvider.getService(MailingListDao.class);
   }
 
-  public String createMailingList(MailingList mailingList);
+  String createMailingList(MailingList mailingList);
 
-  public void updateMailingList(MailingList mailingList);
+  void updateMailingList(MailingList mailingList);
 
-  public void deleteMailingList(MailingList mailingList);
+  void deleteMailingList(MailingList mailingList);
 
-  public MailingList findById(String id);
+  MailingList findById(String id);
 
-  public MailingList findByComponentId(String componentId);
+  MailingList findByComponentId(String componentId);
 
-  public List<MailingList> listMailingLists();
+  List<MailingList> listMailingLists();
 }

@@ -29,5 +29,4 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("user")
 public class InternalUserSubscriber extends InternalSubscriber {
-  private static final long serialVersionUID = -7319522927777183127L;
 }

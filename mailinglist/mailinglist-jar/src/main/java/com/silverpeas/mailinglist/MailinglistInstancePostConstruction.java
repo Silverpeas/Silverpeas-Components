@@ -23,28 +23,31 @@
  */
 package com.silverpeas.mailinglist;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import com.silverpeas.mailinglist.model.MailingListComponent;
 import com.silverpeas.mailinglist.service.MailingListServicesProvider;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
 
 /**
- * Delete the mailing connection data and remove the mails fetching scheduler related to the
- * MailingList instance that is being deleted.
+ * Registers for the spawned MailingList instance a message checkers to check and fetch new
+ * incoming messages.
  * @author mmoquillon
  */
 @Named
-public class MailingListInstancePreDestruction implements ComponentInstancePreDestruction {
+public class MailinglistInstancePostConstruction implements ComponentInstancePostConstruction {
 
-  /**
-   * Performs pre destruction tasks in the behalf of the specified MailingList instance.
-   * @param componentInstanceId the unique identifier of the MailingList instance.
-   */
   @Transactional
   @Override
-  public void preDestroy(final String componentInstanceId) {
-    MailingListServicesProvider.getMailingListService().deleteMailingList(componentInstanceId);
-    MailingListServicesProvider.getMessageChecker().removeListener(componentInstanceId);
+  public void postConstruct(final String componentInstanceId) {
+    MailingList mailingList = new MailingList();
+    mailingList.setComponentId(componentInstanceId);
+
+    MailingListServicesProvider.getMailingListService().createMailingList(mailingList);
+
+    MailingListComponent component = new MailingListComponent(componentInstanceId);
+    MailingListServicesProvider.getMessageChecker().addMessageListener(component);
   }
 }
