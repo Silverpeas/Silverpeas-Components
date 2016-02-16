@@ -71,6 +71,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeSelection;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -90,6 +91,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.cache.service.CacheServiceProvider.getSessionCacheService;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 
@@ -625,7 +628,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande de média
     // 1. création du message
     OrganizationController orga = getOrganisationController();
-    UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
+    UserDetail[] admins = orga.getUsers("-1", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
     String url = URLManager.getURL(null, getComponentId()) + "Main";
 
@@ -877,7 +880,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // 1. création du message
 
     OrganizationController orga = getOrganisationController();
-    UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
+    UserDetail[] admins = orga.getUsers("-1", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
     String url = URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId;
@@ -1382,29 +1385,28 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public PublicationTemplate getTemplate(boolean register) throws PublicationTemplateException {
-    return getTemplate(getXMLFormName(), register);
+  public PublicationTemplate getTemplate() throws PublicationTemplateException {
+    return getTemplate(getXMLFormName());
   }
 
-  public PublicationTemplate getOrderTemplate(boolean register)
-      throws PublicationTemplateException {
-    return getTemplate(getOrderForm(), register);
+  public PublicationTemplate getOrderTemplate() throws PublicationTemplateException {
+    return getTemplate(getOrderForm());
   }
 
-  private PublicationTemplate getTemplate(String fileName, boolean register)
-      throws PublicationTemplateException {
+  private PublicationTemplate getTemplate(String fileName) throws PublicationTemplateException {
+    PublicationTemplate pub = null;
     if (StringUtil.isDefined(fileName)) {
       String xmlFormShortName =
           fileName.substring(fileName.indexOf("/") + 1, fileName.indexOf("."));
       String registerId = getComponentId() + ":" + xmlFormShortName;
-      if (register) {
-        // affectation du formulaire à la médiathèque
+      final String sessionCacheKey = this.getClass().getName() + registerId;
+      if (getSessionCacheService().get(sessionCacheKey) == null) {
         getPublicationTemplateManager().addDynamicPublicationTemplate(registerId, fileName);
+        getSessionCacheService().put(sessionCacheKey, registerId);
       }
-      PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(registerId);
-      return pub;
+      pub = getPublicationTemplateManager().getPublicationTemplate(registerId);
     }
-    return null;
+    return pub;
   }
 
 }
