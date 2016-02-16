@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
@@ -42,7 +41,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
@@ -666,8 +664,11 @@ public class ForumsDAO {
   }
 
   private static final String FORUM_RIGHTS_DELETION = "delete from " + RIGHTS_TABLE + " where " +
-      FORUM_COLUMN_FORUM_ID + " in (select " + FORUM_COLUMN_FORUM_ID +
-      " from sc_forums_forum where " + FORUM_COLUMN_INSTANCE_ID + "= ?)";
+      FORUM_COLUMN_FORUM_ID + " in ";
+  private static final String FORUM_HISTORY_DELETION = "delete from " + HISTORY_TABLE +
+      " where messageId in (select messageId from " + MESSAGE_TABLE +
+      " as m JOIN sc_forums_forum as f on m." + FORUM_COLUMN_FORUM_ID + " = f." +
+      FORUM_COLUMN_FORUM_ID + " and " + FORUM_COLUMN_INSTANCE_ID + "= ?)";
   private static final String FORUM_MESSAGES_DELETION = "delete from " + MESSAGE_TABLE + " where " +
       FORUM_COLUMN_FORUM_ID + " in (select " + FORUM_COLUMN_FORUM_ID +
       " from sc_forums_forum where " + FORUM_COLUMN_INSTANCE_ID + "= ?)";
@@ -676,7 +677,18 @@ public class ForumsDAO {
 
 
   public static void deleteAllForums(Connection con, String instanceId) throws SQLException {
-    try(PreparedStatement statement = con.prepareStatement(FORUM_RIGHTS_DELETION)) {
+    List<Integer> forumIds = new ArrayList<>(getAllForumsByInstanceId(con, instanceId));
+    StringBuilder listOfIds = new StringBuilder("(");
+    for (int i = 0; i < forumIds.size() - 1; i++) {
+      listOfIds.append("'").append(forumIds.get(i)).append("', ");
+    }
+    listOfIds.append("'").append(forumIds.get(forumIds.size() - 1)).append("')");
+    if (listOfIds.length() > 0) {
+      try (PreparedStatement statement = con.prepareStatement(FORUM_RIGHTS_DELETION + listOfIds.toString())) {
+        statement.execute();
+      }
+    }
+    try(PreparedStatement statement = con.prepareStatement(FORUM_HISTORY_DELETION)) {
       statement.setString(1, instanceId);
       statement.execute();
     }
