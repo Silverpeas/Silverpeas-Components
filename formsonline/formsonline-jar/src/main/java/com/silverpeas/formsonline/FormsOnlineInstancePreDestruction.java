@@ -66,35 +66,9 @@ public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDe
   @Override
   public void preDestroy(final String componentInstanceId) {
     try(Connection connection = DBUtil.openConnection()) {
-      deleteFormsRecords(connection, componentInstanceId);
-      deleteFormsRecords(connection, componentInstanceId);
+      deleteForms(connection, componentInstanceId);
     } catch (SQLException e) {
       throw new RuntimeException(e.getMessage(), e);
-    }
-  }
-
-  private void deleteFormsRecords(Connection con, String componentId) {
-    List<String> xmlFormNames = new ArrayList<>();
-    try (PreparedStatement stmt = con.prepareStatement(FORMS_QUERY)) {
-      stmt.setString(1, componentId);
-      try (ResultSet rs = stmt.executeQuery()) {
-        while (rs.next()) {
-          xmlFormNames.add(rs.getString("xmlFormName"));
-        }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException("Cannot get forms registered by " + componentId, e);
-    }
-    try {
-      // delete records from each template found
-      for (final String xmlFormName : xmlFormNames) {
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-        PublicationTemplateManager.getInstance()
-            .removePublicationTemplate(componentId + ":" + xmlFormShortName);
-      }
-    } catch (PublicationTemplateException e) {
-      throw new RuntimeException("Cannot delete forms' records for " + componentId, e);
     }
   }
 
