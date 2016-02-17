@@ -38,6 +38,7 @@ public class GalleryWarBuilder extends BasicCoreWarBuilder {
   protected <T> GalleryWarBuilder(final Class<T> test) {
     super(test);
     addPackages(true, "com.silverpeas.gallery");
+    addMavenDependencies("commons-httpclient:commons-httpclient");
     addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
     addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
     addMavenDependencies("org.silverpeas.core.ejb-core:comment");
