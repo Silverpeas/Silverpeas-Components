@@ -113,7 +113,6 @@ function sendActionData() {
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");
-browseBar.setExtraInformation(resource.getString("projectManager.DefinirProjet"));
 
 out.println(window.printBefore());
 
@@ -141,7 +140,7 @@ out.println(board.printBefore());
     <td><%=orgaFullName%></td>
 </tr>
 <tr>
-	<td class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> <%=resource.getString("projectManager.Action")%> :</td>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> :</td>
     <td><input type="text" name="Nom" value="<%=nom%>" size="60" maxlength="150">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" border="0"></td>
 </tr>
 <tr>
