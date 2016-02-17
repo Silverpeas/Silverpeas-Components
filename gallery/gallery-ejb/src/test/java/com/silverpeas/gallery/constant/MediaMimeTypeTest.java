@@ -24,12 +24,9 @@
 
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.gallery.GalleryWarBuilder;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.silverpeas.test.rule.CommonAPI4Test;
 
 import java.io.File;
 import java.util.HashSet;
@@ -38,13 +35,10 @@ import java.util.Set;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(Arquillian.class)
 public class MediaMimeTypeTest {
 
-  @Deployment
-  public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(MediaMimeTypeTest.class).build();
-  }
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void verifyMediaMimeTypes() {

@@ -24,25 +24,14 @@
 
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.gallery.GalleryWarBuilder;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static com.silverpeas.gallery.constant.StreamingProvider.getOembedUrl;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(Arquillian.class)
 public class StreamingProviderTest {
-
-  @Deployment
-  public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(StreamingProviderTest.class).build();
-  }
 
   @Test
   public void testFrom() {
@@ -107,7 +96,7 @@ public class StreamingProviderTest {
     assertThat(getOembedUrl(
         "https://soundcloud.com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien" +
             "-vermalle?in=benjamin-roux-10/sets/lazy-compagny"),
-        is("https://soundcloud.com/oembed?url=http://soundcloud" +
+        is("http://soundcloud.com/oembed?url=http://soundcloud" +
             ".com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in" +
             "=benjamin-roux-10/sets/lazy-compagny&format=json"));
   }

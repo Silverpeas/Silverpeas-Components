@@ -24,24 +24,13 @@
 
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.gallery.GalleryWarBuilder;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-@RunWith(Arquillian.class)
 public class MediaDefinitionTest {
-
-  @Deployment
-  public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(MediaDefinitionTest.class).build();
-  }
 
   @Test
   public void fromNameOrLabel() {
