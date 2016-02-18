@@ -134,9 +134,9 @@
 	browseBar.setDomainName(scc.getSpaceLabel()); 
 	browseBar.setComponentName(scc.getComponentLabel(), "Main");
 	if (action.equals("CreateCategory")) {
-		browseBar.setPath(resource.getString("questionReply.addCategory"));
+		browseBar.setPath(resource.getString("questionReply.createCategory"));
 	} else {
-		browseBar.setPath(resource.getString("questionRpely.editCategory"));
+		browseBar.setPath(resource.getString("questionReply.updateCategory"));
 	}
 
 	out.println(window.printBefore());

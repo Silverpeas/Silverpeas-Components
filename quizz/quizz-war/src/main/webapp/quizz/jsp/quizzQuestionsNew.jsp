@@ -775,7 +775,7 @@ function update_suggestion(quizz_id)
    document.quizz.Action.value="UpdateSuggestion";
    if (!isWhitespace(document.quizz.txa_suggestion.value)) {
       if (!isValidTextArea(document.quizz.txa_suggestion)) {
-            errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n";
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n";
             errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("EducationSuggestion")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
             window.alert(errorMsg);
             return;

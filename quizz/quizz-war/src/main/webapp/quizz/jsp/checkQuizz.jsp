@@ -103,4 +103,7 @@
         request, response);
     return;
   }
+  LocalizationBundle surveyResource = ResourceLocator
+      .getLocalizationBundle("org.silverpeas.survey.multilang.surveyBundle",
+          quizzScc.getLanguage());
 %>
