@@ -29,7 +29,6 @@ import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -81,6 +80,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
@@ -780,33 +780,27 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       ThumbnailException {
     ThumbnailSettings thumbnailSettings = ksc.getThumbnailSettings();
     String vignette_url;
-    String size = null;
+    String width = String.valueOf(thumbnailSettings.getWidth());
+    String height = String.valueOf(thumbnailSettings.getHeight());
+    
     if (pub.getImage().startsWith("/")) {
       vignette_url = pub.getImage();
-      size = "133x100";
     } else {
       vignette_url = FileServerUtils.getUrl(pub.getPK().
-          getComponentName(),
-          "vignette", pub.getImage(), pub.getImageMimeType(),
+              getComponentName(), "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
-      if (!StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
-        // thumbnail is not cropped, process sizes
-        String[] computedSize = new String[2];
-        File image = getThumbnail(pub, publicationSettings);
-        if (thumbnailSettings.getWidth() != -1) {
-          computedSize = ImageUtil.getWidthAndHeightByWidth(image, thumbnailSettings.getWidth());
-        } else if (thumbnailSettings.getHeight() != -1) {
-          computedSize = ImageUtil.getWidthAndHeightByHeight(image, thumbnailSettings.getHeight());
-        }
-        if (StringUtil.isDefined(computedSize[0]) && StringUtil.isDefined(computedSize[1])) {
-          size = computedSize[0] + "x" + computedSize[1];
-        }
+      if (StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
+        // thumbnail is cropped, no resize
+        width = null;
+        height = null;
       }
     }
+
     ImageTag imageTag = new ImageTag();
     imageTag.setSrc(vignette_url);
     imageTag.setType("vignette");
-    if (StringUtil.isDefined(size)) {
+    String size = defaultStringIfNotDefined(width) + "x" + defaultStringIfNotDefined(height);
+    if (!"x".equals(size)) {
       imageTag.setSize(size);
     }
     out.write(imageTag.toString());
