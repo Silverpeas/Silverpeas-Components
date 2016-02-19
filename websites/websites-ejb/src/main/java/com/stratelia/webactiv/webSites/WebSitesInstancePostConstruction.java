@@ -57,6 +57,7 @@ public class WebSitesInstancePostConstruction implements ComponentInstancePostCo
   private NodeDetail getWebSitesRootNodeFor(String componentInstanceId) {
     NodeDetail webSites = new NodeDetail();
     webSites.setNodePK(new NodePK("0", componentInstanceId));
+    webSites.setFatherPK(null);
     webSites.setUseId(true);
     webSites.setName("Accueil");
     webSites.setDescription("La Racine");
