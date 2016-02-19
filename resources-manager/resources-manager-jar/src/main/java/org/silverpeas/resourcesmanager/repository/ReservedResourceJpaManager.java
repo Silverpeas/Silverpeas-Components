@@ -73,4 +73,15 @@ public class ReservedResourceJpaManager
     return listFromNamedQuery("reservedResource.findAllReservedResourcesOfReservation",
         newNamedParameters().add("currentReservationId", currentReservationId));
   }
+
+  /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param instanceId the unique instance identifier.
+   * @return the number of deleted entities.
+   */
+  @Override
+  public long deleteByComponentInstanceId(final String instanceId) {
+    return deleteFromNamedQuery("reservedResource.deleteAllReservedResourcesForComponentInstance",
+        newNamedParameters().add("instanceId", instanceId));
+  }
 }

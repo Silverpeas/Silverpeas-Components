@@ -69,6 +69,10 @@ import static org.silverpeas.resourcesmanager.model.ResourceStatus.*;
     @NamedQuery(name = "reservedResource.deleteAllReservedResourcesForResource",
         query = "DELETE ReservedResource reservedResource " +
             "WHERE reservedResource.id.resourceId = :currentResourceId"),
+    @NamedQuery(name = "reservedResource.deleteAllReservedResourcesForComponentInstance",
+        query = "DELETE FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.reservation IN (SELECT reservation FROM Reservation " +
+            "reservation WHERE reservation.instanceId = :instanceId)"),
     @NamedQuery(name = "reservedResource.findAllReservedResourcesOfReservation",
         query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
             "WHERE reservedResource.id.reservationId = :currentReservationId")})

@@ -41,7 +41,11 @@ import java.io.Serializable;
 @NamedQueries({@NamedQuery(name = "resourceValidator.getResourceValidator",
     query = "SELECT DISTINCT resourceValidator FROM ResourceValidator resourceValidator " +
         "WHERE resourceValidator.id.managerId = :currentUserId AND " +
-        "resourceValidator.id.resourceId = :resourceId")})
+        "resourceValidator.id.resourceId = :resourceId"),
+    @NamedQuery(name = "resourceValidator.deleteAllResourceValidatorsForComponentInstance",
+        query = "DELETE FROM ResourceValidator resourceValidator " +
+            "WHERE resourceValidator.resource IN (SELECT resource FROM Resource resource " +
+            "WHERE resource.instanceId = :instanceId)")})
 public class ResourceValidator
     extends AbstractJpaCustomEntity<ResourceValidator, ResourceValidatorPk>
     implements Serializable {

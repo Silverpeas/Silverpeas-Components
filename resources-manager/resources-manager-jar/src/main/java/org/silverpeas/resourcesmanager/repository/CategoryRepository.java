@@ -32,5 +32,5 @@ import java.util.List;
 
 public interface CategoryRepository extends BasicEntityRepository<Category, UniqueLongIdentifier> {
 
-  public List<Category> findCategoriesByInstanceId(String instanceId);
+  List<Category> findCategoriesByInstanceId(String instanceId);
 }

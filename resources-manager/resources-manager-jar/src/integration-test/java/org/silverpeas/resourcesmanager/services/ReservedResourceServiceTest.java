@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.resourcesmanager.model.ReservedResource;
 import org.silverpeas.resourcesmanager.model.ResourceStatus;
 import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.Arrays;
@@ -52,8 +52,8 @@ public class ReservedResourceServiceTest {
   }
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "reservations_validation_dataset.xml");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("reservations_validation_dataset.sql");
 
   @Deployment
   public static Archive<?> createTestArchive() {
