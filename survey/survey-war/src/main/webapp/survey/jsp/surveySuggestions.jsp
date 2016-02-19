@@ -63,6 +63,7 @@ Button closeButton = (Button) gef.getFormButton(generalMessage.getString("GML.cl
 <body>
 <% 
 Window window = gef.getWindow();
+window.setPopup(true);
 
 BrowseBar browseBar = window.getBrowseBar();
 browseBar.setDomainName(surveyScc.getSpaceLabel());

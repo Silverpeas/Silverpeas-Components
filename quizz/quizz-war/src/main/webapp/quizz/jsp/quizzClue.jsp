@@ -90,6 +90,7 @@ Vector infos(JspWriter out, Collection<Question> Questions, String questionId)  
 
   //objet window
   Window window = gef.getWindow();
+  window.setPopup(true);
   window.setWidth("100%");
   window.printBefore();
 
