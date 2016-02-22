@@ -28,24 +28,24 @@ import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import org.silverpeas.attachment.AttachmentService;
 
 import javax.inject.Named;
-import javax.transaction.Transactional;
+
+import static com.silverpeas.admin.components.ComponentInstancePreDestruction
+    .WORKFLOW_PRE_DESTRUCTION;
 
 /**
  * Removes all the process instances defined for the ProcessManager instance that is being
  * deleted.
  * @author mmoquillon
  */
-@Named
+@Named(WORKFLOW_PRE_DESTRUCTION)
 public class ProcessManagerInstancePreDestruction implements ComponentInstancePreDestruction {
 
   /**
    * Performs pre destruction tasks in the behalf of the specified ProcessManager instance.
    * @param componentInstanceId the unique identifier of the ProcessManager instance.
    */
-  @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
     try {

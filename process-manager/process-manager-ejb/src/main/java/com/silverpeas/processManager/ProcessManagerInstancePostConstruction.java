@@ -29,7 +29,9 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 
 import javax.inject.Named;
-import javax.transaction.Transactional;
+
+import static com.silverpeas.admin.components.ComponentInstancePostConstruction
+    .WORKFLOW_POST_CONSTRUCTION;
 
 /**
  * Find and creates for the spawned ProcessManager instance a process model, id est instantiates
@@ -37,10 +39,9 @@ import javax.transaction.Transactional;
  * an error occurs while creating the workflow, a RuntimeException is thrown.
  * @author mmoquillon
  */
-@Named
+@Named(WORKFLOW_POST_CONSTRUCTION)
 public class ProcessManagerInstancePostConstruction implements ComponentInstancePostConstruction {
 
-  @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
     String xmlFilename = null;
