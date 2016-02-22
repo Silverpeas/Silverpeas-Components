@@ -153,7 +153,7 @@ public class DefaultHandler extends FunctionHandler {
       try {
         classifieds = classifiedsSC.getClassifieds(query, 5);
       } catch (Exception e) {
-        classifieds = new ArrayList<ClassifiedDetail>();
+        classifieds = new ArrayList<>();
       }
       category.setClassifieds(classifieds);
 
