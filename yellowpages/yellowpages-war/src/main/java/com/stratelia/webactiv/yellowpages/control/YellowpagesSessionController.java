@@ -36,7 +36,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.yellowpages.YellowpagesComponentSettings;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -1204,7 +1203,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       try {
         Variant[][] csvHeaderValues = csvReader.parseStream(is);
 
-        int nbColumns = csvReader.getM_nbCols() + csvReader.getM_specificNbCols();
+        int nbColumns = csvReader.getNbCols() + csvReader.getSpecificNbCols();
 
         int currentLine = 1;
         int nbContactsAdded = 0;
@@ -1221,8 +1220,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           CompleteContact contact = new CompleteContact(contactDetail, modelId);
           try {
             List<String> values = new ArrayList<>();
-            for (int column = csvReader.getM_nbCols();
-                 column < csvReader.getM_nbCols() + csvReader.getM_specificNbCols(); column++) {
+            for (int column = csvReader.getNbCols();
+                 column < csvReader.getNbCols() + csvReader.getSpecificNbCols(); column++) {
               String value = formatStringSeparator(CSVRow[column]);
               values.add(value);
             }
