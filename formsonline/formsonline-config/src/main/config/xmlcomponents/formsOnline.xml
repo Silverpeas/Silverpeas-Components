@@ -50,7 +50,6 @@
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
-  <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
   <profiles>
     <profile name="Administrator">
       <label>

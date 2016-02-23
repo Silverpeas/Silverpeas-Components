@@ -42,7 +42,6 @@
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
-  <instanceClassName>com.silverpeas.dataWarning.DataWarningInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

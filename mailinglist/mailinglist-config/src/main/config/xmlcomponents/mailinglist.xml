@@ -50,7 +50,6 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
-  <instanceClassName>com.silverpeas.mailinglist.MailingListInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

@@ -49,7 +49,6 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
-  <instanceClassName>com.silverpeas.blog.BlogInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

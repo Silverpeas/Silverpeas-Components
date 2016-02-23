@@ -49,7 +49,6 @@
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
   <portlet>true</portlet>
-  <instanceClassName>com.silverpeas.rssAgregator.RssAgregatorInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>
