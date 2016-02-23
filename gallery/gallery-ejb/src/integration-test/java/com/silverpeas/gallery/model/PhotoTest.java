@@ -23,9 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryWarBuilder;
-import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
@@ -45,14 +43,7 @@ public class PhotoTest extends AbstractMediaTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return GalleryWarBuilder.onWarForTestClass(PhotoTest.class).testFocusedOn(warBuilder -> {
-      warBuilder.addClasses(GalleryComponentSettings.class, MediaUtil.class);
-      warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
-      warBuilder.addPackages(true, "com.silverpeas.gallery.media");
-      warBuilder.addPackages(true, "com.silverpeas.gallery.model");
-      warBuilder.addPackages(true, "com.silverpeas.gallery.process");
-      warBuilder.addAsResource("maven.properties");
-    }).build();
+    return GalleryWarBuilder.onWarForTestClass(PhotoTest.class).build();
   }
 
   @Test

@@ -40,7 +40,6 @@ import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
 import com.silverpeas.gallery.processing.Size;
 import com.silverpeas.gallery.processing.Watermarker;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,6 +56,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -65,10 +65,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import static com.silverpeas.gallery.constant.MediaResolution.*;
+import static org.apache.commons.io.filefilter.FileFilterUtils.*;
+import static org.silverpeas.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_EXTENSION;
+import static org.silverpeas.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_PREFIX;
 
 public class MediaUtil {
 
@@ -77,7 +81,7 @@ public class MediaUtil {
 
   /**
    * Saves uploaded sound file on file system
-   * @param fileHandler
+   * @param fileHandler the current session file handler
    * @param sound the current sound media
    * @param fileItem the current uploaded sound
    * @throws Exception
@@ -101,7 +105,7 @@ public class MediaUtil {
 
   /**
    * Saves uploaded sound file on file system (In case of drag And Drop upload)
-   * @param fileHandler
+   * @param fileHandler the current session file handler
    * @param sound the current sound media
    * @param uploadedFile the current uploaded sound
    * @throws Exception
@@ -122,7 +126,7 @@ public class MediaUtil {
 
   /**
    * Saves uploaded video file on file system
-   * @param fileHandler
+   * @param fileHandler the current session file handler
    * @param video the current video media
    * @param fileItem the current uploaded video
    * @throws Exception
@@ -147,7 +151,7 @@ public class MediaUtil {
 
   /**
    * Saves uploaded video file on file system (In case of drag And Drop upload)
-   * @param fileHandler
+   * @param fileHandler the current session file handler
    * @param video the current video media
    * @param uploadedFile the current uploaded video
    * @throws Exception
@@ -169,12 +173,12 @@ public class MediaUtil {
 
   /**
    * Saves uploaded photo file on file system with associated thumbnails and watermarks.
-   * @param fileHandler
-   * @param photo
-   * @param image
-   * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
+   * @param fileHandler the current session file handler
+   * @param photo the photo media
+   * @param image the image to register
+   * @param watermark true if watermark must be handled
+   * @param watermarkHD the primary metadata retrieved to compute the watermark
+   * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
   public static void processPhoto(final FileHandler fileHandler, final Photo photo,
@@ -201,12 +205,12 @@ public class MediaUtil {
    * Saves uploaded photo file on file system with associated thumbnails and watermarks. (In case
    * of
    * drag And Drop upload)
-   * @param fileHandler
-   * @param photo
-   * @param image
-   * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
+   * @param fileHandler the current session file handler
+   * @param photo the photo media
+   * @param image the image to register
+   * @param watermark true if watermark must be handled
+   * @param watermarkHD the primary metadata retrieved to compute the watermark
+   * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
   public static void processPhoto(final FileHandler fileHandler, final Photo photo,
@@ -228,9 +232,9 @@ public class MediaUtil {
 
   /**
    * Gets a handled file.
-   * @param fileHandler
-   * @param media
-   * @return
+   * @param fileHandler the current session file handler
+   * @param media the original media file to get.
+   * @return the handled file
    */
   private static HandledFile getHandledFile(FileHandler fileHandler, InternalMedia media) {
     if (StringUtil.isNotDefined(media.getFileName())) {
@@ -242,9 +246,9 @@ public class MediaUtil {
 
   /**
    * Sets the internal metadata. If metadata
-   * @param handledImageFile
-   * @param iMedia
-   * @param supportedMimeTypes
+   * @param handledImageFile the handled file that represents the image
+   * @param iMedia the internal media
+   * @param supportedMimeTypes the set of supported media types
    * @return true if internal data have been set, false otherwise.
    */
   private static boolean setInternalMetadata(HandledFile handledImageFile, InternalMedia iMedia,
@@ -295,11 +299,11 @@ public class MediaUtil {
 
   /**
    * Creation treatment of all the preview image around a photo.
-   * @param handledImageFile
-   * @param photo
-   * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
+   * @param handledImageFile the handled file that represents the image
+   * @param photo the photo media
+   * @param watermark true if watermark must be handled
+   * @param watermarkHD the primary metadata retrieved to compute the watermark
+   * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
   private static void createPhoto(final HandledFile handledImageFile, final Photo photo,
@@ -329,9 +333,8 @@ public class MediaUtil {
       try {
         createThumbnails(handledImageFile, photo, image, watermark, nameForWatermark);
       } catch (final Exception e) {
-        SilverTrace
-            .error("gallery", "MediaHelper.createImage", "gallery.ERR_CANT_CREATE_THUMBNAILS",
-                "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
+        SilverLogger.getLogger("gallery")
+            .error("image = " + photo.getTitle() + " (#" + photo.getId() + ")");
       }
     }
   }
@@ -360,8 +363,8 @@ public class MediaUtil {
             photo.addMetaData(meta);
           }
         } catch (UnsupportedEncodingException e) {
-          SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
-              "Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
+          SilverLogger.getLogger("gallery")
+              .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
         }
       }
     }
@@ -369,8 +372,8 @@ public class MediaUtil {
 
   /**
    * Sets the resolution of a photo.
-   * @param image
-   * @param photo
+   * @param image the image from which the resolution must be red
+   * @param photo the photo media into which the resolution must be saved
    */
   private static void setResolution(final BufferedImage image, final Photo photo) {
     if (image == null) {
@@ -382,11 +385,11 @@ public class MediaUtil {
 
   /**
    * Creates all the thumbnails around a photo.
-   * @param originalHandedImageFile
-   * @param photo
-   * @param originalImage
-   * @param watermark
-   * @param nameWatermark
+   * @param originalHandedImageFile the handled file that represents the original media file
+   * @param photo the photo media
+   * @param originalImage the original image of the original media
+   * @param watermark true if watermark must be handled
+   * @param nameWatermark the watermark to register
    * @throws Exception
    */
   private static void createThumbnails(final HandledFile originalHandedImageFile, final Photo photo,
@@ -434,12 +437,12 @@ public class MediaUtil {
 
   /**
    * Return the written file
-   * @param image
-   * @param outputFile
-   * @param widthParam
-   * @param watermark
-   * @param nameWatermark
-   * @param sizeWatermark
+   * @param image the image from which the resolution must be red
+   * @param outputFile the output file
+   * @param widthParam the width parameter
+   * @param watermark the height parameter
+   * @param nameWatermark the watermark to write on the output file
+   * @param sizeWatermark the size of the watermark
    * @throws Exception
    */
   private static void resizePhoto(final BufferedImage image, final HandledFile outputFile,
@@ -529,12 +532,24 @@ public class MediaUtil {
     // Copy and rename all media that exist into source folder
     if (fromDir.exists()) {
 
-      // Copy thumbnails & watermark (only if it does exist)
-      for (final MediaResolution mediaResolution : new MediaResolution[]{MEDIUM, SMALL, TINY,
-          PREVIEW, LARGE, WATERMARK}) {
-        pasteFile(fromDir.getHandledFile(fromPK.getId() + mediaResolution.getThumbnailSuffix()),
-            toDir.getHandledFile(media.getId() + mediaResolution.getThumbnailSuffix()), cut);
+      // Copy all files which the name starts with the media identifier
+      Collection<HandledFile> srcFiles =
+          fromDir.listFiles(
+              or(
+                  prefixFileFilter(fromPK.getId()),
+                  asFileFilter((file) -> file.getName().matches(
+                      "^" + VIDEO_THUMBNAIL_FILE_PREFIX + "[0-9]+" +
+                          VIDEO_THUMBNAIL_FILE_EXTENSION + "$"))
+                  ),
+              falseFileFilter());
+      int substringIndex = fromPK.getId().length();
+      for (HandledFile srcFile : srcFiles) {
+        String srcFileName = srcFile.getFile().getName();
+        String dstFileName = (srcFileName.startsWith(fromPK.getId())) ?
+            (media.getId() + srcFileName.substring(substringIndex)) : srcFileName;
+        pasteFile(srcFile, toDir.getHandledFile(dstFileName), cut);
       }
+
       // Copy original image
       pasteFile(fromDir.getHandledFile(media.getFileName()), toDir.getHandledFile(media.
           getFileName()), cut);
@@ -544,7 +559,7 @@ public class MediaUtil {
         try {
           fromDir.delete();
         } catch (Exception e) {
-          SilverTrace.error("gallery", "MediaHelper.pasteInternalMedia", "root.MSG_GEN_PARAM_VALUE",
+          SilverLogger.getLogger("gallery").error(
               "Unable to delete source folder : folder path = " + fromDir.getFile().getPath(), e);
         }
       }
@@ -561,7 +576,7 @@ public class MediaUtil {
           fromFile.copyFile(toFile);
         }
       } catch (final Exception e) {
-        SilverTrace.error("gallery", "MediaHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE",
+        SilverLogger.getLogger("gallery").error(
             "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
                 toFile.getFile().getPath(), e);
       }
@@ -608,10 +623,10 @@ public class MediaUtil {
           }
         }
       } catch (MediaMetadataException e) {
-        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_FILE_FORMAT",
-            "Bad image file format " + image.getFile().getPath() + ": " + e.getMessage());
+        SilverLogger.getLogger("gallery")
+            .error("Bad image file format " + image.getFile().getPath() + ": " + e.getMessage());
       } catch (UnsupportedEncodingException e) {
-        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
+        SilverLogger.getLogger("gallery").error(
             "Bad metadata encoding in image " + image.getFile().getPath() + ": " + e.getMessage());
       }
     }

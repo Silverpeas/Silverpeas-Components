@@ -48,7 +48,6 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
-  <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
   <profiles>
     <profile name="user">
       <label>

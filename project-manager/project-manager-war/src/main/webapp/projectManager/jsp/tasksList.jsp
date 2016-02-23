@@ -123,12 +123,12 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 		if (task.isUpdateAvailable())
 		{
 		    Icon updateIcon = iconPane.addIcon();
-		    updateIcon.setProperties(resource.getIcon("projectManager.update"), resource.getString("projectManager.ModifierAction"), "ToUpdateTask?Id="+task.getId());
+		    updateIcon.setProperties(resource.getIcon("projectManager.update"), "", "ToUpdateTask?Id="+task.getId());
 		}
 		if (task.isDeletionAvailable())
 		{
 		    Icon deleteIcon = iconPane.addIcon();
-		    deleteIcon.setProperties(resource.getIcon("projectManager.delete"), resource.getString("projectManager.SupprimerAction"),"javascript:onClick=deleteTask('"+task.getId()+"')");
+		    deleteIcon.setProperties(resource.getIcon("projectManager.delete"), "","javascript:onClick=deleteTask('"+task.getId()+"')");
 		}
 		arrayLine.addArrayCellIconPane(iconPane);
 	} else if (role.equals("responsable")){
@@ -225,22 +225,22 @@ function isCorrectForm() {
      
      if (!isCorrectDate(document.actionForm.DateDebutFrom))
      {
-     	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDatePV")%> (<%=resource.getString("projectManager.Du")%>)' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.Du")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
         errorNb++;
      }
      if (!isCorrectDate(document.actionForm.DateDebutTo))
      {
-     	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDatePV")%> (<%=resource.getString("projectManager.Au")%>)' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.Au")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
         errorNb++;
      }
      if (!isCorrectDate(document.actionForm.DateFinFrom))
      {
-     	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDatePV")%> (<%=resource.getString("projectManager.Du")%>)' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.Du")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
         errorNb++;
      }
      if (!isCorrectDate(document.actionForm.DateFinTo))
      {
-     	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDatePV")%> (<%=resource.getString("projectManager.Au")%>)' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.Au")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
         errorNb++;
      }
      

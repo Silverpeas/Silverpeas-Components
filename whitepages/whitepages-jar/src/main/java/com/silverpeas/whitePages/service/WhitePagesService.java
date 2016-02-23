@@ -36,10 +36,10 @@ public interface WhitePagesService {
     return ServiceProvider.getService(WhitePagesService.class);
   }
 
-  public void createSearchFields(String[] fields, String instanceId);
+  void createSearchFields(String[] fields, String instanceId);
   
-  public SortedSet<SearchField> getSearchFields(String instanceId);
+  SortedSet<SearchField> getSearchFields(String instanceId);
   
-  public void deleteFields(String instanceId);
+  void deleteFields(String instanceId);
   
 }

@@ -51,7 +51,6 @@
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
-  <instanceClassName>org.silverpeas.components.suggestionbox.SuggestionBoxInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

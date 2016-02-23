@@ -31,6 +31,7 @@ import com.silverpeas.kmelia.repository.TopicSearchRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -46,6 +47,7 @@ public class TopicSearchServiceImpl implements TopicSearchService {
   @Inject
   private TopicSearchDao topicSearchDao;
 
+  @Transactional
   @Override
   public void createTopicSearch(TopicSearch kmeliaSearch) {
     topicSearchRepo.saveAndFlush(kmeliaSearch);

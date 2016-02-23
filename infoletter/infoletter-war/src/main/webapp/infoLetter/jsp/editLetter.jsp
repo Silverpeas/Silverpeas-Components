@@ -101,7 +101,7 @@
             objectId="${parution}" />
       </div>
 
-      <textarea rows="5" cols="10" name="Content" id="Content">${parutionContent}</textarea>
+      <textarea rows="5" cols="10" name="editor" id="Content">${parutionContent}</textarea>
     </div>
   </div>
 </form>

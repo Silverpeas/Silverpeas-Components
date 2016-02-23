@@ -50,7 +50,6 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
-  <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>  
   <profiles>
     <profile name="admin">
       <label>

@@ -23,7 +23,7 @@
  */
 package com.silverpeas.projectManager.model;
 
-import com.stratelia.webactiv.calendar.backbone.TodoDetail;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.attachment.model.SimpleDocument;

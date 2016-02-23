@@ -112,6 +112,7 @@
           <include>**/*.jpg</include>
           <include>**/*.xml</include>
           <include>**/*.sql</include>
+          <include>**/*.BeanContainer</include>
         </includes>
         <excludes>
           <exclude>**/*.properties</exclude>

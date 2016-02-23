@@ -74,7 +74,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
         if (DESTINATION_MESSAGE.equalsIgnoreCase(type)) {
           rest.getElements().put(DESTINATION_MESSAGE, request.getParameter("Id"));
           rest.setComponentId(componentSC.getComponentId());
-        } else if ("com.stratelia.webactiv.calendar.backbone.TodoDetail"
+        } else if ("com.stratelia.webactiv.calendar.model.TodoDetail"
             .equalsIgnoreCase(type)) {
           String destination = request.getScheme() + "://"
               + request.getServerName() + ':' + request.getServerPort()

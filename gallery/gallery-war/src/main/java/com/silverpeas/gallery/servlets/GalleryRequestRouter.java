@@ -312,7 +312,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
 
         // prepare xml form data
-        PublicationTemplate template = gallerySC.getTemplate(false);
+        PublicationTemplate template = gallerySC.getTemplate();
         if (template != null) {
           RecordSet recordSet = template.getRecordSet();
           request.setAttribute("Form", template.getUpdateForm());
@@ -551,7 +551,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             request.setAttribute("GetLanguage", gallerySC.getLanguage());
 
             // passage des paramètres pour le formulaire
-            PublicationTemplate template = gallerySC.getTemplate(false);
+            PublicationTemplate template = gallerySC.getTemplate();
             if (template != null) {
               RecordSet recordSet = template.getRecordSet();
               request.setAttribute("Form", template.getUpdateForm());
@@ -669,7 +669,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Repertoire", media.getWorkspaceSubFolderName());
 
         // récupération du formulaire et affichage
-        PublicationTemplate template = gallerySC.getTemplate(false);
+        PublicationTemplate template = gallerySC.getTemplate();
         if (template != null) {
           RecordSet recordSet = template.getRecordSet();
           DataRecord data = recordSet.getRecord(mediaId);
@@ -745,7 +745,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("PDCSearchContext", gallerySC.getPDCSearchContext());
 
         // pour les formulaires
-        PublicationTemplate template = gallerySC.getTemplate(false);
+        PublicationTemplate template = gallerySC.getTemplate();
         if (template != null) {
           // get previous search
           DataRecord data = gallerySC.getXMLSearchContext();
@@ -840,7 +840,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.setSearchKeyWord(word);
 
         // Ajout des éléments de recherche sur form XML
-        PublicationTemplateImpl template = (PublicationTemplateImpl) gallerySC.getTemplate(false);
+        PublicationTemplateImpl template = (PublicationTemplateImpl) gallerySC.getTemplate();
         if (template != null) {
           String templateFileName = template.getFileName();
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
@@ -1096,7 +1096,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if (function.startsWith("Order")) {
         if ("OrderAdd".equals(function)) {
           // Retrieve order form
-          PublicationTemplate template = gallerySC.getOrderTemplate(false);
+          PublicationTemplate template = gallerySC.getOrderTemplate();
           if (template != null) {
             RecordSet recordSet = template.getRecordSet();
             request.setAttribute("Form", template.getUpdateForm());
@@ -1118,7 +1118,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           }
           List<FileItem> items = request.getFileItems();
 
-          PublicationTemplate template = gallerySC.getOrderTemplate(true);
+          PublicationTemplate template = gallerySC.getOrderTemplate();
           if (template != null) {
             RecordSet set = template.getRecordSet();
             Form form = template.getUpdateForm();
@@ -1180,7 +1180,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("Order", gallerySC.getOrder(orderId));
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
 
-          PublicationTemplate template = gallerySC.getOrderTemplate(false);
+          PublicationTemplate template = gallerySC.getOrderTemplate();
           if (template != null) {
             RecordSet recordSet = template.getRecordSet();
             DataRecord data = recordSet.getRecord(orderId);
@@ -1336,7 +1336,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     }
 
     // 2. Getting form data
-    PublicationTemplate template = gallerySC.getTemplate(true);
+    PublicationTemplate template = gallerySC.getTemplate();
     if (template != null) {
       delegate.setForm(template.getRecordSet(), template.getUpdateForm());
     }
@@ -1407,7 +1407,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         FileUploadUtil.getParameter(parameters, "Media$EndDownloadDate", null, encoding));
 
     // Setting form
-    PublicationTemplate template = gallerySC.getTemplate(true);
+    PublicationTemplate template = gallerySC.getTemplate();
     if (template != null) {
       delegate.setForm(template.getRecordSet(), template.getUpdateForm());
     }
@@ -1432,7 +1432,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   private void putXMLDisplayerIntoRequest(Media media, HttpServletRequest request,
       GallerySessionController gallerySC) throws PublicationTemplateException, FormException {
     String mediaId = media.getId();
-    PublicationTemplate template = gallerySC.getTemplate(false);
+    PublicationTemplate template = gallerySC.getTemplate();
     if (template != null) {
       RecordSet recordSet = template.getRecordSet();
       DataRecord data = recordSet.getRecord(mediaId);
@@ -1469,7 +1469,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         .setEndDownloadDate(request.getParameter(ParameterNames.MediaEndDownloadDate));
 
     // 2. Récupération des données du formulaire
-    PublicationTemplate template = gallerySC.getTemplate(true);
+    PublicationTemplate template = gallerySC.getTemplate();
     if (template != null) {
       delegate.setForm(template.getRecordSet(), template.getUpdateForm());
     }

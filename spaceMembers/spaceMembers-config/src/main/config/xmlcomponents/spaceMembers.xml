@@ -45,7 +45,6 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
-  <instanceClassName>org.silverpeas.components.spaceMembers.SpaceMembersInstanciator</instanceClassName>
   <profiles>
     <profile name="user">
       <label>

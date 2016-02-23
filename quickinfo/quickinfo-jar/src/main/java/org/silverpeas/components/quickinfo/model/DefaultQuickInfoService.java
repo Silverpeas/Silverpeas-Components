@@ -37,7 +37,6 @@ import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -55,8 +54,6 @@ import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
@@ -67,6 +64,7 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -81,6 +79,8 @@ import java.util.Date;
 import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.persistence.Transaction.performInOne;
+import static org.silverpeas.persistence.repository.OperationContext.fromUser;
 
 @Singleton
 public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News> {
@@ -98,9 +98,6 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
 
   @Override
   public List<News> getVisibleNews(String componentId) {
-    SilverTrace
-        .info("quickinfo", "DefaultQuickInfoService.getVisibleNews()", "root.MSG_GEN_ENTER_METHOD",
-            "componentId = " + componentId);
     List<News> quickinfos = getAllNews(componentId);
     List<News> result = new ArrayList<>();
     for (News news : quickinfos) {
@@ -191,13 +188,10 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     final PublicationPK pubPK = getPublicationService().createPublication(publication);
     publication.setPk(pubPK);
 
-    News savedNews = Transaction.performInOne(new Transaction.Process<News>() {
-      @Override
-      public News execute() {
-        news.setId(null);
-        news.setPublicationId(pubPK.getId());
-        return newsRepository.save(OperationContext.fromUser(publication.getCreatorId()), news);
-      }
+    News savedNews = performInOne(() -> {
+      news.setId(null);
+      news.setPublicationId(pubPK.getId());
+      return newsRepository.save(fromUser(publication.getCreatorId()), news);
     });
 
     // Attaching all documents linked to volatile news to the persisted news
@@ -214,9 +208,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
       new QuickInfoContentManager()
           .createSilverContent(null, publication, publication.getCreatorId(), false);
     } catch (ContentManagerException e) {
-      SilverTrace
-          .error("quickinfo", "DefaultQuickInfoService.addNews()", "root.ContentManagerException",
-              e);
+      SilverLogger.getLogger(this).error(
+          "can not create a silver-content for publication " + publication.getId() +
+              " associated to the saved news " + savedNews.getId(), e);
     }
 
     return savedNews;
@@ -226,12 +220,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     news.setPublished();
     news.setPublishDate(new Date());
 
-    Transaction.performInOne(new Transaction.Process<News>() {
-      @Override
-      public News execute() {
-        return newsRepository.save(OperationContext.fromUser(news.getPublishedBy()), news);
-      }
-    });
+    performInOne(() -> newsRepository.save(fromUser(news.getPublishedBy()), news));
 
     PublicationDetail publication = news.getPublication();
     getPublicationService().setDetail(publication, false);
@@ -239,9 +228,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     try {
       new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
     } catch (ContentManagerException e) {
-      SilverTrace
-          .error("quickinfo", "DefaultQuickInfoService.publish()", "root.ContentManagerException",
-              e);
+      SilverLogger.getLogger(this).error(
+          "can not update the silver-content of the publication " + publication.getId() +
+              " associated to the news " + news.getId(), e);
     }
 
     if (news.isVisible()) {
@@ -282,25 +271,22 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     }
     getPublicationService().setDetail(publication);
 
-    Transaction.performInOne(new Transaction.Process<News>() {
-      @Override
-      public News execute() {
-        news.setPublicationId(publication.getId());
-        if (forcePublishing) {
-          news.setPublishDate(new Date());
-          news.setPublishedBy(news.getLastUpdatedBy());
-        }
-        return newsRepository.save(OperationContext.fromUser(news.getLastUpdatedBy()), news);
+    performInOne(() -> {
+      news.setPublicationId(publication.getId());
+      if (forcePublishing) {
+        news.setPublishDate(new Date());
+        news.setPublishedBy(news.getLastUpdatedBy());
       }
+      return newsRepository.save(fromUser(news.getLastUpdatedBy()), news);
     });
 
     // Updating visibility onto taxonomy
     try {
       new QuickInfoContentManager().updateSilverContentVisibility(publication, !news.isDraft());
     } catch (ContentManagerException e) {
-      SilverTrace
-          .error("quickinfo", "DefaultQuickInfoService.update()", "root.ContentManagerException",
-              e);
+      SilverLogger.getLogger(this).error(
+          "can not update the silver-content of the publication " + publication.getId() +
+              " associated to the news " + news.getId(), e);
     }
 
     // Classifying new content onto taxonomy
@@ -335,9 +321,9 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     try (Connection connection = DBUtil.openConnection()) {
       new QuickInfoContentManager().deleteSilverContent(connection, foreignPK);
     } catch (ContentManagerException | SQLException e) {
-      SilverTrace
-          .error("quickinfo", "DefaultQuickInfoService.removeNews", e.getClass().getSimpleName(),
-              e);
+      SilverLogger.getLogger(this).error(
+          "can not delete the silver-content of the publication " + foreignPK.getId() +
+              " associated to the news " + news.getId(), e);
     }
 
 
@@ -365,19 +351,12 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     getDelegatedNewsService().deleteDelegatedNews(Integer.parseInt(foreignPK.getId()));
 
     // deleting news itself
-    Transaction.performInOne(new Transaction.Process<Long>() {
-      @Override
-      public Long execute() {
-        return newsRepository.deleteById(id);
-      }
-    });
+    performInOne(() -> newsRepository.deleteById(id));
   }
 
   @Override
   public List<News> getPlatformNews(String userId) {
-    SilverTrace
-        .info("quickinfo", "DefaultQuickInfoService.getPlatformNews()", "root.MSG_GEN_PARAM_VALUE",
-            "Enter Get All Quick Info : User=" + userId);
+    SilverLogger.getLogger(this).info("Enter Get All Quick Info : User=" + userId);
     List<News> result = new ArrayList<>();
     CompoSpace[] compoSpaces = OrganizationControllerProvider.getOrganisationController()
         .getCompoForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
@@ -386,8 +365,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
       try {
         result.addAll(getVisibleNews(componentId));
       } catch (Exception e) {
-        SilverTrace.error("quickinfo", "DefaultQuickInfoService.getPlatformNews()",
-            "quickinfo.CANT_GET_QUICKINFOS", componentId, e);
+        SilverLogger.getLogger(this).error("can get visible news of " + componentId, e);
       }
     }
     return sortByDateDesc(result);

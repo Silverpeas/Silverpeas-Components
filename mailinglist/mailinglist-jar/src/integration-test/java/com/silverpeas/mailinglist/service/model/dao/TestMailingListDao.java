@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 
@@ -73,20 +74,23 @@ public class TestMailingListDao {
   @Test
   public void testCreateMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
-    MailingList mailingList = new MailingList();
-    mailingList.setComponentId("componentId");
-    ExternalUser user = new ExternalUser();
-    user.setEmail("bart.simpson@gmail.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    InternalUserSubscriber bart = new InternalUserSubscriber();
-    bart.setExternalId("bart");
-    mailingList.getInternalSubscribers().add(bart);
-    InternalGroupSubscriber simpsonsFamily = new InternalGroupSubscriber();
-    simpsonsFamily.setExternalId("Simpsons");
-    mailingList.getGroupSubscribers().add(simpsonsFamily);
-    String id = mailingListDao.createMailingList(mailingList);
+    String id = Transaction.performInOne(() -> {
+      MailingList mailingList = new MailingList();
+      mailingList.setComponentId("componentId");
+      ExternalUser user = new ExternalUser();
+      user.setEmail("bart.simpson@gmail.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      InternalUserSubscriber bart = new InternalUserSubscriber();
+      bart.setExternalId("bart");
+      mailingList.getInternalSubscribers().add(bart);
+      InternalGroupSubscriber simpsonsFamily = new InternalGroupSubscriber();
+      simpsonsFamily.setExternalId("Simpsons");
+      mailingList.getGroupSubscribers().add(simpsonsFamily);
+      return mailingListDao.createMailingList(mailingList);
+    });
     assertNotNull(id);
+
     MailingList saved = mailingListDao.findById(id);
     assertNotNull(saved);
     assertEquals("componentId", saved.getComponentId());
@@ -112,41 +116,47 @@ public class TestMailingListDao {
   @Test
   public void testUpdateMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
-    MailingList mailingList = new MailingList();
-    mailingList.setComponentId("componentId");
-    ExternalUser user = new ExternalUser();
-    user.setEmail("bart.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    String id = mailingListDao.createMailingList(mailingList);
+    String id = Transaction.performInOne(() -> {
+      MailingList mailingList = new MailingList();
+      mailingList.setComponentId("componentId");
+      ExternalUser user = new ExternalUser();
+      user.setEmail("bart.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      return mailingListDao.createMailingList(mailingList);
+    });
     assertNotNull(id);
-    mailingList = mailingListDao.findById(id);
-    assertNotNull(mailingList);
-    assertEquals("componentId", mailingList.getComponentId());
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_LIST"));
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
-    assertNotNull(mailingList.getExternalSubscribers());
-    assertEquals(1, mailingList.getExternalSubscribers().size());
-    ExternalUser savedUser = mailingList.getExternalSubscribers().iterator().next();
-    assertNotNull(savedUser.getId());
-    assertNotNull("componentId", savedUser.getComponentId());
-    user = new ExternalUser();
-    user.setEmail("lisa.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    mailingListDao.updateMailingList(mailingList);
-    mailingList = mailingListDao.findById(id);
-    assertNotNull(mailingList);
-    assertEquals("componentId", mailingList.getComponentId());
+
+    Transaction.performInOne(() -> {
+      MailingList  mailingList = mailingListDao.findById(id);
+      assertNotNull(mailingList);
+      assertNotNull(mailingList.getExternalSubscribers());
+      assertEquals(1, mailingList.getExternalSubscribers().size());
+      ExternalUser user = new ExternalUser();
+      user.setEmail("lisa.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      mailingListDao.updateMailingList(mailingList);
+      return null;
+    });
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_LIST"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
-    assertNotNull(mailingList.getExternalSubscribers());
-    assertEquals(2, mailingList.getExternalSubscribers().size());
-    user.setEmail("bart.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    mailingListDao.updateMailingList(mailingList);
-    mailingList = mailingListDao.findById(id);
+
+    Transaction.performInOne(() -> {
+      MailingList mailingList = mailingListDao.findById(id);
+      assertNotNull(mailingList);
+      assertNotNull(mailingList.getExternalSubscribers());
+      assertEquals(2, mailingList.getExternalSubscribers().size());
+      ExternalUser user = new ExternalUser();
+      user.setEmail("bart.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      mailingListDao.updateMailingList(mailingList);
+      return null;
+    });
+    MailingList mailingList = mailingListDao.findById(id);
     assertNotNull(mailingList);
     assertEquals("componentId", mailingList.getComponentId());
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_LIST"));
@@ -158,27 +168,30 @@ public class TestMailingListDao {
   @Test
   public void testDeleteMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
-    MailingList mailingList = new MailingList();
-    mailingList.setComponentId("componentId");
-    ExternalUser user = new ExternalUser();
-    user.setEmail("bart.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    user = new ExternalUser();
-    user.setEmail("lisa.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    String id = mailingListDao.createMailingList(mailingList);
+
+    String id = Transaction.performInOne(() -> {
+      MailingList mailingList = new MailingList();
+      mailingList.setComponentId("componentId");
+      ExternalUser user = new ExternalUser();
+      user.setEmail("bart.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      user = new ExternalUser();
+      user.setEmail("lisa.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      return mailingListDao.createMailingList(mailingList);
+    });
     assertNotNull(id);
-    mailingList = mailingListDao.findById(id);
-    assertNotNull(mailingList);
-    assertEquals("componentId", mailingList.getComponentId());
-    assertEquals(1, countRowsInTable("SC_MAILINGLIST_LIST"));
-    assertEquals(2, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
-    assertNotNull(mailingList.getExternalSubscribers());
-    assertEquals(2, mailingList.getExternalSubscribers().size());
-    mailingListDao.deleteMailingList(mailingList);
-    mailingList = mailingListDao.findById(id);
+
+    Transaction.performInOne(() -> {
+      MailingList mailingList = mailingListDao.findById(id);
+      assertNotNull(mailingList);
+      mailingListDao.deleteMailingList(mailingList);
+      return null;
+    });
+
+    MailingList mailingList = mailingListDao.findById(id);
     assertNull(mailingList);
     assertEquals(0, countRowsInTable("SC_MAILINGLIST_LIST"));
     assertEquals(0, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
@@ -187,19 +200,23 @@ public class TestMailingListDao {
   @Test
   public void testFindByComponentId() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
-    MailingList mailingList = new MailingList();
-    mailingList.setComponentId("componentId");
-    ExternalUser user = new ExternalUser();
-    user.setEmail("bart.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    user = new ExternalUser();
-    user.setEmail("lisa.simpson@silverpeas.com");
-    user.setComponentId("componentId");
-    mailingList.getExternalSubscribers().add(user);
-    String id = mailingListDao.createMailingList(mailingList);
+
+    String id = Transaction.performInOne(() -> {
+      MailingList mailingList = new MailingList();
+      mailingList.setComponentId("componentId");
+      ExternalUser user = new ExternalUser();
+      user.setEmail("bart.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      user = new ExternalUser();
+      user.setEmail("lisa.simpson@silverpeas.com");
+      user.setComponentId("componentId");
+      mailingList.getExternalSubscribers().add(user);
+      return mailingListDao.createMailingList(mailingList);
+    });
     assertNotNull(id);
-    mailingList = mailingListDao.findByComponentId("componentId");
+
+    MailingList mailingList = mailingListDao.findByComponentId("componentId");
     assertNotNull(mailingList);
     assertEquals("componentId", mailingList.getComponentId());
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_LIST"));
@@ -211,22 +228,27 @@ public class TestMailingListDao {
   @Test
   public void testListMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
-    MailingList mailingList = new MailingList();
-    mailingList.setComponentId("componentId1");
-    ExternalUser user = new ExternalUser();
-    user.setEmail("bart.simpson@gmail.com");
-    user.setComponentId("componentId1");
-    mailingList.getExternalSubscribers().add(user);
-    String id1 = mailingListDao.createMailingList(mailingList);
-    assertNotNull(id1);
-    mailingList = new MailingList();
-    mailingList.setComponentId("componentId2");
-    user = new ExternalUser();
-    user.setEmail("bart.simpson@gmail.com");
-    user.setComponentId("componentId2");
-    mailingList.getExternalSubscribers().add(user);
-    String id2 = mailingListDao.createMailingList(mailingList);
-    assertNotNull(id2);
+
+    Transaction.performInOne(() -> {
+      MailingList mailingList = new MailingList();
+      mailingList.setComponentId("componentId1");
+      ExternalUser user = new ExternalUser();
+      user.setEmail("bart.simpson@gmail.com");
+      user.setComponentId("componentId1");
+      mailingList.getExternalSubscribers().add(user);
+      String id1 = mailingListDao.createMailingList(mailingList);
+      assertNotNull(id1);
+      mailingList = new MailingList();
+      mailingList.setComponentId("componentId2");
+      user = new ExternalUser();
+      user.setEmail("bart.simpson@gmail.com");
+      user.setComponentId("componentId2");
+      mailingList.getExternalSubscribers().add(user);
+      String id2 = mailingListDao.createMailingList(mailingList);
+      assertNotNull(id2);
+      return null;
+    });
+
     List mailingLists = mailingListDao.listMailingLists();
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_LIST"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));

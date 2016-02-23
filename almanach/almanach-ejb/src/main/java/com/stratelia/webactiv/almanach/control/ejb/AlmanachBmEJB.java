@@ -824,5 +824,4 @@ public class AlmanachBmEJB implements AlmanachBm {
       }
     }
   }
-
 }

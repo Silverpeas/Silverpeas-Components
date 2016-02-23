@@ -53,7 +53,7 @@ public class ToWysiwygHeaderHandler extends FunctionHandler {
     destination.append("&ComponentId=").append(classifiedsSC.getComponentId());
     destination.append("&ComponentName=")
         .append(URLEncoder.encode(classifiedsSC.getComponentLabel(), "UTF-8"));
-    destination.append("&BrowseInfo=").append(classifiedsSC.getString("HeaderWysiwyg"));
+    destination.append("&BrowseInfo=").append("");
     destination.append("&ObjectId=Node_0");
     destination.append("&Language=fr");
     destination.append("&ReturnUrl=").append(returnURL);

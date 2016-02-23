@@ -33,24 +33,25 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 
+import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.silverpeas.gallery.control.ejb.MediaServiceProvider.getMediaService;
+import static com.stratelia.silverpeas.notificationManager.NotificationParameters.NORMAL;
+import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
@@ -66,133 +67,87 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("gallery", "ScheduledAlertUser.initialize()",
-          "gallery.EX_CANT_INIT_SCHEDULED_ALERT_USER", e);
+      SilverLogger.getLogger(this).error(
+          "can not initialize successfully the batch in charge of alerting administrators about " +
+              "the end of visibility of media", e);
     }
   }
 
   public void doScheduledAlertUser() {
-
-
     try {
-      // recherche du nombre de jours
+      // Finding media for which the visibility will soon end
       int nbDays = resources.getInteger("nbDaysForAlertUser");
-
-      // rechercher la liste des photos arrivant à échéance
       Collection<Media> mediaList = getMediaService().getAllMediaThatWillBeNotVisible(nbDays);
 
-
-      OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-
-      // pour chaque photo, construction d'une ligne ...
       String currentInstanceId = null;
-
-      LocalizationBundle message =
-          ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle",
-              DisplayI18NHelper.getDefaultLanguage());
-
-      StringBuilder messageBody = new StringBuilder();
-      Media nextMedia = null;
-
+      LocalizedContent messageContent = new LocalizedContent();
       for (Media media : mediaList) {
-        nextMedia = media;
-
-        if (media.getInstanceId().equals(currentInstanceId)) {
-          // construire la liste des images pour cette instance (a mettre dans
-          // le corps du message)
-          messageBody.append(message.getString("gallery.notifName")).append(" : ").append(media.
-              getName()).append("\n");
-
-        } else {
+        if (!media.getInstanceId().equals(currentInstanceId)) {
           if (currentInstanceId != null) {
-            // Création du message à envoyer aux admins
-            UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-            String subject = message.getString("gallery.notifSubject");
-            String body = messageBody.append("\n").append(
-                message.getString("gallery.notifUserInfo")).append("\n\n").toString();
-            NotificationMetaData notifMetaData = new NotificationMetaData(
-                NotificationParameters.NORMAL, subject, body);
-            createMessage(notifMetaData, media, admins);
-            messageBody = new StringBuilder();
+            // Sending the notification
+            createMessage(messageContent, currentInstanceId);
+            messageContent = new LocalizedContent();
           }
           currentInstanceId = media.getInstanceId();
-          String nameInstance = orga.getComponentInst(currentInstanceId).getLabel();
-
-
-          // initialisation du corps du message avec la première photo de
-          // l'instance en cours
-          messageBody.append(message.getString("gallery.notifTitle")).append(
-              nameInstance).append("\n").append("\n");
-          messageBody.append(message.getString("gallery.notifName")).append(" : ")
-              .append(media.getName()).append("\n");
-
-
         }
+        // Adding the media header information
+        messageContent.appendFromBundleKey("gallery.notifName").append(" : ")
+            .append(media.getName()).append("\n");
       }
 
-      // Création du message à envoyer aux admins pour la dernière instance en
-      // cours
+      // Finally send the last message
       if (currentInstanceId != null) {
-        UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-        String subject = message.getString("gallery.notifSubject");
-        String body = messageBody.append("\n").append(
-            message.getString("gallery.notifUserInfo")).append("\n\n").toString();
-        NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.NORMAL, subject, body);
-        createMessage(notifMetaData, nextMedia, admins);
+        createMessage(messageContent, currentInstanceId);
       }
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledAlertUser.doScheduledAlertUser()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-
-
   }
 
-  private void createMessageByLanguage(String url, NotificationMetaData notifMetaData) {
-    for (String language : DisplayI18NHelper.getLanguages()) {
-      LocalizationBundle message =
-          ResourceLocator.getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle",
-              language);
-      String subject = message.getString("gallery.notifSubject");
-      StringBuilder messageBody = new StringBuilder();
-      String body = messageBody.append("\n").append(
-          message.getString("gallery.notifUserInfo")).append("\n\n").toString();
-      notifMetaData.addLanguage(language, subject, body);
-      Link link = new Link(url, message.getString("gallery.notifLinkLabel"));
-      notifMetaData.setLink(link, language);
-    }
-  }
-
-  private void createMessage(NotificationMetaData notifMetaData, Media media, UserDetail[] admins) {
+  private void createMessage(LocalizedContent localizedContent, String componentInstanceId) {
+    UserDetail[] admins = getOrganisationController().getUsers("-1", componentInstanceId, "admin");
     if (admins == null || admins.length == 0) {
       return;
     }
 
-    // 1. création du message
-    String url = getPhotoUrl(media);
-    createMessageByLanguage(url, notifMetaData);
+    NotificationMetaData notificationMetaData = new NotificationMetaData(NORMAL, "", "");
 
+    // Preparing the notification content
+    localizedContent.append("\n").appendFromBundleKey("gallery.notifUserInfo").append("\n\n");
+    mergeLocalizedContentIntoNotificationMetaData(componentInstanceId, localizedContent,
+        notificationMetaData);
+    notificationMetaData.setComponentId(componentInstanceId);
+
+    // Sending the notification to the component instance administrators
     for (UserDetail admin : admins) {
-      notifMetaData.addUserRecipient(new UserRecipient(admin));
+      notificationMetaData.addUserRecipient(new UserRecipient(admin));
     }
-    notifMetaData.setComponentId(media.getInstanceId());
-
-    // 2. envoie de la notification aux admin
-    if (StringUtil.isDefined(media.getCreatorId())) {
-      notifMetaData.setSender(media.getCreatorId());
-    }
-    NotificationSender notifSender = new NotificationSender(media.getInstanceId());
+    NotificationSender notifSender = new NotificationSender(componentInstanceId);
     try {
-      notifSender.notifyUser(notifMetaData);
+      notifSender.notifyUser(notificationMetaData);
     } catch (NotificationManagerException e) {
-      SilverTrace.error("gallery", "ScheduledAlertUser.ScheduledAlertUser",
-          "gallery.CANT_NOTIFY_USERS", e);
+      SilverLogger.getLogger(this)
+          .error("can not send the notification message about media which will be no more visible",
+              e);
     }
   }
 
-  private String getPhotoUrl(Media media) {
-    return URLManager.getURL(null, media.getInstanceId()) + media.getURL();
+  private void mergeLocalizedContentIntoNotificationMetaData(final String componentInstanceId,
+      LocalizedContent localizedContent, NotificationMetaData notificationMetaData) {
+    String nameInstance =
+        getOrganisationController().getComponentInst(componentInstanceId).getLabel();
+    String url = URLManager.getComponentInstanceURL(componentInstanceId) + "Main";
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      LocalizationBundle bundle = LocalizedContent.getBundle(language);
+      String subject = bundle.getString("gallery.notifSubject");
+      String body = MessageFormat
+          .format("{0} <b>{1}</b>\n\n{2}", bundle.getString("gallery.notifTitle"), nameInstance,
+              localizedContent.get(language));
+      notificationMetaData.addLanguage(language, subject, body);
+      Link link = new Link(url, nameInstance);
+      notificationMetaData.setLink(link, language);
+    }
   }
 
   @Override
@@ -206,8 +161,46 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName()
-        + "' was not successfull", anEvent.getJobThrowable());
+    SilverLogger.getLogger(this).error(
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull",
+        anEvent.getJobThrowable());
+  }
+
+  private static class LocalizedContent {
+    private Map<String, StringBuilder> localizedContents = new HashMap<>();
+
+    public LocalizedContent appendFromBundleKey(String key) {
+      for (String language : DisplayI18NHelper.getLanguages()) {
+        append(localizedContents, language, getBundle(language).getString(key));
+      }
+      return this;
+    }
+
+    public LocalizedContent append(String content) {
+      for (String language : DisplayI18NHelper.getLanguages()) {
+        append(localizedContents, language, content);
+      }
+      return this;
+    }
+
+    static LocalizationBundle getBundle(String language) {
+      return ResourceLocator
+          .getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle", language);
+    }
+
+    private static void append(Map<String, StringBuilder> container, String language,
+        String message) {
+      StringBuilder sb = container.get(language);
+      if (sb == null) {
+        sb = new StringBuilder();
+        container.put(language, sb);
+      }
+      sb.append(message);
+    }
+
+    public String get(final String language) {
+      StringBuilder sb = localizedContents.get(language);
+      return sb != null ? sb.toString() : "";
+    }
   }
 }

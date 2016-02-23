@@ -44,7 +44,6 @@ import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.gallery.process.GalleryProcessManagement;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -54,6 +53,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.SearchEngineProvider;
@@ -63,7 +63,6 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -422,6 +421,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removeMediaFromAllAlbums(final Media media) {
     try {
       MediaDAO.deleteAllMediaPath(media);
@@ -432,6 +432,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void addMediaToAlbums(final Media media, final String... albums) {
     try {
       for (final String albumId : albums) {
@@ -562,12 +563,14 @@ public class GalleryBmEJB implements GalleryBm {
 
       if (silverObjectId == -1) {
         Media media = getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-        final Connection con = openConnection();
-        try {
-          silverObjectId = createSilverContent(con, media, media.getCreatorId());
-        } finally {
-          DBUtil.close(con);
-        }
+        silverObjectId = Transaction.performInOne(() -> {
+          final Connection con = openConnection();
+          try {
+            return createSilverContent(con, media, media.getCreatorId());
+          } finally {
+            DBUtil.close(con);
+          }
+        });
       }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getSilverObjectId()",
@@ -599,11 +602,7 @@ public class GalleryBmEJB implements GalleryBm {
           .forEach(matchIndex -> {
             final MediaPK mediaPK = new MediaPK(matchIndex.getObjectId());
             final Media media = getMedia(mediaPK);
-
             if (media != null) {
-              SilverTrace
-                  .info("gallery", "GalleryBmEJB.search()", "root.MSG_GEN_ENTER_METHOD",
-                      "media = " + media.getMediaPK().getId());
               mediaList.add(media);
             }
           });
@@ -626,6 +625,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public String createOrder(final Collection<String> basket, final String userId,
       final String componentId) {
     try {
@@ -648,6 +648,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void updateOrder(final Order order) {
     try {
       OrderDAO.updateOrder(order);
@@ -658,6 +659,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void updateOrderRow(final OrderRow row) {
     try {
       OrderDAO.updateOrderRow(row);
@@ -690,6 +692,7 @@ public class GalleryBmEJB implements GalleryBm {
 
   @SuppressWarnings("Convert2streamapi")
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void deleteOrders(final List<Order> orders) {
     try {
       for (Order order : orders) {

@@ -45,84 +45,84 @@ public interface InfoLetterDataInterface {
   }
 
   /**
-   * Open connection
-   * @return Connection
-   * @throws InfoLetterException
-   */
-  public Connection openConnection() throws InfoLetterException;
-
-  /**
    * Create information letter
    * @param il the information letter to create
    */
-  public void createInfoLetter(InfoLetter il);
+  void createInfoLetter(InfoLetter il);
 
   /**
    * Update information letter
    * @param il the information letter to update
    */
-  public void updateInfoLetter(InfoLetter il);
+  void updateInfoLetter(InfoLetter il);
 
   /**
    * Retrieve information letters
    * @param applicationId the application identifier
    * @return the information letters of the current application identifier given in parameter
    */
-  public List<InfoLetter> getInfoLetters(String applicationId);
+  List<InfoLetter> getInfoLetters(String applicationId);
 
   /**
    * Retrieve information letter publications
    * @param letterPK the information letter primary key
    * @return the list of information letter publications of an information letter
    */
-  public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK);
+  List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK);
 
   /**
    * Create information letter publication
    * @param ilp the information letter publication pdc to create
    * @param userId the creator user identifier
    */
-  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId);
+  void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId);
 
   /**
    * Delete information letter publication
    * @param pk the information letter publication primary key
    * @param componentId the component identifier
    */
-  public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId);
+  void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId);
 
   /**
    * Update information letter publication
    * @param ilp the information letter publication to update
    */
-  public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp);
+  void updateInfoLetterPublication(InfoLetterPublicationPdC ilp);
 
   /**
    * Retrieve an information letter from his primary key
    * @param letterPK the letter primary key
    * @return the infirmation letter
    */
-  public InfoLetter getInfoLetter(WAPrimaryKey letterPK);
+  InfoLetter getInfoLetter(WAPrimaryKey letterPK);
 
   /**
    * Retrieve information letter publication from his key
    * @param publiPK the information letter publication primary key
    * @return an Information Letter Publication PdC
    */
-  public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK);
+  InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK);
 
   /**
    * Create a default Info Letter when instanciated
    * @param componentId the component identifier
    * @return a default Info Letter
    */
-  public InfoLetter createDefaultLetter(String componentId);
+  InfoLetter createDefaultLetter(String componentId);
+
+  /**
+   * Deletes all the info letters (and then all the publications and external subscribers) in the
+   * specified component instance.
+   * @param componentId the unique identifier of the InfoLetter instance.
+   */
+  void deleteAllInfoLetters(String componentId);
 
   /**
    * @param componentId componentId component instance id
    * @return map of subscriber ids indexed by type of subscriber
    */
-  public SubscriptionSubscriberList getInternalSuscribers(String componentId);
+  SubscriptionSubscriberList getInternalSuscribers(String componentId);
 
   /**
    * Update internal user subscribers list
@@ -130,21 +130,21 @@ public interface InfoLetterDataInterface {
    * @param users an array of User detail
    * @param groups an array of Group
    */
-  public void setInternalSuscribers(String componentId, UserDetail[] users, Group[] groups);
+  void setInternalSuscribers(String componentId, UserDetail[] users, Group[] groups);
 
   /**
    * Retrieve external emails address
    * @param letterPK the info letter identifier (letter primary key)
    * @return a set of external emails
    */
-  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK);
+  Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK);
 
   /**
    * Save external subscriber emails address
    * @param letterPK the letter primary key
    * @param emails the list of external emails to save
    */
-  public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails);
+  void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails);
 
   /**
    * Toggle subscription unsubscription of a user to the news letter
@@ -152,7 +152,7 @@ public interface InfoLetterDataInterface {
    * @param componentId the info letter component instance identifier
    * @param isUserSubscribing true if user is subscribing, false else if
    */
-  public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);
+  void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);
 
   /**
    * Check if use is an internal subscriber of the information letter
@@ -160,7 +160,7 @@ public interface InfoLetterDataInterface {
    * @param componentId the info letter component instance identifier
    * @return true if user is a subscriber, false else if
    */
-  public boolean isUserSuscribed(String userId, String componentId);
+  boolean isUserSuscribed(String userId, String componentId);
 
   /**
    * Initialize template
@@ -168,9 +168,9 @@ public interface InfoLetterDataInterface {
    * @param letterPK the info letter identifier
    * @param userId the user identifier
    */
-  public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
+  void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
 
-  public int getSilverObjectId(String pubId, String componentId);
+  int getSilverObjectId(String pubId, String componentId);
 
   /**
    * Send letter by mail
@@ -182,6 +182,6 @@ public interface InfoLetterDataInterface {
    * @param emailFrom
    * @return list of emails in error
    */
-  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
+  Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
       String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom);
 }

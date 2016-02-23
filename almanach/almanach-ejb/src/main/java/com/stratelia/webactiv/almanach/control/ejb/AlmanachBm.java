@@ -49,7 +49,7 @@ public interface AlmanachBm {
    * @return a list of event occurrences.
    * @ if an error occurs with the remote business service.
    */
-  public List<EventOccurrence> getEventOccurrencesInPeriod(Period period, String... almanachIds);
+  List<EventOccurrence> getEventOccurrencesInPeriod(Period period, String... almanachIds);
 
   /**
    * Gets the next event occurrences that will occur andd that are defined in the specified
@@ -59,7 +59,7 @@ public interface AlmanachBm {
    * @return a list of event occurrences that will occur in the future.
    * @ if an error occurs with the remote business service.
    */
-  public List<EventOccurrence> getNextEventOccurrences(String... almanachIds);
+  List<EventOccurrence> getNextEventOccurrences(String... almanachIds);
 
   /**
    * this method provide a collection of event
@@ -67,7 +67,7 @@ public interface AlmanachBm {
    * @param : EventPk pk, to obtain the space and component
    * @ return: java.util.Collection
    */
-  public Collection<EventDetail> getAllEvents(EventPK pk);
+  Collection<EventDetail> getAllEvents(EventPK pk);
 
   /**
    * Get all events of instanceId Almanachs
@@ -76,9 +76,9 @@ public interface AlmanachBm {
    * @param instanceIds String[] of instanceIds
    * @return Collection of Events
    */
-  public Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds);
+  Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds);
 
-  public Collection<EventDetail> getEvents(Collection<EventPK> pks);
+  Collection<EventDetail> getEvents(Collection<EventPK> pks);
 
   /**
    * addEvent() add an event entry in the database.
@@ -87,7 +87,7 @@ public interface AlmanachBm {
    * @param uploadedFiles attached files.
    * @return the unique identifier of the added event.
    */
-  public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles);
+  String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles);
 
   /**
    * Adds the event in the almanach with the specified classification on the PdC.
@@ -97,36 +97,36 @@ public interface AlmanachBm {
    * @param withClassification the classificationwith which the event will be classified on the PdC.
    * @return the unique identifier of the added event.
    */
-  public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles,
+  String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles,
       PdcClassification withClassification);
 
   /**
    * updateEvent() update the event entry, specified by the pk, in the database
    */
-  public void updateEvent(EventDetail event);
+  void updateEvent(EventDetail event);
 
   /**
    * removeEvent() remove the Event entry specified by the pk
    */
-  public void removeEvent(EventPK pk);
+  void removeEvent(EventPK pk);
 
   /**
    * getEventDetail() returns the EventDetail represented by the pk
    */
-  public EventDetail getEventDetail(EventPK pk);
+  EventDetail getEventDetail(EventPK pk);
 
-  public int getSilverObjectId(EventPK pk);
+  int getSilverObjectId(EventPK pk);
 
-  public void createIndex(EventDetail detail);
+  void createIndex(EventDetail detail);
 
-  public void addPeriodicityException(PeriodicityException exception);
+  void addPeriodicityException(PeriodicityException exception);
 
-  public Calendar getICal4jCalendar(Collection<EventDetail> events, String language);
+  Calendar getICal4jCalendar(Collection<EventDetail> events, String language);
 
-  public Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
+  Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
       java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope);
 
-  public Collection<SimpleDocument> getAttachments(EventPK eventPK);
+  Collection<SimpleDocument> getAttachments(EventPK eventPK);
 
-  public String getHTMLPath(EventPK eventPK);
+  String getHTMLPath(EventPK eventPK);
 }

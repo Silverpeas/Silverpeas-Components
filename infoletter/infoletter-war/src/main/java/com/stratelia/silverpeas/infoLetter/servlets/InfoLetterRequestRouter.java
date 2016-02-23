@@ -517,7 +517,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         destination = "infoLetterSended.jsp";
       } else if (function.startsWith("SaveContent")) {
         String parution = param(request, "parution");
-        String content = param(request, "Content");
+        String content = param(request, "editor");
         if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
           publiPK.setId(parution);

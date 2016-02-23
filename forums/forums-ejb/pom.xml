@@ -32,12 +32,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>notation</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>tagcloud</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>

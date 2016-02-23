@@ -217,12 +217,12 @@ function isCorrectForm()
           result = true;
           break;
       case 1 :
-          errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
           window.alert(errorMsg);
           result = false;
           break;
       default :
-          errorMsg = "<%=resources.getString("GML.ThisFormContain")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
           window.alert(errorMsg);
           result = false;
           break;
@@ -287,12 +287,12 @@ function isCorrectForm2()
           result = true;
           break;
       case 1 :
-          errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
           window.alert(errorMsg);
           result = false;
           break;
       default :
-          errorMsg = "<%=resources.getString("GML.ThisFormContain")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
           window.alert(errorMsg);
           result = false;
           break;
@@ -610,11 +610,11 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
         </div>
     
         <div class="thumbnailInputs">
-        <img title="<%=resources.getString("survey.answer.image.select")%>" alt="<%=resources.getString("survey.answer.image.select")%>" src="/silverpeas/util/icons/images.png" /> <input type="file" id="thumbnailFile" size="40" name="image<%=i%>" />
+        <img title="<%=surveyResource.getString("survey.answer.image.select")%>" alt="<%=surveyResource.getString("survey.answer.image.select")%>" src="/silverpeas/util/icons/images.png" /> <input type="file" id="thumbnailFile" size="40" name="image<%=i%>" />
         <%if (galleries != null) {%>
         <span class="txtsublibform"> ou </span><input type="hidden" name="valueImageGallery<%= i %>" id="valueImageGallery<%= i %>"/>
          <select class="galleries" name="galleries" onchange="choixGallery(this, '<%= i %>');this.selectedIndex=0;"> 
-           <option selected><%= resources.getString("survey.galleries") %></option>
+           <option selected><%= surveyResource.getString("survey.galleries") %></option>
 <%
           for (ComponentInstLight gallery : galleries) { %>
              <option value="<%= gallery.getId() %>"><%= gallery.getLabel() %></option> 

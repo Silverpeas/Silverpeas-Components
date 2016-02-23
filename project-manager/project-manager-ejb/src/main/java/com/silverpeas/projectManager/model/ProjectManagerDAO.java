@@ -28,6 +28,10 @@
  */
 package com.silverpeas.projectManager.model;
 
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,11 +43,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.exception.UtilException;
 
 /**
  * @author neysseri
@@ -270,6 +269,26 @@ public class ProjectManagerDAO {
       stmt.executeUpdate();
     } finally {
       DBUtil.close(stmt);
+    }
+  }
+
+  /**
+   * Deletes all the tasks and their associated resources in the specified project manager.
+   * @param con a connection to the data source into which are stored the tasks and the resources.
+   * @param instanceId the unique identifier of a ProjectManager instance.
+   * @throws SQLException if an error occurs while deleting the tasks and the associated resources.
+   */
+  public static void removeAllTasks(Connection con, String instanceId) throws SQLException {
+    final String tasks = "delete from " + PROJECTMANAGER_TASKS_TABLENAME + " where instanceId = ?";
+    final String resources =
+        "delete from " + PROJECTMANAGER_RESOURCES_TABLENAME + " where instanceId = ?";
+    try(PreparedStatement deletion = con.prepareCall(resources)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
+    try (PreparedStatement deletion = con.prepareCall(tasks)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 

@@ -158,6 +158,16 @@ public class ForumsBMEJB implements ForumsBM {
   }
 
   @Override
+  public void deleteAll(final String instanceId) {
+    try (Connection con = openConnection()) {
+      ForumsDAO.deleteAllForums(con, instanceId);
+    } catch (SQLException e) {
+      throw new ForumsRuntimeException("ForumsBmEJB.deleteAllForums()",
+          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_FORUM_FAILED", e);
+    }
+  }
+
+  @Override
   public boolean isForumActive(int forumId) {
     try (Connection con = openConnection()) {
       return ForumsDAO.isForumActive(con, forumId);

@@ -63,9 +63,6 @@ public class MetadataExtractorTest {
           warBuilder.addMavenDependencies("com.drewnoakes:metadata-extractor");
           warBuilder.addClasses(MediaMetadataExtractor.class, DrewMediaMetadataExtractor.class,
               AbstractMediaMetadataExtractor.class);
-          warBuilder.addPackages(true, "com.silverpeas.gallery.model");
-          warBuilder.addPackages(true, "com.silverpeas.gallery.media");
-          warBuilder.addPackages(true, "com.silverpeas.gallery.constant");
           warBuilder.addAsResource(
               "org/silverpeas/gallery/settings/metadataSettings_gallery52.properties");
           warBuilder.addAsResource("org/silverpeas/gallery/settings/metadataSettings.properties");

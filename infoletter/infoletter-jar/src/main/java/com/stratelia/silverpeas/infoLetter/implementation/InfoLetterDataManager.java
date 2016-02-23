@@ -71,6 +71,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -245,6 +246,29 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     return ie;
   }
 
+  /**
+   * Deletes all the info letters (and then all the publications and external subscribers) in the
+   * specified component instance.
+   * @param componentId the unique identifier of the InfoLetter instance.
+   */
+  @Override
+  public void deleteAllInfoLetters(final String componentId) {
+    try (Connection connection = openConnection()) {
+      infoLetterPublicationDAO.removeWhere(connection, null, "instanceId = '" + componentId + "'");
+      infoLetterDAO.removeWhere(connection, null,
+          "instanceId = '" + componentId + "'");//TABLE_EXTERNAL_EMAILS
+      try (PreparedStatement statement = connection.prepareStatement(
+          "delete from " + TABLE_EXTERNAL_EMAILS + " where instanceId = ?")) {
+        statement.setString(1, componentId);
+        statement.execute();
+      }
+    } catch (Exception e) {
+      throw new InfoLetterException(
+          "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
+          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+    }
+  }
+
   @Override
   public int getSilverObjectId(String pubId, String componentId) {
 
@@ -386,8 +410,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
    * @return Connection
    * @throws InfoLetterException
    */
-  @Override
-  public Connection openConnection() throws InfoLetterException {
+  private Connection openConnection() throws InfoLetterException {
     Connection con;
     try {
       con = DBUtil.openConnection();

@@ -58,7 +58,7 @@
     <view:looknfeel/>
   </head>
   <body>
-    <view:browseBar componentId="${componentLabel}" path="${path}" ignoreComponentLink="true "extraInformations="${extraInfo} ${resourceName}"></view:browseBar>
+    <view:browseBar componentId="${componentLabel}" path="${path}" ignoreComponentLink="true" extraInformations="${extraInfo} ${resourceName}"></view:browseBar>
 
     <view:window>
       <view:tabs>

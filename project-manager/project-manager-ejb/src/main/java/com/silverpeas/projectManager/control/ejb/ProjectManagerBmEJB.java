@@ -35,9 +35,8 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import com.stratelia.webactiv.calendar.backbone.TodoDetail;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -48,6 +47,7 @@ import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -69,7 +69,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   private CommentService commentController;
 
   @Inject
-  private TodoBackboneAccess todoAccessor;
+  private SilverpeasCalendar calendar;
 
   /**
    * Gets a comment service.
@@ -577,8 +577,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
-      SilverTrace.warn("projectManager", "ProjectManagerBmEJB.alertResource()",
-          "projectManager.EX_CANT_SEND_NOTIFICATIONS", "taskId = " + task.getId(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -834,26 +833,25 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   }
 
   private TodoDetail getTodo(String todoId) {
-
-    return todoAccessor.getEntry(todoId);
+    return calendar.getTodoDetail(todoId);
   }
 
   private void addTodo(TaskDetail task) {
 
     TodoDetail todo = task.toTodoDetail();
-    todoAccessor.addEntry(todo);
+    calendar.addToDo(todo);
   }
 
   private void removeTodo(int id, String instanceId) {
 
-    todoAccessor.removeEntriesFromExternal("useless", instanceId, Integer.toString(id));
+    calendar.removeToDoFromExternal("useless", instanceId, Integer.toString(id));
   }
 
   private void updateTodo(TaskDetail task) {
 
-    todoAccessor.removeEntriesFromExternal("useless", task.getInstanceId(), Integer.
+    calendar.removeToDoFromExternal("useless", task.getInstanceId(), Integer.
         toString(task.getId()));
-    todoAccessor.addEntry(task.toTodoDetail());
+    calendar.addToDo(task.toTodoDetail());
   }
 
   private void createIndex(TaskDetail task) {

@@ -24,6 +24,7 @@
 package com.silverpeas.delegatednews.service;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.delegatednews.dao.DelegatedNewsRepository;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.ui.DisplayI18NHelper;
@@ -56,12 +57,17 @@ import java.util.Map;
 
 @Singleton
 @Transactional
-public class DelegatedNewsServiceImpl implements DelegatedNewsService {
+public class DelegatedNewsServiceImpl implements DelegatedNewsService, ComponentInstanceDeletion {
 
   @Inject
   private DelegatedNewsRepository dao;
   @Inject
   private OrganizationController organizationController;
+
+  @Override
+  public void delete(final String componentInstanceId) {
+    dao.deleteByComponentInstanceId(componentInstanceId);
+  }
 
   /**
    * Add new delegated news

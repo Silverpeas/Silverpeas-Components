@@ -152,6 +152,27 @@ public class EventDAO {
     }
   }
 
+  public void removeAllEvents(final Connection connection, String instanceId) throws Exception {
+    String deletePeriodicityExceptions =
+        "delete from sc_almanach_periodicityexcept where periodicityid in (select id from " +
+            "sc_almanach_periodicity as p, sc_almanach_event as e where p.eventId = e.eventId and" +
+            " e.instanceId = ?)";
+    String deleteEventPeriodicities =
+        "delete from sc_almanach_periodicity where eventId in (select eventId from " +
+            "sc_almanach_event where instanceId = ?)";
+    String deleteEvents = "delete from sc_almanach_event where instanceId = ?";
+    try(PreparedStatement stmt1 = connection.prepareStatement(deletePeriodicityExceptions);
+    PreparedStatement stmt2 = connection.prepareStatement(deleteEventPeriodicities);
+    PreparedStatement stmt3 = connection.prepareStatement(deleteEvents)) {
+      stmt1.setString(1, instanceId);
+      stmt2.setString(1, instanceId);
+      stmt3.setString(1, instanceId);
+      stmt1.execute();
+      stmt2.execute();
+      stmt3.execute();
+    }
+  }
+
   /**
    * Find all events that can occur in the specified range and for the specified almanachs.
    * @param startDay the start date of the range. It has to be in the format yyyy/MM/dd.

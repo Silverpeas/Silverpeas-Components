@@ -49,7 +49,6 @@
   <visible>true</visible>
   <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
-  <instanceClassName>com.stratelia.webactiv.yellowpages.YellowpagesInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

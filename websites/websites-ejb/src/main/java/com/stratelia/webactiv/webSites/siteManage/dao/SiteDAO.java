@@ -29,6 +29,14 @@ package com.stratelia.webactiv.webSites.siteManage.dao;
  * @version
  */
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
+import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
+import com.stratelia.webactiv.webSites.siteManage.model.SitePK;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,16 +44,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.exception.UtilException;
-import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
-import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
-import com.stratelia.webactiv.webSites.siteManage.model.SitePK;
 
 public class SiteDAO {
 
@@ -218,6 +217,23 @@ public class SiteDAO {
       daoDeleteWebSites(liste);
     } finally {
       closeConnection(dbConnection);
+    }
+  }
+
+  public void deleteAllWebSites() throws SQLException {
+    final String siteIcons =
+        "DELETE FROM " + tableSiteIconsName + " WHERE siteId in (SELECT siteId FROM " +
+            tableSiteName + " WHERE instanceId = ?)";
+    final String sites = "DELETE FROM " + tableSiteName + " WHERE instanceId =?";
+    try (Connection connection = openConnection()) {
+      try (PreparedStatement deletion = connection.prepareStatement(siteIcons)) {
+        deletion.setString(1, componentId);
+        deletion.execute();
+      }
+      try (PreparedStatement deletion = connection.prepareStatement(sites)) {
+        deletion.setString(1, componentId);
+        deletion.execute();
+      }
     }
   }
 

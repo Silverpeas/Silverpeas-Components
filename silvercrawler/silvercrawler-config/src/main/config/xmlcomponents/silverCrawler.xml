@@ -40,7 +40,6 @@
 	</suite>
 	<visible>true</visible>
 	<portlet>true</portlet>
-	<instanceClassName>com.silverpeas.silvercrawler.SilverCrawlerInstanciator</instanceClassName>
 	<profiles>
 		<profile name="admin">
 			<label>

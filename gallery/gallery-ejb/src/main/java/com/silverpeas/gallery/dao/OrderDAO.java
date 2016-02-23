@@ -94,7 +94,7 @@ public class OrderDAO {
     updateOrderStatus(order);
     List<OrderRow> rows = order.getRows();
     for (OrderRow row : rows) {
-      JdbcSqlQuery update = createInsertFor("SC_Gallery_OrderDetail");
+      JdbcSqlQuery update = createUpdateFor("SC_Gallery_OrderDetail");
       update.addUpdateParam("downloadDecision", row.getDownloadDecision());
       update.where("orderId = ? and mediaId = ?", row.getOrderId(), row.getMediaId());
       update.execute();
@@ -107,7 +107,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   private static void updateOrderStatus(Order order) throws SQLException {
-    JdbcSqlQuery update = createInsertFor("SC_Gallery_Order");
+    JdbcSqlQuery update = createUpdateFor("SC_Gallery_Order");
     update.addUpdateParam("processDate", new Timestamp(new Date().getTime()));
     update.addUpdateParam("processUser", order.getProcessUserId());
     update.where("orderId = ?", order.getOrderId());
@@ -165,7 +165,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   public static void updateOrderRow(OrderRow row) throws SQLException {
-    JdbcSqlQuery update = createInsertFor("SC_Gallery_OrderDetail");
+    JdbcSqlQuery update = createUpdateFor("SC_Gallery_OrderDetail");
     update.addUpdateParam("downloadDate", new Timestamp(new Date().getTime()));
     update.addUpdateParam("downloadDecision", row.getDownloadDecision());
     update.where("orderId = ? and mediaId = ?", row.getOrderId(), row.getMediaId());

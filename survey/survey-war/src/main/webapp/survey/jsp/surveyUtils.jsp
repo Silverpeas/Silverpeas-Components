@@ -316,9 +316,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                   if (answer.isOpened())
                   {
                       	isOpened = 1;
-                      	String label = "";
-                      	if (StringUtil.isDefined(settings.getString("SurveyCreationDefaultSuggestionLabel")))
-                      		label = settings.getString("SurveyCreationDefaultSuggestionLabel");
+                      	String label = resources.getString("SurveyCreationDefaultSuggestionLabel");
                       	r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+nbQuestionInPage+"\" value=\""+inputValue+"\"></td><td align=\"left\" width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"40\" maxlength=\""+DBUtil.getTextFieldLength()+"\" name=\"openedAnswer_"+nbQuestionInPage+"\" value=\""+label+"\" onFocus=\"checkButton(document.survey.answer_"+nbQuestionInPage+"["+answerNb+"])\"></td></tr>";
                   }
                   else

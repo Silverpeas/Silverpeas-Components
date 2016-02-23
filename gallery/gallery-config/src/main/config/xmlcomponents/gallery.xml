@@ -48,7 +48,6 @@
   <visible>true</visible>
   <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
-  <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

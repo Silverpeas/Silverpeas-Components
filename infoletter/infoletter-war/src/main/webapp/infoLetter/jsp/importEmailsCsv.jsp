@@ -52,7 +52,7 @@ function SubmitWithVerif(verifParams) {
 
     if (verifParams) {
          if (isWhitespace(csvFilefld)) {
-            errorMsg = "<% out.print(resource.getString("GML.thefield")+resource.getString("GML.csvFile")+resource.getString("CSV.isRequired")); %>";
+            errorMsg = "<% out.print(resource.getString("GML.thefield")+resource.getString("GML.csvFile")+resource.getString("GML.mandatory")); %>";
          } else {
 			var ext = csvFilefld.substring(csvFilefld.length - 4);
     	    if (ext.toLowerCase() != ".csv") {

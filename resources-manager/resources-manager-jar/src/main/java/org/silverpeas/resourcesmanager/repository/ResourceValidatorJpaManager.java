@@ -41,4 +41,15 @@ public class ResourceValidatorJpaManager
     return getFromNamedQuery("resourceValidator.getResourceValidator", newNamedParameters()
         .add("resourceId", currentResourceId).add("currentUserId", currentUserId));
   }
+
+  /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param instanceId the unique instance identifier.
+   * @return the number of deleted entities.
+   */
+  @Override
+  public long deleteByComponentInstanceId(final String instanceId) {
+    return deleteFromNamedQuery("resourceValidator.deleteAllResourceValidatorsForComponentInstance",
+        newNamedParameters().add("instanceId", instanceId));
+  }
 }

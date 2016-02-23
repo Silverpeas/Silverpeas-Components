@@ -67,7 +67,6 @@ import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.csv.CSVReader;
-import org.silverpeas.util.csv.CSVWriter;
 import org.silverpeas.util.csv.Variant;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -636,9 +635,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     }
     try {
       Set<String> emails = getEmailsExternalsSuscribers(getCurrentLetter().getPK());
-
-      CSVWriter csvWriter = new CSVWriter(getLanguage());
-      csvWriter.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat", "User", ";");
 
       for (String email : emails) {
         FileUtils.writeStringToFile(fileOutput, email + "\n", true);
