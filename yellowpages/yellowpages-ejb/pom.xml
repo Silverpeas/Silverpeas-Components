@@ -19,19 +19,19 @@
       <version>${core.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>contact</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
      <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>

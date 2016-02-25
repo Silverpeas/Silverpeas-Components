@@ -73,7 +73,6 @@ import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ejb.EJBException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;

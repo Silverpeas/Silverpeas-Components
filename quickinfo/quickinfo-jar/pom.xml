@@ -19,25 +19,25 @@
       <version>${core.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>statistic</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
@@ -49,13 +49,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>tagcloud</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>comment</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>

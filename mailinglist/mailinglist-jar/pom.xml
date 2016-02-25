@@ -23,7 +23,7 @@
       <artifactId>xercesImpl</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>calendar</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
@@ -35,25 +35,25 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>personalization</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>tagcloud</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>

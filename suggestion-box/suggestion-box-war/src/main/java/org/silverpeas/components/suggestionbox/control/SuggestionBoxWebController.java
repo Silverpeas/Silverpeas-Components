@@ -53,7 +53,6 @@ import org.silverpeas.components.suggestionbox.notification
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;

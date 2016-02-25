@@ -23,12 +23,10 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Set;
 
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ServiceProvider;
