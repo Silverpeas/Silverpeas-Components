@@ -64,13 +64,13 @@ public class ResourceValidatorRepositoryIntegrationTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(ResourceValidatorRepositoryIntegrationTest.class)
         .testFocusedOn(warBuilder -> {
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
-          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
-          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
-          warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:calendar");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc");
+          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:node");
+          warBuilder.addMavenDependencies("org.silverpeas.core.services:tagcloud");
+          warBuilder.addMavenDependencies("org.silverpeas.core.services:publication");
+          warBuilder.addMavenDependencies("org.silverpeas.core.services:formtemplate");
+          warBuilder.addMavenDependencies("org.silverpeas.core.services:calendar");
           warBuilder.addMavenDependencies("org.apache.tika:tika-core");
           warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
           warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
