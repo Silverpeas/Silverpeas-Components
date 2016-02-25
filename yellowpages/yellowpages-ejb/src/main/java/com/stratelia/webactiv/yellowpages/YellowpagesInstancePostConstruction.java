@@ -70,7 +70,7 @@ public class YellowpagesInstancePostConstruction implements ComponentInstancePos
   private NodeDetail getBinNodeFor(String componentInstanceId, NodeDetail root) {
     NodeDetail bin = new NodeDetail();
     bin.setNodePK(new NodePK("1", componentInstanceId));
-    bin.setFatherPK(root.getFatherPK());
+    bin.setFatherPK(root.getNodePK());
     bin.setUseId(true);
     bin.setName("Corbeille");
     bin.setDescription("Vous trouvez ici les contacts que vous avez supprimé");
@@ -82,7 +82,7 @@ public class YellowpagesInstancePostConstruction implements ComponentInstancePos
   private NodeDetail getDzNodeFor(String componentInstanceId, NodeDetail root) {
     NodeDetail dz = new NodeDetail();
     dz.setNodePK(new NodePK("2", componentInstanceId));
-    dz.setFatherPK(root.getFatherPK());
+    dz.setFatherPK(root.getNodePK());
     dz.setUseId(true);
     dz.setName("Déclassées");
     dz.setDescription("Vos contacts inaccessibles se retrouvent ici");
