@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.chat</groupId>
-  <artifactId>chat-war</artifactId>
+  <artifactId>silverpeas-chat-war</artifactId>
   <packaging>war</packaging>
-  <name>chat Webapp</name>
+  <name>Chat Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.components.chat</groupId>
-      <artifactId>chat-jar</artifactId>
+      <artifactId>silverpeas-chat</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

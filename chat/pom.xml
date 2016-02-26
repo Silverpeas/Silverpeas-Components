@@ -20,10 +20,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>chat</artifactId>
   <packaging>pom</packaging>
-  <name>chat Component</name>
+  <name>Silverpeas Chat Component</name>
   <modules>
-    <module>chat-jar</module>
+    <module>chat-configuration</module>
+    <module>chat-library</module>
     <module>chat-war</module>
-    <module>chat-config</module>
   </modules>
 </project>
