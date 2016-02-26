@@ -24,7 +24,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>calendar</artifactId>
+      <artifactId>silverpeas-core-calendar</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -36,25 +36,25 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>personalization</artifactId>
+      <artifactId>silverpeas-core-personalization</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>node</artifactId>
+      <artifactId>silverpeas-core-node</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>publication</artifactId>
+      <artifactId>silverpeas-core-publication</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>tagcloud</artifactId>
+      <artifactId>silverpeas-core-tagcloud</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>

@@ -41,31 +41,31 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>publication</artifactId>
+      <artifactId>silverpeas-core-publication</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>node</artifactId>
+      <artifactId>silverpeas-core-node</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>comment</artifactId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>mylinks</artifactId>
+      <artifactId>silverpeas-core-mylinks</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>pdc</artifactId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

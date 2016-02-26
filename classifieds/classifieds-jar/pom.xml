@@ -21,19 +21,19 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>searchengine</artifactId>
+      <artifactId>silverpeas-core-searchengine</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>pdc</artifactId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>comment</artifactId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

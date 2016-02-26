@@ -20,19 +20,19 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>contact</artifactId>
+      <artifactId>silverpeas-core-contact</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>node</artifactId>
+      <artifactId>silverpeas-core-node</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
      <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>formtemplate</artifactId>
+      <artifactId>silverpeas-core-formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

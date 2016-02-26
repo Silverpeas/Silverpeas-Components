@@ -35,7 +35,7 @@
     </dependency>
 	 <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>comment</artifactId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

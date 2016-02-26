@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>pdc</artifactId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -53,13 +53,13 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>clipboard</artifactId>
+      <artifactId>silverpeas-core-clipboard</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>personalization</artifactId>
+      <artifactId>silverpeas-core-personalization</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>

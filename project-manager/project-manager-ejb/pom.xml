@@ -20,12 +20,12 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>comment</artifactId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>calendar</artifactId>
+      <artifactId>silverpeas-core-calendar</artifactId>
       <version>${core.version}</version>
     </dependency>
     <dependency>

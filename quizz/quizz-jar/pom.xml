@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>questioncontainer</artifactId>
+      <artifactId>silverpeas-core-questioncontainer</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

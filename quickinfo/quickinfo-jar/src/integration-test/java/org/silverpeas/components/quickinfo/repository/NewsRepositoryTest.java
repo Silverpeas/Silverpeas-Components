@@ -42,14 +42,14 @@ public class NewsRepositoryTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(NewsRepositoryTest.class).testFocusedOn(warBuilder -> {
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:node");
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc");
+      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
+      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
       warBuilder.addMavenDependenciesWithPersistence(
           "org.silverpeas.components.delegatednews:delegatednews-jar");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:tagcloud");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:publication");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:statistic");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:comment");
+      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
+      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
+      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-statistic");
+      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
       warBuilder.addMavenDependencies("org.apache.tika:tika-core");
       warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
       warBuilder.addPackages(true, "org.silverpeas.components.quickinfo");
