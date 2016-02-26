@@ -49,7 +49,7 @@
     <!-- TESTS -->
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-webservice-test</artifactId>
+      <artifactId>silverpeas-core-web-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
