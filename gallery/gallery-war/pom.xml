@@ -85,7 +85,7 @@
     <!-- TESTS -->
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>ws-test-core</artifactId>
+      <artifactId>silverpeas-core-webservice-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
