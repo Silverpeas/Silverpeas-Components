@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.components.almanach</groupId>
-  <artifactId>almanach-war</artifactId>
+  <artifactId>silverpeas-almanach-war</artifactId>
   <packaging>war</packaging>
-  <name>almanach Webapp</name>
+  <name>Almanach Web Application</name>
 
   <dependencies>
     <dependency>
@@ -29,7 +29,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.almanach</groupId>
-      <artifactId>almanach-ejb</artifactId>
+      <artifactId>silverpeas-almanach</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
