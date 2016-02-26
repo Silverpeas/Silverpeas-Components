@@ -8,36 +8,16 @@
   </parent>
 
   <groupId>org.silverpeas.components.blog</groupId>
-  <artifactId>silverpeas-blog-war</artifactId>
-  <packaging>war</packaging>
-  <name>Blog Web Application</name>
+  <artifactId>silverpeas-blog</artifactId>
+  <packaging>jar</packaging>
+  <name>Blog Library</name>
+  <description>The business layer of the Blog Silverpeas component</description>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-web</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.components.blog</groupId>
-      <artifactId>silverpeas-blog</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
@@ -51,17 +31,27 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
+     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-comment</artifactId>
+      <artifactId>silverpeas-core-statistic</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-mylinks</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-mylinks</artifactId>
+      <artifactId>silverpeas-core-searchengine</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-comment</artifactId>
+      <version>${core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
@@ -70,5 +60,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
 </project>

@@ -1,6 +1,0 @@
-ALTER TABLE SC_Blog_Post WITH NOCHECK ADD 
-	 CONSTRAINT PK_Blog_Post PRIMARY KEY  CLUSTERED 
-	(
-		pubId
-	)   
-;

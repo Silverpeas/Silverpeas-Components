@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>blog</name>
+  <label>
+    <message lang="fr">Blog</message>
+    <message lang="en">Blog</message>
+    <message lang="de">Blog</message>
+  </label>
+  <description>
+    <message lang="fr">Parfait pour suivre l’actualité d’un projet ou d’une équipe, le blog permet
+		de créer des billets. Chaque utilisateur peut s’abonner et participer en laissant des
+		commentaires. La gestion des catégories est possible. Les billets sont également
+		accessibles via RSS.
+	</message>
+    <message lang="en">A blog application, displaying posts by categories or by time.</message>
+    <message lang="de">Eine Blog-Komponente die Beiträge per Kategorien oder nach Zeit Anzeiget.</message>
+  </description>
+  <suite>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>true</portlet>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
+        <message lang="de">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, personnaliser l'affichage, mettre à jour le pied de page et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators can create categories, links, customize, update footer and set up the Classification Scheme.</message>
+        <message lang="de">Administrator</message>
+      </help>
+    </profile>
+    <profile name="publisher">
+      <label>
+        <message lang="fr">Bloggeurs</message>
+        <message lang="en">Authors</message>
+        <message lang="de">Autor</message>
+      </label>
+      <help>
+        <message lang="fr">Les bloggeurs peuvent gérer des billets, les positionner dans une catégorie et les classer sur le Plan de Classement .</message>
+        <message lang="en">Authors can manage posts, classify them in a category and classify them on the Classification Scheme.</message>
+        <message lang="de">Autor</message>
+      </help>
+    </profile>
+    <profile name="user">
+      <label>
+		<message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs consultent les billets et peuvent s'abonner au blog. Ils peuvent également laisser des commentaires.</message>
+        <message lang="en">Readers visualize posts and can subscribe to the blog. They can also leave comments.</message>
+        <message lang="de">Leser</message>
+      </help>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>rss</name>
+      <label>
+        <message lang="fr">Flux RSS</message>
+        <message lang="en">RSS</message>
+        <message lang="de">RSS</message>
+      </label>
+      <order>1</order>
+      <mandatory>false</mandatory>
+      <value>N</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de générer un flux RSS de ce blog.</message>
+        <message lang="en">Produce a RSS stream for the events of this Blog.</message>
+        <message lang="de">Erlaubt, eine RSS-Stream des Blogs zu erzeugen</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">Post will be classified on the classification scheme.</message>
+        <message lang="de">Posts können auf dem KP klassifiziert werden</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>draftVisible</name>
+      <label>
+        <message lang="fr">Brouillon visible</message>
+        <message lang="en">Display drafts</message>
+        <message lang="de">Entwürfe anzeigen</message>
+      </label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Le brouillon sera visible entre bloggeurs.</message>
+        <message lang="en">Authors will be able to see draft posts.</message>
+        <message lang="de">Die Autoren werden in der Lage sein Entwurf Beiträge zu sehen.</message>
+      </help>
+    </parameter>
+  </parameters>
+</WAComponent>
