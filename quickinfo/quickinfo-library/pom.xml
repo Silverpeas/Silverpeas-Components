@@ -8,36 +8,15 @@
   </parent>
 
   <groupId>org.silverpeas.components.quickinfo</groupId>
-  <artifactId>silverpeas-quickinfo-war</artifactId>
-  <packaging>war</packaging>
-  <name>Quickinfo Web Application</name>
+  <artifactId>silverpeas-quickinfo</artifactId>
+  <packaging>jar</packaging>
+  <name>Quickinfo Library</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-web</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.components.quickinfo</groupId>
-      <artifactId>silverpeas-quickinfo</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
@@ -48,12 +27,6 @@
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-pdc</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-clipboard</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -70,15 +43,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.components.delegatednews</groupId>
       <artifactId>delegatednews-jar</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-tagcloud</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-comment</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
