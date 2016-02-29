@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>survey</artifactId>
   <packaging>pom</packaging>
-  <name>survey Component</name>
+  <name>Silverpeas Survey Component</name>
   <modules>
-    <module>survey-jar</module>
+    <module>survey-configuration</module>
+    <module>survey-library</module>
     <module>survey-war</module>
-    <module>survey-config</module>
   </modules>
 </project>

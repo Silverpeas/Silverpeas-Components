@@ -6,11 +6,11 @@
     <artifactId>survey</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>org.silverpeas.components.survey</groupId>
-  <artifactId>survey-config</artifactId>
+  <artifactId>silverpeas-survey-configuration</artifactId>
   <packaging>pom</packaging>
-  <name>Configuration survey</name>
+  <name>Survey Configuration</name>
 
   <build>
     <plugins>
