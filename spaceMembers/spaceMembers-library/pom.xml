@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas.components</groupId>
-    <artifactId>spaceMembers</artifactId>
+    <artifactId>spacemembers</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
-	
-  <groupId>org.silverpeas.components.spaceMembers</groupId>
-  <artifactId>spaceMembers-jar</artifactId>
+
+  <groupId>org.silverpeas.components.spacemembers</groupId>
+  <artifactId>silverpas-spacemembers</artifactId>
   <packaging>jar</packaging>
-  <name>Lib SpaceMembers</name>
-	
+  <name>SpaceMembers Library</name>
+
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

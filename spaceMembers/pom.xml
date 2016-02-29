@@ -8,14 +8,14 @@
   </parent>
   
   <groupId>org.silverpeas.components</groupId>
-  <artifactId>spaceMembers</artifactId>
+  <artifactId>spacemembers</artifactId>
   <packaging>pom</packaging>
-  <name>SpaceMembers Component</name>
+  <name>Silverpeas SpaceMembers Component</name>
   
   
   <modules>
-    <module>spaceMembers-jar</module>
+    <module>spaceMembers-configuration</module>
+    <module>spaceMembers-library</module>
     <module>spaceMembers-war</module>
-    <module>spaceMembers-config</module>
   </modules>
 </project>

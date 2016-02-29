@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas.components</groupId>
-    <artifactId>spaceMembers</artifactId>
+    <artifactId>spacemembers</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
-	
-  <groupId>org.silverpeas.components.spaceMembers</groupId>
-  <artifactId>spaceMembers-config</artifactId>
+
+  <groupId>org.silverpeas.components.spacemembers</groupId>
+  <artifactId>silverpeas-spacemembers-configuration</artifactId>
   <packaging>pom</packaging>
-  <name>Configuration SpaceMembers</name>
+  <name>SpaceMembers Configuration</name>
 
   <build>
     <plugins>

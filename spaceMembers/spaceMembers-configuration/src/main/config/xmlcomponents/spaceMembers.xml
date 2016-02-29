@@ -60,7 +60,7 @@
     </profile>
   </profiles>
   <parameters>
-  	<parameter>
+	<parameter>
       <name>homePage</name>
       <label>
         <message lang="fr">Page d'accueil</message>
@@ -95,6 +95,6 @@
         <message lang="en">Type of display of the space members home page</message>
         <message lang="de">Art der Darstellung des Raumes Mitglieder Startseite</message>
       </help>
-    </parameter>  
+    </parameter>
   </parameters>
 </WAComponent>

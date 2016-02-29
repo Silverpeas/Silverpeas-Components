@@ -3,19 +3,19 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas.components</groupId>
-    <artifactId>spaceMembers</artifactId>
+    <artifactId>spacemembers</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.silverpeas.components.spaceMembers</groupId>
-  <artifactId>spaceMembers-war</artifactId>
+  <groupId>org.silverpeas.components.spacemembers</groupId>
+  <artifactId>silverpeas-spacemembers-war</artifactId>
   <packaging>war</packaging>
-  <name>SpaceMembers Webapp</name>
+  <name>SpaceMembers Web Application</name>
 
   <dependencies>
     <dependency>
-      <groupId>org.silverpeas.components.spaceMembers</groupId>
-      <artifactId>spaceMembers-jar</artifactId>
+      <groupId>org.silverpeas.components.spacemembers</groupId>
+      <artifactId>silverpas-spacemembers</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
