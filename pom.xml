@@ -191,7 +191,7 @@
     <module>organizationchart</module>
     <module>classifieds</module>
     <module>formsOnline</module>
-    <module>scheduleevent</module>
+    <module>scheduleEvent</module>
     <module>suggestion-box</module>
     <module>spaceMembers</module>
   </modules>

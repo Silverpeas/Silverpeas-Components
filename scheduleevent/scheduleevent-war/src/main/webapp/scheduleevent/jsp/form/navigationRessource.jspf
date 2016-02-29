@@ -1,3 +1,0 @@
-<fmt:message key="scheduleevent.button.cancel" var="cancelLabel" />
-<fmt:message key="scheduleevent.button.back" var="backLabel" />
-<fmt:message key="scheduleevent.button.next" var="nextLabel" />
