@@ -21,7 +21,6 @@
 package com.silverpeas.dataWarning.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
 public class DataWarningResult extends Object {

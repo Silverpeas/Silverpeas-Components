@@ -39,8 +39,6 @@ import org.silverpeas.util.LocalizationBundle;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.silverpeas.util.ResourceLocator;
-
 /**
  * It is a translator of text containing in some parts of an ODT documents.
  * It is instanciated for a given localized resource bundle from which it will fetch the translated 

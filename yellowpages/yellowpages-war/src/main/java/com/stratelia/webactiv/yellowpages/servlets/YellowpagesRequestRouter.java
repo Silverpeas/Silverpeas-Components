@@ -28,7 +28,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;

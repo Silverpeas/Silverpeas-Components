@@ -32,7 +32,6 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.io.File;
-import java.sql.SQLException;
 
 /**
  * Deletes all the web site managed by the WebSites instance that is being deleted.

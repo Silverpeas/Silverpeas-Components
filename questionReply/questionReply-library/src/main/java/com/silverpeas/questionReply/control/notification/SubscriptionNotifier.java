@@ -36,7 +36,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
 

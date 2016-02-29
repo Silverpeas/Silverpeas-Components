@@ -30,7 +30,6 @@ import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspWriter;

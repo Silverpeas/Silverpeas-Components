@@ -55,7 +55,6 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ImageUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.SettingBundle;

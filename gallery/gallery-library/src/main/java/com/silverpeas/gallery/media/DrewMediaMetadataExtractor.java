@@ -23,27 +23,24 @@
  */
 package com.silverpeas.gallery.media;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.silverpeas.gallery.model.MetaData;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Descriptor;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.iptc.IptcDirectory;
+import com.silverpeas.gallery.model.MetaData;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.EncodingUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.drew.metadata.iptc.IptcDirectory.*;
 
@@ -156,7 +153,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
         defaultEncoding = iptcCharset;
       }
       String encoding =
-          StringUtil.detectStringEncoding(forEncodingDetection.toByteArray(), defaultEncoding);
+          EncodingUtil.detectStringEncoding(forEncodingDetection.toByteArray(), defaultEncoding);
 
       for (MetaData metaData : result) {
         metaData.convert(encoding);

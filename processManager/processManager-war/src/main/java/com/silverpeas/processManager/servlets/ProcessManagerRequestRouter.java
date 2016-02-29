@@ -42,7 +42,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.silverpeas.util.FileRepositoryManager;

@@ -30,14 +30,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.XmlSettingBundle;
-import org.w3c.dom.Node;
 
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Database driver manager. All available drivers are described in MyDB setting file.

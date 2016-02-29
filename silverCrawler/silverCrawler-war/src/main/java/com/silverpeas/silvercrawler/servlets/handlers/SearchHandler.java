@@ -26,7 +26,6 @@ package com.silverpeas.silvercrawler.servlets.handlers;
 
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.model.FileDetail;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;

@@ -49,7 +49,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Section;
 import com.lowagie.text.pdf.PdfWriter;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;

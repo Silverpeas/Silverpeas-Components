@@ -23,7 +23,6 @@ package org.silverpeas.kmelia.notification;
 
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.notification.CDIResourceEventListener;

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.whitePages.service;
 
-import com.silverpeas.annotation.Service;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
@@ -45,7 +44,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Singleton
 public class MixedSearchServiceImpl implements MixedSearchService {

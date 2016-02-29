@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.models.Forum;
@@ -32,7 +31,6 @@ import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
