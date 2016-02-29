@@ -167,7 +167,7 @@
     <module>quickinfo</module>
     <module>quizz</module>
     <module>jdbcConnector</module>
-    <module>rssaggregator</module>
+    <module>rssAggregator</module>
     <!-- DEACTIVATED (to remove later): <module>mydb</module> -->
     <module>projectManager</module>
     <module>websites</module>
