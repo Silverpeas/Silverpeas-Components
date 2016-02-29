@@ -8,9 +8,9 @@
   </parent>
 	
   <groupId>org.silverpeas.components.quizz</groupId>
-  <artifactId>quizz-war</artifactId>
+  <artifactId>silverpeas-quizz-war</artifactId>
   <packaging>war</packaging>
-  <name>quizz Webapp</name>
+  <name>Quizz Web Application</name>
 
   <dependencies>
     <dependency>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.quizz</groupId>
-      <artifactId>quizz-jar</artifactId>
+      <artifactId>silverpeas-quizz</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

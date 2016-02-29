@@ -10,11 +10,11 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>quizz</artifactId>
   <packaging>pom</packaging>
-  <name>Quizz Component</name>
+  <name>Silverpeas Quizz Component</name>
 
   <modules>
-    <module>quizz-jar</module>
+    <module>quizz-configuration</module>
+    <module>quizz-library</module>
     <module>quizz-war</module>
-    <module>quizz-config</module>
   </modules>
 </project>

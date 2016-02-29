@@ -6,11 +6,11 @@
     <artifactId>quizz</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>org.silverpeas.components.quizz</groupId>
-  <artifactId>quizz-jar</artifactId>
+  <artifactId>silverpeas-quizz</artifactId>
   <packaging>jar</packaging>
-  <name>Lib quizz</name>
+  <name>Quizz Library</name>
 
   <dependencies>
     <dependency>
