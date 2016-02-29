@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>myDB</name>
+  <label>
+    <message lang="fr">My DB</message>
+    <message lang="en">My DB</message>
+    <message lang="de">My DB</message>
+  </label>
+  <description>
+    <message lang="fr">Silverpeas permet grâce à « MyDB » de définir et gérer une base de données
+		relationnelle. Le gestionnaire crée sa structure. Les contributeurs saisissent les
+		données, les lecteurs les consultent.
+	</message>
+    <message lang="en">An easy way to create tables, consult, modify or delete data stored in a database.</message>
+    <message lang="de">Ein einfacher Weg Tabellen zu erstellen, einsehen, ändern oder Löschen von Daten die in einer Datenbank gespeichert sind.</message>
+  </description>
+  <suite>
+    <message lang="fr">06 Connecteurs</message>
+    <message lang="en">06 Connectors</message>
+    <message lang="de">06 Verbinder</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>false</portlet>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
+        <message lang="de">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires paramètrent les informations de connexion à la base de données.</message>
+        <message lang="en">Administrators set up the DB connection's parameters.</message>
+        <message lang="de">Administrator</message>
+      </help>
+    </profile>
+    <profile name="publisher">
+      <label>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
+        <message lang="de">Herausgeber</message>
+      </label>
+      <help>
+        <message lang="fr">Les publieurs écrivent dans la base de données.</message>
+        <message lang="en">Publishers write the data base.</message>
+        <message lang="de">Herausgeber</message>
+      </help>
+    </profile>
+    <profile name="user">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs visualisent les données.</message>
+        <message lang="en">Readers visualize data.</message>
+        <message lang="de">Leser</message>
+      </help>
+    </profile>
+  </profiles>
+</WAComponent>

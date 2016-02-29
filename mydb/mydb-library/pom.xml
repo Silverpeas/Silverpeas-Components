@@ -8,35 +8,15 @@
   </parent>
 
   <groupId>org.silverpeas.components.mydb</groupId>
-  <artifactId>silverpeas-mydb-war</artifactId>
-  <packaging>war</packaging>
-  <name>MyDB Web Application</name>
+  <artifactId>silverpeas-mydb</artifactId>
+  <packaging>jar</packaging>
+  <name>MyDB Library</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-web</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.components.mydb</groupId>
-      <artifactId>silverpeas-mydb</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
@@ -45,5 +25,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
 </project>
