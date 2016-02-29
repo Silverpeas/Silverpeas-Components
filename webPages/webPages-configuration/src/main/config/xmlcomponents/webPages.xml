@@ -83,7 +83,7 @@
         <message lang="en">Manage subscription</message>
         <message lang="de">Abonnement verwalten</message>
       </label>
-      <order>1</order>      
+      <order>1</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>

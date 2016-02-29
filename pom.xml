@@ -173,7 +173,7 @@
     <module>websites</module>
     <module>whitepages</module>
     <module>questionReply</module>
-    <module>webpages</module>
+    <module>webPages</module>
     <!-- DEACTIVATED (to remove later): <module>chat</module> -->
     <module>mailinglist</module>
     <module>infoLetter</module>

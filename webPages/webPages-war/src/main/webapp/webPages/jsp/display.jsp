@@ -41,14 +41,14 @@
 	}
 	boolean haveGotContent = ((Boolean)request.getAttribute("haveGotContent")).booleanValue();
 	boolean isAnonymous = ((Boolean)request.getAttribute("AnonymousAccess")).booleanValue();
-	
+
 	Form form = (Form) request.getAttribute("Form");
 	DataRecord data = (DataRecord) request.getAttribute("Data");
-	
+
 	PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
- 	context.setObjectId("0");
+	context.setObjectId("0");
 	context.setBorderPrinted(false);
-	
+
 	boolean operationsVisibles = !action.equals("Portlet") && webPagesScc.isSubscriptionUsed() && !isAnonymous;
 %>
 
@@ -63,13 +63,13 @@
 <body>
 <%
 	if (operationsVisibles) {
-	 	if (!isSubscriber) {
-	 		operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
-	 	} else {
-	 		operationPane.addOperation("useless", resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
-	 	}
+		if (!isSubscriber) {
+			operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
+		} else {
+			operationPane.addOperation("useless", resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
+		}
 	}
-	
+
 	if (action.equals("Preview") || operationsVisibles) {
 		out.println(window.printBefore());
 	}
@@ -80,7 +80,7 @@
 		tabbedPane.addTab(resource.getString("webPages.preview"), "Preview", true);
 		tabbedPane.addTab(resource.getString("webPages.edit"), "Edit", false);
 		out.println(tabbedPane.print());
-		
+
 		out.println(frame.printBefore());
 	}
 %>
@@ -88,13 +88,13 @@
 	<tr><td id="richContent">
 		<%
 			if (haveGotContent) {
-			  	if (data != null) {
-			  	  form.display(out, context, data);
-			  	} else {
-			  	  %>
-			  	  <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>"/>
-			  	  <%
-			  	}
+				if (data != null) {
+				  form.display(out, context, data);
+				} else {
+				  %>
+				  <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>"/>
+				  <%
+				}
 			} else {
 		%>
 				<center>
@@ -106,14 +106,14 @@
 	</td></tr>
 	</table>
 <%
-	
+
 	if (action.equals("Preview")) {
 		out.println(frame.printAfter());
 	}
-		
+
 	if (action.equals("Preview") || operationsVisibles) {
 		out.println(window.printAfter());
 	}
-%>	
+%>
 </body>
 </html>

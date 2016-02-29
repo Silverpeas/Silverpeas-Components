@@ -91,7 +91,7 @@ Frame frame = gef.getFrame();
 WebPagesSessionController webPagesScc = (WebPagesSessionController) request.getAttribute("WebPages");
 
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-	
+
 String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];
 String componentLabel = browseContext[1];
