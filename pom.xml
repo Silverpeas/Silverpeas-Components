@@ -192,7 +192,7 @@
     <module>classifieds</module>
     <module>formsOnline</module>
     <module>scheduleEvent</module>
-    <module>suggestion-box</module>
+    <module>suggestionBox</module>
     <module>spaceMembers</module>
   </modules>
 
