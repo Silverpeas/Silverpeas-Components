@@ -163,7 +163,7 @@
 
   <modules>
     <module>hyperlink</module>
-    <module>datawarning</module>
+    <module>dataWarning</module>
     <module>quickinfo</module>
     <module>quizz</module>
     <module>jdbc-connector</module>
