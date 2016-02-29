@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.components.gallery</groupId>
-  <artifactId>gallery-war</artifactId>
+  <artifactId>silverpeas-gallery-war</artifactId>
   <packaging>war</packaging>
-  <name>gallery Webapp</name>
+  <name>Gallery Web Application</name>
 
   <dependencies>
     <dependency>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.gallery</groupId>
-      <artifactId>gallery-ejb</artifactId>
+      <artifactId>silverpeas-gallery</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

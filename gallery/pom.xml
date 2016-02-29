@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>gallery</artifactId>
   <packaging>pom</packaging>
-  <name>gallery Component</name>
+  <name>Silverpeas Gallery Component</name>
   <modules>
-    <module>gallery-ejb</module>
+    <module>gallery-configuration</module>
+    <module>gallery-library</module>
     <module>gallery-war</module>
-    <module>gallery-config</module>
   </modules>
 </project>
