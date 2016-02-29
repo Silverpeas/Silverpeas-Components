@@ -166,7 +166,7 @@
     <module>dataWarning</module>
     <module>quickinfo</module>
     <module>quizz</module>
-    <module>jdbc-connector</module>
+    <module>jdbcConnector</module>
     <module>rssaggregator</module>
     <module>mydb</module>
     <module>project-manager</module>
