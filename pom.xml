@@ -179,7 +179,7 @@
     <module>infoLetter</module>
     <module>almanach</module>
     <module>yellowpages</module>
-    <module>silvercrawler</module>
+    <module>silverCrawler</module>
     <module>resourcesManager</module>
     <module>processManager</module>
     <module>forums</module>
