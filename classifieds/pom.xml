@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>classifieds</artifactId>
   <packaging>pom</packaging>
-  <name>classifieds Component</name>
+  <name>Silverpeas Classifieds Component</name>
   <modules>
-    <module>classifieds-jar</module>
+    <module>classifieds-configuration</module>
+    <module>classifieds-library</module>
     <module>classifieds-war</module>
-    <module>classifieds-config</module>
   </modules>
 </project>

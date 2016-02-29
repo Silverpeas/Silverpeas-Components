@@ -8,44 +8,40 @@
   </parent>
 
   <groupId>org.silverpeas.components.classifieds</groupId>
-  <artifactId>silverpeas-classifieds-war</artifactId>
-  <packaging>war</packaging>
-  <name>Classifieds Web Application</name>
+  <artifactId>silverpeas-classifieds</artifactId>
+  <packaging>jar</packaging>
+  <name>Classifieds Library</name>
+  <description>Business layer of the Classifieds Silverpeas component</description>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-web</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-searchengine</artifactId>
+      <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-	 <dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-pdc</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>silverpeas-classifieds</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-test</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
-
