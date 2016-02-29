@@ -180,7 +180,7 @@
     <module>almanach</module>
     <module>yellowpages</module>
     <module>silvercrawler</module>
-    <module>resources-manager</module>
+    <module>resourcesManager</module>
     <module>processManager</module>
     <module>forums</module>
     <module>blog</module>
