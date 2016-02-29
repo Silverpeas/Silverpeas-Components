@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.components.yellowpages</groupId>
-  <artifactId>yellowpages-war</artifactId>
+  <artifactId>silverpeas-yellowpages-war</artifactId>
   <packaging>war</packaging>
-  <name>yellowpages Webapp</name>
+  <name>YellowPages Web Application</name>
 
   <dependencies>
     <dependency>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.yellowpages</groupId>
-      <artifactId>yellowpages-ejb</artifactId>
+      <artifactId>silverpeas-yellowpages</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
