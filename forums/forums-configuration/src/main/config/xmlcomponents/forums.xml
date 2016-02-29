@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>forums</name>
+  <label>
+    <message lang="fr">Forum</message>
+    <message lang="en">Forum</message>
+    <message lang="de">Forum</message>
+  </label>
+  <description>
+    <message lang="fr">Cette application couvre les fonctionnalités classiques d’un forum :
+		abonnement, indicateur de nouveautés, mise en avant des utilisateurs, date du
+		dernier message, nombre de consultations...
+	</message>
+    <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Forums can be classified on the classification scheme.</message>
+    <message lang="de">Foren können für verschiedene Themen erstellt werden. Sie können auf jedem Punkt in den Faden beantworten.
+	Foren können Sie auf dem KP klassifizieren.</message>
+  </description>
+  <suite>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>true</portlet>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
+        <message lang="de">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires gèrent les thèmes de discussion, les catégories, choisissent les modérateurs et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators manage threads and categories, choose moderators and set up the Classification scheme.</message>
+        <message lang="de">Administrator</message>
+      </help>
+    </profile>
+    <profile name="user">
+      <label>
+        <message lang="fr">Participants</message>
+        <message lang="en">Participants</message>
+        <message lang="de">Teilnehmer</message>
+      </label>
+      <help>
+        <message lang="fr">Les participants échanges au sein des forums. Un participant peut être désigné comme modérateur par les gestionnaires.</message>
+        <message lang="en">Participants discuss whithin forums. A participant can be designate as moderator by administrators.</message>
+        <message lang="de">Teilnehmer</message>
+      </help>
+    </profile>
+    <profile name="reader">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs consultent les forums.</message>
+        <message lang="en">Readers consult forums.</message>
+        <message lang="de">Leser</message>
+      </help>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</message>
+        <message lang="en">The forums will be classified on the classification scheme.</message>
+        <message lang="de">Foren werden auf dem KP klassifiziert werden</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>forumInsideForum</name>
+      <label>
+        <message lang="fr">Arborescence de forums</message>
+        <message lang="en">Tree of forums</message>
+        <message lang="de">Baum der Foren</message>
+      </label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Un forum peut contenir d'autres forums</message>
+        <message lang="en">A forum can be created inside another forum.</message>
+        <message lang="de">Ein Forum kann in einem anderen Forum erstellt werden.</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>rss</name>
+      <label>
+        <message lang="fr">Flux RSS</message>
+        <message lang="en">RSS</message>
+        <message lang="de">RSS</message>
+      </label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value>false</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de générer un flux RSS de ces forums.</message>
+        <message lang="en">Produce a RSS stream for the forums.</message>
+        <message lang="de">Erlaubt, eine RSS-Stream des Forums zu erzeugen</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>isValidationActive</name>
+      <label>
+        <message lang="fr">Validation</message>
+        <message lang="en">Validation</message>
+        <message lang="de">Validierung</message>
+      </label>
+      <order>5</order>
+      <mandatory>true</mandatory>
+      <value>false</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</message>
+        <message lang="en">Posts will be moderated.</message>
+        <message lang="de">Beiträge werden moderiert.</message>
+      </help>
+    </parameter>
+  </parameters>
+</WAComponent>
