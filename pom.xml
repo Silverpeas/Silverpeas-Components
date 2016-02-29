@@ -169,7 +169,7 @@
     <module>jdbcConnector</module>
     <module>rssaggregator</module>
     <!-- DEACTIVATED (to remove later): <module>mydb</module> -->
-    <module>project-manager</module>
+    <module>projectManager</module>
     <module>websites</module>
     <module>whitepages</module>
     <module>question-reply</module>
