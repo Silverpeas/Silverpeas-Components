@@ -172,7 +172,7 @@
     <module>projectManager</module>
     <module>websites</module>
     <module>whitepages</module>
-    <module>question-reply</module>
+    <module>questionReply</module>
     <module>webpages</module>
     <!-- DEACTIVATED (to remove later): <module>chat</module> -->
     <module>mailinglist</module>
