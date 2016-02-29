@@ -8,46 +8,25 @@
   </parent>
 
   <groupId>org.silverpeas.components.mailinglist</groupId>
-  <artifactId>silverpeas-mailinglist-war</artifactId>
-  <packaging>war</packaging>
-  <name>Mailinglist Web Application</name>
+  <artifactId>silverpeas-mailinglist</artifactId>
+  <packaging>jar</packaging>
+  <name>Mailinglist Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.components.mailinglist</groupId>
-      <artifactId>silverpeas-mailinglist</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-web</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-calendar</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.icegreen</groupId>
-      <artifactId>greenmail</artifactId>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
@@ -61,8 +40,38 @@
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-node</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-publication</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-tagcloud</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
 
   <build>
     <testResources>
@@ -81,9 +90,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>**/web/*.java</exclude>
-          </excludes>
+          <skipTests>false</skipTests>
         </configuration>
       </plugin>
       <plugin>
