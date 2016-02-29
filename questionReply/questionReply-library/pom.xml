@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.whitepages</groupId>
-      <artifactId>whitepages-jar</artifactId>
+      <artifactId>silverpeas-whitepages</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -76,7 +76,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.delegatednews</groupId>
-      <artifactId>delegatednews-jar</artifactId>
+      <artifactId>silverpeas-delegatednews</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
