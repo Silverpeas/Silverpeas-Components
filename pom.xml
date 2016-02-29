@@ -170,7 +170,7 @@
     <module>rssAggregator</module>
     <!-- DEACTIVATED (to remove later): <module>mydb</module> -->
     <module>projectManager</module>
-    <module>websites</module>
+    <module>webSites</module>
     <module>whitepages</module>
     <module>questionReply</module>
     <module>webPages</module>
