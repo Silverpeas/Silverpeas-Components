@@ -10,12 +10,12 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>hyperlink</artifactId>
   <packaging>pom</packaging>
-  <name>Hyperlink Component</name>
+  <name>Silverpeas Hyperlink Component</name>
   
   
   <modules>
-    <module>hyperlink-jar</module>
+    <module>hyperlink-configuration</module>
+    <module>hyperlink-library</module>
     <module>hyperlink-war</module>
-    <module>hyperlink-config</module>
   </modules>
 </project>

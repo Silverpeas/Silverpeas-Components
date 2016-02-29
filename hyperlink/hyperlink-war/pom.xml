@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.hyperlink</groupId>
-  <artifactId>hyperlink-war</artifactId>
+  <artifactId>silverpeas-hyperlink-war</artifactId>
   <packaging>war</packaging>
-  <name>Hyperlink Webapp</name>
+  <name>Hyperlink Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.components.hyperlink</groupId>
-      <artifactId>hyperlink-jar</artifactId>
+      <artifactId>silverpeas-hyperlink</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
