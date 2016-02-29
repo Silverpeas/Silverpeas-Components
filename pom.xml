@@ -181,7 +181,7 @@
     <module>yellowpages</module>
     <module>silvercrawler</module>
     <module>resources-manager</module>
-    <module>process-manager</module>
+    <module>processManager</module>
     <module>forums</module>
     <module>blog</module>
     <module>survey</module>
