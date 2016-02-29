@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.components.kmelia</groupId>
-  <artifactId>kmelia-war</artifactId>
+  <artifactId>silverpeas-kmelia-war</artifactId>
   <packaging>war</packaging>
-  <name>kmelia Webapp</name>
+  <name>Kmelia Web Application</name>
   <build>
     <testResources>
       <testResource>
@@ -48,7 +48,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.kmelia</groupId>
-      <artifactId>kmelia-ejb</artifactId>
+      <artifactId>silverpeas-kmelia</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>kmelia</artifactId>
   <packaging>pom</packaging>
-  <name>kmelia Component</name>
+  <name>Silverpeas Kmelia Component</name>
   <modules>
-    <module>kmelia-ejb</module>
+    <module>kmelia-configuration</module>
+    <module>kmelia-library</module>
     <module>kmelia-war</module>
-    <module>kmelia-config</module>
   </modules>
 </project>
