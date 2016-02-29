@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.organizationchart</groupId>
-  <artifactId>organizationchart-war</artifactId>
+  <artifactId>silverpeas-organizationchart-war</artifactId>
   <packaging>war</packaging>
-  <name>organizationchart Webapp</name>
+  <name>Organizationchart Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.components.organizationchart</groupId>
-      <artifactId>organizationchart-jar</artifactId>
+      <artifactId>silverpeas-organizationchart</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

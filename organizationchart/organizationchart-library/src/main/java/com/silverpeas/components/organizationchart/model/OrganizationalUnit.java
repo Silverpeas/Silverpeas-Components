@@ -43,7 +43,7 @@ public class OrganizationalUnit {
   private String parentName;
   private String parentOu;
   private String completeName;
-  
+
   private Map<String, String> detail;
 
   public OrganizationalUnit(String name, String completeName) {
@@ -120,7 +120,7 @@ public class OrganizationalUnit {
   public String getSpecificCSSClass() {
     return specificCSSClass;
   }
-  
+
   public void setDetail(Map<String, String> detail) {
     this.detail = detail;
   }

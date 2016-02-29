@@ -8,15 +8,18 @@
   </parent>
 
   <groupId>org.silverpeas.components.organizationchart</groupId>
-  <artifactId>organizationchart-jar</artifactId>
-  <packaging>jar</packaging>
-  <name>Lib organizationchart</name>
+  <artifactId>silverpeas-organizationchart-configuration</artifactId>
+  <packaging>pom</packaging>
+  <name>Organizationchart Configuration</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
-  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <skipAssembly>false</skipAssembly>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
