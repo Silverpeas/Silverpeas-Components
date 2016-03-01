@@ -9,17 +9,14 @@
 
   <groupId>org.silverpeas.components.survey</groupId>
   <artifactId>silverpeas-survey-configuration</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>Survey Configuration</name>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <skipAssembly>false</skipAssembly>
-        </configuration>
-      </plugin>
-    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/config</directory>
+      </resource>
+    </resources>
   </build>
 </project>

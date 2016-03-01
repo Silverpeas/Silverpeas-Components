@@ -9,17 +9,14 @@
 
   <groupId>org.silverpeas.components.websites</groupId>
   <artifactId>silverpeas-websites-configuration</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>WebSites Configuration</name>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <skipAssembly>false</skipAssembly>
-        </configuration>
-      </plugin>
-    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/config</directory>
+      </resource>
+    </resources>
   </build>
 </project>
