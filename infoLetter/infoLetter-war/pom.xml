@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.components.infoletter</groupId>
-  <artifactId>infoletter-war</artifactId>
+  <artifactId>silverpeas-infoletter-war</artifactId>
   <packaging>war</packaging>
   <name>InfoLetter Web Application</name>
 

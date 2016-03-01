@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.components.resourcesmanager</groupId>
-  <artifactId>silverpeas-resourcesmanager-config</artifactId>
+  <artifactId>silverpeas-resourcesmanager-configuration</artifactId>
   <packaging>pom</packaging>
   <name>ResourcesManager Configuration</name>
 

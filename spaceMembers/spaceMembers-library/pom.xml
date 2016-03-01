@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.components.spacemembers</groupId>
-  <artifactId>silverpas-spacemembers</artifactId>
+  <artifactId>silverpeas-spacemembers</artifactId>
   <packaging>jar</packaging>
   <name>SpaceMembers Library</name>
 
