@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.classifieds.control.SearchContext"%>
+<%@page import="org.silverpeas.components.classifieds.control.SearchContext"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.pagination.Pagination"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
