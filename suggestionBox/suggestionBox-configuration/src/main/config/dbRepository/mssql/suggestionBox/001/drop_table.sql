@@ -1,1 +1,0 @@
-DROP TABLE sc_suggestion, sc_suggestion_box;

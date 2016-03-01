@@ -1,1 +1,0 @@
-ALTER TABLE SC_Rss_Channels DROP CONSTRAINT PK_Rss_Channels;
