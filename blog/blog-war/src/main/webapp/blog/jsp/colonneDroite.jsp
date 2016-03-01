@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.components.blog.model.Archive" %>
 <%
 Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", false);
 %>

@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.components.blog.model.PostDetail" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -39,7 +39,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <% 
-	PostDetail 	post			= (PostDetail) request.getAttribute("Post"); //never null
+	PostDetail post			= (PostDetail) request.getAttribute("Post"); //never null
 	Collection<NodeDetail> 	categories		= (Collection) request.getAttribute("AllCategories");
 	UserDetail  updater			= (UserDetail) request.getAttribute("Updater");
 	

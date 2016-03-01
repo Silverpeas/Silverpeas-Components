@@ -30,17 +30,17 @@
   <servlet>
     <display-name>BlogRequestRouter</display-name>
     <servlet-name>BlogRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.blog.servlets.BlogRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.blog.servlets.BlogRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>BlogRssServlet</display-name>
     <servlet-name>BlogRssServlet</servlet-name>    
-    <servlet-class>com.silverpeas.blog.servlets.BlogRssServlet</servlet-class>
+    <servlet-class>org.silverpeas.components.blog.servlets.BlogRssServlet</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToPost</display-name>
     <servlet-name>GoToPost</servlet-name>    
-    <servlet-class>com.silverpeas.blog.servlets.GoToPost</servlet-class>
+    <servlet-class>org.silverpeas.components.blog.servlets.GoToPost</servlet-class>
   </servlet>
   
   <servlet-mapping>
