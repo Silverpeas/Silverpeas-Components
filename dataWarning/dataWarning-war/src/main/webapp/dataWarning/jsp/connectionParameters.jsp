@@ -1,4 +1,6 @@
 <%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.components.datawarning.DataWarningDBDriver" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarning" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,7 +31,7 @@
 <%@ include file="checkDataWarning.jsp" %>
 
 <%
-DataWarning         dataWarningObject = (DataWarning)request.getAttribute("dataWarningObject");
+DataWarning dataWarningObject = (DataWarning)request.getAttribute("dataWarningObject");
 DataWarningDBDriver[] dataWarningDBDrivers = (DataWarningDBDriver[])request.getAttribute("dataWarningDBDrivers");
 DataWarningDBDriver currentDBDriver = (DataWarningDBDriver)request.getAttribute("currentDBDriver");
 %>

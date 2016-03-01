@@ -33,7 +33,7 @@
     <servlet-name>DataWarningRequestRouter</servlet-name>
     <display-name>DataWarningRequestRouter</display-name>
     <description>no description</description>
-    <servlet-class>com.silverpeas.dataWarning.servlets.DataWarningRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.datawarning.servlets.DataWarningRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>DataWarningRequestRouter</servlet-name>

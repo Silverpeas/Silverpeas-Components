@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarningQuery" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarning" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
