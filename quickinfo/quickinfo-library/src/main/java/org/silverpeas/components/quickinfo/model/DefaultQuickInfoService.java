@@ -26,8 +26,8 @@ package org.silverpeas.components.quickinfo.model;
 
 import com.silverpeas.ApplicationService;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.DelegatedNewsServiceProvider;
+import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
+import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;

@@ -29,7 +29,7 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List"%>
-<%@ page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
+<%@ page import="org.silverpeas.components.delegatednews.model.DelegatedNews"%>
 
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />

@@ -27,7 +27,7 @@ package org.silverpeas.components.quickinfo.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
-import com.silverpeas.delegatednews.model.DelegatedNews;
+import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;

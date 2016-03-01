@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 <c:out value="${error}"/>
 
-<%@ page import="com.silverpeas.delegatednews.control.DelegatedNewsSessionController"%>
+<%@ page import="org.silverpeas.components.delegatednews.control.DelegatedNewsSessionController"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
