@@ -37,8 +37,6 @@ import org.silverpeas.date.PeriodType;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.*;
-import static com.stratelia.webactiv.almanach.model.EventOccurrenceMatcher.*;
 
 /**
  * Unit tests on the generation of occurrences of events in a given period.

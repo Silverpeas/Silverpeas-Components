@@ -65,7 +65,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.monthCalendar.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.AlmanachSessionController"%>
+<%@ page import="org.silverpeas.components.almanach.control.AlmanachSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>

@@ -39,7 +39,6 @@ import java.util.List;
 
 import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.NON_PERIODIC_EVENTS;
 import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.PERIODIC_EVENTS;
-import static com.stratelia.webactiv.almanach.model.EventOccurrenceMatcher.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 

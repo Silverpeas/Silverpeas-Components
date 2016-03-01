@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.components.almanach.control.ejb.AlmanachPrivateException" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -54,7 +54,7 @@
 	  <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
 		<tr align=center> 
                 <td align="center" class="textePetitBold">
-                <%= almanach.getString(((AlmanachPrivateException)request.getAttribute("error")).getMessage())%>  
+                <%= almanach.getString(((AlmanachPrivateException)request.getAttribute("error")).getMessage())%>
 				</td>
         </tr>
       </table>
