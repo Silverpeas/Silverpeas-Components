@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.forums.models.Forum"%>
+<%@page import="org.silverpeas.components.forums.models.Forum"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -46,8 +46,11 @@
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
-<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
+<%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper" %>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumActionHelper" %>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumHelper" %>
 <%
     ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");

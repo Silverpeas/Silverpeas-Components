@@ -49,8 +49,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.components.forum.subscription.ForumMessageSubscriptionResource;
-import org.silverpeas.components.forum.subscription.ForumSubscriptionResource;
+import org.silverpeas.components.forums.subscription.ForumMessageSubscriptionResource;
+import org.silverpeas.components.forums.subscription.ForumSubscriptionResource;
 import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

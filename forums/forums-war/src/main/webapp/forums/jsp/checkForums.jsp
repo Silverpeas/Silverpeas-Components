@@ -35,11 +35,11 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.forums.forumsException.ForumsException"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Message"%>
-<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
-<%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
+<%@ page import="org.silverpeas.components.forums.forumsException.ForumsException"%>
+<%@ page import="org.silverpeas.components.forums.models.Forum"%>
+<%@ page import="org.silverpeas.components.forums.models.Message"%>
+<%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>
+<%@ page import="org.silverpeas.components.forums.url.ActionUrl"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
