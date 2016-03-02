@@ -40,6 +40,13 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.components.almanach.control.ejb.AlmanachBadParamException;
 import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
 import org.silverpeas.components.almanach.control.ejb.AlmanachException;
@@ -49,13 +56,6 @@ import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.PeriodicityException;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 import org.silverpeas.upload.UploadedFile;
@@ -88,11 +88,11 @@ import java.util.Map;
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 import static org.silverpeas.calendar.CalendarViewType.*;
 import static org.silverpeas.util.DateUtil.parse;
 import static org.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.cache.service.CacheServiceProvider
-    .getSessionVolatileResourceCacheService;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such

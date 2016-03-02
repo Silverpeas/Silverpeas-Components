@@ -36,8 +36,6 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import static org.silverpeas.util.DateUtil.extractHour;
 import static org.silverpeas.util.DateUtil.extractMinutes;
 
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
-import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;

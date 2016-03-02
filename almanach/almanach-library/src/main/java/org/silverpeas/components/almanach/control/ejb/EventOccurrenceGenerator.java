@@ -26,8 +26,6 @@ package org.silverpeas.components.almanach.control.ejb;
 import com.silverpeas.calendar.Date;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.date.Period;
 
 import java.util.List;

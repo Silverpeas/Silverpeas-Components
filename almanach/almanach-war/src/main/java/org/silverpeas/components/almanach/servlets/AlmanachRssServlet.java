@@ -27,7 +27,6 @@ import com.silverpeas.peasUtil.RssServlet;
 import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.util.DateUtil;
 
 import javax.inject.Inject;

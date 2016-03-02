@@ -25,7 +25,6 @@ package com.silverpeas.projectManager.servlets;
 
 import com.silverpeas.projectManager.control.ProjectManagerSessionController;
 import com.silverpeas.projectManager.model.TaskDetail;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;

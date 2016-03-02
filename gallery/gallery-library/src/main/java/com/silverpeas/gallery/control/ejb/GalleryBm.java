@@ -27,8 +27,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ejb.Local;
-
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;

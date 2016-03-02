@@ -43,17 +43,18 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.upload.UploadedFile;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.cache.service.CacheServiceProvider
+import static org.silverpeas.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
 
 /**

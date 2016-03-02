@@ -33,9 +33,6 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
-import org.silverpeas.components.almanach.control.ExceptionDatesGenerator;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
