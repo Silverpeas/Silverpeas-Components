@@ -21,28 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.hyperlink;
+package org.silverpeas.components.hyperlink.control;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.Collections;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
- * @author
+ * @author nchaix
  */
-@Singleton
-@Named("hyperlink" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
-public class HyperlinkStatistics implements ComponentStatisticsProvider {
+public class HyperlinkSessionController extends AbstractComponentSessionController {
 
-  @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-    myCouple.setUserId("-2"); // unknown userId
-    myCouple.setCountVolume(1);
-    return Collections.singletonList(myCouple);
+  public HyperlinkSessionController(MainSessionController mainSessionCtrl,
+      ComponentContext context) {
+    super(mainSessionCtrl, context,
+        "org.silverpeas.hyperlink.multilang.hyperlinkBundle", null,
+        "org.silverpeas.hyperlink.settings.hyperlinkSettings");
+  }
+
+  public UserFull getUserFull() {
+    return getOrganisationController().getUserFull(getUserId());
+  }
+
+  public boolean isClientSSO() {
+    return "yes".equalsIgnoreCase(getComponentParameterValue("clientSSO"));
+  }
+
+  public String getURL() {
+    return getComponentParameterValue("URL");
+  }
+
+  public String getMethodType() {
+    String methodType = getComponentParameterValue("method");
+    return methodType;
   }
 }

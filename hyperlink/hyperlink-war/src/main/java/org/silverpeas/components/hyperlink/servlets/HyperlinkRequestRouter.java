@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.hyperlink.servlets;
+package org.silverpeas.components.hyperlink.servlets;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.hyperlink.control.HyperlinkSessionController;
+import org.silverpeas.components.hyperlink.control.HyperlinkSessionController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;

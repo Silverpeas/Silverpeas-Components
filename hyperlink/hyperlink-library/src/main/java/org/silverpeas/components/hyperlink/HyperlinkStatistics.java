@@ -21,24 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.hyperlink;
+package org.silverpeas.components.hyperlink;
 
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * @author ehugonnet
+ * @author
  */
 @Singleton
-@Named("hyperlink" + ComponentIndexation.QUALIFIER_SUFFIX)
-public class HyperlinkIndexer implements ComponentIndexation {
+@Named("hyperlink" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class HyperlinkStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public void index(ComponentInst componentInst) throws
-      Exception {
-    // nothing to index for this application
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
+    UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+    myCouple.setUserId("-2"); // unknown userId
+    myCouple.setCountVolume(1);
+    return Collections.singletonList(myCouple);
   }
 }

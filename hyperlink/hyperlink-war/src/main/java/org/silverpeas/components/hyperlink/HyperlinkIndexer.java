@@ -21,39 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.hyperlink.control;
+package org.silverpeas.components.hyperlink;
 
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
- * @author nchaix
+ * @author ehugonnet
  */
-public class HyperlinkSessionController extends AbstractComponentSessionController {
+@Singleton
+@Named("hyperlink" + ComponentIndexation.QUALIFIER_SUFFIX)
+public class HyperlinkIndexer implements ComponentIndexation {
 
-  public HyperlinkSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
-    super(mainSessionCtrl, context,
-        "org.silverpeas.hyperlink.multilang.hyperlinkBundle", null,
-        "org.silverpeas.hyperlink.settings.hyperlinkSettings");
-  }
-
-  public UserFull getUserFull() {
-    return getOrganisationController().getUserFull(getUserId());
-  }
-
-  public boolean isClientSSO() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("clientSSO"));
-  }
-
-  public String getURL() {
-    return getComponentParameterValue("URL");
-  }
-
-  public String getMethodType() {
-    String methodType = getComponentParameterValue("method");
-    return methodType;
+  @Override
+  public void index(ComponentInst componentInst) throws
+      Exception {
+    // nothing to index for this application
   }
 }

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.hyperlink;
+package org.silverpeas.components.hyperlink;
 
 import org.silverpeas.util.exception.SilverpeasException;
 
