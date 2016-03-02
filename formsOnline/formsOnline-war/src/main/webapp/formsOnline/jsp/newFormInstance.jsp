@@ -30,7 +30,7 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
+<%@page import="org.silverpeas.components.formsonline.model.FormDetail"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 

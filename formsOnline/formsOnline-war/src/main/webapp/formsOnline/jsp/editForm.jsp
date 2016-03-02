@@ -1,4 +1,4 @@
-<%@ page import="com.silverpeas.formsonline.control.FormsOnlineSessionController" %>
+<%@ page import="org.silverpeas.components.formsonline.control.FormsOnlineSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

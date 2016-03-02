@@ -33,7 +33,7 @@
     <servlet-name>FormsOnlineRequestRouter</servlet-name>
     <display-name>FormsOnlineRequestRouter</display-name>
     <description>no description</description>
-    <servlet-class>com.silverpeas.formsonline.servlets.FormsOnlineRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.formsonline.servlets.FormsOnlineRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>FormsOnlineRequestRouter</servlet-name>

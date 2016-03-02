@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.notification;
 
-import com.silverpeas.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstance;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
