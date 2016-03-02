@@ -33,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.silverpeas.gallery.web.GalleryResourceMock.*;
-
 /**
  * @author Yohann Chastagnier
  */

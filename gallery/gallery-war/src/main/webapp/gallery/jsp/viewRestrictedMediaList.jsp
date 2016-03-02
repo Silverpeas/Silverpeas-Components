@@ -53,9 +53,9 @@
 <c:url var="addToBasketSelectedMediaIcon" value="${addToBasketSelectedMediaIcon}"/>
 
 <c:set var="mediaList" value="${requestScope.MediaList}"/>
-<jsp:useBean id="mediaList" type="java.util.List<com.silverpeas.gallery.model.Media>"/>
+<jsp:useBean id="mediaList" type="java.util.List<org.silverpeas.components.gallery.model.Media>"/>
 <c:set var="mediaResolution" value="${requestScope.MediaResolution}"/>
-<jsp:useBean id="mediaResolution" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<jsp:useBean id="mediaResolution" type="org.silverpeas.components.gallery.constant.MediaResolution"/>
 <c:set var="nbMediaPerPage" value="${requestScope.NbMediaPerPage}"/>
 <c:set var="currentPageIndex" value="${requestScope.CurrentPageIndex}"/>
 <c:set var="firstMediaIndex" value="${nbMediaPerPage * currentPageIndex}"/>

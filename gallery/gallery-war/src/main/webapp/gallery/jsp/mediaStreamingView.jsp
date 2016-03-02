@@ -35,7 +35,7 @@
 
 <gallery:viewMediaLayout>
   <jsp:attribute name="headerBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Streaming"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Streaming"/>
     <gallery:streamingLibrary/>
     <script type="text/javascript">
       $(document).ready(function() {

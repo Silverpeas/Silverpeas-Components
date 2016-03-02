@@ -85,16 +85,16 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.silverpeas.form.*"%>
 
-<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
-<%@ page import="com.silverpeas.gallery.control.GallerySessionController"%>
-<%@ page import="com.silverpeas.gallery.model.AlbumDetail"%>
-<%@ page import="com.silverpeas.gallery.model.Media"%>
-<%@ page import="com.silverpeas.gallery.model.MetaData"%>
-<%@ page import="com.silverpeas.gallery.model.Order"%>
-<%@ page import="com.silverpeas.gallery.model.OrderRow"%>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
-<%@ page import="com.silverpeas.gallery.ParameterNames"%>
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="org.silverpeas.components.gallery.constant.MediaResolution" %>
+<%@ page import="org.silverpeas.components.gallery.control.GallerySessionController"%>
+<%@ page import="org.silverpeas.components.gallery.model.AlbumDetail"%>
+<%@ page import="org.silverpeas.components.gallery.model.Media"%>
+<%@ page import="org.silverpeas.components.gallery.model.MetaData"%>
+<%@ page import="org.silverpeas.components.gallery.model.Order"%>
+<%@ page import="org.silverpeas.components.gallery.model.OrderRow"%>
+<%@ page import="org.silverpeas.components.gallery.model.Photo" %>
+<%@ page import="org.silverpeas.components.gallery.ParameterNames"%>
+<%@ page import="org.silverpeas.components.gallery.GalleryComponentSettings" %>
 
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>

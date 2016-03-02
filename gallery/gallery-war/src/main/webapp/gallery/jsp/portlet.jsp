@@ -34,13 +34,13 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
+<view:setConstant var="TINY_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.TINY"/>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="root" value="${requestScope.root}"/>
-<jsp:useBean id="root" type="com.silverpeas.gallery.model.AlbumDetail"/>
+<jsp:useBean id="root" type="org.silverpeas.components.gallery.model.AlbumDetail"/>
 <c:set var="mediaList" value="${requestScope.MediaList}"/>
-<jsp:useBean id="mediaList" type="java.util.List<com.silverpeas.gallery.model.Media>"/>
+<jsp:useBean id="mediaList" type="java.util.List<org.silverpeas.components.gallery.model.Media>"/>
 
 <html>
 <head>

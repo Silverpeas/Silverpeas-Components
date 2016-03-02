@@ -35,7 +35,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%@ attribute name="currentMediaResolution" required="true"
-              type="com.silverpeas.gallery.constant.MediaResolution"
+              type="org.silverpeas.components.gallery.constant.MediaResolution"
               description="The current displayed mediaResolution." %>
 <%@ attribute name="nbMediaPerPage" required="true"
               type="java.lang.Integer"
@@ -47,7 +47,7 @@
               type="java.util.List"
               description="The current album displayed." %>
 <jsp:useBean id="mediaList"
-             type="java.util.List<com.silverpeas.gallery.model.Media>"
+             type="java.util.List<org.silverpeas.components.gallery.model.Media>"
              scope="page"/>
 
 <table border="0" width="100%">

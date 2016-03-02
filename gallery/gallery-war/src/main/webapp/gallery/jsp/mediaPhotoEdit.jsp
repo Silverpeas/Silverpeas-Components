@@ -30,16 +30,16 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
-<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Photo"/>
-<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.PHOTOS"/>
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
+<view:setConstant var="mediaType" constant="org.silverpeas.components.gallery.constant.MediaType.Photo"/>
+<view:setConstant var="supportedMediaMimeTypes" constant="org.silverpeas.components.gallery.constant.MediaMimeType.PHOTOS"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.MEDIUM"/>
 
 <c:set var="isViewMetadata" value="${requestScope.IsViewMetadata}"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
   <jsp:attribute name="headerBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Photo"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Photo"/>
     <jsp:useBean id="isNewMediaCase" scope="request" type="java.lang.Boolean"/>
     <c:if test="${not isNewMediaCase}">
       <gallery:handleMediaPreview jquerySelector="${'#photoPreview'}"/>

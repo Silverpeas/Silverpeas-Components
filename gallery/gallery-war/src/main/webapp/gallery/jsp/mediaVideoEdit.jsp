@@ -27,14 +27,14 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
-<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
-<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
-<jsp:useBean id="MEDIUM_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
-<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
+<view:setConstant var="mediaType" constant="org.silverpeas.components.gallery.constant.MediaType.Video"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.MEDIUM"/>
+<jsp:useBean id="MEDIUM_RESOLUTION" type="org.silverpeas.components.gallery.constant.MediaResolution"/>
+<view:setConstant var="supportedMediaMimeTypes" constant="org.silverpeas.components.gallery.constant.MediaMimeType.VIDEOS"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
   <jsp:attribute name="mediaPreviewBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Video"/>
     <gallery:videoPlayer video="${media}" mediaResolution="${MEDIUM_RESOLUTION}"/>
   </jsp:attribute>
 </gallery:editMediaLayout>

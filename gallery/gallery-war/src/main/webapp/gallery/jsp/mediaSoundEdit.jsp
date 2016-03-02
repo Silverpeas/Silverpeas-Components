@@ -26,13 +26,13 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
-<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Sound"/>
-<view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
-<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.SOUNDS"/>
+<view:setConstant var="mediaType" constant="org.silverpeas.components.gallery.constant.MediaType.Sound"/>
+<view:setConstant var="SMALL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.SMALL"/>
+<view:setConstant var="supportedMediaMimeTypes" constant="org.silverpeas.components.gallery.constant.MediaMimeType.SOUNDS"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
   <jsp:attribute name="mediaPreviewBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Sound"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Sound"/>
     <gallery:soundPlayer sound="${media}" mediaResolution="${SMALL_RESOLUTION}"/>
   </jsp:attribute>
 </gallery:editMediaLayout>

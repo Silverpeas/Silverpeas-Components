@@ -33,8 +33,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%-- Constants --%>
-<view:setConstant var="supportedStreamingProviders" constant="com.silverpeas.gallery.constant.StreamingProvider.ALL_VALIDS"/>
-<jsp:useBean id="supportedStreamingProviders" type="java.util.Set<com.silverpeas.gallery.constant.StreamingProvider>"/>
+<view:setConstant var="supportedStreamingProviders" constant="org.silverpeas.components.gallery.constant.StreamingProvider.ALL_VALIDS"/>
+<jsp:useBean id="supportedStreamingProviders" type="java.util.Set<org.silverpeas.components.gallery.constant.StreamingProvider>"/>
 
 <%-- Common data --%>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>

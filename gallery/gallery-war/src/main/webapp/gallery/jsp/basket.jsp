@@ -46,10 +46,10 @@
 <c:set var="userSelectionAlert" value="${requestScope.MediaTypeAlert}" />
 <c:set var="isExportEnable" value="${requestScope.IsExportEnable }" />
 
-<view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
-<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<view:setConstant var="ORIGINAL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.ORIGINAL"/>
+<view:setConstant var="TINY_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.TINY"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.MEDIUM"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
+<view:setConstant var="ORIGINAL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.ORIGINAL"/>
 
 <fmt:message key="gallery.export.basket" var="exportBasketLabel"/>
 <fmt:message key="gallery.exported.basket" var="exportedBasketLabel"/>

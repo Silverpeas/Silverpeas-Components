@@ -31,14 +31,14 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Constants --%>
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
 <view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 
 <%-- Attributes --%>
-<%@ attribute name="media" required="true" type="com.silverpeas.gallery.model.Media"
+<%@ attribute name="media" required="true" type="org.silverpeas.components.gallery.model.Media"
               description="A media bean (Media.java). The label of the current value is handled." %>
 <%@ attribute name="mediaResolution" required="true"
-              type="com.silverpeas.gallery.constant.MediaResolution"
+              type="org.silverpeas.components.gallery.constant.MediaResolution"
               description="The album path." %>
 <%@ attribute name="isPortletDisplay" required="false"
               type="java.lang.Boolean"

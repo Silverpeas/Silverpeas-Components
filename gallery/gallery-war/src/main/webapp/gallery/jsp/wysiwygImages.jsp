@@ -25,8 +25,8 @@
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.silverpeas.gallery.model.Media" %>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
+<%@ page import="org.silverpeas.components.gallery.model.Media" %>
+<%@ page import="org.silverpeas.components.gallery.model.Photo" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>

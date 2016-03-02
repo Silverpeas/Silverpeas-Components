@@ -33,10 +33,10 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%-- Constants --%>
-<view:setConstant var="MEDIA_DEFINITIONS" constant="com.silverpeas.gallery.constant.MediaResolution.ALL"/>
-<jsp:useBean id="MEDIA_DEFINITIONS" type="java.util.Set<com.silverpeas.gallery.constant.MediaResolution>"/>
-<view:setConstant var="MEDIA_SORTS" constant="com.silverpeas.gallery.web.MediaSort.ALL"/>
-<jsp:useBean id="MEDIA_SORTS" type="java.util.Set<com.silverpeas.gallery.web.MediaSort>"/>
+<view:setConstant var="MEDIA_DEFINITIONS" constant="org.silverpeas.components.gallery.constant.MediaResolution.ALL"/>
+<jsp:useBean id="MEDIA_DEFINITIONS" type="java.util.Set<org.silverpeas.components.gallery.constant.MediaResolution>"/>
+<view:setConstant var="MEDIA_SORTS" constant="org.silverpeas.components.gallery.web.MediaSort.ALL"/>
+<jsp:useBean id="MEDIA_SORTS" type="java.util.Set<org.silverpeas.components.gallery.web.MediaSort>"/>
 
 <%-- Default values --%>
 <c:set var="_formName" value="mediaForm"/>
@@ -52,7 +52,7 @@
 </c:if>
 
 <%@ attribute name="currentMediaResolution" required="true"
-              type="com.silverpeas.gallery.constant.MediaResolution"
+              type="org.silverpeas.components.gallery.constant.MediaResolution"
               description="The current displayed mediaResolution." %>
 
 <%@ attribute name="currentSearchKeyWord" required="false"

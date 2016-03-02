@@ -39,7 +39,7 @@
 <c:set var="selectedMediaIds" value="${requestScope.SelectedMediaIds}"/>
 <c:set var="albumId" value="${requestScope.AlbumId}"/>
 <c:set var="albumPath" value="${requestScope.Path}"/>
-<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<jsp:useBean id="albumPath" type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"/>
 <c:set var="searchKeyWord" value="${requestScope.SearchKeyWord}"/>
 
 <%-- Actions --%>

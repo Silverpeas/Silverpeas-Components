@@ -35,7 +35,7 @@
               type="java.util.List"
               description="The album path." %>
 <jsp:useBean id="subAlbumList"
-             type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"
+             type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"
              scope="page"/>
 
 <script type="text/javascript">

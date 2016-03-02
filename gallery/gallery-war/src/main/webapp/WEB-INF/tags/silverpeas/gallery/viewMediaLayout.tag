@@ -81,7 +81,7 @@
 <%-- Request attributes --%>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="media" value="${requestScope.Media}" scope="request"/>
-<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
+<jsp:useBean id="media" type="org.silverpeas.components.gallery.model.Media" scope="request"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
 <c:set var="isNewMediaCase" value="${empty media.id}" scope="request"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
@@ -93,7 +93,7 @@
 <c:set var="searchKeyWord" value="${requestScope.SearchKeyWord}"/>
 
 <c:set var="albumPath" value="${requestScope.Path}"/>
-<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<jsp:useBean id="albumPath" type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"/>
 <c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].nodePK.id}"/>
 <jsp:useBean id="albumId" type="java.lang.String"/>
 

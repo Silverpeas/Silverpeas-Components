@@ -56,14 +56,14 @@
 </c:if>
 
 <%@ attribute name="currentAlbum" required="false"
-              type="com.silverpeas.gallery.model.AlbumDetail"
+              type="org.silverpeas.components.gallery.model.AlbumDetail"
               description="The current album." %>
 
 <%@ attribute name="mediaList" required="true"
               type="java.util.List"
               description="The album path." %>
 <jsp:useBean id="mediaList"
-             type="java.util.List<com.silverpeas.gallery.model.Media>"
+             type="java.util.List<org.silverpeas.components.gallery.model.Media>"
              scope="page"/>
 <%@ attribute name="selectedIds" required="true"
               type="java.util.List"
@@ -76,7 +76,7 @@
               description="Indicates, if true, that metadata of photo must be displayed." %>
 
 <%@ attribute name="mediaResolution" required="true"
-              type="com.silverpeas.gallery.constant.MediaResolution"
+              type="org.silverpeas.components.gallery.constant.MediaResolution"
               description="The album path." %>
 <%@ attribute name="isViewList" required="true"
               type="java.lang.Boolean"
@@ -273,7 +273,7 @@
                     <c:forEach var="metaDataKey" items="${photoMedia.metaDataProperties}">
                       <li class="field field_category media-name">
                         <c:set var="metaData" value="${photoMedia.getMetaData(metaDataKey)}"/>
-                        <jsp:useBean id="metaData" type="com.silverpeas.gallery.model.MetaData"/>
+                        <jsp:useBean id="metaData" type="org.silverpeas.components.gallery.model.MetaData"/>
                         <label class="txtlibform"><c:out value="${metaData.label}"/> :</label>
 
                         <div class="fieldInput">

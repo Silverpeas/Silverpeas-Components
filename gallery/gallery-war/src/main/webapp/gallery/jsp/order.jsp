@@ -42,13 +42,13 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
-<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
+<view:setConstant var="TINY_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.TINY"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.MEDIUM"/>
 
 <c:set var="instanceId" value="${requestScope.browseContext[3]}"/>
 <c:set var="profile" value="${requestScope.Profile}"/>
 <c:set var="order" value="${requestScope.Order}"/>
-<jsp:useBean id="order" type="com.silverpeas.gallery.model.Order"/>
+<jsp:useBean id="order" type="org.silverpeas.components.gallery.model.Order"/>
 
 <%
   // paramètres du formulaire
@@ -249,7 +249,7 @@ function isCorrectForm() {
 
       <c:forEach var="row" items="${order.rows}">
         <c:set var="media" value="${row.internalMedia}"/>
-        <jsp:useBean id="media" type="com.silverpeas.gallery.model.InternalMedia"/>
+        <jsp:useBean id="media" type="org.silverpeas.components.gallery.model.InternalMedia"/>
         <view:arrayLine>
           <c:set var="mediaTitle"><c:out value="${media.title}"/></c:set>
           <c:set var="photoCellText"><a class="imagePreview" href="MediaView?MediaId=${media.id}" tipTitle="${mediaTitle}" tipUrl="${media.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}"><img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" alt=""/></a></c:set>
@@ -302,7 +302,7 @@ function isCorrectForm() {
 
       <c:forEach var="row" items="${order.rows}">
         <c:set var="mediaWhenNotAdmin" value="${row.internalMedia}"/>
-        <jsp:useBean id="mediaWhenNotAdmin" type="com.silverpeas.gallery.model.InternalMedia"/>
+        <jsp:useBean id="mediaWhenNotAdmin" type="org.silverpeas.components.gallery.model.InternalMedia"/>
         <view:arrayLine>
           <c:set var="mediaTitle"><c:out value="${mediaWhenNotAdmin.title}"/></c:set>
           <c:set var="photoCellText"><a class="imagePreview" href="MediaView?MediaId=${mediaWhenNotAdmin.id}" tipTitle="${mediaTitle}" tipUrl="${mediaWhenNotAdmin.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}"><img src="${mediaWhenNotAdmin.getApplicationThumbnailUrl(TINY_RESOLUTION)}" alt=""/></a></c:set>

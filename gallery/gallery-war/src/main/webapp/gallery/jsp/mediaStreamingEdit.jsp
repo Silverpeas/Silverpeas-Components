@@ -36,12 +36,12 @@
 <fmt:message key="GML.validate" var="validateLabel"/>
 
 <%-- Constants --%>
-<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Streaming"/>
-<view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
+<view:setConstant var="mediaType" constant="org.silverpeas.components.gallery.constant.MediaType.Streaming"/>
+<view:setConstant var="SMALL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.SMALL"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}">
   <jsp:attribute name="headerBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Streaming"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Streaming"/>
     <gallery:streamingLibrary/>
     <script type="text/javascript">
       $(document).ready(function() {

@@ -37,7 +37,7 @@
 
 <c:url var="downloadWatermarkIconUrl" value="${downloadWatermarkIcon}"/>
 
-<view:setConstant var="WATERMARK_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.WATERMARK"/>
+<view:setConstant var="WATERMARK_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.WATERMARK"/>
 
 <c:set var="isViewMetadata" value="${requestScope.IsViewMetadata}"/>
 <c:set var="isWatermark" value="${requestScope.IsWatermark}"/>
@@ -45,7 +45,7 @@
 
 <gallery:viewMediaLayout>
   <jsp:attribute name="headerBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Photo"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Photo"/>
     <jsp:useBean id="mediaUrl" scope="request" type="java.lang.String"/>
   </jsp:attribute>
 

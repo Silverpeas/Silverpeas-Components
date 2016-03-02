@@ -23,13 +23,13 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.Photo;
 import org.apache.commons.lang3.SystemUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ServiceProvider;
@@ -139,7 +139,7 @@ public class SilverpeasImageFinder {
     Map<String, String> parameters = getQueryParameters(href);
     String imageId = parameters.get("ImageId");
     String componentId = parameters.get("ComponentId");
-    Photo image = getGalleryBm().getPhoto(new MediaPK(imageId, componentId));
+    Photo image = getGalleryService().getPhoto(new MediaPK(imageId, componentId));
     return FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId()) + "image"
         + image.getId() + "/" + image.getFileName();
   }
@@ -156,7 +156,7 @@ public class SilverpeasImageFinder {
     return queryParameters;
   }
 
-  private GalleryBm getGalleryBm() throws Exception {
-    return ServiceProvider.getService(GalleryBm.class);
+  private GalleryService getGalleryService() throws Exception {
+    return ServiceProvider.getService(GalleryService.class);
   }
 }
