@@ -41,13 +41,14 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp" %>
 
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="com.silverpeas.form.*"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
 <%@page import="org.silverpeas.rating.web.RaterRatingEntity" %>
 <%@page import="org.silverpeas.util.exception.SilverpeasException" %>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>

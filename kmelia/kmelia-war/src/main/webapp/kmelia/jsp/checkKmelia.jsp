@@ -85,11 +85,11 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
-<%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
-<%@ page import="com.stratelia.webactiv.kmelia.KmeliaException"%>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
+<%@ page import="org.silverpeas.components.kmelia.KmeliaException"%>
 <%@ page import="com.stratelia.webactiv.kmelia.model.*"%>
-<%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper"%>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaHelper"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 
 <%@ page import="com.silverpeas.comment.model.Comment"%>
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
@@ -102,7 +102,7 @@
 <%@ page import="org.silverpeas.util.i18n.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
-<%@page import="com.silverpeas.kmelia.KmeliaConstants"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>
 <%@ page import="com.silverpeas.form.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="org.silverpeas.util.SettingBundle" %>

@@ -1,4 +1,4 @@
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.search.SearchEngineProvider"%>
 <%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--

@@ -38,8 +38,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@page import="com.silverpeas.publicationTemplate.*"%>
 <%@page import="com.silverpeas.form.*"%>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 
 <%
 	SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.publication.publicationSettings");
@@ -47,7 +48,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
-	KmeliaPublication 		kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
+	KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
 	boolean 				attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
 	boolean 				userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
 	boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");

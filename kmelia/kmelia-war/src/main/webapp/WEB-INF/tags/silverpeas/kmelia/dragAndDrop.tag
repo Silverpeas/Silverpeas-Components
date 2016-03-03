@@ -48,7 +48,7 @@
               description="The folder tree is ignored, all the files are moved at root" %>
 
 <c:set var="kmeliaCtrl" value="${requestScope.kmelia}"/>
-<jsp:useBean id="kmeliaCtrl" type="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"/>
+<jsp:useBean id="kmeliaCtrl" type="org.silverpeas.components.kmelia.control.KmeliaSessionController"/>
 
 <c:set var="dragAndDropEnable" value="${kmeliaCtrl.dragAndDropEnable and kmeliaCtrl.attachmentsEnabled}"/>
 <c:if test="${dragAndDropEnable}">

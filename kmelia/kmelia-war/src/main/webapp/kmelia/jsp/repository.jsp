@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.components.kmelia.model.FileFolder" %>
+<%@ page import="org.silverpeas.components.kmelia.model.FileDetail" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -48,7 +49,7 @@ String displayFilePath(String path, String startPath) {
 %>
 
 <% 
-FileFolder 	folder 				= (FileFolder) request.getAttribute("Directory");
+FileFolder folder 				= (FileFolder) request.getAttribute("Directory");
 Collection 	path 				= (Collection) request.getAttribute("Path");
 String		linkedPathString	= (String) request.getAttribute("LinkedPathString");
 

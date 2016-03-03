@@ -1,4 +1,4 @@
-<%@page import="com.silverpeas.component.kmelia.KmeliaCopyDetail"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaCopyDetail"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>

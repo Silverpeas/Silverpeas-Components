@@ -31,11 +31,12 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController" %>
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<% com.stratelia.webactiv.kmelia.control.KmeliaSessionController kmeliaScc = (com.stratelia.webactiv.kmelia.control.KmeliaSessionController) request.getAttribute("kmelia");%>
+<% KmeliaSessionController kmeliaScc = (KmeliaSessionController) request.getAttribute("kmelia");%>
 <% if(kmeliaScc == null ) {
     // No session controller in the request -> security exception
     String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");

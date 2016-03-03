@@ -41,7 +41,7 @@
               description="The component instance id associated to the drag and drop" %>
 
 <c:set var="kmeliaCtrl" value="${requestScope.kmelia}"/>
-<jsp:useBean id="kmeliaCtrl" type="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"/>
+<jsp:useBean id="kmeliaCtrl" type="org.silverpeas.components.kmelia.control.KmeliaSessionController"/>
 
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>

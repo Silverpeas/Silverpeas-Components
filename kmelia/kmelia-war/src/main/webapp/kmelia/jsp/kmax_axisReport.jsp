@@ -41,7 +41,7 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>

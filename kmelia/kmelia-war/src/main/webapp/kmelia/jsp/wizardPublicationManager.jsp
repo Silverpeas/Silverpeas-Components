@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

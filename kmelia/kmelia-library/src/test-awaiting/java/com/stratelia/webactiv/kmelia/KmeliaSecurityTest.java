@@ -28,7 +28,7 @@ package com.stratelia.webactiv.kmelia;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
+import com.stratelia.webactiv.kmelia.control.KmeliaBm;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

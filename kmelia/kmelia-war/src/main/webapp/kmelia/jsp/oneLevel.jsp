@@ -30,7 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 

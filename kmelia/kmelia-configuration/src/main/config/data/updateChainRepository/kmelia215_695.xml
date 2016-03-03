@@ -27,7 +27,7 @@
 <updateChain>
 	<title>CANDIDATURES SPONTANEES</title>
 	<libelle>Saisir le nom du candidat dans la zone mot clé</libelle>
-	<helper>com.silverpeas.kmelia.updatechainhelpers.DefineUnpromptedCandidacy</helper>
+	<helper>org.silverpeas.components.kmelia.updatechainhelpers.DefineUnpromptedCandidacy</helper>
 	<fields>
 		<fieldDescriptor>
 			<type>text</type>

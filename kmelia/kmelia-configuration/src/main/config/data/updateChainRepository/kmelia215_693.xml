@@ -27,7 +27,7 @@
 <updateChain>
 	<title>Documents collaborateurs</title>
 	<libelle></libelle>
-	<helper>com.silverpeas.kmelia.updatechainhelpers.DefineServiceOfUserAndDocuments</helper>
+	<helper>org.silverpeas.components.kmelia.updatechainhelpers.DefineServiceOfUserAndDocuments</helper>
 	<fields>
 		<fieldDescriptor>	<!-- la zone "nom" va récupérer la liste de tous les utilisateurs de la plateforme -->
 			<type>jdbc</type>

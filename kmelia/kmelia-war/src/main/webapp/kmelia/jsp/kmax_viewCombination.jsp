@@ -32,7 +32,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ page import="com.stratelia.webactiv.coordinates.model.Coordinate"%>
 <%@ page import="com.stratelia.webactiv.coordinates.model.CoordinatePoint"%>
-<%@ page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 
 
 <%@ include file="checkKmelia.jsp" %>

@@ -44,9 +44,9 @@
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
-<%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%!
 String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaScc)

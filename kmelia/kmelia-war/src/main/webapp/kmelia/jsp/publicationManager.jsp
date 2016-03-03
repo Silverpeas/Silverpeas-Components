@@ -31,8 +31,8 @@
 
 <%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>

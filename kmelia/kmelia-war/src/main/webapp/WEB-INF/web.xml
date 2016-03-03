@@ -29,36 +29,36 @@
     <servlet>
         <display-name>KmeliaRequestRouter</display-name>
         <servlet-name>KmeliaRequestRouter</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaRequestRouter</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.servlets.KmeliaRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <display-name>AjaxPublicationsListServlet</display-name>
         <servlet-name>AjaxPublicationsListServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
     </servlet>
     <servlet>
         <display-name>AliasFileServer</display-name>
         <servlet-name>AliasFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.AliasFileServer</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.servlets.AliasFileServer</servlet-class>
     </servlet>
     <servlet>
         <display-name>JSONServlet</display-name>
         <servlet-name>JSONServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.JSONServlet</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.servlets.JSONServlet</servlet-class>
     </servlet>
     <servlet>
         <display-name>KmeliaAjaxServlet</display-name>
         <servlet-name>KmeliaAjaxServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxServlet</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.servlets.AjaxServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>KmeliaPublicationExportServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaPublicationExportServlet</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.servlets.KmeliaPublicationExportServlet</servlet-class>
     </servlet>
     <servlet>
         <display-name>LastPublicationsServlet</display-name>
         <servlet-name>LastPublicationsServlet</servlet-name>
-        <servlet-class>com.silverpeas.kmelia.RssLastPublicationsServlet</servlet-class>
+        <servlet-class>org.silverpeas.components.kmelia.RssLastPublicationsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>KmeliaAjaxServlet</servlet-name>
