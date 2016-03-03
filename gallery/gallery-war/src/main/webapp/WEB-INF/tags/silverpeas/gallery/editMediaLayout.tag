@@ -124,7 +124,7 @@
   </c:when>
   <c:when test="${isUpdateMediaFromAlbumCase}">
     <fmt:message key="GML.modify" var="modifyLabel"/>
-    <c:set var="additionalBrowseBarElements" value="${modifyLabel} ''${silfn:truncate(mediaTitle, 50)}''@#"/>
+    <c:set var="additionalBrowseBarElements" value="${modifyLabel} ${'&quot;'}${silfn:truncate(mediaTitle, 50)}${'&quot;'}@#"/>
   </c:when>
   <c:otherwise>
     <fmt:message key="GML.modify" var="modifyLabel"/>
