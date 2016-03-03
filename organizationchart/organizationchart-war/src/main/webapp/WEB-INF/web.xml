@@ -30,7 +30,7 @@
   <servlet>
     <display-name>OrganizationChartRequestRouter</display-name>
     <servlet-name>OrganizationChartRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.components.organizationchart.servlets.OrganizationChartRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.organizationchart.servlets.OrganizationChartRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>OrganizationChartRequestRouter</servlet-name>
