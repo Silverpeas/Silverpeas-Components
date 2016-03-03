@@ -40,7 +40,7 @@
     <property name="searchSystemEnvironment" value="true" />
   </bean>
 
-  <bean id="notificationHelper" class="com.silverpeas.mailinglist.service.notification.SimpleNotificationHelper">
+  <bean id="notificationHelper" class="org.silverpeas.components.mailinglist.service.notification.SimpleNotificationHelper">
     <property name="session" ref="mailSession" />
     <property name="notificationSender" ref="notificationSender" />
     <property name="notificationFormatter" ref="notificationFormatter" />
@@ -59,7 +59,7 @@
   </bean>
 
   <bean id="notificationFormatter" name="notificationFormatter"
-        class="com.silverpeas.mailinglist.service.notification.SimpleNotificationFormatter">
+        class="org.silverpeas.components.mailinglist.service.notification.SimpleNotificationFormatter">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 

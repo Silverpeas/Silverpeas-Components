@@ -27,7 +27,7 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-  <bean id="messageChecker" class="com.silverpeas.mailinglist.service.job.MessageChecker">
+  <bean id="messageChecker" class="org.silverpeas.components.mailinglist.service.job.MessageChecker">
     <property name="protocol" value="${mail.server.protocol}" />
     <property name="login" value="${mail.server.login}" />
     <property name="password" value="${mail.server.password}" />
@@ -39,11 +39,11 @@
     <property name="mailingListService" ref="mailingListService" />
   </bean>
 
-  <bean id="mailProcessor" name="mailProcessor" class="com.silverpeas.mailinglist.service.job.MailProcessor">
+  <bean id="mailProcessor" name="mailProcessor" class="org.silverpeas.components.mailinglist.service.job.MailProcessor">
     <property name="cleaner" ref="htmlCleaner" />
   </bean>
 
-  <bean id="htmlCleaner" name="htmlCleaner" class="com.silverpeas.mailinglist.service.util.neko.NekoHtmlCleaner" />
+  <bean id="htmlCleaner" name="htmlCleaner" class="org.silverpeas.components.mailinglist.service.util.neko.NekoHtmlCleaner" />
 
   <bean id="mailSession" name="mailSession" class="javax.mail.Session" factory-method="getInstance">
     <constructor-arg ref="systemProperties" type="java.util.Properties" />

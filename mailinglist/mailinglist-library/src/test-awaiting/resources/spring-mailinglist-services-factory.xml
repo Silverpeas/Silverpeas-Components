@@ -34,12 +34,12 @@
   <context:component-scan base-package="com.silverpeas.mailinglist.service.model"/>
 
   <bean id="messageService" name="messageService"
-        class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
+        class="org.silverpeas.components.mailinglist.service.model.MessageServiceImpl">
     <property name="elementsPerPage" value="10" />
   </bean>
 
   <bean id="mailingListServicesProvider" name="mailingListServicesProvider"
-        class="com.silverpeas.mailinglist.service.MailingListServicesProvider"
+        class="org.silverpeas.components.mailinglist.service.MailingListServicesProvider"
         factory-method="getFactory" />
 
   <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />

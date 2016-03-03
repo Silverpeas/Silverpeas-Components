@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.stratelia.webactiv.kmelia.model.updatechain.*" %>
+<%@ page import="org.silverpeas.components.kmelia.model.updatechain.*" %>
 <%@ page import="org.silverpeas.components.kmelia.model.updatechain.FieldsContext" %>
 <%@ page import="org.silverpeas.components.kmelia.model.updatechain.Fields" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>

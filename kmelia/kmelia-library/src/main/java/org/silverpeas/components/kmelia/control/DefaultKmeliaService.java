@@ -2173,10 +2173,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return validationOK;
   }
 
-  /* (non-Javadoc)
-   * @see com.stratelia.webactiv.kmelia.control.KmeliaBmBusinessSkeleton#validatePublication
-   * (com.stratelia.webactiv.publication.model.PublicationPK, java.lang.String, boolean)
-   */
   @Override
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     boolean validationComplete = false;

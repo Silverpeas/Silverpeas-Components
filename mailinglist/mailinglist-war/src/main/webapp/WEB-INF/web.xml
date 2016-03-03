@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2013 Silverpeas
+    Copyright (C) 2000 - 2016 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,33 +25,33 @@
 
 -->
 
-<web-app version="2.4">
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name>mailingList War</display-name>
   <description>Component managing Mailing List</description>
 
   <servlet>
     <display-name>MailingListRssServlet</display-name>
     <servlet-name>MailingListRssServlet</servlet-name>
-    <servlet-class>com.silverpeas.external.mailinglist.servlets.RssMailingListServlet</servlet-class>
+    <servlet-class>org.silverpeas.components.mailinglist.servlets.RssMailingListServlet</servlet-class>
   </servlet>
 
   <servlet>
+    <description>Servlet controller pour l'application mailinglist</description>
     <display-name>MailingListRequestRouter</display-name>
     <servlet-name>MailingListRequestRouter</servlet-name>
-    <description>Servlet controller pour l'application mailinglist</description>
-    <servlet-class>com.silverpeas.external.mailinglist.servlets.MailingListRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.mailinglist.servlets.MailingListRequestRouter</servlet-class>
   </servlet>
 
   <servlet>
     <display-name>GoToMailingListMessage</display-name>
     <servlet-name>GoToMailingListMessage</servlet-name>
-    <servlet-class>com.silverpeas.external.mailinglist.servlets.GoToMessage</servlet-class>
+    <servlet-class>org.silverpeas.components.mailinglist.servlets.GoToMessage</servlet-class>
   </servlet>
 
   <servlet>
     <display-name>MailingListAttachmentServlet</display-name>
     <servlet-name>MailingListAttachmentServlet</servlet-name>
-    <servlet-class>com.silverpeas.external.mailinglist.servlets.AttachmentServlet</servlet-class>
+    <servlet-class>org.silverpeas.components.mailinglist.servlets.AttachmentServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

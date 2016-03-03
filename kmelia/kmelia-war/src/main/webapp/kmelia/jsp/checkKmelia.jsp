@@ -87,7 +87,7 @@
 
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.components.kmelia.KmeliaException"%>
-<%@ page import="com.stratelia.webactiv.kmelia.model.*"%>
+<%@ page import="org.silverpeas.components.kmelia.model.*"%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaHelper"%>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 

@@ -40,7 +40,7 @@
     <property name="searchSystemEnvironment" value="true" />
   </bean>
 
-  <bean name="notificationHelper" id="notificationHelper" class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationHelper">
+  <bean name="notificationHelper" id="notificationHelper" class="org.silverpeas.components.mailinglist.service.notification.AdvancedNotificationHelper">
     <property name="session" ref="mailSession" />
     <property name="notificationSender" ref="notificationSender" />
     <property name="notificationFormatter" ref="notificationFormatter" />
@@ -61,7 +61,7 @@
   <!-- ebo <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" /> -->
 
   <bean id="notificationFormatter" name="notificationFormatter"
-        class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
+        class="org.silverpeas.components.mailinglist.service.notification.AdvancedNotificationFormatter" />
 
   <bean id="notificationSender" name="notificationSender"
         class="com.stratelia.silverpeas.notificationManager.NotificationSender">
