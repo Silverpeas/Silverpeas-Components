@@ -19,10 +19,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.connecteurJDBC.model;
+package org.silverpeas.components.jdbcconnector.model;
 
-import org.silverpeas.connecteurJDBC.control.ConnecteurJDBCException;
-import org.silverpeas.connecteurJDBC.control.DataSourceConnectionInfoService;
+import org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCException;
+import org.silverpeas.components.jdbcconnector.control.DataSourceConnectionInfoService;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -34,7 +34,6 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.connecteurJDBC.control;
+package org.silverpeas.components.jdbcconnector.control;
 
-import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfo;
-import org.silverpeas.connecteurJDBC.model.DataSourceDefinition;
+import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
+import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.List;

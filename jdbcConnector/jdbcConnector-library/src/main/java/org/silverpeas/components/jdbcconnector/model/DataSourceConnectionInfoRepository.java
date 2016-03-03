@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.connecteurJDBC.model;
+package org.silverpeas.components.jdbcconnector.model;
 
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;

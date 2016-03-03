@@ -19,10 +19,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.connecteurJDBC.model;
+package org.silverpeas.components.jdbcconnector.model;
 
-import org.silverpeas.connecteurJDBC.control.DataSourceConnectionInfoService;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.components.jdbcconnector.control.DataSourceConnectionInfoService;
 
 import java.util.List;
 

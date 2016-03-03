@@ -30,7 +30,7 @@
   <servlet>
     <display-name>ConnecteurJDBCRequestRouter</display-name>
     <servlet-name>ConnecteurJDBCRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.connecteurJDBC.control.ConnecteurJDBCRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ConnecteurJDBCRequestRouter</servlet-name>

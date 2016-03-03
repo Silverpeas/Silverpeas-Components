@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.connecteurJDBC.control;
+package org.silverpeas.components.jdbcconnector.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -45,7 +45,7 @@ public class ConnecteurJDBCRequestRouter
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @throws org.silverpeas.connecteurJDBC.control.ConnecteurJDBCException
+   * @throws ConnecteurJDBCException
    */
   public ConnecteurJDBCSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

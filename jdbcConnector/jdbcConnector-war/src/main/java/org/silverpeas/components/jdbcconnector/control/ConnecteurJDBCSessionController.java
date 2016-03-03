@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.connecteurJDBC.control;
+package org.silverpeas.components.jdbcconnector.control;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfo;
-import org.silverpeas.connecteurJDBC.model.DataSourceDefinition;
+import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
+import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;

@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

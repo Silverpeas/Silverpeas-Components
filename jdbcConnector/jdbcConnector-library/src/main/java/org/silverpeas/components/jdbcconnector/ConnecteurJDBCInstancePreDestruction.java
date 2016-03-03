@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.connecteurJDBC;
+package org.silverpeas.components.jdbcconnector;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import org.silverpeas.connecteurJDBC.model.DataSourceConnectionInfo;
+import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

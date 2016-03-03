@@ -40,7 +40,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.connecteurJDBC.control.ConnecteurJDBCSessionController"%>
+<%@ page import="org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCSessionController"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
