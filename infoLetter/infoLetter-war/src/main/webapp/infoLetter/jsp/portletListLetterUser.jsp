@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.components.infoletter.model.InfoLetterPublication" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

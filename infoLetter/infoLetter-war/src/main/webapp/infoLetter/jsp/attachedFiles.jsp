@@ -29,17 +29,18 @@
 <%@ page import="org.silverpeas.util.URLUtils" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.exception.SilverpeasRuntimeException" %>
+<%@ page import="org.silverpeas.components.infoletter.InfoLetterException" %>
 
 <%!
 void displayAttachmentEdit(String id, String spaceId, String componentId, String url, HttpServletRequest request, HttpServletResponse response)
-	throws com.stratelia.silverpeas.infoLetter.InfoLetterException {
+	throws InfoLetterException {
     try {
 	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="
 		+ id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Context=attachment" + "&Url=" +
       URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 
     } catch (Exception e) {
-		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
+		throw new InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
 		SilverpeasRuntimeException.ERROR, e.getMessage());
     }
 }

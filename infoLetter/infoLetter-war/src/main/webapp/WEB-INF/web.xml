@@ -30,7 +30,7 @@
   <servlet>
     <display-name>InfoLetterRequestRouter</display-name>
     <servlet-name>InfoLetterRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.infoLetter.servlets.InfoLetterRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.infoletter.servlets.InfoLetterRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>InfoLetterRequestRouter</servlet-name>
