@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.quickinfo.servlets;
+package org.silverpeas.components.quickinfo.servlets;
 
 import java.text.ParseException;
 import java.util.Collection;
@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
+import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.model.News;

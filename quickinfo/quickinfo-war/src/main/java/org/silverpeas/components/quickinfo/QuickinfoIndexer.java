@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.quickinfo;
+package org.silverpeas.components.quickinfo;
 
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;

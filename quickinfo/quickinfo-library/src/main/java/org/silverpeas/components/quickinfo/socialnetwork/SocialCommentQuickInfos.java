@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.quickinfo.socialNetwork;
+package org.silverpeas.components.quickinfo.socialnetwork;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.service.CommentServiceProvider;

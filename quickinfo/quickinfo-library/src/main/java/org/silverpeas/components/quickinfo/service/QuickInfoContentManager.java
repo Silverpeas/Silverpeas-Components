@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.quickinfo;
+package org.silverpeas.components.quickinfo.service;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;

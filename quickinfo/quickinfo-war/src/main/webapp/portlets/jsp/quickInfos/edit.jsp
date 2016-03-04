@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.portlets.QuickInfosPortlet"%>
+<%@page import="org.silverpeas.components.quickinfo.portlets.QuickInfosPortlet"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="javax.portlet.RenderRequest" %>

@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.silverpeas.components.quickinfo.model.News;
 
-import com.stratelia.webactiv.quickinfo.control.QuickInfoDateComparatorDesc;
+import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
 
 public class NewsByStatus {
 
