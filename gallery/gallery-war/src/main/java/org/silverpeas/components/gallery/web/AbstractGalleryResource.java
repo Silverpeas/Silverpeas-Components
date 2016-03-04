@@ -25,8 +25,8 @@ package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.control.GalleryService;
-import org.silverpeas.components.gallery.control.MediaServiceProvider;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;

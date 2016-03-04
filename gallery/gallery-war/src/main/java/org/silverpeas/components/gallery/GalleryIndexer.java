@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.service.GalleryService;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;

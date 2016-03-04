@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.control.MediaServiceProvider;
+import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import java.util.Date;

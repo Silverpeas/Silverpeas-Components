@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
-import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;

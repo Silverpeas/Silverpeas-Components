@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.process;
 
 import org.silverpeas.components.gallery.constant.MediaMimeType;
-import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
 import org.silverpeas.components.gallery.model.AlbumDetail;

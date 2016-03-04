@@ -25,7 +25,7 @@ package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.service.GalleryService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;

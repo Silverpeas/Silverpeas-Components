@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
-import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import com.silverpeas.peasUtil.GoTo;

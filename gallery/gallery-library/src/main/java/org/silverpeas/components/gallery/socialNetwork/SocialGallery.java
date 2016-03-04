@@ -31,7 +31,7 @@ package org.silverpeas.components.gallery.socialNetwork;
  */
 
 import com.silverpeas.calendar.Date;
-import org.silverpeas.components.gallery.control.GalleryService;
+import org.silverpeas.components.gallery.service.GalleryService;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

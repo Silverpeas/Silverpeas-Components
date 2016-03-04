@@ -28,7 +28,7 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
-import org.silverpeas.components.gallery.control.MediaServiceProvider;
+import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;

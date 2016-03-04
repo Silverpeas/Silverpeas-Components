@@ -21,27 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.gallery.control;
+package org.silverpeas.components.gallery.service;
 
-import org.silverpeas.components.gallery.model.GalleryRuntimeException;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.initialization.Initialization;
 
 /**
- * @author: Yohann Chastagnier
+ * Initializes the Gallery application by setting up the different schedulers, one to alert the
+ * user, the other to delete orders.
  */
-public class MediaServiceProvider {
-
-  /**
-   * @return an instance of {@link GalleryService} gallery service layer using JEE CDI BeanManager.
-   */
-  public static GalleryService getMediaService() {
-    try {
-      return ServiceProvider.getService(GalleryService.class);
-    } catch (Exception e) {
-      throw new GalleryRuntimeException("MediaServiceProvider.getMediaService()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+public class GalleryInitialize implements Initialization {
+  public GalleryInitialize() {
   }
 
+  @Override
+  public void init() {
+    ScheduledAlertUser sa = new ScheduledAlertUser();
+    sa.initialize();
+    ScheduledDeleteOrder so = new ScheduledDeleteOrder();
+    so.initialize();
+  }
 }
