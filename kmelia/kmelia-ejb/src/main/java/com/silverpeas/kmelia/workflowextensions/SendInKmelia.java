@@ -306,7 +306,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
   
   private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK) {
-    return copyFile(file, toPK); 
+    return copyFile(file, toPK, null);
   }
   
   private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK, DocumentType type) {
