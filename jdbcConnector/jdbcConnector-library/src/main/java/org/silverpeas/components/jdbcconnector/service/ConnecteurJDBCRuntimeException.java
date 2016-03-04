@@ -21,30 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.jdbcconnector.control;
+package org.silverpeas.components.jdbcconnector.service;
 
-import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
-import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import java.util.List;
+public class ConnecteurJDBCRuntimeException extends SilverpeasRuntimeException {
 
-public interface DataSourceConnectionInfoService {
+  private static final long serialVersionUID = 9175773763045521697L;
 
-  static DataSourceConnectionInfoService get() {
-    return ServiceProvider.getService(DataSourceConnectionInfoService.class);
+  public ConnecteurJDBCRuntimeException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  public List<DataSourceConnectionInfo> getConnectionInfoList(String instanceId);
+  public ConnecteurJDBCRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
-  public void removeConnectionInfo(DataSourceConnectionInfo connectionInfo);
+  public ConnecteurJDBCRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-  public void removeConnectionInfoOfComponentInstance(String componentInstanceId);
+  public ConnecteurJDBCRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 
-  public DataSourceConnectionInfo getConnectionInfo(String id);
-
-  public DataSourceConnectionInfo saveConnectionInfo(DataSourceConnectionInfo connectionInfo);
-
-  public List<DataSourceDefinition> getAllDataSourceDefinitions();
+  public String getModule() {
+    return "connecteurJDBC";
+  }
 
 }

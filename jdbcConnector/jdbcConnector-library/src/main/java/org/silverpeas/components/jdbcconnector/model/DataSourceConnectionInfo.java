@@ -21,8 +21,8 @@
 
 package org.silverpeas.components.jdbcconnector.model;
 
-import org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCException;
-import org.silverpeas.components.jdbcconnector.control.DataSourceConnectionInfoService;
+import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
+import org.silverpeas.components.jdbcconnector.service.DataSourceConnectionInfoService;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.exception.SilverpeasException;

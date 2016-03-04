@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.jdbcconnector.control;
+package org.silverpeas.components.jdbcconnector.service;
 
 import org.silverpeas.util.exception.SilverpeasException;
 

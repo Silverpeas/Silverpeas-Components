@@ -29,6 +29,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
+import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
+import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCRuntimeException;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
