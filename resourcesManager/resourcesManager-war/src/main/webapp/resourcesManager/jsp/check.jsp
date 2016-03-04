@@ -36,9 +36,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.resourcesmanager.model.Category"%>
-<%@ page import="org.silverpeas.resourcesmanager.model.Resource"%>
-<%@ page import="org.silverpeas.resourcesmanager.model.Reservation"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.model.Category"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.model.Resource"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.model.Reservation"%>
 <%@ page import="com.silverpeas.form.DataRecord"%>
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.RecordSet"%>
@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.monthCalendar.*"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
-<%@ page import="org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController"%>
 <%@ page import="java.util.Calendar"%>
 <%@ page import="java.util.List"%>
 

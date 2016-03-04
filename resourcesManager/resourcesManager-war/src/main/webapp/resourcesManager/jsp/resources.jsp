@@ -40,8 +40,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="org.silverpeas.resourcesmanager.model.Category"%>
-<%@ page import="org.silverpeas.resourcesmanager.model.Resource"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.model.Category"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ include file="check.jsp" %>

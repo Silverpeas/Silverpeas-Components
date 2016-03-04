@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.resourcesmanager.model.Reservation"%>
+<%@ page import="org.silverpeas.components.resourcesmanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <%
