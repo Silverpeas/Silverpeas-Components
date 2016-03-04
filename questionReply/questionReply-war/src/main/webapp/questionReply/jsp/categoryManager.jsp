@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.components.questionreply.model.Category" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -29,7 +29,7 @@
 
 <%
 	// r�cup�ration des param�tres :
-	Category 	category		= (Category) request.getAttribute("Category");
+	Category category		= (Category) request.getAttribute("Category");
 	String 		userName		= (String) request.getAttribute("UserName");
 
 

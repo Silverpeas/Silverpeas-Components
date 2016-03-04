@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.components.questionreply.model.Question" %>
+<%@ page import="org.silverpeas.components.questionreply.model.Reply" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

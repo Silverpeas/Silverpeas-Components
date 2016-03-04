@@ -29,12 +29,12 @@
   <servlet>
     <display-name>QuestionReplyRequestRouter</display-name>
     <servlet-name>QuestionReplyRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.questionReply.servlets.QuestionReplyRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.questionreply.servlets.QuestionReplyRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToQuestion</display-name>
     <servlet-name>GoToQuestion</servlet-name>
-    <servlet-class>com.silverpeas.questionReply.servlets.GoToQuestion</servlet-class>
+    <servlet-class>org.silverpeas.components.questionreply.servlets.GoToQuestion</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>QuestionReplyRequestRouter</servlet-name>

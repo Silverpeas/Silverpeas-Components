@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.components.questionreply.model.Reply" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -33,7 +33,7 @@
 <%@ include file="checkQuestionReply.jsp" %>
 
 <%
-Reply 	reply 		= (Reply) request.getAttribute("CurrentReply");
+Reply reply 		= (Reply) request.getAttribute("CurrentReply");
 String	currentLang = (String) request.getAttribute("Language");
 
 String replyId = reply.getPK().getId();

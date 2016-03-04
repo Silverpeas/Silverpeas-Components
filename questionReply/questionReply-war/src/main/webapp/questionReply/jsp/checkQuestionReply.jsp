@@ -81,6 +81,9 @@
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="org.silverpeas.components.questionreply.model.Question" %>
+<%@ page import="org.silverpeas.components.questionreply.control.QuestionReplySessionController" %>
+<%@ page import="org.silverpeas.components.questionreply.model.Reply" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
