@@ -29,7 +29,7 @@
   <servlet>
     <display-name>YellowpagesRequestRouter</display-name>
     <servlet-name>YellowpagesRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.yellowpages.servlets.YellowpagesRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.yellowpages.servlets.YellowpagesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>YellowpagesRequestRouter</servlet-name>

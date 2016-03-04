@@ -1,5 +1,6 @@
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
+<%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

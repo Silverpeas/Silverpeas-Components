@@ -1,4 +1,4 @@
-<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
+<%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

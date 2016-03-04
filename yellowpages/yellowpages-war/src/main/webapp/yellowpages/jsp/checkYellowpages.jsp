@@ -59,8 +59,8 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController"%>
-<%@ page import="com.stratelia.webactiv.yellowpages.model.*"%>
+<%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController"%>
+<%@ page import="org.silverpeas.components.yellowpages.model.*"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
