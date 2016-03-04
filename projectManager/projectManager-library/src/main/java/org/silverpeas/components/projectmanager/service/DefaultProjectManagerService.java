@@ -39,7 +39,6 @@ import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.TodoDetail;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -64,7 +63,7 @@ import java.util.List;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class ProjectManagerBmEJB implements ProjectManagerBm {
+public class DefaultProjectManagerService implements ProjectManagerService {
 
   @Inject
   private CommentService commentController;
@@ -88,7 +87,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1, null);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getProjects()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getProjects()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_PROJECTS_FAILED",
           "instanceId = " + instanceId, re);
     } finally {
@@ -109,7 +108,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTasksByMotherId()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTasksByMotherId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
@@ -125,7 +124,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTasksByMotherId()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTasksByMotherId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
@@ -142,7 +141,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
           getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
     } catch (SQLException re) {
       throw new ProjectManagerRuntimeException(
-          "ProjectManagerBmEJB.getTasksByMotherIdAndPreviousId()",
+          "DefaultProjectManagerService.getTasksByMotherIdAndPreviousId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
@@ -157,7 +156,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getAllTasks()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getAllTasks()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
@@ -172,7 +171,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getTask(con, id);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTask()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "id = " + id, re);
     } finally {
       DBUtil.close(con);
@@ -189,7 +188,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
       actionId = todo.getExternalId();
       return ProjectManagerDAO.getTask(con, actionId);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTaskByTodoId()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTaskByTodoId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "actionId = "
           + actionId, re);
     } finally {
@@ -204,7 +203,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getMostDistantTask()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getMostDistantTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "taskId = "
           + taskId, re);
     } finally {
@@ -241,7 +240,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
       }
       return id;
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.addTask()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.addTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.CREATING_TASK_FAILED", "task = " + task,
           re);
     } finally {
@@ -280,7 +279,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
       // modification de sa tache mère s'il en existe une
       updateChargesMotherTask(con, task);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.removeTask()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.removeTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.DELETING_TASK_FAILED", "id = " + id, re);
     } finally {
       DBUtil.close(con);
@@ -348,7 +347,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
         alertResource(task, false);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.updateTask()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.updateTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.UPDATING_TASK_FAILED", "task = " + task,
           re);
     } finally {
@@ -720,7 +719,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
         ProjectManagerDAO.updateTask(con, motherTask);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.updateChargesMotherTask()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.updateChargesMotherTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.UPDATING_TASK_FAILED", "task = " + task,
           re);
     } finally {
@@ -735,7 +734,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getHolidayDates()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATES_FAILED",
           "instanceId = " + instanceId, re);
     } finally {
@@ -750,7 +749,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId, beginDate, endDate);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getHolidayDates()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATES_FAILED",
           "instanceId = " + instanceId, re);
     } finally {
@@ -765,7 +764,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.addHolidayDate()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.addHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.ADDING_HOLIDAYDATE_FAILED", "date = "
           + holiday.getDate(), re);
     } finally {
@@ -782,7 +781,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
         ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.addHolidayDates()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.addHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.ADDING_HOLIDAYDATES_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -796,7 +795,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.removeHolidayDate()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.removeHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.REMOVING_HOLIDAYDATE_FAILED", "date = "
           + holiday.getDate(), re);
     } finally {
@@ -813,7 +812,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
         ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.removeHolidayDates()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.removeHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.REMOVING_HOLIDAYDATES_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -826,7 +825,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerCalendarDAO.isHolidayDate(con, date);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.isHolidayDate()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.isHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -892,7 +891,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getConnection()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
@@ -903,7 +902,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.isHolidayDate()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.isHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -916,7 +915,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     try {
       return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin, excludedTaskId);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.isHolidayDate()",
+      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.isHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
     } finally {
       DBUtil.close(con);

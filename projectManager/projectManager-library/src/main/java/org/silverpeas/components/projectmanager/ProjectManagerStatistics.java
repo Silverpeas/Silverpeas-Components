@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
+import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
@@ -41,11 +41,11 @@ import javax.inject.Singleton;
 public class ProjectManagerStatistics implements ComponentStatisticsProvider {
 
   @Inject
-  private ProjectManagerBm projectManagerBm = null;
+  private ProjectManagerService projectManagerService = null;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    Collection<TaskDetail> tasks = getProjectManagerBm().getAllTasks(componentId, null);
+    Collection<TaskDetail> tasks = getProjectManagerService().getAllTasks(componentId, null);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(tasks.size());
     for (TaskDetail task : tasks) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -57,11 +57,11 @@ public class ProjectManagerStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  private ProjectManagerBm getProjectManagerBm() {
-    if (projectManagerBm == null) {
+  private ProjectManagerService getProjectManagerService() {
+    if (projectManagerService == null) {
       throw new ProjectManagerRuntimeException("projectManager", SilverpeasRuntimeException.ERROR,
-          "ProjectManagerStatistics.getProjectManagerBm()", "CDI bootstrap error");
+          "ProjectManagerStatistics.getProjectManagerService()", "CDI bootstrap error");
     }
-    return projectManagerBm;
+    return projectManagerService;
   }
 }

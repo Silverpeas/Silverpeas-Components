@@ -28,7 +28,7 @@
  */
 package org.silverpeas.components.projectmanager;
 
-import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
+import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
@@ -44,10 +44,10 @@ import javax.inject.Singleton;
 public class ProjectManagerIndexer implements ComponentIndexation {
 
   @Inject
-  private ProjectManagerBm projectManagerBm;
+  private ProjectManagerService projectManagerService;
 
   @Override
   public void index(ComponentInst componentInst) {
-    projectManagerBm.index(componentInst.getId());
+    projectManagerService.index(componentInst.getId());
   }
 }

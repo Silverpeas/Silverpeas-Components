@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.projectmanager.control;
 
-import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
+import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
@@ -67,7 +67,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   /**
    * Project manager EJB
    */
-  private ProjectManagerBm projectManagerBm = null;
+  private ProjectManagerService projectManagerService = null;
   private TaskDetail currentTask = null;
   private Boolean projectDefined = null;
   private TaskDetail currentProject = null;
@@ -108,7 +108,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<TaskDetail> getAllTasks() {
-    List<TaskDetail> tasks = getProjectManagerBm().getAllTasks(getComponentId(), getFiltre());
+    List<TaskDetail> tasks = getProjectManagerService().getAllTasks(getComponentId(), getFiltre());
     for (TaskDetail task : tasks) {
       enrichirTask(task);
     }
@@ -117,7 +117,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public List<TaskDetail> getTasks() {
     currentTask = null;
-    List<TaskDetail> tasks = getProjectManagerBm().getTasksByMotherId(getComponentId(),
+    List<TaskDetail> tasks = getProjectManagerService().getTasksByMotherId(getComponentId(),
         getCurrentProject().getId(), getFiltre());
     List<TaskDetail> arbo = new ArrayList<TaskDetail>();
     for (TaskDetail task : tasks) {
@@ -152,7 +152,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       arbo.add(task);
 
       // la tâche est dépliée
-      List<TaskDetail> sousActions = getProjectManagerBm().getTasksByMotherId(
+      List<TaskDetail> sousActions = getProjectManagerService().getTasksByMotherId(
           getComponentId(), task.getId(), getFiltre());
       level++;
       for (TaskDetail sousAction : sousActions) {
@@ -166,7 +166,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<TaskDetail> getTasks(String id) {
-    List<TaskDetail> tasks = getProjectManagerBm().getTasksByMotherId(getComponentId(),
+    List<TaskDetail> tasks = getProjectManagerService().getTasksByMotherId(getComponentId(),
         Integer.parseInt(id), getFiltre());
     for (TaskDetail task : tasks) {
       enrichirTask(task);
@@ -181,7 +181,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * @return the list of tasks which are not cancelled
    */
   public List<TaskDetail> getTasksNotCancelled(String id) {
-    List<TaskDetail> tasks = getProjectManagerBm().getTasksNotCancelledByMotherId(
+    List<TaskDetail> tasks = getProjectManagerService().getTasksNotCancelledByMotherId(
         getComponentId(), Integer.parseInt(id), getFiltre());
     for (TaskDetail task : tasks) {
       enrichirTask(task);
@@ -203,7 +203,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         motherId = getCurrentTask().getMereId();
       }
     }
-    List<TaskDetail> previousTasks = getProjectManagerBm().getTasksByMotherId(getComponentId(),
+    List<TaskDetail> previousTasks = getProjectManagerService().getTasksByMotherId(getComponentId(),
         motherId);
     // calcul de la date de debut de la nouvelle tache
     // par rapport à la date de fin de la tache precedente
@@ -223,18 +223,18 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public Date processEndDate(TaskDetail task) {
     task.setInstanceId(getComponentId());
-    return getProjectManagerBm().processEndDate(task);
+    return getProjectManagerService().processEndDate(task);
   }
 
   public Date processEndDate(String taskId, String charge, Date dateDebut) {
     TaskDetail task = getTask(taskId);
     task.setCharge(charge);
     task.setDateDebut(dateDebut);
-    return getProjectManagerBm().processEndDate(task);
+    return getProjectManagerService().processEndDate(task);
   }
 
   public Date processEndDate(String charge, Date dateDebut, String instanceId) {
-    return getProjectManagerBm().processEndDate(Float.parseFloat(charge), instanceId, dateDebut);
+    return getProjectManagerService().processEndDate(Float.parseFloat(charge), instanceId, dateDebut);
   }
 
   /**
@@ -246,7 +246,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   public void checkBeginDate(TaskDetail task) {
     getCalendar().setTime(task.getDateDebut());
     // récupère les jours non travaillés
-    List<Date> holidayDates = getProjectManagerBm().getHolidayDates(getComponentId());
+    List<Date> holidayDates = getProjectManagerService().getHolidayDates(getComponentId());
     while (holidayDates.contains(getCalendar().getTime())) {
       getCalendar().add(Calendar.DATE, 1);
     }
@@ -283,12 +283,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public TaskDetail getTask(String id, boolean getAttachments) {
-    currentTask = getProjectManagerBm().getTask(Integer.parseInt(id));
+    currentTask = getProjectManagerService().getTask(Integer.parseInt(id));
     enrichirTask(currentTask);
     // récupération du nom de la tâche précédente
     int previousTaskId = currentTask.getPreviousTaskId();
     if (previousTaskId != -1) {
-      TaskDetail previousTask = getProjectManagerBm().getTask(previousTaskId);
+      TaskDetail previousTask = getProjectManagerService().getTask(previousTaskId);
       if (previousTask != null) {
         currentTask.setPreviousTaskName(previousTask.getNom());
       }
@@ -301,7 +301,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public TaskDetail getTaskByTodoId(String todoId) {
-    currentTask = getProjectManagerBm().getTaskByTodoId(todoId);
+    currentTask = getProjectManagerService().getTaskByTodoId(todoId);
     enrichirTask(currentTask);
     // fichiers joint à la tâche
     currentTask.setAttachments(getAttachments(String.valueOf(currentTask.getId())));
@@ -313,7 +313,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public TaskDetail getTaskMere(int mereId) {
-    TaskDetail actionMere = getProjectManagerBm().getTask(mereId);
+    TaskDetail actionMere = getProjectManagerService().getTask(mereId);
     if (actionMere != null) {
       // dates au format de l'utilisateur
       actionMere.setUiDateDebut(date2UIDate(actionMere.getDateDebut()));
@@ -359,17 +359,17 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // reinitialise le filtre
     filtre = null;
 
-    return getProjectManagerBm().addTask(task);
+    return getProjectManagerService().addTask(task);
   }
 
   public void removeTask(String id) {
 
-    getProjectManagerBm().removeTask(Integer.parseInt(id), getComponentId());
+    getProjectManagerService().removeTask(Integer.parseInt(id), getComponentId());
     currentTask = null;
   }
 
   public void updateCurrentTask() {
-    getProjectManagerBm().updateTask(getCurrentTask(), getUserId());
+    getProjectManagerService().updateTask(getCurrentTask(), getUserId());
   }
 
   public String initUserPanel() {
@@ -475,7 +475,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public boolean isProjectDefined() {
     if (projectDefined == null) {
-      List<TaskDetail> projects = getProjectManagerBm().getProjects(getComponentId());
+      List<TaskDetail> projects = getProjectManagerService().getProjects(getComponentId());
       if (!projects.isEmpty()) {
         projectDefined = Boolean.TRUE;
         currentProject = projects.get(0);
@@ -495,7 +495,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     project.setInstanceId(getComponentId());
     project.setOrganisateurId(getUserId());
     project.setMereId(-1);
-    int currentProjectId = getProjectManagerBm().addTask(project);
+    int currentProjectId = getProjectManagerService().addTask(project);
     this.currentProject = getTask(Integer.toString(currentProjectId));
     projectDefined = Boolean.TRUE;
   }
@@ -512,7 +512,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public Date getEndDateOfCurrentProjet() {
-    TaskDetail mostDistantTask = getProjectManagerBm().getMostDistantTask(getComponentId(),
+    TaskDetail mostDistantTask = getProjectManagerService().getMostDistantTask(getComponentId(),
         getCurrentProject().getId());
     if (mostDistantTask != null) {
       return mostDistantTask.getDateFin();
@@ -521,7 +521,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public void updateCurrentProject() {
-    getProjectManagerBm().updateTask(getCurrentProject(), getUserId());
+    getProjectManagerService().updateTask(getCurrentProject(), getUserId());
   }
 
   /**
@@ -543,10 +543,10 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         getCurrentProject().getId(), getComponentId());
     if (status == WORKING_DAY) {
       // le jour devient un jour travaillé
-      getProjectManagerBm().removeHolidayDate(holiday);
+      getProjectManagerService().removeHolidayDate(holiday);
     } else {
       // le jour devient un jour non travaillé
-      getProjectManagerBm().addHolidayDate(holiday);
+      getProjectManagerService().addHolidayDate(holiday);
     }
     // recalcule pour toutes les tâches du projet
     // toutes les dates de début et de fin
@@ -568,7 +568,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
     HolidayDetail holidayDate = new HolidayDetail(date, getCurrentProject().getId(),
         getComponentId());
-    boolean isHoliday = getProjectManagerBm().isHolidayDate(holidayDate);
+    boolean isHoliday = getProjectManagerService().isHolidayDate(holidayDate);
     List<HolidayDetail> holidayDates = new ArrayList<HolidayDetail>();
     while (getCalendar().get(Calendar.MONTH) == iMonth) {
       holidayDates.add(new HolidayDetail(getCalendar().getTime(), getCurrentProject().getId(),
@@ -576,9 +576,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       getCalendar().add(Calendar.DATE, 7);
     }
     if (isHoliday) {
-      getProjectManagerBm().removeHolidayDates(holidayDates);
+      getProjectManagerService().removeHolidayDates(holidayDates);
     } else {
-      getProjectManagerBm().addHolidayDates(holidayDates);
+      getProjectManagerService().addHolidayDates(holidayDates);
     }
     // recalcule pour toutes les tâches du projet
     // toutes les dates de début et de fin
@@ -586,11 +586,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<Date> getHolidayDates() {
-    return getProjectManagerBm().getHolidayDates(getComponentId());
+    return getProjectManagerService().getHolidayDates(getComponentId());
   }
 
   public void calculateAllTasksDates() {
-    getProjectManagerBm().calculateAllTasksDates(getComponentId(), getCurrentProject().getId(),
+    getProjectManagerService().calculateAllTasksDates(getComponentId(), getCurrentProject().getId(),
         getUserId());
   }
 
@@ -634,18 +634,18 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * @return an instance of ProjectManagerBm (Project Manager Business Model class)
+   * @return an instance of ProjectManagerService (Project Manager Business Model class)
    */
-  private ProjectManagerBm getProjectManagerBm() {
-    if (projectManagerBm == null) {
+  private ProjectManagerService getProjectManagerService() {
+    if (projectManagerService == null) {
       try {
-        projectManagerBm = ProjectManagerBm.get();
+        projectManagerService = ProjectManagerService.get();
       } catch (Exception e) {
         throw new ProjectManagerRuntimeException("projectManager", SilverpeasRuntimeException.ERROR,
-            "ProjectManagerSessionController.getProjectManagerBm()", "IoC error cannot retrieve AlmanachBm from container", e);
+            "ProjectManagerSessionController.getProjectManagerService()", "IoC error cannot retrieve AlmanachBm from container", e);
       }
     }
-    return projectManagerBm;
+    return projectManagerService;
   }
 
   /**
@@ -686,7 +686,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       Collection<TaskResourceDetail> resources = task.getResources();
       for (TaskResourceDetail resource : resources) {
         String userId = resource.getUserId();
-        resource.setOccupation(getProjectManagerBm().getOccupationByUser(userId, dateDeb, dateFin));
+        resource.setOccupation(
+            getProjectManagerService().getOccupationByUser(userId, dateDeb, dateFin));
       }
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException("ProjectManagerSessionController.updateOccupation()",
@@ -704,7 +705,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       TaskDetail task = getTask(taskId);
       Date dateDeb = task.getDateDebut();
       Date dateFin = task.getDateFin();
-      return getProjectManagerBm().getOccupationByUser(userId, dateDeb, dateFin, task.getId());
+      return getProjectManagerService().getOccupationByUser(userId, dateDeb, dateFin, task.getId());
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException(
           "ProjectManagerSessionController.updateOccupation()",
@@ -721,7 +722,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public int checkOccupation(String taskId, String userId, Date beginDate, Date endDate) {
     try {
-      return getProjectManagerBm().getOccupationByUser(userId, beginDate, endDate,
+      return getProjectManagerService().getOccupationByUser(userId, beginDate, endDate,
           Integer.parseInt(taskId));
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException("ProjectManagerSessionController.updateOccupation()",
@@ -737,7 +738,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public int checkOccupation(String userId, Date beginDate, Date endDate) {
     try {
-      return getProjectManagerBm().getOccupationByUser(userId, beginDate, endDate);
+      return getProjectManagerService().getOccupationByUser(userId, beginDate, endDate);
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException("ProjectManagerSessionController.updateOccupation()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

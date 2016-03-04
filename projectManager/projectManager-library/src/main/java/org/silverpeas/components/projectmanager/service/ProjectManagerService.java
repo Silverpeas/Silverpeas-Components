@@ -28,10 +28,10 @@ import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.util.ServiceProvider;
 
-public interface ProjectManagerBm {
+public interface ProjectManagerService {
 
-  static ProjectManagerBm get() {
-    return ServiceProvider.getService(ProjectManagerBm.class);
+  static ProjectManagerService get() {
+    return ServiceProvider.getService(ProjectManagerService.class);
   }
 
   List<TaskDetail> getProjects(String instanceId);
