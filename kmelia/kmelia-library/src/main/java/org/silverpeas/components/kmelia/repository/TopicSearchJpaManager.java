@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmelia.repository;
 
-import org.silverpeas.components.kmelia.domain.TopicSearch;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 

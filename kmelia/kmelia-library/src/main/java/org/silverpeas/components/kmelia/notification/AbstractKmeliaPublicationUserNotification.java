@@ -27,7 +27,7 @@ import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.kmelia.control.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 

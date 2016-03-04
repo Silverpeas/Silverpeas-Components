@@ -22,10 +22,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.silverpeas.components.kmelia.control;
+package org.silverpeas.components.kmelia.service;
 
 
-import org.silverpeas.components.kmelia.control.KmeliaService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.notification.AttachmentEvent;
 import org.silverpeas.attachment.notification.AttachmentRef;

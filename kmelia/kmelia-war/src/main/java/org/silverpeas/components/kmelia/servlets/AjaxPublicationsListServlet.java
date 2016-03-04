@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.servlets;
 
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.domain.TopicSearch;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
@@ -39,7 +39,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.kmelia.control.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

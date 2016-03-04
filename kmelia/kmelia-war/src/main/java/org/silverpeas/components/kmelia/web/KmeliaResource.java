@@ -24,7 +24,7 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
-import org.silverpeas.components.kmelia.control.KmeliaService;
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;

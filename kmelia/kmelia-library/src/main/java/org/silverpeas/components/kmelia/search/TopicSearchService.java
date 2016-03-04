@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.search;
 
 import java.util.List;
 
-import org.silverpeas.components.kmelia.domain.TopicSearch;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.model.MostInterestedQueryVO;
 
 /**

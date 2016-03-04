@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.search;
 
 import org.silverpeas.components.kmelia.dao.TopicSearchDao;
-import org.silverpeas.components.kmelia.domain.TopicSearch;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.model.MostInterestedQueryVO;
 import org.silverpeas.components.kmelia.repository.TopicSearchRepository;
 

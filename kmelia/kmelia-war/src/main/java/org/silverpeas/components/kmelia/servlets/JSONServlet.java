@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.servlets;
 
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.control.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.JSONCodec;

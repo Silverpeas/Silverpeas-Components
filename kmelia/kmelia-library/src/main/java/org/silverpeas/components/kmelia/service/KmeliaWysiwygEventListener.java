@@ -19,9 +19,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.kmelia.control;
+package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.components.kmelia.control.KmeliaService;
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.notification.JMSResourceEventListener;

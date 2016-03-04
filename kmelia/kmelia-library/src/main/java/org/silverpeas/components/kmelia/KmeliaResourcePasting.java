@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia;
 
 import com.silverpeas.admin.components.ApplicationResourcePasting;
 import com.silverpeas.admin.components.PasteDetail;
-import org.silverpeas.components.kmelia.control.KmeliaService;
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;

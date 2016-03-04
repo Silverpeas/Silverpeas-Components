@@ -53,7 +53,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
-import org.silverpeas.components.kmelia.control.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.FileFolder;
 import org.silverpeas.components.kmelia.model.updatechain.Fields;
 import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;

@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.components.kmelia.control.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**

@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.kmelia.control;
+package org.silverpeas.components.kmelia.service;
 
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
@@ -26,7 +26,6 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.control.KmeliaService;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;

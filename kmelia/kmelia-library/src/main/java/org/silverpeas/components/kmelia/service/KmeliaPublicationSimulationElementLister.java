@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.kmelia.control;
+package org.silverpeas.components.kmelia.service;
 
 import com.silverpeas.thumbnail.control.ThumbnailSimulationElement;
+import org.silverpeas.components.kmelia.service.AbstractKmeliaSimulationElementLister;
 import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

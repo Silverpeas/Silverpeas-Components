@@ -20,7 +20,7 @@
  */
 
 
-package org.silverpeas.components.kmelia.control;
+package org.silverpeas.components.kmelia.service;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;

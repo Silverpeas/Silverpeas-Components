@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmelia.repository;
 
-import org.silverpeas.components.kmelia.domain.TopicSearch;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.kmelia.test.WarBuilder4Kmelia;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
 
