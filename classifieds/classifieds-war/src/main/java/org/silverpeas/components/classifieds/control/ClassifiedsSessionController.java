@@ -47,6 +47,8 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.components.classifieds.service.ClassifiedService;
+import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;

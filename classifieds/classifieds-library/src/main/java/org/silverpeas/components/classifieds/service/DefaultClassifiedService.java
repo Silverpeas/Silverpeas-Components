@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.classifieds.control;
+package org.silverpeas.components.classifieds.service;
 
 import org.silverpeas.components.classifieds.dao.ClassifiedsDAO;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;

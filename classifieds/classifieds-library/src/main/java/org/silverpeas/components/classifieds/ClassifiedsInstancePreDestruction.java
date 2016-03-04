@@ -24,8 +24,8 @@
 package org.silverpeas.components.classifieds;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import org.silverpeas.components.classifieds.control.ClassifiedService;
-import org.silverpeas.components.classifieds.control.ClassifiedServiceProvider;
+import org.silverpeas.components.classifieds.service.ClassifiedService;
+import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

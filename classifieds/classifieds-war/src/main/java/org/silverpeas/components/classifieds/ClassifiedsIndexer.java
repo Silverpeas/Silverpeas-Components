@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.classifieds;
 
-import org.silverpeas.components.classifieds.control.ClassifiedService;
+import org.silverpeas.components.classifieds.service.ClassifiedService;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
