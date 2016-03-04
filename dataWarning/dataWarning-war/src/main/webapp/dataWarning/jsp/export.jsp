@@ -1,4 +1,5 @@
-<%--
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Iterator" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

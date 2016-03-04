@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.datawarning.servlets;
 
-import org.silverpeas.components.datawarning.control.DataWarningEngine;
+import org.silverpeas.components.datawarning.service.DataWarningEngine;
 import org.silverpeas.components.datawarning.control.DataWarningSessionController;
 import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningGroup;

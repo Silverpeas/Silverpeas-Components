@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.datawarning.service.DataWarningEngine;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;

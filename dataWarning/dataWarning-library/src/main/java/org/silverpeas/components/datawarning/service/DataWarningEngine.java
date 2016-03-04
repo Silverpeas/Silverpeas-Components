@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.datawarning.control;
+package org.silverpeas.components.datawarning.service;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.datawarning.DataWarningException;

@@ -45,8 +45,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.components.datawarning.control.DataWarningSessionController"%>
-<%@ page import="com.silverpeas.dataWarning.model.*"%>
-<%@ page import="com.silverpeas.dataWarning.*"%>
+<%@ page import="org.silverpeas.components.datawarning.model.*"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
