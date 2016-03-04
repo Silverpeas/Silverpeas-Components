@@ -21,63 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.vo;
 
-import java.io.Serializable;
-import java.util.List;
+/*
+ * Created on 13 avr. 2005
+ *
+ */
+package org.silverpeas.components.projectmanager;
+
+import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
- * This Object represents a Week value object
+ * @author neysseri
  */
-public class WeekVO implements Serializable {
+@Singleton
+@Named("projectManager" + ComponentIndexation.QUALIFIER_SUFFIX)
+public class ProjectManagerIndexer implements ComponentIndexation {
 
-  private static final long serialVersionUID = 8536159971527346255L;
+  @Inject
+  private ProjectManagerBm projectManagerBm;
 
-  /**
-   * List of days inside a week
-   */
-  private List<DayVO> days = null;
-
-  /**
-   * Number of week in a year
-   */
-  private String number = null;
-
-  /**
-   * @param days
-   * @param number
-   */
-  public WeekVO(List<DayVO> days, String number) {
-    super();
-    this.days = days;
-    this.number = number;
-  }
-
-  /**
-   * @return the days
-   */
-  public List<DayVO> getDays() {
-    return days;
-  }
-
-  /**
-   * @param days the days to set
-   */
-  public void setDays(List<DayVO> days) {
-    this.days = days;
-  }
-
-  /**
-   * @return the number
-   */
-  public String getNumber() {
-    return number;
-  }
-
-  /**
-   * @param number the number to set
-   */
-  public void setNumber(String number) {
-    this.number = number;
+  @Override
+  public void index(ComponentInst componentInst) {
+    projectManagerBm.index(componentInst.getId());
   }
 }

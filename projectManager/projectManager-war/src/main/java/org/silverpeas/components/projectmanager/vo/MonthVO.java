@@ -21,43 +21,57 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.vo;
+package org.silverpeas.components.projectmanager.vo;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 /**
- * This Object represents a day value object
+ * This Object represents a month value object
  */
-public class DayVO implements Serializable {
+public class MonthVO implements Serializable {
 
-  private static final long serialVersionUID = 4711346434253108166L;
+  private static final long serialVersionUID = 8536159971527346255L;
 
   /**
-   * Number of day in a month with two digits character
+   * List of weeks inside a month
+   */
+  private List<WeekVO> weeks = null;
+
+  /**
+   * Number of month in a year
    */
   private String number = null;
 
   /**
-   * First day character
+   * Number of days in this month
    */
-  private String firstDayChar = null;
+  private int nbDays = 0;
 
   /**
-   * Date
-   */
-  private Date day = null;
-
-  /**
+   * @param weeks
    * @param number
-   * @param firstDayChar
-   * @param day TODO
+   * @param nbDays TODO
    */
-  public DayVO(String number, String firstDayChar, Date day) {
+  public MonthVO(List<WeekVO> weeks, String number, int nbDays) {
     super();
+    this.weeks = weeks;
     this.number = number;
-    this.firstDayChar = firstDayChar;
-    this.day = day;
+    this.nbDays = nbDays;
+  }
+
+  /**
+   * @return the weeks
+   */
+  public List<WeekVO> getWeeks() {
+    return weeks;
+  }
+
+  /**
+   * @param weeks the weeks to set
+   */
+  public void setWeeks(List<WeekVO> weeks) {
+    this.weeks = weeks;
   }
 
   /**
@@ -75,30 +89,17 @@ public class DayVO implements Serializable {
   }
 
   /**
-   * @return the firstDayChar
+   * @return the nbDays
    */
-  public String getFirstDayChar() {
-    return firstDayChar;
+  public int getNbDays() {
+    return nbDays;
   }
 
   /**
-   * @param firstDayChar the firstDayChar to set
+   * @param nbDays the nbDays to set
    */
-  public void setFirstDayChar(String firstDayChar) {
-    this.firstDayChar = firstDayChar;
+  public void setNbDays(int nbDays) {
+    this.nbDays = nbDays;
   }
 
-  /**
-   * @return the day
-   */
-  public Date getDay() {
-    return day;
-  }
-
-  /**
-   * @param day the day to set
-   */
-  public void setDay(Date day) {
-    this.day = day;
-  }
 }

@@ -26,7 +26,7 @@
  * Created on 25 oct. 2004
  *
  */
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 

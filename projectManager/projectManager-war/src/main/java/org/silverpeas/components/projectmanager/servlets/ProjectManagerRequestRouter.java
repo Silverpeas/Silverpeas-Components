@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.servlets;
+package org.silverpeas.components.projectmanager.servlets;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -31,11 +31,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.projectManager.control.ProjectManagerSessionController;
-import com.silverpeas.projectManager.model.Filtre;
-import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.projectManager.model.TaskResourceDetail;
-import com.silverpeas.projectManager.vo.MonthVO;
+import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
+import org.silverpeas.components.projectmanager.model.Filtre;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
+import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;

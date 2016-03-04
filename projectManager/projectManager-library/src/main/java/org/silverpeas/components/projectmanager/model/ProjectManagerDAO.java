@@ -26,7 +26,7 @@
  * Created on 25 oct. 2004
  *
  */
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.model;
 
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;

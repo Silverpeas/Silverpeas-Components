@@ -22,32 +22,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 13 avr. 2005
- *
- */
-package com.silverpeas.projectManager;
+package org.silverpeas.components.projectmanager.model;
 
-import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author neysseri
  */
-@Singleton
-@Named("projectManager" + ComponentIndexation.QUALIFIER_SUFFIX)
-public class ProjectManagerIndexer implements ComponentIndexation {
+public class HolidayDetail implements Serializable {
+  private static final long serialVersionUID = 5791543598843818180L;
+  private Date holidayDate = null;
+  private String instanceId = null;
+  private int fatherId = -1;
 
-  @Inject
-  private ProjectManagerBm projectManagerBm;
-
-  @Override
-  public void index(ComponentInst componentInst) {
-    projectManagerBm.index(componentInst.getId());
+  public HolidayDetail(Date holidayDate, int fatherId, String instanceId) {
+    setDate(holidayDate);
+    setInstanceId(instanceId);
+    setFatherId(fatherId);
   }
+
+  /**
+   * @return
+   */
+  public int getFatherId() {
+    return fatherId;
+  }
+
+  /**
+   * @return
+   */
+  public Date getDate() {
+    return holidayDate;
+  }
+
+  /**
+   * @return
+   */
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  /**
+   * @param i
+   */
+  public void setFatherId(int i) {
+    fatherId = i;
+  }
+
+  /**
+   * @param date
+   */
+  public void setDate(Date date) {
+    holidayDate = date;
+  }
+
+  /**
+   * @param string
+   */
+  public void setInstanceId(String string) {
+    instanceId = string;
+  }
+
 }

@@ -22,41 +22,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.projectManager.model;
+/*
+ * Created on 13 avr. 2005
+ *
+ */
+package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.WAPrimaryKey;
 
-public class ProjectManagerRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = -1416351973604283038L;
+/**
+ * @author neysseri
+ */
+public class TaskPK extends WAPrimaryKey {
+
+  private static final long serialVersionUID = 341665047380031916L;
 
   /**
-   * constructors
+   * TaskPK constructor
+   * @param id the task identifier
+   * @param componentId the component identifier
    */
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public TaskPK(String id, String componentId) {
+    super(id, null, componentId);
   }
 
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public TaskPK(int id, String componentId) {
+    super(Integer.toString(id), null, componentId);
   }
 
   /**
-   * Implements SilverpeasRuntimeException getModule abstract method
+   * Implementation of equals method for TaskPK object
    */
-  public String getModule() {
-    return "projectManager";
+  public boolean equals(Object other) {
+    if (!(other instanceof TaskPK)) {
+      return false;
+    }
+    return (id.equals(((TaskPK) other).getId()))
+        && (componentName.equals(((TaskPK) other).getComponentName()));
   }
 
+  /**
+   * @return A hash code for this object
+   */
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

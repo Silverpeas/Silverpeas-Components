@@ -26,7 +26,7 @@
  * Created on 8 nov. 2004
  *
  */
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.model;
 
 import java.io.Serializable;
 import java.util.Date;

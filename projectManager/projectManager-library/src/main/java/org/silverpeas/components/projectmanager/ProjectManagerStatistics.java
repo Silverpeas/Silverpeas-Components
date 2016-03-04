@@ -18,15 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager;
+package org.silverpeas.components.projectmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
-import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
-import com.silverpeas.projectManager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
+import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 

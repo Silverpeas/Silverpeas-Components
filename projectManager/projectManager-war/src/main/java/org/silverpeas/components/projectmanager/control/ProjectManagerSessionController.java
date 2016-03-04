@@ -18,17 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.control;
+package org.silverpeas.components.projectmanager.control;
 
-import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
-import com.silverpeas.projectManager.model.Filtre;
-import com.silverpeas.projectManager.model.HolidayDetail;
-import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
-import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.projectManager.model.TaskResourceDetail;
-import com.silverpeas.projectManager.vo.DayVO;
-import com.silverpeas.projectManager.vo.MonthVO;
-import com.silverpeas.projectManager.vo.WeekVO;
+import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
+import org.silverpeas.components.projectmanager.model.Filtre;
+import org.silverpeas.components.projectmanager.model.HolidayDetail;
+import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
+import org.silverpeas.components.projectmanager.vo.DayVO;
+import org.silverpeas.components.projectmanager.vo.MonthVO;
+import org.silverpeas.components.projectmanager.vo.WeekVO;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

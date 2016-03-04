@@ -22,49 +22,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 13 avr. 2005
- *
- */
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-/**
- * @author neysseri
- */
-public class TaskPK extends WAPrimaryKey {
-
-  private static final long serialVersionUID = 341665047380031916L;
+public class ProjectManagerRuntimeException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = -1416351973604283038L;
 
   /**
-   * TaskPK constructor
-   * @param id the task identifier
-   * @param componentId the component identifier
+   * constructors
    */
-  public TaskPK(String id, String componentId) {
-    super(id, null, componentId);
+  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  public TaskPK(int id, String componentId) {
-    super(Integer.toString(id), null, componentId);
+  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  /**
-   * Implementation of equals method for TaskPK object
-   */
-  public boolean equals(Object other) {
-    if (!(other instanceof TaskPK)) {
-      return false;
-    }
-    return (id.equals(((TaskPK) other).getId()))
-        && (componentName.equals(((TaskPK) other).getComponentName()));
+  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   /**
-   * @return A hash code for this object
+   * Implements SilverpeasRuntimeException getModule abstract method
    */
-  public int hashCode() {
-    return super.hashCode();
+  public String getModule() {
+    return "projectManager";
   }
+
 }

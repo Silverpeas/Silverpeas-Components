@@ -18,16 +18,16 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.control.ejb;
+package org.silverpeas.components.projectmanager.service;
 
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.projectManager.model.Filtre;
-import com.silverpeas.projectManager.model.HolidayDetail;
-import com.silverpeas.projectManager.model.ProjectManagerCalendarDAO;
-import com.silverpeas.projectManager.model.ProjectManagerDAO;
-import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
-import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.projectManager.model.TaskPK;
+import org.silverpeas.components.projectmanager.model.Filtre;
+import org.silverpeas.components.projectmanager.model.HolidayDetail;
+import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
+import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
+import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.model.TaskPK;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -39,6 +39,7 @@ import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.TodoDetail;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.components.projectmanager.service.ProjectManagerBm;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;

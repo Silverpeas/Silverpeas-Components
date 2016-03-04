@@ -21,67 +21,84 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.vo;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author neysseri
+ * This Object represents a day value object
  */
-public class HolidayDetail implements Serializable {
-  private static final long serialVersionUID = 5791543598843818180L;
-  private Date holidayDate = null;
-  private String instanceId = null;
-  private int fatherId = -1;
+public class DayVO implements Serializable {
 
-  public HolidayDetail(Date holidayDate, int fatherId, String instanceId) {
-    setDate(holidayDate);
-    setInstanceId(instanceId);
-    setFatherId(fatherId);
+  private static final long serialVersionUID = 4711346434253108166L;
+
+  /**
+   * Number of day in a month with two digits character
+   */
+  private String number = null;
+
+  /**
+   * First day character
+   */
+  private String firstDayChar = null;
+
+  /**
+   * Date
+   */
+  private Date day = null;
+
+  /**
+   * @param number
+   * @param firstDayChar
+   * @param day TODO
+   */
+  public DayVO(String number, String firstDayChar, Date day) {
+    super();
+    this.number = number;
+    this.firstDayChar = firstDayChar;
+    this.day = day;
   }
 
   /**
-   * @return
+   * @return the number
    */
-  public int getFatherId() {
-    return fatherId;
+  public String getNumber() {
+    return number;
   }
 
   /**
-   * @return
+   * @param number the number to set
    */
-  public Date getDate() {
-    return holidayDate;
+  public void setNumber(String number) {
+    this.number = number;
   }
 
   /**
-   * @return
+   * @return the firstDayChar
    */
-  public String getInstanceId() {
-    return instanceId;
+  public String getFirstDayChar() {
+    return firstDayChar;
   }
 
   /**
-   * @param i
+   * @param firstDayChar the firstDayChar to set
    */
-  public void setFatherId(int i) {
-    fatherId = i;
+  public void setFirstDayChar(String firstDayChar) {
+    this.firstDayChar = firstDayChar;
   }
 
   /**
-   * @param date
+   * @return the day
    */
-  public void setDate(Date date) {
-    holidayDate = date;
+  public Date getDay() {
+    return day;
   }
 
   /**
-   * @param string
+   * @param day the day to set
    */
-  public void setInstanceId(String string) {
-    instanceId = string;
+  public void setDay(Date day) {
+    this.day = day;
   }
-
 }

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.model;
 
 import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;

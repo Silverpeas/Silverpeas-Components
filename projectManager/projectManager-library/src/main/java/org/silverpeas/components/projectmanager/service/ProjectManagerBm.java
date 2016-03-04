@@ -18,14 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.control.ejb;
+package org.silverpeas.components.projectmanager.service;
 
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.projectManager.model.Filtre;
-import com.silverpeas.projectManager.model.HolidayDetail;
-import com.silverpeas.projectManager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.model.Filtre;
+import org.silverpeas.components.projectmanager.model.HolidayDetail;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.util.ServiceProvider;
 
 public interface ProjectManagerBm {

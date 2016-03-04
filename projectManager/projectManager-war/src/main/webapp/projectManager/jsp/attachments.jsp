@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.components.projectmanager.model.TaskDetail" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -28,7 +28,7 @@
 <%@ include file="check.jsp" %>
 
 <%
-TaskDetail 	task 	= (TaskDetail) request.getAttribute("Task");
+TaskDetail task 	= (TaskDetail) request.getAttribute("Task");
 String 		url 	= (String) request.getAttribute("URL");
 String		role	= (String) request.getAttribute("Role");
 %>

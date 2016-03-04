@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.servlets;
+package org.silverpeas.components.projectmanager.servlets;
 
-import com.silverpeas.projectManager.control.ProjectManagerSessionController;
-import com.silverpeas.projectManager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;

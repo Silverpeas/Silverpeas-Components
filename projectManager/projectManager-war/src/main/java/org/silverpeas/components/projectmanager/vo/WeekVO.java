@@ -21,57 +21,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager.vo;
+package org.silverpeas.components.projectmanager.vo;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * This Object represents a month value object
+ * This Object represents a Week value object
  */
-public class MonthVO implements Serializable {
+public class WeekVO implements Serializable {
 
   private static final long serialVersionUID = 8536159971527346255L;
 
   /**
-   * List of weeks inside a month
+   * List of days inside a week
    */
-  private List<WeekVO> weeks = null;
+  private List<DayVO> days = null;
 
   /**
-   * Number of month in a year
+   * Number of week in a year
    */
   private String number = null;
 
   /**
-   * Number of days in this month
-   */
-  private int nbDays = 0;
-
-  /**
-   * @param weeks
+   * @param days
    * @param number
-   * @param nbDays TODO
    */
-  public MonthVO(List<WeekVO> weeks, String number, int nbDays) {
+  public WeekVO(List<DayVO> days, String number) {
     super();
-    this.weeks = weeks;
+    this.days = days;
     this.number = number;
-    this.nbDays = nbDays;
   }
 
   /**
-   * @return the weeks
+   * @return the days
    */
-  public List<WeekVO> getWeeks() {
-    return weeks;
+  public List<DayVO> getDays() {
+    return days;
   }
 
   /**
-   * @param weeks the weeks to set
+   * @param days the days to set
    */
-  public void setWeeks(List<WeekVO> weeks) {
-    this.weeks = weeks;
+  public void setDays(List<DayVO> days) {
+    this.days = days;
   }
 
   /**
@@ -87,19 +80,4 @@ public class MonthVO implements Serializable {
   public void setNumber(String number) {
     this.number = number;
   }
-
-  /**
-   * @return the nbDays
-   */
-  public int getNbDays() {
-    return nbDays;
-  }
-
-  /**
-   * @param nbDays the nbDays to set
-   */
-  public void setNbDays(int nbDays) {
-    this.nbDays = nbDays;
-  }
-
 }

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.projectManager.model;
+package org.silverpeas.components.projectmanager.model;
 
 import java.io.Serializable;
 

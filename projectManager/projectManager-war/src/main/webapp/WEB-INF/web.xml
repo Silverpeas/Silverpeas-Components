@@ -29,12 +29,12 @@
   <servlet>
     <display-name>ProjectManagerRequestRouter</display-name>
     <servlet-name>ProjectManagerRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.projectManager.servlets.ProjectManagerRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.projectmanager.servlets.ProjectManagerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>AjaxProjectManagerServlet</display-name>
     <servlet-name>AjaxProjectManagerServlet</servlet-name>
-    <servlet-class>com.silverpeas.projectManager.servlets.AjaxProjectManagerServlet</servlet-class>
+    <servlet-class>org.silverpeas.components.projectmanager.servlets.AjaxProjectManagerServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

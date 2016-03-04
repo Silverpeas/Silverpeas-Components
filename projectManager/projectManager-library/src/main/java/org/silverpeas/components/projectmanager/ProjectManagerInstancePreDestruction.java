@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.projectManager;
+package org.silverpeas.components.projectmanager;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.projectManager.model.ProjectManagerCalendarDAO;
-import com.silverpeas.projectManager.model.ProjectManagerDAO;
+import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
+import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
 import org.silverpeas.util.DBUtil;
 
 import javax.inject.Named;
