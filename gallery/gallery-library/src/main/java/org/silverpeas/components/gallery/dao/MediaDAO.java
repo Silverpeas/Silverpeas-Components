@@ -36,7 +36,7 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.components.gallery.socialNetwork.SocialInformationGallery;
+import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.date.Period;
