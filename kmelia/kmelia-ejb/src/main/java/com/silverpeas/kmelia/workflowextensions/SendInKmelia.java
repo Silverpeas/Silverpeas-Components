@@ -264,7 +264,7 @@ public class SendInKmelia extends ExternalActionImpl {
       attachment = service
           .searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
       if (attachment != null) {
-        SimpleDocumentPK copyPK = copyFile(attachment, toPK, DocumentType.attachment);
+        SimpleDocumentPK copyPK = copyFileWithoutDocumentTypeChange(attachment, toPK);
         return copyPK.getId();
       }
     }
@@ -286,6 +286,10 @@ public class SendInKmelia extends ExternalActionImpl {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return fileIds;
+  }
+
+  private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file, ForeignPK toPK) {
+    return copyFile(file, toPK, null);
   }
 
   private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK, DocumentType type) {
