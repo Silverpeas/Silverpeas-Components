@@ -62,12 +62,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.*"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.*"%>
 <%@ page import="com.stratelia.webactiv.publication.model.*"%>
-<%@ page import="com.stratelia.webactiv.publication.info.model.*"%>
 
 <%@ page import="org.silverpeas.util.exception.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail" %>
 
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>

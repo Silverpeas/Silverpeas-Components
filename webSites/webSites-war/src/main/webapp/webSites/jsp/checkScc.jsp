@@ -73,9 +73,9 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.Link"%>
 
 
-<%@ page import="com.stratelia.webactiv.webSites.control.WebSiteSessionController"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.IconDetail"%>
+<%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
 
 
 

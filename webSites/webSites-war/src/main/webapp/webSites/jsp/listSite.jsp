@@ -40,9 +40,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.publication.model.*"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.*"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.*"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail" %>
 
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>

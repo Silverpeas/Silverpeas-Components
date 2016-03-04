@@ -37,9 +37,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.*"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.webSites.control.*"%>
+<%@ page import="org.silverpeas.components.websites.control.*"%>
 <%@ page import="com.stratelia.webactiv.publication.model.*"%>
-<%@ page import="com.stratelia.webactiv.publication.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 
 <%@ page import="org.silverpeas.util.exception.*"%>

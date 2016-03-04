@@ -38,9 +38,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="javax.naming.Context"%>
 <%@ page import="javax.naming.InitialContext"%>
 <%@ page import="javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.webSites.control.WebSiteSessionController"%>
+<%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>

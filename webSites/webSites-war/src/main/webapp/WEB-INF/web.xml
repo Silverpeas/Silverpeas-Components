@@ -29,7 +29,7 @@
   <servlet>
     <display-name>WebSitesRequestRouter</display-name>
     <servlet-name>WebSitesRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.webSites.servlets.WebSitesRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.websites.servlets.WebSitesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>WebSitesRequestRouter</servlet-name>

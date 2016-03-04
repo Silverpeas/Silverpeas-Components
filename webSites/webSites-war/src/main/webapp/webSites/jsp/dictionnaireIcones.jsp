@@ -59,7 +59,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.*"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.*"%>
 
 <%@ include file="checkScc.jsp" %>
 
