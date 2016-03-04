@@ -21,39 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * AlmanachException.java
+package org.silverpeas.components.almanach.service;
+
+/**
+ *
+ * @author groccia
+ * @version
  */
+public class AlmanachBadParamException extends AlmanachPrivateException {
 
-package org.silverpeas.components.almanach.control.ejb;
+  private static final long serialVersionUID = -5689999837339454781L;
 
-import org.silverpeas.util.exception.SilverpeasException;
+  /** Creates new AlmanachBadParamException */
 
-public class AlmanachException extends SilverpeasException {
-
-  private static final long serialVersionUID = 4170030551594235164L;
-
-  public AlmanachException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  public AlmanachException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public AlmanachException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AlmanachException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "almanach";
+  public AlmanachBadParamException(String message) {
+    super(message);
   }
 
 }

@@ -30,8 +30,8 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.almanach.AlmanachContentManager;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
@@ -282,7 +282,7 @@ public class EventDetail extends AbstractBean
 
   public Collection<SimpleDocument> getAttachments() {
     try {
-      AlmanachBm almanachService = ServiceProvider.getService(AlmanachBm.class);
+      AlmanachService almanachService = ServiceProvider.getService(AlmanachService.class);
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
       SilverLogger.getLogger("attachment").error(ex.getMessage(), ex);

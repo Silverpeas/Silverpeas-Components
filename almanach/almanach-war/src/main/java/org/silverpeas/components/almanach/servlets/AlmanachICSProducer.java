@@ -29,14 +29,13 @@ import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import org.silverpeas.components.almanach.control.CalendarEventEncoder;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.control.ejb.AlmanachException;
+import org.silverpeas.components.almanach.service.CalendarEventEncoder;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.AlmanachException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.UtilException;
 
@@ -123,7 +122,7 @@ public class AlmanachICSProducer {
   public List<EventDetail> getAllEvents(final String almanachId) throws AlmanachException,
       RemoteException, UtilException, CreateException {
     EventPK pk = new EventPK("", null, almanachId);
-    AlmanachBm almanachBm = ServiceProvider.getService(AlmanachBm.class);
-    return new ArrayList<>(almanachBm.getAllEvents(pk));
+    AlmanachService almanachService = ServiceProvider.getService(AlmanachService.class);
+    return new ArrayList<>(almanachService.getAllEvents(pk));
   }
 }

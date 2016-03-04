@@ -58,7 +58,7 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
   }
 
   /**
-   * Test of generateRecurrenceRule method, of class AlmanachBmEJB.
+   * Test of generateRecurrenceRule method, of class DefaultAlmanachService.
    */
   @Test
   public void testGenerateRecurrenceRule() {
@@ -157,7 +157,7 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
   }
 
   /**
-   * An AlmanachBmEJB instance dedicated to tests. It overrides some methods in order to set a
+   * An DefaultAlmanachService instance dedicated to tests. It overrides some methods in order to set a
    * context adapted to the tests.
    */
   private static class AlmanachBmEJBForTest extends AlmanachBmEJB {

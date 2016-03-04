@@ -26,10 +26,9 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.control.ejb.AlmanachException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.AlmanachException;
 import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -43,7 +42,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   private ContentManager contentManager;
   @Inject
-  private AlmanachBm currentAlmanachBm;
+  private AlmanachService currentAlmanachService;
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -162,12 +161,12 @@ public class AlmanachContentManager implements ContentInterface {
     return headers;
   }
 
-  private AlmanachBm getAlmanachBm() throws AlmanachException {
-    if (currentAlmanachBm == null) {
+  private AlmanachService getAlmanachBm() throws AlmanachException {
+    if (currentAlmanachService == null) {
       throw new AlmanachException("AlmanachContentManager.getAlmanachBm()",
           SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL");
     }
-    return currentAlmanachBm;
+    return currentAlmanachService;
   }
 
   private ContentManager getContentManager() {

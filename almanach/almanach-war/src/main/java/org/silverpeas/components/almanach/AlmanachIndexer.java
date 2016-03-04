@@ -24,13 +24,12 @@
 package org.silverpeas.components.almanach;
 
 
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.components.almanach.model.EventPK;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +41,7 @@ import java.util.Collection;
 public class AlmanachIndexer implements ComponentIndexation {
 
   @Inject
-  private AlmanachBm almanach;
+  private AlmanachService almanach;
   @Inject
   private AttachmentService attachmentService;
 

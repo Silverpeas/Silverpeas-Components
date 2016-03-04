@@ -32,6 +32,7 @@ import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
@@ -41,7 +42,6 @@ import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.Periodicity;
@@ -77,7 +77,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    * Attribute loaded with dependency injection
    */
   @Inject
-  private AlmanachBm almanachBm;
+  private AlmanachService almanachService;
 
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
@@ -88,7 +88,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     EventPK eventPK = new EventPK(silverResult.getId());
     EventDetail event = null;
     try {
-      event = getAlmanachBm().getEventDetail(eventPK);
+      event = getAlmanachService().getEventDetail(eventPK);
     } catch (Exception e) {
       SilverTrace.warn("almanach", ResultSearchRenderer.class.getName() + ".getResultContent",
           "Unable to load event " + eventPK.getId() + " from EJB", e);
@@ -173,17 +173,17 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
   }
 
   /**
-   * @return the almanachBm
+   * @return the almanachService
    */
-  public AlmanachBm getAlmanachBm() {
-    return almanachBm;
+  public AlmanachService getAlmanachService() {
+    return almanachService;
   }
 
   /**
-   * @param almanachBm the almanachBm to set
+   * @param almanachService the almanachService to set
    */
-  public void setAlmanachBm(AlmanachBm almanachBm) {
-    this.almanachBm = almanachBm;
+  public void setAlmanachService(AlmanachService almanachService) {
+    this.almanachService = almanachService;
   }
 
 }

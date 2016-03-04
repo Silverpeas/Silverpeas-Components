@@ -47,15 +47,16 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBadParamException;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.control.ejb.AlmanachException;
-import org.silverpeas.components.almanach.control.ejb.AlmanachNoSuchFindEventException;
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
+import org.silverpeas.components.almanach.service.AlmanachBadParamException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.AlmanachException;
+import org.silverpeas.components.almanach.service.AlmanachNoSuchFindEventException;
+import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.PeriodicityException;
+import org.silverpeas.components.almanach.service.CalendarEventEncoder;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 import org.silverpeas.upload.UploadedFile;
@@ -105,7 +106,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 public class AlmanachSessionController extends AbstractComponentSessionController {
 
-  private AlmanachBm almanachBm;
+  private AlmanachService almanachService;
   private Calendar currentDay = Calendar.getInstance();
   private EventDetail currentEvent;
   private static final String AE_MSG1 = "almanach.ASC_NoSuchFindEvent";
@@ -223,7 +224,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public List<EventDetail> getAllEvents() throws AlmanachException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
-    return new ArrayList<>(getAlmanachBm().getAllEvents(pk));
+    return new ArrayList<>(getAlmanachService().getAllEvents(pk));
   }
 
   /**
@@ -257,7 +258,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private List<EventDetail> getAllEvents(final List<String> instanceIds) throws AlmanachException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
     return new ArrayList<>(
-        getAlmanachBm().getAllEvents(pk, instanceIds.toArray(new String[instanceIds.size()])));
+        getAlmanachService().getAllEvents(pk, instanceIds.toArray(new String[instanceIds.size()])));
   }
 
   /**
@@ -270,7 +271,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public EventDetail getEventDetail(final String id)
       throws AlmanachException, AlmanachNoSuchFindEventException {
     EventDetail detail =
-        getAlmanachBm().getEventDetail(new EventPK(id, getSpaceId(), getComponentId()));
+        getAlmanachService().getEventDetail(new EventPK(id, getSpaceId(), getComponentId()));
     if (detail != null) {
       return detail;
     }
@@ -289,8 +290,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         .info("almanach", "AlmanachSessionController.removeEvent()", "root.MSG_GEN_ENTER_METHOD");
     EventPK pk = new EventPK(id, getSpaceId(), getComponentId());
     // remove event from DB
-    EventDetail event = getAlmanachBm().getEventDetail(pk);
-    getAlmanachBm().removeEvent(pk);
+    EventDetail event = getAlmanachService().getEventDetail(pk);
+    getAlmanachService().removeEvent(pk);
     // remove attachments from filesystem
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(pk, null);
@@ -325,7 +326,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     periodicityException.setEndDateException(parse(startDate));
 
     // add exception periodicity in DB
-    getAlmanachBm().addPeriodicityException(periodicityException);
+    getAlmanachService().addPeriodicityException(periodicityException);
 
   }
 
@@ -374,7 +375,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           getInstanceId()).withPositions(pdcPositions);
     }
     // Add the event
-    String eventId = getAlmanachBm().addEvent(eventDetail, uploadedFiles, withClassification);
+    String eventId = getAlmanachService().addEvent(eventDetail, uploadedFiles, withClassification);
     eventPK.setId(eventId);
     Date startDate = eventDetail.getStartDate();
     // currentDay
@@ -410,7 +411,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     eventDetail.getPK().setSpace(getSpaceId());
     eventDetail.getPK().setComponentName(getComponentId());
     // Update event
-    getAlmanachBm().updateEvent(eventDetail);
+    getAlmanachService().updateEvent(eventDetail);
     Date startDate = eventDetail.getStartDate();
     // currentDay
     if (startDate != null) {
@@ -435,16 +436,16 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @return the remote business object.
    * @throws AlmanachException if an error occurs while getting the remote object.
    */
-  protected AlmanachBm getAlmanachBm() throws AlmanachException {
-    if (almanachBm == null) {
+  protected AlmanachService getAlmanachService() throws AlmanachException {
+    if (almanachService == null) {
       try {
-        almanachBm = AlmanachBm.get();
+        almanachService = AlmanachService.get();
       } catch (Exception e) {
-        throw new AlmanachException("AlmanachSessionControl.getAlmanachBm()",
-            SilverpeasException.ERROR, "IoC error cannot retrieve AlmanachBm from container", e);
+        throw new AlmanachException("AlmanachSessionControl.getAlmanachService()",
+            SilverpeasException.ERROR, "IoC error cannot retrieve AlmanachService from container", e);
       }
     }
-    return almanachBm;
+    return almanachService;
   }
 
   /**
@@ -582,7 +583,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public int getSilverObjectId(final String eventId)
       throws AlmanachBadParamException, AlmanachException {
-    return getAlmanachBm().getSilverObjectId(new EventPK(eventId, getSpaceId(), getComponentId()));
+    return getAlmanachService().getSilverObjectId(new EventPK(eventId, getSpaceId(), getComponentId()));
   }
 
   /**
@@ -711,10 +712,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     // création des données ...
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
-    EventDetail eventDetail = getAlmanachBm().getEventDetail(eventPK);
+    EventDetail eventDetail = getAlmanachService().getEventDetail(eventPK);
 
     // recherche de l’emplacement de l’évènement
-    String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
+    String htmlPath = getAlmanachService().getHTMLPath(eventPK);
 
     // création des notifications
     LocalizationBundle message =
@@ -771,8 +772,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   @Override
   public void close() {
-    if (almanachBm != null) {
-      almanachBm = null;
+    if (almanachService != null) {
+      almanachService = null;
     }
   }
 
@@ -976,7 +977,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<DisplayableEventOccurrence> listCurrentYearEvents(String... almanachIds)
       throws AlmanachException {
-    List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInPeriod(
+    List<EventOccurrence> occurrencesInYear = getAlmanachService().getEventOccurrencesInPeriod(
         Period.from(currentDay.getTime(), PeriodType.year, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInYear);
   }
@@ -991,7 +992,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<DisplayableEventOccurrence> listCurrentMonthEvents(String... almanachIds)
       throws AlmanachException {
-    List<EventOccurrence> occurrencesInMonth = getAlmanachBm().
+    List<EventOccurrence> occurrencesInMonth = getAlmanachService().
         getEventOccurrencesInPeriod(
             Period.from(currentDay.getTime(), PeriodType.month, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInMonth);
@@ -1007,7 +1008,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<DisplayableEventOccurrence> listCurrentWeekEvents(String... almanachIds)
       throws AlmanachException {
-    List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInPeriod(
+    List<EventOccurrence> occurrencesInWeek = getAlmanachService().getEventOccurrencesInPeriod(
         Period.from(currentDay.getTime(), PeriodType.week, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInWeek);
   }
@@ -1021,7 +1022,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<DisplayableEventOccurrence> listNextEvents(String... almanachIds)
       throws AlmanachException {
-    List<EventOccurrence> nextOccurrences = getAlmanachBm().getNextEventOccurrences(almanachIds);
+    List<EventOccurrence> nextOccurrences = getAlmanachService().getNextEventOccurrences(almanachIds);
     return DisplayableEventOccurrence.decorate(nextOccurrences);
   }
 

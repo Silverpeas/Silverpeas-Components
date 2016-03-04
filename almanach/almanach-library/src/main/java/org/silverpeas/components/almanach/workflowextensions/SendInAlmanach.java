@@ -25,8 +25,8 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -193,9 +193,9 @@ public class SendInAlmanach extends ExternalActionImpl {
     this.role = role;
   }
 
-  protected AlmanachBm getAlmanachBm() {
+  protected AlmanachService getAlmanachBm() {
     try {
-      return ServiceProvider.getService(AlmanachBm.class);
+      return ServiceProvider.getService(AlmanachService.class);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("SendInAlmanach.getKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

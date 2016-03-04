@@ -21,11 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.almanach.control;
+package org.silverpeas.components.almanach.service;
 
 import com.silverpeas.calendar.Datable;
 import static org.silverpeas.util.StringUtil.isDefined;
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.components.almanach.model.PeriodicityException;
@@ -107,7 +106,7 @@ public class ExceptionDatesGenerator {
       return dao.findByWhereClause(pk, "periodicityId = " + periodicity.getPK().getId());
     } catch (PersistenceException e) {
       throw new AlmanachRuntimeException(
-              "AlmanachBmEJB.getListPeriodicityException()",
+              "DefaultAlmanachService.getListPeriodicityException()",
               SilverpeasRuntimeException.ERROR,
               "almanach.EX_GET_PERIODICITY_EXCEPTION", e);
     }

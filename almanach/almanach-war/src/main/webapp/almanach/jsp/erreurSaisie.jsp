@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.components.almanach.control.ejb.AlmanachPrivateException" %><%--
+<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

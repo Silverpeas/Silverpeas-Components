@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.almanach.control.ejb;
+package org.silverpeas.components.almanach.service;
 
 import com.silverpeas.pdc.model.PdcClassification;
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -34,10 +34,10 @@ import org.silverpeas.util.ServiceProvider;
 import java.util.Collection;
 import java.util.List;
 
-public interface AlmanachBm {
+public interface AlmanachService {
 
-  static AlmanachBm get() {
-    return ServiceProvider.getService(AlmanachBm.class);
+  static AlmanachService get() {
+    return ServiceProvider.getService(AlmanachService.class);
   }
 
   /**

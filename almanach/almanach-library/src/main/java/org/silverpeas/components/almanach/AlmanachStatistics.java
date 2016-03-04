@@ -25,11 +25,9 @@ package org.silverpeas.components.almanach;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.components.almanach.control.ejb.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -49,7 +47,7 @@ import java.util.List;
 public class AlmanachStatistics implements ComponentStatisticsProvider {
 
   @Inject
-  private AlmanachBm almanachBm = null;
+  private AlmanachService almanachService = null;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
@@ -65,16 +63,16 @@ public class AlmanachStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  private AlmanachBm getAlmanachBm() throws Exception {
-    if (almanachBm == null) {
+  private AlmanachService getAlmanachService() throws Exception {
+    if (almanachService == null) {
       throw new AlmanachRuntimeException("almanach", SilverpeasRuntimeException.ERROR,
-          "AlmanachStatistics.getAlmanachBm", "CDI bootstrap error");
+          "AlmanachStatistics.getAlmanachService", "CDI bootstrap error");
     }
-    return almanachBm;
+    return almanachService;
   }
 
   public Collection<EventDetail> getEvents(String spaceId, String componentId) throws Exception {
-    return getAlmanachBm().getAllEvents(new EventPK("", spaceId, componentId));
+    return getAlmanachService().getAllEvents(new EventPK("", spaceId, componentId));
   }
 
 }

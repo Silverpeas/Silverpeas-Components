@@ -24,7 +24,7 @@
 package org.silverpeas.components.almanach.servlets;
 
 import com.silverpeas.peasUtil.RssServlet;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.util.DateUtil;
@@ -43,7 +43,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
   private static final long serialVersionUID = -2142983612465351228L;
 
   @Inject
-  private AlmanachBm almanachBm;
+  private AlmanachService almanachService;
 
   /*
    * (non-Javadoc)
@@ -57,13 +57,13 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
     // récupération de la liste des 10 prochains événements de l'Almanach
     Collection<EventDetail> result = new ArrayList<>();
 
-    Collection<EventDetail> allEvents = getAlmanachBm().getAllEvents(
+    Collection<EventDetail> allEvents = getAlmanachService().getAllEvents(
         new EventPK("", "", instanceId));
-    net.fortuna.ical4j.model.Calendar calendarAlmanach = getAlmanachBm()
+    net.fortuna.ical4j.model.Calendar calendarAlmanach = getAlmanachService()
         .getICal4jCalendar(allEvents, "fr");
 
     Calendar currentDay = GregorianCalendar.getInstance();
-    Collection<EventDetail> events = getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
+    Collection<EventDetail> events = getAlmanachService().getListRecurrentEvent(calendarAlmanach,
         null, "", instanceId, true);
     if (events != null) {
       Iterator<EventDetail> it = events.iterator();
@@ -149,7 +149,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
     return event.getCreatorId();
   }
 
-  private AlmanachBm getAlmanachBm() {
-    return almanachBm;
+  private AlmanachService getAlmanachService() {
+    return almanachService;
   }
 }

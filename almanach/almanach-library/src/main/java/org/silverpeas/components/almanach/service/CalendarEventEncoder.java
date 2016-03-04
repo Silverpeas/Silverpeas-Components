@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.almanach.control;
+package org.silverpeas.components.almanach.service;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 import static com.silverpeas.calendar.CalendarEventRecurrence.every;

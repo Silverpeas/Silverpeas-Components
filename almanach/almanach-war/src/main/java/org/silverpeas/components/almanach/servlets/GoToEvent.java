@@ -25,11 +25,7 @@ package org.silverpeas.components.almanach.servlets;
 
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.components.almanach.control.ejb.AlmanachBm;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.util.ServiceProvider;
@@ -59,9 +55,9 @@ public class GoToEvent extends GoTo {
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 
-  private AlmanachBm getAlmanachBm() {
+  private AlmanachService getAlmanachBm() {
     try {
-      return ServiceProvider.getService(AlmanachBm.class);
+      return ServiceProvider.getService(AlmanachService.class);
     } catch (Exception e) {
       displayError(null);
       return null;
