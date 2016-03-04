@@ -26,7 +26,7 @@
  *** cree par Franck Rageade ***
  *** le 26 Fevrier 2002      ***
  *******************************/
-package org.silverpeas.components.infoletter.control;
+package org.silverpeas.components.infoletter.service;
 
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 

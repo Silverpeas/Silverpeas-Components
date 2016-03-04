@@ -24,7 +24,7 @@
 package org.silverpeas.components.infoletter;
 
 import com.silverpeas.admin.components.ComponentInstancePostConstruction;
-import org.silverpeas.components.infoletter.control.InfoLetterServiceProvider;
+import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;

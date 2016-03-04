@@ -28,7 +28,7 @@ package org.silverpeas.components.infoletter;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import org.silverpeas.components.infoletter.control.InfoLetterServiceProvider;
+import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;

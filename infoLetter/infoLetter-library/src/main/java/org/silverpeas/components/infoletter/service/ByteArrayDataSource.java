@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 // *** Rajoute par F. Rageade pour compilation du SessionController
-package org.silverpeas.components.infoletter.control;
+package org.silverpeas.components.infoletter.service;
 
 // ***
 

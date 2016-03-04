@@ -33,7 +33,7 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
-import org.silverpeas.components.infoletter.control.InfoLetterServiceProvider;
+import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

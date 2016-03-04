@@ -33,7 +33,7 @@ import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.components.infoletter.InfoLetterException;
-import org.silverpeas.components.infoletter.control.ByteArrayDataSource;
+import org.silverpeas.components.infoletter.service.ByteArrayDataSource;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
