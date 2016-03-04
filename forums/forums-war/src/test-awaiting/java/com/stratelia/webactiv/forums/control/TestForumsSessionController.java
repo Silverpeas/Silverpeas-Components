@@ -10,7 +10,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
+import com.stratelia.webactiv.forums.service.ForumsBM;
 
 import static org.mockito.Mockito.*;
 

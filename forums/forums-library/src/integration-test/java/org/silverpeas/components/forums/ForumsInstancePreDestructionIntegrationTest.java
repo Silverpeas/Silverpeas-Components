@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.forums;
 
-import org.silverpeas.components.forums.forumsManager.ejb.ForumsBM;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.Moderator;
+import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.Moderator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -81,7 +81,7 @@ public class ForumsInstancePreDestructionIntegrationTest {
   private static final String COMPONENT_INSTANCE_ID = "forums122";
 
   @Inject
-  private ForumsBM forumService;
+  private ForumService forumService;
 
   @Inject
   private ForumsInstancePreDestruction destruction;

@@ -28,8 +28,8 @@ package org.silverpeas.components.forums;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumPK;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumPK;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider
+import static org.silverpeas.components.forums.service.ForumsServiceProvider
     .getForumsService;
 
 @Singleton

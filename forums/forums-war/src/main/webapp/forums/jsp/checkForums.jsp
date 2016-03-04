@@ -35,9 +35,9 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.components.forums.forumsException.ForumsException"%>
-<%@ page import="org.silverpeas.components.forums.models.Forum"%>
-<%@ page import="org.silverpeas.components.forums.models.Message"%>
+<%@ page import="org.silverpeas.components.forums.service.ForumsException"%>
+<%@ page import="org.silverpeas.components.forums.model.Forum"%>
+<%@ page import="org.silverpeas.components.forums.model.Message"%>
 <%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>
 <%@ page import="org.silverpeas.components.forums.url.ActionUrl"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>

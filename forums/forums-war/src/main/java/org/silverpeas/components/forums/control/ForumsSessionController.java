@@ -39,14 +39,14 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.forums.bean.ForumModeratorBean;
-import org.silverpeas.components.forums.forumsException.ForumsException;
-import org.silverpeas.components.forums.forumsManager.ejb.ForumsBM;
-import org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumDetail;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.MessagePK;
+import org.silverpeas.components.forums.service.ForumsException;
+import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.components.forums.service.ForumsServiceProvider;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.MessagePK;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
@@ -849,7 +849,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return statisticService;
   }
 
-  protected ForumsBM getForumsService() {
+  protected ForumService getForumsService() {
     return ForumsServiceProvider.getForumsService();
   }
 

@@ -22,15 +22,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.forumsManager.ejb;
+package org.silverpeas.components.forums.service;
 
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumDetail;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.MessagePK;
-import org.silverpeas.components.forums.models.Moderator;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.model.Moderator;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.ServiceProvider;
@@ -43,10 +43,10 @@ import java.util.List;
  * Forums service layer interface
  * @author frageade
  */
-public interface ForumsBM {
+public interface ForumService {
 
-  static ForumsBM get() {
-    return ServiceProvider.getService(ForumsBM.class);
+  static ForumService get() {
+    return ServiceProvider.getService(ForumService.class);
   }
 
   Forum getForum(ForumPK forumPK);

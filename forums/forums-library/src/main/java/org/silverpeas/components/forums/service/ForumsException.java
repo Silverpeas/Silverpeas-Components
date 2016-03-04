@@ -22,17 +22,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.forumsManager.ejb;
+package org.silverpeas.components.forums.service;
 
-/**
- * @author Yohann Chastagnier
- */
-public class ForumsServiceProvider {
+import org.silverpeas.util.exception.SilverpeasException;
 
-  /**
-   * @return an instance of {@link ForumsBM} EJB.
-   */
-  public static ForumsBM getForumsService() {
-    return ForumsBM.get();
+public class ForumsException extends SilverpeasException {
+
+  private static final long serialVersionUID = 7581452403275941687L;
+
+  public ForumsException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
   }
+
+  public ForumsException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
+
+  public ForumsException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public ForumsException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  public String getModule() {
+    return "forums";
+  }
+
 }

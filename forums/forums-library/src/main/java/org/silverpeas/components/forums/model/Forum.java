@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.models;
+package org.silverpeas.components.forums.model;
 
 import com.silverpeas.notation.control.RatingService;
 import org.silverpeas.rating.ContributionRating;

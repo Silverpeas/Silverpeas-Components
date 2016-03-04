@@ -25,7 +25,7 @@ package org.silverpeas.components.forums.notification;
 
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.components.forums.models.Message;
+import org.silverpeas.components.forums.model.Message;
 
 import java.util.Collection;
 import java.util.Collections;

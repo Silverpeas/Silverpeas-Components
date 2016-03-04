@@ -22,15 +22,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.forumsManager.ejb;
+package org.silverpeas.components.forums.service;
 
-import org.silverpeas.components.forums.forumsException.ForumsRuntimeException;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumDetail;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.MessagePK;
-import org.silverpeas.components.forums.models.Moderator;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.model.Moderator;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.StringUtil;

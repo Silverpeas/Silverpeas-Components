@@ -24,9 +24,9 @@
 package org.silverpeas.components.forums.control.helpers;
 
 import org.silverpeas.components.forums.control.ForumsSessionController;
-import org.silverpeas.components.forums.forumsException.ForumsException;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.Message;
+import org.silverpeas.components.forums.service.ForumsException;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.LocalizationBundle;

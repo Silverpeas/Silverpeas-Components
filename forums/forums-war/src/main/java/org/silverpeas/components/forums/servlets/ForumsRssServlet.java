@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider
+import static org.silverpeas.components.forums.service.ForumsServiceProvider
     .getForumsService;
 
 public class ForumsRssServlet extends RssServlet {

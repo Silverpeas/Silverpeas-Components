@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
-import static org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider
+import static org.silverpeas.components.forums.service.ForumsServiceProvider
     .getForumsService;
 
 public class GoToMessage extends GoTo {

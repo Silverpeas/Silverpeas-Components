@@ -25,7 +25,7 @@ package org.silverpeas.components.forums.subscription;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.PKSubscriptionResource;
-import org.silverpeas.components.forums.models.ForumPK;
+import org.silverpeas.components.forums.model.ForumPK;
 
 /**
  * User: Yohann Chastagnier

@@ -27,7 +27,7 @@ import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehav
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.components.forums.models.ForumDetail;
+import org.silverpeas.components.forums.model.ForumDetail;
 
 import java.util.Collection;
 

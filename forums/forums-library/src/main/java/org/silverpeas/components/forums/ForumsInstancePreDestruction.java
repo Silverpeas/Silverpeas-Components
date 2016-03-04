@@ -24,7 +24,7 @@
 package org.silverpeas.components.forums;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import org.silverpeas.components.forums.forumsManager.ejb.ForumsBM;
+import org.silverpeas.components.forums.service.ForumService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +39,7 @@ import javax.transaction.Transactional;
 public class ForumsInstancePreDestruction implements ComponentInstancePreDestruction {
 
   @Inject
-  private ForumsBM forumsService;
+  private ForumService forumsService;
 
   /**
    * Performs pre destruction tasks in the behalf of the specified Forums instance.

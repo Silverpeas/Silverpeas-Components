@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.forums.forumsManager.ejb;
+package com.stratelia.webactiv.forums.service;
 
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
@@ -36,8 +36,8 @@ import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.silverpeas.util.MapUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.forums.forumsManager.ejb.mock.OrganizationControllerMock;
-import com.stratelia.webactiv.forums.forumsManager.ejb.mock.SubscriptionServiceMock;
+import com.stratelia.webactiv.forums.service.mock.OrganizationControllerMock;
+import com.stratelia.webactiv.forums.service.mock.SubscriptionServiceMock;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import org.silverpeas.util.DBUtil;

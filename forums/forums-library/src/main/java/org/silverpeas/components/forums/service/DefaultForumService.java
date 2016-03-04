@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.forumsManager.ejb;
+package org.silverpeas.components.forums.service;
 
 import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -37,13 +37,12 @@ import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.forums.ForumsContentManager;
-import org.silverpeas.components.forums.forumsException.ForumsRuntimeException;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumDetail;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.MessagePK;
-import org.silverpeas.components.forums.models.Moderator;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.model.Moderator;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -82,7 +81,7 @@ import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class ForumsBMEJB implements ForumsBM {
+public class DefaultForumService implements ForumService {
   @Inject
   private TagCloudBm tagcloud;
   @Inject
@@ -1111,7 +1110,7 @@ public class ForumsBMEJB implements ForumsBM {
   @Override
   public void updateCategory(NodeDetail category) {
     SilverTrace
-        .info("forums", "ForumsBMEJB.updateCategory", "", "category = " + category.getName());
+        .info("forums", "DefaultForumService.updateCategory", "", "category = " + category.getName());
     node.setDetail(category);
   }
 

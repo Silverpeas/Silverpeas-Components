@@ -22,35 +22,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.forumsException;
+package org.silverpeas.components.forums.model;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.WAPrimaryKey;
 
-public class ForumsException extends SilverpeasException {
+/**
+ * Clé primaire associée à un message.
+ * @author frageade
+ * @since November 2000
+ */
+public class MessagePK extends WAPrimaryKey {
+  /**
+   * Generated serial version identifier
+   */
+  private static final long serialVersionUID = 1454596772173738407L;
 
-  private static final long serialVersionUID = 7581452403275941687L;
-
-  public ForumsException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public MessagePK(String component, String id) {
+    super(id, component);
   }
 
-  public ForumsException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public MessagePK(String component) {
+    this(component, "0");
   }
 
-  public ForumsException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  @Override
+  public boolean equals(Object other) {
+    return ((other instanceof MessagePK)
+        && (getInstanceId().equals(((MessagePK) other).getInstanceId()))
+        && (getId().equals(((MessagePK) other).getId())));
   }
 
-  public ForumsException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "forums";
+  @Override
+  public int hashCode() {
+    int hash = 21;
+    return hash * super.hashCode();
   }
 
 }

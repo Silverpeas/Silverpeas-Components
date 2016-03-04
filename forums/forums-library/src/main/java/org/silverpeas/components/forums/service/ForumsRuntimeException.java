@@ -22,41 +22,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.models;
+package org.silverpeas.components.forums.service;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-/**
- * Clé primaire associée à un forum.
- * @author frageade
- * @since November 2000
- */
-public class ForumPK extends WAPrimaryKey {
+public class ForumsRuntimeException extends SilverpeasRuntimeException {
 
-  /**
-   * Generated serial version identifier (Serializable class)
-   */
-  private static final long serialVersionUID = -6924058189303890284L;
+  private static final long serialVersionUID = 2106651190069558942L;
 
-  public ForumPK(String component, String id) {
-    super(id, component);
+  public ForumsRuntimeException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  public ForumPK(String component) {
-    this(component, "0");
+  public ForumsRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  @Override
-  public boolean equals(Object other) {
-    return ((other instanceof ForumPK)
-        && (getInstanceId().equals(((ForumPK) other).getInstanceId()))
-        && (getId().equals(((ForumPK) other).getId())));
+  public ForumsRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    return hash * super.hashCode();
+  public ForumsRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  public String getModule() {
+    return "forums";
   }
 
 }

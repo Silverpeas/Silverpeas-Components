@@ -22,40 +22,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.models;
-
-import org.silverpeas.util.WAPrimaryKey;
+package org.silverpeas.components.forums.service;
 
 /**
- * Clé primaire associée à un message.
- * @author frageade
- * @since November 2000
+ * @author Yohann Chastagnier
  */
-public class MessagePK extends WAPrimaryKey {
+public class ForumsServiceProvider {
+
   /**
-   * Generated serial version identifier
+   * @return an instance of {@link ForumService} EJB.
    */
-  private static final long serialVersionUID = 1454596772173738407L;
-
-  public MessagePK(String component, String id) {
-    super(id, component);
+  public static ForumService getForumsService() {
+    return ForumService.get();
   }
-
-  public MessagePK(String component) {
-    this(component, "0");
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    return ((other instanceof MessagePK)
-        && (getInstanceId().equals(((MessagePK) other).getInstanceId()))
-        && (getId().equals(((MessagePK) other).getId())));
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 21;
-    return hash * super.hashCode();
-  }
-
 }

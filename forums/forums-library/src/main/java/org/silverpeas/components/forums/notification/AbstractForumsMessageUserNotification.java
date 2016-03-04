@@ -27,7 +27,7 @@ import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.components.forums.models.Message;
+import org.silverpeas.components.forums.model.Message;
 
 import java.util.HashMap;
 import java.util.Map;

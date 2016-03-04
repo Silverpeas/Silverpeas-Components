@@ -25,16 +25,16 @@ package org.silverpeas.components.forums;
 
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.MessagePK;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.MessagePK;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider
+import static org.silverpeas.components.forums.service.ForumsServiceProvider
     .getForumsService;
 
 @Singleton

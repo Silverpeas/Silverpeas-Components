@@ -31,10 +31,10 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.forums.forumsException.ForumsRuntimeException;
-import org.silverpeas.components.forums.models.ForumDetail;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider;
+import org.silverpeas.components.forums.service.ForumsRuntimeException;
+import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

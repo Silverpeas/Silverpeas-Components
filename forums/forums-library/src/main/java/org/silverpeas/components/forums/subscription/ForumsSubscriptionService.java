@@ -27,16 +27,16 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.AbstractResourceSubscriptionService;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import org.silverpeas.components.forums.models.Forum;
-import org.silverpeas.components.forums.models.ForumPK;
-import org.silverpeas.components.forums.models.Message;
-import org.silverpeas.components.forums.models.MessagePK;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.MessagePK;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import static com.silverpeas.subscribe.SubscriptionServiceProvider.getSubscribeService;
-import static org.silverpeas.components.forums.forumsManager.ejb.ForumsServiceProvider
+import static org.silverpeas.components.forums.service.ForumsServiceProvider
     .getForumsService;
 
 /**
