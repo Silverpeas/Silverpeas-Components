@@ -25,13 +25,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.GregorianCalendar"%>
-<%@page import="java.io.File"%>
 <%@page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.components.blog.model.Archive" %>
 <%@ page import="org.silverpeas.components.blog.model.PostDetail" %>

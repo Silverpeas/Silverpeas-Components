@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.blog;
 
-import org.silverpeas.components.blog.control.BlogService;
-import org.silverpeas.components.blog.control.BlogServiceFactory;
+import org.silverpeas.components.blog.service.BlogService;
+import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.components.blog.model.PostDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;

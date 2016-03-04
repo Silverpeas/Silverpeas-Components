@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.blog;
 
-import org.silverpeas.components.blog.control.BlogService;
+import org.silverpeas.components.blog.service.BlogService;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 

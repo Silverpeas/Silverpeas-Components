@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.blog.servlets;
 
-import org.silverpeas.components.blog.control.BlogService;
-import org.silverpeas.components.blog.control.BlogServiceFactory;
+import org.silverpeas.components.blog.service.BlogService;
+import org.silverpeas.components.blog.service.BlogServiceFactory;
 
 import java.net.URLEncoder;
 

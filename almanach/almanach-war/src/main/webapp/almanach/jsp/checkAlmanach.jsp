@@ -40,9 +40,8 @@
 <%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.ejb.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.model.*"%>
+<%@ page import="org.silverpeas.components.almanach.service.*"%>
+<%@ page import="org.silverpeas.components.almanach.model.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 

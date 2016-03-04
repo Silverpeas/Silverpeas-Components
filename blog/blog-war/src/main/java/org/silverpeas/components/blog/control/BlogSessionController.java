@@ -52,6 +52,8 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.components.blog.service.BlogService;
+import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.node.web.NodeEntity;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.DateUtil;

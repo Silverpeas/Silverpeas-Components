@@ -61,7 +61,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
-<%@ page import="com.silverpeas.blog.model.*"%>
+<%@ page import="org.silverpeas.components.blog.model.*"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
