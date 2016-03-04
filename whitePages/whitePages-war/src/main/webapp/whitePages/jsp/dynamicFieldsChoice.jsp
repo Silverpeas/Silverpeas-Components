@@ -23,12 +23,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.whitePages.model.SearchField"%>
+<%@page import="org.silverpeas.components.whitepages.model.SearchField"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
-<%@ page import="com.silverpeas.whitePages.model.SearchFieldsType"%>
+<%@ page import="org.silverpeas.components.whitepages.model.SearchFieldsType"%>
 <%@ page import="com.silverpeas.form.FieldTemplate"%>
 
 <%@ include file="checkWhitePages.jsp"%>

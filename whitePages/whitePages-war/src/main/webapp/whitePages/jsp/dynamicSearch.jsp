@@ -26,11 +26,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="com.silverpeas.whitePages.html.WhitePagesHtmlTools"%>
-<%@ page import="com.silverpeas.whitePages.model.Card"%>
-<%@ page import="com.silverpeas.whitePages.model.SearchField"%>
-<%@ page import="com.silverpeas.whitePages.model.SearchFieldsType"%>
-<%@ page import="com.silverpeas.whitePages.record.UserRecord"%>
+<%@ page import="org.silverpeas.components.whitepages.html.WhitePagesHtmlTools"%>
+<%@ page import="org.silverpeas.components.whitepages.model.Card"%>
+<%@ page import="org.silverpeas.components.whitepages.model.SearchField"%>
+<%@ page import="org.silverpeas.components.whitepages.model.SearchFieldsType"%>
+<%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>

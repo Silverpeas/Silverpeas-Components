@@ -26,13 +26,14 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.util.*"%>
-<%@ page import="com.silverpeas.whitePages.model.*"%>
+<%@ page import="org.silverpeas.components.whitepages.model.*"%>
 <%@ page import="com.silverpeas.form.*"%>
+<%@ page import="org.silverpeas.components.whitepages.model.Card" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 
 <%
-	Card			card		= (Card) request.getAttribute("card");
+	Card card		= (Card) request.getAttribute("card");
 	Form			updateForm	= (Form) request.getAttribute("Form");
 	PagesContext	context		= (PagesContext) request.getAttribute("context");
 	DataRecord		data		= (DataRecord) request.getAttribute("data");

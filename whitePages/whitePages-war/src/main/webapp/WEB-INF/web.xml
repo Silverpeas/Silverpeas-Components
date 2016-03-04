@@ -28,11 +28,11 @@
 <web-app>
   <filter>
     <filter-name>whitePagesComponentRequestRouterFilter</filter-name>
-    <filter-class>com.silverpeas.whitePages.filters.ComponentRequestRouterFilter</filter-class>
+    <filter-class>org.silverpeas.components.whitepages.filters.ComponentRequestRouterFilter</filter-class>
   </filter>
   <filter>
     <filter-name>whitePagesLoginFilter</filter-name>
-    <filter-class>com.silverpeas.whitePages.filters.LoginFilter</filter-class>
+    <filter-class>org.silverpeas.components.whitepages.filters.LoginFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>whitePagesComponentRequestRouterFilter</filter-name>
@@ -49,7 +49,7 @@
   <servlet>
     <display-name>WhitePagesRequestRouter</display-name>
     <servlet-name>WhitePagesRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.whitePages.servlets.WhitePagesRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.whitepages.servlets.WhitePagesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>WhitePagesRequestRouter</servlet-name>

@@ -26,15 +26,17 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="com.silverpeas.whitePages.model.*"%>
+<%@ page import="org.silverpeas.components.whitepages.model.*"%>
 <%@ page import="com.silverpeas.form.*"%>
-<%@ page import="com.silverpeas.whitePages.record.UserRecord"%>
+<%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyPosition"%>
+<%@ page import="org.silverpeas.components.whitepages.model.WhitePagesCard" %>
+<%@ page import="org.silverpeas.components.whitepages.model.Card" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 

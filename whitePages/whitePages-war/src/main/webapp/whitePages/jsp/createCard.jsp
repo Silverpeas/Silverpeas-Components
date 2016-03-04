@@ -26,9 +26,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="com.silverpeas.whitePages.model.*"%>
+<%@ page import="org.silverpeas.components.whitepages.model.*"%>
 <%@ page import="com.silverpeas.form.*"%>
-<%@ page import="com.silverpeas.whitePages.record.UserRecord"%>
+<%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
+<%@ page import="org.silverpeas.components.whitepages.model.WhitePagesCard" %>
+<%@ page import="org.silverpeas.components.whitepages.model.Card" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
