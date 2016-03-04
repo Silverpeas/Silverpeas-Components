@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.quizz.control;
+package org.silverpeas.components.quizz.control;
 
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -42,7 +42,7 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerSelection;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
-import com.stratelia.webactiv.quizz.QuizzException;
+import org.silverpeas.components.quizz.QuizzException;
 import com.stratelia.webactiv.score.model.ScoreDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;

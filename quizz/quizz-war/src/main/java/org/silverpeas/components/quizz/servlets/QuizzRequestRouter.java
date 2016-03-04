@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.quizz.servlets;
+package org.silverpeas.components.quizz.servlets;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
-import com.stratelia.webactiv.quizz.control.QuizzSessionController;
+import org.silverpeas.components.quizz.control.QuizzSessionController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;

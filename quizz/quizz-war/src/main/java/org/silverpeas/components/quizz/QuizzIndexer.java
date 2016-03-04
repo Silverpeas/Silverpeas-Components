@@ -21,11 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.components.quizz;
 
-package com.stratelia.webactiv.quizz;
-
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
@@ -33,44 +32,30 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-/**
- * Class declaration
- *
- * @author
- */
 @Singleton
-@Named("quizz" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
-public class QuizzStatistics implements ComponentStatisticsProvider {
+@Named("quizz" + ComponentIndexation.QUALIFIER_SUFFIX)
+public class QuizzIndexer implements ComponentIndexation {
 
   @Inject
-  private QuestionContainerService questionContainerService;
+  private QuestionContainerService service;
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
-    Collection<QuestionContainerHeader> headers = getQuizz(spaceId, componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(headers.size());
-    for (QuestionContainerHeader qcHeader : headers) {
-      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-      myCouple.setUserId(qcHeader.getCreatorId());
-      myCouple.setCountVolume(1);
-      myArrayList.add(myCouple);
+  public void index(ComponentInst componentInst) throws QuizzException {
+    try {
+      QuestionContainerPK pk =
+          new QuestionContainerPK(null, componentInst.getSpaceId(), componentInst.getId());
+      Collection<QuestionContainerHeader> quizzes = service.getNotClosedQuestionContainers(pk);
+      for (QuestionContainerHeader header : quizzes) {
+        pk = new QuestionContainerPK(header.getId(), componentInst.getSpaceId(),
+            componentInst.getId());
+        header.setPK(pk);
+        service.updateQuestionContainerHeader(header);
+      }
+    } catch (Exception e) {
+      throw new QuizzException("QuizzIndexer.index", QuizzException.WARNING,
+          "Quizz.EX_CANNOT_UPDATE_QUIZZ_HEADER", e);
     }
-
-    return myArrayList;
-  }
-
-  private QuestionContainerService getQuestionContainerService() {
-    return questionContainerService;
-  }
-
-  public Collection<QuestionContainerHeader> getQuizz(String spaceId, String componentId)
-      throws Exception {
-    return getQuestionContainerService().getNotClosedQuestionContainers(
-        new QuestionContainerPK(null, spaceId, componentId));
   }
 }

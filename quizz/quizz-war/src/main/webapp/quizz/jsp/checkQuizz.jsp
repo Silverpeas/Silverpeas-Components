@@ -55,9 +55,9 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.quizz.control.*"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
+<%@ page import="org.silverpeas.components.quizz.QuizzException"%>
+<%@ page import="org.silverpeas.components.quizz.QuestionForm"%>
+<%@ page import="org.silverpeas.components.quizz.QuestionHelper"%>
 <%@ page import="org.silverpeas.util.FileServerUtils"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
@@ -88,6 +88,7 @@
 <%@ page import="com.stratelia.webactiv.score.control.*"%>
 
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
+<%@ page import="org.silverpeas.components.quizz.control.QuizzSessionController" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

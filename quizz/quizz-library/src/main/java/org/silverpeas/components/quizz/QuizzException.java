@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.quizz;
+package org.silverpeas.components.quizz;
 
 import org.silverpeas.util.exception.SilverpeasException;
 
