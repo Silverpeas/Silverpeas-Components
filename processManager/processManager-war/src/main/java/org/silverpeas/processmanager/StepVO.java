@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.processManager;
+package org.silverpeas.processmanager;
 
 public class StepVO {
   String stepId = null;

@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.processManager.record;
+package org.silverpeas.processmanager.record;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.processManager.ejb;
+package org.silverpeas.processmanager.service;
 
 import java.io.Serializable;
 

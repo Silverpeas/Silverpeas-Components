@@ -29,7 +29,7 @@
   <servlet>
     <display-name>ProcessManagerRequestRouter</display-name>
     <servlet-name>ProcessManagerRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.processManager.servlets.ProcessManagerRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.processmanager.servlets.ProcessManagerRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ProcessManagerRequestRouter</servlet-name>

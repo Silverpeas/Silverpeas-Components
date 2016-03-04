@@ -22,40 +22,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.processManager;
+package org.silverpeas.processmanager.servlets;
 
-import java.io.Serializable;
-import java.util.Comparator;
+import javax.servlet.http.HttpServletRequest;
+
+import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerSessionController;
 
 /**
- * A named value pair.
+ * A functio handler is associated to a peas function and is called by the request router when this
+ * function has to be processed.
  */
-public final class NamedValue implements Serializable {
-
-  private static final long serialVersionUID = 95974461450918272L;
-
-  public final String name;
-  public final String value;
-
-  public NamedValue(String name, String value) {
-    this.name = name;
-    this.value = value;
-  }
-
-  public boolean equals(Object o) {
-    return o instanceof NamedValue && name.equals(((NamedValue) o).name);
-  }
-
-  public int hashCode() {
-    return name.hashCode();
-  }
-
-  static Comparator<NamedValue> ascendingValues = new Comparator<NamedValue>() {
-    public int compare(NamedValue o1, NamedValue o2) {
-      if (o1.value == null) {
-        return (o2.value == null) ? 0 : (-1);
-      }
-      return o1.value.compareTo(o2.value);
-    }
-  };
+public interface FunctionHandler {
+  /**
+   * Process the request and returns the response url.
+   * @param function the user request name
+   * @param request the user request params
+   * @param session the user request context
+   */
+  public String getDestination(String function,
+      ProcessManagerSessionController session, HttpServletRequest request)
+      throws ProcessManagerException;
 }

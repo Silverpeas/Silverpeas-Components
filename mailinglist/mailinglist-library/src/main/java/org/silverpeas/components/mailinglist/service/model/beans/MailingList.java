@@ -46,7 +46,7 @@ import java.util.stream.Stream;
         ":componentId"),
     @NamedQuery(name = "mailinglist.findAll", query = "from MailingList")})
 public class MailingList extends IdentifiableObject {
-  private static final long serialVersionUID = -6935580611128301622L;
+  private static final long serialVersionUID = 3983404426767796807L;
 
   private String componentId;
   @Transient

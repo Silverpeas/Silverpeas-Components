@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.processManager.ejb;
+package org.silverpeas.processmanager.service;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -34,7 +34,7 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericDataRecord;
-import com.silverpeas.processManager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerException;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
@@ -77,7 +77,7 @@ import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class ProcessManagerBmEJB implements ProcessManagerBm {
+public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
    * Default role for creating workflow processes.
@@ -194,7 +194,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       }
     } catch (ProcessManagerException e) {
       SilverTrace
-          .error("processManager", "ProcessManagerBmEJB.createProcess()", "root.MSG_GEN_ERROR", e);
+          .error("processManager", "DefaultProcessManagerService.createProcess()", "root.MSG_GEN_ERROR", e);
       throw e;
     }
     return instanceId;
@@ -225,9 +225,9 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       }
       return retrieveMatchingFieldTypeName(col.iterator().next());
     } else {
-      SilverTrace.error("processManager", "ProcessManagerBmEJB.retrieveMatchingFieldTypeName()",
+      SilverTrace.error("processManager", "DefaultProcessManagerService.retrieveMatchingFieldTypeName()",
           "processManager.FORM_FIELD_BAD_TYPE", "type: " + value.getClass().getName());
-      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_BAD_TYPE",
+      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_BAD_TYPE",
           "type: " + value.getClass().getName());
     }
   }
@@ -263,19 +263,19 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
-          SilverTrace.error("processManager", "ProcessManagerBmEJB.findMatchingField()",
+          SilverTrace.error("processManager", "DefaultProcessManagerService.findMatchingField()",
               "processManager.FORM_FIELD_NOT_FOUND",
               "field name: " + name + ", field type: " + typeName, e);
-          throw new ProcessManagerException("ProcessManagerBmEJB",
+          throw new ProcessManagerException("DefaultProcessManagerService",
               "processManager.FORM_FIELD_BAD_TYPE",
               "field name: " + name + ", field type: " + typeName, e);
         }
       }
     }
 
-    SilverTrace.error("processManager", "ProcessManagerBmEJB.findMatchingField()",
+    SilverTrace.error("processManager", "DefaultProcessManagerService.findMatchingField()",
         "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name + ", field type: " + typeName);
-    throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_NOT_FOUND",
+    throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_NOT_FOUND",
         "field name: " + name + ", field type: " + typeName);
   }
 
@@ -319,9 +319,9 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       }
 
     } catch (FormException e) {
-      SilverTrace.error("processManager", "ProcessManagerBmEJB.populateSimpleField()",
+      SilverTrace.error("processManager", "DefaultProcessManagerService.populateSimpleField()",
           "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
-      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_ERROR",
+      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
           "field name: " + name + ", field type: " + type, e);
     }
   }
@@ -362,10 +362,10 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
         }
         String str = getSimpleFieldValueString(value, type);
         if (str == null) {
-          SilverTrace.error("processManager", "ProcessManagerBmEJB.populateListField()",
+          SilverTrace.error("processManager", "DefaultProcessManagerService.populateListField()",
               "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
               "field name: " + name + ", field type: " + type);
-          throw new ProcessManagerException("ProcessManagerBmEJB",
+          throw new ProcessManagerException("DefaultProcessManagerService",
               "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
               "field name: " + name + ", field type: " + type);
         }
@@ -374,9 +374,9 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       field.setStringValue(valuesStr.toString());
 
     } catch (FormException e) {
-      SilverTrace.error("processManager", "ProcessManagerBmEJB.populateListField()",
+      SilverTrace.error("processManager", "DefaultProcessManagerService.populateListField()",
           "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
-      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_ERROR",
+      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
           "field name: " + name + ", field type: " + type, e);
     }
   }
@@ -419,7 +419,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.UNKNOWN_ACTION", e);
+      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.UNKNOWN_ACTION", e);
     }
   }
 
@@ -435,7 +435,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
           Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
       return creationTask;
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerBmEJB",
+      throw new ProcessManagerException("DefaultProcessManagerService",
           "processManager.CREATION_TASK_UNAVAILABLE", e);
     }
   }
@@ -447,7 +447,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
     try {
       return Workflow.getProcessModelManager().getProcessModel(modelId);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerBmEJB",
+      throw new ProcessManagerException("DefaultProcessManagerService",
           "processManager.UNKNOWN_PROCESS_MODEL", modelId, e);
     }
   }

@@ -21,13 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.processManager.servlets;
+package org.silverpeas.processmanager.servlets;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.processManager.*;
+import org.silverpeas.processmanager.LockVO;
+import org.silverpeas.processmanager.ProcessFilter;
+import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerSessionController;
+import org.silverpeas.processmanager.StepVO;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;

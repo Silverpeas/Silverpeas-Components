@@ -43,7 +43,7 @@ import java.util.Set;
     @NamedQuery(name = "countOfMessagesByModeration", query = "select count(m) from Message m " +
         "where m.componentId = :componentId and m.moderated = :moderated"),
     @NamedQuery(name = "findActivitiesFromMessages", query =
-        "select new com.silverpeas.mailinglist.service.model.beans.Activity(count(m), m.year, " +
+        "select new org.silverpeas.components.mailinglist.service.model.beans.Activity(count(m), m.year, " +
             "m.month) from Message m where m.componentId = :componentId and m.moderated = " +
             ":moderated " +
             "group by m.year, m.month")})

@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.processManager.ejb;
+package org.silverpeas.processmanager.service;
 
-import com.silverpeas.processManager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerException;
 
 import java.io.Serializable;
 import java.util.Map;
 
-public interface ProcessManagerBm {
+public interface ProcessManagerService {
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role

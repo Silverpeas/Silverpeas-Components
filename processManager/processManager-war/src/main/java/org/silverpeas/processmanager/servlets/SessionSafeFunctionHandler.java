@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.processManager.servlets;
+package org.silverpeas.processmanager.servlets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 
-import com.silverpeas.processManager.ProcessManagerException;
-import com.silverpeas.processManager.ProcessManagerSessionController;
+import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerSessionController;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

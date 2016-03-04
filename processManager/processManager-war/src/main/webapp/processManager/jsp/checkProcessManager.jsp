@@ -69,8 +69,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.silverpeas.processManager.*"%>
-<%@ page import="com.silverpeas.processManager.record.*"%>
+<%@ page import="org.silverpeas.processmanager.*"%>
+<%@ page import="org.silverpeas.processmanager.record.*"%>
 <%@ page import="com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord"%>
 <%@ page import="com.silverpeas.workflow.api.instance.*"%>
 <%@ page import="com.silverpeas.workflow.api.model.*"%>
@@ -80,6 +80,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="com.silverpeas.workflow.api.error.*"%>
 <%@ page import="com.silverpeas.form.*"%>
 <%@ page import="com.silverpeas.form.fieldType.DateField"%>
+<%@ page import="org.silverpeas.processmanager.NamedValue" %>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.processManager;
+package org.silverpeas.processmanager;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
@@ -38,8 +38,8 @@ import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
-import com.silverpeas.processManager.record.QuestionRecord;
-import com.silverpeas.processManager.record.QuestionTemplate;
+import org.silverpeas.processmanager.record.QuestionRecord;
+import org.silverpeas.processmanager.record.QuestionTemplate;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowEngine;

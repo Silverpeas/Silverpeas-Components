@@ -22,25 +22,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.processManager.servlets;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.silverpeas.processManager.ProcessManagerException;
-import com.silverpeas.processManager.ProcessManagerSessionController;
+package org.silverpeas.processmanager;
 
 /**
- * A functio handler is associated to a peas function and is called by the request router when this
- * function has to be processed.
+ * Thrown when a fatal error occured in a processManager component.
  */
-public interface FunctionHandler {
+public class ProcessManagerFatalException extends ProcessManagerException {
+
+  private static final long serialVersionUID = 2449277163364832687L;
+
   /**
-   * Process the request and returns the response url.
-   * @param function the user request name
-   * @param request the user request params
-   * @param session the user request context
+   * Set the caller and the error message
    */
-  public String getDestination(String function,
-      ProcessManagerSessionController session, HttpServletRequest request)
-      throws ProcessManagerException;
+  public ProcessManagerFatalException(String caller, String message) {
+    super(caller, ERROR, message);
+  }
+
+  /**
+   * Set the caller, the error message and the nested exception.
+   */
+  public ProcessManagerFatalException(String caller, String message, Exception nestedException) {
+    super(caller, ERROR, message, nestedException);
+  }
+
+  /**
+   * Set the caller, infos and the error message
+   */
+  public ProcessManagerFatalException(String caller, String message, String infos) {
+    super(caller, ERROR, message, infos);
+  }
+
+  /**
+   * Set the caller, the error message, infos and the nested exception.
+   */
+  public ProcessManagerFatalException(String caller, String message, String infos,
+      Exception nestedException) {
+    super(caller, ERROR, message, infos, nestedException);
+  }
 }
