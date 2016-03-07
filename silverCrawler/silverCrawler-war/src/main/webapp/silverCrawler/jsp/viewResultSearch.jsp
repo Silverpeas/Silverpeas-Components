@@ -28,7 +28,7 @@
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/silverCrawler" prefix="silverCrawler" %>
 <%
@@ -122,7 +122,7 @@ out.println("<br>");
         </td>
     </tr>
     <tr class=intfdcolor4><td>&nbsp;</td></tr>
-</table border=0>
+</table>
 
 <%
 // affichage des fichiers, r�sultats de la recherche

@@ -28,22 +28,22 @@
   <servlet>
     <display-name>SilverCrawlerRequestRouter</display-name>
     <servlet-name>SilverCrawlerRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.silvercrawler.servlets.SilverCrawlerRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.silvercrawler.servlets.SilverCrawlerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>SilverCrawlerFileServer</display-name>
     <servlet-name>SilverCrawlerFileServer</servlet-name>
-    <servlet-class>com.silverpeas.silvercrawler.servlets.SilverCrawlerFileServer</servlet-class>
+    <servlet-class>org.silverpeas.components.silvercrawler.servlets.SilverCrawlerFileServer</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToCrawler</display-name>
     <servlet-name>GoToCrawler</servlet-name>
-    <servlet-class>com.silverpeas.silvercrawler.servlets.GoToCrawler</servlet-class>
+    <servlet-class>org.silverpeas.components.silvercrawler.servlets.GoToCrawler</servlet-class>
   </servlet>
   <servlet>
     <display-name>SilverCrawlerDragAndDrop</display-name>
     <servlet-name>SilverCrawlerDragAndDrop</servlet-name>
-    <servlet-class>com.silverpeas.silvercrawler.servlets.DragAndDrop</servlet-class>
+    <servlet-class>org.silverpeas.components.silvercrawler.servlets.DragAndDrop</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>SilverCrawlerRequestRouter</servlet-name>
