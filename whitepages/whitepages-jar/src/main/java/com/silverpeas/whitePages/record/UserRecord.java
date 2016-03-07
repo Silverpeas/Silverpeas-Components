@@ -38,14 +38,9 @@ public class UserRecord implements DataRecord {
 
   private static final long serialVersionUID = 4372981095216600600L;
   private UserDetail user = null;
-  private boolean connected = false;
 
   public boolean isConnected() {
-    return connected;
-  }
-
-  public void setConnected(boolean connected) {
-    this.connected = connected;
+    return user.isConnected();
   }
 
   /**

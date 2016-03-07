@@ -34,9 +34,6 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
@@ -1005,21 +1002,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
             cards.add(map.get(content.getId()));
           }
         }
-
-        for (Card card : cards) {
-          UserRecord userRecord = card.readUserRecord();
-          if (userRecord != null) {
-            SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-            Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
-            for (SessionInfo varSi : sessionInfos) {
-              if (varSi.getUserDetail().equals(userRecord.getUserDetail())) {
-                userRecord.setConnected(true);
-                break;
-              }
-            }
-          }
-        }
-
       } catch (Exception e) {
 
       }
