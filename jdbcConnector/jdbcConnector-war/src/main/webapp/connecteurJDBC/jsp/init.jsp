@@ -23,6 +23,10 @@
   --%>
 
 <%@page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
 
 <%!
 	GraphicElementFactory gef;

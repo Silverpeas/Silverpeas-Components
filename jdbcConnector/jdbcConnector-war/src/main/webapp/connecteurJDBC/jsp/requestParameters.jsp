@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.*" %>
 <%--
   Copyright (C) 2000 - 2015 Silverpeas
 
