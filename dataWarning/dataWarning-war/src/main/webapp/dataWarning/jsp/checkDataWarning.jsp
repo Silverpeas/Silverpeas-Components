@@ -31,27 +31,31 @@
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
+<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.components.datawarning.DataWarningDBDriver" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarning" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarningScheduler" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarningResult" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarningQueryResult" %>
+<%@ page import="org.silverpeas.components.datawarning.model.DataWarningQuery" %>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.components.datawarning.control.DataWarningSessionController"%>
-<%@ page import="org.silverpeas.components.datawarning.model.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="java.util.*"%>
-<%@ page import="java.text.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

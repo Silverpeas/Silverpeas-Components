@@ -28,22 +28,10 @@
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.SettingBundle"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.components.datawarning.control.DataWarningSessionController"%>
-<%@ page import="org.silverpeas.components.datawarning.model.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
 
-<%@ page import="java.util.*"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

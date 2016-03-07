@@ -38,7 +38,6 @@
 <view:looknfeel withCheckFormScript="true"/>
 </HEAD>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-</script>
 <script language="JavaScript">
 	function ClosePopup_onValider()
 	{

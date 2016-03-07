@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.components.datawarning.model.DataWarningQuery" %><%--
+<%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -34,8 +34,7 @@
 <TITLE><%=resource.getString("operationPaneParamGen")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>
 </HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload=document.form.SQLReqDescription.focus()>
-</script>
+<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload="document.form.SQLReqDescription.focus()">
 <script language="JavaScript">
 	function isValidText(input, textFieldLength)
 	{

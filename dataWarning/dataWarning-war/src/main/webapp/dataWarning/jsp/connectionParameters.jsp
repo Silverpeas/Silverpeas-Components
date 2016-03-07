@@ -1,6 +1,3 @@
-<%@ page import="org.silverpeas.util.DBUtil" %>
-<%@ page import="org.silverpeas.components.datawarning.DataWarningDBDriver" %>
-<%@ page import="org.silverpeas.components.datawarning.model.DataWarning" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -28,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="checkDataWarning.jsp" %>
 
 <%
