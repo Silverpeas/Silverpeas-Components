@@ -25,15 +25,11 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
+<%@ page import="com.stratelia.webactiv.survey.control.FileHelper"%>
+<%@ page import="org.silverpeas.servlet.HttpRequest"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
 <%@ page import="java.io.File"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
-<%@ page import="java.text.ParsePosition"%>
-<%@ page import="org.silverpeas.servlet.HttpRequest" %>
-<%@ page import="org.silverpeas.util.*" %>
+<%@ page import="java.io.IOException"%>
 
 <%@ include file="checkSurvey.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

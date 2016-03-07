@@ -31,7 +31,13 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.util.*"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.HashMap"%>
+<%@ page import="java.util.ArrayList"%>
 <%@ page import="java.lang.Math"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParseException"%>

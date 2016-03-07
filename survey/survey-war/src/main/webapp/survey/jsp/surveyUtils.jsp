@@ -1,10 +1,10 @@
-<%@page import="org.silverpeas.util.StringUtil"%>
+<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
-<%@ page import="java.text.ParseException"%>
-<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="java.text.ParseException" %>
 
 <%!
 
