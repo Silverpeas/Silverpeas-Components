@@ -25,12 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.components.whitepages.model.*"%>
-<%@ page import="org.silverpeas.components.whitepages.record.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
-<%@ page import="org.silverpeas.components.whitepages.record.UserRecord" %>
-<%@ page import="org.silverpeas.components.whitepages.model.Card" %>
+<%@ page import="org.silverpeas.components.whitepages.model.Card"%>
+<%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Iterator" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 

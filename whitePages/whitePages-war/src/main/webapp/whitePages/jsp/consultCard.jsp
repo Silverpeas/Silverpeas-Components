@@ -25,18 +25,23 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.components.whitepages.model.*"%>
-<%@ page import="com.silverpeas.form.*"%>
-<%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+<%@ page import="com.silverpeas.form.DataRecord"%>
+<%@ page import="com.silverpeas.form.Form"%>
+<%@ page import="com.silverpeas.form.PagesContext"%>
+<%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyPosition"%>
-<%@ page import="org.silverpeas.components.whitepages.model.WhitePagesCard" %>
+<%@ page import="com.stratelia.silverpeas.pdc.model.Value" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserFull" %>
 <%@ page import="org.silverpeas.components.whitepages.model.Card" %>
+<%@ page import="org.silverpeas.components.whitepages.model.WhitePagesCard" %>
+<%@ page import="org.silverpeas.components.whitepages.record.UserRecord" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 

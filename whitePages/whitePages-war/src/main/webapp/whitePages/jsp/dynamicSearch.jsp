@@ -25,17 +25,13 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="org.silverpeas.components.whitepages.html.WhitePagesHtmlTools"%>
 <%@ page import="org.silverpeas.components.whitepages.model.Card"%>
 <%@ page import="org.silverpeas.components.whitepages.model.SearchField"%>
-<%@ page import="org.silverpeas.components.whitepages.model.SearchFieldsType"%>
 <%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.SortedSet"%>
 
 <%@ include file="checkWhitePages.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

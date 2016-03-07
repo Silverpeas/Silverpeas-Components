@@ -25,7 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 
@@ -85,7 +87,7 @@ out.println(frame.printBefore());
 		<td nowrap>
 			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
 				<tr align=center>
-					<td><span class="textePetitBold"><%=message%><span></td>
+					<td><span class="textePetitBold"><%=message%></span></td>
 					</td>
 				</tr>
 			</table>
