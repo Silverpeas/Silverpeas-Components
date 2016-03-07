@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.StringUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -39,13 +38,14 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
-Form 			formUpdate 		= (Form) request.getAttribute("Form");
-DataRecord 		data 			= (DataRecord) request.getAttribute("Data");
+Form formUpdate 		= (Form) request.getAttribute("Form");
+DataRecord data 			= (DataRecord) request.getAttribute("Data");
 Collection		path 			= (Collection) request.getAttribute("Path");
 
 String 			charteUrl		= (String) request.getAttribute("CharteUrl");
 
-PagesContext 	context 		= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
+PagesContext
+		context 		= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
 context.setBorderPrinted(false);
 
 %>

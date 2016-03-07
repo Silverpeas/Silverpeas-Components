@@ -30,7 +30,6 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="java.beans.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.File"%>
@@ -42,16 +41,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Calendar"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="java.text.ParsePosition"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
@@ -61,14 +56,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.pagination.Pagination"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBarElement"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
@@ -83,8 +76,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 
-<%@ page import="com.silverpeas.form.*"%>
-
 <%@ page import="org.silverpeas.components.gallery.constant.MediaResolution" %>
 <%@ page import="org.silverpeas.components.gallery.control.GallerySessionController"%>
 <%@ page import="org.silverpeas.components.gallery.model.AlbumDetail"%>
@@ -96,10 +87,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.components.gallery.ParameterNames"%>
 <%@ page import="org.silverpeas.components.gallery.GalleryComponentSettings" %>
 
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
+
+<%@ page import="com.silverpeas.form.DataRecord" %>
+<%@ page import="com.silverpeas.form.Form" %>
+<%@ page import="com.silverpeas.form.PagesContext" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

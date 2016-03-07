@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
 
