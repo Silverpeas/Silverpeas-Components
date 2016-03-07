@@ -21,34 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.model;
+package org.silverpeas.components.rssaggregator.service;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 
-public class RssAgregatorException extends SilverpeasException {
+import java.util.List;
 
-  private static final long serialVersionUID = 270659414571080250L;
+/**
+ * @author neysseric
+ */
+public interface RssAgregatorBm {
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
+  SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
+  void updateChannel(SPChannel channel) throws RssAgregatorException;
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
+  void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
+  void deleteChannels(String instanceId) throws RssAgregatorException;
 
-  public String getModule() {
-    return "rssAgregator";
-  }
+  List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
+
+  SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
+
 }

@@ -21,18 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.control;
+package org.silverpeas.components.rssaggregator.service;
 
-import com.silverpeas.rssAgregator.model.RSSItem;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
+import org.silverpeas.components.rssaggregator.model.RSSItem;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.ChannelBuilder;
 import de.nava.informa.impl.basic.Item;
 import de.nava.informa.parsers.FeedParser;
+import org.silverpeas.components.rssaggregator.service.RSSService;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorCache;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

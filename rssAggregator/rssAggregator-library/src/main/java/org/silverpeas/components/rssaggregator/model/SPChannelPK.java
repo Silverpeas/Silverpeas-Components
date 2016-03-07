@@ -21,29 +21,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.control;
+package org.silverpeas.components.rssaggregator.model;
 
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
+import org.silverpeas.util.WAPrimaryKey;
 
-import java.util.List;
+public class SPChannelPK extends WAPrimaryKey {
 
-/**
- * @author neysseric
- */
-public interface RssAgregatorBm {
+  private static final long serialVersionUID = -3412580197458003232L;
 
-  SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
+  public SPChannelPK(String id) {
+    super(id);
+  }
 
-  void updateChannel(SPChannel channel) throws RssAgregatorException;
+  public SPChannelPK(String id, String componentName) {
+    super(id, "useless", componentName);
+  }
 
-  void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  public SPChannelPK(String id, WAPrimaryKey pk) {
+    super(id, pk);
+  }
 
-  void deleteChannels(String instanceId) throws RssAgregatorException;
+  public String getRootTableName() {
+    return "SC_Rss_Channels";
+  }
 
-  List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
+  public String getTableName() {
+    return "SC_Rss_Channels";
+  }
 
-  SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  public boolean equals(Object other) {
+    if (!(other instanceof SPChannelPK)) {
+      return false;
+    }
+    return (id.equals(((SPChannelPK) other).getId())) &&
+        (space.equals(((SPChannelPK) other).getSpace())) &&
+        (componentName.equals(((SPChannelPK) other).getComponentName()));
+  }
+
+  public int hashCode() {
+    return toString().hashCode();
+  }
 
 }

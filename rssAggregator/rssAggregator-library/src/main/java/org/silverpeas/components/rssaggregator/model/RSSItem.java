@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.model;
+package org.silverpeas.components.rssaggregator.model;
 
 import de.nava.informa.core.ImageIF;
 import de.nava.informa.impl.basic.Channel;

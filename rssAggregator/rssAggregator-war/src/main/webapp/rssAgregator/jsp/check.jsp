@@ -46,7 +46,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.Date"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
@@ -68,17 +67,16 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 
-<%@ page import="com.silverpeas.rssAgregator.control.RssAgregatorSessionController"%>
-<%@ page import="com.silverpeas.rssAgregator.model.SPChannel"%>
-<%@ page import="com.silverpeas.rssAgregator.model.RSSItem"%>
-<%@ page import="com.silverpeas.rssAgregator.model.RSSViewType"%>
+<%@ page import="org.silverpeas.components.rssaggregator.control.RssAgregatorSessionController"%>
+<%@ page import="org.silverpeas.components.rssaggregator.model.SPChannel"%>
+<%@ page import="org.silverpeas.components.rssaggregator.model.RSSItem"%>
+<%@ page import="org.silverpeas.components.rssaggregator.model.RSSViewType"%>
 <%@ page import="de.nava.informa.utils.ItemComparator"%>
 <%@ page import="de.nava.informa.impl.basic.Channel"%>
 <%@ page import="de.nava.informa.impl.basic.Item"%>

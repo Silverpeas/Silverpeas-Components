@@ -22,12 +22,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.rssAgregator.control;
+package org.silverpeas.components.rssaggregator.control;
 
-import com.silverpeas.rssAgregator.model.RSSViewType;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
+import org.silverpeas.components.rssaggregator.model.RSSViewType;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -35,6 +35,9 @@ import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.ChannelBuilder;
 import de.nava.informa.parsers.FeedParser;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBmImpl;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorCache;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;

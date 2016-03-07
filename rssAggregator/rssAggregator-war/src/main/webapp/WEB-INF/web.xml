@@ -29,7 +29,7 @@
   <servlet>
     <display-name>RssAgregatorRequestRouter</display-name>
     <servlet-name>RssAgregatorRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.rssAgregator.servlets.RssAgregatorRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.rssaggregator.servlets.RssAgregatorRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>RssAgregatorRequestRouter</servlet-name>

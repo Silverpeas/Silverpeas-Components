@@ -22,11 +22,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.rssAgregator;
+package org.silverpeas.components.rssaggregator;
 
-import com.silverpeas.rssAgregator.control.RssAgregatorBm;
-import com.silverpeas.rssAgregator.control.RssAgregatorBmImpl;
-import com.silverpeas.rssAgregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBmImpl;
+import org.silverpeas.components.rssaggregator.model.SPChannel;
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 

@@ -21,31 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.control;
+package org.silverpeas.components.rssaggregator;
 
-import com.silverpeas.rssAgregator.model.RSSItem;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import java.util.List;
-
-public interface RSSService {
+public class RssAgregatorRuntimeException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = -8258500003916960093L;
 
   /**
-   *
-   * @param applicationId the application identifier
-   * @param agregateContent true if sorting all items from date, false else if sorting by channel
-   * @return list of RSSItems which are retrieved from application RSS channels
-   * @throws RssAgregatorException
+   * constructors
    */
-  public List<RSSItem> getApplicationItems(String applicationId, boolean agregateContent)  throws RssAgregatorException;
+  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
+
+  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
+
+  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 
   /**
-   * Retrieve all the channel of an application
-   * @param applicationId the current application identifier (instance of rssagregator application)
-   * @return the list of SPChannel
-   * @throws RssAgregatorException
+   * getModule
    */
-  public List<SPChannel> getAllChannels(String applicationId) throws RssAgregatorException;
+  public String getModule() {
+    return "RssAgregator";
+  }
 
 }

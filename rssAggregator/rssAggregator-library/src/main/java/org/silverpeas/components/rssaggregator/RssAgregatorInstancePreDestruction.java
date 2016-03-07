@@ -21,16 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator;
+package org.silverpeas.components.rssaggregator;
 
 import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.rssAgregator.control.RssAgregatorBm;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.management.RuntimeErrorException;
-import javax.transaction.Transactional;
 
 /**
  * Deletes all the RSS streams in the RssAgregrator instance that is being deleted.

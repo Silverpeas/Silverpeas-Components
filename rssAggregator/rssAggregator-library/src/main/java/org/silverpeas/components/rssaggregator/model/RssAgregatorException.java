@@ -21,45 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.model;
+package org.silverpeas.components.rssaggregator.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasException;
 
-public class SPChannelPK extends WAPrimaryKey {
+public class RssAgregatorException extends SilverpeasException {
 
-  private static final long serialVersionUID = -3412580197458003232L;
+  private static final long serialVersionUID = 270659414571080250L;
 
-  public SPChannelPK(String id) {
-    super(id);
+  public RssAgregatorException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  public SPChannelPK(String id, String componentName) {
-    super(id, "useless", componentName);
+  public RssAgregatorException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  public SPChannelPK(String id, WAPrimaryKey pk) {
-    super(id, pk);
+  public RssAgregatorException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  public String getRootTableName() {
-    return "SC_Rss_Channels";
+  public RssAgregatorException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  public String getTableName() {
-    return "SC_Rss_Channels";
+  public String getModule() {
+    return "rssAgregator";
   }
-
-  public boolean equals(Object other) {
-    if (!(other instanceof SPChannelPK)) {
-      return false;
-    }
-    return (id.equals(((SPChannelPK) other).getId())) &&
-        (space.equals(((SPChannelPK) other).getSpace())) &&
-        (componentName.equals(((SPChannelPK) other).getComponentName()));
-  }
-
-  public int hashCode() {
-    return toString().hashCode();
-  }
-
 }

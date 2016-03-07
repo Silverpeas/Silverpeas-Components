@@ -21,14 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.control;
+package org.silverpeas.components.rssaggregator.service;
 
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -101,7 +102,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
   private SilverpeasBeanDAO<SPChannel> getDAO() throws RssAgregatorException {
     if (rssDAO == null) {
       try {
-        rssDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.rssAgregator.model.SPChannel");
+        rssDAO = SilverpeasBeanDAOFactory.getDAO("SPChannel");
       } catch (PersistenceException pe) {
         throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()", SilverpeasException.ERROR,
             "rssAgregator.GETTING_SILVERPEASBEANDAO_FAILED", pe);

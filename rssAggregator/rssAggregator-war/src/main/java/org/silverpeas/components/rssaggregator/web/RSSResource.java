@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.web;
+package org.silverpeas.components.rssaggregator.web;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.rssAgregator.control.RSSServiceProvider;
-import com.silverpeas.rssAgregator.model.RSSItem;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
+import org.silverpeas.components.rssaggregator.model.RSSItem;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 

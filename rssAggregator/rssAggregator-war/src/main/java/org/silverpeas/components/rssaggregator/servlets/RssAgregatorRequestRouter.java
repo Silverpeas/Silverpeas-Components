@@ -21,17 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rssAgregator.servlets;
+package org.silverpeas.components.rssaggregator.servlets;
 
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.rssAgregator.control.RSSServiceProvider;
-import com.silverpeas.rssAgregator.control.RssAgregatorSessionController;
-import com.silverpeas.rssAgregator.model.RSSViewType;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
+import org.silverpeas.components.rssaggregator.control.RssAgregatorSessionController;
+import org.silverpeas.components.rssaggregator.model.RSSViewType;
+import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
