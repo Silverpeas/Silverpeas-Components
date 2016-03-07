@@ -41,8 +41,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.lang.Math"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParseException"%>
-<%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
-<%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.ForeignPK"%>

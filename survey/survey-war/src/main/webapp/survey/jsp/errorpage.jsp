@@ -60,17 +60,8 @@ private String displayUnexpectedError(SurveySessionController surveyScc) {
 <h2><%=surveyScc.getString("GML.error")%></h2>
 <h3><%=surveyScc.getString("RequestUncomplete")%></h3>
 <p>
-<% if (exception instanceof NamingException) {
-        out.println(displayNetworkError(surveyScc));
-    } else if (exception instanceof SQLException) {
-            out.println(displayDatabaseError(surveyScc));
-    } else if (exception instanceof CreateException) {
-            out.println(displayEJBCreationError(surveyScc));
-    } else if (exception instanceof FinderException) {
-            out.println(displayEJBFinderError(surveyScc));
-    } else {
-            out.println(displayUnexpectedError(surveyScc));
-    }
+<%
+  out.println(displayUnexpectedError(surveyScc));
 %>
 <p>
 <font color="red" size="3"><b><em><%= exception.getClass().getName() +"  "+ exception.getMessage() %></em></b></font>
