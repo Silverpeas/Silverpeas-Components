@@ -23,6 +23,6 @@
  * @author mmoquillon
  */
 @Module("webPage")
-package com.silverpeas.webpages;
+package org.silverpeas.components.webpages;
 
 import org.silverpeas.annotation.Module;

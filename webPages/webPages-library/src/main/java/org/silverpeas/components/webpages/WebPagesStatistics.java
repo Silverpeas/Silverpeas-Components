@@ -21,41 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.webpages.model;
+package org.silverpeas.components.webpages;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
-public class WebPagesRuntimeException extends SilverpeasRuntimeException {
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-  private static final long serialVersionUID = 4029000924789213211L;
+@Singleton
+@Named("webPages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class WebPagesStatistics implements ComponentStatisticsProvider {
 
-  /**
-   * constructors
-   */
-  public WebPagesRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  @Override
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
+      throws Exception {
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
+    UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+    myCouple.setUserId("-2"); // unknown userId
+    myCouple.setCountVolume(1);
+    myArrayList.add(myCouple);
+
+    return myArrayList;
   }
-
-  public WebPagesRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public WebPagesRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public WebPagesRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * getModule
-   */
-  public String getModule() {
-    return "webPages";
-  }
-
 }

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.webpages.control;
+package org.silverpeas.components.webpages.control;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -34,8 +34,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.webpages.model.WebPagesException;
-import com.silverpeas.webpages.notification.WebPagesUserNotifier;
+import org.silverpeas.components.webpages.model.WebPagesException;
+import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

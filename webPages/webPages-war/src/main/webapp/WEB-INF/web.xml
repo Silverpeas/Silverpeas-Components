@@ -29,7 +29,7 @@
   <servlet>
     <display-name>WebPagesRequestRouter</display-name>
     <servlet-name>WebPagesRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.webpages.servlets.WebPagesRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.webpages.servlets.WebPagesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>WebPagesRequestRouter</servlet-name>

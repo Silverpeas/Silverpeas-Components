@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.webpages;
+package org.silverpeas.components.webpages;
 
-import com.silverpeas.webpages.notification.WebPagesUserNotifier;
+import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.JMSResourceEventListener;

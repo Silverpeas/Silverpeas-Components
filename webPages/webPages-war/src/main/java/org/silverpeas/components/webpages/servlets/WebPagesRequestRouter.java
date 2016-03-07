@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.webpages.servlets;
+package org.silverpeas.components.webpages.servlets;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionManagementContext;
-import com.silverpeas.webpages.control.WebPagesSessionController;
-import com.silverpeas.webpages.model.WebPagesException;
+import org.silverpeas.components.webpages.control.WebPagesSessionController;
+import org.silverpeas.components.webpages.model.WebPagesException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
