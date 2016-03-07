@@ -26,6 +26,10 @@
 <%@page import="org.apache.commons.lang3.BooleanUtils"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.Form"%>
+<%@ page import="com.stratelia.webactiv.contact.model.CompleteContact" %>
+<%@ page import="com.stratelia.webactiv.contact.model.ContactDetail" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

@@ -1,4 +1,15 @@
 <%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
 <%!
 String displayPath(YellowpagesSessionController Scc, Collection path, boolean linked, int beforeAfter) {
       String linkedPathString = new String();
@@ -44,7 +55,8 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
           return pathString;
 }
 
-TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, String id, String separator, GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException, Exception {
+TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, String id, String separator, GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws
+                                                                                                                                                                                                                                                                                             IOException, Exception {
 	return displayTopicsToAdmin(yellowpagesScc, id, separator, gef, pageContext, request, session, resources, out, true);
 }
 
@@ -93,16 +105,16 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 	                childName 			= node.getName();
 	                childDescription 	= node.getDescription();
 	                
-	                IconPane 	actionPane 	= gef.getIconPane();
+	                IconPane actionPane 	= gef.getIconPane();
 					IconPane 	folderPane 	= gef.getIconPane();
-					Icon 		folder 		= folderPane.addIcon();
+					Icon folder 		= folderPane.addIcon();
 	                if (childId.startsWith("group_"))
 	                {
 	                	link = "GoToGroup?Id="+childId;
 	                	folder.setProperties(resources.getIcon("yellowpages.group"), "", link);
 	                	
 	                	Icon expleIcon2 = actionPane.addIcon();
-						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"), yellowpagesScc.getString("SupprimerSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=groupDeleteConfirm('"+childId+"', '"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(childName))+"')");
+						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"), yellowpagesScc.getString("SupprimerSousTheme")+" '"+EncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=groupDeleteConfirm('"+childId+"', '"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(childName))+"')");
 	                }
 	                else
 	                {
@@ -110,18 +122,18 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 		                folder.setProperties(resources.getIcon("yellowpages.folder"), "", link);
 	                	
 	                	Icon expleIcon1 = actionPane.addIcon();
-						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=toAddOrUpdateFolder('ToUpdateFolder', '"+childId+"')");
+						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+EncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=toAddOrUpdateFolder('ToUpdateFolder', '"+childId+"')");
 						Icon expleIcon2 = actionPane.addIcon();
-						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"),  yellowpagesScc.getString("SupprimerSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicDeleteConfirm('"+childId+"', '"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(childName))+"')");
+						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"),  yellowpagesScc.getString("SupprimerSousTheme")+" '"+EncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicDeleteConfirm('"+childId+"', '"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(childName))+"')");
 	                }
 	                
 	                
 	                ArrayLine arrayLine = arrayPane.addArrayLine();
 					arrayLine.addArrayCellIconPane(folderPane);
-	                arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(childName), link);
+	                arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(childName), link);
 	                ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(nbContact);
 	                arrayCellText1.setCompareOn(new Integer(nbContact));
-	                arrayLine.addArrayCellText(Encode.javaStringToHtmlString(childDescription));
+	                arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(childDescription));
 	                
 	                if (displayOperations)
 						arrayLine.addArrayCellIconPane(actionPane);

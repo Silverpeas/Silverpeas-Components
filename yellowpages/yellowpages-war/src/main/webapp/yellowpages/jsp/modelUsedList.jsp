@@ -23,24 +23,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
+<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
+<%@ page import="java.util.Collection" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp" %>
 
 <%
-Collection			xmlForms	= (List) request.getAttribute("XMLForms");
+Collection xmlForms	= (Collection) request.getAttribute("XMLForms");
 Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
-
-//Icons
-String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
 
 // declaration des boutons
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
 %>
-
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <HTML>
 <HEAD>
 <view:looknfeel/>

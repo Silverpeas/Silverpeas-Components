@@ -35,6 +35,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="com.stratelia.webactiv.contact.model.CompleteContact" %>
+<%@ page import="com.stratelia.webactiv.contact.model.ContactDetail" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp" %>

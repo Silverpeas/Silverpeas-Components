@@ -24,6 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.components.yellowpages.ImportReport"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
