@@ -1,7 +1,3 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
-<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
-<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -35,7 +31,12 @@
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	%>
-	<%@ include file="checkAlmanach.jsp" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
+<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
+<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ include file="checkAlmanach.jsp" %>
 
 <%
 

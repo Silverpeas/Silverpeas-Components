@@ -24,29 +24,17 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.lang.Integer"%>
-<%@ page import="java.beans.*"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="org.silverpeas.components.almanach.service.*"%>
-<%@ page import="org.silverpeas.components.almanach.model.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="org.silverpeas.util.exception.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
@@ -61,7 +49,6 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.monthCalendar.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.components.almanach.control.AlmanachSessionController"%>
@@ -69,6 +56,7 @@
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="java.util.Date" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

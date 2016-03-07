@@ -1,6 +1,3 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
-<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -34,6 +31,9 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
+<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
 <%@ include file="checkAlmanach.jsp" %>
 
 <%
