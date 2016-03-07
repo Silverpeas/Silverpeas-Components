@@ -93,7 +93,7 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 	}
 
 	ArrayCellText cellNom;
-	if (!task.getAttachments().isEmpty())  {}
+	if (!task.getAttachments().isEmpty())  {
 		cellNom = arrayLine.addArrayCellText(nom+"&nbsp<img src=\""+resource.getIcon("projectManager.attachedFile")+"\" border=\"0\" align=\"absmiddle\">");
     } else {
 		cellNom = arrayLine.addArrayCellText(nom);

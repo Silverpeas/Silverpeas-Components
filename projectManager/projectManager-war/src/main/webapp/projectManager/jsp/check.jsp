@@ -52,7 +52,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>

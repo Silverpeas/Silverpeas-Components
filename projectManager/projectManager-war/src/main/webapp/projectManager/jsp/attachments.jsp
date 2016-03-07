@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.components.projectmanager.model.TaskDetail" %><%--
+><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
