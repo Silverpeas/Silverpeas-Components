@@ -102,7 +102,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
   private SilverpeasBeanDAO<SPChannel> getDAO() throws RssAgregatorException {
     if (rssDAO == null) {
       try {
-        rssDAO = SilverpeasBeanDAOFactory.getDAO("SPChannel");
+        rssDAO = SilverpeasBeanDAOFactory.getDAO(SPChannel.class.getName());
       } catch (PersistenceException pe) {
         throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()", SilverpeasException.ERROR,
             "rssAgregator.GETTING_SILVERPEASBEANDAO_FAILED", pe);

@@ -76,11 +76,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   SilverpeasQuestionManager() {
     try {
-      questionDao =
-          SilverpeasBeanDAOFactory.<Question>getDAO("Question");
-      replyDao = SilverpeasBeanDAOFactory.<Reply>getDAO("Reply");
-      recipientDao = SilverpeasBeanDAOFactory
-          .<Recipient>getDAO("Recipient");
+      questionDao = SilverpeasBeanDAOFactory.<Question>getDAO(Question.class.getName());
+      replyDao = SilverpeasBeanDAOFactory.<Reply>getDAO(Reply.class.getName());
+      recipientDao = SilverpeasBeanDAOFactory.<Recipient>getDAO(Recipient.class.getName());
     } catch (PersistenceException ex) {
       SilverTrace
           .error("questionReply", "SilverpeasQuestionManager", "root.EX_RESOURCE_CLOSE_FAILED", ex);
