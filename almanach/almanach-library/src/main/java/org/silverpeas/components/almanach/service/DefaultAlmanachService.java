@@ -341,7 +341,7 @@ public class DefaultAlmanachService implements AlmanachService {
     if (eventPeriodicityDAO == null) {
       try {
         eventPeriodicityDAO =
-            SilverpeasBeanDAOFactory.getDAO("com.stratelia.webactiv.almanach.model.Periodicity");
+            SilverpeasBeanDAOFactory.getDAO("org.silverpeas.components.almanach.model.Periodicity");
       } catch (PersistenceException pe) {
         throw new AlmanachRuntimeException("DefaultAlmanachService.getEventPeriodicityDAO()",
             SilverpeasRuntimeException.ERROR, "almanach.EX_PERSISTENCE_PERIODICITY", pe);
@@ -417,7 +417,7 @@ public class DefaultAlmanachService implements AlmanachService {
     if (periodicityExceptionDAO == null) {
       try {
         periodicityExceptionDAO = SilverpeasBeanDAOFactory
-            .getDAO("com.stratelia.webactiv.almanach.model.PeriodicityException");
+            .getDAO("org.silverpeas.components.almanach.model.PeriodicityException");
       } catch (PersistenceException pe) {
         throw new AlmanachRuntimeException("DefaultAlmanachService.getPeriodicityExceptionDAO()",
             SilverpeasRuntimeException.ERROR, "almanach.EX_PERSISTENCE_PERIODICITY_EXCEPTION", pe);

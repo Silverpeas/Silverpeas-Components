@@ -102,7 +102,7 @@ public class ExceptionDatesGenerator {
     try {
       IdPK pk = new IdPK();
       SilverpeasBeanDAO<PeriodicityException> dao = SilverpeasBeanDAOFactory.getDAO(
-              "com.stratelia.webactiv.almanach.model.PeriodicityException");
+              "org.silverpeas.components.almanach.model.PeriodicityException");
       return dao.findByWhereClause(pk, "periodicityId = " + periodicity.getPK().getId());
     } catch (PersistenceException e) {
       throw new AlmanachRuntimeException(
