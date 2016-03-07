@@ -31,25 +31,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-
-<%@ page import="com.silverpeas.scheduleevent.control.ScheduleEventSessionController"%>
-<%@ page import="com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent"%>
-<%@ page import="com.silverpeas.scheduleevent.service.model.beans.Contributor"%>
+<%@ page import="org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController" %>
+<%@ page import="org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent" %>
 
 <%@ page errorPage="/admin/jsp/errorpageMain.jsp"%>

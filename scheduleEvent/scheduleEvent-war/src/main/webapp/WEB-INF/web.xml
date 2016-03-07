@@ -32,12 +32,12 @@
     <servlet-name>ScheduleEventRequestRouter</servlet-name>
     <display-name>ScheduleEventRequestRouter</display-name>
     <description>no description</description>
-    <servlet-class>com.silverpeas.scheduleevent.servlets.ScheduleEventRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.scheduleevent.servlets.ScheduleEventRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToScheduleEvent</display-name>
     <servlet-name>GoToScheduleEvent</servlet-name>
-    <servlet-class>com.silverpeas.scheduleevent.servlets.GoToScheduleEvent</servlet-class>
+    <servlet-class>org.silverpeas.components.scheduleevent.servlets.GoToScheduleEvent</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ScheduleEventRequestRouter</servlet-name>
