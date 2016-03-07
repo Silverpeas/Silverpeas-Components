@@ -24,17 +24,12 @@
 package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.constant.MediaResolution;
-import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.processing.Size;
 import com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import java.io.IOException;
 
 public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
     implements IGlobalSilverContentProcessor {
@@ -43,23 +38,8 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
       UserDetail creatorDetail, String location) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
-    String instanceId = sci.getInstanceId();
     Media media = (Media) sci;
     gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
-    InternalMedia internalMedia = media.getInternalMedia();
-    if (internalMedia != null) {
-      Size size = new Size(MediaResolution.TINY.getWidth(), MediaResolution.TINY.getHeight());
-      try {
-        size = MediaHelper.getWidthAndHeight(instanceId, media.getWorkspaceSubFolderName(),
-            internalMedia.getFileName(), MediaResolution.TINY.getWidth());
-      } catch (IOException e) {
-        SilverTrace
-            .info("gallery", "GalleryGlobalSilverpeasContentProcessor.getGlobalSilverContent",
-                "root.MSG_GEN_PARAM_VALUE", "Error during processing size !", e);
-      }
-      gsc.setThumbnailWidth(String.valueOf(size.getWidth()));
-      gsc.setThumbnailHeight(String.valueOf(size.getHeight()));
-    }
     return gsc;
   }
 

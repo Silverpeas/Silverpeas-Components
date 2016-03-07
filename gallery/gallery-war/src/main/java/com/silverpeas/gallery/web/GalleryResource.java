@@ -147,12 +147,14 @@ public class GalleryResource extends AbstractGalleryResource {
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    * @param photoId the identifier of the photo
+   * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked photo.
    */
   @GET
-  @Path(GALLERY_PHOTOS_PART + "/{photoId}/" + GALLERY_MEDIA_CONTENT_PART)
+  @Path(GALLERY_PHOTOS_PART + "/{photoId}/{size:([0-9]*x[0-9]*/)?}" + GALLERY_MEDIA_CONTENT_PART)
   @Produces("image/*")
   public Response getPhotoContent(@PathParam("photoId") final String photoId,
+      @PathParam("size") final String size,
       @QueryParam(GALLERY_PHOTO_RESOLUTION_PARAM) MediaResolution mediaResolution) {
     if (mediaResolution == null) {
       mediaResolution = MediaResolution.ORIGINAL;
