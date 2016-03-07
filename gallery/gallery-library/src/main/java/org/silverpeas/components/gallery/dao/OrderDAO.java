@@ -27,7 +27,6 @@ import org.silverpeas.components.gallery.model.MediaOrderCriteria;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.exception.UtilException;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -47,10 +46,9 @@ public class OrderDAO {
    * @param instanceId the identifier of a component instance.
    * @return the identifier of the new order.
    * @throws SQLException
-   * @throws UtilException
    */
   public static String createOrder(Collection<String> mediaIds, String userId, String instanceId)
-      throws SQLException, UtilException {
+      throws SQLException {
 
     // New order
     String uuid = getUniqueId();

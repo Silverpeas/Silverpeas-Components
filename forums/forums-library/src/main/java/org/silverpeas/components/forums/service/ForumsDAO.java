@@ -34,7 +34,6 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -1358,17 +1357,12 @@ public class ForumsDAO {
    * @param messageParent The id of the parent message.
    * @return The id of the newly created message.
    * @throws SQLException An SQL exception.
-   * @throws UtilException
    */
   public static int createMessage(Connection con, String messageTitle, String messageAuthor,
-      Date messageDate, int forumId, int messageParent, String status)
-      throws SQLException, UtilException {
+      Date messageDate, int forumId, int messageParent, String status) throws SQLException {
     if (messageDate == null) {
       messageDate = new Date();
     }
-
-
-
 
     try (PreparedStatement insertStmt = con.prepareStatement(QUERY_CREATE_MESSAGE)) {
       int messageId = DBUtil.getNextId(MESSAGE_TABLE, MESSAGE_COLUMN_MESSAGE_ID);

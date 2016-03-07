@@ -29,15 +29,6 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.importExport.report.ImportReport;
-import org.silverpeas.components.kmelia.KmeliaConstants;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
-import org.silverpeas.components.kmelia.SearchContext;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.TopicDetail;
-import org.silverpeas.components.kmelia.model.updatechain.FieldUpdateChainDescriptor;
-import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
-import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -53,10 +44,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.components.kmelia.model.FileFolder;
-import org.silverpeas.components.kmelia.model.updatechain.Fields;
-import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.Alias;
@@ -66,6 +53,19 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.accesscontrol.PublicationAccessController;
+import org.silverpeas.components.kmelia.KmeliaConstants;
+import org.silverpeas.components.kmelia.KmeliaSecurity;
+import org.silverpeas.components.kmelia.SearchContext;
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import org.silverpeas.components.kmelia.model.FileFolder;
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.model.updatechain.FieldUpdateChainDescriptor;
+import org.silverpeas.components.kmelia.model.updatechain.Fields;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;
+import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
+import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -84,7 +84,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1955,7 +1954,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return destination;
   }
 
-  private void processPath(KmeliaSessionController kmeliaSC, String id) throws RemoteException {
+  private void processPath(KmeliaSessionController kmeliaSC, String id) {
     if (!kmeliaSC.isKmaxMode) {
       NodePK pk;
       if (!StringUtil.isDefined(id)) {
@@ -1997,7 +1996,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   private String processWizard(String function, KmeliaSessionController kmeliaSC,
-      HttpRequest request, String rootDestination) throws RemoteException {
+      HttpRequest request, String rootDestination) {
     String destination = "";
     if (function.equals("WizardStart")) {
       // récupération de l'id du thème dans lequel on veux mettre la
@@ -2218,7 +2217,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   private void updatePubliDuringUpdateChain(String id, HttpServletRequest request,
-      KmeliaSessionController kmelia) throws RemoteException {
+      KmeliaSessionController kmelia) {
     // enregistrement des modifications de la publi
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
@@ -2392,7 +2391,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   private void setTemplatesUsedIntoRequest(KmeliaSessionController kmelia,
-      HttpServletRequest request) throws RemoteException {
+      HttpServletRequest request) {
     Collection<String> modelUsed = kmelia.getModelUsed();
     Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
     List<PublicationTemplate> templates = kmelia.getForms();

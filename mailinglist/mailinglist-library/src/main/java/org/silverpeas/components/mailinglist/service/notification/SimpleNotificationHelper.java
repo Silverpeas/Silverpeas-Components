@@ -23,13 +23,6 @@
  */
 package org.silverpeas.components.mailinglist.service.notification;
 
-import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
-import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalGroupSubscriber;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
-import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -39,6 +32,13 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
+import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
+import org.silverpeas.components.mailinglist.service.model.beans.InternalGroupSubscriber;
+import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
+import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
+import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.mail.ReceiverMailAddressSet;
@@ -56,7 +56,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -140,7 +139,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
       if (moderate) {
         createTask(message, defaultTitle, userIds);
       }
-    } catch (CalendarRuntimeException | UnsupportedEncodingException | RemoteException e) {
+    } catch (CalendarRuntimeException | UnsupportedEncodingException e) {
       throw new NotificationManagerException("NotificationHelperImpl", SilverpeasException.ERROR,
           "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
@@ -262,7 +261,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   }
 
   protected void createTask(Message message, String title, Collection<String> userIds)
-      throws RemoteException, CalendarRuntimeException, UnsupportedEncodingException {
+      throws CalendarRuntimeException, UnsupportedEncodingException {
     ToDoHeader todo = new ToDoHeader();
     todo.setDelegatorId(message.getComponentId());
     todo.setComponentId(message.getComponentId());

@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %><%--
+<%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -28,6 +28,8 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

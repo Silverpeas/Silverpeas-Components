@@ -33,7 +33,6 @@ import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,8 +68,7 @@ public class QuickinfoStatistics implements ComponentStatisticsProvider {
     return publicationService;
   }
 
-  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId)
-      throws RemoteException {
+  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId) {
     return getPublicationService()
         .getOrphanPublications(new PublicationPK("", spaceId, componentId));
   }

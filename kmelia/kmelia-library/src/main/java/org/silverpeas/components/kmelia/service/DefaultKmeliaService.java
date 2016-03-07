@@ -21,7 +21,6 @@
 package org.silverpeas.components.kmelia.service;
 
 import com.silverpeas.comment.service.CommentService;
-import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -29,15 +28,6 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.formTemplate.dao.ModelDAO;
-import org.silverpeas.components.kmelia.notification.KmeliaDefermentPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaModificationPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaNotifyPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaTopicUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaValidationPublicationUserNotification;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionManager;
@@ -67,20 +57,12 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.coordinates.control.CoordinatesService;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import org.silverpeas.components.kmelia.KmeliaContentManager;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
-import org.silverpeas.components.kmelia.PublicationImport;
-import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.components.kmelia.model.TopicComparator;
-import org.silverpeas.components.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -102,7 +84,27 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.components.kmelia.InstanceParameters;
+import org.silverpeas.components.kmelia.KmeliaContentManager;
+import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.components.kmelia.KmeliaSecurity;
+import org.silverpeas.components.kmelia.PublicationImport;
+import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.model.TopicComparator;
+import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.notification.KmeliaDefermentPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification
+    .KmeliaDocumentSubscriptionPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification.KmeliaModificationPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification.KmeliaNotifyPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification
+    .KmeliaPendingValidationPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification.KmeliaTopicUserNotification;
+import org.silverpeas.components.kmelia.notification.KmeliaValidationPublicationUserNotification;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
 import org.silverpeas.process.annotation.SimulationActionProcess;
@@ -127,7 +129,6 @@ import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.*;
 
@@ -1744,7 +1745,7 @@ public class DefaultKmeliaService implements KmeliaService {
                     silverObjectId);
           }
         }
-      } catch (RemoteException | PdcException e) {
+      } catch (PdcException e) {
         SilverLogger.getLogger(this).error("PdC subscriptions notification failure for publication {0}",
             new String[] {pubDetail.getPK().getId()}, e);
       }
@@ -4647,8 +4648,7 @@ public class DefaultKmeliaService implements KmeliaService {
     return fileIds;
   }
 
-  private void copyPdcPositions(PublicationPK fromPK, PublicationPK toPK)
-      throws RemoteException, PdcException {
+  private void copyPdcPositions(PublicationPK fromPK, PublicationPK toPK) throws PdcException {
     int fromSilverObjectId = getSilverObjectId(fromPK);
     int toSilverObjectId = getSilverObjectId(toPK);
 

@@ -35,14 +35,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.components.whitepages.WhitePagesException;
-import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.components.whitepages.model.SearchField;
-import org.silverpeas.components.whitepages.model.SearchFieldsType;
-import org.silverpeas.components.whitepages.model.WhitePagesCard;
-import org.silverpeas.components.whitepages.record.UserRecord;
-import org.silverpeas.components.whitepages.record.UserTemplate;
-import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -71,6 +63,14 @@ import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.whitepages.WhitePagesException;
+import org.silverpeas.components.whitepages.model.Card;
+import org.silverpeas.components.whitepages.model.SearchField;
+import org.silverpeas.components.whitepages.model.SearchFieldsType;
+import org.silverpeas.components.whitepages.model.WhitePagesCard;
+import org.silverpeas.components.whitepages.record.UserRecord;
+import org.silverpeas.components.whitepages.record.UserTemplate;
+import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -81,7 +81,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -917,11 +916,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return mDDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
   }
 
-  public void confirmFieldsChoice(String[] fields) throws UtilException {
+  public void confirmFieldsChoice(String[] fields) {
     WhitePageServiceProvider.getWhitePagesService().createSearchFields(fields, getComponentId());
   }
 
-  public SortedSet<SearchField> getSearchFields() throws UtilException, WhitePagesException {
+  public SortedSet<SearchField> getSearchFields() throws WhitePagesException {
     SortedSet<SearchField> fields =
         WhitePageServiceProvider.getWhitePagesService().getSearchFields(getComponentId());
     if (!fields.isEmpty()) {
@@ -963,7 +962,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return fields;
   }
 
-  public Set<String> getSearchFieldIds() throws UtilException, WhitePagesException {
+  public Set<String> getSearchFieldIds() throws WhitePagesException {
     Set<String> ids = new HashSet<>();
     SortedSet<SearchField> searchFields = getSearchFields();
     if (searchFields != null && !searchFields.isEmpty()) {

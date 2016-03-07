@@ -76,7 +76,6 @@ import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -414,12 +413,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection<String> getUserByQuestion(ForeignPK questionPK) throws RemoteException {
+  public Collection<String> getUserByQuestion(ForeignPK questionPK) {
     return getUserByQuestion(questionPK, true);
   }
 
-  public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName)
-      throws RemoteException {
+  public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName) {
     // return list declaration
     Collection<String> users = new LinkedHashSet<>();
     Collection<QuestionResult> results =
@@ -437,12 +435,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return users;
   }
 
-  public Collection<QuestionResult> getResultByUser(String userId, ForeignPK questionPK)
-      throws RemoteException {
+  public Collection<QuestionResult> getResultByUser(String userId, ForeignPK questionPK) {
     return getQuestionResultService().getUserQuestionResultsToQuestion(userId, questionPK);
   }
 
-  public Collection<String> getResultByUser(String userId) throws RemoteException {
+  public Collection<String> getResultByUser(String userId) {
     Collection<QuestionResult> result = new ArrayList<>();
     Collection<String> resultId = new ArrayList<>();
     QuestionContainerDetail survey = getSessionSurvey();
@@ -459,7 +456,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return resultId;
   }
 
-  public Collection<String> getUserByAnswer(String answerId) throws RemoteException {
+  public Collection<String> getUserByAnswer(String answerId) {
     return getQuestionResultService().getUsersByAnswer(answerId);
   }
 
@@ -519,12 +516,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection<String> getUsersByAnswer(String answerId) throws RemoteException {
+  public Collection<String> getUsersByAnswer(String answerId) {
     return getUserByAnswer(answerId);
   }
 
-  public Collection<String> getUsersBySurvey(String surveyId)
-      throws RemoteException, SurveyException {
+  public Collection<String> getUsersBySurvey(String surveyId) throws SurveyException {
     Collection<String> users = new LinkedHashSet<String>();
     QuestionContainerDetail survey = getSurvey(surveyId);
     Collection<Question> questions = survey.getQuestions();
@@ -655,7 +651,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   // pour la notification
-  public String initAlertUser(String surveyId) throws RemoteException, SurveyException {
+  public String initAlertUser(String surveyId) throws SurveyException {
     AlertUser sel = getAlertUser();
     // Initialisation de AlertUser
     sel.resetAll();
@@ -1191,7 +1187,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   //pour la notification des résultats
   public void initAlertResultParticipants(QuestionContainerDetail surveyDetail)
-      throws RemoteException, SurveyException {
+      throws SurveyException {
     Collection<String> users = getUsersBySurvey(surveyDetail.getId());
     UserDetail[] participants = new UserDetail[users.size()];
     UserDetail userDetail;
@@ -1207,7 +1203,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   //pour la notification des résultats
-  public void initAlertResultUsers(QuestionContainerDetail surveyDetail) throws RemoteException {
+  public void initAlertResultUsers(QuestionContainerDetail surveyDetail) {
     UserDetail[] users = getOrganisationController().getAllUsers(getComponentId());
     String htmlPath = getQuestionContainerService().getHTMLQuestionPath(surveyDetail);
     UserNotificationHelper.buildAndSend(

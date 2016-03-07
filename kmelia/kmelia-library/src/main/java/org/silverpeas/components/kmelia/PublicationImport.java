@@ -28,14 +28,14 @@ import com.silverpeas.form.fileitem.InternalFileItem;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -46,7 +46,6 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -98,7 +97,6 @@ public class PublicationImport {
    * retrieve the eventually existing publication to update.
    * @param userProfile The user's profile used to draft out the publication.
    * @return True if the publication is created, false if it is updated.
-   * @throws RemoteException
    */
   public boolean importPublication(Map<String, String> publiParams, Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName, String userProfile) {
@@ -122,7 +120,6 @@ public class PublicationImport {
    * @param xmlFormName The name of the publication's form.
    * @param userProfile The user's profile used to draft out the publication.
    * @return True if the publication is created, false if it is updated.
-   * @throws RemoteException
    */
   public boolean importPublication(String publicationToUpdateId, Map<String, String> publiParams,
       Map<String, String> formParams, String language, String xmlFormName, String userProfile) {
@@ -291,7 +288,6 @@ public class PublicationImport {
    *
    * @param pubDetail The publication detail.
    * @return The id of the newly created publication.
-   * @throws RemoteException
    */
   private String createPublication(PublicationDetail pubDetail) {
     pubDetail.getPK().setSpace(spaceId);
@@ -311,7 +307,6 @@ public class PublicationImport {
    * Updates the publication detail given as a parameter.
    *
    * @param pubDetail The publication detail.
-   * @throws RemoteException
    */
   private void updatePublication(PublicationDetail pubDetail, boolean forceUpdateDate) {
     pubDetail.getPK().setSpace(spaceId);

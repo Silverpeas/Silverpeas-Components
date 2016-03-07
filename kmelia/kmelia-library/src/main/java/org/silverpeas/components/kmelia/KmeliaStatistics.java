@@ -29,7 +29,6 @@ import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,12 +68,6 @@ public class KmeliaStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
   private PublicationService getPublicationService() {
     if (publicationService == null) {
         publicationService = ServiceProvider.getService(PublicationService.class);
@@ -82,16 +75,7 @@ public class KmeliaStatistics implements ComponentStatisticsProvider {
     return publicationService;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param componentId
-   * @return
-   * @throws RemoteException
-   * @see
-   */
-  public Collection<PublicationDetail> getElements(String componentId)
-      throws RemoteException {
+  public Collection<PublicationDetail> getElements(String componentId) {
     return getPublicationService().getAllPublications(new PublicationPK("useless", componentId));
   }
 }

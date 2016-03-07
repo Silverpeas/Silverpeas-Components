@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.resourcesmanager.ResourcesManagerProvider;
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.Resource;
@@ -46,7 +47,6 @@ import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.components.resourcesmanager.service.ResourcesManagerRuntimeException;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.components.resourcesmanager.ResourcesManagerProvider;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;
@@ -55,7 +55,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -295,7 +294,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void sendNotificationForValidation(Long resourceId, Long reservationId)
-      throws RemoteException, NotificationManagerException {
+      throws NotificationManagerException {
     Resource resource = getResource(resourceId);
     String status = ResourcesManagerProvider.getResourcesManager()
         .getResourceOfReservationStatus(resourceId, reservationId);
@@ -542,7 +541,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void validateResource(Long resourceId, Long reservationId)
-      throws RemoteException, NotificationManagerException {
+      throws NotificationManagerException {
     ResourcesManagerProvider.getResourcesManager()
         .updateReservedResourceStatus(reservationId, resourceId, ResourceStatus.STATUS_VALIDATE);
     Reservation reservation = getReservation(reservationId);
@@ -554,7 +553,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void refuseResource(Long resourceId, Long reservationId, String motive)
-      throws RemoteException, NotificationManagerException {
+      throws NotificationManagerException {
     ResourcesManagerProvider.getResourcesManager()
         .updateReservedResourceStatus(reservationId, resourceId, ResourceStatus.STATUS_REFUSED);
     Reservation reservation = getReservation(reservationId);

@@ -28,8 +28,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page isErrorPage="true" %>
 
-<%@ page import="javax.ejb.FinderException, javax.ejb.NoSuchEntityException, java.rmi.RemoteException, java.sql.SQLException, javax.ejb.CreateException, javax.naming.NamingException"%>
-
 <%@ include file="checkSurvey.jsp" %>
 
 <%!
@@ -68,11 +66,7 @@ private String displayUnexpectedError(SurveySessionController surveyScc) {
             out.println(displayDatabaseError(surveyScc));
     } else if (exception instanceof CreateException) {
             out.println(displayEJBCreationError(surveyScc));
-    } else if (exception instanceof RemoteException) {
-            out.println(displayNetworkError(surveyScc));
     } else if (exception instanceof FinderException) {
-            out.println(displayEJBFinderError(surveyScc));
-    } else if (exception instanceof NoSuchEntityException) {
             out.println(displayEJBFinderError(surveyScc));
     } else {
             out.println(displayUnexpectedError(surveyScc));

@@ -43,12 +43,13 @@
 
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
-<%@page import="com.silverpeas.form.*"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
 <%@page import="org.silverpeas.rating.web.RaterRatingEntity" %>
-<%@page import="org.silverpeas.util.exception.SilverpeasException" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="com.silverpeas.form.Form" %>
+<%@ page import="com.silverpeas.form.DataRecord" %>
+<%@ page import="com.silverpeas.form.PagesContext" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -92,9 +93,6 @@
   if (action == null) {
     action = "View";
   }
-
-  SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE",
-      "ACTION pubManager = " + action);
 
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
   PublicationDetail pubDetail = kmeliaPublication.getDetail();

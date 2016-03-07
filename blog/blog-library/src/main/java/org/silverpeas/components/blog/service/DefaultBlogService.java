@@ -23,13 +23,6 @@
  */
 package org.silverpeas.components.blog.service;
 
-import org.silverpeas.components.blog.BlogContentManager;
-import org.silverpeas.components.blog.dao.PostDAO;
-import org.silverpeas.components.blog.model.Archive;
-import org.silverpeas.components.blog.model.BlogRuntimeException;
-import org.silverpeas.components.blog.model.Category;
-import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.components.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
@@ -54,6 +47,13 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.components.blog.BlogContentManager;
+import org.silverpeas.components.blog.dao.PostDAO;
+import org.silverpeas.components.blog.model.Archive;
+import org.silverpeas.components.blog.model.BlogRuntimeException;
+import org.silverpeas.components.blog.model.Category;
+import org.silverpeas.components.blog.model.PostDetail;
+import org.silverpeas.components.blog.notification.BlogUserNotification;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.IndexManager;
@@ -72,7 +72,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -733,7 +732,7 @@ public class DefaultBlogService implements BlogService {
                     silverObjectId);
           }
         }
-      } catch (RemoteException | PdcException e) {
+      } catch (PdcException e) {
         SilverTrace
             .error("blog", "DefaultBlogService.draftOutPost", "blog.EX_SEND_PDC_SUBSCRIPTION", e);
       }

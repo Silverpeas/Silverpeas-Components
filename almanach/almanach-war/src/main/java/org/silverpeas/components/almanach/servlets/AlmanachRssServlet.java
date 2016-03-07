@@ -24,13 +24,12 @@
 package org.silverpeas.components.almanach.servlets;
 
 import com.silverpeas.peasUtil.RssServlet;
-import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.util.DateUtil;
 
 import javax.inject.Inject;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -52,8 +51,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
    * int)
    */
   @Override
-  public Collection<EventDetail> getListElements(String instanceId, int nbReturned)
-      throws RemoteException {
+  public Collection<EventDetail> getListElements(String instanceId, int nbReturned) {
     // récupération de la liste des 10 prochains événements de l'Almanach
     Collection<EventDetail> result = new ArrayList<>();
 

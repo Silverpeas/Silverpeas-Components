@@ -47,15 +47,15 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.components.almanach.service.AlmanachBadParamException;
-import org.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.components.almanach.service.AlmanachException;
-import org.silverpeas.components.almanach.service.AlmanachNoSuchFindEventException;
-import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.PeriodicityException;
+import org.silverpeas.components.almanach.service.AlmanachBadParamException;
+import org.silverpeas.components.almanach.service.AlmanachException;
+import org.silverpeas.components.almanach.service.AlmanachNoSuchFindEventException;
+import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.CalendarEventEncoder;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
@@ -69,7 +69,6 @@ import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -282,10 +281,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * Removes the event identified by the specified identifier.
    * @param id the identifier of the event to remove.
    * @throws AlmanachException if an error occurs while removing the event.
-   * @throws UtilException if an error occurs while getting the WYSIWYG content of the event.
    */
-  public void removeEvent(final String id)
-      throws AlmanachException, UtilException, WysiwygException {
+  public void removeEvent(final String id) throws AlmanachException, WysiwygException {
     SilverTrace
         .info("almanach", "AlmanachSessionController.removeEvent()", "root.MSG_GEN_ENTER_METHOD");
     EventPK pk = new EventPK(id, getSpaceId(), getComponentId());

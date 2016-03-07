@@ -23,15 +23,14 @@
  */
 package org.silverpeas.components.classifieds;
 
-import org.silverpeas.components.classifieds.service.ClassifiedService;
-import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
-import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.components.classifieds.service.ClassifiedService;
+import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -40,8 +39,7 @@ import java.util.Collection;
 public class ClassifiedsStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     Collection<ClassifiedDetail> c = getElements(spaceId, componentId);
     for (ClassifiedDetail classified : c) {
@@ -53,8 +51,7 @@ public class ClassifiedsStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public Collection<ClassifiedDetail> getElements(String spaceId, String componentId)
-      throws RemoteException {
+  public Collection<ClassifiedDetail> getElements(String spaceId, String componentId) {
     ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
     return service.getAllClassifieds(componentId);
   }

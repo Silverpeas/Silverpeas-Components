@@ -23,13 +23,10 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class UpdateTopicStatusHandler implements AjaxHandler {
 
@@ -38,14 +35,7 @@ public class UpdateTopicStatusHandler implements AjaxHandler {
     String subTopicId = request.getParameter("Id");
     String newStatus = request.getParameter("Status");
     String recursive = request.getParameter("Recursive");
-
-    try {
-      kmelia.changeTopicStatus(newStatus, subTopicId, "1".equals(recursive));
-      return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "UpdateTopicStatusHandler.handleRequest",
-          "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
+    kmelia.changeTopicStatus(newStatus, subTopicId, "1".equals(recursive));
+    return "ok";
   }
 }

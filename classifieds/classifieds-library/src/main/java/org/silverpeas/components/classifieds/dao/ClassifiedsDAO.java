@@ -23,6 +23,10 @@
  */
 package org.silverpeas.components.classifieds.dao;
 
+import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.components.classifieds.model.Subscribe;
+import org.silverpeas.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,11 +38,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.components.classifieds.model.Subscribe;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
-
 public class ClassifiedsDAO {
 
   /**
@@ -47,10 +46,9 @@ public class ClassifiedsDAO {
    * @param classified : ClassifiedDetail
    * @return classifiedId : String
    * @throws SQLException
-   * @throws UtilException
    */
   public static String createClassified(Connection con, ClassifiedDetail classified)
-      throws SQLException, UtilException {
+      throws SQLException {
     // Création d'une nouvelle petite annonce
     String id = "";
     PreparedStatement prepStmt = null;
@@ -117,7 +115,6 @@ public class ClassifiedsDAO {
    * @param con : Connection
    * @param classifiedId : String
    * @throws SQLException
-   * @throws UtilException
    */
   public static void deleteClassified(Connection con, String classifiedId) throws SQLException {
     PreparedStatement prepStmt = null;
@@ -339,10 +336,8 @@ public class ClassifiedsDAO {
    * @param subscribe : Subscribe
    * @return subscribeId : String
    * @throws SQLException
-   * @throws UtilException
    */
-  public static String createSubscribe(Connection con, Subscribe subscribe)
-      throws SQLException, UtilException {
+  public static String createSubscribe(Connection con, Subscribe subscribe) throws SQLException {
     String id = "";
     PreparedStatement prepStmt = null;
     try {

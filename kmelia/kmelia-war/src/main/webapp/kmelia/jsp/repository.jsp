@@ -1,5 +1,4 @@
-<%@ page import="org.silverpeas.components.kmelia.model.FileFolder" %>
-<%@ page import="org.silverpeas.components.kmelia.model.FileDetail" %><%--
+<%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -27,7 +26,14 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkKmelia.jsp" %>
-
+<%@ page import="org.silverpeas.components.kmelia.model.FileFolder" %>
+<%@ page import="org.silverpeas.components.kmelia.model.FileDetail" %>
+<%@ page import="java.util.StringTokenizer" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink" %>
 <%!
 
 String displayFilePath(String path, String startPath) {
@@ -108,7 +114,8 @@ if (files != null && files.size() > 0)
     Iterator i = files.iterator();
     String   fileName = "";
     
-    ArrayPane arrayPane = gef.getArrayPane("folderList", "GoToDirectory?Path="+folder.getPath(), request, session);
+    ArrayPane
+        arrayPane = gef.getArrayPane("folderList", "GoToDirectory?Path="+folder.getPath(), request, session);
 
     ArrayColumn columnType = arrayPane.addArrayColumn("");
     columnType.setWidth("40px");
@@ -118,7 +125,7 @@ if (files != null && files.size() > 0)
     while (i.hasNext())
     {
         FileDetail file = (FileDetail) i.next();
-        ArrayLine  arrayLine = arrayPane.addArrayLine();
+        ArrayLine arrayLine = arrayPane.addArrayLine();
 
         // icone du dossier
         IconPane icon = gef.getIconPane();

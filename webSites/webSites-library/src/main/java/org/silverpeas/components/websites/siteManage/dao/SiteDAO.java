@@ -458,7 +458,6 @@ public class SiteDAO {
   /**
    * @return
    * @throws SQLException
-   * @throws UtilException
    */
   private String daoGetNextId() throws SQLException {
     int nextid = DBUtil.getNextId(tableSiteName, "siteId");

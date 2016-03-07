@@ -29,6 +29,7 @@
 <%@ page import="org.silverpeas.components.kmelia.model.updatechain.FieldsContext" %>
 <%@ page import="org.silverpeas.components.kmelia.model.updatechain.Fields" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="java.util.StringTokenizer" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0

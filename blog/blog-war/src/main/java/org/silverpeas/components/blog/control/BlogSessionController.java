@@ -23,12 +23,6 @@
  */
 package org.silverpeas.components.blog.control;
 
-import org.silverpeas.components.blog.access.BlogPostWriteAccessControl;
-import org.silverpeas.components.blog.model.Archive;
-import org.silverpeas.components.blog.model.BlogRuntimeException;
-import org.silverpeas.components.blog.model.Category;
-import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.components.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
@@ -52,6 +46,12 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.components.blog.access.BlogPostWriteAccessControl;
+import org.silverpeas.components.blog.model.Archive;
+import org.silverpeas.components.blog.model.BlogRuntimeException;
+import org.silverpeas.components.blog.model.Category;
+import org.silverpeas.components.blog.model.PostDetail;
+import org.silverpeas.components.blog.notification.BlogUserNotification;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.node.web.NodeEntity;
@@ -72,7 +72,6 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -250,7 +249,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     draftOutPost(postId);
   }
 
-  public String initAlertUser(String postId) throws RemoteException {
+  public String initAlertUser(String postId) {
     AlertUser sel = getAlertUser();
     // Initialisation de AlertUser
     sel.resetAll();
@@ -335,17 +334,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     return getBlogService().getResultSearch(word, getUserId(), getSpaceId(), getComponentId());
   }
 
-  public synchronized void addUserSubscription() throws RemoteException {
+  public synchronized void addUserSubscription() {
     getBlogService().addSubscription(getUserId(), getComponentId());
     NotifierUtil.addSuccess(getString("blog.addSubscriptionOk"));
   }
 
-  public synchronized void removeUserSubscription() throws RemoteException {
+  public synchronized void removeUserSubscription() {
     getBlogService().removeSubscription(getUserId(), getComponentId());
     NotifierUtil.addSuccess(getString("blog.removeSubscriptionOk"));
   }
 
-  public synchronized boolean isUserSubscribed() throws RemoteException {
+  public synchronized boolean isUserSubscribed() {
     return getBlogService().isSubscribed(getUserId(), getComponentId());
   }
 
@@ -412,7 +411,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     return DateUtil.date2SQLDate(currentEndDate.getTime());
   }
 
-  public Date getDateEvent(String pubId) throws RemoteException {
+  public Date getDateEvent(String pubId) {
     return getBlogService().getDateEvent(pubId);
   }
 

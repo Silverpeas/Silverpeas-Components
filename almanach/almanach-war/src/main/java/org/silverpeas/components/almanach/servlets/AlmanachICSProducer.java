@@ -29,17 +29,15 @@ import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import org.silverpeas.components.almanach.service.CalendarEventEncoder;
-import org.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.components.almanach.service.AlmanachException;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventPK;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.components.almanach.model.EventDetail;
+import org.silverpeas.components.almanach.model.EventPK;
+import org.silverpeas.components.almanach.service.AlmanachException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.components.almanach.service.CalendarEventEncoder;
 import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.UtilException;
 
-import javax.ejb.CreateException;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,7 +47,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.io.StringWriter;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,12 +112,8 @@ public class AlmanachICSProducer {
    * @param almanachId the almanach identifier
    * @return a list with the details of the events registered in the almanach.
    * @throws AlmanachException if an error occurs while getting the list of events.
-   * @throws RemoteException if the communication with the remote business object fails.
-   * @throws UtilException if a reference to the remote EJB cannot be fetched.
-   * @throws CreateException if the EJB cannot be created.
    */
-  public List<EventDetail> getAllEvents(final String almanachId) throws AlmanachException,
-      RemoteException, UtilException, CreateException {
+  public List<EventDetail> getAllEvents(final String almanachId) throws AlmanachException {
     EventPK pk = new EventPK("", null, almanachId);
     AlmanachService almanachService = ServiceProvider.getService(AlmanachService.class);
     return new ArrayList<>(almanachService.getAllEvents(pk));

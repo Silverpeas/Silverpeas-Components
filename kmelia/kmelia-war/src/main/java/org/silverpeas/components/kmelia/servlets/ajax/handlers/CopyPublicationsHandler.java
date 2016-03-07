@@ -20,14 +20,11 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.util.clipboard.ClipboardException;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.servlet.http.HttpServletRequest;
 
 public class CopyPublicationsHandler extends OperationOnPublicationsHandler {
 
@@ -37,10 +34,6 @@ public class CopyPublicationsHandler extends OperationOnPublicationsHandler {
     try {
       controller.copySelectedPublications();
       return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "CopyPublicationsHandler.handleRequest",
-          "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
     } catch (ClipboardException e) {
       SilverTrace.error("kmelia", "CopyPublicationsHandler.handleRequest",
           "root.MSG_GEN_PARAM_VALUE", e);

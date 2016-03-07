@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.gallery.dao;
 
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -37,8 +39,6 @@ import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.date.Period;
 import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
@@ -47,7 +47,6 @@ import org.silverpeas.persistence.jdbc.ResultSetWrapper;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.exception.UtilException;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -338,10 +337,8 @@ public class MediaDAO {
    * @param media the media to save.
    * @return the id of the saved media.
    * @throws SQLException
-   * @throws UtilException
    */
-  public static String saveMedia(OperationContext context, Media media)
-      throws SQLException, UtilException {
+  public static String saveMedia(OperationContext context, Media media) throws SQLException {
     JdbcSqlQueries updateQueries = new JdbcSqlQueries();
 
     // The current Uuid
@@ -601,9 +598,8 @@ public class MediaDAO {
    * @param media the media that must be associated to the given album.
    * @param albumId the identifier of the album.
    * @throws SQLException
-   * @throws UtilException
    */
-  public static void saveMediaPath(Media media, String albumId) throws SQLException, UtilException {
+  public static void saveMediaPath(Media media, String albumId) throws SQLException {
     List<?> pathParams =
         Arrays.asList(media.getId(), media.getInstanceId(), Integer.valueOf(albumId));
 

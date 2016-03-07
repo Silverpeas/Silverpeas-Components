@@ -23,24 +23,16 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class EmptyTrashHandler implements AjaxHandler {
 
   @Override
   public String handleRequest(HttpServletRequest request,KmeliaSessionController kmelia) {
-    try {
       kmelia.flushTrashCan();
       return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "EmptyTrashHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
   }
 }

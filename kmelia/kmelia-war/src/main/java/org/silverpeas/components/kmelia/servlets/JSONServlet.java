@@ -24,10 +24,10 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.util.JSONCodec;
 
 import javax.servlet.ServletException;
@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.rmi.RemoteException;
 
 public class JSONServlet extends HttpServlet {
 
@@ -70,7 +69,7 @@ public class JSONServlet extends HttpServlet {
     }
   }
 
-  private String getOperations(String id, KmeliaSessionController kmeliaSC) throws RemoteException {
+  private String getOperations(String id, KmeliaSessionController kmeliaSC) {
     return JSONCodec.encodeObject(operations -> {
       // getting profile
       String profile = kmeliaSC.getUserTopicProfile(id);

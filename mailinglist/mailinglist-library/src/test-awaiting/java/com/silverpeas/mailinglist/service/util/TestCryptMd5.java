@@ -28,8 +28,6 @@ import org.junit.Test;
 import com.silverpeas.mailinglist.service.job.TestMessageChecker;
 import org.silverpeas.util.crypto.CryptMD5;
 
-import org.silverpeas.util.exception.UtilException;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -37,14 +35,14 @@ import static org.junit.Assert.assertThat;
 public class TestCryptMd5 {
 
   @Test
-  public void testCrypt() throws UtilException {
+  public void testCrypt() {
     String hash = CryptMD5.encrypt("Hello World");
     assertThat(hash, is(notNullValue()));
     assertThat(hash, is("b10a8db164e0754105b7a99be72e3fe5"));
   }
 
   @Test
-  public void testHash() throws UtilException {
+  public void testHash() {
     URL url = TestMessageChecker.class.getResource("lemonde.html");
     assertThat(url, is(notNullValue()));
     String copyPath = url.getPath();

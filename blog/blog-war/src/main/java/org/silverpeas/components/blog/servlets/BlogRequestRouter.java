@@ -23,31 +23,29 @@
  */
 package org.silverpeas.components.blog.servlets;
 
-import org.silverpeas.components.blog.control.BlogSessionController;
-import org.silverpeas.components.blog.model.Category;
-import org.silverpeas.components.blog.model.PostDetail;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.node.model.NodeDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.components.blog.control.BlogSessionController;
+import org.silverpeas.components.blog.model.Category;
+import org.silverpeas.components.blog.model.PostDetail;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.monthCalendar.Event;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.servlet.HttpRequest;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -416,11 +414,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
     for (PostDetail post : posts) {
       // chercher la date de l'évènement
       String pubId = post.getPublication().getPK().getId();
-      try {
         dateEvent = blogSC.getDateEvent(pubId);
-      } catch (RemoteException e) {
-        dateEvent = post.getPublication().getCreationDate();
-      }
       Event event =
           new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
               dateEvent, dateEvent, null, 0);

@@ -42,7 +42,7 @@ String				wizardLast	= (String) request.getAttribute("WizardLast");
 String 				wizard		= (String) request.getAttribute("Wizard");
 String	 			wizardRow	= (String) request.getAttribute("WizardRow");
 String				currentLang = (String) request.getAttribute("Language");
-List				languages	= (List) request.getAttribute("Languages");
+List languages	= (List) request.getAttribute("Languages");
 String 				xmlForm		= (String) request.getAttribute("XmlFormForFiles");
 if (!StringUtil.isDefined(xmlForm))
 {

@@ -64,7 +64,6 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -207,12 +206,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  /**
-   * @param way
-   * @param topicId
-   * @throws RemoteException
-   */
-  public synchronized void changeTopicsOrder(String way, String topicId) throws RemoteException {
+  public synchronized void changeTopicsOrder(String way, String topicId) {
     NodePK nodePK = new NodePK(topicId, getSpaceId(), getComponentId());
     getWebSiteService().changeTopicsOrder(way, nodePK, getSessionTopic().getNodePK());
   }
@@ -285,12 +279,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  /**
-   * @param pubId
-   * @param direction
-   * @throws RemoteException
-   */
-  public synchronized void changePubsOrder(String pubId, int direction) throws RemoteException {
+  public synchronized void changePubsOrder(String pubId, int direction) {
     getWebSiteService().changePubsOrder(new PublicationPK(pubId, getComponentId()), getSessionTopic().
         getNodePK(), direction);
   }

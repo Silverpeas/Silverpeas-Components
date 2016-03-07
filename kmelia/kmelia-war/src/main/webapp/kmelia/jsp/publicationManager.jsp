@@ -34,6 +34,8 @@
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="java.util.StringTokenizer" %>
+<%@ page import="java.util.Date" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 
@@ -107,8 +109,6 @@
     if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
       errorThumbnail = true;
     }
-
-    SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION pubManager = " + action);
 
     //Icons
     mandatorySrc = m_context + "/util/icons/mandatoryField.gif";

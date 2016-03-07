@@ -30,7 +30,7 @@
 
 <%
 List 				xmlForms	= (List) request.getAttribute("XMLForms");
-Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
+Collection modelUsed	= (Collection) request.getAttribute("ModelUsed");
 
 String linkedPathString = kmeliaScc.getSessionPath();
 

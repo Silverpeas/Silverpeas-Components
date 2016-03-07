@@ -23,8 +23,6 @@
  */
 package org.silverpeas.components.mailinglist.service.notification;
 
-import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -32,6 +30,8 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -41,7 +41,6 @@ import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
 import java.io.UnsupportedEncodingException;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -124,7 +123,7 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
       if (moderate) {
         createTask(message, subject, userIds);
       }
-    } catch (CalendarRuntimeException | UnsupportedEncodingException | RemoteException e) {
+    } catch (CalendarRuntimeException | UnsupportedEncodingException e) {
       throw new NotificationManagerException("NotificationHelperImpl", SilverpeasException.ERROR,
           "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }

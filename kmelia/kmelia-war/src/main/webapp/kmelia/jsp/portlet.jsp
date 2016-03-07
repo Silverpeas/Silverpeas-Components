@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.components.kmelia.model.TopicDetail" %><%--
+<%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

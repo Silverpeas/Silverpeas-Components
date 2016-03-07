@@ -28,14 +28,13 @@ package org.silverpeas.components.infoletter;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.components.infoletter.model.InfoLetter;
-import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
+import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -64,7 +63,7 @@ public class InfoLetterStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public List<InfoLetterPublication> getInfoLetters(String componentId) throws RemoteException {
+  public List<InfoLetterPublication> getInfoLetters(String componentId) {
     List<InfoLetterPublication> publications = new ArrayList<>();
     InfoLetterService dataInterface = InfoLetterServiceProvider.getInfoLetterData();
     List<InfoLetter> listLettres = dataInterface.getInfoLetters(componentId);

@@ -27,13 +27,6 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
-import org.silverpeas.components.whitepages.WhitePagesException;
-import org.silverpeas.components.whitepages.control.WhitePagesSessionController;
-import org.silverpeas.components.whitepages.filters.LoginFilter;
-import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.components.whitepages.model.SearchField;
-import org.silverpeas.components.whitepages.model.SearchFieldsType;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
@@ -44,9 +37,15 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.components.whitepages.WhitePagesException;
+import org.silverpeas.components.whitepages.control.WhitePagesSessionController;
+import org.silverpeas.components.whitepages.filters.LoginFilter;
+import org.silverpeas.components.whitepages.model.Card;
+import org.silverpeas.components.whitepages.model.SearchField;
+import org.silverpeas.components.whitepages.model.SearchFieldsType;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -527,7 +526,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
   }
 
   private Hashtable<String, String> getXmlFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws UtilException, WhitePagesException {
+      HttpServletRequest request) throws WhitePagesException {
     Hashtable<String, String> xmlFields = new Hashtable<>();
 
     // champs personnalisables xml
@@ -549,7 +548,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
   }
 
   private List<FieldDescription> getOthersFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws UtilException, WhitePagesException {
+      HttpServletRequest request) throws WhitePagesException {
     List<FieldDescription> othersFields = new ArrayList<>();
 
     // champs personnalisables non xml (user silverpeas ou ldap)

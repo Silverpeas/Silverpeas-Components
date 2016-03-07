@@ -23,14 +23,11 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
-import com.stratelia.webactiv.node.model.NodeDetail;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class RenameTopicHandler implements AjaxHandler {
 
@@ -39,15 +36,9 @@ public class RenameTopicHandler implements AjaxHandler {
     KmeliaSessionController kmelia = controller;
     String topicId = request.getParameter("Id");
     String name = request.getParameter("Name");
-
-    try {
       NodeDetail node = kmelia.getNodeHeader(topicId);
       node.setName(name);
       kmelia.updateTopicHeader(node, "NoAlert");
       return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "RenameTopicHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
   }
 }

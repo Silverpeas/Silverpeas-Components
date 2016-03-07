@@ -23,17 +23,16 @@
  */
 package org.silverpeas.components.blog.servlets;
 
+import com.silverpeas.peasUtil.RssServlet;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
-import java.rmi.RemoteException;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import org.silverpeas.components.blog.model.PostDetail;
-import com.silverpeas.peasUtil.RssServlet;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
  * @see com.silverpeas.peasUtil.RssServlet
@@ -43,8 +42,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
   private static final long serialVersionUID = -7858489574699990145L;
 
   @Override
-  public Collection<PostDetail> getListElements(String instanceId, int nbReturned)
-      throws RemoteException {
+  public Collection<PostDetail> getListElements(String instanceId, int nbReturned) {
     // récupération de la liste des 10 prochains billets du Blog
     BlogService service = BlogServiceFactory.getBlogService();
     return service.getAllValidPosts(instanceId, nbReturned);

@@ -26,13 +26,11 @@ package org.silverpeas.components.forums.servlets;
 import com.silverpeas.peasUtil.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.components.forums.service.ForumsServiceProvider
-    .getForumsService;
+import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
 
 public class ForumsRssServlet extends RssServlet {
 
@@ -43,8 +41,7 @@ public class ForumsRssServlet extends RssServlet {
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
    */
   @Override
-  public Collection getListElements(String instanceId, int nbReturned)
-      throws RemoteException {
+  public Collection getListElements(String instanceId, int nbReturned) {
     Collection events = getForumsService().getLastMessageRSS(instanceId, nbReturned);
     return events;
   }

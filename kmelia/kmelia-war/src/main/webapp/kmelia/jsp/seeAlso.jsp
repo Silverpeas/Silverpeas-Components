@@ -1,6 +1,3 @@
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="org.silverpeas.search.SearchEngineProvider"%>
-<%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -36,6 +33,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="publicationsList.jsp" %>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.search.SearchEngineProvider"%>
 
 <%!
  //Icons

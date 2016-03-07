@@ -23,26 +23,17 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.rmi.RemoteException;
-import java.util.List;
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import java.util.List;
 
 public class DeletePublicationsHandler extends OperationOnPublicationsHandler  {
 
   @Override
   public String handleRequest(HttpServletRequest request, KmeliaSessionController kmelia) {
     processSelectedPublications(request, kmelia);
-    try {
       List<String> removed = kmelia.deleteSelectedPublications();
       return "ok-" + removed.size();
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "DeletePublicationsHandler.handleRequest",
-          "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
   }
 }
