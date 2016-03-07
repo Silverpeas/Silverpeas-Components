@@ -32,28 +32,20 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -64,10 +56,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
-	Window 		window 		= gef.getWindow();
-	BrowseBar 	browseBar 	= window.getBrowseBar();
+	Window window 		= gef.getWindow();
+	BrowseBar browseBar 	= window.getBrowseBar();
 	Frame 		frame 		= gef.getFrame();
-	Board		board		= gef.getBoard();
+	Board board		= gef.getBoard();
 
 	String[] browseContext = (String[]) request.getAttribute("browseContext");
 	String spaceLabel 		= browseContext[0];
