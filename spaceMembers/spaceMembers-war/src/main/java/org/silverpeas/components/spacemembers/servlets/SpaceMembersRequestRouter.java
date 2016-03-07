@@ -21,15 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.spaceMembers.servlets;
+package org.silverpeas.components.spacemembers.servlets;
 
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import org.silverpeas.components.spaceMembers.control.SpaceMembersSessionController;
+import org.silverpeas.components.spacemembers.control.SpaceMembersSessionController;
 import org.silverpeas.servlet.HttpRequest;
 
 public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembersSessionController> {
@@ -67,23 +66,23 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
       HttpRequest request) {
 
 
-    
+
     String destination = "";
 
     if (function.startsWith("Main") || function.startsWith("portlet")) {
-      
-      destination = "/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getSpaceId(); 
-      
+
+      destination = "/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getSpaceId();
+
       //Affichage page d'accueil : Seulement les membres connectés
       if(spaceMembersSCC.isHomePageDisplayOnlyConnectedMembers()) {
-        
+
         destination += "&View=connected";
-        
-      } 
+
+      }
     } else {
       destination = "/Rdirectory/jsp/"+function;
     }
-    
+
 
     return destination;
   }

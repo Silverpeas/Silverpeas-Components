@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.spaceMembers.control;
+package org.silverpeas.components.spacemembers.control;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -40,7 +40,7 @@ public class SpaceMembersSessionController extends AbstractComponentSessionContr
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
   }
-  
+
   /**
    * return true if Home page displays only connected members
    * @return boolean

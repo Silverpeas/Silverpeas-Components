@@ -30,7 +30,7 @@
   <servlet>
     <display-name>SpaceMembersRequestRouter</display-name>
     <servlet-name>SpaceMembersRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.components.spaceMembers.servlets.SpaceMembersRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.spacemembers.servlets.SpaceMembersRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>SpaceMembersRequestRouter</servlet-name>

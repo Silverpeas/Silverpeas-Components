@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,20 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.spaceMembers;
+package org.silverpeas.components.spacemembers;
 
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Collections;
 
+/**
+ * Class declaration
+ * @author
+ */
 @Singleton
-@Named("spaceMembers" + ComponentIndexation.QUALIFIER_SUFFIX)
-public class SpaceMembersIndexer implements ComponentIndexation {
+@Named("spaceMembers" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+public class SpaceMembersStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
-    // nothing to index for this application
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws Exception {
+    UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+    myCouple.setUserId("-2"); // unknown userId
+    myCouple.setCountVolume(1);
+    return Collections.singletonList(myCouple);
   }
 }
