@@ -31,24 +31,10 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-
-
-<%@ page import="java.io.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.components.websites.control.*"%>
-<%@ page import="com.stratelia.webactiv.publication.model.*"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-
-<%@ page import="org.silverpeas.util.exception.*"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
-
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<%@ page import="java.io.File" %>
 <%@ include file="util.jsp" %>
-
 <%@ include file="checkScc.jsp" %>
 
 <%

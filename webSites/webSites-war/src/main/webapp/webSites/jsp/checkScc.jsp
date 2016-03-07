@@ -27,8 +27,6 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="java.beans.*"%>
-
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator"%>
@@ -40,19 +38,12 @@
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 
-<%@ page import="javax.naming.Context"%>
-<%@ page import="javax.naming.InitialContext"%>
-<%@ page import="javax.rmi.PortableRemoteObject"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*"%>
-
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail" %>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
@@ -71,18 +62,16 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.Link"%>
-
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
 
 <%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
 <%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
 <%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
 
-
-
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
+<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace" %>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 
