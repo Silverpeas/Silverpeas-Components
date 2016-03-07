@@ -43,6 +43,7 @@
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 
 <%
 News news = (News) request.getAttribute("info");

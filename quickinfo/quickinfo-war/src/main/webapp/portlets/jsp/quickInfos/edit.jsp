@@ -30,7 +30,6 @@
 <%@ page import="javax.portlet.RenderRequest" %>
 <%@ page import="javax.portlet.RenderResponse" %>
 <%@ page import="javax.portlet.PortletPreferences" %>
-<%@ page import="javax.portlet.PortletURL" %>
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
