@@ -24,9 +24,7 @@
 package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.constant.MediaResolution;
-import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.processing.Size;
 import com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
@@ -35,7 +33,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Named;
-import java.io.IOException;
 
 import static com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor
     .PROCESSOR_NAME_SUFFIX;
@@ -48,21 +45,8 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
       UserDetail creatorDetail, String location) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
-    String instanceId = sci.getInstanceId();
     Media media = (Media) sci;
     gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
-    InternalMedia internalMedia = media.getInternalMedia();
-    if (internalMedia != null) {
-      Size size = new Size(MediaResolution.TINY.getWidth(), MediaResolution.TINY.getHeight());
-      try {
-        size = MediaUtil.getWidthAndHeight(instanceId, media.getWorkspaceSubFolderName(),
-            internalMedia.getFileName(), MediaResolution.TINY.getWidth());
-      } catch (IOException e) {
-        SilverLogger.getLogger(this).error("Error during processing size !", e);
-      }
-      gsc.setThumbnailWidth(String.valueOf(size.getWidth()));
-      gsc.setThumbnailHeight(String.valueOf(size.getHeight()));
-    }
     return gsc;
   }
 
