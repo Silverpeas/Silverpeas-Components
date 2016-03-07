@@ -31,7 +31,7 @@
    ProcessInstance process = (ProcessInstance) request.getAttribute("process");
 	String state = (String) request.getAttribute("state");
 	String stepId = (String) request.getAttribute("stepId");
-	HistoryStep   step  = (HistoryStep) request.getAttribute("step");
+	HistoryStep step  = (HistoryStep) request.getAttribute("step");
 
    com.silverpeas.form.Form form
 	   = (com.silverpeas.form.Form) request.getAttribute("form");

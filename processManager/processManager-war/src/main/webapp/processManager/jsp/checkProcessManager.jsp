@@ -41,20 +41,32 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="java.util.Hashtable"%>
 <%@ page import="java.util.StringTokenizer"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%// En fonction de ce dont vous avez besoin %>
+<%@ page import="com.silverpeas.workflow.api.instance.ProcessInstance" %>
+<%@ page import="com.silverpeas.form.PagesContext" %>
+<%@ page import="com.silverpeas.form.DataRecord" %>
+<%@ page import="com.silverpeas.workflow.api.error.WorkflowError" %>
+<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="com.silverpeas.workflow.api.model.State" %>
+<%@ page import="com.silverpeas.workflow.api.model.Action" %>
+<%@ page import="com.silverpeas.workflow.api.instance.HistoryStep" %>
+<%@ page import="com.silverpeas.workflow.api.instance.Question" %>
+<%@page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.form.RecordTemplate" %>
+<%@ page import="com.silverpeas.form.FieldTemplate" %>
+<%@ page import="com.silverpeas.workflow.api.model.Item" %>
+<%@ page import="com.silverpeas.workflow.api.task.Task" %>
+<%@ page import="com.silverpeas.form.Field" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
@@ -63,24 +75,15 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.processmanager.*"%>
-<%@ page import="org.silverpeas.processmanager.record.*"%>
 <%@ page import="com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord"%>
-<%@ page import="com.silverpeas.workflow.api.instance.*"%>
-<%@ page import="com.silverpeas.workflow.api.model.*"%>
-<%@ page import="com.silverpeas.workflow.api.task.*"%>
-<%@ page import="com.silverpeas.workflow.api.event.*"%>
-<%@ page import="com.silverpeas.workflow.api.user.*"%>
-<%@ page import="com.silverpeas.workflow.api.error.*"%>
-<%@ page import="com.silverpeas.form.*"%>
 <%@ page import="com.silverpeas.form.fieldType.DateField"%>
 <%@ page import="org.silverpeas.processmanager.NamedValue" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%
