@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.components.formsonline.control.FormsOnlineSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -32,6 +31,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
+<%@ page import="org.silverpeas.components.formsonline.control.FormsOnlineSessionController" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 
