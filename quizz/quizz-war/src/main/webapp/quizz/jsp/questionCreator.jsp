@@ -1,5 +1,3 @@
-<%@ page import="org.silverpeas.servlet.HttpRequest" %>
-<%@ page import="org.silverpeas.util.DBUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -31,6 +29,9 @@
 <jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
+<%@ page import="org.silverpeas.util.DBUtil" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

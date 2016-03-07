@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.DBUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -37,6 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <jsp:useBean id="questionsResponses" scope="session" class="java.util.HashMap" />
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ page import="org.silverpeas.util.DBUtil" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -407,7 +407,6 @@ List<String> displayQuestionResult(QuestionContainerDetail quizz, Question quest
 		}
 		r += "</table></td></tr></table>";
 	} catch (NumberFormatException e) {
-		SilverTrace.info("Quizz","quizzQuestionsNew_JSP.displayQuestionResult","Quizz.EX_BAD_NUMBER_FORMAT");
 	}
 	displayQuestionResult.add(r);
 	displayQuestionResult.add(Integer.toString(questionUserScore));

@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.DBUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -37,6 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <jsp:useBean id="questionsResponses" scope="session" class="java.util.HashMap" />
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ page import="org.silverpeas.util.DBUtil" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />

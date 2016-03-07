@@ -25,36 +25,15 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.beans.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.io.File"%>
-<%@ page import="java.lang.Integer"%>
-<%@ page import="java.net.URLEncoder"%>
-<%@ page import="java.text.ParsePosition"%>
-<%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="java.util.*"%>
-
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="javax.ejb.RemoveException,javax.ejb.CreateException,java.sql.SQLException,javax.naming.NamingException,java.rmi.RemoteException,javax.ejb.FinderException"%>
-<%@ page import="javax.ejb.*,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.stratelia.webactiv.quizz.control.*"%>
 <%@ page import="org.silverpeas.components.quizz.QuizzException"%>
 <%@ page import="org.silverpeas.components.quizz.QuestionForm"%>
 <%@ page import="org.silverpeas.components.quizz.QuestionHelper"%>
@@ -62,33 +41,43 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.score.model.ScoreDetail"%>
 <%@ page import="com.stratelia.webactiv.question.model.Question"%>
 <%@ page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
 <%@ page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail"%>
 <%@ page import="com.stratelia.webactiv.questionResult.model.QuestionResult"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.questionContainer.model.*"%>
-<%@ page import="com.stratelia.webactiv.questionContainer.control.*"%>
 <%@ page import="com.stratelia.webactiv.answer.model.Answer"%>
-<%@ page import="com.stratelia.webactiv.score.model.*"%>
-<%@ page import="com.stratelia.webactiv.score.control.*"%>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Vector" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.io.IOException" %>
 
-<%@ page import="org.apache.commons.fileupload.FileItem"%>
+<%@ page import="org.apache.commons.fileupload.FileItem"%>1
 <%@ page import="org.silverpeas.components.quizz.control.QuizzSessionController" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
