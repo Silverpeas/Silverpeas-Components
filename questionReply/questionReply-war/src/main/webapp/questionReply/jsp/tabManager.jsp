@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="java.io.IOException" %>
 <%!
 
       void displayTabs(boolean updateQ, boolean pdc, String id, MultiSilverpeasBundle resource,

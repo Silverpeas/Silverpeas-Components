@@ -1,5 +1,3 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -38,7 +36,6 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="general"/>
 <fmt:message key="importExportPeas.Export" var="page_title" />
 <fmt:message key="GML.close" var="close_button" bundle="${general}" />
-
 
 <%
   ExportReport report = (ExportReport) request.getAttribute("ExportReport");

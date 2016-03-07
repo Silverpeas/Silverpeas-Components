@@ -35,7 +35,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
-
+<%@ page import="java.util.Iterator" %>
 
 <%@ include file="checkQuestionReply.jsp" %>
 <%
