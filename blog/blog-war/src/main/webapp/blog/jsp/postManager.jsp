@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.components.blog.model.PostDetail" %><%--
+<%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -25,7 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
 	isELIgnored="false"%>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>	
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
 <%@ include file="check.jsp" %>
 
 <%
