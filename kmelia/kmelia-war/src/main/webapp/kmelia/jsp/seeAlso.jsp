@@ -35,6 +35,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="publicationsList.jsp" %>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.search.SearchEngineProvider"%>
+<%@ page import="org.silverpeas.search.searchEngine.model.QueryDescription" %>
+<%@ page import="org.silverpeas.search.searchEngine.model.MatchingIndexEntry" %>
 
 <%!
  //Icons

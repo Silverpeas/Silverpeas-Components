@@ -24,11 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.components.resourcesmanager.model.Category"%>
-<%@ page import="org.silverpeas.components.resourcesmanager.model.Resource"%>
-<%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

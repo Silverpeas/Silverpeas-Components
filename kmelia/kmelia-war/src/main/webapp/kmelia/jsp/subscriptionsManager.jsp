@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%!
-void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIcon, String hLineSrc, MultiSilverpeasBundle resources, JspWriter out) throws IOException, CreateException, FinderException, NamingException, SQLException {
+void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIcon, String hLineSrc, MultiSilverpeasBundle resources, JspWriter out) throws IOException{
 
   String cssClass = null;
   boolean peer = true;

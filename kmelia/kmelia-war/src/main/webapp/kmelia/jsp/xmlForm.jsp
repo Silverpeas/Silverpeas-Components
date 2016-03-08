@@ -25,8 +25,9 @@
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="checkKmelia.jsp" %>
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="com.silverpeas.form.*"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
+<%@ page import="com.silverpeas.form.Form"%>
+<%@ page import="com.silverpeas.form.PagesContext" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>

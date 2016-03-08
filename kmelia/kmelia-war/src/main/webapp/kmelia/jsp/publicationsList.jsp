@@ -24,19 +24,17 @@
 
 --%>
 
-<%@ page import="java.text.NumberFormat"%>
-<%@ page import="java.text.ParsePosition"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.net.URLEncoder"%>
-
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
-<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
+
+<%@ page import="org.silverpeas.search.searchEngine.model.MatchingIndexEntry"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="java.text.NumberFormat"%>
+<%@ page import="java.util.Collection "%>
+<%@ page import="java.util.Iterator"%>
 <%!
 String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaScc)
 {

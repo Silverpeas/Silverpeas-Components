@@ -25,8 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.components.resourcesmanager.model.Reservation"%>
-<%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <%
 //Recuperation des details de l'utilisateur
@@ -85,7 +83,7 @@ while(!listOfReservation.isEmpty()){
 	Icon editIcon = iconPane1.addIcon();
 	Icon deleteIcon = iconPane1.addIcon();
 	Reservation maReservation = (Reservation)listOfReservation.get(0);
-	Long reservationId = maReservation.getId();
+	Long reservationId = maReservation.getIdAsLong();
 	String event = maReservation.getEvent();
 	String place = maReservation.getPlace();
 	String reason = maReservation.getReason();

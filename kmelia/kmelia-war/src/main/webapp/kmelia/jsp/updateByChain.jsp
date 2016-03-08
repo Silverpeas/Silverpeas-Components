@@ -25,10 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.components.kmelia.model.updatechain.*" %>
-<%@ page import="org.silverpeas.components.kmelia.model.updatechain.FieldsContext" %>
-<%@ page import="org.silverpeas.components.kmelia.model.updatechain.Fields" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="org.silverpeas.components.kmelia.model.updatechain.Fields" %>
+<%@ page import="org.silverpeas.components.kmelia.model.updatechain.FieldsContext" %>
 <%@ page import="java.util.StringTokenizer" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1

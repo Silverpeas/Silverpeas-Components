@@ -36,11 +36,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@include file="checkKmelia.jsp" %>
 
-<%@page import="com.silverpeas.publicationTemplate.*"%>
-<%@page import="com.silverpeas.form.*"%>
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
+<%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.silverpeas.form.Form"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
 
 <%
 	SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.publication.publicationSettings");

@@ -70,8 +70,6 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodeI18NDetail"%>
 
 
-<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
-
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
@@ -86,7 +84,6 @@
 <%@ page import="org.silverpeas.util.ForeignPK"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.i18n.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>

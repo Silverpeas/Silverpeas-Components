@@ -23,17 +23,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="java.util.List"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");

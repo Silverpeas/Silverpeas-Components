@@ -29,10 +29,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="org.silverpeas.components.resourcesmanager.model.Resource"%>
-<%@ page import="org.silverpeas.components.resourcesmanager.model.Reservation"%>
-<%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ include file="check.jsp" %>
 
 <fmt:setLocale value="${requestScope.resources.language}" />
