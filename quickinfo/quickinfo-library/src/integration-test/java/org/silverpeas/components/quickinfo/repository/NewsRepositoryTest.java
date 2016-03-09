@@ -42,7 +42,6 @@ public class NewsRepositoryTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(NewsRepositoryTest.class).testFocusedOn(warBuilder -> {
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
       warBuilder.addMavenDependenciesWithPersistence(
           "org.silverpeas.components.delegatednews:silverpeas-delegatednews");

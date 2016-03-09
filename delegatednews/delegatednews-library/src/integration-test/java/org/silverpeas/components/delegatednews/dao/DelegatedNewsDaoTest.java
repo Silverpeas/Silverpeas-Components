@@ -60,7 +60,6 @@ public class DelegatedNewsDaoTest {
     return BasicWarBuilder.onWarForTestClass(DelegatedNewsDaoTest.class)
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
           warBuilder.addMavenDependencies("org.apache.tika:tika-core");

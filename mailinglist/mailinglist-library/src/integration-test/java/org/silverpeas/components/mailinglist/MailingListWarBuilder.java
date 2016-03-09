@@ -50,7 +50,6 @@ public class MailingListWarBuilder extends BasicWarBuilder{
     MailingListWarBuilder warBuilder = new MailingListWarBuilder(test);
     warBuilder.addMavenDependencies("javax.jcr:jcr");
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-calendar");

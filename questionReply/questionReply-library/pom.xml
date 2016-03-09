@@ -25,12 +25,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-node</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.components.whitepages</groupId>
       <artifactId>silverpeas-whitepages</artifactId>
       <version>${project.version}</version>

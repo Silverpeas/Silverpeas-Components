@@ -44,7 +44,6 @@ public class WarBuilder4Kmelia extends BasicWarBuilder {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
-    addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-statistic");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
