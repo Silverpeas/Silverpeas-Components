@@ -69,6 +69,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.components.silvercrawler.model.FileDetail"%>
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="java.util.Locale"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.NeedWindowTag" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
