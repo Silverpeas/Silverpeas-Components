@@ -53,7 +53,6 @@ public class MailingListWarBuilder extends BasicWarBuilder{
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-calendar");
-    warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalization");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
     warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
