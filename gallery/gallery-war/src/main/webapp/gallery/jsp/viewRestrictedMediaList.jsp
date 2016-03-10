@@ -66,6 +66,8 @@
 <c:set var="selectedIds" value="${requestScope.SelectedIds}"/>
 <c:set var="isViewNotVisible" value="${requestScope.ViewNotVisible}"/>
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
+<c:set var="isExportEnable" value="${requestScope.IsExportEnable}"/>
+<c:set var="isMediaSelectable" value="${greaterUserRole eq userRole and isBasket or isExportEnable}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -99,7 +101,7 @@ function sendToBasket() {
     <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
     <view:operation action="javascript:onClick=sendData()" altText="${updateSelectedMediaLabel}" icon="${updateSelectedMediaIcon}"/>
   </c:if>
-  <c:if test="${greaterUserRole eq userRole and isBasket}">
+  <c:if test="${isMediaSelectable}">
     <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
     <view:operation action="javascript:onClick=sendToBasket()" altText="${addToBasketSelectedMediaLabel}" icon="${addToBasketSelectedMediaIcon}"/>
   </c:if>
@@ -114,8 +116,7 @@ function sendToBasket() {
                                  nbMediaPerPage="${nbMediaPerPage}"
                                  currentPageIndex="${currentPageIndex}"
                                  isViewList="${isViewList}"
-                                 greaterUserRole="${greaterUserRole}"
-                                 isBasket="${isBasket}"/>
+                                 selectable="${isMediaSelectable}"/>
     <c:if test="${empty mediaList}">
       <view:board>
         <c:choose>

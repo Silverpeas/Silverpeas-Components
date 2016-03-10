@@ -143,6 +143,7 @@
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
 <c:set var="isExportEnable" value="${requestScope.IsExportEnable}"/>
+<c:set var="isMediaSelectable" value="${greaterUserRole eq userRole and isBasket or isExportEnable}"/>
 
 <view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
 <view:setConstant var="ORIGINAL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.ORIGINAL"/>
@@ -393,7 +394,7 @@ function CutSelectedMedia() {
     <view:operationOfCreation action="${addStreamingAction}" altText="${addStreamingLabel}" icon="${addStreamingIcon}"/>
   </c:if>
   <%-- Basket for users --%>
-  <c:if test="${greaterUserRole eq userRole and isBasket or isExportEnable}">
+  <c:if test="${isMediaSelectable}">
     <view:operationSeparator/>
     <view:operation action="javascript:onClick=sendToBasket()" altText="${addToBasketSelectedMediaLabel}" icon="${addToBasketSelectedMediaIcon}"/>
     <view:operation action="BasketView" altText="${viewBasketLabel}" icon="${viewBasketIcon}"/>
@@ -433,8 +434,7 @@ function CutSelectedMedia() {
                                  nbMediaPerPage="${nbMediaPerPage}"
                                  currentPageIndex="${currentPageIndex}"
                                  isViewList="${isViewList}"
-                                 greaterUserRole="${greaterUserRole}"
-                                 isBasket="${isBasket}"/>
+                                 selectable="${isMediaSelectable}"/>
     <c:choose>
       <c:when test="${empty currentAlbum.media and empty albums and greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
         <c:set var="templateUserRole" value="${publisherRole}"/>

@@ -93,13 +93,9 @@
               type="java.lang.String"
               description="Current keyword search." %>
 
-<%@ attribute name="greaterUserRole" required="true"
-              type="com.stratelia.webactiv.SilverpeasRole"
-              description="Greater user role." %>
-
-<%@ attribute name="isBasket" required="true"
+<%@ attribute name="selectable" required="true"
               type="java.lang.Boolean"
-              description="Greater user role." %>
+              description="Images are selectable" %>
 
 <c:set var="firstMediaIndex" value="${nbMediaPerPage * currentPageIndex}"/>
 <c:set var="lastMediaIndex" value="${firstMediaIndex + nbMediaPerPage - 1}"/>
@@ -221,7 +217,7 @@
                         <gallery:displayMediaInAlbumContent media="${media}" mediaResolution="${mediaResolution}"/>
                       </a>
                     </div>
-                    <c:if test="${not (greaterUserRole eq userRole and not isBasket)}">
+                    <c:if test="${selectable}">
                       <div>
                         <input type="checkbox" name="SelectMedia" value="${media.id}" ${mediaChecked}/>
                       </div>
@@ -237,9 +233,11 @@
                 </td>
               </c:when>
               <c:otherwise>
-                <td class="a-media aff-list checkbox">
-                  <input type="checkbox" name="SelectMedia" value="${media.id}" ${mediaChecked}/>
-                </td>
+                <c:if test="${selectable}">
+                  <td class="a-media aff-list checkbox">
+                    <input type="checkbox" name="SelectMedia" value="${media.id}" ${mediaChecked}/>
+                  </td>
+                </c:if>
                 <td class="a-media aff-list vignette">
                   <div class="${mediaBackgroundClass}">
                     <div class="cadrePhoto">
