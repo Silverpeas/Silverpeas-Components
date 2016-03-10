@@ -54,14 +54,16 @@
 		false));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+
 <%
 	responseForm.displayScripts(out, context);
 %>
-<SCRIPT language="JavaScript">
+<script language="JavaScript">
 <!--
 	function B_VALIDER_ONCLICK()
 	{
@@ -76,64 +78,46 @@
 	}
 
 //-->
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY class="yui-skin-sam">
+</head>
+<body class="yui-skin-sam">
 <%
    out.println(window.printBefore());
    out.println(frame.printBefore());
 %>
 
-<CENTER>
-<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="98%">
-<tr>
-	<td class="intfdcolor" nowrap width="100%">
-		<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
-		<span class="txtNav">
-			  <%= resource.getString("processManager.questionsToAnswer")+" "+ question.getFromUser().getFullName() %>
-		</span>
-	</td>
-</tr>
-</table>
+	<p class="txtnav">
+		  <%= resource.getString("processManager.questionsToAnswer")+" "+ question.getFromUser().getFullName() %>
+	</p>
+
 <%
    questionForm.display(out, context, questionData);
 %>
-   <BR>
-</CENTER>
 
-<FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveResponse" ENCTYPE="multipart/form-data">
+
+
+<form name="<%=context.getFormName()%>" method="post" action="saveResponse" enctype="multipart/form-data">
 <input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
-<CENTER>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
-			<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">
-				<tr>
-					<td class="intfdcolor" rowspan="2" nowrap width="100%">
-		         <img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
-		         <span class="txtNav">
+
+
+		         <p class="txtnav">
 					   <%=resource.getString("processManager.yourAnswer") %>
-		         </span>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</table>
+		         </p>
+				
 <%
    responseForm.display(out, context, responseData);
 %>
 
-   <INPUT type="hidden" name="questionId" value="<%=question.getId()%>">
-   <BR>
+   <input type="hidden" name="questionId" value="<%=question.getId()%>" />
+   <br />
 <%
 	out.println(buttonPane.print());
 %>
-</CENTER>
-</FORM>
+
+</form>
 <%
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-</BODY>
+</body>
