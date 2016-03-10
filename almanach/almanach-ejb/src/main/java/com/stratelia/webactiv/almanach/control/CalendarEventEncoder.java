@@ -83,7 +83,7 @@ public class CalendarEventEncoder {
 
       CalendarEvent event = anEventAt(startDate).
               endingAt(endDate).
-              withTitle(eventDetail.getName()).
+              from(eventDetail).
               withDescription(eventDetail.getWysiwyg()).
               withPriority(eventDetail.getPriority());
       if (isDefined(eventDetail.getPlace())) {
