@@ -51,7 +51,7 @@
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
 	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-	tabbedPane.addTab(resource.getString("processManager.actions"), "", true, false);
+	tabbedPane.addTab(resource.getString("processManager.actions"), "#", true, true);
 	if (isReturnEnabled) {
 		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId() , false, true);
 	}
@@ -60,18 +60,19 @@
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
    out.println(window.printBefore());
    out.println(tabbedPane.print());
    out.println(frame.printBefore());
 %>
-<CENTER>
+
 <%
    boolean noTask = true;
 	for (int i=0; tasks!=null && i<tasks.length; i++)
@@ -79,24 +80,14 @@
      noTask = false;
   	  State state = tasks[i].getState();
 %>
-<% out.println(board.printBefore()); %>
-			<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">
-				<tr>
-					<td class="intfdcolor" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"><span class="txtNav"><%=resource.getString("processManager.activityStates") %> </span>
-					</td>
-				</tr>
-			</table>
-			<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
-				  <tr>
-				   <td>
-						 <span class="textePetitBold">&#149;&nbsp;
-								<%=state.getLabel(currentRole, language)%></span>
-				   </td>
-				  </tr>
-				  <tr>
-				   <td>
+
+	<h2 class="form-title"><%=resource.getString("processManager.activityStates") %> </h2>
+					
+					
+	<div>
+			<div class="inlineMessage">&#149;&nbsp;
+			<%=state.getLabel(currentRole, language)%></div>
+	
 <%
 		  ButtonPane buttonPane = gef.getButtonPane();
 			Action[] actions = state.getFilteredActions();
@@ -123,33 +114,25 @@
 
 		  out.println(buttonPane.print());
 %>
-				   </td>
-				  </tr>
-				<tr><td colspan=3><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
-			</table>
-<% out.println(board.printAfter()); %>
+	</div>
+
 
 <%
 	}
 
    if (noTask)
    { %>
-<% out.println(board.printBefore()); %>
-         <table CELLPADDING="0" CELLSPACING="2" BORDER="0" WIDTH="100%" CLASS="intfdcolor4"><tr><td>&nbsp;</td></tr><tr>
-			   <td width="80%">
-			      <img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
-			      <span class="textePetitBold">
+         <div class="inlineMessage-nok">
+			      <p>
 			      <% if (isInErrorState.booleanValue()) out.println(resource.getString("processManager.ERR_PROCESS_IN_ERROR")+"&nbsp;"); %>
 			      <%=resource.getString("processManager.noTask")%>
-			      </span>
-				</td>
-			</tr><tr><td>&nbsp;</td></tr></table>
-<% out.println(board.printAfter()); %>
+			      </p>
+		</div>
 <% } %>
 
-</CENTER>
+
 <%
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-</BODY>
+</body>

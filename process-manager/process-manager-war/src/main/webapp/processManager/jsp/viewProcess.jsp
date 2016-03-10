@@ -64,7 +64,7 @@
 			resource.getString("processManager.print"),
 			"javascript:printProcess()");
 	}
-	tabbedPane.addTab(resource.getString("processManager.details"), "", true, false);
+	tabbedPane.addTab(resource.getString("processManager.details"), "#", true, true);
 
 	if ("supervisor".equalsIgnoreCase(currentRole))
 	{
@@ -130,70 +130,58 @@ function printProcess() {
 %>
 <view:frame>
 			<% if (hasLockingUsers) {%>
-			<view:board>
-			<table cellpadding="0" cellspacing="0" border="0" width="100%">
-				<tr>
-					<td class="intfdcolor" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/><span class="txtNav"><%=resource.getString("processManager.actionInProgress") %> </span>
-					</td>
-				</tr>
-			</table>
-			<table cellpadding="5" cellspacing="0" border="0" width="100%">
-				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"/></td></tr>
-
+			
+		<div class="inlineMessage un">	
+			<p class="txtnav"><%=resource.getString("processManager.actionInProgress") %> </p>
+					
+			
 				<c:choose>
 					<c:when test="${isCurrentUserIsLockingUser}">
-						<tr>
-						<td class="textePetitBold">
+
+						<p class="textePetitBold">
 						<%=resource.getString("processManager.youHaveAnActionToFinish") %>
-						</td>
-						</tr>
+						</p>
+
 					</c:when>
 
 					<c:otherwise>
 						<c:forEach items="${locks}" var="userlock">
-							<tr>
-								<td class="textePetitBold">
+
+								<p class="textePetitBold">
 									<%=resource.getString("processManager.instanceLockedBy")%> ${userlock.user.fullName}
 									<%=resource.getString("processManager.since")%> <fmt:formatDate value="${userlock.lockDate}" pattern="dd MMM yyyy"/>
 									<c:if test="${currentRole eq 'supervisor'}">
 										<c:if test="${userlock.removableBySupervisor}">
 											<c:url value="/util/icons/delete.gif" var="removeIconUrl" />
 											<a href="removeLock?processId=${process.instanceId}&stateName=${userlock.state}&userId=${userlock.user.userId}">
-												<img src="${removeIconUrl}" border="0"/>
+												<img alt="" src="${removeIconUrl}" border="0"/>
 											</a>
 										</c:if>
 									</c:if>
-								</td>
-							</tr>
+								</p>
+	
 						</c:forEach>
 					</c:otherwise>
 				</c:choose>
-			</table>
-			</view:board>
+			</div>
+
 			<br/>
 			<%
 			}
 			%>
 			
-			<view:board>
-			<table cellpadding="0" cellspacing="0" border="0" width="100%">
-				<tr>
-					<td class="intfdcolor" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/><span class="txtNav"><%=resource.getString("processManager.activeStates") %> </span>
-					</td>
-				</tr>
-			</table>
-			<table cellpadding="5" cellpadding="0" border="0" width="100%">
+		<div class="inlineMessage deux">
+			<p class="txtnav"><%=resource.getString("processManager.activeStates") %> </p>
+					
 					<%
 						if (activeStates==null || activeStates.length==0)
 						{
 							%>
-							<tr>
-							<td class="textePetitBold">
+
+							<p class="textePetitBold">
 							<%=resource.getString("processManager.noActiveState") %>
-							</td>
-							</tr>
+							</p>
+
 							<%
 						}
 						else
@@ -201,24 +189,22 @@ function printProcess() {
 							for (int i=0; i<activeStates.length; i++)
 							{
 							%>
-							   <tr>
-							   <td>
+
+							   <p>
 								 <span class="textePetitBold">&#149;&nbsp;
 								<%=activeStates[i]%></span>
 								<% if (activeRoles != null && i<activeRoles.length && activeRoles[i] != null && activeRoles[i].length() > 0) { %>
 								   (<%=activeRoles[i]%>)
 								<% } %>
-							   </td>
-							  </tr>
+							   </p>
+
 							<%
 							}
 						}
 					%>
-				<tr><td colspan="3"><img src="<%=resource.getIcon("processManager.px") %>"/></td></tr>
-			</table>
-</view:board>
+		</div>	
 <br/>
-<view:board>
+
 <table width="100%">
 <tr><td>
 <%
@@ -226,6 +212,7 @@ function printProcess() {
    	form.display(out, context, data);
 %>
 </td><td valign="top">
+
 <%
 	out.flush();
 	if (!isVersionControlled) {
@@ -235,7 +222,7 @@ function printProcess() {
 	}
 %>
 </td></tr></table>
-</view:board>
+
 </view:frame>
 <%
    out.println(window.printAfter());
