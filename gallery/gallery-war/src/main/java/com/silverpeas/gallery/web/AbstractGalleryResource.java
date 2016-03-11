@@ -41,6 +41,7 @@ import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.ThumbnailPeriod;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -266,19 +267,24 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param expectedMediaType the expected media type
    * @param mediaId the media identifier
    * @param thumbnailId the thumbnail identifier
-   * @return video media thumbnail
+   * @param sizeDirective the size directive with pattern (optional)
+   * @return
    */
   protected Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
-      final String thumbnailId) {
+      final String thumbnailId, final String sizeDirective) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Verifying the physical file exists
-      final SilverpeasFile thumbFile = SilverpeasFileProvider.getFile(FileUtils
-          .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
-              media.getWorkspaceSubFolderName(),
-              ThumbnailPeriod.fromIndex(thumbnailId).getFilename()).getPath());
+      String filename = ThumbnailPeriod.fromIndex(thumbnailId).getFilename();
+      if (StringUtil.isDefined(sizeDirective)) {
+        filename = sizeDirective + "/" + filename;
+      }
+      final SilverpeasFile thumbFile =
+          SilverpeasFileProvider.getFile(FileUtils
+              .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
+                  media.getWorkspaceSubFolderName(), filename).getPath());
       if (!thumbFile.exists()) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
