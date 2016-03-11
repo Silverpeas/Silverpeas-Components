@@ -46,7 +46,6 @@ public class NewsRepositoryTest {
       warBuilder.addMavenDependenciesWithPersistence(
           "org.silverpeas.components.delegatednews:silverpeas-delegatednews");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-statistic");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
       warBuilder.addMavenDependencies("org.apache.tika:tika-core");
