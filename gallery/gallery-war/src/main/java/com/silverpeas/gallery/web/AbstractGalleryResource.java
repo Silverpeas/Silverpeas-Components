@@ -31,6 +31,7 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -269,20 +270,24 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param expectedMediaType
    * @param mediaId
    * @param thumbnailId
+   * @param sizeDirective the size directive with pattern (optional)
    * @return
    */
   protected Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
-      final String thumbnailId) {
+      final String thumbnailId, final String sizeDirective) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Verifying the physical file exists
+      String filename = ThumbnailPeriod.fromIndex(thumbnailId).getFilename();
+      if (StringUtil.isDefined(sizeDirective)) {
+        filename = sizeDirective + "/" + filename;
+      }
       final SilverpeasFile thumbFile =
           SilverpeasFileProvider.getFile(FileUtils
               .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
-                  media.getWorkspaceSubFolderName(),
-                  ThumbnailPeriod.fromIndex(thumbnailId).getFilename()).getPath());
+                  media.getWorkspaceSubFolderName(), filename).getPath());
       if (!thumbFile.exists()) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
