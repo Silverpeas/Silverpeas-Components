@@ -31,9 +31,6 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -1081,24 +1078,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
             cards.add(map.get(content.getId()));
           }
         }
-
-        if (cards != null) {
-          for (Card card : cards) {
-            UserRecord userRecord = card.readUserRecord();
-            if (userRecord != null) {
-              SessionManagementFactory factory = SessionManagementFactory.getFactory();
-              SessionManagement sessionManagement = factory.getSessionManagement();
-              Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
-              for (SessionInfo varSi : sessionInfos) {
-                if (varSi.getUserDetail().equals(userRecord.getUserDetail())) {
-                  userRecord.setConnected(true);
-                  break;
-                }
-              }
-            }
-          }
-        }
-
       } catch (Exception e) {
         SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult",
             "whitePages.EX_SEARCH_GETCARDS", e);
