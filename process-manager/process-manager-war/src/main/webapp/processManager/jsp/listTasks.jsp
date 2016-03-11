@@ -51,7 +51,7 @@
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
 	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-	tabbedPane.addTab(resource.getString("processManager.actions"), "", true, false);
+	tabbedPane.addTab(resource.getString("processManager.actions"), "#", true, true);
 	if (isReturnEnabled) {
 		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId() , false, true);
 	}

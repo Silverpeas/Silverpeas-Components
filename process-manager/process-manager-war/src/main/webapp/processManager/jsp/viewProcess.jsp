@@ -64,7 +64,7 @@
 			resource.getString("processManager.print"),
 			"javascript:printProcess()");
 	}
-	tabbedPane.addTab(resource.getString("processManager.details"), "", true, false);
+	tabbedPane.addTab(resource.getString("processManager.details"), "#", true, true);
 
 	if ("supervisor".equalsIgnoreCase(currentRole))
 	{

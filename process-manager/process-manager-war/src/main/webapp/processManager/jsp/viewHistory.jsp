@@ -52,7 +52,7 @@
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
 	if ("supervisor".equalsIgnoreCase(currentRole))
 	{
-		tabbedPane.addTab(resource.getString("processManager.history"), "", true, false);
+		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
 	}
 	else
@@ -63,7 +63,7 @@
 		if (isReturnEnabled) {
 			tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
 		}
-		tabbedPane.addTab(resource.getString("processManager.history"), "", true, false);
+		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 	}
 	
 	operationPane.addOperation(resource.getIcon("processManager.print"), resource.getString("GML.print"), "javascript:window.print();");

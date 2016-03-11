@@ -48,7 +48,7 @@
 	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 	tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-	tabbedPane.addTab(resource.getString("processManager.questions"), "" , true, false);
+	tabbedPane.addTab(resource.getString("processManager.questions"), "#" , true, true);
 	if (isHistoryTabEnable.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 %>
