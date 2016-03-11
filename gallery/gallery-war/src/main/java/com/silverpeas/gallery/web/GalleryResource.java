@@ -30,6 +30,7 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.view.Viewable;
 
@@ -147,12 +148,14 @@ public class GalleryResource extends AbstractGalleryResource {
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    * @param photoId the identifier of the photo
+   * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked photo.
    */
   @GET
-  @Path(GALLERY_PHOTOS_PART + "/{photoId}/" + GALLERY_MEDIA_CONTENT_PART)
+  @Path(GALLERY_PHOTOS_PART + "/{photoId}/{size:([0-9]*x[0-9]*/)?}" + GALLERY_MEDIA_CONTENT_PART)
   @Produces("image/*")
   public Response getPhotoContent(@PathParam("photoId") final String photoId,
+      @PathParam("size") final String size,
       @QueryParam(GALLERY_PHOTO_RESOLUTION_PARAM) MediaResolution mediaResolution) {
     if (mediaResolution == null) {
       mediaResolution = MediaResolution.ORIGINAL;
@@ -179,14 +182,20 @@ public class GalleryResource extends AbstractGalleryResource {
    * authentified, a 401 HTTP code is returned. If a problem occurs when processing the request, a
    * 503 HTTP code is returned.
    * @param videoId the identifier of the video
+   * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked video.
    */
   @GET
-  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_THUMBNAIL_PART + "/{thumbnailId}")
+  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_THUMBNAIL_PART + "/{size:([0-9]*x[0-9]*/)?}{thumbnailId}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getVideoThumbnail(@PathParam("videoId") final String videoId,
+      @PathParam("size") final String size,
       @PathParam("thumbnailId") final String thumbnailId) {
-    return getMediaThumbnail(Video, videoId, thumbnailId);
+    String sizeDirective = size;
+    if (StringUtil.isDefined(sizeDirective)) {
+      sizeDirective = sizeDirective.replaceAll("[^0-9x]*", "");
+    }
+    return getMediaThumbnail(Video, videoId, thumbnailId, sizeDirective);
   }
 
   /**
