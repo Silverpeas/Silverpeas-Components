@@ -23,12 +23,11 @@
  */
 package com.silverpeas.gallery.web;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaLogicalComparator;
-import org.apache.commons.collections.set.UnmodifiableSet;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -51,7 +50,8 @@ public enum MediaSort {
   Definition(false, "gallery.dimension", DIMENSION_ASC, CREATE_DATE_DESC, IDENTIFIER_ASC);
 
   @SuppressWarnings("unchecked")
-  public final static Set<MediaSort> ALL = UnmodifiableSet.decorate(EnumSet.allOf(MediaSort.class));
+  public final static Set<MediaSort> ALL =
+      Collections.unmodifiableSet(EnumSet.allOf(MediaSort.class));
 
   private final boolean displayed;
   private final String bundleKey;

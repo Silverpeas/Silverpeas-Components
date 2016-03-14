@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.components.mydb</groupId>
   <artifactId>mydb-ejb</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB mydb</name>
 
   <dependencies>
