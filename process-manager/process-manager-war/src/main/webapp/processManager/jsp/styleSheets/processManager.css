@@ -1,0 +1,39 @@
+.inlineMessage {
+	text-align: left;
+	padding-left: 50px;
+	margin-top: 0px;
+}
+
+.deploy-item {
+	position:absolute;
+	top:1em;
+	right:1em;
+}
+
+.deploy-item img {
+	border:0
+}
+
+.bgDegradeGris {
+	position:relative;
+}
+
+.btn-closed {
+	margin:1em;
+    display: block;
+	text-align:right;
+}
+
+.btn-deploy-all-item{
+	margin:1em 0;
+    display: inline-block;
+}
+
+.txt-align-right {
+	text-align:right;
+}
+
+.inlineMessage.neutral {
+	background-color:#EFEFEF;
+	border-color:#CCC;
+}

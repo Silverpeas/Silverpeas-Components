@@ -52,7 +52,7 @@
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
 	if ("supervisor".equalsIgnoreCase(currentRole))
 	{
-		tabbedPane.addTab(resource.getString("processManager.history"), "", true, false);
+		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
 	}
 	else
@@ -63,7 +63,7 @@
 		if (isReturnEnabled) {
 			tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
 		}
-		tabbedPane.addTab(resource.getString("processManager.history"), "", true, false);
+		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 	}
 	
 	operationPane.addOperation(resource.getIcon("processManager.print"), resource.getString("GML.print"), "javascript:window.print();");
@@ -83,58 +83,48 @@
 	out.println(tabbedPane.print());
 %>
 <view:frame>
-<table cellpadding="0" cellspacing="2" border="0" width="98%">
-<tr><td align="right">
+
+
+<div class="txt-align-right">
 	<% if ("all".equalsIgnoreCase(enlightedStep)) { %>
-		<a href="viewHistory"><%=resource.getString("processManager.collapseAll") %></a>
+	<a  class="bend-all-item btn-deploy-all-item bgDegradeGris " title="<%=resource.getString("processManager.collapseAll") %>"  href="viewHistory">
+    <img class="deploy-item-rssNews" src="/silverpeas/util/icons/arrow/closed.gif"  alt=""/> <%=resource.getString("processManager.collapseAll") %></a>
 	<% } else { %>
-		<a href="viewHistory?enlightedStep=all"><%=resource.getString("processManager.expandAll") %></a>
+		<a class="deploy-all-item btn-deploy-all-item bgDegradeGris " title="<%=resource.getString("processManager.expandAll") %>" href="viewHistory?enlightedStep=all">
+				<img class="deploy-item-rssNews" src="/silverpeas/util/icons/arrow/open.gif" alt=""/> <%=resource.getString("processManager.expandAll") %></a>
+
 	<% } %>
-</td></tr>
-</table>
+</div>
 <% 
 	for (int i=0; i<steps.size(); i++) // boucle sur tous les process
 	{
 	  StepVO step = (StepVO) steps.get(i);
 %>
-<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
+
 <form name="formCollapse" action="viewHistory">
 <input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
-	<tr>
-		<td class="intfdcolor4">
-			<table cellpadding="0" cellspacing="0" border="0" width="100%">
-				<tr>
-					<td class="intfdcolor" rowspan="2" width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
-						<span class="txtNav">
+
+			<div class="bgDegradeGris ">
+						<p class="txtnav">
 						<% 
 						if ( StringUtil.isDefined( step.getActivity() ) )
 							out.println(step.getActivity()+" - ");
 						%>
 						<%= step.getActionName()%> (<%=step.getActorFullName()%> - <%=step.getStepDate()%>)
-						</span>
-					</td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"/></td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"/></td>
-				</tr>
-				<tr>
-					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.boxAngleLeft") %>"/></td>
-					<td align="center" valign="bottom">
+						</p>
 						<%
 						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )
 						{
 							if (step.getContent() == null) {
-								out.println("<a href=\"viewHistory?enlightedStep="+step.getStepId()+"\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
+								out.println("<a class=\"deploy-item\" href=\"viewHistory?enlightedStep="+step.getStepId()+"\"><img  alt=\"\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
 							}
 							else{
-								out.println("<a href=\"viewHistory\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
+								out.println("<a class=\"deploy-item\" href=\"viewHistory\"><img  alt=\"\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
 							}
 						}
 						%>
-					<img border="0" height="1" width="3" src="<%=resource.getIcon("processManager.px") %>"/>
-					</td>
-				</tr>
-			</table>
+					
+			</div>
 			<%
 			if (step.getContent() != null) 	{
 				form = step.getContent().getForm();
@@ -143,39 +133,29 @@
 				
 				if (form == null || data == null || ( !step.isVisible() && !("supervisor".equalsIgnoreCase(currentRole))) ) {
 				%>
-					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td></tr></table>
-				<%	
+					ICI
+				<%
 				}
 				else
 				{
 				%>
-					<table cellpadding="5" cellspacing="0" border="0" width="100%">
-						<tr>
-							<td>
-							<%
-								context.setBorderPrinted(true);
+					<%
 								form.display(out, context, data); 
 							%>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2" align="right"><a href="viewHistory"><img border="0" src="<%=resource.getIcon("processManager.boxUp") %>"/></a><img border="0" width="3" src="<%=resource.getIcon("processManager.px") %>"/></td>
-						</tr>
-					</table>
+					<a class="btn-closed" href="viewHistory"><img   alt="" border="0" src="<%=resource.getIcon("processManager.boxUp") %>"/></a>
 				<%
 				}
 			}
 			else
 			{
 			%>
-				<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td></tr></table>
+
 			<%
 			}
 			%>
-		</td>
-	</tr>
+
 </form>	
-</table>
+
 <%
    }
 %>
