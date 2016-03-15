@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.yellowpages.service;
 
-import com.stratelia.webactiv.contact.model.CompleteContact;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.contact.model.ContactPK;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.util.ServiceProvider;
@@ -104,7 +104,7 @@ public interface YellowpagesService {
    * Return the detail of a contact (only the Header)
    * @param contactPK the id of the contact
    * @return a ContactDetail
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    * @since 1.0
    */
   ContactDetail getContactDetail(ContactPK contactPK);
@@ -122,7 +122,7 @@ public interface YellowpagesService {
    * Create a new Contact (only the header - parameters) to the current Topic
    * @param contact a contact
    * @return the id of the new contact
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    * @since 1.0
    */
   String createContact(Contact contact, NodePK nodePK);
@@ -130,7 +130,7 @@ public interface YellowpagesService {
   /**
    * Update a contact (only the header - parameters)
    * @param contact a contact
-   * @see com.stratelia.webactiv.util.contact.model.Contact
+   * @see Contact
    * @since 1.0
    */
   void updateContact(Contact contact);
@@ -173,7 +173,7 @@ public interface YellowpagesService {
    * @param contactPK the id of a contact
    * @param nodeId the id of the node
    * @return a CompleteContact
-   * @see com.stratelia.webactiv.contact.model.CompleteContact
+   * @see CompleteContact
    */
   CompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId);
 
@@ -183,7 +183,7 @@ public interface YellowpagesService {
    * Return a collection of ContactDetail through a collection of contact ids
    * @param contactIds a collection of contact ids
    * @return a collection of ContactDetail
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    * @since 1.0
    */
   Collection<UserContact> getContacts(Collection<String> contactIds, String instanceId);

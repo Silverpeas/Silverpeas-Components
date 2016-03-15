@@ -25,7 +25,7 @@ package org.silverpeas.components.yellowpages;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import com.stratelia.webactiv.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;

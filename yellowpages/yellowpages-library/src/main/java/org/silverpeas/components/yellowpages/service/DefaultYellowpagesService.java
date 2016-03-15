@@ -28,15 +28,15 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.contact.control.ContactBm;
-import com.stratelia.webactiv.contact.model.CompleteContact;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.contact.model.ContactPK;
+import org.silverpeas.core.contact.service.ContactService;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.components.yellowpages.dao.GroupDAO;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
@@ -74,7 +74,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   @Inject
   private NodeService nodeService;
   @Inject
-  private ContactBm contactBm;
+  private ContactService contactService;
 
   public DefaultYellowpagesService() {
   }
@@ -110,7 +110,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         NodePK childPK = child.getNodePK();
         if (!childPK.getId().startsWith("group_")) {
           String childPath = child.getPath();
-          nbContacts = contactBm.getNbPubByFatherPath(childPK, childPath);
+          nbContacts = contactService.getNbPubByFatherPath(childPK, childPath);
           // traitement des sous-rubriques et des sous-groupes
           nbContactsBySubTopic = getRecursiveNbContact(nodeService.getDetail(childPK));
           itSub = nbContactsBySubTopic.iterator();
@@ -145,12 +145,12 @@ public class DefaultYellowpagesService implements YellowpagesService {
       Collection<ContactDetail> contactDetails;
       if (pk.isUnclassed()) {
         ContactPK contactPK = new ContactPK("unknown", pk);
-        contactDetails = contactBm.getOrphanContacts(contactPK);
+        contactDetails = contactService.getOrphanContacts(contactPK);
       } else if (pk.isTrash()) {
         ContactPK contactPK = new ContactPK("unknown", pk);
-        contactDetails = contactBm.getUnavailableContactsByPublisherId(contactPK, userId, "1");
+        contactDetails = contactService.getUnavailableContactsByPublisherId(contactPK, userId, "1");
       } else {
-        contactDetails = contactBm.getDetailsByFatherPK(nodeDetail.getNodePK());
+        contactDetails = contactService.getDetailsByFatherPK(nodeDetail.getNodePK());
       }
 
       if (contactDetails != null) {
@@ -344,7 +344,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
     // Delete all entries in the table which link pub to topic
     try {
-      contactBm.removeAllIssue(pkToDelete, contactPK);
+      contactService.removeAllIssue(pkToDelete, contactPK);
       unreferenceOrphanContacts(contactPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteTopic()",
@@ -393,12 +393,12 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * Return the detail of a contact (only the Header)
    * @param contactPK the id of the contact
    * @return a ContactDetail
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    */
   @Override
   public ContactDetail getContactDetail(ContactPK contactPK) {
     try {
-      ContactDetail contactDetail = contactBm.getDetail(contactPK);
+      ContactDetail contactDetail = contactService.getDetail(contactPK);
       // contact de type user Silverpeas
       if (contactDetail.getUserId() != null) {
         OrganizationController orga = getOrganisationController();
@@ -431,7 +431,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   public Collection<ContactDetail> getContactDetailsByLastName(ContactPK pk, String query) {
 
     try {
-      return contactBm.getDetailsByLastName(pk, query);
+      return contactService.getDetailsByLastName(pk, query);
     } catch (Exception e) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.getContactDetailsByLastName()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_CONTACTS_FAILED", e);
@@ -445,7 +445,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
     Collection<ContactDetail> contactDetails;
     try {
-      contactDetails = contactBm.getDetailsByLastNameOrFirstName(pk, query);
+      contactDetails = contactService.getDetailsByLastNameOrFirstName(pk, query);
     } catch (Exception e) {
       throw new YellowpagesRuntimeException(
           "DefaultYellowpagesService.getContactDetailsByLastNameOrFirstName()",
@@ -459,7 +459,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       String lastName, String firstName) {
 
     try {
-      return contactBm.getDetailsByLastNameAndFirstName(pk, lastName, firstName);
+      return contactService.getDetailsByLastNameAndFirstName(pk, lastName, firstName);
     } catch (Exception e) {
       throw new YellowpagesRuntimeException(
           "DefaultYellowpagesService.getContactDetailsByLastNameAndFirstName()",
@@ -482,7 +482,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       }
       ContactPK pk = new ContactPK("unknown", nodePK);
       Collection<ContactFatherDetail> contactDetails =
-          contactBm.getDetailsByFatherPKs(nodePKsWithout12, pk, nodePK);
+          contactService.getDetailsByFatherPKs(nodePKsWithout12, pk, nodePK);
       if (contactDetails != null) {
         for (ContactFatherDetail contactFatherDetail : contactDetails) {
           ContactDetail contactDetail = contactFatherDetail.getContactDetail();
@@ -527,7 +527,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     Collection<NodePK> fatherPKs;
     try {
       // get all nodePK whick contains this contact
-      fatherPKs = contactBm.getAllFatherPK(contactPK);
+      fatherPKs = contactService.getAllFatherPK(contactPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.getPathList()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACTBM_HOME_FAILED", re);
@@ -554,7 +554,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * Create a new Contact (only the header - parameters) to the current Topic
    * @param contact a contact
    * @return the id of the new contact
-   * @see com.stratelia.webactiv.util.contact.model.Contact
+   * @see Contact
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -565,7 +565,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
     try {
       // create the contact
-      contactPK = contactBm.createContact(contact);
+      contactPK = contactService.createContact(contact);
       contact.getPK().setId(contactPK.getId());
       // add this contact to the current topic
       addContactToTopic(contactPK, nodePK.getId());
@@ -580,16 +580,16 @@ public class DefaultYellowpagesService implements YellowpagesService {
   /**
    * Update a contact (only the header - parameters)
    * @param contactDetail a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.Contact
+   * @see Contact
    */
   @Override
   public void updateContact(Contact contactDetail) {
 
     try {
-      contactBm.setDetail(contactDetail);
+      contactService.setDetail(contactDetail);
       ContactPK contactPK = contactDetail.getPK();
       String fatherId = "2";
-      Collection<NodePK> fathers = contactBm.getAllFatherPK(contactPK);
+      Collection<NodePK> fathers = contactService.getAllFatherPK(contactPK);
       Iterator<NodePK> it = fathers.iterator();
       if (it.hasNext()) {
         fatherId = (it.next()).getId();
@@ -621,9 +621,9 @@ public class DefaultYellowpagesService implements YellowpagesService {
     if (nodePK.isTrash() || nodePK.isUnclassed()) {
       try {
         // delete link between this contact and the basket A VOIR POUR LA DZ !!!!!!!!!
-        contactBm.removeFather(contactPK, new NodePK(NodePK.BIN_NODE_ID, nodePK));
+        contactService.removeFather(contactPK, new NodePK(NodePK.BIN_NODE_ID, nodePK));
         // delete the contact
-        contactBm.removeContact(contactPK);
+        contactService.removeContact(contactPK);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteContact()",
             SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_CONTACT_FAILED", re);
@@ -644,9 +644,9 @@ public class DefaultYellowpagesService implements YellowpagesService {
   private void sendContactToBasket(ContactPK contactPK) {
     try {
       // remove all links between this contact and topics
-      contactBm.removeAllFather(contactPK);
+      contactService.removeAllFather(contactPK);
       // add link between this contact and the basket topic
-      contactBm.addFather(contactPK, new NodePK(NodePK.BIN_NODE_ID, contactPK));
+      contactService.addFather(contactPK, new NodePK(NodePK.BIN_NODE_ID, contactPK));
       deleteIndex(contactPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.sendContactToBasket()",
@@ -659,7 +659,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     ContactPK contactPK = new ContactPK(null, instanceId);
     try {
       // delete all current user orphan contacts
-      contactBm.deleteOrphanContactsByCreatorId(contactPK, userId);
+      contactService.deleteOrphanContactsByCreatorId(contactPK, userId);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.emptyDZByUserId()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_ORPHEAN_CONTACTS_FAILED", re);
@@ -677,20 +677,20 @@ public class DefaultYellowpagesService implements YellowpagesService {
     NodePK fatherPK = new NodePK(fatherId, contactPK);
     // add contact to topic
     try {
-      Collection<NodePK> fathers = contactBm.getAllFatherPK(contactPK);
+      Collection<NodePK> fathers = contactService.getAllFatherPK(contactPK);
       if (fathers.size() == 1) {
         Iterator<NodePK> iterator = fathers.iterator();
         if (iterator.hasNext()) {
           NodePK pk = iterator.next();
           if (pk.isTrash()) {
-            contactBm.removeFather(contactPK, pk);
+            contactService.removeFather(contactPK, pk);
           }
         }
       }
-      contactBm.addFather(contactPK, fatherPK);
+      contactService.addFather(contactPK, fatherPK);
       // reindexe le contact si pas dans la corbeille
       if (!fatherPK.isTrash()) {
-        contactBm.index(contactPK);
+        contactService.index(contactPK);
       }
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.addContactToTopic()",
@@ -707,7 +707,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   public void deleteContactFromTopic(ContactPK contactPK, String fatherId) {
     NodePK fatherPK = new NodePK(fatherId, contactPK);
     try {
-      contactBm.removeFather(contactPK, fatherPK);
+      contactService.removeFather(contactPK, fatherPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteContactFromTopic()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_CONTACT_FROM_TOPIC_FAILED", re);
@@ -723,7 +723,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   @Override
   public void createInfoModel(ContactPK contactPK, String modelId) {
     try {
-      contactBm.createInfoModel(contactPK, modelId);
+      contactService.createInfoModel(contactPK, modelId);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.createInfoModel()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_CREATE_INFO_MODEL_DETAIL_FAILED", re);
@@ -735,7 +735,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * @param contactPK the id of a contact
    * @param nodeId the id of the node
    * @return a CompleteContact
-   * @see com.stratelia.webactiv.contact.model.CompleteContact
+   * @see CompleteContact
    */
   @Override
   public CompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId) {
@@ -745,7 +745,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       NodePK nodePK = new NodePK(nodeId, contactPK.getInstanceId());
       NodeDetail nodeDetail = nodeService.getDetail(nodePK);
       String modelId = nodeDetail.getModelId();
-      completeContact = contactBm.getCompleteContact(contactPK, modelId);
+      completeContact = contactService.getCompleteContact(contactPK, modelId);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.getCompleteContactInNode()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACT_FAILED", re);
@@ -757,7 +757,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
   @Override
   public CompleteContact getCompleteContact(ContactPK contactPK) {
-    CompleteContact contact = contactBm.getCompleteContact(contactPK);
+    CompleteContact contact = contactService.getCompleteContact(contactPK);
     checkContactAsUser(contact);
     return contact;
   }
@@ -786,7 +786,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * Return a collection of ContactDetail throught a collection of contact ids
    * @param contactIds a collection of contact ids
    * @return a collection of ContactDetail
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    */
   @Override
   public Collection<UserContact> getContacts(Collection<String> contactIds, String instanceId) {
@@ -798,7 +798,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       contactPKs.add(contactPK);
     }
     try {
-      Collection<ContactDetail> contacts = contactBm.getContacts(contactPKs);
+      Collection<ContactDetail> contacts = contactService.getContacts(contactPKs);
       if (contacts != null) {
         for (ContactDetail contactDetail : contacts) {
           if (contactDetail.getUserId() != null) {
@@ -835,7 +835,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   public Collection<NodePK> getContactFathers(ContactPK contactPK) {
     try {
       // fetch contact fathers
-      return contactBm.getAllFatherPK(contactPK);
+      return contactService.getAllFatherPK(contactPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("DefaultYellowpagesService.getContactFathers()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACT_FATHERS_FAILED", re);
@@ -844,10 +844,10 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
   public void unreferenceOrphanContacts(ContactPK contactPK) {
     try {
-      Collection<ContactDetail> orphanContacts = contactBm.getOrphanContacts(contactPK);
+      Collection<ContactDetail> orphanContacts = contactService.getOrphanContacts(contactPK);
       for (ContactDetail contactDetail : orphanContacts) {
         // add link between this contact and the basket topic
-        contactBm.addFather(contactDetail.getPK(), new NodePK(NodePK.BIN_NODE_ID, contactPK));
+        contactService.addFather(contactDetail.getPK(), new NodePK(NodePK.BIN_NODE_ID, contactPK));
         deleteIndex(contactDetail.getPK());
       }
     } catch (Exception e) {
@@ -858,7 +858,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   }
 
   private void deleteIndex(ContactPK contactPK) {
-    contactBm.deleteIndex(contactPK);
+    contactService.deleteIndex(contactPK);
   }
 
   @Override
@@ -965,9 +965,9 @@ public class DefaultYellowpagesService implements YellowpagesService {
   }
 
   private void indexContacts(NodePK pk) {
-    Collection<ContactDetail> contacts = contactBm.getDetailsByFatherPK(pk);
+    Collection<ContactDetail> contacts = contactService.getDetailsByFatherPK(pk);
     for (ContactDetail contact : contacts) {
-      contactBm.index(contact.getPK());
+      contactService.index(contact.getPK());
     }
   }
 

@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.contact.model.ContactDetail;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic
@@ -117,7 +118,7 @@ public class TopicDetail implements java.io.Serializable {
    * Get a ContactDetail collection containing all the contacts in this topic
    * @return a ContactDetail collection containing all the contacts in this
    * topic
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    * @see java.util.Collection
    */
   public Collection<UserContact> getContactDetails() {

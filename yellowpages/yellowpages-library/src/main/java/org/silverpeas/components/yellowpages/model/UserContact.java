@@ -24,7 +24,7 @@
 package org.silverpeas.components.yellowpages.model;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactDetail;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic

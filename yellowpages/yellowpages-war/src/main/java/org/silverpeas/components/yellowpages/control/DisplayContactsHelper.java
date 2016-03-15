@@ -25,8 +25,8 @@ package org.silverpeas.components.yellowpages.control;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.MultiSilverpeasBundle;
