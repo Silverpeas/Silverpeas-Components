@@ -24,9 +24,9 @@
 package org.silverpeas.components.kmelia.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;

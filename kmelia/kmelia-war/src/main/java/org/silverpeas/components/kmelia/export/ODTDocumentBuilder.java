@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import com.silverpeas.comment.model.Comment;
+import org.silverpeas.core.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import com.silverpeas.converter.HTMLConverter;
 import com.silverpeas.form.DataRecord;

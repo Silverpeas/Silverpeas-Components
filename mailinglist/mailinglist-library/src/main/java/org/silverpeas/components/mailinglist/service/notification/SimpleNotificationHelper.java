@@ -29,9 +29,9 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import org.silverpeas.core.calendar.service.CalendarRuntimeException;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.calendar.model.ToDoHeader;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalGroupSubscriber;

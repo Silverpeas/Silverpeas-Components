@@ -77,7 +77,7 @@
 <%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper"%>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 
-<%@ page import="com.silverpeas.comment.model.Comment"%>
+<%@ page import="org.silverpeas.core.comment.model.Comment"%>
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 

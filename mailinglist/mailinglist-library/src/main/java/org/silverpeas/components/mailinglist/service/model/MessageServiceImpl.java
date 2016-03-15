@@ -29,9 +29,9 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingListActi
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.model.dao.MessageDao;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import org.silverpeas.core.calendar.service.CalendarRuntimeException;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.calendar.model.ToDoHeader;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;

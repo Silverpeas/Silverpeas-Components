@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import com.silverpeas.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -56,9 +56,9 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.Attendee;
-import com.stratelia.webactiv.calendar.model.TodoDetail;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.calendar.model.Attendee;
+import org.silverpeas.core.calendar.model.TodoDetail;
 import com.stratelia.webactiv.coordinates.control.CoordinatesService;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;

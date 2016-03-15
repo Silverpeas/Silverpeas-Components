@@ -25,8 +25,8 @@
 package org.silverpeas.components.quickinfo.socialnetwork;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.service.CommentServiceProvider;
-import com.silverpeas.comment.socialnetwork.SocialInformationComment;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentQuickInfosInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;

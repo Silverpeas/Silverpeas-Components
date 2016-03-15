@@ -25,7 +25,7 @@ package org.silverpeas.components.blog.notification;
 
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
-import com.silverpeas.comment.model.Comment;
+import org.silverpeas.core.comment.model.Comment;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.usernotification.model.NotificationResourceData;

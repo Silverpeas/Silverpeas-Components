@@ -25,8 +25,6 @@
 package org.silverpeas.components.quickinfo.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceProvider;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -40,6 +38,8 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.date.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;

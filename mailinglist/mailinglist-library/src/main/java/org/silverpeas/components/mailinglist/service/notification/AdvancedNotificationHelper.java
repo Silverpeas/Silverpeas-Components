@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import org.silverpeas.core.calendar.service.CalendarRuntimeException;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.util.ResourceLocator;

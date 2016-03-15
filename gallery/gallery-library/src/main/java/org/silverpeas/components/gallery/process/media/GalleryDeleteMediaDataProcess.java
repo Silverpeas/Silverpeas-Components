@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import com.silverpeas.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;

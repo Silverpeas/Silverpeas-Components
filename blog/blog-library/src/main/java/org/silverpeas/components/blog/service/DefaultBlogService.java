@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.blog.service;
 
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentService;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentService;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionManager;

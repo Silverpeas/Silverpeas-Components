@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.projectmanager.service;
 
-import com.silverpeas.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
@@ -35,8 +35,8 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.TodoDetail;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.calendar.model.TodoDetail;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;

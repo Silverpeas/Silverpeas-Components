@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.gallery.control;
 
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.ImportExportDescriptor;
@@ -75,8 +75,8 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.*;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

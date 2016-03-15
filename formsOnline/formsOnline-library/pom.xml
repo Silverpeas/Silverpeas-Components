@@ -36,12 +36,6 @@
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-clipboard</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <testResources>

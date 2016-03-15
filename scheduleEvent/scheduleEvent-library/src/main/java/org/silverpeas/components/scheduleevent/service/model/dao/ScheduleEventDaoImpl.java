@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;

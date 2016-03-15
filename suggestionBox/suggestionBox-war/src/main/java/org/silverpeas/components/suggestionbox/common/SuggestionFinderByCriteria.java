@@ -23,9 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.common;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.comment.model.CommentedPublicationInfo;
-import com.silverpeas.comment.service.CommentService;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
@@ -35,6 +32,9 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_OR
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.comment.model.CommentedPublicationInfo;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -101,7 +101,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
       final List<JOIN_DATA_APPLY> joinDataApplies) {
     if (CollectionUtil.isNotEmpty(joinDataApplies)) {
       if (joinDataApplies.contains(JOIN_DATA_APPLY.COMMENT)) {
-        CommentService commentService = SilverpeasServiceProvider.getCommentService();
+        CommentService commentService = CommentServiceProvider.getCommentService();
         List<CommentedPublicationInfo> suggestionInfos = commentService.
             getMostCommentedPublicationsInfo(Suggestion.TYPE, Arrays.asList(new ForeignPK(null,
                 criteria.getSuggestionBox().getComponentInstanceId())));

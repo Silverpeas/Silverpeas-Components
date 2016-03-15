@@ -24,9 +24,8 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentService;
 import com.silverpeas.notation.control.RatingService;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;

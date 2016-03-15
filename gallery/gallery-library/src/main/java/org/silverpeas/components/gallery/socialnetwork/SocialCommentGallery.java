@@ -25,8 +25,8 @@
 package org.silverpeas.components.gallery.socialnetwork;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.service.CommentServiceProvider;
-import com.silverpeas.comment.socialnetwork.SocialInformationComment;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.model.Media;

@@ -51,8 +51,8 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.DecodingException;
 
 import javax.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
 package org.silverpeas.components.suggestionbox.web;
 
-import com.silverpeas.comment.model.Comment;
+import org.silverpeas.core.comment.model.Comment;
 import com.silverpeas.comment.web.CommentEntity;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 

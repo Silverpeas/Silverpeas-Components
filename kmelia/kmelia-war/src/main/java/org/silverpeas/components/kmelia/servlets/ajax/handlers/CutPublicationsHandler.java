@@ -22,7 +22,7 @@ package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardException;
 
 import javax.servlet.http.HttpServletRequest;
 

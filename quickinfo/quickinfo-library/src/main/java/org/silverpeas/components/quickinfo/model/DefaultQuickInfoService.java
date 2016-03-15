@@ -25,7 +25,7 @@
 package org.silverpeas.components.quickinfo.model;
 
 import com.silverpeas.ApplicationService;
-import com.silverpeas.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import com.silverpeas.pdc.PdcServiceProvider;

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.blog.control;
 
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.pdc.model.PdcClassification;

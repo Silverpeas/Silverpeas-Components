@@ -443,13 +443,13 @@ public class ProcessManagerRequestRouter
       String todoId = request.getParameter("Id");
 
       // Accept only links coming from todo details
-      if (type == null || (!type.equals("com.stratelia.webactiv.calendar.model.TodoDetail") &&
+      if (type == null || (!type.equals("TodoDetail") &&
           !type.equals("ProcessInstance"))) {
         return listProcessHandler.getDestination(function, session, request);
       }
 
       String processId = todoId;
-      if (type.equals("com.stratelia.webactiv.calendar.model.TodoDetail")) {
+      if (type.equals("TodoDetail")) {
         // from todo, todoId is in fact the externalId
         processId = session.getProcessInstanceIdFromExternalTodoId(todoId);
 

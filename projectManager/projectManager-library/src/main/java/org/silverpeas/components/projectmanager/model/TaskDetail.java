@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.projectmanager.model;
 
-import com.stratelia.webactiv.calendar.model.TodoDetail;
-import com.stratelia.webactiv.calendar.model.Attendee;
+import org.silverpeas.core.calendar.model.TodoDetail;
+import org.silverpeas.core.calendar.model.Attendee;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 
