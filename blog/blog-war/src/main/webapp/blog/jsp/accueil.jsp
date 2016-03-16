@@ -33,6 +33,7 @@
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.components.blog.model.Archive" %>
 <%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
+<%@ page import="org.silverpeas.core.mylinks.model.LinkDetail" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%

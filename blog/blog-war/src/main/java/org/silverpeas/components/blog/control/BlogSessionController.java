@@ -27,8 +27,8 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import com.silverpeas.myLinks.control.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
@@ -377,8 +377,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     return CommentServiceProvider.getCommentService();
   }
 
-  public MyLinksBm getMyLinksBm() {
-    return ServiceProvider.getService(MyLinksBm.class);
+  public MyLinksService getMyLinksBm() {
+    return ServiceProvider.getService(MyLinksService.class);
   }
 
   private BlogService getBlogService() {
