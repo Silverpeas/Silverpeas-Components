@@ -28,7 +28,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.importExport.report.ImportReport;
+import org.silverpeas.core.importexport.report.ImportReport;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -67,7 +67,7 @@ import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandle
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.FileUploadManager;

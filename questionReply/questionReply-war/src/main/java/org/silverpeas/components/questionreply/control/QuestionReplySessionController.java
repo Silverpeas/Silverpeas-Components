@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.control;
 
-import com.silverpeas.importExport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;

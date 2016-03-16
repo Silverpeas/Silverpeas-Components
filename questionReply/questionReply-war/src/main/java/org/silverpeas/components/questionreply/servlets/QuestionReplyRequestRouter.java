@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.servlets;
 
-import com.silverpeas.importExport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.components.questionreply.control.QuestionReplySessionController;
 import org.silverpeas.components.questionreply.model.Category;
 import org.silverpeas.components.questionreply.model.Question;

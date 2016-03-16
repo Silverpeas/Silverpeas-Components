@@ -46,7 +46,7 @@
 <%@ page import="org.silverpeas.util.DBUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.importExport.attachment.AttachmentDetail"%>
+<%@ page import="org.silverpeas.core.importexport.attachment.AttachmentDetail"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>

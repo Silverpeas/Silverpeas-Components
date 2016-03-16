@@ -25,7 +25,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.fileitem.InternalFileItem;
-import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.webactiv.node.model.NodeDetail;

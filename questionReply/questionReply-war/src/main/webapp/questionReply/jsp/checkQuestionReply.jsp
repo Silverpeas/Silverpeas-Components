@@ -31,7 +31,7 @@
 
 
 <%@ page import="java.util.Collection"%>
-<%@ page import="com.silverpeas.importExport.report.ExportReport"%>
+<%@ page import="org.silverpeas.core.importexport.report.ExportReport"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.components.questionreply.model.Question" %>
 <%@ page import="org.silverpeas.components.questionreply.model.Reply" %>

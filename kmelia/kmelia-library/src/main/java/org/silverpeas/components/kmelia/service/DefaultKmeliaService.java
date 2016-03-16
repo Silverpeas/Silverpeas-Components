@@ -25,7 +25,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.XMLField;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.pdc.model.PdcClassification;

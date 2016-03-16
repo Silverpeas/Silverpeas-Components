@@ -49,7 +49,7 @@ import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.web.ExportOptionValue;
 import org.silverpeas.components.gallery.web.MediaSort;
-import com.silverpeas.importExport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ExportReport;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

@@ -20,11 +20,11 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.silverpeas.importExport.control.ImportSettings;
-import com.silverpeas.importExport.control.MassiveDocumentImport;
-import com.silverpeas.importExport.model.ImportExportException;
-import com.silverpeas.importExport.report.ImportReport;
-import com.silverpeas.importExport.report.MassiveReport;
+import org.silverpeas.core.importexport.control.ImportSettings;
+import org.silverpeas.core.importexport.control.MassiveDocumentImport;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.report.ImportReport;
+import org.silverpeas.core.importexport.report.MassiveReport;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;

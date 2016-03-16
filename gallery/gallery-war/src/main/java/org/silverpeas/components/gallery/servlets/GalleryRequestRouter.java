@@ -43,7 +43,7 @@ import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.web.MediaSort;
-import com.silverpeas.importExport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ExportReport;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;

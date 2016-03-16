@@ -31,8 +31,8 @@ import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.core.importexport.attachment.AttachmentDetail;
+import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.util.UnitUtil;
 
 import java.io.File;

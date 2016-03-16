@@ -22,7 +22,7 @@ package org.silverpeas.components.kmelia.service;
 
 import com.silverpeas.ApplicationService;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
-import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.SilverpeasRole;
