@@ -37,12 +37,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-formtemplate</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-tagcloud</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>

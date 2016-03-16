@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-formtemplate</artifactId>
+      <artifactId>silverpeas-core-workflow</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
