@@ -53,13 +53,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent les flux RSS à diffuser.</message>
-        <message lang="en">Administrators set up RSS streams to broadcast.</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers set up RSS feeds to broadcast.</message>
+        <message lang="de">Managers set up RSS feeds to broadcast.</message>
       </help>
     </profile>
     <profile name="user">

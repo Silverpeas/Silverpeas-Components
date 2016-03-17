@@ -38,7 +38,7 @@
 		données via une requête SQL définie par le gestionnaire. Idéal pour exposer
 		rapidement vos données existantes.
     </message>
-    <message lang="en">Allow to connect and request a database; displaying results in tables. The administrator
+    <message lang="en">Allow to connect and request a database; displaying results in tables. Managers
       create SQL request and translate them in natural language request.
     </message>
     <message lang="de">Ermöglicht verbindungen zu einer Datenbanke un Zugriffe zu den Daten, Ergebnisse werden in Tabellen Anzeiget.
@@ -55,13 +55,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent les informations de connexion à la base de données.</message>
-        <message lang="en">Administrators set up the DB connection's parameters.</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers set up the DB connection's parameters.</message>
+        <message lang="de">Managers set up the DB connection's parameters.</message>
       </help>
     </profile>
     <profile name="publisher">

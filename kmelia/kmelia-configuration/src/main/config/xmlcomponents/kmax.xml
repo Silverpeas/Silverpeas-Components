@@ -58,12 +58,12 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
+        <message lang="en">Managers</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires définissent les axes de classement et sélectionnent les formulaires de métadonnées.</message>
-        <message lang="en">Administrators define classification axis and select metadata templates.</message>
+        <message lang="en">Managers define classification axis and select metadata templates.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>

@@ -53,13 +53,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires créent des catégories, des contacts et importent des groupe du référentiel utilisateurs.</message>
-        <message lang="en">Administrators create categories, contacts and import groups from the users referencial.</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers create categories, contacts and import groups from the users referencial.</message>
+        <message lang="de">Managers create categories, contacts and import groups from the users referencial.</message>
       </help>
     </profile>
     <profile name="publisher">
