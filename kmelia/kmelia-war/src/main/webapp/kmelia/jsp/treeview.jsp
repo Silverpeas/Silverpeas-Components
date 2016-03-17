@@ -469,8 +469,7 @@ function customMenu(node) {
         					if (params["i18n"]) {
         						storeTranslations(topic.translations);
         					} else {
-        						$("#addOrUpdateNode #folderName").val(name);
-								$("#addOrUpdateNode #folderDescription").val(desc);
+                    setDataInFolderDialog(name, desc);
         					}
         					topicUpdate(topic.attr["id"]);
         				});
@@ -615,7 +614,7 @@ function spreadNbItems(children) {
 	if (children) {
 		for(var i = 0; i < children.length; i++) {
 			var child = children[i];
-			child.attr['title'] = child.attr['description'];
+			child.attr['title'] = child.attr['description'].unescapeHTML();
 			<% if (kmeliaScc.isOrientedWebContent()) { %>
 				child.attr['class'] = child.attr['status'];
 			<% } %>
