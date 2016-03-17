@@ -50,14 +50,14 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Administrateurs</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administratoren</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les administrateurs créent des salles de discussions, gèrent les utilisateurs et paramètrent l'utilisation du Plan de Classement.</message>
-        <message lang="en">Administrators create chatrooms, manage users and set up the Classification Scheme.</message>
-        <message lang="de">Administratoren</message>
+        <message lang="fr">Les gestionnaires créent des salles de discussions, gèrent les utilisateurs et paramètrent l'utilisation du Plan de Classement.</message>
+        <message lang="en">Managers create chatrooms, manage users and set up the Classification Scheme.</message>
+        <message lang="de">Managers create chatrooms, manage users and set up the Classification Scheme.</message>
       </help>
     </profile>
     <profile name="publisher">

@@ -55,12 +55,12 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
+        <message lang="en">Managers</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires créent des dossiers et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators create topics and set up the Classification Scheme.</message>
+        <message lang="en">Managers create folders and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>

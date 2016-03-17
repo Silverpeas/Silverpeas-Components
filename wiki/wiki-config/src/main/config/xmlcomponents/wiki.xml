@@ -54,13 +54,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Administrateurs</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les administrateurs peuvent supprimer et modifier n'importe quelle page. Ils peuvent évidemment créer de nouvelles pages.</message>
-        <message lang="en">Administrators can delete and edit any page. They can obviously create new pages.</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers can delete and edit any page. They can obviously create new pages.</message>
+        <message lang="de">Managers can delete and edit any page. They can obviously create new pages.</message>
       </help>
     </profile>
     <profile name="writer">
