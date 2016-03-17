@@ -24,7 +24,7 @@
 package org.silverpeas.components.scheduleevent.service;
 
 import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.calendar.Datable;
+import org.silverpeas.date.Datable;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventStatus;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;

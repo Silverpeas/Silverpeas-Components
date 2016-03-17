@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;

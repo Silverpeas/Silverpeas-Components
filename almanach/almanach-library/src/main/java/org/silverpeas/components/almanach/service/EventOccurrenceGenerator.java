@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 
 import java.util.List;
 

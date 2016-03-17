@@ -30,7 +30,7 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 
 import java.util.List;
 

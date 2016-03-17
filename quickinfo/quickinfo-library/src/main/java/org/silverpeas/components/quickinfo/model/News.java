@@ -40,7 +40,7 @@ import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.util.DateUtil;

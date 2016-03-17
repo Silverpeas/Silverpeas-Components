@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.MediaUtil;
 import org.silverpeas.components.gallery.model.Media;

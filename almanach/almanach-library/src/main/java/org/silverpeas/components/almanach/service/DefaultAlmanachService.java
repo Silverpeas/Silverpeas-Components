@@ -23,7 +23,7 @@ package org.silverpeas.components.almanach.service;
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.AlmanachContentManager;
 import org.silverpeas.components.almanach.model.EventDAO;
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -756,7 +756,7 @@ public class DefaultAlmanachService implements AlmanachService {
   }
 
   @Override
-  public List<EventOccurrence> getEventOccurrencesInPeriod(org.silverpeas.date.Period period,
+  public List<EventOccurrence> getEventOccurrencesInPeriod(org.silverpeas.date.period.Period period,
       String... almanachIds) {
     try {
       Collection<EventDetail> events = getEventDAO().findAllEventsInPeriod(period, almanachIds);
@@ -773,7 +773,7 @@ public class DefaultAlmanachService implements AlmanachService {
   public List<EventOccurrence> getNextEventOccurrences(String... almanachIds) {
     List<EventOccurrence> occurrences;
     try {
-      com.silverpeas.calendar.Date today = today();
+      org.silverpeas.date.Date today = today();
       java.util.Calendar endDate = java.util.Calendar.getInstance();
       String upToDay = null;
       int numberOfMonths = settings.getInteger("almanach.nextEvents.windowtime", 0);
@@ -787,7 +787,7 @@ public class DefaultAlmanachService implements AlmanachService {
       EventOccurrenceGenerator occurrenceGenerator =
           EventOccurrenceGeneratorProvider.getEventOccurrenceGenerator();
       if (numberOfMonths > 0) {
-        com.silverpeas.calendar.Date endDay = new com.silverpeas.calendar.Date(endDate.getTime());
+        org.silverpeas.date.Date endDay = new org.silverpeas.date.Date(endDate.getTime());
         occurrences = occurrenceGenerator
             .generateOccurrencesInRange(today, endDay, new ArrayList<EventDetail>(events));
       } else {
@@ -805,8 +805,8 @@ public class DefaultAlmanachService implements AlmanachService {
     return this.eventDAO;
   }
 
-  protected com.silverpeas.calendar.Date today() {
-    return com.silverpeas.calendar.Date.today();
+  protected org.silverpeas.date.Date today() {
+    return org.silverpeas.date.Date.today();
   }
 
   private void checkEventDates(final EventDetail event) {

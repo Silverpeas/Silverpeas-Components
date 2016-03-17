@@ -23,8 +23,9 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.calendar.Date;
+import net.fortuna.ical4j.model.Period;
+import org.silverpeas.date.Datable;
+import net.fortuna.ical4j.model.DateTime;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import net.fortuna.ical4j.model.*;
@@ -32,6 +33,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
+import org.silverpeas.date.Date;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
@@ -51,7 +53,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator {
 
   @Override
-  public List<EventOccurrence> generateOccurrencesInPeriod(org.silverpeas.date.Period period,
+  public List<EventOccurrence> generateOccurrencesInPeriod(org.silverpeas.date.period.Period period,
           List<EventDetail> events) {
     Period thePeriod =
         new Period(new DateTime(period.getBeginDate()), new DateTime(period.getEndDate()));
@@ -59,7 +61,8 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
   }
 
   @Override
-  public List<EventOccurrence> generateOccurrencesInRange(Date startDate,  Date endDate,
+  public List<EventOccurrence> generateOccurrencesInRange(
+      org.silverpeas.date.Date startDate,  Date endDate,
     List<EventDetail> events) {
     Period period = new Period(new DateTime(startDate), new DateTime(endDate));
     return generateOccurrencesOf(events, occurringIn(period));
@@ -154,7 +157,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       calendarDate.set(java.util.Calendar.MINUTE, extractMinutes(time));
       calendarDate.set(java.util.Calendar.SECOND, 0);
       calendarDate.set(java.util.Calendar.MILLISECOND, 0);
-      datable = new com.silverpeas.calendar.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
+      datable = new org.silverpeas.date.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
     } else {
       datable = new Date(date).inTimeZone(timeZone);
     }

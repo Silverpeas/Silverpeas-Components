@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 

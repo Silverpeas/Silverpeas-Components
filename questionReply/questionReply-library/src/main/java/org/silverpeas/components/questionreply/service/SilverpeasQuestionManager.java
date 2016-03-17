@@ -24,9 +24,6 @@
 package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.QuestionReplyException;
-import org.silverpeas.components.questionreply.service.QuestionManager;
-import org.silverpeas.components.questionreply.service.QuestionRegexpComparator;
-import org.silverpeas.components.questionreply.service.QuestionReplyContentManager;
 import org.silverpeas.components.questionreply.service.notification.SubscriptionNotifier;
 import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
@@ -35,7 +32,7 @@ import org.silverpeas.components.questionreply.model.Reply;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;

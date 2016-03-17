@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.model;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 import java.awt.datatransfer.DataFlavor;

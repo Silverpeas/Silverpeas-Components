@@ -45,7 +45,7 @@ import com.silverpeas.mydb.data.db.DbLine;
 import com.silverpeas.mydb.data.db.DbTable;
 import com.silverpeas.mydb.data.db.DbUtil;
 import com.silverpeas.mydb.exception.MyDBException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 

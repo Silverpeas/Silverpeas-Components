@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.datawarning.model;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.SettingBundle;
 
 public class DataWarningResult extends Object {

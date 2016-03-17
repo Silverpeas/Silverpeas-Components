@@ -38,7 +38,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.util.DateUtil;

@@ -25,7 +25,7 @@
 package org.silverpeas.components.almanach.control;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import java.util.Date;
 

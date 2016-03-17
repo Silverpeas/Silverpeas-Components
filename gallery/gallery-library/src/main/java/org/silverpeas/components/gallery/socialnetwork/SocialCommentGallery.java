@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.gallery.socialnetwork;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
@@ -39,7 +39,7 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentGalleryInterface;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Singleton;

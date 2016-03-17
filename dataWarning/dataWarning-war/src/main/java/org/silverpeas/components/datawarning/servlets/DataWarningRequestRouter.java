@@ -36,7 +36,7 @@ import org.silverpeas.components.datawarning.model.DataWarningUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.viewGenerator.html.Encode;
 import org.silverpeas.servlet.HttpRequest;
 

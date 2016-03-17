@@ -29,8 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.export.ExportException;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileServerUtils;
 
 public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHandler {

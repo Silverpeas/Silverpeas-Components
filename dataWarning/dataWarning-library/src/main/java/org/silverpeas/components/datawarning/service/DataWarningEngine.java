@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning.service;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;

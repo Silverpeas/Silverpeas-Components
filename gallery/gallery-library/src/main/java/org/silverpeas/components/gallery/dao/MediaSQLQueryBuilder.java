@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.dao;
 
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteriaProcessor;

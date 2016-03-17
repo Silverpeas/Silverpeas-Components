@@ -29,7 +29,7 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.control.AlmanachCalendarView;
 import org.silverpeas.components.almanach.control.AlmanachSessionController;
 import org.silverpeas.components.almanach.model.EventDetail;

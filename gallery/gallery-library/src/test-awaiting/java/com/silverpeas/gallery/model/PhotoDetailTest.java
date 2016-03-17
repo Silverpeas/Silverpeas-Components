@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.springframework.context.ApplicationContext;
 
 import java.sql.Timestamp;

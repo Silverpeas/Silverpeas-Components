@@ -42,14 +42,14 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.CalendarEventRecurrence;
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.Datable;
+import org.silverpeas.date.DateTime;
 import com.silverpeas.calendar.DayOfWeek;
 import com.silverpeas.calendar.DayOfWeekOccurrence;
 import com.silverpeas.calendar.TimeUnit;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.util.ResourceLocator;
@@ -75,7 +75,7 @@ public class CalendarEventEncoder {
       Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
               inTimeZone(timeZone);
       String endTime = eventDetail.getEndHour();
-      if (startDate instanceof com.silverpeas.calendar.Date) {
+      if (startDate instanceof org.silverpeas.date.Date) {
         endTime = "";
       } else if (!isDefined(endTime)) {
         endTime = eventDetail.getStartHour();

@@ -37,11 +37,9 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
 
 public class ChatDataAccess {
   private static final String TBL_ROOM = "SC_chat_chatroom";

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.XmlSettingBundle;
 

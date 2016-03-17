@@ -71,7 +71,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace" %>
+<%@ page import="org.silverpeas.silvertrace.SilverTrace" %>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 

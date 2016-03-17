@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import org.silverpeas.components.kmelia.service.KmeliaService;

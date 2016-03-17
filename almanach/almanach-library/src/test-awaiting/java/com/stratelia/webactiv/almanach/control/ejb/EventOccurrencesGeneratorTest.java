@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
@@ -32,8 +32,8 @@ import java.util.Calendar;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.date.Period;
-import org.silverpeas.date.PeriodType;
+import org.silverpeas.date.period.Period;
+import org.silverpeas.date.period.PeriodType;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;

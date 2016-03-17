@@ -22,7 +22,7 @@ package org.silverpeas.components.kmelia.stats;
 
 import org.silverpeas.components.kmelia.model.StatisticActivityVO;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.node.control.NodeService;

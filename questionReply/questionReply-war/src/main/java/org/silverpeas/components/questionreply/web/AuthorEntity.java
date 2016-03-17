@@ -25,7 +25,7 @@ package org.silverpeas.components.questionreply.web;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.xml.bind.annotation.XmlElement;

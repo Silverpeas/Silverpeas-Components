@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.dao;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -39,7 +39,7 @@ import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;

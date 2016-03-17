@@ -28,8 +28,7 @@ import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionContr
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.scheduleevent.servlets.handlers.*;
 import org.silverpeas.servlet.HttpRequest;
 

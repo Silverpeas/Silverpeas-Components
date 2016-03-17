@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.model.updatechain;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ResourceLocator;
 

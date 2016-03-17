@@ -23,8 +23,9 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import com.silverpeas.calendar.Datable;
+import org.silverpeas.date.Datable;
 import static org.silverpeas.util.StringUtil.isDefined;
+
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.components.almanach.model.PeriodicityException;
@@ -35,10 +36,13 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import static org.silverpeas.util.DateUtil.extractHour;
 import static org.silverpeas.util.DateUtil.extractMinutes;
 
+import org.silverpeas.date.DateTime;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import java.util.*;
+import java.util.Date;
+
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 
@@ -91,9 +95,9 @@ public class ExceptionDatesGenerator {
       calendarDate.set(java.util.Calendar.MINUTE, extractMinutes(time));
       calendarDate.set(java.util.Calendar.SECOND, 0);
       calendarDate.set(java.util.Calendar.MILLISECOND, 0);
-      datable = new com.silverpeas.calendar.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
+      datable = new DateTime(calendarDate.getTime()).inTimeZone(timeZone);
     } else {
-      datable = new com.silverpeas.calendar.Date(date).inTimeZone(timeZone);
+      datable = new org.silverpeas.date.Date(date).inTimeZone(timeZone);
     }
     return datable;
   }

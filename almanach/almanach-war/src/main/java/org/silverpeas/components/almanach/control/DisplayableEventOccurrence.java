@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.control;
 
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.attachment.model.SimpleDocument;

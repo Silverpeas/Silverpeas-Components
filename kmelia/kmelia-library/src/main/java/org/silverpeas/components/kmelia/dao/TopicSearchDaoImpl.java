@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.dao;
 
 import org.silverpeas.components.kmelia.model.MostInterestedQueryVO;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

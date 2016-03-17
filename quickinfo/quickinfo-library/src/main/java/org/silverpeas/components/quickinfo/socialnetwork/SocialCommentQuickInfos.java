@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quickinfo.socialnetwork;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -34,7 +34,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Singleton;

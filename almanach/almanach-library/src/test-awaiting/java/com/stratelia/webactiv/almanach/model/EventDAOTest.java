@@ -26,8 +26,8 @@ package com.stratelia.webactiv.almanach.model;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.date.Period;
-import org.silverpeas.date.PeriodType;
+import org.silverpeas.date.period.Period;
+import org.silverpeas.date.period.PeriodType;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -24,7 +24,7 @@
 package org.silverpeas.components.questionreply.web;
 
 import org.silverpeas.components.questionreply.model.Question;
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.SilverpeasRole;
 

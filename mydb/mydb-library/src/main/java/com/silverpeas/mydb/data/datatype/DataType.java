@@ -24,7 +24,7 @@
 
 package com.silverpeas.mydb.data.datatype;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Data type of database column. Data types for a specific database driver are defined in the MyDB

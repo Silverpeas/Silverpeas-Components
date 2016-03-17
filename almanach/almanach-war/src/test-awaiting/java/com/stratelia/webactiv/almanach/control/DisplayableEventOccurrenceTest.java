@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;

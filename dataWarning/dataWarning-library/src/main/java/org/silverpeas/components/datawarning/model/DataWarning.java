@@ -26,7 +26,7 @@ package org.silverpeas.components.datawarning.model;
 import org.silverpeas.components.datawarning.DataWarningDBDriver;
 import org.silverpeas.components.datawarning.DataWarningDBDrivers;
 import org.silverpeas.components.datawarning.DataWarningException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.util.DBUtil;

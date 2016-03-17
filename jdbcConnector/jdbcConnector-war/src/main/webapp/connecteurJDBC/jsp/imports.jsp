@@ -39,10 +39,8 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
-<%@ page import="org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCSessionController" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace" %>
+<%@ page import="org.silverpeas.silvertrace.SilverTrace" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

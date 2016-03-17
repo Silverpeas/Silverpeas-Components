@@ -39,7 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 
 import java.util.ArrayList;
 import java.util.Arrays;

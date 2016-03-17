@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.almanach.model;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.date.Period;
+import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;

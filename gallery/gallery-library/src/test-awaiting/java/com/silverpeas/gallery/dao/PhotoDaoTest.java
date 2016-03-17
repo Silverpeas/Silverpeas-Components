@@ -32,7 +32,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.DateUtil;
 import org.junit.Test;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.media.Definition;
 
 import java.sql.Connection;

@@ -34,7 +34,7 @@ import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;

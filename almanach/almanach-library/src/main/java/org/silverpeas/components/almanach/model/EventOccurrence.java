@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.almanach.model;
 
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.calendar.Date;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.Datable;
+import org.silverpeas.date.Date;
+import org.silverpeas.date.DateTime;
 import java.util.Calendar;
 import static org.silverpeas.util.StringUtil.*;
 import static org.silverpeas.util.DateUtil.*;

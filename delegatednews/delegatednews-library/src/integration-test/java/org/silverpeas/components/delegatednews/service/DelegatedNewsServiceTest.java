@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.DateUtil;

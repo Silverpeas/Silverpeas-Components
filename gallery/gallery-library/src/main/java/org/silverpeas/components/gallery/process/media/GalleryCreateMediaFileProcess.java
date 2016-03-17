@@ -30,18 +30,13 @@ import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
 import java.io.File;
-
-import static org.silverpeas.components.gallery.constant.MediaType.Photo;
-import static org.silverpeas.components.gallery.constant.MediaType.Sound;
-import static org.silverpeas.components.gallery.constant.MediaType.Video;
 
 /**
  * Process to create a media on file system
