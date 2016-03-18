@@ -20,10 +20,9 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.components.almanach.AlmanachContentManager;
 import org.silverpeas.components.almanach.model.EventDAO;
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -62,6 +61,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -302,8 +302,7 @@ public class DefaultAlmanachService implements AlmanachService {
       indexEntry.setCreationUser(detail.getDelegatorId());
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {
-      SilverTrace
-          .warn("almanach", "DefaultAlmanachService.createIndex()", "root.EXE_CREATE_INDEX_FAIL", null, e);
+      SilverLogger.getLogger(this).error("Index creation failure", e);
     }
   }
 

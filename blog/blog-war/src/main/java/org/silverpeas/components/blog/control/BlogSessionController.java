@@ -29,8 +29,8 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -80,7 +80,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public final class BlogSessionController extends AbstractComponentSessionController {
 

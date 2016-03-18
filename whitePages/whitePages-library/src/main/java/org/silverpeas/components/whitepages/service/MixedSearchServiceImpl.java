@@ -25,9 +25,8 @@ package org.silverpeas.components.whitepages.service;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -68,9 +67,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     ArrayList<GlobalSilverContent> silverContents = new ArrayList<>();
 
     if (pdcContext != null && !pdcContext.isEmpty()) {
-      SilverTrace
-          .info("searchEngine", "MixedSearchServiceImpl.search()", "root.MSG_GEN_PARAM_VALUE",
-              "pdc search start !");
       //the pdc context is not empty. We have to search all silvercontentIds according to query
       // settings
 
@@ -92,9 +88,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
         }
         return silverContents;
       }
-      SilverTrace
-          .info("searchEngine", "MixedSearchServiceImpl.search()", "root.MSG_GEN_PARAM_VALUE",
-              "pdc search done !");
     }
 
     // XML search
@@ -105,9 +98,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
         String value = entry.getValue();
         value = value.trim().replaceAll("##", " AND ");
         newXmlQuery.put(xmlTemplate + "$$" + entry.getKey(), value);
-        SilverTrace
-            .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-                "newXmlQuery.put(" + xmlTemplate + "$$" + entry.getKey() + "," + value + ")");
       }
 
       query.setXmlQuery(newXmlQuery);
@@ -121,31 +111,15 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     List<MatchingIndexEntry> result = null;
     if (StringUtil.isDefined(query.getQuery()) || query.getXmlQuery() != null ||
         query.getMultiFieldQuery() != null) {
-
-
-      SilverTrace
-          .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-              "search processed !");
-
       //retrieve results
       List<MatchingIndexEntry> fullTextResult =
           SearchEngineProvider.getSearchEngine().search(query).
               getEntries();
-      SilverTrace
-          .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-              "results retrieved !");
-
       if (pdcContext != null && !pdcContext.isEmpty()) {
         // We retain only objects which are presents in the both search result list
         result = mixedSearch(fullTextResult, alSilverContentIds);
-        SilverTrace
-            .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-                "both searches have been mixed !");
       } else {
         result = fullTextResult;
-        SilverTrace
-            .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-                "results are full text results !");
       }
     }
 
@@ -154,10 +128,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
       GlobalSilverContent silverContent;
       LinkedList<String> returnedObjects = new LinkedList<>();
       for (MatchingIndexEntry mie : result) {
-        SilverTrace
-            .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-                "mie.getTitle() = " + mie.getTitle() + ", mie.getObjectType() = " +
-                    mie.getObjectType());
         if (mie.getTitle().endsWith("wysiwyg.txt")) {
           //we don't show it as result.
         } else {
@@ -200,9 +170,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
           }
         }
       }
-      SilverTrace
-          .info("searchEngine", "SearchEngineTagUtil.getResults()", "root.MSG_GEN_PARAM_VALUE",
-              "results transformed !");
     }
 
     return silverContents;
@@ -239,10 +206,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
 
   private List<MatchingIndexEntry> mixedSearch(List<MatchingIndexEntry> ie, List<String> objectIds)
       throws Exception {
-    SilverTrace
-        .info("searchEngine", "MixedSearchServiceImpl.mixedSearch()", "root.MSG_GEN_PARAM_VALUE",
-            "objectIds = " + objectIds.toString());
-
     // la liste basicSearchList ne contient maintenant que les silverContentIds des documents
     // trouvés mais ces documents sont également dans le tableau résultat de la recherche classique
     // il faut donc créer un tableau de MatchingIndexEntry pour afficher le resultat

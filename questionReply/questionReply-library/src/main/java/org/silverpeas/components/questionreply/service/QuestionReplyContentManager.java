@@ -25,7 +25,7 @@ package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
-import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -33,8 +33,6 @@ import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.webactiv.persistence.IdPK;
-import org.silverpeas.components.questionreply.service.QuestionHeader;
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;

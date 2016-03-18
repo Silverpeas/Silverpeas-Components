@@ -28,8 +28,8 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -44,14 +44,14 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.SearchAxis;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -85,7 +85,7 @@ import org.silverpeas.util.exception.SilverpeasException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 

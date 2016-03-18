@@ -23,17 +23,17 @@
  */
 package com.stratelia.webactiv.survey.control;
 
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import org.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -87,7 +87,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * This class contains business layer of survey component

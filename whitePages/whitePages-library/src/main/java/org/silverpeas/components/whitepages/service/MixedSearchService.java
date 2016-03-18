@@ -24,7 +24,7 @@
 package org.silverpeas.components.whitepages.service;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.util.ServiceProvider;
 

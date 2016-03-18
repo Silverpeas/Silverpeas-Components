@@ -30,7 +30,7 @@ import java.util.List;
 import com.silverpeas.ApplicationService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 
-import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.ServiceProvider;
 

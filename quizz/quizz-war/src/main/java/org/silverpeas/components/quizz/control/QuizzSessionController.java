@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.quizz.control;
 
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -66,7 +66,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public final class QuizzSessionController extends AbstractComponentSessionController {
 

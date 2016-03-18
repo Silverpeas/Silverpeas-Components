@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.quickinfo.control;
 
-import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;

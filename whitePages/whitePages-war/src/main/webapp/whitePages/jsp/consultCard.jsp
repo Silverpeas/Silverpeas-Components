@@ -29,8 +29,8 @@
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value" %>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyValue"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.Value" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull" %>
 <%@ page import="org.silverpeas.components.whitepages.model.Card" %>
 <%@ page import="org.silverpeas.components.whitepages.model.WhitePagesCard" %>

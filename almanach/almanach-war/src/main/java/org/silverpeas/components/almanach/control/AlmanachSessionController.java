@@ -28,8 +28,8 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -86,8 +86,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
 import static org.silverpeas.calendar.CalendarViewType.*;

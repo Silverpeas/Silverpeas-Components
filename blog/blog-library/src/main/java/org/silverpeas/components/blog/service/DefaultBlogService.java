@@ -26,19 +26,18 @@ package org.silverpeas.components.blog.service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.pdcSubscription.util.PdcSubscriptionManager;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
@@ -68,6 +67,7 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -379,25 +379,12 @@ public class DefaultBlogService implements BlogService {
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
 
       Collection<PublicationPK> publications = getPublicationService().getPubPKsInFatherPK(pk);
-      SilverTrace
-          .info("blog", "DefaultBlogService.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
-              "nb publications =" + publications.size());
-
       PublicationPK[] allPubs = publications.toArray(new PublicationPK[publications.size()]);
-      SilverTrace
-          .info("blog", "DefaultBlogService.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
-              "allPubs =" + allPubs.length);
       for (String pubId : lastEvents) {
         int j;
         for (int i = 0; i < allPubs.length; i++) {
           j = allPubs.length - i - 1;
-          SilverTrace
-              .info("blog", "DefaultBlogService.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
-                  "i =" + i + " j = " + j);
           PublicationPK pubPK = allPubs[j];
-          SilverTrace
-              .info("blog", "DefaultBlogService.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
-                  "pubPK =" + pubPK.getId());
           if (pubPK.getId().equals(pubId)) {
             posts.add(getContentById(pubId));
           }
@@ -431,9 +418,6 @@ public class DefaultBlogService implements BlogService {
           getPublicationService().getAllPublications(pubPK);
       for (String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
-        SilverTrace
-            .info("blog", "DefaultBlogService.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
-                "publications =" + publications.toString());
         for (PublicationDetail publication : publications) {
           if (publication.getPK().getId().equals(pubId)) {
             posts.add(getPost(publication));
@@ -640,8 +624,8 @@ public class DefaultBlogService implements BlogService {
       // index comments
       getCommentService().indexAllCommentsOnPublication(PostDetail.getResourceType(), pubPK);
     } catch (Exception e) {
-      SilverTrace.error("blog", "DefaultBlogService.indexExternalElementsOfPublication",
-          "Indexing comments failed", "pubPK = " + pubPK.toString(), e);
+      SilverLogger.getLogger(this).error("Comment indexing failure for publication {0}",
+          new String[]{pubPK.toString()}, e);
     }
   }
 
@@ -677,9 +661,6 @@ public class DefaultBlogService implements BlogService {
   }
 
   private int createSilverContent(Connection con, PublicationDetail pubDetail, String creatorId) {
-    SilverTrace
-        .info("blog", "DefaultBlogService.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-            "pubId = " + pubDetail.getPK().getId());
     try {
       return getBlogContentManager().createSilverContent(con, pubDetail, creatorId);
     } catch (ContentManagerException e) {
@@ -733,16 +714,12 @@ public class DefaultBlogService implements BlogService {
           }
         }
       } catch (PdcException e) {
-        SilverTrace
-            .error("blog", "DefaultBlogService.draftOutPost", "blog.EX_SEND_PDC_SUBSCRIPTION", e);
+        SilverLogger.getLogger(this).error("PdC subscriber notification failure", e);
       }
     }
   }
 
   private int createSilverContent(PublicationDetail pubDetail, String creatorId) {
-    SilverTrace
-        .info("blog", "DefaultBlogService.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-            "pubId = " + pubDetail.getPK().getId());
     Connection con = null;
     try {
       con = openConnection();

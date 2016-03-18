@@ -24,10 +24,10 @@
 package org.silverpeas.components.questionreply.control;
 
 import org.silverpeas.core.importexport.report.ExportReport;
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.service.ExpertPanel;
@@ -81,7 +81,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.util.Charsets.UTF_8;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {

@@ -25,7 +25,7 @@ package org.silverpeas.components.whitepages.control;
 
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
-import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;

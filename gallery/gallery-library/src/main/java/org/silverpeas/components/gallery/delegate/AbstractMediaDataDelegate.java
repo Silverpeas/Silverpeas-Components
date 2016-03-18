@@ -33,7 +33,7 @@ import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.Streaming;
-import com.silverpeas.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;

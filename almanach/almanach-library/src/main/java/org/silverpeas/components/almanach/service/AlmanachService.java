@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import com.silverpeas.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;

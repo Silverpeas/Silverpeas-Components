@@ -26,9 +26,9 @@ package org.silverpeas.components.whitepages.control;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.components.whitepages.WhitePagesException;
@@ -38,11 +38,10 @@ import org.silverpeas.components.whitepages.model.WhitePagesCard;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
@@ -63,6 +62,7 @@ import java.util.List;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.logging.SilverLogger;
 
 public class CardManager {
 
@@ -422,7 +422,7 @@ public class CardManager {
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), "", indexEntry);
     } catch (Exception e) {
-      SilverTrace.error("whitePages", "CardManager.indexCard", "whitePages.EX_CANT_INDEX_CARD", e);
+      SilverLogger.getLogger(this).error("User card indexation failure", e);
     }
 
     IndexEngineProxy.addIndexEntry(indexEntry);

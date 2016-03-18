@@ -24,7 +24,7 @@
 package org.silverpeas.components.blog;
 
 import org.silverpeas.components.blog.model.BlogRuntimeException;
-import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;

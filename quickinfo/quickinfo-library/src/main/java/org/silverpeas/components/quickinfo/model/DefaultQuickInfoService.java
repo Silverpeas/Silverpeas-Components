@@ -28,10 +28,10 @@ import com.silverpeas.ApplicationService;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
@@ -78,7 +78,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.persistence.Transaction.performInOne;
 import static org.silverpeas.persistence.repository.OperationContext.fromUser;
 

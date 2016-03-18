@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import com.stratelia.silverpeas.pdc.control.Pdc;
+import org.silverpeas.core.pdc.pdc.service.Pdc;
 
 import java.util.List;
 

@@ -31,7 +31,7 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import com.silverpeas.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.PdcServiceProvider;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import org.silverpeas.util.ForeignPK;

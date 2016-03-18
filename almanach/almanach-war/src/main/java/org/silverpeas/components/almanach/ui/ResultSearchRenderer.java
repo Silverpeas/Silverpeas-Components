@@ -23,29 +23,27 @@
  */
 package org.silverpeas.components.almanach.ui;
 
-import java.util.Properties;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
-import org.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.Periodicity;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Properties;
 
 /**
  * <pre>
@@ -90,8 +88,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     try {
       event = getAlmanachService().getEventDetail(eventPK);
     } catch (Exception e) {
-      SilverTrace.warn("almanach", ResultSearchRenderer.class.getName() + ".getResultContent",
-          "Unable to load event " + eventPK.getId() + " from EJB", e);
+      SilverLogger.getLogger(this)
+          .warn("Unable to load event {0}: {1}", eventPK.getId(), e.getMessage());
     }
     // Create a SilverpeasTemplate
     SilverpeasTemplate template = getNewTemplate();

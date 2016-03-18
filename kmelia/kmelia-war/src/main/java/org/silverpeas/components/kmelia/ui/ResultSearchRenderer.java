@@ -30,17 +30,17 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
-import org.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -92,8 +92,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
     try {
       pubDetail = getPublicationService().getDetail(pubPK);
     } catch (Exception e) {
-      SilverTrace.warn("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent",
-          "Unable to load publication " + pubPK.getId() + " from EJB", e);
+      SilverLogger.getLogger(this)
+          .warn("Unable to load publication {0}: {1}", pubPK.toString(), e.getMessage());
     }
     // Create a SilverpeasTemplate
     SilverpeasTemplate template = getNewTemplate();
@@ -197,11 +197,9 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
             }
           }
         } catch (PublicationTemplateException e) {
-          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent()",
-              "Impossible to load Publication Template", e);
+          SilverLogger.getLogger(this).error("Failed to load publication template", e);
         } catch (FormException e) {
-          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent()",
-              "Impossible to load publication form", e);
+          SilverLogger.getLogger(this).error("Failed to load publication form", e);
         }
       }
     }

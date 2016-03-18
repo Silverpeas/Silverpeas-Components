@@ -27,8 +27,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.model.SearchAxis;
+import org.silverpeas.core.pdc.pdc.model.Value;
 
 public class WhitePagesHtmlTools {
 
