@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
+<jsp:useBean id="quizzUnderConstruction" scope="session" class="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" />
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>

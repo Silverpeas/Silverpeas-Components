@@ -26,9 +26,9 @@ package com.stratelia.webactiv.survey;
 import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 
 import javax.inject.Inject;
 import javax.inject.Named;

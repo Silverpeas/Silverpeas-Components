@@ -36,7 +36,7 @@
 <%@ include file="checkQuizz.jsp"%>
 
 <jsp:useBean id="currentQuizz" scope="session"
-	class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
+	class="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" />
 
 <%
   String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");

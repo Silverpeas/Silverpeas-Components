@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

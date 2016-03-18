@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.quizz;
 
-import com.stratelia.webactiv.answer.model.Answer;
+import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.util.FileRepositoryManager;

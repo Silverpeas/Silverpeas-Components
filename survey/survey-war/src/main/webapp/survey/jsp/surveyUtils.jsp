@@ -1,5 +1,5 @@
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
+<%@page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.SettingBundle"%>

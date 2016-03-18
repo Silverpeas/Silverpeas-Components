@@ -41,11 +41,11 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.score.model.ScoreDetail"%>
-<%@ page import="com.stratelia.webactiv.question.model.Question"%>
-<%@ page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
-<%@ page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail"%>
-<%@ page import="com.stratelia.webactiv.questionResult.model.QuestionResult"%>
+<%@ page import="org.silverpeas.core.questioncontainer.score.model.ScoreDetail"%>
+<%@ page import="org.silverpeas.core.questioncontainer.question.model.Question"%>
+<%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
+<%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail"%>
+<%@ page import="org.silverpeas.core.questioncontainer.result.model.QuestionResult"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
@@ -55,7 +55,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.answer.model.Answer"%>
+<%@ page import="org.silverpeas.core.questioncontainer.answer.model.Answer"%>
 <%@ page import="org.silverpeas.util.SettingBundle" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
