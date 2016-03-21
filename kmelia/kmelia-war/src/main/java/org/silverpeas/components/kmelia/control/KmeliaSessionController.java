@@ -1772,15 +1772,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     setSessionPublicationsList(null);
   }
 
-  public String initUPToSelectValidator(String pubId) {
+  public String initUPToSelectValidator(String formElementName, String formElementId) {
     String mContext = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("kmelia.SelectValidator"), "");
-    String hostUrl =
-        mContext + URLUtil.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
-    String cancelUrl =
-        mContext + URLUtil.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
+    String hostUrl = mContext + URLUtil.getURL("useless", getComponentId()) + "SetValidator";
+    String cancelUrl = mContext + URLUtil.getURL("useless", getComponentId()) + "SetValidator";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -1792,8 +1790,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setCancelURL(cancelUrl);
 
     sel.setHtmlFormName("pubForm");
-    sel.setHtmlFormElementName("Valideur");
-    sel.setHtmlFormElementId("ValideurId");
+    if (!StringUtil.isDefined(formElementName)) {
+      formElementName = "Valideur";
+    }
+    sel.setHtmlFormElementName(formElementName);
+    if (!StringUtil.isDefined(formElementId)) {
+      formElementId = "ValideurId";
+    }
+    sel.setHtmlFormElementId(formElementId);
 
     // Contraintes
     if (isTargetMultiValidationEnable()) {
