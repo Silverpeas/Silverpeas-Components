@@ -24,23 +24,22 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
-import org.silverpeas.components.classifieds.model.Category;
-import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
+import org.silverpeas.components.classifieds.model.Category;
+import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.components.classifieds.servlets.FunctionHandler;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.StringUtil;
 
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.servlet.HttpRequest;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Default use case : show all categories and for each one, list last published adds

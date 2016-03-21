@@ -24,15 +24,6 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
-import org.silverpeas.components.classifieds.control.SearchContext;
-import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
@@ -41,8 +32,16 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
+import org.silverpeas.components.classifieds.control.SearchContext;
+import org.silverpeas.components.classifieds.servlets.FunctionHandler;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
+import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+
+import java.util.List;
 
 /**
  * Use Case : for all users, show all adds of given category

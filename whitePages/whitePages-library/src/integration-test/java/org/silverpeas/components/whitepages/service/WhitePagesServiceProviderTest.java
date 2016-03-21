@@ -50,7 +50,6 @@ public class WhitePagesServiceProviderTest {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-          warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-searchengine");
           warBuilder.addMavenDependencies("org.apache.tika:tika-core");
           warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
           warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");

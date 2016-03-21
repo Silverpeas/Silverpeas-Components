@@ -27,9 +27,9 @@ package org.silverpeas.components.gallery.process.media;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 public class GalleryDeindexMediaDataProcess extends AbstractGalleryDataProcess {
 

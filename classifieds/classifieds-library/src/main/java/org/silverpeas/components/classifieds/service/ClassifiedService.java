@@ -26,7 +26,7 @@ package org.silverpeas.components.classifieds.service;
 import com.silverpeas.ApplicationService;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.core.index.search.model.QueryDescription;
 
 import java.util.Collection;
 import java.util.List;

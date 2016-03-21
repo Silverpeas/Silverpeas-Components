@@ -23,30 +23,28 @@
  */
 package org.silverpeas.components.gallery.service;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
-import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
-import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.components.gallery.model.MediaCriteria;
-import org.silverpeas.components.gallery.model.MediaPK;
-
-import org.silverpeas.components.gallery.model.Order;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
-import org.silverpeas.components.gallery.delegate.GalleryPasteDelegate;
-import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
-import org.silverpeas.components.gallery.model.AlbumDetail;
-import org.silverpeas.components.gallery.model.OrderRow;
-import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.components.gallery.delegate.GalleryPasteDelegate;
+import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
+import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
+import org.silverpeas.components.gallery.model.AlbumDetail;
+import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.components.gallery.model.MediaCriteria;
+import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.model.Order;
+import org.silverpeas.components.gallery.model.OrderRow;
+import org.silverpeas.components.gallery.model.Photo;
+import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.date.period.Period;
+import org.silverpeas.process.util.ProcessList;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 public interface GalleryService {
 

@@ -25,13 +25,13 @@ package org.silverpeas.components.whitepages.service;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
+import org.silverpeas.core.index.search.SearchEngineProvider;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.index.search.model.ScoreComparator;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;

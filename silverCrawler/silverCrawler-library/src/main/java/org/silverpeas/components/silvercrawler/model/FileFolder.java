@@ -24,15 +24,15 @@
 
 package org.silverpeas.components.silvercrawler.model;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.util.ArrayList;

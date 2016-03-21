@@ -24,17 +24,17 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.comment.service.CommentService;
 import com.silverpeas.notation.control.RatingService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;

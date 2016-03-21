@@ -23,13 +23,6 @@
  */
 package org.silverpeas.components.classifieds.control;
 
-import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.components.classifieds.model.ClassifiedsRuntimeException;
-import org.silverpeas.components.classifieds.model.Subscribe;
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -47,9 +40,16 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.components.classifieds.model.ClassifiedsRuntimeException;
+import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.StringUtil;

@@ -23,21 +23,12 @@
  */
 package org.silverpeas.components.blog.service;
 
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
@@ -54,10 +45,19 @@ import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserNotification;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.index.search.SearchEngineProvider;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
@@ -624,7 +624,7 @@ public class DefaultBlogService implements BlogService {
       // index comments
       getCommentService().indexAllCommentsOnPublication(PostDetail.getResourceType(), pubPK);
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error("Comment indexing failure for publication {0}",
+      SilverLogger.getLogger(this).error("Comment index failure for publication {0}",
           new String[]{pubPK.toString()}, e);
     }
   }

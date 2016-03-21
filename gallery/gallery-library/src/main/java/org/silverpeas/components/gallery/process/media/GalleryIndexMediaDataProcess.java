@@ -25,20 +25,20 @@
 package org.silverpeas.components.gallery.process.media;
 
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Collection;
 

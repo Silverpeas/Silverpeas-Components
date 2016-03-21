@@ -28,7 +28,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.core.index.indexing.model.IndexManager;
 
 import java.io.Serializable;
 
