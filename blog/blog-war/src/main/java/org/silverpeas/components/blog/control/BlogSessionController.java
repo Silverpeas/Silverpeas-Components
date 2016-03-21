@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.blog.control;
 
-import com.silverpeas.pdc.web.PdcClassificationEntity;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.node.model.NodeDetail;
@@ -54,7 +54,7 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.node.web.NodeEntity;
+import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;

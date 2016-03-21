@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.blog.servlets;
 
-import com.silverpeas.peasUtil.RssServlet;
+import org.silverpeas.core.web.util.servlet.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * @see com.silverpeas.peasUtil.RssServlet
+ * @see RssServlet
  */
 public class BlogRssServlet extends RssServlet<PostDetail> {
 

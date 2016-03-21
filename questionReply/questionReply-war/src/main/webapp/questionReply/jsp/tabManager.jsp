@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="java.io.IOException" %>
 <%!
 

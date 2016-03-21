@@ -25,10 +25,10 @@ package org.silverpeas.components.forums.servlets;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.web.RequestHelper;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.control.helpers.ForumActionHelper;
 import org.silverpeas.components.forums.control.helpers.ForumHelper;
@@ -36,8 +36,8 @@ import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
 import com.stratelia.webactiv.node.model.NodeDetail;
-import org.silverpeas.rating.web.RaterRatingEntity;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.webapi.rating.RaterRatingEntity;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 

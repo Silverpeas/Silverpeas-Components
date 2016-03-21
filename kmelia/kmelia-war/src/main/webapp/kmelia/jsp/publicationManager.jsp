@@ -36,6 +36,10 @@
 <%@page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%@ page import="java.util.StringTokenizer" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 

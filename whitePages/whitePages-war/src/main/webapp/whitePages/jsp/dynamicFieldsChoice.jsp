@@ -28,9 +28,9 @@
 
 <%@ page import="org.silverpeas.components.whitepages.model.SearchField"%>
 <%@ page import="org.silverpeas.components.whitepages.model.SearchFieldsType"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
 

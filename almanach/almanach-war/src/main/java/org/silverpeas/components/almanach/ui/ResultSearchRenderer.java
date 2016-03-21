@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.almanach.ui;
 
-import com.silverpeas.search.AbstractResultDisplayer;
-import com.silverpeas.search.ResultDisplayer;
-import com.silverpeas.search.SearchResultContentVO;
+import org.silverpeas.core.web.search.AbstractResultDisplayer;
+import org.silverpeas.core.web.search.ResultDisplayer;
+import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.Periodicity;

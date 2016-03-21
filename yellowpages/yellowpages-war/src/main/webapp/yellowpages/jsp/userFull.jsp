@@ -24,9 +24,9 @@
 
 --%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

@@ -39,14 +39,14 @@ import org.silverpeas.components.organizationchart.view.ChartUnitVO;
 import org.silverpeas.components.organizationchart.view.ChartVO;
 import org.silverpeas.components.organizationchart.view.OrganizationBox;
 import org.silverpeas.components.organizationchart.view.UserVO;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.viewGenerator.html.UserNameGenerator;
+import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

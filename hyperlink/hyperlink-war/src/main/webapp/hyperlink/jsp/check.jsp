@@ -40,12 +40,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

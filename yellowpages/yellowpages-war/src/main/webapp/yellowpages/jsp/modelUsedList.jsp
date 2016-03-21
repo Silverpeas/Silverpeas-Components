@@ -26,13 +26,13 @@
 
 <%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="java.util.Collection" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="java.util.Iterator" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

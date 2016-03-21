@@ -20,15 +20,15 @@
  */
 package org.silverpeas.components.kmelia.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
-import org.silverpeas.publication.web.PublicationEntity;
+import org.silverpeas.core.webapi.publication.PublicationEntity;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.ws.rs.Consumes;

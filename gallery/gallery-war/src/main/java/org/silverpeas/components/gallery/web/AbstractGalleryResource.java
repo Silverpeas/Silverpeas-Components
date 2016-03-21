@@ -31,7 +31,7 @@ import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.io.FileUtils;

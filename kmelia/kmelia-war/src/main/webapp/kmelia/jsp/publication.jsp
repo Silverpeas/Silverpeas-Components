@@ -45,7 +45,7 @@
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
-<%@page import="org.silverpeas.rating.web.RaterRatingEntity" %>
+<%@page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ page import="com.silverpeas.form.Form" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>

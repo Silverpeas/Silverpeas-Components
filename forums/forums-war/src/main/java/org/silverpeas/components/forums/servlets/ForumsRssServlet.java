@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.servlets;
 
-import com.silverpeas.peasUtil.RssServlet;
+import org.silverpeas.core.web.util.servlet.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 import java.util.Collection;
@@ -38,7 +38,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getListElements(java.lang.String, int)
    */
   @Override
   public Collection getListElements(String instanceId, int nbReturned) {
@@ -48,7 +48,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
    */
   @Override
   public String getElementTitle(Object element, String userId) {
@@ -58,7 +58,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object, java.lang.String)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementLink(java.lang.Object, java.lang.String)
    */
   @Override
   public String getElementLink(Object element, String userId) {
@@ -71,7 +71,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
   @Override
@@ -82,7 +82,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDate(java.lang.Object)
    */
   @Override
   public Date getElementDate(Object element) {

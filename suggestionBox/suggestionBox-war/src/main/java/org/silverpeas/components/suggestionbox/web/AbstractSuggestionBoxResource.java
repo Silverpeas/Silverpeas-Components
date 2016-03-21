@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
 import javax.ws.rs.PathParam;

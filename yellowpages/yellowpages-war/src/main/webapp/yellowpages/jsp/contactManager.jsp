@@ -35,13 +35,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.contact.model.CompleteContact" %>
 <%@ page import="org.silverpeas.core.contact.model.ContactDetail" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp" %>

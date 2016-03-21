@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.rssaggregator.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
 import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

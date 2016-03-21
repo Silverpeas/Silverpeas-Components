@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
+import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
 /**

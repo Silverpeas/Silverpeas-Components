@@ -30,7 +30,7 @@
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
 
-<%@ page import="org.silverpeas.core.search.searchEngine.model.MatchingIndexEntry"%>
+<%@ page import="org.silverpeas.core.index.search.model.MatchingIndexEntry"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="java.util.Collection "%>

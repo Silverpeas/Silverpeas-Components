@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;

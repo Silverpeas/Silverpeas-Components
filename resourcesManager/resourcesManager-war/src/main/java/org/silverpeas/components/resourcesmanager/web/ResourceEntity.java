@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.components.resourcesmanager.model.Resource;

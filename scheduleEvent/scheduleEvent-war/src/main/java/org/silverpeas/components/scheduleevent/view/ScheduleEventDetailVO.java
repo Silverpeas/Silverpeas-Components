@@ -1,7 +1,5 @@
 package org.silverpeas.components.scheduleevent.view;
 
-import static org.silverpeas.components.scheduleevent.view.ScheduleEventRessources.formatInPercent;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,14 +12,8 @@ import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.components.scheduleevent.view.AvailabilityFactoryVO.Availability;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.scheduleevent.service.model.ScheduleEventBean;
-import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
-import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 
 public class ScheduleEventDetailVO {
   private final static String USER_CONTRIBUTOR_HMTL_CLASS_ATTRIBUTE = "userVote";

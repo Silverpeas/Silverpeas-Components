@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.almanach.control;
 
-import org.silverpeas.calendar.CalendarDay;
-import org.silverpeas.calendar.CalendarViewContext;
-import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.core.web.calendar.CalendarDay;
+import org.silverpeas.core.web.calendar.CalendarViewContext;
+import org.silverpeas.core.web.calendar.CalendarViewType;
 
 import java.util.ArrayList;
 import java.util.Collections;

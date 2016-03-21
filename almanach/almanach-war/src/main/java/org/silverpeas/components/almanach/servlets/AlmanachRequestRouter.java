@@ -25,18 +25,18 @@ package org.silverpeas.components.almanach.servlets;
 
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
-import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.control.AlmanachCalendarView;
 import org.silverpeas.components.almanach.control.AlmanachSessionController;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.Periodicity;
-import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.calendar.CalendarViewType;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.DBUtil;
@@ -50,7 +50,7 @@ import org.silverpeas.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
-import static org.silverpeas.calendar.CalendarViewType.*;
+import static org.silverpeas.core.web.calendar.CalendarViewType.*;
 import static org.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.StringUtil.isInteger;
 

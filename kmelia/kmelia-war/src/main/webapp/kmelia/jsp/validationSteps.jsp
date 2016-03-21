@@ -26,10 +26,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ include file="checkKmelia.jsp" %>
 
 <%

@@ -32,15 +32,15 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.core.web.calendar.CalendarViewType;
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.Resource;
@@ -48,7 +48,7 @@ import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataViewType;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.GlobalContext;
@@ -150,7 +150,7 @@ public class ResourcesManagerRequestRouter
   }
 
   /**
-   * @see com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter
+   * @see ComponentRequestRouter
    */
   @Override
   public String getDestination(String function,

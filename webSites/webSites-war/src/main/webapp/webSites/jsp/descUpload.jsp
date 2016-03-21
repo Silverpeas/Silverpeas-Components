@@ -32,6 +32,12 @@
 %>
 
 <%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>
 

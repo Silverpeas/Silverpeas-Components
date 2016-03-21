@@ -29,8 +29,11 @@
 <jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
 
 <%@ include file="checkQuizz.jsp" %>
-<%@ page import="org.silverpeas.servlet.HttpRequest" %>
+<%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>

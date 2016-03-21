@@ -40,8 +40,8 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.util.FileRepositoryManager;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.util.viewGenerator.html.tabs.TabbedPane;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
 
 /**
  * Helper class to be able to remove old JSP methods.

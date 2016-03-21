@@ -29,7 +29,7 @@ import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 import javax.inject.Inject;

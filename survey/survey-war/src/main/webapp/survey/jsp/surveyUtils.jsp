@@ -5,6 +5,7 @@
 <%@ page import="org.silverpeas.util.SettingBundle"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="java.text.ParseException" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 
 <%!
 

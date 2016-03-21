@@ -28,20 +28,20 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.AbstractNavigationContextListener;
-import com.stratelia.silverpeas.peasCore.servlets.Navigation;
-import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.AbstractNavigationContextListener;
+import org.silverpeas.core.web.mvc.webcomponent.Navigation;
+import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.Invokable;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
@@ -73,8 +73,7 @@ import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebSer
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
-    com.stratelia.silverpeas.peasCore.servlets
-        .WebComponentController<SuggestionBoxWebRequestContext> {
+    org.silverpeas.core.web.mvc.webcomponent.WebComponentController<SuggestionBoxWebRequestContext> {
 
   /**
    * A context on the viewing of suggestions. It is used to parametrize the rendering of the

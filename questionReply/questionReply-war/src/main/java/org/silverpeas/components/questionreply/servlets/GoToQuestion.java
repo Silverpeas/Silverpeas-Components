@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.servlets;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Question;
 import com.stratelia.silverpeas.peasCore.URLManager;

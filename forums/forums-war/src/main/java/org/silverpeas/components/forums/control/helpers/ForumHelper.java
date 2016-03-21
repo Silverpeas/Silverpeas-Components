@@ -28,7 +28,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
-import org.silverpeas.rating.web.RaterRatingEntity;
+import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;

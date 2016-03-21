@@ -24,10 +24,10 @@
 package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.StreamingProvider;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.media.Definition;
-import org.silverpeas.media.web.MediaDefinitionEntity;
+import org.silverpeas.core.webapi.media.MediaDefinitionEntity;
 import org.silverpeas.util.JSONCodec;
 
 import javax.xml.bind.annotation.XmlAccessType;

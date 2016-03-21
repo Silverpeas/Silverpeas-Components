@@ -25,7 +25,7 @@ package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.media.Definition;
-import org.silverpeas.media.web.MediaDefinitionEntity;
+import org.silverpeas.core.webapi.media.MediaDefinitionEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

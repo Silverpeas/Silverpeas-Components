@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.silverpeas.look.PublicationHelper;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.look.PublicationHelper;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

@@ -25,16 +25,16 @@
 --%>
 <%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail" %>
 <%@ page import="java.util.Collection" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%

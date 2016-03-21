@@ -26,11 +26,11 @@ package org.silverpeas.components.silvercrawler.servlets;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.control.UploadItem;
 import org.silverpeas.components.silvercrawler.control.UploadReport;
-import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.UploadSession;
 
 import javax.servlet.ServletConfig;

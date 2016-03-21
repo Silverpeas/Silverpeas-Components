@@ -26,11 +26,11 @@ package org.silverpeas.components.classifieds.servlets;
 import org.silverpeas.components.classifieds.control.ClassifiedsRole;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.servlets.handler.HandlerProvider;
-import com.silverpeas.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 

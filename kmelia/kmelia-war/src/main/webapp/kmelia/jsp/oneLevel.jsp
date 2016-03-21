@@ -33,6 +33,10 @@
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />

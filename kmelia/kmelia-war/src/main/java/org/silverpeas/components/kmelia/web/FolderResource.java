@@ -20,18 +20,18 @@
  */
 package org.silverpeas.components.kmelia.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.node.web.NodeAttrEntity;
-import org.silverpeas.node.web.NodeEntity;
+import org.silverpeas.core.webapi.node.NodeAttrEntity;
+import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import com.silverpeas.web.WebEntity;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.rating.web.RaterRatingEntity;
-import org.silverpeas.validation.web.ContributionValidationEntity;
+import org.silverpeas.core.webapi.rating.RaterRatingEntity;
+import org.silverpeas.core.webapi.validation.ContributionValidationEntity;
 import org.springframework.util.ReflectionUtils;
 
 import javax.ws.rs.core.UriBuilder;

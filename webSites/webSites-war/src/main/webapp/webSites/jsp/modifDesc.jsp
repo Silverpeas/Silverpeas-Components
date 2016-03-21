@@ -32,6 +32,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ include file="util.jsp" %>
 <%@ include file="checkScc.jsp" %>
 

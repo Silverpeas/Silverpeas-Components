@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.publication.control.PublicationService;

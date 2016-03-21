@@ -38,7 +38,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * A SessionSafeFunctionHandler must be used to prevent conflicts in HTTP Session when user

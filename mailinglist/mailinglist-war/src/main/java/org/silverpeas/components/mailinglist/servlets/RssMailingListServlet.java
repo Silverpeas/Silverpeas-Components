@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import com.silverpeas.peasUtil.RssServlet;
+import org.silverpeas.core.web.util.servlet.RssServlet;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.MessageService;

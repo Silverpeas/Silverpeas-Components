@@ -27,8 +27,8 @@
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.publication.model.CompletePublication"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.silverpeas.chat.control.ChatSessionController"%>
 <%!
   

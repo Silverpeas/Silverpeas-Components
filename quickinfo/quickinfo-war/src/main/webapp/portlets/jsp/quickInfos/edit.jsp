@@ -30,7 +30,7 @@
 <%@ page import="javax.portlet.RenderRequest" %>
 <%@ page import="javax.portlet.RenderResponse" %>
 <%@ page import="javax.portlet.PortletPreferences" %>
-<%@ page import="com.silverpeas.portlets.FormNames" %>
+<%@ page import="org.silverpeas.core.web.portlets.FormNames" %>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

@@ -50,7 +50,7 @@ package org.silverpeas.components.classifieds.servlets.handler;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Use Case : for all users, show all adds of given category

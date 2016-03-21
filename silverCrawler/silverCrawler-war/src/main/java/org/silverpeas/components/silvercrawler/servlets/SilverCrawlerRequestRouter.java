@@ -27,10 +27,10 @@ import org.silverpeas.components.silvercrawler.control.ProfileHelper;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.servlets.handlers.FunctionHandler;
 import org.silverpeas.components.silvercrawler.servlets.handlers.HandlerProvider;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.http.HttpRequest;
 
 public class SilverCrawlerRequestRouter
     extends ComponentRequestRouter<SilverCrawlerSessionController> {

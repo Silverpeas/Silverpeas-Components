@@ -30,14 +30,14 @@ import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import com.silverpeas.pdc.web.PdcClassificationEntity;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -46,7 +46,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.core.web.calendar.CalendarViewType;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;
@@ -90,7 +90,7 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFIC
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
-import static org.silverpeas.calendar.CalendarViewType.*;
+import static org.silverpeas.core.web.calendar.CalendarViewType.*;
 import static org.silverpeas.util.DateUtil.parse;
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -492,7 +492,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /*
    * (non-Javadoc) @see
-   * com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl ()
+   * org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController#getRSSUrl ()
    */
   @Override
   public String getRSSUrl() {

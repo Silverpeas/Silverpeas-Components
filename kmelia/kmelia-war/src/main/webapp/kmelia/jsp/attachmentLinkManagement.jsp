@@ -31,14 +31,14 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%-- Import area --%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="com.silverpeas.treeMenu.process.TreeHandler"%>
-<%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
+<%@page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
+<%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

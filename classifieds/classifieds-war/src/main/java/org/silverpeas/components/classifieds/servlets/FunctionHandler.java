@@ -25,13 +25,13 @@
 package org.silverpeas.components.classifieds.servlets;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * A functio handler is associated to a peas function and is called by the request router when this

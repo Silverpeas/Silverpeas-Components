@@ -36,7 +36,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="java.util.Calendar"%>
 <%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

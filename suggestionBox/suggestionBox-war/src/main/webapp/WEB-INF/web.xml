@@ -33,7 +33,7 @@
     <description>no description</description>
     <display-name>SuggestionBoxRequestRouter</display-name>
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestRouter
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter
     </servlet-class>
     <init-param>
       <param-name>WebComponentController</param-name>

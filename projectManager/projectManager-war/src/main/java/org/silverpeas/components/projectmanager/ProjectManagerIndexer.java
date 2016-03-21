@@ -29,7 +29,7 @@
 package org.silverpeas.components.projectmanager;
 
 import org.silverpeas.components.projectmanager.service.ProjectManagerService;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 import javax.inject.Inject;

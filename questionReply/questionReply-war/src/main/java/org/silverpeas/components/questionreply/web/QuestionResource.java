@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Question;
 import com.stratelia.webactiv.SilverpeasRole;

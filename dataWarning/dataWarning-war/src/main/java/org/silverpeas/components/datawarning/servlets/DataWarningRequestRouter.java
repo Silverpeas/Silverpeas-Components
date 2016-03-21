@@ -33,12 +33,12 @@ import org.silverpeas.components.datawarning.model.DataWarningQueryResult;
 import org.silverpeas.components.datawarning.model.DataWarningResult;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
 import org.silverpeas.components.datawarning.model.DataWarningUser;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.viewGenerator.html.Encode;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.util.viewgenerator.html.Encode;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;

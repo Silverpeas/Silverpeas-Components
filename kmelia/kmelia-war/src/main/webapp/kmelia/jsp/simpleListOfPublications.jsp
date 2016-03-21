@@ -33,6 +33,7 @@
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 
 <c:set var='greatestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 

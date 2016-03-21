@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.yellowpages;
 
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 

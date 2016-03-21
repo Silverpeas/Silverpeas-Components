@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.components.gallery.constant.MediaResolution;

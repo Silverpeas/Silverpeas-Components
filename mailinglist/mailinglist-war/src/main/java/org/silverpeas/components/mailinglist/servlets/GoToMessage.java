@@ -25,7 +25,7 @@ package org.silverpeas.components.mailinglist.servlets;
 
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 import javax.servlet.http.HttpServletRequest;

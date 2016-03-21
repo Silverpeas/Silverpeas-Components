@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.survey.servlets;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
@@ -37,7 +37,7 @@ import com.stratelia.webactiv.survey.control.SurveySessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;

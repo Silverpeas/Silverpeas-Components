@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.servlets;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.apache.commons.lang3.CharEncoding;

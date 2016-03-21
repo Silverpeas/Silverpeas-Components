@@ -1,7 +1,7 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import org.silverpeas.core.comment.model.Comment;
-import com.silverpeas.comment.web.CommentEntity;
+import org.silverpeas.core.webapi.comment.CommentEntity;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import javax.xml.bind.annotation.XmlElement;

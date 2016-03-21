@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.survey.servlets;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;

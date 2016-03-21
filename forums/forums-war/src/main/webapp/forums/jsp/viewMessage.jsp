@@ -48,7 +48,9 @@
 <%@ page import="org.silverpeas.util.NotifierUtil"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map" %>
-<%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
+<%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;

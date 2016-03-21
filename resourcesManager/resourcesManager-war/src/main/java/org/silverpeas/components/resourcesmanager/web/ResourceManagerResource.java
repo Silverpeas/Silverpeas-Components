@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.date.period.Period;

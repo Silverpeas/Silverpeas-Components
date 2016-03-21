@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.survey;
 
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;

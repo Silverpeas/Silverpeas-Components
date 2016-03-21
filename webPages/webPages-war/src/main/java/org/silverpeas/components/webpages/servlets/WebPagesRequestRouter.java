@@ -23,21 +23,21 @@
  */
 package org.silverpeas.components.webpages.servlets;
 
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionManagementContext;
 import org.silverpeas.components.webpages.control.WebPagesSessionController;
 import org.silverpeas.components.webpages.model.WebPagesException;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.owasp.encoder.Encode;
 import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.ActionType;
 
 import javax.servlet.http.HttpServletRequest;

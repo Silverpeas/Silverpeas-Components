@@ -26,6 +26,8 @@
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -176,7 +178,8 @@ out.println("<br>");
 
 			//ic�ne de l'historique
 				Icon historyIcon = iconPane.addIcon();
-				historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(filePath)+"')");
+				historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+
+            Encode.javaStringToJsString(filePath)+"')");
 				iconPane.setSpacing("20px");
 
 				arrayLine.addArrayCellIconPane(iconPane);

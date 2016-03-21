@@ -14,6 +14,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>javax.servlet.jsp.jstl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.components.organizationchart</groupId>
       <artifactId>silverpeas-organizationchart</artifactId>
       <version>${project.version}</version>

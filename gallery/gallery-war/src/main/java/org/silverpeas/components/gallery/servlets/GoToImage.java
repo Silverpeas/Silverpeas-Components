@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.servlets;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.util.ServiceProvider;

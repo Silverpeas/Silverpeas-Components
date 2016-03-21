@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
@@ -37,6 +37,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.util.PaginationList;
 import org.silverpeas.util.StringUtil;
 
@@ -80,7 +81,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * @param suggestionId the identifier of the suggestion
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * suggestion.
-   * @see com.silverpeas.web.RESTWebService.WebProcess#execute()
+   * @see RESTWebService.WebProcess#execute()
    */
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}")

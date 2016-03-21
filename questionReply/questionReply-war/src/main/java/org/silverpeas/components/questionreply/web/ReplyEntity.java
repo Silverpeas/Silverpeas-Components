@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import com.silverpeas.attachment.web.AttachmentEntity;
+import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import static com.stratelia.webactiv.SilverpeasRole.admin;

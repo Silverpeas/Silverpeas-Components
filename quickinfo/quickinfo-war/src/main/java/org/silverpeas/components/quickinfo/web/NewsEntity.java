@@ -30,7 +30,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.time.TimeData;

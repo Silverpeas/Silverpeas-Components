@@ -30,8 +30,8 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="com.silverpeas.treeMenu.process.TreeHandler"%>
-<%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
+<%@ page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
+<%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

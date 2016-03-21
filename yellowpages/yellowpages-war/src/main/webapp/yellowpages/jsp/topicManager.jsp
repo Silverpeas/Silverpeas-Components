@@ -27,10 +27,10 @@
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%

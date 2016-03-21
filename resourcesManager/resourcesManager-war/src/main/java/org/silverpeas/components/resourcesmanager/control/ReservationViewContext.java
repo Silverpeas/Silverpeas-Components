@@ -25,7 +25,7 @@ package org.silverpeas.components.resourcesmanager.control;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.calendar.CalendarViewContext;
+import org.silverpeas.core.web.calendar.CalendarViewContext;
 import org.silverpeas.components.resourcesmanager.web.ResourceManagerResourceURIs;
 
 /**

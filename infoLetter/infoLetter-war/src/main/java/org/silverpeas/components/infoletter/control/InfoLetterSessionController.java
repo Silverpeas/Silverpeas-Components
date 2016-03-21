@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.infoletter.control;
 
-import com.silverpeas.pdc.web.PdcClassificationEntity;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
@@ -32,9 +32,9 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;

@@ -1,4 +1,6 @@
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

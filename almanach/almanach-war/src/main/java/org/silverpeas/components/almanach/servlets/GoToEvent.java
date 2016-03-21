@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.servlets;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;

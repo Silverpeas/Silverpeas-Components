@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.model.AlbumDetail;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

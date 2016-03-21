@@ -27,7 +27,7 @@ package org.silverpeas.components.classifieds.servlets.handler;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.Collection;
 

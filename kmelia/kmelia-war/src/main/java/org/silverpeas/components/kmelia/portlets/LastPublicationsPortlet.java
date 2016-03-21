@@ -24,10 +24,10 @@
 
 package org.silverpeas.components.kmelia.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.components.kmelia.KmeliaTransversal;

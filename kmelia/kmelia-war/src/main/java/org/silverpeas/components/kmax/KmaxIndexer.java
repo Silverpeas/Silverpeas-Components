@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmax;
 
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.publication.control.PublicationService;
