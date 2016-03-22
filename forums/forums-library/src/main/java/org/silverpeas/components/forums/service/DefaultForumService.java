@@ -30,10 +30,10 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.silverpeas.tagcloud.ejb.TagCloudBm;
-import com.silverpeas.tagcloud.model.TagCloud;
-import com.silverpeas.tagcloud.model.TagCloudPK;
-import com.silverpeas.tagcloud.model.TagCloudUtil;
+import org.silverpeas.core.tagcloud.service.TagCloudService;
+import org.silverpeas.core.tagcloud.model.TagCloud;
+import org.silverpeas.core.tagcloud.dao.TagCloudPK;
+import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
@@ -83,7 +83,7 @@ import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultForumService implements ForumService {
   @Inject
-  private TagCloudBm tagcloud;
+  private TagCloudService tagcloud;
   @Inject
   private RatingService notation;
   @Inject
