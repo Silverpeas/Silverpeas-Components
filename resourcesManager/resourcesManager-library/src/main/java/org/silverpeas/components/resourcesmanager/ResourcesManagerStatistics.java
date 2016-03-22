@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.resourcesmanager;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 
 import javax.inject.Named;

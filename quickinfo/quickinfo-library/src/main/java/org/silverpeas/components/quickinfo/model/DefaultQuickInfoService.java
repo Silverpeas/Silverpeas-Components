@@ -34,7 +34,7 @@ import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticService;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;

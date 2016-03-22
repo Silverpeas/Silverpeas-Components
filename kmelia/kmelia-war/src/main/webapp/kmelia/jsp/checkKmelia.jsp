@@ -85,7 +85,7 @@
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>
 <%@ page import="org.silverpeas.util.SettingBundle" %>
 

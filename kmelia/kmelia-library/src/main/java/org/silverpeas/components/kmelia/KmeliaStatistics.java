@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;

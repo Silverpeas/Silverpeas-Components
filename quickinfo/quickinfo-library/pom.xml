@@ -26,7 +26,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-statistic</artifactId>
+      <artifactId>silverpeas-core-silverstatistics</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

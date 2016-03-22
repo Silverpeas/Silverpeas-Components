@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.classifieds;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;

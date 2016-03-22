@@ -26,8 +26,8 @@
  ---*/
 package org.silverpeas.components.forums;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumPK;
 

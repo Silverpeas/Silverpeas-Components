@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.websites;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.websites.service.WebSiteService;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.util.ServiceProvider;

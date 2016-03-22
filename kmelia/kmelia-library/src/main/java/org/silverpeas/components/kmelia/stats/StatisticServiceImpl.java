@@ -31,8 +31,8 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticService;
-import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 

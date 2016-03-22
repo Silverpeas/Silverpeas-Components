@@ -27,8 +27,8 @@ package org.silverpeas.components.rssaggregator;
 import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
 import org.silverpeas.components.rssaggregator.service.RssAgregatorBmImpl;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

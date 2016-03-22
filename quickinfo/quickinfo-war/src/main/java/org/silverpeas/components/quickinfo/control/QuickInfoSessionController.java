@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.statistic.control.StatisticService;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;

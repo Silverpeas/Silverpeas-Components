@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.whitepages;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
 

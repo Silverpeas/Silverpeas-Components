@@ -36,7 +36,7 @@ import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
+import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.ForeignPK;
