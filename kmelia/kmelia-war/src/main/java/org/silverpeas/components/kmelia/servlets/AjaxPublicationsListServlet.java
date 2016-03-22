@@ -66,7 +66,7 @@ import org.silverpeas.util.viewGenerator.html.ImageTag;
 import org.silverpeas.util.viewGenerator.html.UserNameGenerator;
 import org.silverpeas.util.viewGenerator.html.board.Board;
 import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
-import org.silverpeas.viewer.ViewerProvider;
+import org.silverpeas.core.viewer.service.ViewerProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
