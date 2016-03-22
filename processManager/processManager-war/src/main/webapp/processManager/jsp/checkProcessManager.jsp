@@ -47,20 +47,20 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="com.silverpeas.workflow.api.instance.ProcessInstance" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
 <%@ page import="com.silverpeas.form.PagesContext" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>
-<%@ page import="com.silverpeas.workflow.api.error.WorkflowError" %>
+<%@ page import="org.silverpeas.core.workflow.api.error.WorkflowError" %>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
-<%@ page import="com.silverpeas.workflow.api.model.State" %>
-<%@ page import="com.silverpeas.workflow.api.model.Action" %>
-<%@ page import="com.silverpeas.workflow.api.instance.HistoryStep" %>
-<%@ page import="com.silverpeas.workflow.api.instance.Question" %>
+<%@ page import="org.silverpeas.core.workflow.api.model.State" %>
+<%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.HistoryStep" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.Question" %>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.form.RecordTemplate" %>
 <%@ page import="com.silverpeas.form.FieldTemplate" %>
-<%@ page import="com.silverpeas.workflow.api.model.Item" %>
-<%@ page import="com.silverpeas.workflow.api.task.Task" %>
+<%@ page import="org.silverpeas.core.workflow.api.model.Item" %>
+<%@ page import="org.silverpeas.core.workflow.api.task.Task" %>
 <%@ page import="com.silverpeas.form.Field" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
@@ -80,7 +80,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord"%>
+<%@ page import="org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord"%>
 <%@ page import="com.silverpeas.form.fieldType.DateField"%>
 <%@ page import="org.silverpeas.processmanager.NamedValue" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>

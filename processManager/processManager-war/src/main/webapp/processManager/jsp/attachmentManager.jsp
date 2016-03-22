@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.util.URLUtils" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,7 +30,7 @@
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
-	ProcessInstance 	process 			= (ProcessInstance) request.getAttribute("process");
+	ProcessInstance process 			= (ProcessInstance) request.getAttribute("process");
 	Boolean 			isHistoryTabEnable 	= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean				isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
 

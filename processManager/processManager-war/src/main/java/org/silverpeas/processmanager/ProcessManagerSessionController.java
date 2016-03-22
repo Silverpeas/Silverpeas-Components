@@ -38,32 +38,32 @@ import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
+import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
-import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
-import com.silverpeas.workflow.api.Workflow;
-import com.silverpeas.workflow.api.WorkflowEngine;
-import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.error.WorkflowError;
-import com.silverpeas.workflow.api.event.GenericEvent;
-import com.silverpeas.workflow.api.event.QuestionEvent;
-import com.silverpeas.workflow.api.event.ResponseEvent;
-import com.silverpeas.workflow.api.event.TaskDoneEvent;
-import com.silverpeas.workflow.api.event.TaskSavedEvent;
-import com.silverpeas.workflow.api.instance.Actor;
-import com.silverpeas.workflow.api.instance.HistoryStep;
-import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.silverpeas.workflow.api.instance.Question;
-import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
-import com.silverpeas.workflow.api.model.*;
-import com.silverpeas.workflow.api.task.Task;
-import com.silverpeas.workflow.api.user.User;
-import com.silverpeas.workflow.api.user.UserInfo;
-import com.silverpeas.workflow.api.user.UserSettings;
-import com.silverpeas.workflow.engine.WorkflowHub;
-import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
-import com.silverpeas.workflow.engine.instance.LockingUser;
-import com.silverpeas.workflow.engine.model.ItemImpl;
+import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
+import org.silverpeas.core.workflow.api.Workflow;
+import org.silverpeas.core.workflow.api.WorkflowEngine;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.error.WorkflowError;
+import org.silverpeas.core.workflow.api.event.GenericEvent;
+import org.silverpeas.core.workflow.api.event.QuestionEvent;
+import org.silverpeas.core.workflow.api.event.ResponseEvent;
+import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
+import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
+import org.silverpeas.core.workflow.api.instance.Actor;
+import org.silverpeas.core.workflow.api.instance.HistoryStep;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.core.workflow.api.instance.Question;
+import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
+import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.api.user.UserInfo;
+import org.silverpeas.core.workflow.api.user.UserSettings;
+import org.silverpeas.core.workflow.engine.WorkflowHub;
+import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
+import org.silverpeas.core.workflow.engine.instance.LockingUser;
+import org.silverpeas.core.workflow.engine.model.ItemImpl;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -1483,7 +1483,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Form getPrintForm(HttpServletRequest request) throws ProcessManagerException {
     try {
-      com.silverpeas.workflow.api.model.Form form = processModel.getForm("printForm");
+      org.silverpeas.core.workflow.api.model.Form form = processModel.getForm("printForm");
       if (form == null) {
         throw new ProcessManagerException("ProcessManagerSessionController",
             "processManager.NO_PRINTFORM_DEFINED_IN_MODEL");
@@ -1580,7 +1580,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Form getUserSettingsForm() throws ProcessManagerException {
     try {
-      com.silverpeas.workflow.api.model.DataFolder userInfos = processModel.getUserInfos();
+      DataFolder userInfos = processModel.getUserInfos();
       if (userInfos == null) {
         return null;
       }

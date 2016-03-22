@@ -21,9 +21,9 @@
 package org.silverpeas.components.almanach.workflowextensions;
 
 import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.model.Parameter;
-import com.silverpeas.workflow.external.impl.ExternalActionImpl;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.model.Parameter;
+import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.AlmanachRuntimeException;

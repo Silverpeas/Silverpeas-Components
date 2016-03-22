@@ -36,10 +36,10 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.filter.FilterManager;
 import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.silverpeas.workflow.api.model.ProcessModel;
-import com.silverpeas.workflow.api.model.State;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.core.workflow.api.model.ProcessModel;
+import org.silverpeas.core.workflow.api.model.State;
 
 /**
  * A ProcessFilter is used to select some process from all the process.

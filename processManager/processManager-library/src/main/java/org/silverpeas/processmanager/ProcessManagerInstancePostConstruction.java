@@ -24,8 +24,8 @@
 package org.silverpeas.processmanager;
 
 import com.silverpeas.admin.components.ComponentInstancePostConstruction;
-import com.silverpeas.workflow.api.Workflow;
-import com.silverpeas.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.Workflow;
+import org.silverpeas.core.workflow.api.WorkflowException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 
 import javax.inject.Named;

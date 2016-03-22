@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
