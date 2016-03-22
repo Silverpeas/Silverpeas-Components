@@ -24,8 +24,8 @@
 package org.silverpeas.components.almanach.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -41,7 +41,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.formsonline.control;
 
-import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
+import org.silverpeas.core.accesscontrol.ForbiddenRuntimeException;
 import com.silverpeas.form.FormException;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.FormDetail;

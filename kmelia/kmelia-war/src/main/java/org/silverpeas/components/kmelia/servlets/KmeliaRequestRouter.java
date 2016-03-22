@@ -52,7 +52,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.accesscontrol.PublicationAccessController;
+import org.silverpeas.core.accesscontrol.PublicationAccessController;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaSecurity;
 import org.silverpeas.components.kmelia.SearchContext;

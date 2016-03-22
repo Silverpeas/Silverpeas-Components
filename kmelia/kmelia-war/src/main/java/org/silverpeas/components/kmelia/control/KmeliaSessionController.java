@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.control;
 
-import com.silverpeas.accesscontrol.AccessControlContext;
+import org.silverpeas.core.accesscontrol.AccessControlContext;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
@@ -70,8 +70,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.accesscontrol.NodeAccessController;
-import org.silverpeas.accesscontrol.PublicationAccessController;
+import org.silverpeas.core.accesscontrol.NodeAccessController;
+import org.silverpeas.core.accesscontrol.PublicationAccessController;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;

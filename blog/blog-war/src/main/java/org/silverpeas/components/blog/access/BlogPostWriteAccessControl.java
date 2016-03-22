@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.blog.access;
 
-import com.silverpeas.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.util.ServiceProvider;
 
 /**
