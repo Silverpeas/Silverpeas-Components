@@ -57,11 +57,11 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -78,10 +78,10 @@ import static org.silverpeas.components.kmelia.export.DocumentTemplateParts.*;
 import static org.silverpeas.components.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
 import static org.silverpeas.components.kmelia.export.ODTDocumentsMerging.atSection;
 import static org.silverpeas.components.kmelia.export.ODTDocumentsMerging.decorates;
-import static org.silverpeas.util.DateUtil.formatDate;
-import static org.silverpeas.util.DateUtil.getOutputDate;
-import static org.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.util.StringUtil.isInteger;
+import static org.silverpeas.core.util.DateUtil.formatDate;
+import static org.silverpeas.core.util.DateUtil.getOutputDate;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isInteger;
 
 /**
  * A builder of an ODT document based on a given template and from a specified Kmelia publication.

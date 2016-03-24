@@ -31,7 +31,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.dao.MailingListDao;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;

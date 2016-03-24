@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

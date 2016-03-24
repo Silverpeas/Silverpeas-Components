@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of EventOccurrenceGenerator instances. It manages the life-cycle of the generators and

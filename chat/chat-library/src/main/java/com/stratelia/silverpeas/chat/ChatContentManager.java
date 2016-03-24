@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**

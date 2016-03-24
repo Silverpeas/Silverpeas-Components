@@ -22,7 +22,7 @@ package org.silverpeas.components.scheduleevent.service;
 
 import com.silverpeas.ApplicationService;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Set;
 

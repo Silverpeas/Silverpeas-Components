@@ -22,7 +22,7 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@page import="org.silverpeas.util.ResourceLocator"%>
+<%@page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>

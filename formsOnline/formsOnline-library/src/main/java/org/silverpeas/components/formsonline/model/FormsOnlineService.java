@@ -27,7 +27,7 @@ import com.silverpeas.ApplicationService;
 import com.silverpeas.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 

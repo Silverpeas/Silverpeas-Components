@@ -41,9 +41,9 @@ import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.util.ArrayList;

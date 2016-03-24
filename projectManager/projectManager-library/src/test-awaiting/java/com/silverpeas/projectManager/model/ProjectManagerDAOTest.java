@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Calendar;
 import com.silverpeas.components.model.AbstractTestDao;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import static com.silverpeas.jcrutil.RandomGenerator.*;
 import java.sql.Connection;

@@ -32,7 +32,7 @@ import org.silverpeas.components.mailinglist.service.util.OrderBy;
 import org.silverpeas.core.calendar.service.CalendarRuntimeException;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.ToDoHeader;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

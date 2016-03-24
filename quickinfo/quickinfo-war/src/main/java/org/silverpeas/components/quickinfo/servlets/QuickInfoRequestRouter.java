@@ -29,19 +29,19 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.upload.UploadedFile;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {

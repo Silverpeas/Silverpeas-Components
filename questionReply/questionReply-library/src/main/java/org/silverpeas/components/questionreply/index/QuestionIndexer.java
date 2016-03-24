@@ -28,7 +28,7 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.Collection;
 

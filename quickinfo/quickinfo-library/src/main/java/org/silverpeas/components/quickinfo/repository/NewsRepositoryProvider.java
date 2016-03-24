@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quickinfo.repository;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class NewsRepositoryProvider {
   private NewsRepositoryProvider() {

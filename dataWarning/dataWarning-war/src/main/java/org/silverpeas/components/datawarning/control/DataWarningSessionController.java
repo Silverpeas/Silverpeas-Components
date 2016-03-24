@@ -33,14 +33,14 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.datawarning.service.DataWarningEngine;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;

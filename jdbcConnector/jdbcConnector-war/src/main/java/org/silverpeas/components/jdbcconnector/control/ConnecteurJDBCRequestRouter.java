@@ -26,11 +26,11 @@ package org.silverpeas.components.jdbcconnector.control;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer

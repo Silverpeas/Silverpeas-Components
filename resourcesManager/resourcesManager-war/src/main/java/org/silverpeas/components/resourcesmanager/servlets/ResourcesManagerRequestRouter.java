@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.web.calendar.CalendarViewType;
@@ -49,11 +49,11 @@ import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataVie
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;

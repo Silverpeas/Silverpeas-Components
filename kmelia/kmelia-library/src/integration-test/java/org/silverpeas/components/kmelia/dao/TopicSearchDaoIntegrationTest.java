@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.components.kmelia.test.WarBuilder4Kmelia;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 

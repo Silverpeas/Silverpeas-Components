@@ -37,11 +37,11 @@ import com.silverpeas.mydb.data.key.ForeignKey;
 import com.silverpeas.mydb.data.key.PrimaryKey;
 import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.exception.MyDBException;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

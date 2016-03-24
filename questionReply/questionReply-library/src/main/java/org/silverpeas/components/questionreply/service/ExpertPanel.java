@@ -29,9 +29,9 @@ import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

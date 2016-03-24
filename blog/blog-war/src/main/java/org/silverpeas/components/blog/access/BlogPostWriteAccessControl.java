@@ -25,7 +25,7 @@
 package org.silverpeas.components.blog.access;
 
 import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This interface extends access controller for Post resource in writing mode.

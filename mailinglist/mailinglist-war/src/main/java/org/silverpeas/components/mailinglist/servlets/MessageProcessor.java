@@ -27,7 +27,7 @@ import org.silverpeas.components.mailinglist.service.MailingListServicesProvider
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
 import java.util.List;

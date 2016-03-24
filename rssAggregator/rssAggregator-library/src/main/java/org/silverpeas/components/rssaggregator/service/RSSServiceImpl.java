@@ -27,13 +27,13 @@ import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.ChannelBuilder;
 import de.nava.informa.impl.basic.Item;
 import de.nava.informa.parsers.FeedParser;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;

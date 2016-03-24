@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.notification
     .FormsOnlinePendingValidationRequestUserNotification;
@@ -46,7 +46,7 @@ import org.silverpeas.components.formsonline.notification
     .FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification
     .FormsOnlineValidationRequestUserNotification;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import java.util.Date;

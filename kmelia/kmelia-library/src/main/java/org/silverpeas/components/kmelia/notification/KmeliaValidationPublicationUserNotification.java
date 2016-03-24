@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import java.util.Collection;
 import java.util.HashSet;

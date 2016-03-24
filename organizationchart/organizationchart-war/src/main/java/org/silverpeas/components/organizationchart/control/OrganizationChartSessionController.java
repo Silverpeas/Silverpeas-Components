@@ -44,8 +44,8 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
 
 import java.io.UnsupportedEncodingException;

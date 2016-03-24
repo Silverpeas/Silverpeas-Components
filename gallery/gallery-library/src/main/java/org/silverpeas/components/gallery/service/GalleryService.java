@@ -39,7 +39,7 @@ import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.process.util.ProcessList;
 
 import java.io.File;

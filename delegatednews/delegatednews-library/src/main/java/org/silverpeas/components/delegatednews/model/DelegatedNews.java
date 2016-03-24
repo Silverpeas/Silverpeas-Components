@@ -28,9 +28,9 @@ import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
-import org.silverpeas.persistence.model.identifier.ExternalIntegerIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.persistence.model.identifier.ExternalIntegerIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.persistence.AttributeOverride;

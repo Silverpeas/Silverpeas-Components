@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.core.contact.model.CompleteContact" %>
 <%@ page import="org.silverpeas.core.contact.model.ContactDetail" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

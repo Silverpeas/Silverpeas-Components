@@ -29,10 +29,10 @@
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Iterator"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.silvertrace.SilverTrace"%>
+<%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.components.forums.service.ForumsException"%>
@@ -41,7 +41,7 @@
 <%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>
 <%@ page import="org.silverpeas.components.forums.url.ActionUrl"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
@@ -50,7 +50,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%!  
   public static String IMAGE_UPDATE = "../../util/icons/update.gif";

@@ -34,7 +34,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>

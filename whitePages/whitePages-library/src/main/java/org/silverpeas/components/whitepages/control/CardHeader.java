@@ -29,11 +29,11 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.util.HashMap;
 import java.util.Map;

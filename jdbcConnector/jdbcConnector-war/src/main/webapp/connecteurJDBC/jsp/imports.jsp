@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.SettingBundle"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
@@ -41,6 +41,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.silvertrace.SilverTrace" %>
+<%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

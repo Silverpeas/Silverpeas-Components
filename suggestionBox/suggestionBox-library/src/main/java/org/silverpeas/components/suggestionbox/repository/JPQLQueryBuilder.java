@@ -30,11 +30,11 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.PaginationCriterion;
-import org.silverpeas.persistence.repository.QueryCriteria;
-import org.silverpeas.persistence.repository.SimpleQueryCriteria;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.PaginationCriterion;
+import org.silverpeas.core.persistence.repository.QueryCriteria;
+import org.silverpeas.core.persistence.repository.SimpleQueryCriteria;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
 
 import java.util.ArrayList;
 import java.util.List;

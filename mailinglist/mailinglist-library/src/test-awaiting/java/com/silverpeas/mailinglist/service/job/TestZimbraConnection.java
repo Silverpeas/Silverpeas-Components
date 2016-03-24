@@ -20,7 +20,7 @@
  */
 package com.silverpeas.mailinglist.service.job;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;

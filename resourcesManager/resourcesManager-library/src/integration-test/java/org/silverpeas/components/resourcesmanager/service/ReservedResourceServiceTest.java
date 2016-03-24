@@ -34,7 +34,7 @@ import org.silverpeas.components.resourcesmanager.model.ReservedResource;
 import org.silverpeas.components.resourcesmanager.model.ResourceStatus;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Arrays;
 import java.util.List;

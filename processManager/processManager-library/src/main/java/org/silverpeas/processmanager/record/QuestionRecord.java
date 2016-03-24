@@ -31,7 +31,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.fieldType.TextFieldImpl;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class QuestionRecord implements DataRecord {
 

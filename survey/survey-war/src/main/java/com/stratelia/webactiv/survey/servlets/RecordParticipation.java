@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
 
 public class RecordParticipation extends HttpServlet {
   private static final long serialVersionUID = -1833168544559333059L;

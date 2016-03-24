@@ -27,18 +27,18 @@ import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.process.media.GalleryLoadMetaDataProcess;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.media.video.ThumbnailPeriod;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageManager;
 
 import java.util.ArrayList;
 import java.util.Collection;

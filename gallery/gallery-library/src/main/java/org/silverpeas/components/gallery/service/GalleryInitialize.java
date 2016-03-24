@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.service;
 
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 /**
  * Initializes the Gallery application by setting up the different schedulers, one to alert the

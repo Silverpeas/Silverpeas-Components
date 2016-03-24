@@ -32,7 +32,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;

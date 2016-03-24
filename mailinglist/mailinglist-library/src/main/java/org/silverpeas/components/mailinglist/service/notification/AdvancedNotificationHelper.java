@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist.service.notification;
 
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -32,8 +32,8 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import org.silverpeas.core.calendar.service.CalendarRuntimeException;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;

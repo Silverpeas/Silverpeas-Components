@@ -26,7 +26,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.FileDetail;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;

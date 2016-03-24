@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.Date;

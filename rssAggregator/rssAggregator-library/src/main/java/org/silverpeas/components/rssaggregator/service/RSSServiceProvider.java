@@ -23,8 +23,7 @@
  */
 package org.silverpeas.components.rssaggregator.service;
 
-import org.silverpeas.components.rssaggregator.service.RSSService;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class RSSServiceProvider {
 

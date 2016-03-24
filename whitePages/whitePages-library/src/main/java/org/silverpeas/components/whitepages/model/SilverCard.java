@@ -29,8 +29,8 @@ import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;

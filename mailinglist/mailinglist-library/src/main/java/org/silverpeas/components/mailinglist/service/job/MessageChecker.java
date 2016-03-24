@@ -29,10 +29,10 @@ import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.mail.engine.SmtpConfiguration;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

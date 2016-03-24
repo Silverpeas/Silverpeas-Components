@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="jChatBox.Util.*,jChatBox.Chat.*,java.util.*,java.text.SimpleDateFormat,org.silverpeas.silvertrace.*" %>
+<%@ page import="jChatBox.Util.*,jChatBox.Chat.*,java.util.*,java.text.SimpleDateFormat,org.silverpeas.core.silvertrace.*" %>
 <%
 		Integer cID ;
 		ChatroomUser cUser = (ChatroomUser) session.getValue(XMLConfig.USERSESSIONID);

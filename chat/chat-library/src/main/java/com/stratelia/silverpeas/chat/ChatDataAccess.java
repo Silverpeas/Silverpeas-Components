@@ -37,7 +37,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

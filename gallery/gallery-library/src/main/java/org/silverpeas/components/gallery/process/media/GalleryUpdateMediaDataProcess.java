@@ -30,7 +30,7 @@ import org.silverpeas.process.session.ProcessSession;
 import com.silverpeas.form.PagesContext;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * Process to update a media in Database

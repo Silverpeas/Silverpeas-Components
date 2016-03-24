@@ -27,7 +27,7 @@ import com.silverpeas.mydb.data.datatype.DataType;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.db.DbColumn;
 import com.silverpeas.mydb.data.db.DbTable;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.util.MultiSilverpeasBundle;
 

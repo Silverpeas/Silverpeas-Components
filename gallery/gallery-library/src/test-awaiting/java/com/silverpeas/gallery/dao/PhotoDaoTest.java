@@ -29,10 +29,10 @@ import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.DateUtil;
 import org.junit.Test;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.media.Definition;
 
 import java.sql.Connection;

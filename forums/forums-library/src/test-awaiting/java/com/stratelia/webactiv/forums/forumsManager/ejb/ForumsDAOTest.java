@@ -28,7 +28,7 @@ import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.After;
 import org.junit.AfterClass;

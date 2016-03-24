@@ -10,13 +10,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
 import java.util.List;

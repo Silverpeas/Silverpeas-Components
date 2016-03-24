@@ -29,13 +29,13 @@ import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;

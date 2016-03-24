@@ -28,7 +28,7 @@ import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.notification.NotificationFormatter;
 import org.silverpeas.components.mailinglist.service.notification.NotificationHelper;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class MailingListServicesProvider {
 

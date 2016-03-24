@@ -52,7 +52,7 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;

@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.service;
 
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**

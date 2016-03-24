@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.datawarning;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.XmlSettingBundle;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.XmlSettingBundle;
 
 import java.util.HashMap;
 import java.util.Map;

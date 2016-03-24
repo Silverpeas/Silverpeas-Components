@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning.service;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

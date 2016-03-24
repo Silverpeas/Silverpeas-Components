@@ -25,7 +25,7 @@ package org.silverpeas.components.questionreply.web;
 
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
@@ -33,7 +33,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
 
 import com.stratelia.webactiv.persistence.IdPK;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.net.URI;

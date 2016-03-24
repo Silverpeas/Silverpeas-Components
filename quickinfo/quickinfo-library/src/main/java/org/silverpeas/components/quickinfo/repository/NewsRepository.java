@@ -25,9 +25,9 @@
 package org.silverpeas.components.quickinfo.repository;
 
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
-import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager;
 
 import java.util.List;
 

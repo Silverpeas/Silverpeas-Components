@@ -44,8 +44,8 @@ import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.control.helpers;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;

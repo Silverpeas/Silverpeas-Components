@@ -33,9 +33,9 @@ import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
-import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

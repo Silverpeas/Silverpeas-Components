@@ -27,7 +27,7 @@ import org.silverpeas.components.mailinglist.service.MailingListServicesProvider
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

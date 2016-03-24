@@ -36,7 +36,7 @@ import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -44,7 +44,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.web.http.HttpRequest;

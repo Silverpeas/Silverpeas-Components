@@ -24,7 +24,7 @@
 package org.silverpeas.components.questionreply.web;
 
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
@@ -32,7 +32,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.net.URI;
 import java.text.ParseException;

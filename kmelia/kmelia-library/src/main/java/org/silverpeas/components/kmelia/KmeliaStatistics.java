@@ -25,7 +25,7 @@ import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.util.*"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 
 

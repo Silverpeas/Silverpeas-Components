@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.datawarning.model;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.SettingBundle;
 
 public class DataWarningResult extends Object {
   // Trigger static values

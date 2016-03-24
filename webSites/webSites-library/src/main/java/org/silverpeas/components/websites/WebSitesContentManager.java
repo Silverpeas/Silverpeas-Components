@@ -33,7 +33,7 @@ import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
 import org.silverpeas.components.websites.siteManage.model.WebSitesRuntimeException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.util.ArrayList;

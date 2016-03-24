@@ -24,7 +24,7 @@
 package org.silverpeas.components.resourcesmanager.control;
 
 
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -48,11 +48,11 @@ import org.silverpeas.components.resourcesmanager.service.ResourcesManagerRuntim
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.Link;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.util.ArrayList;

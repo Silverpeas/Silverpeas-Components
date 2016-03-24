@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist.service.notification;
 
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;

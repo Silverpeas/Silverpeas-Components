@@ -23,8 +23,8 @@
  */
 package com.stratelia.silverpeas.chat;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 

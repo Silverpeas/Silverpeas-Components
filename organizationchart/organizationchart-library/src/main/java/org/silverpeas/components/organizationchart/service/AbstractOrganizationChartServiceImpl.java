@@ -26,7 +26,7 @@ package org.silverpeas.components.organizationchart.service;
 import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import org.silverpeas.components.organizationchart.model.OrganizationalRole;
 import org.silverpeas.components.organizationchart.model.PersonCategory;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

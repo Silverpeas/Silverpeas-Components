@@ -28,7 +28,7 @@ import java.util.Map;
 
 import javax.naming.Context;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 public class OrganizationChartLDAPConfiguration extends OrganizationChartConfiguration {
   private Map<String, String> env = null;

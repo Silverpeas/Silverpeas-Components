@@ -29,7 +29,7 @@ import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.repository.OperationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

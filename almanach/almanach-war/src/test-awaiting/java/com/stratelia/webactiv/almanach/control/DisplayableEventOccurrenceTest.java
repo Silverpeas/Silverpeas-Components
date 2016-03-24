@@ -23,11 +23,11 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Date;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.json.JSONArray;
 import org.json.JSONObject;

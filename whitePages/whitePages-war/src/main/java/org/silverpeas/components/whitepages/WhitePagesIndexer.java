@@ -40,8 +40,8 @@ import org.silverpeas.core.web.index.components.ComponentIndexation;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;

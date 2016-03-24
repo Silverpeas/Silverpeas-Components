@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.MediaUtil;
 import org.silverpeas.components.gallery.model.Media;
@@ -31,7 +31,7 @@ import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * Process to update a media on file system

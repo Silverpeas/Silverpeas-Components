@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.organizationchart.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class OrganizationChartServicesProvider {
 

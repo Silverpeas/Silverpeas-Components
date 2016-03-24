@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.almanach.model;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
@@ -35,8 +35,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.util.DateUtil.*;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.DateUtil.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class EventDAO {
 

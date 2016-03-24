@@ -30,7 +30,7 @@
 <%@ page import="org.silverpeas.components.whitepages.control.WhitePagesSessionController"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>

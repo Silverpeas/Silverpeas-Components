@@ -29,4 +29,4 @@
 @Module("silverCrawler")
 package org.silverpeas.components.silvercrawler;
 
-import org.silverpeas.annotation.Module;
+import org.silverpeas.core.annotation.Module;

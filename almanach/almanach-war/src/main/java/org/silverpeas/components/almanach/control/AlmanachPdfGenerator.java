@@ -51,8 +51,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.silverpeas.components.almanach.service.AlmanachException;
 import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.exception.SilverpeasException;
 

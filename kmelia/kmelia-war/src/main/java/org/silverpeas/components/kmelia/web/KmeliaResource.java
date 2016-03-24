@@ -29,7 +29,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

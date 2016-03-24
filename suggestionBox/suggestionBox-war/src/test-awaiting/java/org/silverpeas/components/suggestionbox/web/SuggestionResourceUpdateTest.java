@@ -30,7 +30,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 

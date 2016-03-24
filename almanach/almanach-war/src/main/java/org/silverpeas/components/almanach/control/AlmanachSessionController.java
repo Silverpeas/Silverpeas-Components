@@ -31,7 +31,7 @@ import com.silverpeas.export.ical.ExportableCalendar;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -39,7 +39,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.apache.commons.io.FileUtils;
@@ -57,17 +57,17 @@ import org.silverpeas.components.almanach.service.AlmanachNoSuchFindEventExcepti
 import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.CalendarEventEncoder;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.Link;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -88,11 +88,11 @@ import java.util.Map;
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.cache.service.VolatileCacheServiceProvider
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.web.calendar.CalendarViewType.*;
-import static org.silverpeas.util.DateUtil.parse;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.DateUtil.parse;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such

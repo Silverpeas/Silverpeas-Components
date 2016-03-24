@@ -22,14 +22,14 @@ package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.web.look.PublicationHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

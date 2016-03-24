@@ -35,7 +35,7 @@
 
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
@@ -54,8 +54,8 @@
 <%@ page import="org.silverpeas.components.almanach.control.AlmanachSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="java.util.Date" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

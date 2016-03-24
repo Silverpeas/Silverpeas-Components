@@ -29,8 +29,8 @@ import java.util.Date;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public class SiteDetail extends PublicationDetail {

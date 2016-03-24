@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.calendar.AbstractEventEntity;
 import org.silverpeas.components.resourcesmanager.model.Reservation;

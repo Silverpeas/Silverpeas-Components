@@ -45,12 +45,12 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import org.silverpeas.mydb.control.DriverManager;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.math.BigDecimal;

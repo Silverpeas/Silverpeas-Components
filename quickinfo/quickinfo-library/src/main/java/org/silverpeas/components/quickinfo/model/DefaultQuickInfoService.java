@@ -59,12 +59,12 @@ import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -79,8 +79,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.persistence.Transaction.performInOne;
-import static org.silverpeas.persistence.repository.OperationContext.fromUser;
+import static org.silverpeas.core.persistence.Transaction.performInOne;
+import static org.silverpeas.core.persistence.repository.OperationContext.fromUser;
 
 @Singleton
 public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News> {

@@ -27,7 +27,7 @@ package org.silverpeas.components.whitepages.service;
 import java.util.SortedSet;
 
 import org.silverpeas.components.whitepages.model.SearchField;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 
 public interface WhitePagesService {

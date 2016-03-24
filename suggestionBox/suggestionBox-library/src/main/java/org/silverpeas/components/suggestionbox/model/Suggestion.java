@@ -31,10 +31,10 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.Rateable;
 

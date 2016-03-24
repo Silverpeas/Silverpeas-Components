@@ -29,7 +29,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.control.AlmanachCalendarView;
 import org.silverpeas.components.almanach.control.AlmanachSessionController;
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -40,19 +40,19 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 import static org.silverpeas.core.web.calendar.CalendarViewType.*;
-import static org.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.util.StringUtil.isInteger;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isInteger;
 
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {

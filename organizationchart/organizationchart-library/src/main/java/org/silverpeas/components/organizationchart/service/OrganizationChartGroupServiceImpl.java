@@ -32,7 +32,7 @@ import org.silverpeas.components.organizationchart.model.PersonCategory;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;

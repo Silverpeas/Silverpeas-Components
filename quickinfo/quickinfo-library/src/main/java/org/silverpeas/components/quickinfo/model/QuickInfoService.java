@@ -32,7 +32,7 @@ import org.silverpeas.components.quickinfo.NewsByStatus;
 
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface QuickInfoService extends ApplicationService<News> {
 

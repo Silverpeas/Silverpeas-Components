@@ -36,9 +36,9 @@ import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;
 

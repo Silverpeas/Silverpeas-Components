@@ -34,11 +34,11 @@ import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.servlet.FileUploadUtil;
 
 import java.text.ParseException;

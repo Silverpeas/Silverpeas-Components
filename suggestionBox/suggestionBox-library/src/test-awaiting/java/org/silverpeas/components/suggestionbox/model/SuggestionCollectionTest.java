@@ -48,8 +48,8 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepositor
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.OperationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;

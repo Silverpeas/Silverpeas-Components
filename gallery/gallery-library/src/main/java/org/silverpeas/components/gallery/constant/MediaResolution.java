@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.constant;
 
 import org.silverpeas.components.gallery.GalleryComponentSettings;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 

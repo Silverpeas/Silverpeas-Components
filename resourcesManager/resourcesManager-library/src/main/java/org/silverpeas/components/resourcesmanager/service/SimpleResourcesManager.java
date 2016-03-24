@@ -37,10 +37,10 @@ import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;

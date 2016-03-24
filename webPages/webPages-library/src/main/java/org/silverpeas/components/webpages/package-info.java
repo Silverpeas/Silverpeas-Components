@@ -25,4 +25,4 @@
 @Module("webPage")
 package org.silverpeas.components.webpages;
 
-import org.silverpeas.annotation.Module;
+import org.silverpeas.core.annotation.Module;

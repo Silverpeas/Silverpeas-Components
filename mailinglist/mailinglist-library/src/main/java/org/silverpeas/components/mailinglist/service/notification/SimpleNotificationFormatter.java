@@ -24,8 +24,8 @@
 package org.silverpeas.components.mailinglist.service.notification;
 
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;

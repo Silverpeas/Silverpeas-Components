@@ -26,8 +26,8 @@ package com.stratelia.webactiv.almanach.model;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,7 +37,7 @@ import java.util.List;
 
 import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.anEventDetailOfId;
 import static com.stratelia.webactiv.almanach.model.EventDetailMatcher.theEventDetail;
-import static org.silverpeas.util.DateUtil.date2SQLDate;
+import static org.silverpeas.core.util.DateUtil.date2SQLDate;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;

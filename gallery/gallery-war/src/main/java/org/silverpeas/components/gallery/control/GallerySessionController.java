@@ -36,6 +36,11 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -74,8 +79,8 @@ import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.util.*;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -91,7 +96,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 

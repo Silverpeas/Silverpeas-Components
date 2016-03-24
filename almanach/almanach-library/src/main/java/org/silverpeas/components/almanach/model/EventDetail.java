@@ -43,13 +43,13 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractBean;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.Serializable;
@@ -57,7 +57,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class EventDetail extends AbstractBean
     implements SilverContentInterface, Serializable, SilverpeasContent {

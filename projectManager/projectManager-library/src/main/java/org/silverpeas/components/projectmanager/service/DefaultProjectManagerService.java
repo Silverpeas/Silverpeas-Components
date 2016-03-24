@@ -41,13 +41,13 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.Link;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

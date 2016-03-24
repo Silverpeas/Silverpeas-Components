@@ -26,8 +26,8 @@ package org.silverpeas.components.forums.notification;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier

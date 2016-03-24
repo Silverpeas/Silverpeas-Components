@@ -32,7 +32,7 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.jboss.resteasy.plugins.providers.html.View;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

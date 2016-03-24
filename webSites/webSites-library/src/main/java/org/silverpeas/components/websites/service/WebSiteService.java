@@ -40,7 +40,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.components.websites.siteManage.model.FolderDetail;
 import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;

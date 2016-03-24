@@ -24,7 +24,7 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.components.datawarning.DataWarningException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationController;

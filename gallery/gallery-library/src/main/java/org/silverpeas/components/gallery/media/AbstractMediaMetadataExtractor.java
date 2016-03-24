@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.gallery.media;
 
-import org.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

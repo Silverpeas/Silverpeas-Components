@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 
@@ -40,7 +40,7 @@
 <%@ page import="org.silverpeas.util.FileServerUtils"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.questioncontainer.score.model.ScoreDetail"%>
 <%@ page import="org.silverpeas.core.questioncontainer.question.model.Question"%>
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
@@ -56,7 +56,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.core.questioncontainer.answer.model.Answer"%>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
@@ -74,8 +74,8 @@
 
 <%@ page import="org.apache.commons.fileupload.FileItem"%>1
 <%@ page import="org.silverpeas.components.quizz.control.QuizzSessionController" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 

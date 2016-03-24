@@ -38,11 +38,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -28,7 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@include file="checkKmelia.jsp" %>
 

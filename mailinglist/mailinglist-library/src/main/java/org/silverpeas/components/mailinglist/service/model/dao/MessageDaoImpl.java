@@ -28,10 +28,10 @@ import org.silverpeas.components.mailinglist.service.model.beans.Activity;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;

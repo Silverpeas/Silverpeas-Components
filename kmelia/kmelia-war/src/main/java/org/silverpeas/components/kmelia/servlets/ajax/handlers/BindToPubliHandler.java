@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 

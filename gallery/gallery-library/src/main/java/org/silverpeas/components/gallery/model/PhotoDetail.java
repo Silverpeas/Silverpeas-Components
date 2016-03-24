@@ -31,10 +31,10 @@ import java.util.Iterator;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 /**
  * @deprecated

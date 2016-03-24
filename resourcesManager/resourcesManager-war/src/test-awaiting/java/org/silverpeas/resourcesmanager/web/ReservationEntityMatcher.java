@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcesmanager.web;
 
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.DateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

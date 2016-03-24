@@ -32,9 +32,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.webapi.node.NodeAttrEntity;
 import org.silverpeas.core.webapi.node.NodeEntity;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

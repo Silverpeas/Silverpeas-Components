@@ -25,10 +25,10 @@
 package org.silverpeas.components.kmelia.dao;
 
 import org.silverpeas.components.kmelia.model.MostInterestedQueryVO;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.sql.SQLException;

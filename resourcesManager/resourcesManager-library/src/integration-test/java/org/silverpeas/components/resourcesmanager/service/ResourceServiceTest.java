@@ -35,9 +35,9 @@ import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
-import org.silverpeas.persistence.Transaction;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Arrays;
 import java.util.Date;

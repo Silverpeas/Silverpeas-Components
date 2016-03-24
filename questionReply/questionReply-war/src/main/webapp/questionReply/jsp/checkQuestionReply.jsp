@@ -56,14 +56,14 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.components.questionreply.control.QuestionReplySessionController" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

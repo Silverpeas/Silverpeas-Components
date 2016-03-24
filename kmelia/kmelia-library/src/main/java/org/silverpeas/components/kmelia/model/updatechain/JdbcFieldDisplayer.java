@@ -26,9 +26,9 @@ package org.silverpeas.components.kmelia.model.updatechain;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

@@ -38,7 +38,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * This entity ensures that all streaming data are formatted in a single way whatever the

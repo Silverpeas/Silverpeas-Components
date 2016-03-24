@@ -56,7 +56,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
 <%@ page import="org.silverpeas.core.workflow.api.instance.HistoryStep" %>
 <%@ page import="org.silverpeas.core.workflow.api.instance.Question" %>
-<%@page import="org.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="com.silverpeas.form.RecordTemplate" %>
 <%@ page import="com.silverpeas.form.FieldTemplate" %>
 <%@ page import="org.silverpeas.core.workflow.api.model.Item" %>
@@ -79,11 +79,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord"%>
 <%@ page import="com.silverpeas.form.fieldType.DateField"%>
 <%@ page import="org.silverpeas.processmanager.NamedValue" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%

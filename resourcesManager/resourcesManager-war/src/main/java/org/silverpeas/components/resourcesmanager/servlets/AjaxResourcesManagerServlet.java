@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.resourcesmanager.servlets;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.io.IOException;
 import java.io.Writer;

@@ -28,7 +28,7 @@ import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionContr
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

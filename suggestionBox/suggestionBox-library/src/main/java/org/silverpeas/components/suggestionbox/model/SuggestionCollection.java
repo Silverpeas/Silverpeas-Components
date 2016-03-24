@@ -12,8 +12,8 @@ import org.silverpeas.components.suggestionbox.notification.SuggestionValidation
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;

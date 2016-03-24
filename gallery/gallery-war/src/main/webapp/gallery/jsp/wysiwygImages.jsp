@@ -28,9 +28,9 @@
 <%@ page import="org.silverpeas.components.gallery.model.Media" %>
 <%@ page import="org.silverpeas.components.gallery.model.Photo" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 

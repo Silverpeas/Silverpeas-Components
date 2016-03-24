@@ -34,10 +34,10 @@ import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.TimeUnit;
-import org.silverpeas.initialization.Initialization;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 

@@ -32,12 +32,12 @@ import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
 import java.util.Collection;

@@ -35,7 +35,7 @@ import org.odftoolkit.odfdom.pkg.OdfPackage;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.draw.Frame;
 import org.odftoolkit.simple.draw.Image;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,7 +43,7 @@ import org.w3c.dom.NodeList;
 import java.net.URI;
 import java.util.Iterator;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A decorator of an OpenDocument text document. It decorates an ODT document by adding document

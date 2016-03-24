@@ -44,7 +44,7 @@
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.core.importexport.attachment.AttachmentDetail"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
@@ -82,12 +82,12 @@
 <%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 
 <%@ page import="org.silverpeas.util.ForeignPK"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

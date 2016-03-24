@@ -35,11 +35,11 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.PaginationList;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 
 import javax.inject.Singleton;

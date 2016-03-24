@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

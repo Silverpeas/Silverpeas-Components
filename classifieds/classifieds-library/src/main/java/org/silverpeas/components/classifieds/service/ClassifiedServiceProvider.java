@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.classifieds.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * The factory of the classified service objects.

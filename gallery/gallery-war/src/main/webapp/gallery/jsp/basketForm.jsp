@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

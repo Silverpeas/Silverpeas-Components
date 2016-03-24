@@ -36,7 +36,7 @@ import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.service.AlmanachException;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.CalendarEventEncoder;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

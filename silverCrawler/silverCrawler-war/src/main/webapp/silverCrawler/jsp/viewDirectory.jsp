@@ -25,7 +25,7 @@
 --%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -39,8 +39,8 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="greatestUserRole" value='<%=SilverpeasRole.from((String)request.getAttribute("Profile"))%>'/>

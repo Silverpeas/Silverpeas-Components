@@ -32,7 +32,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
@@ -42,19 +42,19 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.DecodingException;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.cache.service.VolatileCacheServiceProvider
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
 
 /**

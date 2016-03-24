@@ -30,14 +30,14 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.springframework.context.ApplicationContext;
 
 import java.sql.Timestamp;

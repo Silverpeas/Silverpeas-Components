@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.search;
 
 import org.silverpeas.components.kmelia.stats.StatisticService;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Factory of KmeliaSearchService, you can change the implementation using JEE IoC configuration

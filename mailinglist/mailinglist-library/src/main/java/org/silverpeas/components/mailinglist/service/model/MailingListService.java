@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface MailingListService {
 

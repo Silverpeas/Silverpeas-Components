@@ -32,11 +32,11 @@ import org.silverpeas.components.rssaggregator.control.RssAgregatorSessionContro
 import org.silverpeas.components.rssaggregator.model.RSSViewType;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.http.HttpRequest;
 
 public class RssAgregatorRequestRouter

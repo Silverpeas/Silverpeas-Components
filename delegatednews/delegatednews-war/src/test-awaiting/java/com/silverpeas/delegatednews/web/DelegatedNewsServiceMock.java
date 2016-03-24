@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.delegatednews.model.DelegatedNews;

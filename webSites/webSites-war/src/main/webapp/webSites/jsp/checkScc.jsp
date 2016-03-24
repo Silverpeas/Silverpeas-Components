@@ -39,7 +39,7 @@
 <%@ page import="java.io.ObjectInputStream"%>
 
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
@@ -71,7 +71,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="org.silverpeas.silvertrace.SilverTrace" %>
+<%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 

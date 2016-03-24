@@ -24,7 +24,7 @@
 package org.silverpeas.components.almanach.service;
 
 import net.fortuna.ical4j.model.Period;
-import org.silverpeas.date.Datable;
+import org.silverpeas.core.date.Datable;
 import net.fortuna.ical4j.model.DateTime;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
@@ -33,9 +33,9 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
-import org.silverpeas.date.Date;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.date.Date;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,9 +43,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static org.silverpeas.util.DateUtil.extractHour;
-import static org.silverpeas.util.DateUtil.extractMinutes;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.DateUtil.extractHour;
+import static org.silverpeas.core.util.DateUtil.extractMinutes;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A generator of event occurrences built on the iCal4J library.
@@ -53,7 +53,8 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator {
 
   @Override
-  public List<EventOccurrence> generateOccurrencesInPeriod(org.silverpeas.date.period.Period period,
+  public List<EventOccurrence> generateOccurrencesInPeriod(
+      org.silverpeas.core.date.period.Period period,
           List<EventDetail> events) {
     Period thePeriod =
         new Period(new DateTime(period.getBeginDate()), new DateTime(period.getEndDate()));
@@ -62,7 +63,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
 
   @Override
   public List<EventOccurrence> generateOccurrencesInRange(
-      org.silverpeas.date.Date startDate,  Date endDate,
+      Date startDate,  Date endDate,
     List<EventDetail> events) {
     Period period = new Period(new DateTime(startDate), new DateTime(endDate));
     return generateOccurrencesOf(events, occurringIn(period));
@@ -157,7 +158,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       calendarDate.set(java.util.Calendar.MINUTE, extractMinutes(time));
       calendarDate.set(java.util.Calendar.SECOND, 0);
       calendarDate.set(java.util.Calendar.MILLISECOND, 0);
-      datable = new org.silverpeas.date.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
+      datable = new org.silverpeas.core.date.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
     } else {
       datable = new Date(date).inTimeZone(timeZone);
     }

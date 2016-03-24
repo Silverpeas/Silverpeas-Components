@@ -25,7 +25,7 @@
 package org.silverpeas.components.silvercrawler.statistic;
 
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;

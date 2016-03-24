@@ -24,14 +24,14 @@
 package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
+import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
 
 /**
  * Class that permits to set order search criteria for order application.

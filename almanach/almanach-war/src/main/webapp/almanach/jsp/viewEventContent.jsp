@@ -31,7 +31,7 @@
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	%>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
 <%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
 <%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>

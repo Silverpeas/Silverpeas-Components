@@ -31,13 +31,13 @@ import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 

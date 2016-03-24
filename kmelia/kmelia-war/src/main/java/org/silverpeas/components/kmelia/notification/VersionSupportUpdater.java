@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.StateTransition;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 

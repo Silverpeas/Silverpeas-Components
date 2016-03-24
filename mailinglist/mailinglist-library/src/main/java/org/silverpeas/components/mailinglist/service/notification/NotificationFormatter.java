@@ -25,7 +25,7 @@ package org.silverpeas.components.mailinglist.service.notification;
 
 
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface NotificationFormatter {
 

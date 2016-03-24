@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.silvercrawler.statistic;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -25,7 +25,7 @@ package org.silverpeas.components.jdbcconnector.service;
 
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 

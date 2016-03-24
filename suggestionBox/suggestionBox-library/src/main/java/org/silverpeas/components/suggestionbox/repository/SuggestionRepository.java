@@ -30,13 +30,13 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.repository.SilverpeasEntityRepository;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;

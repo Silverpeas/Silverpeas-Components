@@ -50,7 +50,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCell" %>
 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.tools.agenda.view.CalendarHtmlView"%>
 <%@ page import="org.silverpeas.core.web.tools.agenda.control.AgendaSessionController"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.calendar.Calendar"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 

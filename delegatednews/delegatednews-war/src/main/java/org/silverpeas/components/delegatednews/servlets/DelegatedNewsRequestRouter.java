@@ -25,12 +25,12 @@ package org.silverpeas.components.delegatednews.servlets;
 
 import org.silverpeas.components.delegatednews.control.DelegatedNewsSessionController;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.Date;

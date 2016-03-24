@@ -25,4 +25,4 @@
 @Module("suggestionBox")
 package org.silverpeas.components.suggestionbox;
 
-import org.silverpeas.annotation.Module;
+import org.silverpeas.core.annotation.Module;

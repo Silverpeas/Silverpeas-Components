@@ -66,9 +66,9 @@ import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +80,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
+import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 

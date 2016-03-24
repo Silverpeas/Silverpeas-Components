@@ -25,12 +25,12 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class AutomaticDraftOut implements SchedulerEventListener {

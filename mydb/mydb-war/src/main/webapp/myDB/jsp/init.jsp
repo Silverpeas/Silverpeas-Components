@@ -73,7 +73,7 @@
 %><%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"
 %><%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"
 %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %><%
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %><%
 	response.setHeader("Cache-Control", "no-store"); // HTTP 1.1
 	response.setHeader("Pragma", "no-cache");        // HTTP 1.0
 	response.setDateHeader("Expires", -1);           // prevents caching at the proxy server

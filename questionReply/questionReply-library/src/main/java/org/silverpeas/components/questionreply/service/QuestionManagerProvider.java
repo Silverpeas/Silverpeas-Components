@@ -23,8 +23,7 @@
  */
 package org.silverpeas.components.questionreply.service;
 
-import org.silverpeas.components.questionreply.service.QuestionManager;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author ehugonnet

@@ -33,8 +33,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.Date;
 

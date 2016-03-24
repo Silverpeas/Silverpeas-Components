@@ -24,13 +24,13 @@
 package org.silverpeas.components.scheduleevent.service;
 
 import com.silverpeas.calendar.CalendarEvent;
-import org.silverpeas.date.Datable;
+import org.silverpeas.core.date.Datable;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventStatus;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
-import static org.silverpeas.util.DateUtil.asDatable;
+import static org.silverpeas.core.util.DateUtil.asDatable;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.

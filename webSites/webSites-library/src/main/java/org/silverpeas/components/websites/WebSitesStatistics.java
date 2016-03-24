@@ -27,7 +27,7 @@ import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsPr
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.websites.service.WebSiteService;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

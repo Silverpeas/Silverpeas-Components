@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.core.util.UnitUtil;
 
 import java.io.File;
 import java.text.ParseException;

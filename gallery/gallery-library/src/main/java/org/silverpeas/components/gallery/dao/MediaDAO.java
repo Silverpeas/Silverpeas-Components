@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.dao;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -39,14 +39,14 @@ import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.media.Definition;
-import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.persistence.jdbc.ResultSetWrapper;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQueries;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.ResultSetWrapper;
+import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -59,7 +59,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.*;
+import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.*;
 import static org.silverpeas.util.DBUtil.getUniqueId;
 
 public class MediaDAO {

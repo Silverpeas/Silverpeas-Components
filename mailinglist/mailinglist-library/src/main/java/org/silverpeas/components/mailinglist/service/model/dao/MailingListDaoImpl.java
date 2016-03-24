@@ -25,7 +25,7 @@ package org.silverpeas.components.mailinglist.service.model.dao;
 
 import com.silverpeas.annotation.Repository;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.List;
 import javax.inject.Singleton;

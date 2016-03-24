@@ -39,7 +39,7 @@ import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrap
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.springframework.test.util.ReflectionTestUtils;

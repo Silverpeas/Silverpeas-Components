@@ -25,7 +25,7 @@ package org.silverpeas.components.questionreply.web;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The entity representing the author of a comment. It is a user that has written a comment and

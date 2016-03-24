@@ -42,7 +42,7 @@ import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.ThumbnailPeriod;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;

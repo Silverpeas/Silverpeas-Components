@@ -26,7 +26,7 @@ import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.MediaWithStatus;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 public class SocialInformationGallery extends AbstractSocialInformation {
 

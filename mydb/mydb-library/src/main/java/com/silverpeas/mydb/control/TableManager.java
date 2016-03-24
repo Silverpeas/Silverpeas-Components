@@ -38,7 +38,7 @@ import com.silverpeas.mydb.data.key.PrimaryKey;
 import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.data.key.UnicityKeys;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.MultiSilverpeasBundle;
 
 /**

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.model;
 
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

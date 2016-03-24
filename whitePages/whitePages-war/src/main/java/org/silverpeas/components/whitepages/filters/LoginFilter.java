@@ -27,11 +27,11 @@ package org.silverpeas.components.whitepages.filters;
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

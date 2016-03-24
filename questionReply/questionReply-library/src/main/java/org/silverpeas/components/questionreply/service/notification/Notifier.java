@@ -26,8 +26,8 @@ package org.silverpeas.components.questionreply.service.notification;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 

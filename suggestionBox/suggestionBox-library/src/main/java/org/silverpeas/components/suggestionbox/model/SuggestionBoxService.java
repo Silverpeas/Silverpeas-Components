@@ -23,12 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.util.ServiceProvider;
-
-import java.util.Collection;
-import java.util.List;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A business service to provide a high level interface in the management of the suggestion boxes

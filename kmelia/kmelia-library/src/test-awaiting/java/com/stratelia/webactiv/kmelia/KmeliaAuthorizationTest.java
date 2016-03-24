@@ -47,9 +47,9 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-public class KmeliaSecurityTest {
+public class KmeliaAuthorizationTest {
 
-  public KmeliaSecurityTest() {
+  public KmeliaAuthorizationTest() {
   }
 
   @BeforeClass
@@ -73,7 +73,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testEnableCache() {
-    KmeliaSecurity instance = new KmeliaSecurity();
+    KmeliaAuthorization instance = new KmeliaAuthorization();
     instance.enableCache();
     assertTrue(instance.isCacheEnabled());
   }
@@ -83,7 +83,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testDisableCache() {
-    KmeliaSecurity instance = new KmeliaSecurity();
+    KmeliaAuthorization instance = new KmeliaAuthorization();
     instance.disableCache();
     assertFalse(instance.isCacheEnabled());
   }
@@ -100,11 +100,11 @@ public class KmeliaSecurityTest {
     OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(instanceId, "10")).thenReturn(Boolean.FALSE);
-    when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue(instanceId, KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn(null);
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
-    KmeliaSecurity instance = new KmeliaSecurity(controller);
+    KmeliaAuthorization instance = new KmeliaAuthorization(controller);
     NodeService nodeService = mock(NodeService.class);
     instance.setNodeBm(nodeService);
     PublicationService validBm = mock(PublicationService.class);
@@ -136,7 +136,7 @@ public class KmeliaSecurityTest {
     String notAuthorizedWriterId = "15";
     OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
-    when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue(instanceId, KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn(null);
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
@@ -148,7 +148,7 @@ public class KmeliaSecurityTest {
       SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     when(controller.getUserProfiles(notAuthorizedWriterId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
-    KmeliaSecurity instance = new KmeliaSecurity(controller);
+    KmeliaAuthorization instance = new KmeliaAuthorization(controller);
     NodeService nodeService = mock(NodeService.class);
     instance.setNodeBm(nodeService);
     PublicationService validBm = mock(PublicationService.class);
@@ -187,7 +187,7 @@ public class KmeliaSecurityTest {
     String notAuthorizedWriterId = "15";
     OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
-    when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue(instanceId, KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn(null);
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
@@ -199,7 +199,7 @@ public class KmeliaSecurityTest {
       SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     when(controller.getUserProfiles(notAuthorizedWriterId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
-    KmeliaSecurity instance = new KmeliaSecurity(controller);
+    KmeliaAuthorization instance = new KmeliaAuthorization(controller);
     NodeService nodeService = mock(NodeService.class);
     instance.setNodeBm(nodeService);
     PublicationService validBm = mock(PublicationService.class);
@@ -250,7 +250,7 @@ public class KmeliaSecurityTest {
   @Test
   public void testIsObjectAvailable() {
     OrganizationController controller = mock(DefaultOrganizationController.class);
-    KmeliaSecurity instance = new KmeliaSecurity(controller);
+    KmeliaAuthorization instance = new KmeliaAuthorization(controller);
     assertTrue("Object not of type kmelia", instance.isObjectAvailable("100", "10", "1000", "toto"));
   }
 
@@ -259,11 +259,11 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsKmeliaObjectType() {
-    KmeliaSecurity instance = new KmeliaSecurity();
+    KmeliaAuthorization instance = new KmeliaAuthorization();
     assertFalse(instance.isKmeliaObjectType(null));
     assertFalse(instance.isKmeliaObjectType(RandomGenerator.getRandomString()));
-    assertFalse(instance.isKmeliaObjectType(KmeliaSecurity.NODE_TYPE));
-    assertTrue(instance.isKmeliaObjectType(KmeliaSecurity.PUBLICATION_TYPE));
+    assertFalse(instance.isKmeliaObjectType(KmeliaAuthorization.NODE_TYPE));
+    assertTrue(instance.isKmeliaObjectType(KmeliaAuthorization.PUBLICATION_TYPE));
     assertTrue(instance.isKmeliaObjectType("Attachment" + RandomGenerator.getRandomString()));
     assertFalse(instance.isKmeliaObjectType("attachment" + RandomGenerator.getRandomString()));
     assertTrue(instance.isKmeliaObjectType("Version" + RandomGenerator.getRandomString()));
@@ -276,24 +276,24 @@ public class KmeliaSecurityTest {
   @Test
   public void testIsRightsOnTopicsEnabled() {
     OrganizationController controller = mock(DefaultOrganizationController.class);
-    when(controller.getComponentParameterValue("100", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("100", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("yes");
-    when(controller.getComponentParameterValue("101", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("101", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("Yes");
-    when(controller.getComponentParameterValue("102", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("102", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("Y");
-    when(controller.getComponentParameterValue("103", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("103", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("1");
 
-    when(controller.getComponentParameterValue("200", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("200", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn(null);
-    when(controller.getComponentParameterValue("201", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("201", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("no");
-    when(controller.getComponentParameterValue("202", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("202", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("0");
-    when(controller.getComponentParameterValue("203", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
+    when(controller.getComponentParameterValue("203", KmeliaAuthorization.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("");
-    KmeliaSecurity instance = new KmeliaSecurity(controller);
+    KmeliaAuthorization instance = new KmeliaAuthorization(controller);
 
     assertTrue(instance.isRightsOnTopicsEnabled("100"));
     assertTrue(instance.isRightsOnTopicsEnabled("101"));

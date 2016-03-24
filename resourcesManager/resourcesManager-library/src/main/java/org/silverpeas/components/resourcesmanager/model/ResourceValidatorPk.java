@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.model;
 
-import org.silverpeas.persistence.model.CompositeEntityIdentifier;
+import org.silverpeas.core.persistence.model.CompositeEntityIdentifier;
 
 import javax.persistence.Embeddable;
 

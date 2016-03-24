@@ -33,7 +33,7 @@ import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.components.forums.model.Moderator;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.Date;

@@ -58,10 +58,10 @@ import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -77,8 +77,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.util.DateUtil.*;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.DateUtil.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * CDI bean to manage the almanach application
@@ -755,7 +755,8 @@ public class DefaultAlmanachService implements AlmanachService {
   }
 
   @Override
-  public List<EventOccurrence> getEventOccurrencesInPeriod(org.silverpeas.date.period.Period period,
+  public List<EventOccurrence> getEventOccurrencesInPeriod(
+      org.silverpeas.core.date.period.Period period,
       String... almanachIds) {
     try {
       Collection<EventDetail> events = getEventDAO().findAllEventsInPeriod(period, almanachIds);
@@ -772,7 +773,7 @@ public class DefaultAlmanachService implements AlmanachService {
   public List<EventOccurrence> getNextEventOccurrences(String... almanachIds) {
     List<EventOccurrence> occurrences;
     try {
-      org.silverpeas.date.Date today = today();
+      org.silverpeas.core.date.Date today = today();
       java.util.Calendar endDate = java.util.Calendar.getInstance();
       String upToDay = null;
       int numberOfMonths = settings.getInteger("almanach.nextEvents.windowtime", 0);
@@ -786,7 +787,7 @@ public class DefaultAlmanachService implements AlmanachService {
       EventOccurrenceGenerator occurrenceGenerator =
           EventOccurrenceGeneratorProvider.getEventOccurrenceGenerator();
       if (numberOfMonths > 0) {
-        org.silverpeas.date.Date endDay = new org.silverpeas.date.Date(endDate.getTime());
+        org.silverpeas.core.date.Date endDay = new org.silverpeas.core.date.Date(endDate.getTime());
         occurrences = occurrenceGenerator
             .generateOccurrencesInRange(today, endDay, new ArrayList<EventDetail>(events));
       } else {
@@ -804,8 +805,8 @@ public class DefaultAlmanachService implements AlmanachService {
     return this.eventDAO;
   }
 
-  protected org.silverpeas.date.Date today() {
-    return org.silverpeas.date.Date.today();
+  protected org.silverpeas.core.date.Date today() {
+    return org.silverpeas.core.date.Date.today();
   }
 
   private void checkEventDates(final EventDetail event) {

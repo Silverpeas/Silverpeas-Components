@@ -36,9 +36,9 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

@@ -42,9 +42,9 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.process.media.*;
 import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.io.File;

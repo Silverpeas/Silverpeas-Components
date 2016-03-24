@@ -26,10 +26,10 @@ package org.silverpeas.mydb.control;
 
 import com.silverpeas.mydb.data.datatype.DataType;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.XmlSettingBundle;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.XmlSettingBundle;
 
 import java.sql.Driver;
 import java.util.ArrayList;

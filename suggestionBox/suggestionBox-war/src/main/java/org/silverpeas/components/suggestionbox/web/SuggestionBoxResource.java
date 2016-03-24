@@ -39,7 +39,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_OR
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.util.PaginationList;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;

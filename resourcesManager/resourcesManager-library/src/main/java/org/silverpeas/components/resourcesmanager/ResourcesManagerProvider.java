@@ -24,7 +24,7 @@
 package org.silverpeas.components.resourcesmanager;
 
 import org.silverpeas.components.resourcesmanager.service.ResourcesManager;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author ehugonnet

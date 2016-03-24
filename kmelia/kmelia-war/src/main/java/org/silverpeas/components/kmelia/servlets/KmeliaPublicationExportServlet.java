@@ -22,10 +22,10 @@ import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ClientBrowserUtil;
 
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * An HTTP servlet dedicated to the export of Kmelia publications.

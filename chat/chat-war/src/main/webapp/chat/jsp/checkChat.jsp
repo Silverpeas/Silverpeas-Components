@@ -47,10 +47,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.silvertrace.*"%>
+<%@ page import="org.silverpeas.core.silvertrace.*"%>
 
 <%@ page import="com.stratelia.silverpeas.chat.control.ChatSessionController "%>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%

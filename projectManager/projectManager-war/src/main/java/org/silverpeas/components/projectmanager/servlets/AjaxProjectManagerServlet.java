@@ -26,7 +26,7 @@ package org.silverpeas.components.projectmanager.servlets;
 import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.JSONCodec;

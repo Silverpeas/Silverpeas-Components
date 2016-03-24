@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.dao;
 import org.silverpeas.components.gallery.model.MediaOrderCriteria;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.*;
+import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.*;
 import static org.silverpeas.util.DBUtil.getUniqueId;
 
 public class OrderDAO {

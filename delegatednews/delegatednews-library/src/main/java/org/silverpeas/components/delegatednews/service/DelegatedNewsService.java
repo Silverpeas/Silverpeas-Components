@@ -27,10 +27,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface DelegatedNewsService {
 

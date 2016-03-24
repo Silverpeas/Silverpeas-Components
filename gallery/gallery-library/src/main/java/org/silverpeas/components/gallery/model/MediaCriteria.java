@@ -26,10 +26,10 @@ package org.silverpeas.components.gallery.model;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -26,12 +26,12 @@ package org.silverpeas.components.resourcesmanager.web;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.Resource;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.GET;

@@ -36,7 +36,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
 <%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 
@@ -52,7 +52,7 @@ String contextName = ResourceLocator.getGeneralSettingBundle().getString("Applic
 %>
 
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <html>
 <head>
 <title></title>

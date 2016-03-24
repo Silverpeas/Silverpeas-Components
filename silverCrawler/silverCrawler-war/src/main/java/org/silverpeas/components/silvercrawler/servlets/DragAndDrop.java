@@ -27,7 +27,7 @@ import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionContr
 import org.silverpeas.components.silvercrawler.control.UploadItem;
 import org.silverpeas.components.silvercrawler.control.UploadReport;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.web.http.HttpRequest;

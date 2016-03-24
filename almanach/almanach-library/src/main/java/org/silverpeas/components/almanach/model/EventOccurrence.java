@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.almanach.model;
 
-import org.silverpeas.date.Datable;
-import org.silverpeas.date.Date;
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Date;
+import org.silverpeas.core.date.DateTime;
 import java.util.Calendar;
-import static org.silverpeas.util.StringUtil.*;
-import static org.silverpeas.util.DateUtil.*;
+import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.core.util.DateUtil.*;
 
 /**
  * An occurrence of an event in the time. Periodic events are made up of several of occurrences in

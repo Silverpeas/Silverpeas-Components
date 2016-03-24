@@ -20,8 +20,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.components.kmelia.service.AutomaticDraftOut;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 /**
  * Initializes the resources required by the Kmelia application instances.

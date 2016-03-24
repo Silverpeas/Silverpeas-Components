@@ -34,8 +34,8 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  *

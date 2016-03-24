@@ -33,9 +33,9 @@ import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class UserTemplate implements RecordTemplate {
 

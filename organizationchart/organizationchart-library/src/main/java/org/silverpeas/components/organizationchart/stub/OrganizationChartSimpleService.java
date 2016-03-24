@@ -42,7 +42,7 @@ import org.silverpeas.components.organizationchart.model.PersonCategory;
 import org.silverpeas.components.organizationchart.service.OrganizationChartConfiguration;
 import org.silverpeas.components.organizationchart.service.OrganizationChartLDAPConfiguration;
 import org.silverpeas.components.organizationchart.service.OrganizationChartService;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 public class OrganizationChartSimpleService implements OrganizationChartService {
 

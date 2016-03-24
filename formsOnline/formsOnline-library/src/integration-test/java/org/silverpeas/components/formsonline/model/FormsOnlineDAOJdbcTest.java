@@ -33,8 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.text.ParseException;
 import java.util.List;

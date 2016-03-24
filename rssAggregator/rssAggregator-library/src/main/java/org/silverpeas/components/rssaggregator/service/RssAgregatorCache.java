@@ -25,8 +25,8 @@ package org.silverpeas.components.rssaggregator.service;
 
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.util.HashMap;

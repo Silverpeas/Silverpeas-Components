@@ -28,7 +28,7 @@ import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.HtmlCleaner;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;

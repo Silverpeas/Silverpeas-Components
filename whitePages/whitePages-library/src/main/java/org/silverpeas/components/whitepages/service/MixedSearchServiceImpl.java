@@ -32,7 +32,7 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.ScoreComparator;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -25,9 +25,9 @@ package org.silverpeas.components.kmelia.export;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
-import static org.silverpeas.util.DateUtil.getOutputDate;
+import static org.silverpeas.core.util.DateUtil.getOutputDate;
 
 /**
  * Holder of a simple document for the ODTDocumentBuilder. It provides useful operation on the

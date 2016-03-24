@@ -36,10 +36,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Timestamp;
 import java.util.Date;

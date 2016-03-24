@@ -32,12 +32,12 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.time.TimeData;
-import org.silverpeas.util.time.TimeUnit;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.TimeUnit;
 
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 public class NewsEntity implements WebEntity {
 

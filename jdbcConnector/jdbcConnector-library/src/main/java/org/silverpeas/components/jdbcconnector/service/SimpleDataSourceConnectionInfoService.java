@@ -26,9 +26,9 @@ package org.silverpeas.components.jdbcconnector.service;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfoRepository;
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

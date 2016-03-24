@@ -34,9 +34,9 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.process.management.AbstractDataProcess;
 import org.silverpeas.process.session.ProcessSession;
 

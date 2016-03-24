@@ -44,7 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.ForeignPK"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -54,10 +54,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="org.silverpeas.core.util.DateUtil"%>
 <%@ page import="org.silverpeas.util.DBUtil"%>
 <%@ page import="org.silverpeas.core.questioncontainer.question.model.Question "%>
 <%@ page import="org.silverpeas.core.questioncontainer.result.model.QuestionResult "%>

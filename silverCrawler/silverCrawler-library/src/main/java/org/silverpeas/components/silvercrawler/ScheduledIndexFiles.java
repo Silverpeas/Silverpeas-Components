@@ -34,9 +34,9 @@ import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeExcepti
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.io.File;

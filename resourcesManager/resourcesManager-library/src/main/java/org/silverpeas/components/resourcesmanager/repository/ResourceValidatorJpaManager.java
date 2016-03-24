@@ -26,7 +26,7 @@ package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.components.resourcesmanager.model.ResourceValidatorPk;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
 
 /**
  * @author ebonnet

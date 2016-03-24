@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.forums.control.helpers;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.web.RequestHelper;
 

@@ -35,11 +35,11 @@ import org.silverpeas.core.pdc.PdcServiceProvider;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.process.session.ProcessSession;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Process to paste a media in Database

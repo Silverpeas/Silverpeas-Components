@@ -35,7 +35,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Services provided by the Blog Silverpeas component.

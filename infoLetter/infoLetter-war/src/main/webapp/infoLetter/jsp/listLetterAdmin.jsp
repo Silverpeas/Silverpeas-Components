@@ -27,7 +27,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.components.infoletter.model.InfoLetterPublication" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>

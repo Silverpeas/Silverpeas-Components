@@ -25,9 +25,9 @@ package org.silverpeas.components.resourcesmanager.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.*;
 import java.util.ArrayList;

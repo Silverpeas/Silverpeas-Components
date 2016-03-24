@@ -24,13 +24,12 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
-import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**

@@ -26,7 +26,7 @@ package org.silverpeas.components.mailinglist.service.model.dao;
 import java.util.List;
 
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface MailingListDao {
   static MailingListDao get() {

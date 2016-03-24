@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

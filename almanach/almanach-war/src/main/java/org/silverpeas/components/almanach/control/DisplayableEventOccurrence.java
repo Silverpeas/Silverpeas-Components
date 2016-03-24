@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.control;
 
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.DateTime;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * An occurrence of an event in the time and that can be rendered in a calendar view.

@@ -25,8 +25,8 @@
 package org.silverpeas.components.delegatednews.dao;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.persistence.model.identifier.ExternalIntegerIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.model.identifier.ExternalIntegerIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
 
 import java.util.List;
 

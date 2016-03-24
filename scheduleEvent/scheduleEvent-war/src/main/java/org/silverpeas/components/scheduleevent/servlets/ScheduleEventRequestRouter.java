@@ -28,7 +28,7 @@ import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionContr
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.scheduleevent.servlets.handlers.*;
 import org.silverpeas.core.web.http.HttpRequest;
 

@@ -37,7 +37,7 @@ import org.silverpeas.processmanager.ProcessFilter;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
 import org.silverpeas.processmanager.StepVO;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;

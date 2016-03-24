@@ -24,8 +24,7 @@
 
 package org.silverpeas.components.silvercrawler;
 
-import org.silverpeas.components.silvercrawler.ScheduledIndexFiles;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 /**
  * Initializes the SilverCrawler application.

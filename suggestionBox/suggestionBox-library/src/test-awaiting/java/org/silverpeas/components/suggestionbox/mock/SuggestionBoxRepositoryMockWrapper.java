@@ -25,8 +25,8 @@ package org.silverpeas.components.suggestionbox.mock;
 
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.OperationContext;
 
 import javax.inject.Named;
 import java.util.Collection;

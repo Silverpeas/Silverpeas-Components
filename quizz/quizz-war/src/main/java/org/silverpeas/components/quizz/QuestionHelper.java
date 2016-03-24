@@ -27,7 +27,7 @@ import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;

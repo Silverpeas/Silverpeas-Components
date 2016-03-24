@@ -24,7 +24,7 @@
 package org.silverpeas.components.resourcesmanager.util;
 
 import org.silverpeas.components.resourcesmanager.model.Resource;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

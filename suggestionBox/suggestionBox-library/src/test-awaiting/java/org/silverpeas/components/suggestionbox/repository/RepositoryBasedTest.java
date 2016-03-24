@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  * JPA repository.
  */
 public abstract class RepositoryBasedTest
-    extends org.silverpeas.persistence.jpa.RepositoryBasedTest {
+    extends org.silverpeas.core.persistence.jpa.RepositoryBasedTest {
 
   private PersistenceService persistanceService;
 
