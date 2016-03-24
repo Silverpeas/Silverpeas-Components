@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.constant;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.io.File;
 import java.util.HashSet;

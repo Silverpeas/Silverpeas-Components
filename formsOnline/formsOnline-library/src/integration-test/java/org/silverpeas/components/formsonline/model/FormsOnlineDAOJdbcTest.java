@@ -31,8 +31,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ServiceProvider;
 

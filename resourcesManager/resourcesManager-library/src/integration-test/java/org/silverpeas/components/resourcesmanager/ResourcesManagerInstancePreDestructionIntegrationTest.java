@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.DBUtil;
 
 import javax.inject.Inject;

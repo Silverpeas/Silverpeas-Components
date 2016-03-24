@@ -34,7 +34,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.silverpeas.DataSetTest;
+import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
@@ -52,7 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.test.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 
 /**
  * Base class for tests in the gallery component.

@@ -14,9 +14,9 @@ import org.silverpeas.date.period.Period;
 import org.silverpeas.date.period.PeriodType;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.rule.DbSetupRule;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.Date;

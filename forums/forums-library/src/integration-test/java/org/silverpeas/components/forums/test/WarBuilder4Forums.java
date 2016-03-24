@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.test;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * A builder of a war archive for the Forums application dedicated to integration tests with

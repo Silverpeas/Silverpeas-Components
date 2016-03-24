@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.infoletter.test;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * A builder of a war archive dedicated to be used in the integration tests ran with Arquillian.

@@ -37,8 +37,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
-import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import javax.annotation.Resource;

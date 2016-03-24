@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.test;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * A builder of a WAR archive dedicated to the integration tests on Kmelia.

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.test.BasicCoreWarBuilder;
+import org.silverpeas.core.test.BasicCoreWarBuilder;
 
 /**
  * @author ebonnet

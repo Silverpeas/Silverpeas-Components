@@ -38,7 +38,7 @@ import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.DateUtil;
 
 import java.sql.Timestamp;

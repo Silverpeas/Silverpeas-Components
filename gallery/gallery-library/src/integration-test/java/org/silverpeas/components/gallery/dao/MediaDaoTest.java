@@ -47,7 +47,7 @@ import org.silverpeas.date.period.Period;
 import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.test.rule.DbSetupRule.TableRow;
+import org.silverpeas.core.test.rule.DbSetupRule.TableRow;
 import org.silverpeas.util.DateUtil;
 
 import java.sql.Connection;
@@ -62,8 +62,8 @@ import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_
 import static org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.test.rule.DbSetupRule.getActualDataSet;
-import static org.silverpeas.test.rule.DbSetupRule.getTableRowFor;
+import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.core.test.rule.DbSetupRule.getTableRowFor;
 
 /**
  * This class of unit tests has been written during Entity and SGBD model migration.

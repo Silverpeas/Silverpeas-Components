@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * @author ebonnet
