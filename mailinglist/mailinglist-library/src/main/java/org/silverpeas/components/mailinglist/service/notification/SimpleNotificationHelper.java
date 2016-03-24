@@ -39,7 +39,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.mail.engine.SmtpConfiguration;

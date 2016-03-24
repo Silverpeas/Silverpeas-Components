@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;

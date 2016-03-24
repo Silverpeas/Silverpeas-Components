@@ -42,7 +42,7 @@ import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedSupervisorUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedValidationUserNotification;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;

@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery;
 
 import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;

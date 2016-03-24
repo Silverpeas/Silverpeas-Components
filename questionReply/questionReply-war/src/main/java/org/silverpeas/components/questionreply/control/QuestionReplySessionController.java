@@ -60,7 +60,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.*;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;

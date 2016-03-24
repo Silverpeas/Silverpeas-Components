@@ -44,8 +44,8 @@ import org.silverpeas.core.questioncontainer.container.model.QuestionContainerSe
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.components.quizz.QuizzException;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;

@@ -49,7 +49,7 @@ import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileRepositoryManager;

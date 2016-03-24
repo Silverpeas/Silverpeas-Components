@@ -51,7 +51,7 @@ import java.util.Map;
 
 import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
 import static com.stratelia.silverpeas.notificationManager.NotificationParameters.NORMAL;
-import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 

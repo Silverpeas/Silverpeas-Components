@@ -25,7 +25,7 @@ package org.silverpeas.components.webpages;
 
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.wysiwyg.control.WysiwygContent;
 import org.silverpeas.wysiwyg.notification.WysiwygEvent;

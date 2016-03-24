@@ -30,7 +30,7 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

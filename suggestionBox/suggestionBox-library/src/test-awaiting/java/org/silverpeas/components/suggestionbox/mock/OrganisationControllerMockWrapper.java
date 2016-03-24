@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.mock;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
 import org.mockito.Mockito;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Named;

@@ -32,8 +32,8 @@ import com.silverpeas.socialnetwork.provider.SocialCommentQuickInfosInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.date.period.Period;
 import org.silverpeas.util.exception.SilverpeasException;
 

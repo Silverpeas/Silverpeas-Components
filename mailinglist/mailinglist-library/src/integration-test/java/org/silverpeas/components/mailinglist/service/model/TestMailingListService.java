@@ -32,8 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.HashSet;
 import java.util.List;

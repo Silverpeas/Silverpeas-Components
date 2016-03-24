@@ -27,7 +27,7 @@ import org.silverpeas.core.accesscontrol.AbstractAccessController;
 import org.silverpeas.core.accesscontrol.AccessControlContext;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

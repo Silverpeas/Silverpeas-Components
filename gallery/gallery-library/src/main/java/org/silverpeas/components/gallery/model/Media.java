@@ -37,7 +37,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;

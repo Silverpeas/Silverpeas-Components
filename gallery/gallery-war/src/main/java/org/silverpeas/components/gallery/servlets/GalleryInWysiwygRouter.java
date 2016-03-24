@@ -31,7 +31,7 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ServiceProvider;

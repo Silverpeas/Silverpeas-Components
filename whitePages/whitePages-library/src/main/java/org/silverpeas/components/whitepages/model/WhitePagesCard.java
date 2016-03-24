@@ -24,8 +24,8 @@
 package org.silverpeas.components.whitepages.model;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 public class WhitePagesCard implements Comparable {
 

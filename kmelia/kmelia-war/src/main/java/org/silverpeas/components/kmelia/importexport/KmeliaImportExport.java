@@ -35,8 +35,8 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 

@@ -64,7 +64,7 @@ import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.web.ExportOptionValue;
 import org.silverpeas.components.gallery.web.MediaSort;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.comment.model.Comment;

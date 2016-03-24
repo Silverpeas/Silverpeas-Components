@@ -51,7 +51,7 @@ import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;

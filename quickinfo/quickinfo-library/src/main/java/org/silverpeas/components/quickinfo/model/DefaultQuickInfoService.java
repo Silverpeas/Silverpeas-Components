@@ -48,7 +48,7 @@ import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUse
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.components.quickinfo.service.QuickInfoContentManager;
 import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.pdc.PdcServiceProvider;

@@ -95,7 +95,7 @@ import org.silverpeas.components.kmelia.notification.KmeliaSubscriptionPublicati
 import org.silverpeas.components.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
 import org.silverpeas.components.kmelia.notification.KmeliaTopicUserNotification;
 import org.silverpeas.components.kmelia.notification.KmeliaValidationPublicationUserNotification;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.TodoDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
@@ -133,7 +133,7 @@ import java.sql.Connection;
 import java.util.*;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
-import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.util.StringUtil.*;
 import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
