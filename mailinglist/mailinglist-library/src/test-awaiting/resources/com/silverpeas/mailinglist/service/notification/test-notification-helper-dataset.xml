@@ -26,8 +26,8 @@
 -->
 <dataset>
   <st_domain id="0" name="local" description="Domaine local" propfilename="com.stratelia.silverpeas.domains.domainSP"
-    classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
-    thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
+             classname="org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
+             thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs"
     passwordvalid="Y" />
   <st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />

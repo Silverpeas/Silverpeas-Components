@@ -453,7 +453,7 @@ VALUES (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '
 INSERT INTO ST_Domain (id, name, description, propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL)
 VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
         'com.stratelia.silverpeas.domains.domainSP',
-        'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP', '0',
+        'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP', '0',
         '${URLSERVER}');
 
 CREATE TABLE ST_NotifChannel (
