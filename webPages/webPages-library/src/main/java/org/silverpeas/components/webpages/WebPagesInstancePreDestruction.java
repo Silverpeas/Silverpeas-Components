@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.webpages;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.admin.service.OrganizationController;

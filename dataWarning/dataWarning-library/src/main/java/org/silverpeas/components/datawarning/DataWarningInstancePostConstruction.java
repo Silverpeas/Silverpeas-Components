@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
 import org.silverpeas.components.datawarning.model.DataWarningQuery;

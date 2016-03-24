@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.infoletter;
 
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;

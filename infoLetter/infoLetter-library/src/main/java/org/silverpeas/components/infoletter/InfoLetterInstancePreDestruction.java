@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.infoletter;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 
 import javax.inject.Inject;

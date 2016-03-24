@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 
 import javax.inject.Named;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.forums.service.ForumService;
 
 import javax.inject.Inject;

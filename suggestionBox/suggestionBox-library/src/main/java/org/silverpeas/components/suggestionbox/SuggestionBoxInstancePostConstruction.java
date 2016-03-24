@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox;
 
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;

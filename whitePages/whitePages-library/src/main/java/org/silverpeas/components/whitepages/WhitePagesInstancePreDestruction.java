@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.whitepages;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
 import org.silverpeas.util.DBUtil;

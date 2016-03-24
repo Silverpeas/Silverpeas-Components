@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.util.DBUtil;
 
 import javax.inject.Named;
@@ -31,7 +31,6 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 /**
  * Deletes all the questions and their answers that are managed by the QuestionReply instance that

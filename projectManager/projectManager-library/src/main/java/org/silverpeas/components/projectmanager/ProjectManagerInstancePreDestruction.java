@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.projectmanager;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
 import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
 import org.silverpeas.util.DBUtil;

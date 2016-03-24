@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.websites;
 
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;

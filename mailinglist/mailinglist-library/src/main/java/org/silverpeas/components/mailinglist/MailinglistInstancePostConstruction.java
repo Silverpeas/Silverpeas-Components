@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist;
 
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.components.mailinglist.model.MailingListComponent;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;

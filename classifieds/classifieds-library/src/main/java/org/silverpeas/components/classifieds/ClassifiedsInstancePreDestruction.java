@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.classifieds;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.processmanager;
 
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 
 import javax.inject.Named;
 
-import static com.silverpeas.admin.components.ComponentInstancePostConstruction
+import static org.silverpeas.core.admin.component.ComponentInstancePostConstruction
     .WORKFLOW_POST_CONSTRUCTION;
 
 /**

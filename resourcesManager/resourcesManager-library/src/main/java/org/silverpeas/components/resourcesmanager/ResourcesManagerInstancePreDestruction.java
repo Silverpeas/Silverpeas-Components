@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.resourcesmanager.repository.ResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.CategoryRepository;
 import org.silverpeas.components.resourcesmanager.repository.ReservationRepository;

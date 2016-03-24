@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.PasteDetailFromToPK;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.node.model.NodePK;
 

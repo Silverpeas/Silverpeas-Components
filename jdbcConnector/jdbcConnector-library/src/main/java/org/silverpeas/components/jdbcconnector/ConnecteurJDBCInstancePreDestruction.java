@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.jdbcconnector;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 
 import javax.inject.Named;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
 
 import javax.inject.Named;

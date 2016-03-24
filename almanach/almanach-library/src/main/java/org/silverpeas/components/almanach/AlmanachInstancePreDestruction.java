@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.almanach.model.EventDAO;
 import org.silverpeas.util.DBUtil;
 

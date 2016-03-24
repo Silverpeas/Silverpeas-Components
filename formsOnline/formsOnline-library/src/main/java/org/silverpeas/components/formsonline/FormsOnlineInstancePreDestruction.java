@@ -23,20 +23,15 @@
  */
 package org.silverpeas.components.formsonline;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.util.DBUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * When a FormsOnline instance is being deleted, this process deletes all the forms' data that

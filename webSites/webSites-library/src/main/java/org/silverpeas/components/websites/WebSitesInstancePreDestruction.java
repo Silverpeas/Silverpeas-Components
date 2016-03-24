@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.websites;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.websites.siteManage.dao.SiteDAO;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

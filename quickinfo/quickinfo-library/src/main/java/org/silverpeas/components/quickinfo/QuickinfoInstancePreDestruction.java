@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.quickinfo;
 
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 
 import javax.inject.Inject;

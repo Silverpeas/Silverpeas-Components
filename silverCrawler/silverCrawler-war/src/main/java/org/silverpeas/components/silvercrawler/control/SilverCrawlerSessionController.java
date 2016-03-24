@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.silvercrawler.control;
 
-import com.silverpeas.admin.components.Parameter;
+import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
