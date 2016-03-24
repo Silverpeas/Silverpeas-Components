@@ -358,7 +358,7 @@
             if (authorLabel == null) {
                 authorLabel = resource.getString("inconnu");
             }
-            com.stratelia.webactiv.beans.admin.UserDetail author = fsc.getAuthor(authorId);
+            UserDetail author = fsc.getAuthor(authorId);
             String avatar = "/directory/jsp/icons/avatar.png";
             if(author != null) {
                avatar = author.getAvatar();

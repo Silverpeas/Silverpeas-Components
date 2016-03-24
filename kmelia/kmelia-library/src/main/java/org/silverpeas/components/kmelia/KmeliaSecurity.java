@@ -21,8 +21,8 @@
 package org.silverpeas.components.kmelia;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ObjectType;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
@@ -50,7 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stratelia.webactiv.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 /**
  * Kmelia security provides a way to check the rights of a user to access the content of a Kmelia

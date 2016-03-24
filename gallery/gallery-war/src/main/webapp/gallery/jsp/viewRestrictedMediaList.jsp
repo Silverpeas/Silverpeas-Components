@@ -36,11 +36,11 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
 
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<jsp:useBean id="greaterUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<jsp:useBean id="greaterUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
 <fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaLabel"/>
 <fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaIcon" bundle="${icons}"/>

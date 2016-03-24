@@ -29,8 +29,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="checkKmelia.jsp" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@ page import="org.silverpeas.core.admin.user.model.ProfileInst"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 

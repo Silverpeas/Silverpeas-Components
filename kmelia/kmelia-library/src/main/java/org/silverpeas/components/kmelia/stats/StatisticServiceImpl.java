@@ -23,8 +23,8 @@ package org.silverpeas.components.kmelia.stats;
 import org.silverpeas.components.kmelia.model.StatisticActivityVO;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.Group;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
 @Singleton
 public class StatisticServiceImpl implements

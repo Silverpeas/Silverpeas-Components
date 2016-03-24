@@ -26,7 +26,7 @@ package org.silverpeas.components.whitepages;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

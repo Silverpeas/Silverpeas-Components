@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 
 import javax.inject.Inject;

@@ -28,7 +28,7 @@ import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.forums.ForumsContentManager;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;

@@ -28,7 +28,7 @@ import com.silverpeas.SilverpeasContent;
 import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.wysiwyg.control.WysiwygController;

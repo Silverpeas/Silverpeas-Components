@@ -25,7 +25,7 @@ package org.silverpeas.components.formsonline.model;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.form.Form;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.persistence.Transient;
 import java.util.Date;

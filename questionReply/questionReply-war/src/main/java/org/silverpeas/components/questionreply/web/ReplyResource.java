@@ -29,7 +29,7 @@ import com.silverpeas.annotation.Service;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Reply;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;

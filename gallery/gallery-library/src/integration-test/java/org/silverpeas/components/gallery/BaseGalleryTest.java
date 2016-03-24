@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.gallery;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -31,9 +34,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.service.DefaultOrganizationController;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;

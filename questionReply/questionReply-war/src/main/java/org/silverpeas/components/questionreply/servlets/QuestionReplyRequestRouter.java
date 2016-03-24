@@ -36,7 +36,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.core.web.http.HttpRequest;
 
@@ -46,7 +46,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static com.stratelia.webactiv.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 /**
  * Router class for SuestionReply component

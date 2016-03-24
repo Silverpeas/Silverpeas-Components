@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 

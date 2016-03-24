@@ -26,7 +26,7 @@ package org.silverpeas.components.questionreply.web;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Question;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -31,8 +31,8 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 
 public class UserRecord implements DataRecord {
 

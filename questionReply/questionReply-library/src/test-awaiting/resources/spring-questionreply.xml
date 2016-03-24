@@ -39,7 +39,7 @@
     <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.SimpleDocumentService" />
   </ctx:component-scan>
 
-  <bean name="organisationController" id="organisationController" class="com.stratelia.webactiv.beans.admin.DefaultOrganizationController" />
+  <bean name="organisationController" id="organisationController" class="org.silverpeas.core.admin.service.DefaultOrganizationController" />
   <bean id="questionManagerFactory" class="org.silverpeas.components.questionreply.service.QuestionManagerProvider"
         factory-method="getFactory"/>
 

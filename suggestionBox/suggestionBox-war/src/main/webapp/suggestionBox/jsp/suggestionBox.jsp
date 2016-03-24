@@ -45,9 +45,9 @@
 <c:set var="suggestionBoxId"  value="${suggestionBox.id}"/>
 <c:set var="isEdito"          value="${requestScope.isEdito}"/>
 
-<view:setConstant var="adminRole"                 constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-<view:setConstant var="writerRole"                constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<view:setConstant var="publisherRole"             constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="adminRole"                 constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="writerRole"                constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="publisherRole"             constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 <view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
 <view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
 <view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION"/>

@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -66,7 +67,7 @@ function viewResultByUser(userId, userName) {
 	if (users != null) {	
 	  	ArrayCellText cell = null; 
 	    for (String userId : users) {
-			 UserDetail user = surveyScc.getUserDetail(userId);	
+			 UserDetail user = surveyScc.getUserDetail(userId);
 			 ArrayLine ligne = arrayPane.addArrayLine();
 			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+
            EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";

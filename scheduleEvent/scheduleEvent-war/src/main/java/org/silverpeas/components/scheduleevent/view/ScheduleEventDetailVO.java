@@ -13,7 +13,7 @@ import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class ScheduleEventDetailVO {
   private final static String USER_CONTRIBUTOR_HMTL_CLASS_ATTRIBUTE = "userVote";

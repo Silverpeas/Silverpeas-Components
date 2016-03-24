@@ -24,7 +24,7 @@
 package org.silverpeas.components.forums;
 
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;

@@ -27,8 +27,8 @@ import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.DateUtil;
 
 import java.util.ArrayList;

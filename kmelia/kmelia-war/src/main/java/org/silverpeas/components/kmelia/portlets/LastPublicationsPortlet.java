@@ -28,8 +28,8 @@ import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.components.kmelia.KmeliaTransversal;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 

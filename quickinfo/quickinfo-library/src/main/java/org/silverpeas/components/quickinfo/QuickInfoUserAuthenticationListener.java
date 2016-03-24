@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quickinfo;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.components.quickinfo.model.News;

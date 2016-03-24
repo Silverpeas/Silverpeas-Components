@@ -24,8 +24,8 @@
 package org.silverpeas.components.suggestionbox.notification;
 
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 

@@ -33,7 +33,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.components.quickinfo.NewsByStatus;

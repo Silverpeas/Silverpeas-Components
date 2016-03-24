@@ -25,7 +25,7 @@ import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.XMLField;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;

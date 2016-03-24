@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.components.gallery.constant.MediaType;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.Date;
 import java.util.List;

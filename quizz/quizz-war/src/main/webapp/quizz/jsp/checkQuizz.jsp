@@ -32,8 +32,8 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@ page import="org.silverpeas.components.quizz.QuizzException"%>
 <%@ page import="org.silverpeas.components.quizz.QuestionForm"%>
 <%@ page import="org.silverpeas.components.quizz.QuestionHelper"%>

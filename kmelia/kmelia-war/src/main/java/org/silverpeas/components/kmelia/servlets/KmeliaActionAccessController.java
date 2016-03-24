@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmelia.servlets;
 
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
 import java.util.HashMap;
 import java.util.Map;

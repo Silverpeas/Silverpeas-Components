@@ -24,7 +24,7 @@
 package org.silverpeas.components.yellowpages;
 
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;

@@ -34,7 +34,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.components.forums.service.ForumsException"%>
 <%@ page import="org.silverpeas.components.forums.model.Forum"%>
 <%@ page import="org.silverpeas.components.forums.model.Message"%>

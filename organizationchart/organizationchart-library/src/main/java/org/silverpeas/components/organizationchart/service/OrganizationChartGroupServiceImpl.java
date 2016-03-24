@@ -29,8 +29,8 @@ import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
 import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import org.silverpeas.components.organizationchart.model.PersonCategory;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 

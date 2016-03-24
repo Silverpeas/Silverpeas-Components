@@ -27,10 +27,10 @@ import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.writer;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
 
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.DateUtil;

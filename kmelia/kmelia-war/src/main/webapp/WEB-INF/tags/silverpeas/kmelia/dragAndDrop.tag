@@ -35,7 +35,7 @@
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachment"/>
 
 <%@ attribute name="greatestUserRole" required="true"
-              type="com.stratelia.webactiv.SilverpeasRole"
+              type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The greatest role the user has" %>
 <%@ attribute name="componentInstanceId" required="true"
               type="java.lang.String"
@@ -53,8 +53,8 @@
 <c:set var="dragAndDropEnable" value="${kmeliaCtrl.dragAndDropEnable and kmeliaCtrl.attachmentsEnabled}"/>
 <c:if test="${dragAndDropEnable}">
 
-  <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-  <jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+  <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+  <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
   <c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
 
     <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
@@ -66,8 +66,8 @@
 
     <view:includePlugin name="dragAndDropUpload"/>
 
-    <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-    <jsp:useBean id="adminRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+    <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+    <jsp:useBean id="adminRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
     <c:set var="ignoreFolders" value="${not greatestUserRole.isGreaterThanOrEquals(adminRole) or (forceIgnoreFolder != null and forceIgnoreFolder)}"/>
     <c:set var="draftEnabled" value="${kmeliaCtrl.draftEnabled}"/>

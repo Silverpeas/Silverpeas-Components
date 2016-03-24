@@ -70,7 +70,7 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodeI18NDetail"%>
 
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.components.kmelia.KmeliaException"%>

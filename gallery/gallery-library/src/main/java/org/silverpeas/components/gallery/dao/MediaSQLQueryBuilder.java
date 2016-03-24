@@ -28,7 +28,7 @@ import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteriaProcessor;
 import org.silverpeas.components.gallery.model.MediaLogicalComparator;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;

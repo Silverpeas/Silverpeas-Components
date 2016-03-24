@@ -24,8 +24,8 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import org.silverpeas.util.CollectionUtil;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 
 import javax.enterprise.inject.Vetoed;
@@ -198,7 +198,7 @@ public class SuggestionCriteria {
 
   /**
    * Gets the creator criteria value.
-   * {@link #createdBy(com.stratelia.webactiv.beans.admin.UserDetail)}
+   * {@link #createdBy(UserDetail)}
    * @return the criterion on the creator of the suggestions.
    */
   private UserDetail getCreator() {

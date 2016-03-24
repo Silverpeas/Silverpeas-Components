@@ -25,8 +25,8 @@ package org.silverpeas.components.gallery;
 
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.inject.Inject;
 import javax.inject.Named;

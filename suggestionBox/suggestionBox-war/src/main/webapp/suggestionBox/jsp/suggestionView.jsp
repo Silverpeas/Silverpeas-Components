@@ -29,8 +29,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<view:setConstant var="adminRole"  constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="adminRole"  constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>

@@ -32,7 +32,7 @@
 
 <%-- Constants --%>
 <view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
-<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
+<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
 
 <%-- Attributes --%>
 <%@ attribute name="media" required="true" type="org.silverpeas.components.gallery.model.Media"

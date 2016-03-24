@@ -26,11 +26,11 @@ package org.silverpeas.components.questionreply.web;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
-import static com.stratelia.webactiv.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.DateUtil;
 

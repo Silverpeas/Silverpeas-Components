@@ -37,7 +37,7 @@ import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.webpages.model.WebPagesException;

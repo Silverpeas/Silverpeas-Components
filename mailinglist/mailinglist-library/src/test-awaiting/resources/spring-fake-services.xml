@@ -39,6 +39,6 @@
   <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
 
   <bean id="organizationController" name="organizationController"
-        class="com.stratelia.webactiv.beans.admin.DefaultOrganizationController" />
+        class="org.silverpeas.core.admin.service.DefaultOrganizationController" />
 
 </beans>

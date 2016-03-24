@@ -51,7 +51,7 @@ LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpe
 String contextName = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
-<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <html>
 <head>

@@ -26,7 +26,7 @@ package org.silverpeas.components.classifieds.model;
 import com.silverpeas.SilverpeasContent;
 import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.core.accesscontrol.AccessControllerProvider;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 

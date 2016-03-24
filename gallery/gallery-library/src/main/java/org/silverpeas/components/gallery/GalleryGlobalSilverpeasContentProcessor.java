@@ -27,7 +27,7 @@ import com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcess
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.Media;
 

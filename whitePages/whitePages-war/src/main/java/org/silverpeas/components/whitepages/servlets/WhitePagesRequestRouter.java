@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.containerManager.ContainerContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.control.WhitePagesSessionController;
 import org.silverpeas.components.whitepages.filters.LoginFilter;

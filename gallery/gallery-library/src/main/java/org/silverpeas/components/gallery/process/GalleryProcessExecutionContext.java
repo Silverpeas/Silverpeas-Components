@@ -27,7 +27,7 @@ import java.sql.Connection;
 
 import org.silverpeas.process.management.ProcessExecutionContext;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * @author Yohann Chastagnier

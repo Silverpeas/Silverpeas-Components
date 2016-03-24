@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.user;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 

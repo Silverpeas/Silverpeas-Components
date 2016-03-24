@@ -24,8 +24,8 @@
 package org.silverpeas.components.kmelia.notification;
 
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;

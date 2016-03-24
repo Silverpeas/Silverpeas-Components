@@ -34,6 +34,8 @@
 <%@ page import="org.silverpeas.components.blog.model.Archive" %>
 <%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
 <%@ page import="org.silverpeas.core.mylinks.model.LinkDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%

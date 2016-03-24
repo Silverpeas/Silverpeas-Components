@@ -49,8 +49,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 
@@ -85,7 +85,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.FileServerUtils"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 

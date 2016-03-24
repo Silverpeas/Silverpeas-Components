@@ -25,7 +25,7 @@ package org.silverpeas.components.blog.access;
 
 import org.silverpeas.core.accesscontrol.AbstractAccessController;
 import org.silverpeas.core.accesscontrol.AccessControlContext;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.core.admin.service.OrganizationController;
 

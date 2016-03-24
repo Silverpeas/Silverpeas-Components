@@ -26,7 +26,7 @@ package org.silverpeas.components.delegatednews.web;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 

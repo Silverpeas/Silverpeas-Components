@@ -1,8 +1,8 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionBoxSubscriptionUserNotification;

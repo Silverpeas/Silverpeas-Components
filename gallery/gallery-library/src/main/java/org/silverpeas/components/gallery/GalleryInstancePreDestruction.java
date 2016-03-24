@@ -2,7 +2,7 @@ package org.silverpeas.components.gallery;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;

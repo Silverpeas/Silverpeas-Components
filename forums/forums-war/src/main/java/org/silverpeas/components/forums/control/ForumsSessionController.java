@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.forums.bean.ForumModeratorBean;
 import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.components.forums.service.ForumService;
@@ -80,8 +80,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static com.stratelia.webactiv.SilverpeasRole.*;
-import static com.stratelia.webactiv.beans.admin.UserDetail.OnFirstNameAndLastName;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.UserDetail.OnFirstNameAndLastName;
 
 /**
  * This class manage user session when working with forums application

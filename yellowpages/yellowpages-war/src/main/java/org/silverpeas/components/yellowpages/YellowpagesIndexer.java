@@ -24,7 +24,7 @@
 package org.silverpeas.components.yellowpages;
 
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 
 import javax.inject.Inject;

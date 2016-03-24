@@ -25,7 +25,7 @@ package org.silverpeas.components.whitepages.control;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;

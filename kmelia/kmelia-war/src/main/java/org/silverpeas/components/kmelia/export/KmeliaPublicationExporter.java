@@ -28,7 +28,7 @@ import com.silverpeas.converter.ODTConverter;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;

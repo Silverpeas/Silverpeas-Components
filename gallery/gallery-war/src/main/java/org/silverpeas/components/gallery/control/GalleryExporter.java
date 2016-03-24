@@ -38,7 +38,7 @@ import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class GalleryExporter extends AbstractExportProcess {
 

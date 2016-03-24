@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.web;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;

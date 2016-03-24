@@ -25,7 +25,7 @@ package org.silverpeas.components.blog;
 
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import javax.inject.Inject;
 import javax.inject.Named;

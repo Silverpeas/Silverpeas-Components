@@ -29,7 +29,7 @@ import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.webactiv.beans.admin.ObjectType;
+import org.silverpeas.core.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeOrderComparator;

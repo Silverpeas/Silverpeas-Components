@@ -24,9 +24,9 @@
 package org.silverpeas.components.questionreply.web;
 
 import org.silverpeas.core.webapi.base.RESTWebService;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
-import static com.stratelia.webactiv.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;

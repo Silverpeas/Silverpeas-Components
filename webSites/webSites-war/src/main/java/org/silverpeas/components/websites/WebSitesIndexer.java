@@ -24,7 +24,7 @@
 package org.silverpeas.components.websites;
 
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.websites.service.WebSiteService;
 
 import javax.inject.Inject;

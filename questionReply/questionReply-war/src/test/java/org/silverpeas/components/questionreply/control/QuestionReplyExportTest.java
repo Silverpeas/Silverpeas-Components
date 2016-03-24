@@ -6,7 +6,7 @@ package org.silverpeas.components.questionreply.control;
 
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

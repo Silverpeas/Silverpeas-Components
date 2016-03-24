@@ -1,6 +1,6 @@
 package org.silverpeas.components.quickinfo.repository;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -16,7 +16,6 @@ import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.Date;

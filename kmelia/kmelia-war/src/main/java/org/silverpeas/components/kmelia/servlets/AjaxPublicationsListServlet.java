@@ -36,9 +36,9 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -84,7 +84,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
-import static com.stratelia.webactiv.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static com.stratelia.webactiv.publication.model.PublicationDetail.*;
 
 /**
