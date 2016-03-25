@@ -23,7 +23,8 @@
  */
 package org.silverpeas.components.kmelia.control;
 
-import org.silverpeas.core.accesscontrol.AccessControlContext;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
+import org.silverpeas.core.security.authorization.AccessControlContext;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
@@ -70,8 +71,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.core.accesscontrol.NodeAccessController;
-import org.silverpeas.core.accesscontrol.PublicationAccessController;
+import org.silverpeas.core.security.authorization.NodeAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -81,7 +82,6 @@ import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.export.ExportFileNameProducer;
 import org.silverpeas.components.kmelia.export.KmeliaPublicationExporter;
@@ -3247,7 +3247,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           SearchEngineProvider.getSearchEngine().search(queryDescription).getEntries();
 
       List<String> pubIds = new ArrayList<>();
-      KmeliaSecurity security = new KmeliaSecurity();
+      KmeliaAuthorization security = new KmeliaAuthorization();
       security.enableCache();
       for (MatchingIndexEntry result : results) {
         if ("Publication".equals(result.getObjectType())) {

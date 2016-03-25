@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 import javax.servlet.http.HttpServletRequest;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 
@@ -49,7 +49,7 @@ public class SubscribeHandler implements AjaxHandler {
   }
 
   private boolean isNodeAvailable(KmeliaSessionController kmelia, String nodeId) {
-    KmeliaSecurity security = new KmeliaSecurity();
+    KmeliaAuthorization security = new KmeliaAuthorization();
     return security.isObjectAvailable(kmelia.getComponentId(), kmelia.getUserId(), nodeId, "Node");
   }
 }

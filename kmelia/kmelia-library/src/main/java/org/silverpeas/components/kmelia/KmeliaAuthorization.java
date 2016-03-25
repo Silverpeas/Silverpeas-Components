@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.ObjectType;
@@ -40,7 +41,6 @@ import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.security.ComponentSecurity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +56,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
  * Kmelia security provides a way to check the rights of a user to access the content of a Kmelia
  * instance (publications, ...).
  */
-public class KmeliaSecurity implements ComponentSecurity {
+public class KmeliaAuthorization implements ComponentAuthorization {
 
   private static final String CO_WRITING_PARAM = "coWriting";
   private static final String DRAFT_VISIBLE_WITH_CO_WRITING_PARAM = "draftVisibleWithCoWriting";
@@ -72,11 +72,11 @@ public class KmeliaSecurity implements ComponentSecurity {
   private SettingBundle kmeliaSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.kmelia.settings.kmeliaSettings");
 
-  public KmeliaSecurity() {
+  public KmeliaAuthorization() {
     this.controller = OrganizationControllerProvider.getOrganisationController();
   }
 
-  public KmeliaSecurity(OrganizationController controller) {
+  public KmeliaAuthorization(OrganizationController controller) {
     this.controller = controller;
   }
 
@@ -262,7 +262,7 @@ public class KmeliaSecurity implements ComponentSecurity {
             objectAvailable = isNodeAvailable(fatherPK, userId);
           } catch (Exception e) {
             // don't throw exception, log only error
-            SilverTrace.error("kmelia", "KmeliaSecurity.isNodeAvailable",
+            SilverTrace.error("kmelia", "KmeliaAuthorization.isNodeAvailable",
                 "root.MSG_GEN_PARAM_VALUE",
                 "Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId()
                 + ") no more exist but still referenced by a publication (" + pk.getId() + ", "
@@ -288,7 +288,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     try {
       fatherPKs = getPublicationService().getAllFatherPK(pk);
     } catch (Exception e) {
-      SilverTrace.warn("kmelia", "KmeliaSecurity.getPublicationFolderPKs",
+      SilverTrace.warn("kmelia", "KmeliaAuthorization.getPublicationFolderPKs",
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "PubId = " + pk.toString());
     }
     return fatherPKs;
@@ -305,7 +305,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     try {
       return getPublicationService().getDetail(pk);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationDetail()",
+      throw new KmeliaRuntimeException("KmeliaAuthorization.getPublicationDetail()",
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
     }
   }
@@ -381,7 +381,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       try {
         kmeliaService = ServiceProvider.getService(KmeliaService.class);
       } catch (UtilException e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.getKmeliaService()",
+        throw new KmeliaRuntimeException("KmeliaAuthorization.getKmeliaService()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KMELIABM_HOME", e);
       }
     }

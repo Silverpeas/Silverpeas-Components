@@ -166,7 +166,7 @@ public class KmeliaTransversal implements PublicationHelper {
   private List<PublicationDetail> filterPublications(List<PublicationDetail> publications,
       int nbPublis) {
     List<PublicationDetail> filteredPublications = new ArrayList<PublicationDetail>();
-    KmeliaSecurity security = new KmeliaSecurity();
+    KmeliaAuthorization security = new KmeliaAuthorization();
 
     PublicationDetail pub = null;
     for (int p = 0; publications != null && p < publications.size(); p++) {
@@ -186,7 +186,7 @@ public class KmeliaTransversal implements PublicationHelper {
 
   private List<PublicationPK> filterPublicationPKs(List<PublicationPK> publicationPKs, int nbPublis) {
     List<PublicationPK> filteredPublicationPKs = new ArrayList<PublicationPK>();
-    KmeliaSecurity security = new KmeliaSecurity();
+    KmeliaAuthorization security = new KmeliaAuthorization();
 
     PublicationPK pk = null;
     for (int p = 0; publicationPKs != null && p < publicationPKs.size(); p++) {

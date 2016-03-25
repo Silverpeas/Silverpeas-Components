@@ -69,7 +69,7 @@ public class KmeliaSecurityTest {
   }
 
   /**
-   * Test of enableCache method, of class KmeliaSecurity.
+   * Test of enableCache method, of class KmeliaAuthorization.
    */
   @Test
   public void testEnableCache() {
@@ -79,7 +79,7 @@ public class KmeliaSecurityTest {
   }
 
   /**
-   * Test of disableCache method, of class KmeliaSecurity.
+   * Test of disableCache method, of class KmeliaAuthorization.
    */
   @Test
   public void testDisableCache() {
@@ -89,7 +89,7 @@ public class KmeliaSecurityTest {
   }
 
   /**
-   * Test of isAccessAuthorized method, of class KmeliaSecurity.
+   * Test of isAccessAuthorized method, of class KmeliaAuthorization.
    *
    * @throws Exception
    */
@@ -228,7 +228,7 @@ public class KmeliaSecurityTest {
   }
 
   /**
-   * Test of isAccessAuthorized method, of class KmeliaSecurity.
+   * Test of isAccessAuthorized method, of class KmeliaAuthorization.
    */
   /*@Test
    public void testIsAccessAuthorizedForAnyObject() {
@@ -237,7 +237,7 @@ public class KmeliaSecurityTest {
    String userId = "";
    String objectId = "";
    String objectType = "";
-   KmeliaSecurity instance = new KmeliaSecurity();
+   KmeliaAuthorization instance = new KmeliaAuthorization();
    boolean expResult = false;
    boolean result = instance.isAccessAuthorized(componentId, userId, objectId, objectType);
    assertEquals(expResult, result);
@@ -245,7 +245,7 @@ public class KmeliaSecurityTest {
    fail("The test case is a prototype.");
    }*/
   /**
-   * Test of isObjectAvailable method, of class KmeliaSecurity.
+   * Test of isObjectAvailable method, of class KmeliaAuthorization.
    */
   @Test
   public void testIsObjectAvailable() {
@@ -255,7 +255,7 @@ public class KmeliaSecurityTest {
   }
 
   /**
-   * Test of isKmeliaObjectType method, of class KmeliaSecurity.
+   * Test of isKmeliaObjectType method, of class KmeliaAuthorization.
    */
   @Test
   public void testIsKmeliaObjectType() {
@@ -271,7 +271,7 @@ public class KmeliaSecurityTest {
   }
 
   /**
-   * Test of isRightsOnTopicsEnable method, of class KmeliaSecurity.
+   * Test of isRightsOnTopicsEnable method, of class KmeliaAuthorization.
    */
   @Test
   public void testIsRightsOnTopicsEnabled() {
@@ -307,14 +307,14 @@ public class KmeliaSecurityTest {
 
   }
   /**
-   * Test of isPublicationAvailable method, of class KmeliaSecurity.
+   * Test of isPublicationAvailable method, of class KmeliaAuthorization.
    */
   /*@Test
    public void testIsPublicationAvailable() {
    System.out.println("isPublicationAvailable");
    PublicationPK pk = null;
    String userId = "";
-   KmeliaSecurity instance = new KmeliaSecurity();
+   KmeliaAuthorization instance = new KmeliaAuthorization();
    boolean expResult = false;
    boolean result = instance.isPublicationAvailable(pk, userId);
    assertEquals(expResult, result);

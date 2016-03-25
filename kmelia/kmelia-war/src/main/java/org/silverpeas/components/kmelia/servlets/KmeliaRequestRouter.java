@@ -52,9 +52,9 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.accesscontrol.PublicationAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.components.kmelia.KmeliaConstants;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.FileFolder;
@@ -258,7 +258,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (type != null && ("Publication".equals(type) ||
             "com.stratelia.webactiv.calendar.model.TodoDetail".equals(type) ||
             "Attachment".equals(type) || "Document".equals(type) || type.startsWith("Comment"))) {
-          KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganisationController());
+          KmeliaAuthorization security = new KmeliaAuthorization(kmelia.getOrganisationController());
           try {
             PublicationDetail pub2Check = kmelia.getPublicationDetail(id);
             // If given PK defines a clone, change PK to master

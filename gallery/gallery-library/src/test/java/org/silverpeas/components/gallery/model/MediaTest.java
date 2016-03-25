@@ -34,7 +34,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;

@@ -25,10 +25,10 @@
 package org.silverpeas.components.whitepages.model;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.logging.SilverLogger;
 

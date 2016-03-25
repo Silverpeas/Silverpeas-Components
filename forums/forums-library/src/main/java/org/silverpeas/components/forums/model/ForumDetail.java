@@ -24,13 +24,13 @@
 package org.silverpeas.components.forums.model;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.forums.ForumsContentManager;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.i18n.AbstractBean;
 

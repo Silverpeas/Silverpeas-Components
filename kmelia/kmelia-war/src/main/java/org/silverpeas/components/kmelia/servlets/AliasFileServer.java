@@ -22,7 +22,7 @@ package org.silverpeas.components.kmelia.servlets;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -103,14 +103,14 @@ public class AliasFileServer extends HttpServlet {
 
       // check if user have rights to see alias files
       boolean rightsOK = false;
-      KmeliaSecurity security = new KmeliaSecurity();
+      KmeliaAuthorization security = new KmeliaAuthorization();
       for (int a = 0; !rightsOK && a < aliases.size(); a++) {
         Alias alias = aliases.get(a);
         if (!foreignKey.getInstanceId().equals(alias.getInstanceId())) {
           // it's an alias
           // Check if user is allowed to see topic's content
           rightsOK = security.isAccessAuthorized(alias.getInstanceId(), userId, alias.getId(),
-              KmeliaSecurity.NODE_TYPE);
+              KmeliaAuthorization.NODE_TYPE);
         }
       }
 

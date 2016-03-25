@@ -25,12 +25,12 @@
 package org.silverpeas.components.blog.model;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.util.Date;

@@ -25,12 +25,12 @@
 package org.silverpeas.components.infoletter.model;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Date;
 import java.util.Iterator;

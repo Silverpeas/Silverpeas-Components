@@ -44,6 +44,7 @@ import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.ObjectType;
@@ -77,7 +78,6 @@ import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaContentManager;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.components.kmelia.KmeliaSecurity;
 import org.silverpeas.components.kmelia.PublicationImport;
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
@@ -295,7 +295,7 @@ public class DefaultKmeliaService implements KmeliaService {
             nbPublisOnRoot, NodePK.BIN_NODE_ID);
     if (isRightsOnTopicsUsed) {// The list of publications must be filtered
       List<PublicationDetail> filteredList = new ArrayList<>();
-      KmeliaSecurity security = new KmeliaSecurity();
+      KmeliaAuthorization security = new KmeliaAuthorization();
       for (PublicationDetail pubDetail : pubDetails) {
         if (security
             .isObjectAvailable(instanceId, userId, pubDetail.getPK().getId(), "Publication")) {
@@ -1960,13 +1960,13 @@ public class DefaultKmeliaService implements KmeliaService {
     // initialization of the publications list
     List<ForeignPK> allowedPublicationIds = new ArrayList<ForeignPK>(links);
     if (isRightsOnTopicsUsed) {
-      KmeliaSecurity security = new KmeliaSecurity();
+      KmeliaAuthorization security = new KmeliaAuthorization();
       allowedPublicationIds.clear();
 
       // check if the publication is authorized for current user
       for (ForeignPK link : links) {
         if (security.isObjectAvailable(link.getInstanceId(), userId, link.getId(),
-            KmeliaSecurity.PUBLICATION_TYPE)) {
+            KmeliaAuthorization.PUBLICATION_TYPE)) {
           allowedPublicationIds.add(link);
         }
       }
@@ -1987,7 +1987,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) {
-    KmeliaSecurity security = new KmeliaSecurity();
+    KmeliaAuthorization security = new KmeliaAuthorization();
     List<ForeignPK> allLinkIds = publication.getCompleteDetail().getLinkList();
     List<KmeliaPublication> authorizedLinks = new ArrayList<KmeliaPublication>(allLinkIds.size());
     for (ForeignPK linkId : allLinkIds) {

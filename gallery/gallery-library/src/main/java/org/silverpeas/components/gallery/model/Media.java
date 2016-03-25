@@ -24,8 +24,8 @@
 package org.silverpeas.components.gallery.model;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -36,7 +36,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.date.period.Period;
 import org.silverpeas.file.SilverpeasFile;

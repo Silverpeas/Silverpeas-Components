@@ -29,7 +29,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.crypto.CryptMD5;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.logging.SilverLogger;
 
