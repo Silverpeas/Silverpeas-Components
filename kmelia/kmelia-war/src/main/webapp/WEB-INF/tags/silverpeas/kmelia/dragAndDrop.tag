@@ -168,7 +168,6 @@
         </div>
       </c:if>
       <c:if test="${isVersionActive}">
-
         <div>
           <br/>
           <span class="label"><fmt:message key="attachment.dragAndDrop.question" bundle="${attachment}"/></span>
@@ -187,6 +186,7 @@
         <div>
           <br/>
           <span class="label">${ValidatorLabel}</span>
+
           <div>
             <c:choose>
               <c:when test="${oneValidator}">
@@ -255,7 +255,7 @@
           var severalFilesToUpload = fileUpload.uploadSession.severalFilesToUpload &&
               (!fileUpload.uploadSession.existsAtLeastOneFolder || ${ignoreFolders});
           var displayDialog = !fileUpload.uploadSession.id &&
-              (severalFilesToUpload || ${isVersionActive} || ${publicationStateConfirmation} || ${_ddIsI18n});
+              (severalFilesToUpload || ${validationMandatory} || ${isVersionActive} || ${publicationStateConfirmation} || ${_ddIsI18n});
           if (!displayDialog) {
             return Promise.resolve();
           }
@@ -283,14 +283,6 @@
                 <c:if test="${isVersionActive}">
                 var version = jQuery('input[name=versionType]:checked', this).val();
                 uploadCompletedUrl += '&VersionType=' + version;
-                </c:if>
-                <c:if test="${validationMandatory}">
-                var targetValidatorIds = jQuery('input[name=DropValideurId]', this).val();
-                if (StringUtil.isNotDefined(targetValidatorIds)) {
-                  SilverpeasError.add("<b>${ValidatorLabel}</b> <fmt:message key='GML.MustBeFilled'/>");
-                } else {
-                  uploadCompletedUrl += '&ValidatorIds=' + targetValidatorIds;
-                }
                 </c:if>
                 if (severalFilesToUpload) {
                   var creationMode = jQuery(':checked', $creationModeBlock).val();
@@ -328,6 +320,14 @@
                     </c:if>
                   }
                 }
+                <c:if test="${validationMandatory}">
+                var targetValidatorIds = jQuery('input[name=DropValideurId]', this).val();
+                if (StringUtil.isNotDefined(targetValidatorIds)) {
+                  SilverpeasError.add("<b>${ValidatorLabel}</b> <fmt:message key='GML.MustBeFilled'/>");
+                } else {
+                  uploadCompletedUrl += '&ValidatorIds=' + targetValidatorIds;
+                }
+                </c:if>
                 fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;
 
                 if (!SilverpeasError.show()) {
