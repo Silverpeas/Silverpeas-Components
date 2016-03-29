@@ -109,7 +109,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -697,53 +696,17 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<NodeDetail> getTreeview(NodePK nodePK, String profile, boolean coWritingEnable,
       boolean draftVisibleWithCoWriting, String userId, boolean displayNb,
       boolean isRightsOnTopicsUsed) {
+
     String instanceId = nodePK.getInstanceId();
-    List<NodeDetail> tree = nodeService.getSubTree(nodePK);
+    List<NodeDetail> allowedTree = nodeService.getSubTree(nodePK);
 
     if (profile == null) {
       profile = getProfile(userId, nodePK);
     }
 
-    OrganizationController orga = getOrganisationController();
-    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
-    if (isRightsOnTopicsUsed) {
-      // filter allowed nodes
-      for (NodeDetail node2Check : tree) {
-        if (!node2Check.haveRights()) {
-          node2Check.setUserRole(profile);
-          allowedTree.add(node2Check);
-          getAllowedChildren(node2Check, userId, instanceId);
-        } else {
-          int rightsDependsOn = node2Check.getRightsDependsOn();
-          String[] profiles =
-              orga.getUserProfiles(userId, instanceId, rightsDependsOn, ObjectType.NODE);
-          if (!ArrayUtil.isEmpty(profiles)) {
-            node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
-            allowedTree.add(node2Check);
-            getAllowedChildren(node2Check, userId, instanceId);
-          }
-        }
-      }
-    } else {
-      if (tree != null && !tree.isEmpty()) {
-        // case of root. Check if publications on root are allowed
-        String sNB = orga.getComponentParameterValue(nodePK.getInstanceId(), "nbPubliOnRoot");
-        if (!isDefined(sNB)) {
-          sNB = "0";
-        }
-        int nbPublisOnRoot = Integer.parseInt(sNB);
-        if (nbPublisOnRoot != 0) {
-          NodeDetail root = tree.get(0);
-          root.setUserRole("user");
-        }
-        for (NodeDetail node : tree) {
-          if (!node.getNodePK().isRoot()) {
-            node.setUserRole(profile);
-          }
-        }
-      }
-      allowedTree.addAll(tree);
-    }
+    KmeliaUserTreeViewFilter
+        .from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
+        .setBestUserRoleAndFilter(allowedTree);
 
     if (displayNb) {
       boolean checkVisibility = false;
@@ -797,6 +760,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
       decorateWithNumberOfPublications(allowedTree, numbers);
     }
+
     return allowedTree;
   }
 
@@ -814,21 +778,6 @@ public class DefaultKmeliaService implements KmeliaService {
     }
     node.setNbObjects(nb);
     return nb;
-  }
-
-  private void getAllowedChildren(NodeDetail node, String userId, String instanceId) {
-    List<NodeDetail> allowed = new ArrayList<NodeDetail>();
-    for (NodeDetail child : node.getChildrenDetails()) {
-      String[] profiles = getOrganisationController().getUserProfiles(userId, instanceId,
-          child.getRightsDependsOn(), ObjectType.NODE);
-      if (!ArrayUtil.isEmpty(profiles)) {
-        child.setUserRole(KmeliaHelper.getProfile(profiles));
-        allowed.add(child);
-
-        getAllowedChildren(child, userId, instanceId);
-      }
-    }
-    node.setChildrenDetails(allowed);
   }
 
   private Collection<PublicationDetail> getPublicationsInBasket(NodePK pk, String userProfile,
