@@ -27,7 +27,7 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;

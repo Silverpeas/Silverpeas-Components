@@ -26,7 +26,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 

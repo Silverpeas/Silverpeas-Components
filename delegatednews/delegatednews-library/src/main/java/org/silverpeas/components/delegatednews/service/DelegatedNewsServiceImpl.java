@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.util.Link;

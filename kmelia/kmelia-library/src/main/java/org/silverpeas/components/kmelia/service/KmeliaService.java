@@ -32,10 +32,10 @@ import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.Alias;
-import com.stratelia.webactiv.publication.model.CompletePublication;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.upload.UploadedFile;
@@ -176,7 +176,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Return the detail of a publication (only the Header)
    * @param pubPK the id of the publication
    * @return a PublicationDetail
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   PublicationDetail getPublicationDetail(PublicationPK pubPK);
@@ -202,7 +202,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Create a new Publication (only the header - parameters) to the current Topic
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK);
@@ -223,7 +223,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   /**
    * Update a publication (only the header - parameters)
    * @param detail a PublicationDetail
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   void updatePublication(PublicationDetail detail);
@@ -569,7 +569,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Create a new Publication (only the header - parameters)
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   String createKmaxPublication(PublicationDetail pubDetail);

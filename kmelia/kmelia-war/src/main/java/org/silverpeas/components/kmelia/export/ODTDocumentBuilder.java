@@ -41,7 +41,7 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextAElement;

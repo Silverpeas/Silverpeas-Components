@@ -26,8 +26,8 @@ import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
 import org.silverpeas.core.util.ServiceProvider;
 

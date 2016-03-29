@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier

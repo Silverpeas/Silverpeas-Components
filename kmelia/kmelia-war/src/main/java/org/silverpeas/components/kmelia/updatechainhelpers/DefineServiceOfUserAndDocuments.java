@@ -33,7 +33,7 @@ import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

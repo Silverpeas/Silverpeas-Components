@@ -29,8 +29,8 @@
 package org.silverpeas.components.delegatednews.service;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;

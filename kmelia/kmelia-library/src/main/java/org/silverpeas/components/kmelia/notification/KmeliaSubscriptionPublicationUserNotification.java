@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.admin.ObjectType;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Collection;

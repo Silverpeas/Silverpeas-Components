@@ -32,9 +32,9 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.CompletePublication;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ServiceProvider;
@@ -42,7 +42,7 @@ import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
 
-import static com.stratelia.webactiv.publication.model.PublicationDetail.*;
+import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 
 /**
  * Classe métier de création d'entités silverpeas utilisée par le moteur d'importExport.

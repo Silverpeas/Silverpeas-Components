@@ -42,8 +42,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.io.FilenameUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -85,7 +85,7 @@ import java.util.List;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
-import static com.stratelia.webactiv.publication.model.PublicationDetail.*;
+import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 
 /**
  * @author ehugonnet

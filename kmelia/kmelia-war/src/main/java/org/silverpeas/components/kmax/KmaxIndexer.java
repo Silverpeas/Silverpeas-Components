@@ -27,9 +27,9 @@ package org.silverpeas.components.kmax;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 
 import javax.inject.Inject;

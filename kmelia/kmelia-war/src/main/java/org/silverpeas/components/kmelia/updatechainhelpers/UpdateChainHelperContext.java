@@ -29,7 +29,7 @@ import java.util.List;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 public class UpdateChainHelperContext {
 

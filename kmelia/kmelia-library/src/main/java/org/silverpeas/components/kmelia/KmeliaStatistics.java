@@ -22,9 +22,9 @@ package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;

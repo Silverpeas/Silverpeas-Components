@@ -57,13 +57,13 @@ import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.Alias;
-import com.stratelia.webactiv.publication.model.CompletePublication;
-import com.stratelia.webactiv.publication.model.NodeTree;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.ValidationStep;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.NodeTree;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
@@ -114,8 +114,8 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
 import org.silverpeas.process.annotation.SimulationActionProcess;
-import org.silverpeas.publication.dateReminder.PublicationNoteReference;
-import org.silverpeas.publication.notification.PublicationEventNotifier;
+import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
+import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.*;
 import org.silverpeas.util.annotation.Action;
@@ -1008,7 +1008,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * Return the detail of a publication (only the Header)
    * @param pubPK the id of the publication
    * @return a PublicationDetail
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -1059,7 +1059,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * Create a new Publication (only the header - parameters) to the current Topic
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -1221,7 +1221,7 @@ public class DefaultKmeliaService implements KmeliaService {
   /**
    * Update a publication (only the header - parameters)
    * @param pubDetail a PublicationDetail
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -3634,7 +3634,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * Create a new Publication (only the header - parameters)
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override

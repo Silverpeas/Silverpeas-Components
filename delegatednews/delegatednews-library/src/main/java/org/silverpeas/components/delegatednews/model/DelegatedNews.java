@@ -24,10 +24,10 @@
 
 package org.silverpeas.components.delegatednews.model;
 
-import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.persistence.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.core.util.ServiceProvider;

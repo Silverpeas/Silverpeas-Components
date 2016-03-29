@@ -31,7 +31,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.components.kmelia.KmeliaTransversal;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;

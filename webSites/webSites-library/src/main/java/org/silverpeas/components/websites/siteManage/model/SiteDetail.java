@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 public class SiteDetail extends PublicationDetail {
   private static final long serialVersionUID = 1435448496246944796L;

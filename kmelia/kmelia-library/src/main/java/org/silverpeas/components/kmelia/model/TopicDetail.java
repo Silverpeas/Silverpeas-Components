@@ -26,8 +26,8 @@ package org.silverpeas.components.kmelia.model;
 
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,7 +111,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
   /**
    * Get a PublicationDetail collection containing all the publications in this topic
    * @return a PublicationDetail collection containing all the publications in this topic
-   * @see com.stratelia.webactiv.publication.model.PublicationDetail
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @see java.util.Collection
    * @since 1.0
    */

@@ -26,7 +26,7 @@ package org.silverpeas.components.quickinfo;
 
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import com.stratelia.webactiv.publication.control.PublicationService;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 

@@ -25,8 +25,8 @@ package org.silverpeas.components.delegatednews;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.publication.notification.PublicationEvent;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.notification.PublicationEvent;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;

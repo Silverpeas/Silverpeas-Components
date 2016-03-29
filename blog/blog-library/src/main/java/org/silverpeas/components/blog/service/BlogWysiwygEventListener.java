@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.blog.service;
 
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.wysiwyg.control.WysiwygContent;

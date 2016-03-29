@@ -39,7 +39,7 @@ import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.util.FileRepositoryManager;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
 

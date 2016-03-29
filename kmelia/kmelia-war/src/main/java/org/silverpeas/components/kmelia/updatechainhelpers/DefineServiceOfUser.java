@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.updatechainhelpers;
 
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

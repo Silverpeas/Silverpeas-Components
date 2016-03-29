@@ -36,7 +36,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.components.websites.control.WebSiteSessionController;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 

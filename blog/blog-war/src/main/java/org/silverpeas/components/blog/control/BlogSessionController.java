@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.domain.model.Domain;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.blog.access.BlogPostWriteAccessControl;

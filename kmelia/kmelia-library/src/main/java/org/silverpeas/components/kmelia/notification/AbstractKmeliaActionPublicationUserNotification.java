@@ -27,7 +27,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier

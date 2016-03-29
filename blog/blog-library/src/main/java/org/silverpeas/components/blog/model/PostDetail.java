@@ -29,7 +29,7 @@ import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 

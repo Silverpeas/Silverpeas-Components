@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.service;
 
 
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.notification.JMSResourceEventListener;

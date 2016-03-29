@@ -31,9 +31,9 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
