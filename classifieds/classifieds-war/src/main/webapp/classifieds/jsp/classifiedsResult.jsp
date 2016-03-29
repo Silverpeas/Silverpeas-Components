@@ -26,7 +26,7 @@
 <%@page import="org.silverpeas.components.classifieds.control.SearchContext"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
+<%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>

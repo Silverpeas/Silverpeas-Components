@@ -26,7 +26,7 @@
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
 

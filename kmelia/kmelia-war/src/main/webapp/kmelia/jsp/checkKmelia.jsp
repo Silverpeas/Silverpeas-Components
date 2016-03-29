@@ -61,10 +61,10 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationPK"%>
-<%@ page import="com.stratelia.webactiv.publication.model.CompletePublication"%>
-<%@ page import="com.stratelia.webactiv.publication.model.ValidationStep"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationPK"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.CompletePublication"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.ValidationStep"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeI18NDetail"%>

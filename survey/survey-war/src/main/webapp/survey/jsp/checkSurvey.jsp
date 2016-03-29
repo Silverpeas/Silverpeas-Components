@@ -89,7 +89,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 
-<%@ page import="org.silverpeas.attachment.model.SimpleDocument"%>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

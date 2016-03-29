@@ -42,7 +42,7 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
 <%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail" %>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
