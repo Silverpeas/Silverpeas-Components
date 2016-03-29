@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.util.Date;
 

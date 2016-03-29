@@ -64,7 +64,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.Charsets;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.io.File;
 import java.util.Calendar;

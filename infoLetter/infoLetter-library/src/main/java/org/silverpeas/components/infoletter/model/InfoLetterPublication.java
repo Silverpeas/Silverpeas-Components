@@ -27,7 +27,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 /**
  * @author frageade

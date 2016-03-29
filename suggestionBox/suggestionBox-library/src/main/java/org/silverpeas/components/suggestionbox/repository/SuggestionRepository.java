@@ -37,7 +37,7 @@ import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

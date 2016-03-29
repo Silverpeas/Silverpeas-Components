@@ -29,7 +29,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.util.Date;
 

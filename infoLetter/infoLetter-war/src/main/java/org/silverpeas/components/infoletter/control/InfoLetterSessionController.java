@@ -76,7 +76,7 @@ import org.silverpeas.util.exception.UtilTrappedException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.io.File;
 import java.io.IOException;

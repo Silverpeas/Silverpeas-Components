@@ -29,7 +29,7 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Named;

@@ -82,7 +82,7 @@ import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;

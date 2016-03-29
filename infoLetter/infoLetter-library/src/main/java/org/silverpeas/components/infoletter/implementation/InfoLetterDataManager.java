@@ -58,9 +58,9 @@ import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-import org.silverpeas.wysiwyg.control.result.MailContentProcess;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;

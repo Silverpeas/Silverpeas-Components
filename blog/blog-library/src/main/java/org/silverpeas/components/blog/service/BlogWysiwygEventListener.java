@@ -26,8 +26,8 @@ package org.silverpeas.components.blog.service;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.notification.JMSResourceEventListener;
-import org.silverpeas.wysiwyg.control.WysiwygContent;
-import org.silverpeas.wysiwyg.notification.WysiwygEvent;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
+import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

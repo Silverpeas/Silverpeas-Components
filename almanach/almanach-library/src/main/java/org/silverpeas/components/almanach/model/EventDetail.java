@@ -50,7 +50,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.io.Serializable;
 import java.util.Calendar;

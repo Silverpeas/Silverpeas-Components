@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -53,7 +54,7 @@ import java.util.Date;
 /**
  * This entity represents a suggestion associated to a suggestion box.
  * A suggestion is described by a title and by a rich content. The rich content is managed by
- * the {@link org.silverpeas.wysiwyg.control.WysiwygController} object and it is not persisted
+ * the {@link WysiwygController} object and it is not persisted
  * into the database.
  * @author Yohann Chastagnier
  */

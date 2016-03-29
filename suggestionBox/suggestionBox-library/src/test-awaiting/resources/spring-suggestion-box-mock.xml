@@ -93,7 +93,7 @@
   <!-- ebo <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
         factory-method="getInstance"/> -->
 
-  <!-- ych <bean id="wywiwygController" class="org.silverpeas.wysiwyg.control.WysiwygController"-->
+  <!-- ych <bean id="wywiwygController" class="WysiwygController"-->
         <!--factory-method="getInstance"/>-->
 
   <util:list id="entities">

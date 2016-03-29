@@ -78,8 +78,8 @@
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 
 <%@ page import="org.silverpeas.core.comment.model.Comment"%>
-<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController"%>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException"%>
 
 <%@ page import="org.silverpeas.util.ForeignPK"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>

@@ -143,8 +143,8 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.datatransfer.UnsupportedFlavorException;

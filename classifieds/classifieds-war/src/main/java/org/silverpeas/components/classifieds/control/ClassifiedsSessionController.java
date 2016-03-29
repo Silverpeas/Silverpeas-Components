@@ -56,7 +56,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.util.ArrayList;
 import java.util.Collection;

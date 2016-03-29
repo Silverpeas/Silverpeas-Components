@@ -48,7 +48,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.util.Date;
 import java.util.List;

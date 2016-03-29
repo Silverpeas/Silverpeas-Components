@@ -30,7 +30,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
-import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -43,7 +43,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Named;

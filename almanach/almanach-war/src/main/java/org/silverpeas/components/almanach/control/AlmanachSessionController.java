@@ -69,8 +69,8 @@ import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.io.File;
 import java.io.FileWriter;

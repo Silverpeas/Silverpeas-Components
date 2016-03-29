@@ -62,7 +62,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -27,8 +27,8 @@ import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.notification.JMSResourceEventListener;
-import org.silverpeas.wysiwyg.control.WysiwygContent;
-import org.silverpeas.wysiwyg.notification.WysiwygEvent;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
+import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

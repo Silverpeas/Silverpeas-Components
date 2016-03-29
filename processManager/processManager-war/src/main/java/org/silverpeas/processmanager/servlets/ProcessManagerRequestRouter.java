@@ -51,7 +51,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.apache.commons.fileupload.FileItem;

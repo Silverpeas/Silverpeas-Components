@@ -55,7 +55,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
