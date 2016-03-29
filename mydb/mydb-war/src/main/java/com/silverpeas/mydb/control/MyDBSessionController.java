@@ -20,10 +20,10 @@
  */
 package com.silverpeas.mydb.control;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.fieldType.DateField;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.fieldType.DateField;
 import com.silverpeas.mydb.control.ejb.MyDBBm;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.date.DateFormatter;

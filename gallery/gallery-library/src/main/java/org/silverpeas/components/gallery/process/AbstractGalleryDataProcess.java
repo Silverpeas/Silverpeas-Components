@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process;
 
-import com.silverpeas.form.record.GenericRecordSetManager;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.components.gallery.GalleryContentManager;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;

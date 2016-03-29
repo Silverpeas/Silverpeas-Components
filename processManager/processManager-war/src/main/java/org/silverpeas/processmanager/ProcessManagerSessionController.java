@@ -23,21 +23,21 @@
  */
 package org.silverpeas.processmanager;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.fieldType.DateField;
-import com.silverpeas.form.fieldType.MultipleUserField;
-import com.silverpeas.form.fieldType.UserField;
-import com.silverpeas.form.form.HtmlForm;
-import com.silverpeas.form.form.XmlForm;
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.field.DateField;
+import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
+import org.silverpeas.core.contribution.content.form.field.UserField;
+import org.silverpeas.core.contribution.content.form.form.HtmlForm;
+import org.silverpeas.core.contribution.content.form.form.XmlForm;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;

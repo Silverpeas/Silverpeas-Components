@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.yellowpages.servlets;
 
-import com.silverpeas.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.almanach.workflowextensions;
 
-import com.silverpeas.form.DataRecordUtil;
+import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;

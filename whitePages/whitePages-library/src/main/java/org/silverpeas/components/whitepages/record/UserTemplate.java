@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.whitepages.record;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.fieldType.TextField;
-import com.silverpeas.form.form.HtmlForm;
-import com.silverpeas.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.form.form.HtmlForm;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.LocalizationBundle;

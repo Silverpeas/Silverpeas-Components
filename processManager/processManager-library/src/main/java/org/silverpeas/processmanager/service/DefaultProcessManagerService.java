@@ -23,17 +23,17 @@
  */
 package org.silverpeas.processmanager.service;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.fieldType.DateField;
-import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.form.fieldType.TextField;
-import com.silverpeas.form.form.XmlForm;
-import com.silverpeas.form.record.GenericDataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.field.DateField;
+import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.form.form.XmlForm;
+import org.silverpeas.core.contribution.content.form.record.GenericDataRecord;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;

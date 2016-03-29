@@ -31,8 +31,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%@page import="org.silverpeas.components.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.form.Form"%>
-<%@page import="com.silverpeas.form.PagesContext"%>
+<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 
 <%
 	Form formUpdate = (Form) request.getAttribute("Form");

@@ -32,7 +32,7 @@
 
 <%
 	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
-	com.silverpeas.form.Form 	form 						= (com.silverpeas.form.Form) request.getAttribute("form");
+	Form form 						= (Form) request.getAttribute("form");
 	PagesContext 				context 					= (PagesContext) request.getAttribute("context");
 	DataRecord 					data 						= (DataRecord) request.getAttribute("data");
 	String[] 					deleteAction 				= (String[]) request.getAttribute("deleteAction");
@@ -104,6 +104,7 @@
 %>
 
 <%@page import="java.util.Iterator"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

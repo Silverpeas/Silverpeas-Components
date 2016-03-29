@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.classifieds.control;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.form.XmlSearchForm;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 
 public class SearchContext {
 

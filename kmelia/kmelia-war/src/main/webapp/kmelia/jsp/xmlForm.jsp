@@ -25,9 +25,9 @@
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="checkKmelia.jsp" %>
-<%@page import="com.silverpeas.form.DataRecord"%>
-<%@ page import="com.silverpeas.form.Form"%>
-<%@ page import="com.silverpeas.form.PagesContext" %>
+<%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 

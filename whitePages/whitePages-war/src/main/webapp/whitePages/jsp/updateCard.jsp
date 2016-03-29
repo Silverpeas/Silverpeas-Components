@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.silverpeas.form.DataRecord"%>
-<%@ page import="com.silverpeas.form.Form"%>
-<%@ page import="com.silverpeas.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.components.whitepages.model.Card" %>
 
 <%@ include file="checkWhitePages.jsp" %>

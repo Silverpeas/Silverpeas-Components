@@ -90,9 +90,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
-<%@ page import="com.silverpeas.form.DataRecord" %>
-<%@ page import="com.silverpeas.form.Form" %>
-<%@ page import="com.silverpeas.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

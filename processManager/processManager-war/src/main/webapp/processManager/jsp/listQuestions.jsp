@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -29,7 +29,7 @@
 
 <%
 	ProcessInstance 			process					= (ProcessInstance) request.getAttribute("process");
-    com.silverpeas.form.Form 	form 					= (com.silverpeas.form.Form) request.getAttribute("form");
+    Form form 					= (Form) request.getAttribute("form");
     PagesContext 				context 				= (PagesContext) request.getAttribute("context");
 	Task[] 						tasks 					= (Task[]) request.getAttribute("tasks");
 	Boolean 					isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");

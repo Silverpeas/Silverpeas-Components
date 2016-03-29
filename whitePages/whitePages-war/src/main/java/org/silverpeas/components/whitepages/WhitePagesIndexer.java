@@ -28,8 +28,8 @@
  */
 package org.silverpeas.components.whitepages;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

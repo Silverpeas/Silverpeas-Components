@@ -24,9 +24,9 @@
 package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;

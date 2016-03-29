@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.whitepages.control;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;

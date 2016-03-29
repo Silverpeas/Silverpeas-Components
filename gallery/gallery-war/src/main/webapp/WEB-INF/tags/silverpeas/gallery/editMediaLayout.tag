@@ -1,6 +1,6 @@
-<%@ tag import="com.silverpeas.form.DataRecord" %>
-<%@ tag import="com.silverpeas.form.Form" %>
-<%@ tag import="com.silverpeas.form.PagesContext" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
 

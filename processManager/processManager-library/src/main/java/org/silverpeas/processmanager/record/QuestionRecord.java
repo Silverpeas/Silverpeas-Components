@@ -27,10 +27,10 @@ package org.silverpeas.processmanager.record;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.fieldType.TextFieldImpl;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class QuestionRecord implements DataRecord {

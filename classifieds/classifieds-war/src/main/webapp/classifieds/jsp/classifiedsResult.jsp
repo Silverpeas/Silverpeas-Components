@@ -29,8 +29,8 @@
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.form.Form"%>
-<%@page import="com.silverpeas.form.PagesContext"%>
+<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>

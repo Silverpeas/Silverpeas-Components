@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.kmelia.model.updatechain;
 
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.Util;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.util.EncodeHelper;
 
 import java.io.PrintWriter;

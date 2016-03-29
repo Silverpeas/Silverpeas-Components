@@ -37,7 +37,7 @@
 	boolean 		isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
     boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
 
-	com.silverpeas.form.Form form  = (com.silverpeas.form.Form) request.getAttribute("form");
+	Form form  = (Form) request.getAttribute("form");
 	PagesContext context = (PagesContext) request.getAttribute("context");
 	DataRecord data = (DataRecord) request.getAttribute("data");
 
@@ -71,6 +71,7 @@
 
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.processmanager.StepVO" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

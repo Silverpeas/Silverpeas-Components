@@ -27,9 +27,9 @@ package org.silverpeas.components.classifieds.servlets.handler;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import org.silverpeas.core.web.http.HttpRequest;
 

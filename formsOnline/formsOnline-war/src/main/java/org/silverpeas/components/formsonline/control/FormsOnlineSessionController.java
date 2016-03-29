@@ -21,7 +21,7 @@
 package org.silverpeas.components.formsonline.control;
 
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;

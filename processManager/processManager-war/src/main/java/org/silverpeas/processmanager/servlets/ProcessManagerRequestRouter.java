@@ -23,10 +23,11 @@
  */
 package org.silverpeas.processmanager.servlets;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.model.AllowedAction;
 import org.silverpeas.core.workflow.api.model.AllowedActions;
 import org.silverpeas.core.workflow.api.model.Item;
@@ -241,7 +242,7 @@ public class ProcessManagerRequestRouter
       String processId = request.getParameter("processId");
       session.resetCurrentProcessInstance(processId);
       // Get the associated form
-      com.silverpeas.form.Form form = session.getAssignForm();
+      Form form = session.getAssignForm();
       request.setAttribute("form", form);
       // Set the form context
       PagesContext context = getFormContext("assignForm", "0", session, true);
@@ -262,7 +263,7 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       // Get the associated form
-      com.silverpeas.form.Form form = session.getAssignForm();
+      Form form = session.getAssignForm();
       request.setAttribute("form", form);
       // Set the form context
       PagesContext context = getFormContext("assignForm", "0", session, true);
@@ -403,7 +404,7 @@ public class ProcessManagerRequestRouter
         return listQuestionsHandler.getDestination(function, session, request);
       }
 
-      com.silverpeas.form.Form form = session.getPresentationForm();
+      Form form = session.getPresentationForm();
       request.setAttribute("form", form);
 
       PagesContext context = getFormContext("presentation", "0", session, true);
@@ -482,7 +483,7 @@ public class ProcessManagerRequestRouter
         return listQuestionsHandler.getDestination(function, session, request);
       }
 
-      com.silverpeas.form.Form form = session.getPresentationForm();
+      Form form = session.getPresentationForm();
       request.setAttribute("form", form);
 
       PagesContext context = getFormContext("presentation", "0", session, true);
@@ -545,7 +546,7 @@ public class ProcessManagerRequestRouter
 
       session.resetCurrentProcessInstance();
 
-      com.silverpeas.form.Form form = session.getCreationForm();
+      Form form = session.getCreationForm();
       request.setAttribute("form", form);
 
       PagesContext context = getFormContext("createForm", "0", session, true);
@@ -572,7 +573,7 @@ public class ProcessManagerRequestRouter
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      com.silverpeas.form.Form form = session.getCreationForm();
+      Form form = session.getCreationForm();
       PagesContext context = getFormContext("createForm", "0", session);
       DataRecord data = session.getEmptyCreationRecord();
 
@@ -696,7 +697,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("action", session.getAction(actionName));
 
       // Get the associated form
-      com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
+      Form form = session.getActionForm(stateName, actionName);
       request.setAttribute("form", form);
 
       // Set the form context
@@ -737,7 +738,7 @@ public class ProcessManagerRequestRouter
       String actionName = request.getParameter("action");
 
       // Get the associated form
-      com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
+      Form form = session.getActionForm(stateName, actionName);
       if (form == null) {
         // no form associated to this action, process action directly
         DataRecord data = session.getActionRecord(stateName, actionName);
@@ -797,7 +798,7 @@ public class ProcessManagerRequestRouter
         boolean isFirstTimeSaved =
             StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isFirstTimeSaved"));
 
-        com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
+        Form form = session.getActionForm(stateName, actionName);
         PagesContext context = getFormContext("actionForm", "0", session);
         DataRecord data = session.getActionRecord(stateName, actionName);
 
@@ -864,7 +865,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("state", state);
 
       // Get the question form
-      com.silverpeas.form.Form form = session.getQuestionForm(false);
+      Form form = session.getQuestionForm(false);
       request.setAttribute("form", form);
 
       // Set the form context
@@ -900,7 +901,7 @@ public class ProcessManagerRequestRouter
         String stepId = FileUploadUtil.getParameter(items, "stepId");
         String state = FileUploadUtil.getParameter(items, "state");
 
-        com.silverpeas.form.Form form = session.getQuestionForm(false);
+        Form form = session.getQuestionForm(false);
         PagesContext context = getFormContext("questionForm", "0", session);
         DataRecord data = session.getEmptyQuestionRecord();
 
@@ -926,11 +927,11 @@ public class ProcessManagerRequestRouter
       request.setAttribute("question", session.getQuestion(questionId));
 
       // Get the question form (readonly)
-      com.silverpeas.form.Form questionForm = session.getQuestionForm(true);
+      Form questionForm = session.getQuestionForm(true);
       request.setAttribute("questionForm", questionForm);
 
       // Get the response form (same as the question)
-      com.silverpeas.form.Form responseForm = session.getQuestionForm(false);
+      Form responseForm = session.getQuestionForm(false);
       request.setAttribute("responseForm", responseForm);
 
       // Set the form context
@@ -969,7 +970,7 @@ public class ProcessManagerRequestRouter
 
         String questionId = FileUploadUtil.getParameter(items, "questionId");
 
-        com.silverpeas.form.Form responseForm = session.getQuestionForm(false);
+        Form responseForm = session.getQuestionForm(false);
         PagesContext context = getFormContext("responseForm", "0", session);
         DataRecord responseData = session.getEmptyQuestionRecord();
 
@@ -990,7 +991,7 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       // Get the user settings form
-      com.silverpeas.form.Form form = session.getUserSettingsForm();
+      Form form = session.getUserSettingsForm();
       request.setAttribute("form", form);
 
       // Set the form context
@@ -1011,7 +1012,7 @@ public class ProcessManagerRequestRouter
   static private FunctionHandler saveUserSettingsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      com.silverpeas.form.Form form = session.getUserSettingsForm();
+      Form form = session.getUserSettingsForm();
       PagesContext context = getFormContext("userSettingsForm", "0", session);
       DataRecord data = session.getEmptyUserSettingsRecord();
 
@@ -1037,7 +1038,7 @@ public class ProcessManagerRequestRouter
       session.resetCurrentProcessInstance(processId);
 
       // Get the question form (readonly)
-      com.silverpeas.form.Form questionForm = session.getQuestionForm(true);
+      Form questionForm = session.getQuestionForm(true);
       request.setAttribute("form", questionForm);
 
       // Set the form context
@@ -1068,7 +1069,7 @@ public class ProcessManagerRequestRouter
 
       // unless the filterPanel was not open.
       if ("false".equals(oldC)) {
-        com.silverpeas.form.Form form = filter.getPresentationForm();
+        Form form = filter.getPresentationForm();
         PagesContext context = getFormContext("filter", "1", session);
         DataRecord data = filter.getCriteriaRecord();
 
@@ -1089,7 +1090,7 @@ public class ProcessManagerRequestRouter
     String collapse = filter.getCollapse();
     request.setAttribute("collapse", collapse);
 
-    com.silverpeas.form.Form form = filter.getPresentationForm();
+    Form form = filter.getPresentationForm();
     request.setAttribute("form", form);
 
     PagesContext context = getFormContext("filter", "1", session);
@@ -1117,7 +1118,7 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       // Get the print form
-      com.silverpeas.form.Form form = session.getPrintForm(request);
+      Form form = session.getPrintForm(request);
       request.setAttribute("form", form);
 
       // Set the form context

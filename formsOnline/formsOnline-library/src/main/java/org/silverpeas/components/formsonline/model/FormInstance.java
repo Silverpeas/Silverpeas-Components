@@ -24,7 +24,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.form.Form;
+import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.persistence.Transient;

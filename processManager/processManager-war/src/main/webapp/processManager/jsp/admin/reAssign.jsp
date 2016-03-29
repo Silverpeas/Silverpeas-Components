@@ -1,4 +1,7 @@
-<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %><%--
+<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -29,7 +32,7 @@
 
 <%
 	ProcessInstance process = (ProcessInstance) request.getAttribute("process");
-	com.silverpeas.form.Form form = (com.silverpeas.form.Form) request.getAttribute("form");
+	Form form = (Form) request.getAttribute("form");
 	PagesContext context = (PagesContext) request.getAttribute("context");
 	DataRecord data = (DataRecord) request.getAttribute("data");
 

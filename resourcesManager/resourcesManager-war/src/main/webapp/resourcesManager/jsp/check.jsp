@@ -40,10 +40,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.components.resourcesmanager.model.Category"%>
 <%@ page import="org.silverpeas.components.resourcesmanager.model.Resource"%>
 <%@ page import="org.silverpeas.components.resourcesmanager.model.Reservation"%>
-<%@ page import="com.silverpeas.form.DataRecord"%>
-<%@ page import="com.silverpeas.form.Form"%>
-<%@ page import="com.silverpeas.form.RecordSet"%>
-<%@ page import="com.silverpeas.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.RecordSet"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%// En fonction de ce dont vous avez besoin %>

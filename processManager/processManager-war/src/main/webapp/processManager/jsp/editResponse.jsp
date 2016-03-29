@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -31,8 +31,8 @@
 	ProcessInstance process = (ProcessInstance) request.getAttribute("process");
 	Question question = (Question) request.getAttribute("question");
 
-	com.silverpeas.form.Form questionForm = (com.silverpeas.form.Form) request.getAttribute("questionForm");
-	com.silverpeas.form.Form responseForm = (com.silverpeas.form.Form) request.getAttribute("responseForm");
+	Form questionForm = (Form) request.getAttribute("questionForm");
+	Form responseForm = (Form) request.getAttribute("responseForm");
 
 	PagesContext context = (PagesContext) request.getAttribute("context");
 

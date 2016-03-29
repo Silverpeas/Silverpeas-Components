@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.gallery.process.media;
 
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.components.gallery.model.InternalMedia;

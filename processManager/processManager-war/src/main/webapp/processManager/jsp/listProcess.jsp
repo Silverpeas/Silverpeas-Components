@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -84,7 +84,7 @@ Item getItem(Item[] items, String itemName)
 	if (collapse == null) {
 		collapse = "true";
 	}
-	com.silverpeas.form.Form form = (com.silverpeas.form.Form) request.getAttribute("form");
+	Form form = (Form) request.getAttribute("form");
    PagesContext context = (PagesContext) request.getAttribute("context");
    DataRecord data = (DataRecord) request.getAttribute("data");
 

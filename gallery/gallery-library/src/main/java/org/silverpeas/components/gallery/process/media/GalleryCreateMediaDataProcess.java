@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import com.silverpeas.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.model.Media;

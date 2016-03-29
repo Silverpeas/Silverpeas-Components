@@ -24,8 +24,8 @@
 
 --%>
 <%@page import="org.apache.commons.lang3.BooleanUtils"%>
-<%@page import="com.silverpeas.form.PagesContext"%>
-<%@page import="com.silverpeas.form.Form"%>
+<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contact.model.CompleteContact" %>
 <%@ page import="org.silverpeas.core.contact.model.ContactDetail" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>

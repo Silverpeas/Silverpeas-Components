@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.form.FieldTemplate"%>
+<%@page import="org.silverpeas.core.contribution.content.form.FieldTemplate"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.components.whitepages.model.SearchField"%>

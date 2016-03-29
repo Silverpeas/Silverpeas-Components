@@ -26,10 +26,10 @@ package org.silverpeas.components.whitepages.record;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.fieldType.TextFieldImpl;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;

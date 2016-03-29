@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.silverpeas.form.DataRecord"%>
-<%@ page import="com.silverpeas.form.Form"%>
-<%@ page import="com.silverpeas.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.components.whitepages.model.Card"%>
 <%@ page import="org.silverpeas.components.whitepages.model.WhitePagesCard" %>
 <%@ page import="org.silverpeas.components.whitepages.record.UserRecord" %>

@@ -48,8 +48,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
-<%@ page import="com.silverpeas.form.PagesContext" %>
-<%@ page import="com.silverpeas.form.DataRecord" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@ page import="org.silverpeas.core.workflow.api.error.WorkflowError" %>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.workflow.api.model.State" %>
@@ -57,11 +57,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.core.workflow.api.instance.HistoryStep" %>
 <%@ page import="org.silverpeas.core.workflow.api.instance.Question" %>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="com.silverpeas.form.RecordTemplate" %>
-<%@ page import="com.silverpeas.form.FieldTemplate" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.RecordTemplate" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.FieldTemplate" %>
 <%@ page import="org.silverpeas.core.workflow.api.model.Item" %>
 <%@ page import="org.silverpeas.core.workflow.api.task.Task" %>
-<%@ page import="com.silverpeas.form.Field" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Field" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
@@ -81,7 +81,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord"%>
-<%@ page import="com.silverpeas.form.fieldType.DateField"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.field.DateField"%>
 <%@ page import="org.silverpeas.processmanager.NamedValue" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

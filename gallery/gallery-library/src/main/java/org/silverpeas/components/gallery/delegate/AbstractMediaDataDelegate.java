@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.gallery.delegate;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;

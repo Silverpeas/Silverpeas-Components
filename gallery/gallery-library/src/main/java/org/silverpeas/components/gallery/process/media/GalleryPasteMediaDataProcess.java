@@ -24,8 +24,8 @@
 package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.record.GenericRecordSet;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;

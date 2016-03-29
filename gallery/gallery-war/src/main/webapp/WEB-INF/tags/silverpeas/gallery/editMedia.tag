@@ -66,7 +66,7 @@
               description="A type of media to create/update." %>
 <%@ attribute name="isUsePdc" required="true" type="java.lang.Boolean"
               description="Indicates if PDC is used or not." %>
-<%@ attribute name="formUpdate" required="true" type="com.silverpeas.form.Form"
+<%@ attribute name="formUpdate" required="true" type="org.silverpeas.core.contribution.content.form.Form"
               description="Instance of a form." %>
 <%@ attribute name="supportedMediaMimeTypes" required="true"
               type="java.util.Set"
