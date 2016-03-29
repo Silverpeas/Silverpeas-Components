@@ -69,13 +69,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires créent des dossiers, sélectionnent les formulaires de métadonnées et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators create folders, select metadata templates and set up the Classification Scheme.</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers create folders, select metadata templates and set up the Classification Scheme.</message>
+        <message lang="de">Managers create folders, select metadata templates and set up the Classification Scheme.</message>
       </help>
     </profile>
     <profile name="publisher">
@@ -620,8 +620,8 @@
             <updatable>always</updatable>
             <help>
               <message lang="fr">Seuls les gestionnaires de l'application peuvent supprimer une publication et accéder à la corbeille de publications</message>
-              <message lang="en">Only administrators of this application are be able to remove publications and to access to publications bin</message>
-              <message lang="de">Nur Administratoren dieser Komponente können Veröffentlichungen entfernen und am Papierkorb der Publikationen zugreifen</message>
+              <message lang="en">Only managers of this application are be able to remove publications and to access to publications bin</message>
+              <message lang="de">Nur Manager dieser Komponente können Veröffentlichungen entfernen und am Papierkorb der Publikationen zugreifen</message>
             </help>
           </parameter>
       </parameters>

@@ -53,13 +53,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de Classement</message>
-        <message lang="en">Administrators create albums and set up the Classification Scheme</message>
-        <message lang="de">Administrators create albums and set up the Classification Scheme</message>
+        <message lang="en">Managers create albums and set up the Classification Scheme</message>
+        <message lang="de">Managers create albums and set up the Classification Scheme</message>
       </help>
     </profile>
     <profile name="publisher">
@@ -397,8 +397,8 @@
             <option>
               <name>
                 <message lang="fr">Oui, pour les gestionnaires et publieurs</message>
-                <message lang="en">Yes, only for administrators and publishers</message>
-                <message lang="de">Yes, only for administrators and publishers</message>
+                <message lang="en">Yes, only for managers and publishers</message>
+                <message lang="de">Yes, only for managers and publishers</message>
               </name>
               <value>yes_publisher</value>
             </option>

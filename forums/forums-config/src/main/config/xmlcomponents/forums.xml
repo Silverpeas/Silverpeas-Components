@@ -54,13 +54,13 @@
     <profile name="admin">
       <label>      
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>      
         <message lang="fr">Les gestionnaires gèrent les thèmes de discussion, les catégories, choisissent les modérateurs et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators manage threads and categories, choose moderators and set up the Classification scheme.</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers manage threads and categories, choose moderators and set up the Classification scheme.</message>
+        <message lang="de">Managers manage threads and categories, choose moderators and set up the Classification scheme.</message>
       </help>
     </profile>
     <profile name="user">
@@ -71,7 +71,7 @@
       </label>
       <help>
         <message lang="fr">Les participants échanges au sein des forums. Un participant peut être désigné comme modérateur par les gestionnaires.</message>
-        <message lang="en">Participants discuss whithin forums. A participant can be designate as moderator by administrators.</message>
+        <message lang="en">Participants discuss whithin forums. A participant can be designate as moderator by managers.</message>
         <message lang="de">Teilnehmer</message>
       </help>
     </profile>

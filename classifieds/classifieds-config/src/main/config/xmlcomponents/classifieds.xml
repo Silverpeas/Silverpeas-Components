@@ -53,13 +53,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires modèrent et valident les annonces.</message>
-        <message lang="en">Administrators manage and validate adds.</message>
-		<message lang="de">Administrator</message>
+        <message lang="en">Managers manage and validate adds.</message>
+		    <message lang="de">Managers manage and validate adds.</message>
       </help>
     </profile>
     <profile name="publisher">
