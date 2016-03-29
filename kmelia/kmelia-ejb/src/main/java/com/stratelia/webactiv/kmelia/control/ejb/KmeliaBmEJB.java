@@ -59,7 +59,6 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
-import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
@@ -107,7 +106,6 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
@@ -765,53 +763,17 @@ public class KmeliaBmEJB implements KmeliaBm {
   public List<NodeDetail> getTreeview(NodePK nodePK, String profile, boolean coWritingEnable,
       boolean draftVisibleWithCoWriting, String userId, boolean displayNb,
       boolean isRightsOnTopicsUsed) {
+
     String instanceId = nodePK.getInstanceId();
-    List<NodeDetail> tree = nodeBm.getSubTree(nodePK);
-    
+    List<NodeDetail> allowedTree = nodeBm.getSubTree(nodePK);
+
     if (profile == null) {
       profile = getProfile(userId, nodePK);
     }
 
-    OrganisationController orga = getOrganisationController();
-    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
-    if (isRightsOnTopicsUsed) {
-      // filter allowed nodes
-      for (NodeDetail node2Check : tree) {
-        if (!node2Check.haveRights()) {
-          node2Check.setUserRole(profile);
-          allowedTree.add(node2Check);
-          getAllowedChildren(node2Check, userId, instanceId);
-        } else {
-          int rightsDependsOn = node2Check.getRightsDependsOn();
-          String[] profiles = orga.getUserProfiles(userId, instanceId,
-              rightsDependsOn, ObjectType.NODE);
-          if (!ArrayUtil.isEmpty(profiles)) {
-            node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
-            allowedTree.add(node2Check);
-            getAllowedChildren(node2Check, userId, instanceId);
-          }
-        }
-      }
-    } else {
-      if (tree != null && !tree.isEmpty()) {
-        // case of root. Check if publications on root are allowed
-        String sNB = orga.getComponentParameterValue(nodePK.getInstanceId(), "nbPubliOnRoot");
-        if (!isDefined(sNB)) {
-          sNB = "0";
-        }
-        int nbPublisOnRoot = Integer.parseInt(sNB);
-        if (nbPublisOnRoot != 0) {
-          NodeDetail root = tree.get(0);
-          root.setUserRole("user");
-        }
-        for (NodeDetail node : tree) {
-          if (!node.getNodePK().isRoot()) {
-            node.setUserRole(profile);
-          }
-        }
-      }
-      allowedTree.addAll(tree);
-    }
+    KmeliaUserTreeViewFilter
+        .from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
+        .setBestUserRoleAndFilter(allowedTree);
 
     if (displayNb) {
       boolean checkVisibility = false;
@@ -865,6 +827,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
       decorateWithNumberOfPublications(allowedTree, numbers);
     }
+
     return allowedTree;
   }
 
@@ -882,21 +845,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     node.setNbObjects(nb);
     return nb;
-  }
-
-  private void getAllowedChildren(NodeDetail node, String userId, String instanceId) {
-    List<NodeDetail> allowed = new ArrayList<NodeDetail>();
-    for (NodeDetail child : node.getChildrenDetails()) {
-      String[] profiles = getOrganisationController().getUserProfiles(userId, instanceId,
-          child.getRightsDependsOn(), ObjectType.NODE);
-      if (!ArrayUtil.isEmpty(profiles)) {
-        child.setUserRole(KmeliaHelper.getProfile(profiles));
-        allowed.add(child);
-
-        getAllowedChildren(child, userId, instanceId);
-      }
-    }
-    node.setChildrenDetails(allowed);
   }
 
   private Collection<PublicationDetail> getPublicationsInBasket(NodePK pk, String userProfile,
