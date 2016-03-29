@@ -31,7 +31,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;

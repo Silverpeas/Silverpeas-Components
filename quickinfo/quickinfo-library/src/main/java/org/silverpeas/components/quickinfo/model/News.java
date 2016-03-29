@@ -47,9 +47,9 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

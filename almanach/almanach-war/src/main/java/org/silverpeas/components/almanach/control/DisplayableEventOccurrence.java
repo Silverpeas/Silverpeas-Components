@@ -26,7 +26,7 @@ package org.silverpeas.components.almanach.control;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.util.JSONCodec;
 
 import java.util.ArrayList;

@@ -45,12 +45,12 @@ import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
@@ -70,7 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 
 /**
  * Process manager service which manage processes

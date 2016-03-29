@@ -29,7 +29,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.repository.QueryCriteria;

@@ -71,7 +71,7 @@ import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;

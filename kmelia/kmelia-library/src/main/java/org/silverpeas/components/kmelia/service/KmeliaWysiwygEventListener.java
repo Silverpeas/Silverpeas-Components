@@ -21,9 +21,8 @@
 
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.wysiwyg.control.WysiwygContent;
 import org.silverpeas.wysiwyg.notification.WysiwygEvent;

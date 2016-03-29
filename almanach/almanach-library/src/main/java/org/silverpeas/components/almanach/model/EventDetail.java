@@ -42,7 +42,7 @@ import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;

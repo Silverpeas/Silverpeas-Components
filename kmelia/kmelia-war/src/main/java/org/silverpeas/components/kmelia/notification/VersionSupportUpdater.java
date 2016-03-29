@@ -24,7 +24,7 @@ package org.silverpeas.components.kmelia.notification;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.StateTransition;
 import org.silverpeas.core.util.StringUtil;

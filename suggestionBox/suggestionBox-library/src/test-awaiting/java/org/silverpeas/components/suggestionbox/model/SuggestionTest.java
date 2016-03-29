@@ -33,7 +33,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.sql.Timestamp;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.components.suggestionbox.model.SuggestionMatcher.PROPERTY.*;
-import static org.silverpeas.contribution.ContributionStatus.*;
+import static org.silverpeas.core.contribution.ContributionStatus.*;
 
 
 /**

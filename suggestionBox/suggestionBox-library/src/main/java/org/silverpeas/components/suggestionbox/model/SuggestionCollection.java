@@ -10,8 +10,8 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.upload.UploadedFile;
@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
-import static org.silverpeas.contribution.ContributionStatus.*;
+import static org.silverpeas.core.contribution.ContributionStatus.*;
 
 /**
  * A collection of suggestions enriched with business methods on them. A collection of suggestions

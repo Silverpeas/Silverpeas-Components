@@ -26,7 +26,7 @@ package org.silverpeas.components.projectmanager.model;
 import org.silverpeas.core.calendar.model.TodoDetail;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import java.io.Serializable;
 import java.util.ArrayList;

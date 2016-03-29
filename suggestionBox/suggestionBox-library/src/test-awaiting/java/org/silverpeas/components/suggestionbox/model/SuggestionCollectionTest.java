@@ -46,8 +46,8 @@ import org.silverpeas.components.suggestionbox.notification
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.repository.OperationContext;
 import org.springframework.context.support.AbstractApplicationContext;

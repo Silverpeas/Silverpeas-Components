@@ -31,8 +31,8 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
-import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -56,7 +56,7 @@ import java.util.Map;
 
 import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
     .getUserNotificationDisplayLiveTimeForLongMessage;
-import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
+import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDATION;
 
 /**
  * @author: Yohann Chastagnier

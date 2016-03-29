@@ -22,7 +22,7 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import org.silverpeas.core.util.StringUtil;

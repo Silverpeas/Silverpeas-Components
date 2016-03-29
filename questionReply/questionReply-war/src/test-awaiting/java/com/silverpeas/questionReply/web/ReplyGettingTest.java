@@ -26,10 +26,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.SimpleDocumentService;
-import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.SimpleDocumentService;
+import org.silverpeas.core.contribution.attachment.mock.SimpleDocumentServiceWrapper;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
@@ -42,7 +42,7 @@ import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.COMPONENT_INSTANCE_ID;
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.REPLY_RESOURCE_PATH;

@@ -45,8 +45,8 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
-import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.wysiwyg.control.WysiwygManager;

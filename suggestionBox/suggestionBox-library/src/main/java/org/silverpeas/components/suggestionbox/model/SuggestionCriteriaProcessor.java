@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 
 import java.util.List;
 

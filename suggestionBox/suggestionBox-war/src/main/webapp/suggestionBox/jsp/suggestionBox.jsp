@@ -48,9 +48,9 @@
 <view:setConstant var="adminRole"                 constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="writerRole"                constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <view:setConstant var="publisherRole"             constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
-<view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
-<view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
-<view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION"/>
+<view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.core.contribution.ContributionStatus.REFUSED"/>
+<view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.core.contribution.ContributionStatus.VALIDATED"/>
+<view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDATION"/>
 
 <fmt:message key="suggestionBox.menu.item.edito.modify"                    var="modifyEditoLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.add"                  var="browseBarPathSuggestionLabel"/>

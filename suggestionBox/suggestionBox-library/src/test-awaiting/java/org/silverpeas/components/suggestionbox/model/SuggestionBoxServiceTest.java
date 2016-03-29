@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.RatingServiceMockWrapper;
@@ -43,7 +43,7 @@ import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockW
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;

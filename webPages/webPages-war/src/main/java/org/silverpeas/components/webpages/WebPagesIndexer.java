@@ -38,7 +38,7 @@ import org.silverpeas.core.web.index.components.ComponentIndexation;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;

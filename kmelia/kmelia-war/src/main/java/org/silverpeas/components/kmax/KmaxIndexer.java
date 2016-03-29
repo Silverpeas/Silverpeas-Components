@@ -30,7 +30,7 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 
 import javax.inject.Inject;
 import javax.inject.Named;

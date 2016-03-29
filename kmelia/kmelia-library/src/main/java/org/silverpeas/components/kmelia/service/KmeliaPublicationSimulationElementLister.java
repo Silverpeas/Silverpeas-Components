@@ -29,7 +29,7 @@ import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
+import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.process.annotation.SimulationElementLister;
 
 import java.util.Collection;

@@ -28,8 +28,8 @@ import java.util.List;
 
 import javax.servlet.jsp.JspWriter;
 
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;

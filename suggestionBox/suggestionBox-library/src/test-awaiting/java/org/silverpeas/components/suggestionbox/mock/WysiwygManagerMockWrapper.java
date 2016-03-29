@@ -27,7 +27,7 @@ import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.WAPrimaryKey;
 import org.mockito.Mockito;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygManager;

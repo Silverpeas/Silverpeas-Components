@@ -67,13 +67,13 @@ import com.stratelia.webactiv.publication.model.ValidationStep;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaContentManager;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
@@ -137,7 +137,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.*;
 
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.util.StringUtil.*;
 import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
@@ -1393,7 +1393,7 @@ public class DefaultKmeliaService implements KmeliaService {
         for (SimpleDocument doc : documents) {
           AttachmentServiceProvider.getAttachmentService().moveDocument(doc, toPubliForeignPK);
         }
-      } catch (org.silverpeas.attachment.AttachmentException e) {
+      } catch (org.silverpeas.core.contribution.attachment.AttachmentException e) {
         SilverLogger.getLogger(this).error("Cannot move attachments of publication {0}",
             new String[] {pub.getPK().getId()}, e);
       }
@@ -3714,7 +3714,7 @@ public class DefaultKmeliaService implements KmeliaService {
       }
       AttachmentServiceProvider.getAttachmentService()
           .createAttachment(document, new ByteArrayInputStream(contents));
-    } catch (org.silverpeas.attachment.AttachmentException fnfe) {
+    } catch (org.silverpeas.core.contribution.attachment.AttachmentException fnfe) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.addAttachmentToPublication()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DAJOUTER_ATTACHEMENT", fnfe);
     }

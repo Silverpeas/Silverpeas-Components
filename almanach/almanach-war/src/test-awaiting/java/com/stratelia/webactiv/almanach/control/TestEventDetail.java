@@ -28,7 +28,7 @@ import com.stratelia.webactiv.almanach.model.EventPK;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  * Its an event detail dedicated to unit tests. As such, some methods are overriden.

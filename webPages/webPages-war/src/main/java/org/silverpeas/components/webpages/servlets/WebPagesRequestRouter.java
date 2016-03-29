@@ -36,7 +36,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.owasp.encoder.Encode;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.ActionType;
 

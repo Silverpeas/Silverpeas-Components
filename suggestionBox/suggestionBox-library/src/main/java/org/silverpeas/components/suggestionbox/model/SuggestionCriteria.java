@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.ArrayList;
@@ -207,7 +207,7 @@ public class SuggestionCriteria {
 
   /**
    * Gets the statuses criteria value.
-   * {@link #statusIsOneOf(org.silverpeas.contribution.ContributionStatus...)}
+   * {@link #statusIsOneOf(org.silverpeas.core.contribution.ContributionStatus...)}
    * @return the criterion on the status the suggestions should match.
    */
   private List<ContributionStatus> getStatuses() {

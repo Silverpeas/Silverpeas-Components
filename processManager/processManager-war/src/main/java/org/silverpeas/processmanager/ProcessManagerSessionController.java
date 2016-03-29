@@ -88,7 +88,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 
 /**
  * The ProcessManager Session controller

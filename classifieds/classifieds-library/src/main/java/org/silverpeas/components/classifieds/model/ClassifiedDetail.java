@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import java.util.ArrayList;
 import java.util.Date;

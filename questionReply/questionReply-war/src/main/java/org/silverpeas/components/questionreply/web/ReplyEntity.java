@@ -34,7 +34,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
 
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import java.net.URI;
 import java.text.ParseException;

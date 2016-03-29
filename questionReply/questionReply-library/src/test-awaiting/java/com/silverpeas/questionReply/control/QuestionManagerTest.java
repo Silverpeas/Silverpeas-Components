@@ -33,11 +33,11 @@ import org.silverpeas.util.WAPrimaryKey;
 import org.junit.Before;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.Connection;

@@ -29,7 +29,7 @@ import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 
 import javax.inject.Inject;
 import javax.inject.Named;

@@ -27,7 +27,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
-import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.upload.UploadedFile;
 
 import javax.inject.Named;
