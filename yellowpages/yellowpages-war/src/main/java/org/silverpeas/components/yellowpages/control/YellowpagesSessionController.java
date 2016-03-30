@@ -72,8 +72,8 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.csv.CSVReader;
 import org.silverpeas.util.csv.Variant;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilTrappedException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilTrappedException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

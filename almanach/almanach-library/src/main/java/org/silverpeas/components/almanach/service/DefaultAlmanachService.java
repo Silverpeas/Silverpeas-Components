@@ -22,10 +22,10 @@ package org.silverpeas.components.almanach.service;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
@@ -56,11 +56,11 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 

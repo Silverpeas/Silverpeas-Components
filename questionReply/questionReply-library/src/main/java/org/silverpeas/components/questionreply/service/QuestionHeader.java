@@ -26,7 +26,7 @@ package org.silverpeas.components.questionreply.service;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.webactiv.persistence.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 
 /**
  * The questionReply implementation of SilverContentInterface

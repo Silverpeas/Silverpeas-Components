@@ -22,7 +22,7 @@ package org.silverpeas.components.almanach.model;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

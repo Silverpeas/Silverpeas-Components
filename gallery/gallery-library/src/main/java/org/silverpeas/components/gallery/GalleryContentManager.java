@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.util.ArrayList;

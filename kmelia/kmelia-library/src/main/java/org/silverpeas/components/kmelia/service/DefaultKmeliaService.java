@@ -64,6 +64,7 @@ import org.silverpeas.core.contribution.publication.model.NodeTree;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
@@ -140,7 +141,7 @@ import java.util.*;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.util.StringUtil.*;
-import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.core.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * This is the KMelia Service controller of the MVC. It controls all the activities that happen in a

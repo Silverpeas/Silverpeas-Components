@@ -57,7 +57,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;

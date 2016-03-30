@@ -30,7 +30,7 @@ import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;

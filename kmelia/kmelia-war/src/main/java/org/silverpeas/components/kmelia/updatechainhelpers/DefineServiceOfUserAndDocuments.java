@@ -30,8 +30,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 

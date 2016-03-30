@@ -54,7 +54,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 

@@ -33,7 +33,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

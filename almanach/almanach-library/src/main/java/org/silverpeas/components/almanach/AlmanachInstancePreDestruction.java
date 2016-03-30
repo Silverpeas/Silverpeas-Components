@@ -25,7 +25,7 @@ package org.silverpeas.components.almanach;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.almanach.model.EventDAO;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

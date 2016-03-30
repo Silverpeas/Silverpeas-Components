@@ -41,9 +41,9 @@ import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.media.Definition;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQueries;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.core.persistence.jdbc.ResultSetWrapper;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
 import org.silverpeas.core.persistence.repository.OperationContext;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
@@ -59,8 +59,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.*;
-import static org.silverpeas.util.DBUtil.getUniqueId;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
+import static org.silverpeas.core.persistence.jdbc.DBUtil.getUniqueId;
 
 public class MediaDAO {
 

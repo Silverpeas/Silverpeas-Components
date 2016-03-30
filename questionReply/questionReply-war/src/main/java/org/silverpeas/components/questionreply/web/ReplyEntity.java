@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
 
-import com.stratelia.webactiv.persistence.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 

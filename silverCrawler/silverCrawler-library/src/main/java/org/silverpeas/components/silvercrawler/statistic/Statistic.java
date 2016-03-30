@@ -29,9 +29,9 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.sql.Connection;

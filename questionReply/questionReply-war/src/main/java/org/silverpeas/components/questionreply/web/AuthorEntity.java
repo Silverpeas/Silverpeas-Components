@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -172,6 +172,6 @@ public class AuthorEntity implements Serializable {
    */
   @XmlTransient
   public final UserPreferences getUserPreferences() {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(this.id);
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(this.id);
   }
 }

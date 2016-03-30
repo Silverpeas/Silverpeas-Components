@@ -33,7 +33,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.exception.EncodingException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.util.ArrayList;
 import java.util.Date;

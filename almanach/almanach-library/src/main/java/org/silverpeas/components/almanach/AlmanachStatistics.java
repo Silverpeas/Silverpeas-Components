@@ -29,7 +29,7 @@ import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;

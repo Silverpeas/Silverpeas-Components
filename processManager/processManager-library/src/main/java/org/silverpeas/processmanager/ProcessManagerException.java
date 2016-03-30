@@ -24,7 +24,7 @@
 
 package org.silverpeas.processmanager;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Thrown by the processManager components.

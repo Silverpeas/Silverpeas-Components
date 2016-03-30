@@ -59,8 +59,8 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import java.io.File;

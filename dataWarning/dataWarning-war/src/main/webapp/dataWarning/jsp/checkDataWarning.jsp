@@ -31,7 +31,7 @@
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.components.datawarning.DataWarningDBDriver" %>
 <%@ page import="org.silverpeas.components.datawarning.model.DataWarning" %>
 <%@ page import="org.silverpeas.components.datawarning.model.DataWarningScheduler" %>

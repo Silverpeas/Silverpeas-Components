@@ -28,7 +28,7 @@
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.util.URLUtils" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.exception.SilverpeasRuntimeException" %>
+<%@ page import="org.silverpeas.core.exception.SilverpeasRuntimeException" %>
 <%@ page import="org.silverpeas.components.infoletter.InfoLetterException" %>
 
 <%!

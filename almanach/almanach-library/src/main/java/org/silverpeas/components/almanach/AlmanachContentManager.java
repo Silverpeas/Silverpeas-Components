@@ -30,7 +30,7 @@ import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.AlmanachException;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import java.sql.Connection;

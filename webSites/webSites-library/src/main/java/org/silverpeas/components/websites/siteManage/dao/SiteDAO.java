@@ -33,9 +33,9 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

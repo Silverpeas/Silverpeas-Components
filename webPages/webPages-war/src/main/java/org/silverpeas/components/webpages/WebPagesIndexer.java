@@ -44,7 +44,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Named;

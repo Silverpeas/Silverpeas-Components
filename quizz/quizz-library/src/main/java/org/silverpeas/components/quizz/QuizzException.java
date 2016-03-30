@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quizz;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Non runtime exception management for this jobPeas.

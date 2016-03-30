@@ -36,7 +36,7 @@ import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.servlet.FileUploadUtil;

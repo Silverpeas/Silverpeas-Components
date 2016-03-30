@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.core.util.DateUtil"%>
-<%@ page import="org.silverpeas.util.DBUtil"%>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 <%@ page import="org.silverpeas.core.questioncontainer.question.model.Question "%>
 <%@ page import="org.silverpeas.core.questioncontainer.result.model.QuestionResult "%>
 <%@ page import="org.silverpeas.core.questioncontainer.answer.model.Answer "%>

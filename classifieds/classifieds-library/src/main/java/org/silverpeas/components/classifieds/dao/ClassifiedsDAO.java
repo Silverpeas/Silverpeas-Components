@@ -25,7 +25,7 @@ package org.silverpeas.components.classifieds.dao;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

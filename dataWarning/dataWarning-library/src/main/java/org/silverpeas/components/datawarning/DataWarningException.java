@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class DataWarningException extends SilverpeasException {
 

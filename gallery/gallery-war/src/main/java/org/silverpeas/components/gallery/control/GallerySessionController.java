@@ -82,8 +82,8 @@ import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.util.*;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

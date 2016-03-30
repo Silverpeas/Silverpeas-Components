@@ -26,8 +26,8 @@ package org.silverpeas.components.rssaggregator.model;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 import de.nava.informa.impl.basic.Channel;
 

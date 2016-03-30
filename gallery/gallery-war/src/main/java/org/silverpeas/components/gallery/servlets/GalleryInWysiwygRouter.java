@@ -36,7 +36,7 @@ import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;

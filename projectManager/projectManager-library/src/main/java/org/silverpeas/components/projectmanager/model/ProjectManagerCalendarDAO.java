@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.UtilException;
 
 /**
  * @author neysseri

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmax;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class KmaxException extends SilverpeasException {
 

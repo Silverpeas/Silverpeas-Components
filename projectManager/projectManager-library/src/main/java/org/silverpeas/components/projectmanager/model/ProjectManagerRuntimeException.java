@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class ProjectManagerRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -1416351973604283038L;

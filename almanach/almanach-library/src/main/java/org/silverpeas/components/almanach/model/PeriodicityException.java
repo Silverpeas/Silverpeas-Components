@@ -25,7 +25,7 @@ package org.silverpeas.components.almanach.model;
 
 import java.util.Date;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 
 public class PeriodicityException extends SilverpeasBean {
 

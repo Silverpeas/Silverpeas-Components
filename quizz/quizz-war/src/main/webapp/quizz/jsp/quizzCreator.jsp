@@ -29,7 +29,7 @@
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />

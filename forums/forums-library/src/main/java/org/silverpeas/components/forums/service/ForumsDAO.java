@@ -30,10 +30,10 @@ import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.components.forums.model.Moderator;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

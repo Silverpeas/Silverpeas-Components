@@ -45,10 +45,10 @@ import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
 import org.silverpeas.components.websites.siteManage.model.WebSitesRuntimeException;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

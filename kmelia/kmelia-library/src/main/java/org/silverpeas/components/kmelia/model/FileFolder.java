@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class FileFolder implements java.io.Serializable {
   private static final long serialVersionUID = 5071147110169726697L;

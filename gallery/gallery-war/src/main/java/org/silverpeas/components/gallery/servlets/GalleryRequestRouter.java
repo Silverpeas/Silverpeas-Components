@@ -69,7 +69,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 

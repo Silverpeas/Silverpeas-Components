@@ -26,7 +26,7 @@ package org.silverpeas.components.projectmanager;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
 import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
 
 /**
  * Class that permits to set order search criteria for order application.

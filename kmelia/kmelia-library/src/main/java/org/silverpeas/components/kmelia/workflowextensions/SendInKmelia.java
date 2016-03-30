@@ -72,7 +72,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.awt.*;

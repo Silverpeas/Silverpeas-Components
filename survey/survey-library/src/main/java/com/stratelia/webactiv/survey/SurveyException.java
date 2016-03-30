@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.survey;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Non runtime exception management for this jobPeas.

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.service;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class ResourcesManagerRuntimeException extends SilverpeasRuntimeException {
 

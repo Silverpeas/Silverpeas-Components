@@ -23,28 +23,28 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import org.silverpeas.util.MimeTypes;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -192,6 +192,6 @@ public class RssLastPublicationsServlet extends HttpServlet {
    * @return the UserPreferences of user identified by userId
    */
   public UserPreferences getPersonalization(String userId) {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(userId);
   }
 }

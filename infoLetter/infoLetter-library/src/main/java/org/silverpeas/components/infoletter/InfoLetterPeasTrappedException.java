@@ -30,7 +30,7 @@
 
 package org.silverpeas.components.infoletter;
 
-import org.silverpeas.util.exception.SilverpeasTrappedException;
+import org.silverpeas.core.exception.SilverpeasTrappedException;
 
 /**
  * Class declaration

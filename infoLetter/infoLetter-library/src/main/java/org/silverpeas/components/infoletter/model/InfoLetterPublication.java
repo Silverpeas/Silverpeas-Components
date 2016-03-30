@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.infoletter.model;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;

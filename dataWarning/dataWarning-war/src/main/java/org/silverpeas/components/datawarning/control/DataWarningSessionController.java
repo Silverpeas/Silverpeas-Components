@@ -41,7 +41,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

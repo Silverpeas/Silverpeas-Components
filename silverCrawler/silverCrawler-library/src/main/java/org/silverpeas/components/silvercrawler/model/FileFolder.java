@@ -32,7 +32,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 public class PostDAO {
   static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");

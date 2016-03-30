@@ -43,7 +43,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.mail.engine.SmtpConfiguration;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;

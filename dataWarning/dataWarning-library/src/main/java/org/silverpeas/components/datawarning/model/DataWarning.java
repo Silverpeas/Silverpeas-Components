@@ -27,10 +27,10 @@ import org.silverpeas.components.datawarning.DataWarningDBDriver;
 import org.silverpeas.components.datawarning.DataWarningDBDrivers;
 import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

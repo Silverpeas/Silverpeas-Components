@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.infoletter.model;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.WAPrimaryKey;
 
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {

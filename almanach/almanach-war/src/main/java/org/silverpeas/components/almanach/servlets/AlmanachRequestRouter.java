@@ -39,7 +39,7 @@ import org.silverpeas.core.web.calendar.CalendarViewType;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.MultiSilverpeasBundle;

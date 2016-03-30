@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.whitepages.model;
 
-import org.silverpeas.core.contribution.content.form.*;
-import com.stratelia.webactiv.persistence.*;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class Card extends SilverpeasBean {
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.jdbcconnector.service;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer

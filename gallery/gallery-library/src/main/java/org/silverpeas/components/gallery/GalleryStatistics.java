@@ -30,7 +30,7 @@ import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

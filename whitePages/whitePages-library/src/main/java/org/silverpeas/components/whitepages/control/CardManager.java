@@ -30,10 +30,10 @@ import org.silverpeas.core.contribution.templating.publication.PublicationTempla
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.model.SilverCard;
@@ -49,10 +49,10 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;

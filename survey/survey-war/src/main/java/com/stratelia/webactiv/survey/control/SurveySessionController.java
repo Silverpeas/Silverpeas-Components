@@ -72,7 +72,7 @@ import org.silverpeas.util.*;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;

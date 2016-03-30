@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.webpages.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class WebPagesRuntimeException extends SilverpeasRuntimeException {
 

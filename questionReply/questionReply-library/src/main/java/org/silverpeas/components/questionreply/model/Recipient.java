@@ -25,8 +25,8 @@
 package org.silverpeas.components.questionreply.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class Recipient extends SilverpeasBean {
   private static final long serialVersionUID = 909658183117075174L;

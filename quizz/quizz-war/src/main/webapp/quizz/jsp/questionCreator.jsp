@@ -30,7 +30,7 @@
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
-<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>

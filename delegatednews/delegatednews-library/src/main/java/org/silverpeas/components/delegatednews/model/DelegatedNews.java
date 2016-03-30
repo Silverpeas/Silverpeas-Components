@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationRuntimeExce
 import org.silverpeas.core.persistence.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;

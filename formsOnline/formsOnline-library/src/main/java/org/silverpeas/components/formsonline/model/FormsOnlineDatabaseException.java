@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class FormsOnlineDatabaseException extends SilverpeasException {
 

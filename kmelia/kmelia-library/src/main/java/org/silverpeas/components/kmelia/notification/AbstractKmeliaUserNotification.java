@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.core.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * @author Yohann Chastagnier

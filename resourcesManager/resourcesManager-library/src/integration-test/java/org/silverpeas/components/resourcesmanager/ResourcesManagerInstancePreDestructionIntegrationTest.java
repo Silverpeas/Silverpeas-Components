@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Inject;
 import java.sql.Connection;

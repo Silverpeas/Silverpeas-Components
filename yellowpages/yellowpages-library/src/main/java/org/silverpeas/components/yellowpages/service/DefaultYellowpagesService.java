@@ -43,10 +43,10 @@ import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;

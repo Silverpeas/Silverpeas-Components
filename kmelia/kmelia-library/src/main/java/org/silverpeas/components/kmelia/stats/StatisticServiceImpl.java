@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

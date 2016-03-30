@@ -35,7 +35,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -46,7 +46,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 

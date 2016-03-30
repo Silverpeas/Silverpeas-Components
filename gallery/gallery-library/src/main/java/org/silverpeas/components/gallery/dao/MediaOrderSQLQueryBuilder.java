@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.dao;
 import org.silverpeas.components.gallery.model.MediaOrderCriteriaProcessor;
 import org.silverpeas.components.gallery.model.Order;
 import org.apache.commons.lang3.time.DateUtils;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 import java.util.ArrayList;
 import java.util.Date;

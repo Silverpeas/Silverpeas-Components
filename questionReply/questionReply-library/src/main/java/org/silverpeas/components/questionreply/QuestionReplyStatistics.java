@@ -27,7 +27,7 @@ import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import com.stratelia.webactiv.persistence.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

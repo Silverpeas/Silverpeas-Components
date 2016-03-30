@@ -41,7 +41,7 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

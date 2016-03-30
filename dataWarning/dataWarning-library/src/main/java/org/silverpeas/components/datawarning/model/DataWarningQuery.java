@@ -26,11 +26,11 @@ package org.silverpeas.components.datawarning.model;
 import java.util.*;
 import java.sql.*;
 
-import com.stratelia.webactiv.persistence.*;
-
 import org.silverpeas.components.datawarning.DataWarningException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 public class DataWarningQuery extends SilverpeasBean {
 

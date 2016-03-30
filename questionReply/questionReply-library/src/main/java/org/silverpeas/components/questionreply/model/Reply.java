@@ -24,8 +24,8 @@
 package org.silverpeas.components.questionreply.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.i18n.I18NHelper;

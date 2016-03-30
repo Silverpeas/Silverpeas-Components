@@ -46,7 +46,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.text.ParseException;

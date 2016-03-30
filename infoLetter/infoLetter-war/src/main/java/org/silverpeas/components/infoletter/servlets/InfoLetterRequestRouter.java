@@ -33,7 +33,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.persistence.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
 
 import java.util.List;

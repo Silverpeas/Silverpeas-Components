@@ -31,7 +31,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.DBUtil"%>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 
 <%@ include file="checkScc.jsp" %>
 

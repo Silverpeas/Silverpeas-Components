@@ -29,17 +29,17 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.components.almanach.model.PeriodicityException;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import static org.silverpeas.core.util.DateUtil.extractHour;
 import static org.silverpeas.core.util.DateUtil.extractMinutes;
 
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import java.util.*;
 import java.util.Date;
 

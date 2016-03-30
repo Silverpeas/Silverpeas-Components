@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.yellowpages;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class YellowpagesException extends SilverpeasException {
 

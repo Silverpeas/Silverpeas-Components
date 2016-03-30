@@ -65,8 +65,8 @@ import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.EncodingException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import javax.xml.bind.JAXBException;

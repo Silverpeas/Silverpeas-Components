@@ -31,7 +31,7 @@ import org.silverpeas.components.gallery.model.MediaLogicalComparator;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.components.gallery.model.MediaCriteria;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.util.CollectionUtil;
 
 import java.util.ArrayList;

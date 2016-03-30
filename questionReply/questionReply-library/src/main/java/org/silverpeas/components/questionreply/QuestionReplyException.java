@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.questionreply;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class QuestionReplyException extends SilverpeasException {
   private static final long serialVersionUID = 5146623952157133392L;

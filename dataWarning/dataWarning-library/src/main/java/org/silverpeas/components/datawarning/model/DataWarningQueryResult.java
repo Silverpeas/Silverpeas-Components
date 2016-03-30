@@ -29,8 +29,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.WithNested;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.WithNested;
 
 import java.util.ArrayList;
 import java.util.HashMap;

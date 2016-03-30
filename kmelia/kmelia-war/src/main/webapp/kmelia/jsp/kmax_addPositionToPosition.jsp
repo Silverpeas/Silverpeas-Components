@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="org.silverpeas.util.DBUtil"%>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>

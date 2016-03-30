@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.forums.service;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class ForumsRuntimeException extends SilverpeasRuntimeException {
 

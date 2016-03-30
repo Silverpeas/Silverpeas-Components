@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.datawarning.model;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class DataWarningScheduler extends SilverpeasBean {
 

@@ -32,8 +32,8 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
-import com.stratelia.webactiv.persistence.IdPK;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.util.ArrayList;

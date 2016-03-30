@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.persistence.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
 
 import java.net.URI;

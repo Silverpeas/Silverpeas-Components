@@ -26,7 +26,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerForbiddenActionException;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletRequest;
 

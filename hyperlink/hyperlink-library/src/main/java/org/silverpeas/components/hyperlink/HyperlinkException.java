@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.hyperlink;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class HyperlinkException extends SilverpeasException {
   /**

@@ -34,7 +34,7 @@ import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 
 public class Periodicity extends SilverpeasBean {
 

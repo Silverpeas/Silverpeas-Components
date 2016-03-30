@@ -38,7 +38,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;

@@ -54,7 +54,7 @@ import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * @author squere

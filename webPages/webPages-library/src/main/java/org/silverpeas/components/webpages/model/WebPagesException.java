@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.webpages.model;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * @author sdevolder

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.jdbcconnector.service;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class ConnecteurJDBCRuntimeException extends SilverpeasRuntimeException {
 

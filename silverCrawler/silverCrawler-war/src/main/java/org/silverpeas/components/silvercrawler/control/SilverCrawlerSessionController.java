@@ -55,8 +55,8 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.util.ZipUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.util.memory.MemoryUnit;
 

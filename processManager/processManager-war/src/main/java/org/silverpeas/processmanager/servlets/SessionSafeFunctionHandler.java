@@ -37,7 +37,7 @@ import org.silverpeas.processmanager.ProcessManagerSessionController;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**

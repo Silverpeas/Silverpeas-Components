@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * @author groccia

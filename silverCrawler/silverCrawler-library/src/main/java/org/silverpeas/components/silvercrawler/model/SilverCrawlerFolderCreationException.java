@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.silvercrawler.model;
 
-import org.silverpeas.util.exception.SilverpeasTrappedException;
+import org.silverpeas.core.exception.SilverpeasTrappedException;
 
 public class SilverCrawlerFolderCreationException extends SilverpeasTrappedException {
 

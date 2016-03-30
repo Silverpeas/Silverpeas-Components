@@ -27,7 +27,7 @@
 
 package org.silverpeas.components.almanach.service;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class AlmanachException extends SilverpeasException {
 

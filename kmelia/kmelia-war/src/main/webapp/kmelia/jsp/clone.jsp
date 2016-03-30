@@ -40,7 +40,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
-<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
+<%@ page import="org.silverpeas.core.exception.SilverpeasException" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 
 <%

@@ -63,14 +63,14 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.persistence.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.*;
 import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import java.io.File;

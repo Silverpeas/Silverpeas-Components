@@ -37,7 +37,7 @@ import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.util.ArrayList;

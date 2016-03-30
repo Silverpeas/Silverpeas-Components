@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.unique;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 public class PhotoDAO {
 

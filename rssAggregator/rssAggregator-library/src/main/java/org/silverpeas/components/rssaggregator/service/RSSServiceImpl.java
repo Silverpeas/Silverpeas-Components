@@ -34,7 +34,7 @@ import de.nava.informa.impl.basic.ChannelBuilder;
 import de.nava.informa.impl.basic.Item;
 import de.nava.informa.parsers.FeedParser;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

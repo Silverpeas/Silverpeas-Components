@@ -36,7 +36,7 @@ import org.silverpeas.components.forums.model.ForumDetail;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

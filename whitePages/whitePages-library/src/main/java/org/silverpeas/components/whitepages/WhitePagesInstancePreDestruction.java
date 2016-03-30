@@ -26,7 +26,7 @@ package org.silverpeas.components.whitepages;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
