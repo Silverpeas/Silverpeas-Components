@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quickinfo.model;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;

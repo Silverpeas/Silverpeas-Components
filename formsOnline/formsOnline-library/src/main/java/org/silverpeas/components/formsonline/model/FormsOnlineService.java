@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import com.silverpeas.ApplicationService;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
 import org.apache.commons.fileupload.FileItem;

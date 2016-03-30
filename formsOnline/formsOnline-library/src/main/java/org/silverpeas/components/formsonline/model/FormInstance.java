@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.admin.user.model.UserDetail;
 

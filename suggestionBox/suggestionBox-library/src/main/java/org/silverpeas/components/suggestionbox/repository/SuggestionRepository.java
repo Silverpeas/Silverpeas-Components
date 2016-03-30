@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import com.silverpeas.notation.control.RatingService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;

@@ -26,7 +26,7 @@ package org.silverpeas.components.blog.service;
 import java.util.Collection;
 import java.util.Date;
 
-import com.silverpeas.ApplicationService;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.blog.model.Archive;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import com.silverpeas.ApplicationService;
+import org.silverpeas.core.ApplicationService;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;

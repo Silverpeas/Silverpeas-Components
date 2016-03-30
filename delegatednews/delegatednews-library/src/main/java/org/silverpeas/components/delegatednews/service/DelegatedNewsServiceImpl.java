@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.delegatednews.service;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.components.delegatednews.dao.DelegatedNewsRepository;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;

@@ -27,7 +27,7 @@ package org.silverpeas.components.quickinfo.model;
 import java.util.Collection;
 import java.util.List;
 
-import com.silverpeas.ApplicationService;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;

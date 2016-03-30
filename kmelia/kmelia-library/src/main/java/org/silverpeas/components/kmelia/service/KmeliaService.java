@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import com.silverpeas.ApplicationService;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;

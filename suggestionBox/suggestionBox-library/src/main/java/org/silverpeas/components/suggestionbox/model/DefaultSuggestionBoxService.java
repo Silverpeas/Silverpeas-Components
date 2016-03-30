@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.ApplicationService;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.comment.service.CommentService;
 import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
@@ -43,7 +43,7 @@ import javax.transaction.Transactional;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface and of the
- * {@link com.silverpeas.ApplicationService} interface.
+ * {@link ApplicationService} interface.
  * @author mmoquillon
  */
 @Singleton

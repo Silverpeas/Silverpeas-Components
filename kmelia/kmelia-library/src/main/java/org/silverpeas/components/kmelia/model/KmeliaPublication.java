@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.model;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;

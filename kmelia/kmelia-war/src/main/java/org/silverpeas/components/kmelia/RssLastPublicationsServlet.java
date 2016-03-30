@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.silverpeas.SilverpeasServiceProvider;
+import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;

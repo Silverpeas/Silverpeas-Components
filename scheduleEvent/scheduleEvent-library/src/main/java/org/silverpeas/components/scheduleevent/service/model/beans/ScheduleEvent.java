@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.scheduleevent.service.model.beans;
 
-import com.silverpeas.SilverpeasToolContent;
+import org.silverpeas.core.SilverpeasToolContent;
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventBean;
 import org.silverpeas.core.admin.user.model.UserDetail;
