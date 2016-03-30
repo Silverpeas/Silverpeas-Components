@@ -26,10 +26,10 @@ package org.silverpeas.components.classifieds.servlets;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.core.web.look.LookHelper;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 

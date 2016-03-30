@@ -46,7 +46,7 @@ import org.silverpeas.components.forums.test.WarBuilder4Forums;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

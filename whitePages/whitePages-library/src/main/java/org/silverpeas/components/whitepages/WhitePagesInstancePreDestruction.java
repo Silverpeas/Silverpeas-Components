@@ -24,7 +24,7 @@
 package org.silverpeas.components.whitepages;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
 import org.silverpeas.util.DBUtil;
 

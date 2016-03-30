@@ -34,7 +34,7 @@ package org.silverpeas.components.websites.siteManage.model;
  */
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.io.Serializable;
 

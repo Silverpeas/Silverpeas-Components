@@ -29,8 +29,7 @@ import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Singleton;

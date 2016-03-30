@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
+<%@page import="org.silverpeas.core.contribution.templating.publication.PublicationTemplate"%>
 <%@ page import="java.util.Collection" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>

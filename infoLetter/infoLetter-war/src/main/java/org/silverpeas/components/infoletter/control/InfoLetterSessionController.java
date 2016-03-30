@@ -66,7 +66,7 @@ import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.csv.CSVReader;
 import org.silverpeas.util.csv.Variant;
 import org.silverpeas.util.exception.DecodingException;

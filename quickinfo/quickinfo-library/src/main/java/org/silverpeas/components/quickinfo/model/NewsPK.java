@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.quickinfo.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 public class NewsPK extends WAPrimaryKey {
 

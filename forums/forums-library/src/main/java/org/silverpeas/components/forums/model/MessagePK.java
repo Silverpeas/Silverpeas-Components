@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.forums.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * Clé primaire associée à un message.

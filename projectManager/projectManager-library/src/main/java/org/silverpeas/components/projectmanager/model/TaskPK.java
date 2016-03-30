@@ -28,7 +28,7 @@
  */
 package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * @author neysseri

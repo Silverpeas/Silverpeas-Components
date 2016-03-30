@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.Category;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;

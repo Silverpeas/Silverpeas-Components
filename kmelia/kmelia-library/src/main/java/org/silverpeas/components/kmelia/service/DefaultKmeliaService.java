@@ -26,10 +26,10 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
-import com.silverpeas.formTemplate.dao.ModelDAO;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.form.dao.ModelDAO;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -3128,14 +3128,14 @@ public class DefaultKmeliaService implements KmeliaService {
     try {
       // get templates defined for the given node
       Collection<String> result =
-          com.silverpeas.formTemplate.dao.ModelDAO.getModelUsed(con, instanceId, nodeId);
+          ModelDAO.getModelUsed(con, instanceId, nodeId);
       if (isDefined(nodeId) && result.isEmpty()) {
         // there is no templates defined for the given node, check the parent nodes
         Collection<NodeDetail> parents = nodeService.getPath(new NodePK(nodeId, instanceId));
         Iterator<NodeDetail> iter = parents.iterator();
         while (iter.hasNext() && result.isEmpty()) {
           NodeDetail parent = iter.next();
-          result = com.silverpeas.formTemplate.dao.ModelDAO.getModelUsed(con, instanceId, parent.
+          result = ModelDAO.getModelUsed(con, instanceId, parent.
               getNodePK().getId());
         }
       }

@@ -24,7 +24,7 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;

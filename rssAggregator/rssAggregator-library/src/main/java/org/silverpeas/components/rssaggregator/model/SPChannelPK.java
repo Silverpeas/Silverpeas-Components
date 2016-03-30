@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.rssaggregator.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 public class SPChannelPK extends WAPrimaryKey {
 

@@ -30,7 +30,7 @@ import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.Collection;

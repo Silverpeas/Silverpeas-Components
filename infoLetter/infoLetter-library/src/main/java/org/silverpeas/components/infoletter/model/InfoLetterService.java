@@ -30,7 +30,7 @@ import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * Contract to access info letter data

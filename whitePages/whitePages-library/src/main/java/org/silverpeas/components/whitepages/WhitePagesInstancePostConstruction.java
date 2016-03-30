@@ -24,8 +24,8 @@
 package org.silverpeas.components.whitepages;
 
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 
 import javax.inject.Named;

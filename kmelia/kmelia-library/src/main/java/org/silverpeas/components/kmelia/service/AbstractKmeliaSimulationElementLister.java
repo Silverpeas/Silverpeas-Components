@@ -27,7 +27,7 @@ import com.stratelia.webactiv.node.control.NodeService;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.process.annotation.SimulationElementLister;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

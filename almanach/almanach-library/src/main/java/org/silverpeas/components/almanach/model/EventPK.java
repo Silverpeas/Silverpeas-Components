@@ -25,7 +25,7 @@ package org.silverpeas.components.almanach.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * It's the Event PrimaryKey object It identify a Event

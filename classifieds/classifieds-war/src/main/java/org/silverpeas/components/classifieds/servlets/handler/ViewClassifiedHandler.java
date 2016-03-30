@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.http.HttpRequest;

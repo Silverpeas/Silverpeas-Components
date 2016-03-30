@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * @author Nicolas Eysseric
