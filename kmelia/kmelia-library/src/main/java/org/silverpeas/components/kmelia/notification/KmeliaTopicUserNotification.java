@@ -29,8 +29,8 @@ import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 

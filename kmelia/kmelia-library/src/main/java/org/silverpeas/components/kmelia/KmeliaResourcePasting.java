@@ -26,9 +26,9 @@ package org.silverpeas.components.kmelia;
 import org.silverpeas.core.admin.component.ApplicationResourcePasting;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;

@@ -26,12 +26,12 @@ import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -75,8 +75,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param subtopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    * @since 1.0
    */
   NodePK addToTopic(NodePK fatherPK, NodeDetail subtopic);
@@ -89,8 +89,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    * @since 1.0
    */
   NodePK addSubTopic(NodePK fatherPK, NodeDetail subtopic, String alertType);
@@ -104,8 +104,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    * @since 1.0
    */
   NodePK updateTopic(NodeDetail topic, String alertType);
@@ -114,7 +114,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Return a subtopic to currentTopic
    * @param nodePK the id of the researched topic
    * @return the detail of the specified topic
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   NodeDetail getSubTopicDetail(NodePK nodePK);
@@ -151,7 +151,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   /**
    * Subscriptions - get the subscription list of the current user
    * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId);
@@ -191,7 +191,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
    * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK);

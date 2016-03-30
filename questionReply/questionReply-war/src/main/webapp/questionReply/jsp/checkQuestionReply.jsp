@@ -61,7 +61,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.components.questionreply.control.QuestionReplySessionController" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>

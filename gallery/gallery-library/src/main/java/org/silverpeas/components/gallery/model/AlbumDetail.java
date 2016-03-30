@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.model;
 
 
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

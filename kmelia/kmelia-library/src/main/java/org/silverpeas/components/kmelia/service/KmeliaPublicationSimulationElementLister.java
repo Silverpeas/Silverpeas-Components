@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.service;
 
 import com.silverpeas.thumbnail.control.ThumbnailSimulationElement;
 import org.silverpeas.core.WAPrimaryKey;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;

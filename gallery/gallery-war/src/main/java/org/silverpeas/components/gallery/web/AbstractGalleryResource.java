@@ -33,7 +33,7 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.html.View;

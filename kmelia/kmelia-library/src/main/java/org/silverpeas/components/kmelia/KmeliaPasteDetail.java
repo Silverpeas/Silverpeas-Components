@@ -1,6 +1,6 @@
 package org.silverpeas.components.kmelia;
 
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 /**
  * @author Nicolas Eysseric

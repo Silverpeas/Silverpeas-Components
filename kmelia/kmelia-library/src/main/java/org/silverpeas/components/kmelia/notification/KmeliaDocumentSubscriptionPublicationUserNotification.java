@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.Collection;

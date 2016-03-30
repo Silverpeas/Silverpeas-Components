@@ -40,7 +40,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

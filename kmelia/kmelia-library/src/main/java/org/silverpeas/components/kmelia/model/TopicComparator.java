@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 
 import java.util.Comparator;
 import java.util.HashMap;

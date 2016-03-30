@@ -30,8 +30,8 @@ import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.admin.ObjectType;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 

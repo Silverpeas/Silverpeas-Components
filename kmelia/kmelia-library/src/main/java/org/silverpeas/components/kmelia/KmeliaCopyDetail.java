@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 import java.util.HashMap;
 

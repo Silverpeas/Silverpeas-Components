@@ -43,7 +43,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.ParameterNames;
 import org.silverpeas.components.gallery.constant.MediaResolution;

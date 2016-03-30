@@ -25,8 +25,8 @@ package org.silverpeas.components.yellowpages.model;
 
 import java.util.Collection;
 
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contact.model.ContactDetail;
 
 /**
@@ -99,7 +99,7 @@ public class TopicDetail implements java.io.Serializable {
   /**
    * Get the Topic nodePK
    * @return the Topic nodePK
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    */
   public NodePK getNodePK() {
     return this.nodeDetail.getNodePK();
@@ -108,7 +108,7 @@ public class TopicDetail implements java.io.Serializable {
   /**
    * Get the detail of this topic
    * @return the detail of this topic
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    */
   public NodeDetail getNodeDetail() {
     return this.nodeDetail;

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.websites.siteManage.model;
 
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.Collection;

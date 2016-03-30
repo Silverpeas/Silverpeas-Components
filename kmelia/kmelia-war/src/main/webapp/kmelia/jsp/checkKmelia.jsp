@@ -65,9 +65,9 @@
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationPK"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.CompletePublication"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.ValidationStep"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeI18NDetail"%>
+<%@ page import="org.silverpeas.core.node.model.NodePK"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
+<%@ page import="org.silverpeas.core.node.model.NodeI18NDetail"%>
 
 
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>

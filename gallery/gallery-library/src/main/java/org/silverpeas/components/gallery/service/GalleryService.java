@@ -25,8 +25,8 @@ package org.silverpeas.components.gallery.service;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.components.gallery.delegate.GalleryPasteDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;

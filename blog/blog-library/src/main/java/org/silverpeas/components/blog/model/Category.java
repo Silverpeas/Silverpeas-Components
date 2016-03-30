@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.blog.model;
 
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 
 public class Category extends NodeDetail {
 

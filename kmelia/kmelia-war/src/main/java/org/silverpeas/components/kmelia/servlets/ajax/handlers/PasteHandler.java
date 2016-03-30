@@ -29,7 +29,7 @@ import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.util.logging.SilverLogger;
 

@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
@@ -91,7 +91,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
   /**
    * Get the Topic nodePK
    * @return the Topic nodePK
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @since 1.0
    */
   public NodePK getNodePK() {
@@ -101,7 +101,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
   /**
    * Get the detail of this topic
    * @return the detail of this topic
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   public NodeDetail getNodeDetail() {

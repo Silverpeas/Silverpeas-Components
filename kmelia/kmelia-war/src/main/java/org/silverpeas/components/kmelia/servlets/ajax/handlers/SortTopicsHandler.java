@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 public class SortTopicsHandler implements AjaxHandler {
 

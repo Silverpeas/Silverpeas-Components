@@ -33,9 +33,9 @@ import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.contact.model.ContactPK;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.components.yellowpages.dao.GroupDAO;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
@@ -235,8 +235,8 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    */
   @Override
   public NodePK addToTopic(NodeDetail father, NodeDetail subTopic) {
@@ -263,7 +263,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * When creates a new subTopic, Check if a subtopic of same name already exists
    * @param subTopic the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the currentTopic else false
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    */
   private boolean isSameTopicSameLevelOnCreation(NodeDetail subTopic) {
     try {
@@ -278,7 +278,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * When updates a subTopic, Check if another subtopic of same name already exists
    * @param subTopic the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the currentTopic else false
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    */
   private boolean isSameTopicSameLevelOnUpdate(NodeDetail subTopic) {
     try {
@@ -295,8 +295,8 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * @param topic the NodeDetail of the updated sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    */
   @Override
   public NodePK updateTopic(NodeDetail topic) {
@@ -519,7 +519,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
    * Return list of all path to this contact - it's a Collection of NodeDetail collection
    * @param contactPK the id of the contact
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    */
   @Override
   public List<Collection<NodeDetail>> getPathList(ContactPK contactPK) {

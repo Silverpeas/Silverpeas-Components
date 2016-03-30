@@ -41,7 +41,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.io.FilenameUtils;

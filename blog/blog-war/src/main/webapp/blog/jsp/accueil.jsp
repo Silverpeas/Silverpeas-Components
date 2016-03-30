@@ -36,6 +36,7 @@
 <%@ page import="org.silverpeas.core.mylinks.model.LinkDetail" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%

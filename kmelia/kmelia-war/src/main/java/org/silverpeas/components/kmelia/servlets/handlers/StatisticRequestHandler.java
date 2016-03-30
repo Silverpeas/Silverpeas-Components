@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;

@@ -38,7 +38,7 @@ import javax.servlet.http.HttpSession;
 
 import org.silverpeas.components.gallery.control.GallerySessionController;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 public class AjaxServlet extends HttpServlet {
 

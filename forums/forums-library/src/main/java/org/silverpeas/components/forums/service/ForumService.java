@@ -31,8 +31,8 @@ import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.components.forums.model.Moderator;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;

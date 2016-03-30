@@ -25,6 +25,7 @@ package org.silverpeas.components.yellowpages.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.node.model.NodePK;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic
@@ -73,7 +74,7 @@ public class UserCompleteContact implements java.io.Serializable {
   /**
    * Get the Topic nodePK
    * @return the Topic nodePK
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    */
   public CompleteContact getContact() {
     return this.contact;

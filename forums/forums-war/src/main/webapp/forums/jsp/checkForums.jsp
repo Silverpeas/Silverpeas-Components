@@ -42,7 +42,7 @@
 <%@ page import="org.silverpeas.components.forums.url.ActionUrl"%>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>

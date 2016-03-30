@@ -27,7 +27,7 @@
 
 <%@ page language="java" %>
 
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail, java.util.Collection, java.util.Iterator"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail, java.util.Collection, java.util.Iterator"%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>

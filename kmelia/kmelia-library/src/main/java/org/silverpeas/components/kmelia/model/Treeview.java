@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.model;
 
 import java.util.List;
 
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 
 public class Treeview {
 

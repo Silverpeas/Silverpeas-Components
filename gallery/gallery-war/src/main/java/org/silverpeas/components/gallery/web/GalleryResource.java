@@ -30,7 +30,7 @@ import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.util.StringUtil;
 

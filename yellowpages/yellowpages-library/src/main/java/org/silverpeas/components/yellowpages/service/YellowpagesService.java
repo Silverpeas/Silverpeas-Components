@@ -27,8 +27,8 @@ import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.contact.model.ContactPK;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
@@ -61,8 +61,8 @@ public interface YellowpagesService {
    * @param subtopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    * @since 1.0
    */
   NodePK addToTopic(NodeDetail father, NodeDetail subtopic);
@@ -74,8 +74,8 @@ public interface YellowpagesService {
    * @param topic the NodeDetail of the updated sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    * @since 1.0
    */
   NodePK updateTopic(NodeDetail topic);
@@ -84,7 +84,7 @@ public interface YellowpagesService {
    * Return a subtopic to currentTopic
    * @param pk the id of the researched topic
    * @return the detail of the specified topic
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   NodeDetail getSubTopicDetail(NodePK pk);
@@ -113,7 +113,7 @@ public interface YellowpagesService {
    * Return list of all path to this contact - it's a Collection of NodeDetail collection
    * @param contactPK the id of the contact
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   List<Collection<NodeDetail>> getPathList(ContactPK contactPK);

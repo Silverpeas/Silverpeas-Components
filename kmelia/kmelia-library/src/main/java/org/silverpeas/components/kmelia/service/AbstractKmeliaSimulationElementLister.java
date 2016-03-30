@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import com.stratelia.webactiv.node.control.NodeService;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.process.annotation.SimulationElementLister;
 import org.silverpeas.core.util.ServiceProvider;

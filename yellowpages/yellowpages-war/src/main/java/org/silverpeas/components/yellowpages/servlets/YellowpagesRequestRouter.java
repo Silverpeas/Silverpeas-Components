@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.components.yellowpages.control.YellowpagesSessionController;
 import org.silverpeas.components.yellowpages.model.GroupDetail;
 import org.silverpeas.components.yellowpages.model.TopicDetail;

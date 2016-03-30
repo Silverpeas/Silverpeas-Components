@@ -30,7 +30,7 @@ import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.FileRepositoryManager;

@@ -50,13 +50,13 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.coordinates.control.CoordinatesService;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.coordinates.service.CoordinatesService;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
@@ -374,8 +374,8 @@ public class DefaultKmeliaService implements KmeliaService {
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    */
   @Override
   public NodePK addToTopic(NodePK fatherPK, NodeDetail subTopic) {
@@ -421,7 +421,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * @param nodePK the NodePK of the new sub topic
    * @param fatherPK the NodePK of the parent topic
    * @param alertType alertType = "All"|"Publisher"|"None"
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @since 1.0
    */
   private void topicCreationAlert(final NodePK nodePK, final NodePK fatherPK,
@@ -439,8 +439,8 @@ public class DefaultKmeliaService implements KmeliaService {
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.node.model.NodeDetail
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodeDetail
+   * @see NodePK
    * @since 1.0
    */
   @Override
@@ -913,7 +913,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * @param userId
    * @param componentId
    * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   @Override
@@ -1026,7 +1026,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
    * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see NodeDetail
    * @since 1.0
    */
   @Override

@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;

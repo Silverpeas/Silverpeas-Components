@@ -28,7 +28,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.MissingResourceException;

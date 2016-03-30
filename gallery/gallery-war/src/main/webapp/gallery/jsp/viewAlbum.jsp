@@ -128,7 +128,7 @@
 
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="path" value="${requestScope.Path}"/>
-<jsp:useBean id="path" type="java.util.List<com.stratelia.webactiv.node.model.NodeDetail>"/>
+<jsp:useBean id="path" type="java.util.List<org.silverpeas.core.node.model.NodeDetail>"/>
 <c:set var="nbMediaPerPage" value="${requestScope.NbMediaPerPage}"/>
 <c:set var="currentPageIndex" value="${requestScope.CurrentPageIndex}"/>
 <c:set var="mediaResolution" value="${requestScope.MediaResolution}"/>

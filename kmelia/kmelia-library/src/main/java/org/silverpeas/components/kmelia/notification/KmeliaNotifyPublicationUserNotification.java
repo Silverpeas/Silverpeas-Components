@@ -24,7 +24,7 @@
 package org.silverpeas.components.kmelia.notification;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.Collection;

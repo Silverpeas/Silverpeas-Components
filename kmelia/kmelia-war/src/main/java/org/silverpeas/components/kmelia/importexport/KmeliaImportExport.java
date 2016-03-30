@@ -30,8 +30,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.KmeliaException;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -142,7 +142,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * identifiant non modifié).
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    * @see
-   * GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.node.model.NodeDetail,
+   * GEDImportExport#addSubTopicToTopic(NodeDetail,
    * int, UnitReport)
    */
   @Override
@@ -193,7 +193,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @return un objet clé primaire du nouveau thème créé.
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    * @see
-   * GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.node.model.NodeDetail,
+   * GEDImportExport#addSubTopicToTopic(NodeDetail,
    * int, MassiveReport)
    */
   @Override

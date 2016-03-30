@@ -32,7 +32,7 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.sql.Connection;
