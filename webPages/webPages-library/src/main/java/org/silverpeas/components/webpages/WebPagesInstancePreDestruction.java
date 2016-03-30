@@ -24,8 +24,8 @@
 package org.silverpeas.components.webpages;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;

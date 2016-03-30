@@ -25,7 +25,7 @@ package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;

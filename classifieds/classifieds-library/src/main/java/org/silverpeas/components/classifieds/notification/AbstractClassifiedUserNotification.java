@@ -27,7 +27,7 @@ import org.silverpeas.components.classifieds.ClassifiedUtil;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.MissingResourceException;
 

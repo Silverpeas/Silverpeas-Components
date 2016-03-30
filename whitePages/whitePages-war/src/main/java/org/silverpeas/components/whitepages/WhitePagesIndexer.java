@@ -30,9 +30,9 @@ package org.silverpeas.components.whitepages;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserTemplate;

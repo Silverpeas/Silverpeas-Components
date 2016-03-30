@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.List;

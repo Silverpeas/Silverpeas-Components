@@ -32,8 +32,8 @@ import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.process.session.ProcessSession;
 

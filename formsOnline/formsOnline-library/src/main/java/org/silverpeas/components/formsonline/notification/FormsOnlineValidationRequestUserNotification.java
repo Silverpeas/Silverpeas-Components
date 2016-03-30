@@ -25,7 +25,7 @@ package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;

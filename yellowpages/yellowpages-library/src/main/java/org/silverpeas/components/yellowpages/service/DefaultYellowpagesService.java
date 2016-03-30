@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.yellowpages.service;
 
-import org.silverpeas.core.contribution.templating.form.dao.ModelDAO;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contact.service.ContactService;

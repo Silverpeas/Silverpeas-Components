@@ -32,7 +32,7 @@ import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;

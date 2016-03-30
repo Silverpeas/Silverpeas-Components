@@ -84,7 +84,7 @@
 <%@ page import="org.silverpeas.util.ForeignPK"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.core.contribution.templating.publication.PublicationTemplate"%>
+<%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>

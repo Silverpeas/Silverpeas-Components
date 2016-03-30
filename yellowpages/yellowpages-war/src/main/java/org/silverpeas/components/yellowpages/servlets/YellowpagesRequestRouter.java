@@ -24,7 +24,7 @@
 package org.silverpeas.components.yellowpages.servlets;
 
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

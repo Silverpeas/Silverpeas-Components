@@ -74,8 +74,8 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
