@@ -24,8 +24,8 @@
 package org.silverpeas.components.kmelia.export;
 
 import org.silverpeas.core.comment.model.Comment;
-import com.silverpeas.converter.DocumentFormatConverterProvider;
-import com.silverpeas.converter.HTMLConverter;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.HTMLConverter;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -72,8 +72,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static com.silverpeas.converter.DocumentFormat.odt;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
 import static org.silverpeas.components.kmelia.export.DocumentTemplateParts.*;
 import static org.silverpeas.components.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
 import static org.silverpeas.components.kmelia.export.ODTDocumentsMerging.atSection;

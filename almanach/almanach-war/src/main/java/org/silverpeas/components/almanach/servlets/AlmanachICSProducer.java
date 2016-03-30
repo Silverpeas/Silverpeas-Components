@@ -25,10 +25,10 @@ package org.silverpeas.components.almanach.servlets;
 
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterProvider;
-import com.silverpeas.export.ical.ExportableCalendar;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -50,7 +50,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.silverpeas.export.ExportDescriptor.withWriter;
+import static org.silverpeas.core.importexport.ExportDescriptor.withWriter;
 
 /**
  * A producer of an ICS resource from a given almanach.

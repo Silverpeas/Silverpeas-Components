@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.gallery.control;
 
-import com.silverpeas.export.ExportDescriptor;
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.ImportExportDescriptor;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.ImportExportDescriptor;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;

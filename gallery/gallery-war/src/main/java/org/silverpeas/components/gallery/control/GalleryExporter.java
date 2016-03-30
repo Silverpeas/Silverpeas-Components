@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.ImportExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.ImportExportDescriptor;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.Media;

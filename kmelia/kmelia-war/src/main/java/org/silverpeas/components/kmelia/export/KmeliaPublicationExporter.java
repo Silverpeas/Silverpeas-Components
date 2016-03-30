@@ -22,12 +22,12 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.DocumentFormatConverterProvider;
-import com.silverpeas.converter.ODTConverter;
-import com.silverpeas.export.ExportDescriptor;
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.Exporter;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.ODTConverter;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.util.FileRepositoryManager;
@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static com.silverpeas.converter.DocumentFormat.odt;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
 
 /**
  * An exporter of Kmelia publications into a document in a given format.

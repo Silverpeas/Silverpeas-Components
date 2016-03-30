@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.converter.DocumentFormat;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.util.MimeTypes;
 
@@ -24,7 +24,7 @@ import org.silverpeas.util.ClientBrowserUtil;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import static com.silverpeas.converter.DocumentFormat.inFormat;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**

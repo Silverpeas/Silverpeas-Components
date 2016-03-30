@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.scheduleevent.service;
 
-import com.silverpeas.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.Datable;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventStatus;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static com.silverpeas.calendar.CalendarEvent.anEventAt;
+import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
 import static org.silverpeas.core.util.DateUtil.asDatable;
 
 /**

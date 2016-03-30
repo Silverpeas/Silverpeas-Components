@@ -25,8 +25,8 @@ package org.silverpeas.components.kmelia.control;
 
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.core.security.authorization.AccessControlContext;
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.export.ExportDescriptor;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;

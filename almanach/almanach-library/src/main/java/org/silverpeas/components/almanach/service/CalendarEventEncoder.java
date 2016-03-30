@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import static com.silverpeas.calendar.CalendarEvent.anEventAt;
-import static com.silverpeas.calendar.CalendarEventRecurrence.every;
+import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
+import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.DateUtil.asDatable;
 
@@ -40,13 +40,13 @@ import java.util.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.calendar.CalendarEventRecurrence;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventRecurrence;
 import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.date.DateTime;
-import com.silverpeas.calendar.DayOfWeek;
-import com.silverpeas.calendar.DayOfWeekOccurrence;
-import com.silverpeas.calendar.TimeUnit;
+import org.silverpeas.core.calendar.DayOfWeek;
+import org.silverpeas.core.calendar.DayOfWeekOccurrence;
+import org.silverpeas.core.calendar.TimeUnit;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;

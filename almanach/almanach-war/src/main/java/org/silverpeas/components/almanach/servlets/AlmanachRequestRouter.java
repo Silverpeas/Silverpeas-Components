@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.almanach.servlets;
 
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.NoDataToExportException;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.NoDataToExportException;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

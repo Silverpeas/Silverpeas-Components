@@ -20,11 +20,11 @@
  */
 package org.silverpeas.components.scheduleevent.control;
 
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterProvider;
-import com.silverpeas.export.ical.ExportableCalendar;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.components.scheduleevent.notification.ScheduleEventUserCallAgainNotification;
 import org.silverpeas.components.scheduleevent.notification.ScheduleEventUserNotification;
 import org.silverpeas.components.scheduleevent.service.CalendarEventEncoder;
@@ -70,7 +70,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.silverpeas.export.ExportDescriptor.withWriter;
+import static org.silverpeas.core.importexport.ExportDescriptor.withWriter;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
 

@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.almanach.control;
 
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterProvider;
-import com.silverpeas.export.ical.ExportableCalendar;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
@@ -85,7 +85,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.silverpeas.export.ExportDescriptor.withWriter;
+import static org.silverpeas.core.importexport.ExportDescriptor.withWriter;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
