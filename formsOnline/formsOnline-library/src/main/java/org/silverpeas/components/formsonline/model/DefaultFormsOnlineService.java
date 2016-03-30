@@ -21,7 +21,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.ApplicationService;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;

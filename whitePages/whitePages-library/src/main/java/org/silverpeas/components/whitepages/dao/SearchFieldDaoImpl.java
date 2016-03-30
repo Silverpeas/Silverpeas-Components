@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.whitepages.dao;
 
-import com.silverpeas.annotation.Repository;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.components.whitepages.model.SearchField;
 
 import javax.persistence.EntityManager;

@@ -24,8 +24,8 @@
 package org.silverpeas.components.resourcesmanager.web;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.components.resourcesmanager.model.Reservation;

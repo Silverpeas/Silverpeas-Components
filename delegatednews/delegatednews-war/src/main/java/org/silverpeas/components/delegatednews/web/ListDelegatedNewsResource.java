@@ -36,8 +36,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;

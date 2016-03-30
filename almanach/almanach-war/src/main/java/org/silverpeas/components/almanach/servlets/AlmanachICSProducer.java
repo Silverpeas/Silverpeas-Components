@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.almanach.servlets;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;

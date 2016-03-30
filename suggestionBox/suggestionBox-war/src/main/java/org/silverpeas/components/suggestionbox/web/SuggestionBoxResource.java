@@ -24,8 +24,8 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;

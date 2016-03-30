@@ -34,8 +34,8 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 
 /**
  * A REST Web resource representing a given question.

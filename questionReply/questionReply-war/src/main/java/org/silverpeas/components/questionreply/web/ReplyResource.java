@@ -24,8 +24,8 @@
 package org.silverpeas.components.questionreply.web;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Reply;

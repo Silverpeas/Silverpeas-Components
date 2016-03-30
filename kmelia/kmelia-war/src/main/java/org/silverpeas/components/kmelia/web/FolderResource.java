@@ -21,8 +21,8 @@
 package org.silverpeas.components.kmelia.web;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import com.stratelia.webactiv.node.control.NodeService;

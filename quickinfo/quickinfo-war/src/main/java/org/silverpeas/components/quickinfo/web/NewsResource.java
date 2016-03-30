@@ -1,8 +1,8 @@
 package org.silverpeas.components.quickinfo.web;
 
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.components.quickinfo.model.News;

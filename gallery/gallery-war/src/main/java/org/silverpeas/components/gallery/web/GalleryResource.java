@@ -24,8 +24,8 @@
 package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.Media;
