@@ -113,7 +113,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
+import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
