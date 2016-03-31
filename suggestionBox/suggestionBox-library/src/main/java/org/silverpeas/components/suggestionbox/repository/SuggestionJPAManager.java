@@ -1,10 +1,9 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**

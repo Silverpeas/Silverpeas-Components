@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;

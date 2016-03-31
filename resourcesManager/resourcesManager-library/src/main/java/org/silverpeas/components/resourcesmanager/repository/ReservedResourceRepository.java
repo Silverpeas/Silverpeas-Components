@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.core.persistence.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
 import org.silverpeas.components.resourcesmanager.model.ReservedResourcePk;
 

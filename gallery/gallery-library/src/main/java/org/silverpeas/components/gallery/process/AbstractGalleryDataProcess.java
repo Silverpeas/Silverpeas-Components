@@ -36,7 +36,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.process.management.AbstractDataProcess;
 import org.silverpeas.process.session.ProcessSession;
 

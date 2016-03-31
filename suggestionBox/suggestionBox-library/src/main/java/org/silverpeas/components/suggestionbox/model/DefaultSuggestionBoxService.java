@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
-import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 

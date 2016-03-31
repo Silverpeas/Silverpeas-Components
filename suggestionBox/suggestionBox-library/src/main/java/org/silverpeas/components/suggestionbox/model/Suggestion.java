@@ -33,9 +33,9 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.core.contribution.ValidableContribution;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
-import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.Rateable;
 

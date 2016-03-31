@@ -28,8 +28,8 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.persistence.model.identifier.ExternalIntegerIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 

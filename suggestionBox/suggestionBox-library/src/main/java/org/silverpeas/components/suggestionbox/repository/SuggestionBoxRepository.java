@@ -24,9 +24,9 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;

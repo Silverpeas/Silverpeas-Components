@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 
 import java.util.List;

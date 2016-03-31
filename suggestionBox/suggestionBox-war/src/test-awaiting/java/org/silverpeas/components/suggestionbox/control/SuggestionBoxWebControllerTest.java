@@ -50,7 +50,7 @@ import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.servlet.HttpRequest;

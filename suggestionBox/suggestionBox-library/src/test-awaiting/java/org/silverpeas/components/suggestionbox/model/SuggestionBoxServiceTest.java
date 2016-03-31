@@ -44,8 +44,8 @@ import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrap
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.core.contribution.ContributionStatus;
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

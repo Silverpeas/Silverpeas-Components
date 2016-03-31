@@ -24,8 +24,8 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.components.resourcesmanager.model.Resource;
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 
 import java.util.List;
 

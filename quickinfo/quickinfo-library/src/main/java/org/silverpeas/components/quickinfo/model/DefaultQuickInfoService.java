@@ -80,7 +80,7 @@ import java.util.List;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
-import static org.silverpeas.core.persistence.repository.OperationContext.fromUser;
+import static org.silverpeas.core.persistence.datasource.repository.OperationContext.fromUser;
 
 @Singleton
 public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News> {

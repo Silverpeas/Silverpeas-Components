@@ -21,9 +21,9 @@
 
 package org.silverpeas.components.jdbcconnector.model;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import java.util.List;
 
