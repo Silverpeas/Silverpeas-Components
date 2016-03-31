@@ -50,7 +50,7 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ImageLoader;
+import org.silverpeas.core.io.media.image.ImageLoader;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;

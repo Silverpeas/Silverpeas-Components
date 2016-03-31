@@ -28,7 +28,7 @@ package org.silverpeas.components.kmelia.service;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.notification.JMSResourceEventListener;
+import org.silverpeas.core.notification.system.JMSResourceEventListener;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

@@ -25,7 +25,7 @@ package org.silverpeas.components.yellowpages;
 
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.user.notification.GroupEvent;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
 

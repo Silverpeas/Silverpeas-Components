@@ -23,7 +23,7 @@ package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.notification.JMSResourceEventListener;
+import org.silverpeas.core.notification.system.JMSResourceEventListener;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 

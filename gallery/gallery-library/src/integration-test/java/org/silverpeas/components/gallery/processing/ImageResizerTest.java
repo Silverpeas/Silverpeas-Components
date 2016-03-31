@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.util.ImageLoader;
+import org.silverpeas.core.io.media.image.ImageLoader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

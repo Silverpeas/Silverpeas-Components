@@ -26,7 +26,7 @@ package org.silverpeas.components.webpages;
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.notification.JMSResourceEventListener;
+import org.silverpeas.core.notification.system.JMSResourceEventListener;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 
