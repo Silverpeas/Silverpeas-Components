@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.notification;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 
 /**
  * @author Nicolas EYSSERIC

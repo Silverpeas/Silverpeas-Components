@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.quickinfo.notification;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 

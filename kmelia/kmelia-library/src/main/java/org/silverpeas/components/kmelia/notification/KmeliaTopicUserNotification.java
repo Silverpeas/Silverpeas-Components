@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;

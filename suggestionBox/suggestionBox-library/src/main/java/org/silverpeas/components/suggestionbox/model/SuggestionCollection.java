@@ -1,6 +1,6 @@
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.tuple.Pair;

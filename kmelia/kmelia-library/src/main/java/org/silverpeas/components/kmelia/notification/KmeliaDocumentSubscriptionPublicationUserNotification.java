@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.notification;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;

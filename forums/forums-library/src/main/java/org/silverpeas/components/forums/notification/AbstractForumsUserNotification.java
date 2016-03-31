@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.notification;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.util.ResourceLocator;

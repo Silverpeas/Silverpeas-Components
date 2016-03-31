@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;

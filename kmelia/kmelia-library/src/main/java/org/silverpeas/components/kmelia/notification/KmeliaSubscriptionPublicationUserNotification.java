@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;

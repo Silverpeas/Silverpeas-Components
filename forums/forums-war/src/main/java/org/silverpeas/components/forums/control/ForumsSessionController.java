@@ -30,7 +30,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;

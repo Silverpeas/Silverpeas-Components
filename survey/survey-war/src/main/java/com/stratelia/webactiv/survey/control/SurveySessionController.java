@@ -33,7 +33,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;

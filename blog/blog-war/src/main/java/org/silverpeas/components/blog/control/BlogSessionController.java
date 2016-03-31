@@ -24,7 +24,7 @@
 package org.silverpeas.components.blog.control;
 
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.admin.user.model.UserDetail;

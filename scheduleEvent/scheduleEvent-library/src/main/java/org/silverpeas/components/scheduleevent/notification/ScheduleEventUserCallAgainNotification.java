@@ -26,7 +26,7 @@ package org.silverpeas.components.scheduleevent.notification;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.template.SilverpeasTemplate;
 

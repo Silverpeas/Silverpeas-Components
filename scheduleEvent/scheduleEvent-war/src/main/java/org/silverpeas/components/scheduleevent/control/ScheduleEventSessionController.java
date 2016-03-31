@@ -45,7 +45,7 @@ import org.silverpeas.components.scheduleevent.view.OptionDateVO;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventDetailVO;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventVO;
 import org.silverpeas.components.scheduleevent.view.TimeVO;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

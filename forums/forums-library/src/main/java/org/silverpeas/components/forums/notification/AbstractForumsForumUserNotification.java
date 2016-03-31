@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.notification;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.components.forums.model.ForumDetail;
