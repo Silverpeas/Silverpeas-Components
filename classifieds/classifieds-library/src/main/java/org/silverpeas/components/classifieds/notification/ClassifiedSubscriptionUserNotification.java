@@ -26,7 +26,7 @@ package org.silverpeas.components.classifieds.notification;
 import java.util.Collection;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 /**
  * @author Yohann Chastagnier

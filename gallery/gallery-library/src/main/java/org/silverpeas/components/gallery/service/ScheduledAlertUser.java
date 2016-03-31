@@ -31,10 +31,10 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.Link;
@@ -50,7 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
-import static com.stratelia.silverpeas.notificationManager.NotificationParameters.NORMAL;
+import static org.silverpeas.core.notification.user.client.NotificationParameters.NORMAL;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 public class ScheduledAlertUser implements SchedulerEventListener {

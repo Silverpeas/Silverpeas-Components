@@ -27,7 +27,7 @@ import java.util.Collection;
 
 import org.silverpeas.components.quickinfo.model.News;
 
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class NewsManualUserNotification extends AbstractNewsUserNotification {

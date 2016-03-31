@@ -44,8 +44,8 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.notificationManager.NotificationManager;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationManager;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

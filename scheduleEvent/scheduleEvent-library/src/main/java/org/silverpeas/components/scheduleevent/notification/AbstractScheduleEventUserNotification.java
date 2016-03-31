@@ -25,7 +25,7 @@ package org.silverpeas.components.scheduleevent.notification;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**

@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavio
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.components.quickinfo.model.News;
 
 import java.util.Collection;

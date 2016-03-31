@@ -64,7 +64,7 @@
         class="org.silverpeas.components.mailinglist.service.notification.AdvancedNotificationFormatter" />
 
   <bean id="notificationSender" name="notificationSender"
-        class="com.stratelia.silverpeas.notificationManager.NotificationSender">
+        class="org.silverpeas.core.notification.user.client.NotificationSender">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 </beans>

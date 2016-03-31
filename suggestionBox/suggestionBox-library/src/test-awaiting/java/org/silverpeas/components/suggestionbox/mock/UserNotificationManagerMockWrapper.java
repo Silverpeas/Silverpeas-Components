@@ -25,8 +25,8 @@ package org.silverpeas.components.suggestionbox.mock;
 
 import com.silverpeas.usernotification.builder.UserNotificationBuilder;
 import com.silverpeas.usernotification.builder.helper.UserNotificationManager;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 import org.mockito.Mockito;
 
 /**

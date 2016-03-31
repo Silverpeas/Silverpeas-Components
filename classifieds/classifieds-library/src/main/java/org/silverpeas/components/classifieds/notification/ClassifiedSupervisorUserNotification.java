@@ -24,7 +24,7 @@
 package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
