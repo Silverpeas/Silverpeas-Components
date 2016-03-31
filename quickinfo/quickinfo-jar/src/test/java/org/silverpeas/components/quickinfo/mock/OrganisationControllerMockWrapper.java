@@ -257,6 +257,12 @@ public class OrganisationControllerMockWrapper implements OrganisationController
   }
 
   @Override
+  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
+      final String componentId, final ObjectType objectType) {
+    return mock.getUserObjectProfiles(userId, componentId, objectType);
+  }
+
+  @Override
   public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
     return mock.getUserProfiles(componentId, objectId, objectType);
   }
