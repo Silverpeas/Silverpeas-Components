@@ -44,7 +44,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.media.Definition;
+import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.test.rule.DbSetupRule.TableRow;

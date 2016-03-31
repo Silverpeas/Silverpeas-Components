@@ -32,7 +32,7 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;

@@ -35,9 +35,9 @@ import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileProvider;
-import org.silverpeas.media.video.ThumbnailPeriod;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.notification.message.MessageManager;
 
 import java.util.ArrayList;

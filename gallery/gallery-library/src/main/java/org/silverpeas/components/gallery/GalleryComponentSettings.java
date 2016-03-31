@@ -29,7 +29,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.media.video.ThumbnailPeriod;
+import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 
 /**
  * It gathers all the settings and i18n relative to the Gallery component.

@@ -43,15 +43,15 @@ import org.silverpeas.components.gallery.processing.ImageResizer;
 import org.silverpeas.components.gallery.processing.ImageUtility;
 import org.silverpeas.components.gallery.processing.Size;
 import org.silverpeas.components.gallery.processing.Watermarker;
-import org.silverpeas.media.Definition;
-import org.silverpeas.media.video.VideoThumbnailExtractor;
-import org.silverpeas.media.video.VideoThumbnailExtractorProvider;
+import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
+import org.silverpeas.core.io.media.video.VideoThumbnailExtractorProvider;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ImageLoader;
-import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -70,8 +70,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.*;
-import static org.silverpeas.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_EXTENSION;
-import static org.silverpeas.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_PREFIX;
+import static org.silverpeas.core.io.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_EXTENSION;
+import static org.silverpeas.core.io.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_PREFIX;
 
 public class MediaUtil {
 
@@ -259,7 +259,7 @@ public class MediaUtil {
       iMedia.setFileMimeType(mediaMimeType);
       iMedia.setFileSize(fileForData.length());
       MetadataExtractor metadataExtractor = MetadataExtractor.get();
-      org.silverpeas.util.MetaData metaData =
+      org.silverpeas.core.io.media.MetaData metaData =
           metadataExtractor.extractMetadata(handledImageFile.getFile());
       switch (iMedia.getType()) {
         case Photo:

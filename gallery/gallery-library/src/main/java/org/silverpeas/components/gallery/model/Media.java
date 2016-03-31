@@ -39,7 +39,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;

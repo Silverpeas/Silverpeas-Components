@@ -33,7 +33,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFile;
 
 import java.util.HashMap;
 import java.util.Map;

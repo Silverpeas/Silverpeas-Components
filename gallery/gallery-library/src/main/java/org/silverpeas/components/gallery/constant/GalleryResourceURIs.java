@@ -28,7 +28,7 @@ import org.silverpeas.components.gallery.model.Media;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.node.model.NodePK;
 
-import org.silverpeas.media.video.ThumbnailPeriod;
+import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.settings.SilverpeasSettings;
 
 import javax.ws.rs.core.UriBuilder;

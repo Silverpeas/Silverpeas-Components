@@ -34,7 +34,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.media.Definition;
+import org.silverpeas.core.io.media.Definition;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

@@ -29,7 +29,7 @@ import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;

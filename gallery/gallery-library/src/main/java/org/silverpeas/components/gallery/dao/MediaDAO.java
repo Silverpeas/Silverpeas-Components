@@ -40,7 +40,7 @@ import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.media.Definition;
+import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;

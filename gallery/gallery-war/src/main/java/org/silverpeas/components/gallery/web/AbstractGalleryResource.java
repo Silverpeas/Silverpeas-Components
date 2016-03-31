@@ -38,10 +38,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
-import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileProvider;
-import org.silverpeas.media.Definition;
-import org.silverpeas.media.video.ThumbnailPeriod;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.PathParam;

@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.DateUtil;
 
