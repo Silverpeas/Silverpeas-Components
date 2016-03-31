@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import com.stratelia.silverpeas.containerManager.ContainerContext;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

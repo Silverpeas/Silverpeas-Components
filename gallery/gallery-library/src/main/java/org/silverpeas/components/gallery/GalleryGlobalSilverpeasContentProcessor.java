@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.gallery;
 
-import com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcessor;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.DefaultGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.Media;
 
 import javax.inject.Named;
 
-import static com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor
+import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor
     .PROCESSOR_NAME_SUFFIX;
 
 @Named("gallery" + PROCESSOR_NAME_SUFFIX)

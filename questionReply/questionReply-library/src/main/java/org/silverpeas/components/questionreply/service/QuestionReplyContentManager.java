@@ -26,12 +26,12 @@ package org.silverpeas.components.questionreply.service;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.exception.SilverpeasException;
 

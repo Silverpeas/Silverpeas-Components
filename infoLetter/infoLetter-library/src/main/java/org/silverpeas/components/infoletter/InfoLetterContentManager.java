@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;

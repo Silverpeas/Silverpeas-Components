@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.containerManager.ContainerContext"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.components.whitepages.control.WhitePagesSessionController"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>

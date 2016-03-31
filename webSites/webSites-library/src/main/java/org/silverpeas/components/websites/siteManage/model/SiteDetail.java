@@ -26,9 +26,9 @@ package org.silverpeas.components.websites.siteManage.model;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;

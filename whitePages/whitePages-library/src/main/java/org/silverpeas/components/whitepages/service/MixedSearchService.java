@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.whitepages.service;
 
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.util.ServiceProvider;

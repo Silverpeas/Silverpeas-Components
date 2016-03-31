@@ -27,7 +27,7 @@ import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.questionReply.model.ReplyMatcher;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.contentManager.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.WAPrimaryKey;
 import org.junit.Before;

@@ -26,7 +26,7 @@ package org.silverpeas.components.forums.model;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.forums.ForumsContentManager;

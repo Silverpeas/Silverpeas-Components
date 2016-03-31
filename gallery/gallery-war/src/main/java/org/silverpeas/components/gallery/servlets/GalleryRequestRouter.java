@@ -37,7 +37,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import com.stratelia.silverpeas.contentManager.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;

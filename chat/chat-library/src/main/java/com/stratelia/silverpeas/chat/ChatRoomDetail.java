@@ -33,7 +33,7 @@ package com.stratelia.silverpeas.chat;
 import java.io.Serializable;
 
 import org.silverpeas.util.i18n.AbstractBean;
-import com.stratelia.silverpeas.contentManager.*;
+import org.silverpeas.core.contribution.contentcontainer.content.*;
 
 public class ChatRoomDetail extends AbstractBean implements SilverContentInterface,
     Serializable {

@@ -30,7 +30,7 @@ import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;

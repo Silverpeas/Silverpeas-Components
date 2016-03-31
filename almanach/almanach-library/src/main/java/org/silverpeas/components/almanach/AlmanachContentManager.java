@@ -21,10 +21,10 @@
 package org.silverpeas.components.almanach;
 
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.AlmanachException;

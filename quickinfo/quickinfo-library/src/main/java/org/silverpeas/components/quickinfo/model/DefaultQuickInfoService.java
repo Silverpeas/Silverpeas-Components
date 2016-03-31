@@ -28,7 +28,7 @@ import org.silverpeas.core.ApplicationService;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.contribution.publication.service.PublicationService;

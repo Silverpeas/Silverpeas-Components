@@ -24,10 +24,10 @@
 
 package org.silverpeas.components.quizz;
 
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;

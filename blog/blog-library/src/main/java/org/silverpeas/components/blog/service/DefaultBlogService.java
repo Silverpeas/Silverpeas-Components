@@ -28,7 +28,7 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;

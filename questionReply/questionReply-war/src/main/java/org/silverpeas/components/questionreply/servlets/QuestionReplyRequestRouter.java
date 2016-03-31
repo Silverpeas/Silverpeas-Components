@@ -31,7 +31,7 @@ import org.silverpeas.components.questionreply.model.Reply;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.containerManager.ContainerContext;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

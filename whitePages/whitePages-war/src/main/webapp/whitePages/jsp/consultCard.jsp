@@ -28,7 +28,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.URLIcone"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyValue"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Value" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull" %>

@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchUserWrapperSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

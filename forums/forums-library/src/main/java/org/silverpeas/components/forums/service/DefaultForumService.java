@@ -34,7 +34,7 @@ import org.silverpeas.core.tagcloud.service.TagCloudService;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;

@@ -30,7 +30,7 @@ import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
