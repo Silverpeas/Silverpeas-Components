@@ -56,6 +56,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -175,15 +176,16 @@ public class MediaDAO {
     if (!photos.isEmpty()) {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<String>(photos.keySet()));
-      StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
+      String queryBase = SELECT_INTERNAL_MEDIA_PREFIX +
           "P.resolutionW, P.resolutionH from SC_Gallery_Internal I join SC_Gallery_Photo P on I" +
-              ".mediaId = P.mediaId where I.mediaId in ");
+          ".mediaId = P.mediaId where I.mediaId in ";
       for (Collection<String> mediaIds : idGroups) {
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
         try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
+          prepStmt = con.prepareStatement(
+              DBUtil.appendListOfParameters(new StringBuilder().append(queryBase), mediaIds)
+                  .toString());
           DBUtil.setParameters(prepStmt, mediaIds);
           rs = prepStmt.executeQuery();
           while (rs.next()) {
@@ -220,15 +222,16 @@ public class MediaDAO {
     if (!videos.isEmpty()) {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<String>(videos.keySet()));
-      StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
+      String queryBase = SELECT_INTERNAL_MEDIA_PREFIX +
           "V.resolutionW, V.resolutionH, V.bitrate, V.duration from SC_Gallery_Internal I join " +
-              "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId in ");
+          "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId in ";
       for (Collection<String> mediaIds : idGroups) {
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
         try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
+          prepStmt = con.prepareStatement(
+              DBUtil.appendListOfParameters(new StringBuilder().append(queryBase), mediaIds)
+                  .toString());
           DBUtil.setParameters(prepStmt, mediaIds);
           rs = prepStmt.executeQuery();
           while (rs.next()) {
@@ -267,15 +270,16 @@ public class MediaDAO {
     if (!sounds.isEmpty()) {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<String>(sounds.keySet()));
-      StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
+      String queryBase = SELECT_INTERNAL_MEDIA_PREFIX +
           "S.bitrate, S.duration from SC_Gallery_Internal I join SC_Gallery_Sound S on I.mediaId " +
-              "= S.mediaId where I.mediaId in ");
+          "= S.mediaId where I.mediaId in ";
       for (Collection<String> mediaIds : idGroups) {
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
         try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
+          prepStmt = con.prepareStatement(
+              DBUtil.appendListOfParameters(new StringBuilder().append(queryBase), mediaIds)
+                  .toString());
           DBUtil.setParameters(prepStmt, mediaIds);
           rs = prepStmt.executeQuery();
           while (rs.next()) {
@@ -313,15 +317,16 @@ public class MediaDAO {
     if (!streamings.isEmpty()) {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<String>(streamings.keySet()));
-      StringBuilder queryBase = new StringBuilder(
+      String queryBase =
           "select S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S" +
-              ".mediaId in ");
+              ".mediaId in ";
       for (Collection<String> mediaIds : idGroups) {
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
         try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
+          prepStmt = con.prepareStatement(
+              DBUtil.appendListOfParameters(new StringBuilder().append(queryBase), mediaIds)
+                  .toString());
           DBUtil.setParameters(prepStmt, mediaIds);
           rs = prepStmt.executeQuery();
           while (rs.next()) {
@@ -411,15 +416,15 @@ public class MediaDAO {
 
     // Photo
     if (media.getType().isPhoto()) {
-      updateQueries.addAll(prepareSavePhoto(context, media.getPhoto(), isInsert));
+      updateQueries.addAll(prepareSavePhoto(media.getPhoto(), isInsert));
     }
     // Video
     if (media.getType().isVideo()) {
-      updateQueries.addAll(prepareSaveVideo(context, media.getVideo(), isInsert));
+      updateQueries.addAll(prepareSaveVideo(media.getVideo(), isInsert));
     }
     // Sound
     if (media.getType().isSound()) {
-      updateQueries.addAll(prepareSaveSound(context, media.getSound(), isInsert));
+      updateQueries.addAll(prepareSaveSound(media.getSound(), isInsert));
     }
     // Streaming
     if (media.getType().isStreaming()) {
@@ -433,13 +438,11 @@ public class MediaDAO {
 
   /**
    * Prepares query and parameters in order to save a photo.
-   * @param context
    * @param photo
    * @param isInsert
    * @return
    */
-  private static List<Pair<String, List<Object>>> prepareSavePhoto(OperationContext context,
-      Photo photo, boolean isInsert) {
+  private static List<Pair<String, List<Object>>> prepareSavePhoto(Photo photo, boolean isInsert) {
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
     updateQueries.add(prepareSaveInternalMedia(photo, isInsert));
     StringBuilder photoSave = new StringBuilder();
@@ -464,13 +467,11 @@ public class MediaDAO {
 
   /**
    * Prepares query and parameters in order to save a video.
-   * @param context
    * @param video
    * @param isInsert
    * @return
    */
-  private static List<Pair<String, List<Object>>> prepareSaveVideo(OperationContext context,
-      Video video, boolean isInsert) {
+  private static List<Pair<String, List<Object>>> prepareSaveVideo(Video video, boolean isInsert) {
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
     updateQueries.add(prepareSaveInternalMedia(video, isInsert));
     StringBuilder videoSave = new StringBuilder();
@@ -497,13 +498,11 @@ public class MediaDAO {
 
   /**
    * Prepares query and parameters in order to save a sound.
-   * @param context
    * @param sound
    * @param isInsert
    * @return
    */
-  private static List<Pair<String, List<Object>>> prepareSaveSound(OperationContext context,
-      Sound sound, boolean isInsert) {
+  private static List<Pair<String, List<Object>>> prepareSaveSound(Sound sound, boolean isInsert) {
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
     updateQueries.add(prepareSaveInternalMedia(sound, isInsert));
     StringBuilder soundSave = new StringBuilder();
@@ -649,7 +648,7 @@ public class MediaDAO {
    * @throws SQLException
    */
   public static void deleteMedia(Connection con, Media media) throws SQLException {
-    List<Object> mediaIdParam = Arrays.asList((Object) media.getId());
+    List<Object> mediaIdParam = Collections.singletonList((Object) media.getId());
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
     updateQueries.add(Pair.of("delete from SC_Gallery_Media where mediaId = ?", mediaIdParam));
     if (MediaType.Photo == media.getType() || MediaType.Video == media.getType() ||
