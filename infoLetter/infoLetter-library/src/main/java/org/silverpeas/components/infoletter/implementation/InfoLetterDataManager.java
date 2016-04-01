@@ -51,7 +51,7 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.mail.MailSending;
+import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
@@ -81,7 +81,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.mail.MailAddress.eMail;
+import static org.silverpeas.core.mail.MailAddress.eMail;
 
 /**
  * Class declaration

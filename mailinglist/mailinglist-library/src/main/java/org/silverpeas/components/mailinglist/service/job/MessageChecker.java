@@ -30,7 +30,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.mail.engine.SmtpConfiguration;
+import org.silverpeas.core.mail.engine.SmtpConfiguration;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 

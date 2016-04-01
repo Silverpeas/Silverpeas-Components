@@ -40,9 +40,9 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSub
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.mail.MailSending;
-import org.silverpeas.mail.ReceiverMailAddressSet;
-import org.silverpeas.mail.engine.SmtpConfiguration;
+import org.silverpeas.core.mail.MailSending;
+import org.silverpeas.core.mail.ReceiverMailAddressSet;
+import org.silverpeas.core.mail.engine.SmtpConfiguration;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.activation.DataHandler;
@@ -60,8 +60,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.silverpeas.mail.MailAddress.eMail;
-import static org.silverpeas.mail.MailContent.of;
+import static org.silverpeas.core.mail.MailAddress.eMail;
+import static org.silverpeas.core.mail.MailContent.of;
 
 /**
  * Utility class to send notifications.
