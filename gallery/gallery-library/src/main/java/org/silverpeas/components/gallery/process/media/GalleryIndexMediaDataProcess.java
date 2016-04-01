@@ -35,7 +35,7 @@ import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -65,7 +65,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
+   * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
   protected void processData(final GalleryProcessExecutionContext context,
@@ -75,7 +75,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.AbstractProcess#onSuccessful()
+   * @see AbstractProcess#onSuccessful()
    */
   @Override
   public void onSuccessful() throws Exception {

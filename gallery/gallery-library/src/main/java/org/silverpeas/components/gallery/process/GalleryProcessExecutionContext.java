@@ -25,7 +25,7 @@ package org.silverpeas.components.gallery.process;
 
 import java.sql.Connection;
 
-import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 

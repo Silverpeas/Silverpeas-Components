@@ -25,11 +25,11 @@ package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.components.gallery.MediaUtil;
 import org.silverpeas.components.gallery.model.InternalMedia;
-import org.silverpeas.process.ProcessProvider;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.management.AbstractFileProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.ProcessProvider;
+import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.management.AbstractFileProcess;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
+import org.silverpeas.core.process.session.ProcessSession;
 
 /**
  * Process to load metadata of a photo
@@ -59,9 +59,9 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
-   * org.silverpeas.process.io.file.FileHandler)
+   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
+   * management.ProcessExecutionContext, ProcessSession,
+   * FileHandler)
    */
   @Override
   public void processFiles(final ProcessExecutionContext context, final ProcessSession session,

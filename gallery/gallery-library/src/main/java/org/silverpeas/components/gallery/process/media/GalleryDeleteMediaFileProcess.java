@@ -26,8 +26,8 @@ package org.silverpeas.components.gallery.process.media;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.session.ProcessSession;
 
 /**
  * Process to delete a media from file system
@@ -54,9 +54,9 @@ public class GalleryDeleteMediaFileProcess extends AbstractGalleryFileProcess {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
-   * org.silverpeas.process.io.file.FileHandler)
+   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
+   * management.ProcessExecutionContext, ProcessSession,
+   * FileHandler)
    */
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,

@@ -25,7 +25,7 @@ package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.session.ProcessSession;
 
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
@@ -81,7 +81,7 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
+   * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
   protected void processData(final GalleryProcessExecutionContext context,

@@ -37,7 +37,7 @@ import org.silverpeas.components.yellowpages.control.YellowpagesSessionControlle
 import org.silverpeas.components.yellowpages.model.GroupDetail;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;

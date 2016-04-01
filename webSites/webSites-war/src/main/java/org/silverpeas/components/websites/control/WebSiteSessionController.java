@@ -54,7 +54,7 @@ import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.siteManage.model.FolderDetail;
 import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.ZipUtil;

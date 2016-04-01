@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.process;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.process.management.AbstractFileProcess;
+import org.silverpeas.core.process.management.AbstractFileProcess;
 
 /**
  * @author Yohann Chastagnier

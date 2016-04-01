@@ -36,7 +36,7 @@ import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;

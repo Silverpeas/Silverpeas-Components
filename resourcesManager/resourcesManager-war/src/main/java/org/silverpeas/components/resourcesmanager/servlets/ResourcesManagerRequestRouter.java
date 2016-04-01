@@ -47,7 +47,7 @@ import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataViewType;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;

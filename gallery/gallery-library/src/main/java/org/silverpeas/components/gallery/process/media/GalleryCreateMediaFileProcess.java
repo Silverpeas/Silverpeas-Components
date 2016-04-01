@@ -33,8 +33,8 @@ import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.session.ProcessSession;
 
 import java.io.File;
 
@@ -98,9 +98,9 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
-   * org.silverpeas.process.io.file.FileHandler)
+   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
+   * management.ProcessExecutionContext, ProcessSession,
+   * FileHandler)
    */
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,

@@ -34,7 +34,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.session.ProcessSession;
 
 import java.util.List;
 
@@ -80,7 +80,7 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
+   * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
   protected void processData(final GalleryProcessExecutionContext context,

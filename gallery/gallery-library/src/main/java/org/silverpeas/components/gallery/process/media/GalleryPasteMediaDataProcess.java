@@ -37,7 +37,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.session.ProcessSession;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -92,7 +92,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
+   * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
   protected void processData(final GalleryProcessExecutionContext context,

@@ -41,7 +41,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.process.media.*;
-import org.silverpeas.process.util.ProcessList;
+import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;

@@ -37,8 +37,8 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
-import org.silverpeas.process.management.AbstractDataProcess;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.management.AbstractDataProcess;
+import org.silverpeas.core.process.session.ProcessSession;
 
 /**
  * @author Yohann Chastagnier
@@ -59,8 +59,8 @@ public abstract class AbstractGalleryDataProcess extends
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.SilverpeasProcess#process(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
+   * @see SilverpeasProcess#process(org.silverpeas.process.management.
+   * ProcessExecutionContext, ProcessSession)
    */
   @Override
   public final void process(final GalleryProcessExecutionContext processExecutionContext,

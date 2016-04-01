@@ -29,7 +29,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
-import org.silverpeas.process.annotation.SimulationElementLister;
+import org.silverpeas.core.process.annotation.SimulationElementLister;
 
 import java.util.Collection;
 

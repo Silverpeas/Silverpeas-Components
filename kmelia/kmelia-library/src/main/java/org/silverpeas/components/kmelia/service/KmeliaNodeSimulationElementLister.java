@@ -28,7 +28,7 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
-import org.silverpeas.process.annotation.SimulationElementLister;
+import org.silverpeas.core.process.annotation.SimulationElementLister;
 
 import java.util.List;
 

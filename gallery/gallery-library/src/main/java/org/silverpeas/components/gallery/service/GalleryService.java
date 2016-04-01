@@ -40,7 +40,7 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.process.util.ProcessList;
+import org.silverpeas.core.process.util.ProcessList;
 
 import java.io.File;
 import java.util.Collection;

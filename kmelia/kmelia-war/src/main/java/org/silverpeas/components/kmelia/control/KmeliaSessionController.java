@@ -132,7 +132,7 @@ import org.silverpeas.core.datereminder.persistence.PersistentResourceDateRemind
 import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
 import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.upload.UploadedFile;

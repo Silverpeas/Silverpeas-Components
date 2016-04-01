@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.node.model.NodePK;
 
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
-import org.silverpeas.settings.SilverpeasSettings;
+import org.silverpeas.core.util.SilverpeasSettings;
 
 import javax.ws.rs.core.UriBuilder;
 

@@ -35,7 +35,7 @@ import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.core.process.session.ProcessSession;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -66,7 +66,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
+   * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
   protected void processData(final GalleryProcessExecutionContext context,
@@ -116,7 +116,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.AbstractProcess#onSuccessful()
+   * @see AbstractProcess#onSuccessful()
    */
   @Override
   public void onSuccessful() throws Exception {
