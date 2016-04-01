@@ -36,7 +36,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.components.questionreply.QuestionReplyException;
-import org.silverpeas.components.questionreply.service.ExpertPanel;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.service.notification.NotificationData;
 import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
@@ -52,7 +51,7 @@ import org.silverpeas.core.contribution.contentcontainer.container.ContainerCont
 import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import com.stratelia.silverpeas.genericPanel.GenericPanel;
+import org.silverpeas.core.web.panel.GenericPanel;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

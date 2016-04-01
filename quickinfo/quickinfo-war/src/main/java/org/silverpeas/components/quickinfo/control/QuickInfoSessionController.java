@@ -31,7 +31,7 @@ import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.contribution.publication.service.PublicationService;

@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.URLUtils" %>
+<%@ page import="org.silverpeas.core.util.URLEncoder" %>
 <%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%--
@@ -64,7 +64,9 @@
 
 String url = URLUtil.getNewComponentURL(spaceId, componentId)+"attachmentManager";
 getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+
-    URLUtils.encodeQueryNameOrValue(process.getInstanceId())+"&ComponentId="+URLUtils.encodeQueryNameOrValue(componentId)+"&Url="+URLUtils.encodeQueryNameOrValue(url)).include(request, response);
+    org.silverpeas.core.util.URLEncoder.encodeQueryNameOrValue(process.getInstanceId())+"&ComponentId="+
+		org.silverpeas.core.util.URLEncoder.encodeQueryNameOrValue(componentId)+"&Url="+
+		org.silverpeas.core.util.URLEncoder.encodeQueryNameOrValue(url)).include(request, response);
 
    out.println(frame.printAfter());
    out.println(window.printAfter());

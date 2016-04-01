@@ -46,7 +46,7 @@ import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.silverpeas.selection.Selection;
+import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.node.model.NodeDetail;

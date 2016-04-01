@@ -22,12 +22,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.questionreply.service;
+package org.silverpeas.components.questionreply.control;
 
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
-import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelProvider;
+import org.silverpeas.core.web.panel.PanelSearchEdit;
+import org.silverpeas.core.web.panel.PanelSearchToken;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;

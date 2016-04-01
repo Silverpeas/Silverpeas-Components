@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.net.URLEncoder"%>
-<%@ page import="org.silverpeas.util.URLUtils" %>
+<%@ page import="org.silverpeas.core.util.URLEncoder" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.exception.SilverpeasRuntimeException" %>
 <%@ page import="org.silverpeas.components.infoletter.InfoLetterException" %>
@@ -37,7 +37,7 @@ void displayAttachmentEdit(String id, String spaceId, String componentId, String
     try {
 	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="
 		+ id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Context=attachment" + "&Url=" +
-      URLUtils.encodeQueryNameOrValue(url)).include(request, response);
+      org.silverpeas.core.util.URLEncoder.encodeQueryNameOrValue(url)).include(request, response);
 
     } catch (Exception e) {
 		throw new InfoLetterException("viewLetter_JSP.displayViewWysiwyg",

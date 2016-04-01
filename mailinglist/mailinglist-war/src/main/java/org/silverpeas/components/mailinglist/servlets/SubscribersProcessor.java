@@ -29,8 +29,8 @@ import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
-import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 

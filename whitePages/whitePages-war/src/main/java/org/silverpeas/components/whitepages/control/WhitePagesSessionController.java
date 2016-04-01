@@ -45,7 +45,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
-import com.stratelia.silverpeas.selection.Selection;
+import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
