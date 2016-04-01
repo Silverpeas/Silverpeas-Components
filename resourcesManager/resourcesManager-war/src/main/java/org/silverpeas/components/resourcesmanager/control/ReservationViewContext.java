@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.control;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.web.calendar.CalendarViewContext;
 import org.silverpeas.components.resourcesmanager.web.ResourceManagerResourceURIs;
@@ -122,7 +122,7 @@ public class ReservationViewContext extends CalendarViewContext {
    * @return the reservation event URL.
    */
   public String getReservationEventUrl() {
-    StringBuilder uri = new StringBuilder(URLManager.getApplicationURL());
+    StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
     uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART);
@@ -156,7 +156,7 @@ public class ReservationViewContext extends CalendarViewContext {
     if (categoryId == null) {
       return "";
     }
-    StringBuilder uri = new StringBuilder(URLManager.getApplicationURL());
+    StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
     uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART);
@@ -172,7 +172,7 @@ public class ReservationViewContext extends CalendarViewContext {
     if (resourceId == null) {
       return "";
     }
-    StringBuilder uri = new StringBuilder(URLManager.getApplicationURL());
+    StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
     uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART);

@@ -1,6 +1,7 @@
 <%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -197,10 +198,10 @@ if (nav || (!nav && !isRootPath))
 			nameCell = Encode.javaStringToHtmlString(fileName);
 	        }
 	        //  permalien
-	        //link = URLManager.getApplicationURL() + "/SubDir/" + Encode.javaStringToHtmlString(fileName)+"?ComponentId="+componentId;
+	        //link = URLUtil.getApplicationURL() + "/SubDir/" + Encode.javaStringToHtmlString(fileName)+"?ComponentId="+componentId;
 	        String filePath = file.getPath();
 	        filePath = filePath.substring(rootPath.length()+1);
-	        link = URLManager.getApplicationURL() + "/SubDir/" + componentId +"?Path="+filePath;
+	        link = URLUtil.getApplicationURL() + "/SubDir/" + componentId +"?Path="+filePath;
 	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\">"+ "<img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\">" + "</a>";
 
 	        // affichage de la cellule

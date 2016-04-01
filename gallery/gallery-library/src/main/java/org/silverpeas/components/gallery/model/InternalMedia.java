@@ -28,7 +28,7 @@ import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.process.media.GalleryLoadMetaDataProcess;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 
@@ -136,7 +136,7 @@ public abstract class InternalMedia extends Media {
       if (StringUtil.isDefined(getFileName()) && isPreviewable()) {
         return GalleryResourceURIs.buildMediaContentURI(this, mediaResolution).toString();
       } else {
-        String thumbnailUrl = URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
+        String thumbnailUrl = URLUtil.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
             MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix();
         return FilenameUtils.normalize(thumbnailUrl, true);
       }

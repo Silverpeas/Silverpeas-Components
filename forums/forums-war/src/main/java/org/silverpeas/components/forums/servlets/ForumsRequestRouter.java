@@ -24,10 +24,10 @@
 package org.silverpeas.components.forums.servlets;
 
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.web.RequestHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.control.helpers.ForumActionHelper;
@@ -177,10 +177,10 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
         if ("Forum".equalsIgnoreCase(type)) {
-          destination = URLManager.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
+          destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
               "viewForum.jsp?call=main&forumId=" + id;
         } else {
-          destination = URLManager.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
+          destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
               "viewMessage.jsp?action=1&params=" + id;
         }
       } else {

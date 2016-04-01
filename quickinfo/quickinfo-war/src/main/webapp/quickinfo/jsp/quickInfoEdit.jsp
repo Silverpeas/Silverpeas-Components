@@ -41,7 +41,7 @@
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
 
@@ -83,7 +83,8 @@ if (quickInfoDetail != null) {
   	if (news.isMandatory()) {
   	  broadcastBlockingChecked = "checked=\"checked\"";
   	}
-  	pageContext.setAttribute("thumbnailBackURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId)+"View?Id="+news.getId(), PageContext.PAGE_SCOPE);
+  	pageContext.setAttribute("thumbnailBackURL", URLUtil.getFullApplicationURL(request)+
+				URLUtil.getURL("useless", componentId)+"View?Id="+news.getId(), PageContext.PAGE_SCOPE);
 }
 %>
 

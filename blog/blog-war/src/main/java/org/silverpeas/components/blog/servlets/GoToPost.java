@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 public class GoToPost extends GoTo {
 
@@ -45,7 +45,7 @@ public class GoToPost extends GoTo {
     BlogService service = BlogServiceFactory.getBlogService();
     PostDetail post = service.getContentById(objectId);
     String componentId = post.getPublication().getInstanceId();
-    String gotoURL = URLManager.getURL(null, componentId) + post.getPublication().getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + post.getPublication().getURL();
 
     // force context of GraphicElementFactory
     setGefSpaceId(req, componentId);

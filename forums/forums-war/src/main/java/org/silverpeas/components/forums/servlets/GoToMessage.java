@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.forums.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.apache.commons.lang3.CharEncoding;
 
@@ -46,7 +46,7 @@ public class GoToMessage extends GoTo {
     String componentName = getForumsService().getForumInstanceId(forumId);
     String messageUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, Integer.parseInt(objectId),
         forumId);
-    String gotoURL = URLManager.getURL(null, componentName) + messageUrl;
+    String gotoURL = URLUtil.getURL(null, componentName) + messageUrl;
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
   }
 }

@@ -238,7 +238,7 @@ var searchInProgress = <%=searchContext != null%>;
 var searchFolderId = "<%=id%>";
 
 function getComponentPermalink() {
-	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
+	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId)%>";
 }
 
 function copyCurrentNode()	{

@@ -31,7 +31,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>

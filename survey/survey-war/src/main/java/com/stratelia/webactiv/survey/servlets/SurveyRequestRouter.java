@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.survey.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -223,7 +223,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_CLIPBOARD_COPY_FAILED", "function = " + function, e);
       }
-      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
           "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if (function.startsWith("paste")) {
       try {
@@ -232,7 +232,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_CLIPBOARD_PASTE_FAILED", "function = " + function, e);
       }
-      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
+      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) + "Idle.jsp";
     } else if ("QuestionsUpdate".equals(function) || "questionsUpdate.jsp".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
 

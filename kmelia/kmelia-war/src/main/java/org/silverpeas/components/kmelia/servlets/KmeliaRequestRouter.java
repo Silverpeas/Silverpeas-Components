@@ -34,6 +34,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -44,7 +45,6 @@ import com.silverpeas.subscribe.util.SubscriptionManagementContext;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -170,7 +170,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] publicationIds = request.getParameterValues("pubid");
         Collection<KmeliaPublication> publications = kmelia.getPublications(asPks(kmelia.
             getComponentId(), publicationIds));
-        request.setAttribute("Context", URLManager.getApplicationURL());
+        request.setAttribute("Context", URLUtil.getApplicationURL());
         request.setAttribute("PublicationsDetails", publications);
         destination = rootDestination + "validateImportedFilesClassification.jsp";
       } else if (function.startsWith("portlet")) {
@@ -719,7 +719,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.copyPublication(objectId);
         }
 
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+        destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("cut")) {
         String objectType = request.getParameter("Object");
@@ -730,7 +730,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.cutPublication(objectId);
         }
 
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+        destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("ToAlertUserAttachment")) { // utilisation de alertUser et
         // alertUserPeas
@@ -908,8 +908,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("ObjectId", "Node_" + subTopicId);
         request.setAttribute("Language", kmelia.getLanguage());
         request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() +
-            URLManager.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
+        request.setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
+            URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
             "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId +
             "&Profile=" + flag);
         destination = "/wysiwyg/jsp/htmlEditor.jsp";
@@ -1272,7 +1272,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Language", kmelia.getLanguage());
         request.setAttribute("ContentLanguage", checkLanguage(kmelia, publication));
         request.setAttribute("ReturnUrl",
-            URLManager.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
+            URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
                 publication.getId());
         request.setAttribute("UserId", kmelia.getUserId());
         request.setAttribute("IndexIt", "false");
@@ -1899,7 +1899,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("ImportMode", importMode);
             request.setAttribute("DraftMode", draftMode);
             request.setAttribute("Title", importModeTitle);
-            request.setAttribute("Context", URLManager.getApplicationURL());
+            request.setAttribute("Context", URLUtil.getApplicationURL());
             request.setAttribute("Message", message);
 
             destination = routeDestination + "reportImportFiles.jsp";

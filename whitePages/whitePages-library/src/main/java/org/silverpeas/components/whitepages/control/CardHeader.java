@@ -30,9 +30,9 @@ import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.util.HashMap;
@@ -89,12 +89,12 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     StringBuilder buffer = new StringBuilder();
 
     buffer.append("<a href=\"");
-    buffer.append(URLManager.getApplicationURL());
-    buffer.append(URLManager.getURL(null, instanceId));
+    buffer.append(URLUtil.getApplicationURL());
+    buffer.append(URLUtil.getURL(null, instanceId));
     buffer.append("NotifyExpert?cardId=");
     buffer.append(cardId);
     buffer.append("\"><img src=\"");
-    buffer.append(URLManager.getApplicationURL());
+    buffer.append(URLUtil.getApplicationURL());
     buffer.append(whitePagesIcons.getString("whitePages.notify"));
     buffer.append("\" border=\"0\"></a>");
 

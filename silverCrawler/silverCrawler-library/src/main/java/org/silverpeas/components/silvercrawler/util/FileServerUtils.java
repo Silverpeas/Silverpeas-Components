@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.silvercrawler.util;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -32,7 +32,7 @@ public class FileServerUtils extends org.silverpeas.util.FileServerUtils {
 
   public static String getSilverCrawlerUrl(String logicalName, String physicalName,
       String componentId) {
-    UriBuilder uri = UriBuilder.fromPath(URLManager.getApplicationURL());
+    UriBuilder uri = UriBuilder.fromPath(URLUtil.getApplicationURL());
     uri.path("SilverCrawlerFileServer").path(logicalName);
     uri.queryParam("SourceFile", physicalName);
     uri.queryParam("TypeUpload", "link");
@@ -42,7 +42,7 @@ public class FileServerUtils extends org.silverpeas.util.FileServerUtils {
 
   public static String getSilverCrawlerUrl(String logicalName, String physicalName,
       String componentId, String path) {
-    UriBuilder uri = UriBuilder.fromPath(URLManager.getApplicationURL());
+    UriBuilder uri = UriBuilder.fromPath(URLUtil.getApplicationURL());
     uri.path("SilverCrawlerFileServer").path(logicalName);
     uri.queryParam("SourceFile", physicalName);
     uri.queryParam("TypeUpload", "zip");

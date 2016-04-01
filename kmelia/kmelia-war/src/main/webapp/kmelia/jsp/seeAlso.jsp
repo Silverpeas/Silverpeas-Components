@@ -37,6 +37,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@page import="org.silverpeas.core.index.search.SearchEngineProvider"%>
 <%@ page import="org.silverpeas.core.index.search.model.QueryDescription" %>
 <%@ page import="org.silverpeas.core.index.search.model.MatchingIndexEntry" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%!
  //Icons
@@ -134,7 +135,7 @@ function topicGoTo(id) {
 }
 
 function publicationGoTo(id, action){
-    document.pubForm.action = "<%=URLManager.getApplicationURL() + URLManager.getURL("kmelia", "useless", instanceId)%>ViewPublication";
+    document.pubForm.action = "<%=URLUtil.getApplicationURL() + URLUtil.getURL("kmelia", "useless", instanceId)%>ViewPublication";
     document.pubForm.CheckPath.value = "1";
     document.pubForm.PubId.value = id;
     document.pubForm.submit();

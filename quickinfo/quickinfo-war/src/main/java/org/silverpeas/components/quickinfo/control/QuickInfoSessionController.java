@@ -27,7 +27,7 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

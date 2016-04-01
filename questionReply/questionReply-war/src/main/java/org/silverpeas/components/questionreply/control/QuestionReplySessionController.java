@@ -33,6 +33,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.service.ExpertPanel;
@@ -56,7 +57,6 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -537,7 +537,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   public String genericWriters() throws QuestionReplyException {
     GenericPanel gp = new GenericPanel();
-    String webContext = URLManager.getApplicationURL();
+    String webContext = URLUtil.getApplicationURL();
     String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
     String cancelURL =
         webContext + "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId=" +

@@ -26,9 +26,9 @@ package org.silverpeas.components.delegatednews.servlets;
 import org.silverpeas.components.delegatednews.control.DelegatedNewsSessionController;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -87,7 +87,7 @@ public class DelegatedNewsRequestRouter
       } else if ("OpenPublication".equals(function)) {
         String pubId = request.getParameter("PubId");
         String instanceId = request.getParameter("InstanceId");
-        destination = URLManager.getURL(null, instanceId) + "ViewOnly?Id=" + pubId;
+        destination = URLUtil.getURL(null, instanceId) + "ViewOnly?Id=" + pubId;
       } else if ("ValidateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         newsSC.validateDelegatedNews(Integer.parseInt(pubId));

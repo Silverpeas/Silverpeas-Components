@@ -68,7 +68,7 @@
 <%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
 <%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
@@ -86,7 +86,7 @@
     MultiSilverpeasBundle resources 	= (MultiSilverpeasBundle)request.getAttribute("resources");
 	String[] 					browseContext 	= (String[]) request.getAttribute("browseContext");
 
-	String m_context = URLManager.getApplicationURL();
+	String m_context = URLUtil.getApplicationURL();
 	String spaceLabel = browseContext[0];
 	String componentLabel = browseContext[1];
 	String spaceId = browseContext[2];

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.quizz.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
@@ -48,7 +48,7 @@ public class GoToQuizz extends GoTo {
       String componentId = quizz.getInstanceId();
 
 
-      String gotoURL = URLManager.getURL(null, componentId) + quizz.getURL();
+      String gotoURL = URLUtil.getURL(null, componentId) + quizz.getURL();
       return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
     }
     return null;

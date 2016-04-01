@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.util.URLUtils" %>
 <%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -61,7 +62,7 @@
 	out.println(frame.printBefore());
     out.flush();
 
-String url = URLManager.getNewComponentURL(spaceId, componentId)+"attachmentManager";
+String url = URLUtil.getNewComponentURL(spaceId, componentId)+"attachmentManager";
 getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+
     URLUtils.encodeQueryNameOrValue(process.getInstanceId())+"&ComponentId="+URLUtils.encodeQueryNameOrValue(componentId)+"&Url="+URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 

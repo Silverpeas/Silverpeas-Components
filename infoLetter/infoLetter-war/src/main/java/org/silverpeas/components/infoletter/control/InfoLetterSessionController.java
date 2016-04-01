@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.infoletter.control;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
@@ -35,7 +36,6 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.Group;
@@ -128,9 +128,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public String initUserPanel() throws InfoLetterException {
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
-        URLManager.getApplicationURL() + "/RinfoLetter/" + getComponentId() + "/Main");
+        URLUtil.getApplicationURL() + "/RinfoLetter/" + getComponentId() + "/Main");
     String hostUrl =
-        URLManager.getApplicationURL() + "/RinfoLetter/" + getComponentId() + "/RetourPanel";
+        URLUtil.getApplicationURL() + "/RinfoLetter/" + getComponentId() + "/RetourPanel";
     Selection sel = getSelection();
     sel.resetAll();
     sel.setHostSpaceName(hostSpaceName);

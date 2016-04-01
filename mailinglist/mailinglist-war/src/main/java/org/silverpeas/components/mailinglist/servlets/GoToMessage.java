@@ -26,7 +26,7 @@ package org.silverpeas.components.mailinglist.servlets;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +39,7 @@ public class GoToMessage extends GoTo {
   public String getDestination(String id, HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     Message message = MailingListServicesProvider.getMessageService().getMessage(id);
-    String baseUrl = URLManager.getURL(null, message.getComponentId());
+    String baseUrl = URLUtil.getURL(null, message.getComponentId());
     if (!baseUrl.endsWith("/")) {
       baseUrl = baseUrl + '/';
     }

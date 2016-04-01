@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 public class RecordParticipation extends HttpServlet {
   private static final long serialVersionUID = -1833168544559333059L;
@@ -63,7 +63,7 @@ public class RecordParticipation extends HttpServlet {
         sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
     response.sendRedirect(response.encodeRedirectURL(
-        urlAbsolute + URLManager.getApplicationURL() + URLManager.getURL(null, null, componentId) +
+        urlAbsolute + URLUtil.getApplicationURL() + URLUtil.getURL(null, null, componentId) +
             "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
   }
 

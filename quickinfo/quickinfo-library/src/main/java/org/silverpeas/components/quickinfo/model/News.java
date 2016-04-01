@@ -32,7 +32,7 @@ import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -336,7 +336,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   }
 
   public String getPermalink() {
-    return URLManager.getSimpleURL(URLManager.URL_PUBLI, getPublicationId());
+    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getPublicationId());
   }
 
   public void setPublishDate(Date publishDate) {

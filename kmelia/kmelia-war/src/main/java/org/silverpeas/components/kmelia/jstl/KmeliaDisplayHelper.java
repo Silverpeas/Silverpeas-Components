@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
@@ -149,7 +149,7 @@ public class KmeliaDisplayHelper {
   public static void displayAllOperations(String id, KmeliaSessionController kmeliaScc,
       GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out,
       boolean kmaxMode) throws IOException {
-    String routerUrl = URLManager.getApplicationURL() + URLManager.getURL(kmeliaScc
+    String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL(kmeliaScc
         .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
     displayJavascriptAndFormToOperations(kmeliaScc, out);
     boolean enabled = StringUtil.isDefined(id);
@@ -261,7 +261,7 @@ public class KmeliaDisplayHelper {
       GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out,
       boolean kmaxMode) throws IOException {
 
-    String routerUrl = URLManager.getApplicationURL() + URLManager.getURL(kmeliaScc
+    String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL(kmeliaScc
         .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
     displayJavascriptAndFormToOperations(kmeliaScc, out);
     int i = 0;
@@ -290,7 +290,7 @@ public class KmeliaDisplayHelper {
       KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String action,
       MultiSilverpeasBundle resources, JspWriter out, boolean kmaxMode) throws IOException {
 
-    String routerUrl = URLManager.getApplicationURL() + URLManager.getURL(kmeliaScc
+    String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL(kmeliaScc
         .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
 
     displayJavascriptAndFormToOperations(kmeliaScc, out);

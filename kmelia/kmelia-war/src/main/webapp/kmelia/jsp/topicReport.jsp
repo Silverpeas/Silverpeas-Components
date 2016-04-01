@@ -13,6 +13,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%!
 String displayPath(Collection path, boolean linked, int beforeAfter, String translation) {
@@ -73,7 +74,7 @@ TopicDetail displaySessionTopicsToUsers(KmeliaSessionController kmeliaScc, Topic
 
 void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail nodeDetail, String folderSrc, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException {
 
-		boolean		displayLinks	= URLManager.displayUniversalLinks();
+		boolean		displayLinks	= URLUtil.displayUniversalLinks();
     	String		linkIcon		= resources.getIcon("kmelia.link");
 		String 		translation 	= kmeliaScc.getCurrentLanguage();
 	if (translation == null)
@@ -108,7 +109,7 @@ void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail
                   			String universalLink = null;
                   			if (displayLinks)
 							{
-								String link = URLManager.getSimpleURL(URLManager.URL_TOPIC, childId, node.getNodePK().getInstanceId());
+								String link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, childId, node.getNodePK().getInstanceId());
 								universalLink = "<a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"absmiddle\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
 							}
                             navList.addItem(Encode.javaStringToHtmlString(childName+nbPublis),"javascript:onClick=topicGoTo('"+childId+"')",-1,childDescription, universalLink);
@@ -123,7 +124,7 @@ void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail
 
 void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail nodeDetail, String folderSrc, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, MultiSilverpeasBundle resources, JspWriter out) throws IOException {
 
-		boolean		displayLinks	= URLManager.displayUniversalLinks();
+		boolean		displayLinks	= URLUtil.displayUniversalLinks();
 		String		linkIcon		= resources.getIcon("kmelia.link");
 		String 		translation 	= kmeliaScc.getCurrentLanguage();
 		
@@ -172,7 +173,7 @@ void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail n
 							String universalLink = "";
 							if (displayLinks)
 							{
-								String link = URLManager.getSimpleURL(URLManager.URL_TOPIC, childId, node.getNodePK().getInstanceId());
+								String link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, childId, node.getNodePK().getInstanceId());
 								universalLink = "&nbsp;<a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
 							}
                             arrayLine.addArrayCellText("<a href=\"javascript:onClick=topicGoTo('"+childId+"')\">"+childName+"</a>"+universalLink);

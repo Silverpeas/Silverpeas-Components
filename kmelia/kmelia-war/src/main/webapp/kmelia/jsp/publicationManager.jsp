@@ -268,7 +268,7 @@
       nextAction = "AddPublication";
 	}
 
-	String backUrl = URLManager.getFullApplicationURL(request) + URLManager.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
+	String backUrl = URLUtil.getFullApplicationURL(request) + URLUtil.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -522,7 +522,7 @@
           if (kmeliaScc.getSessionClone() == null && isNotificationAllowed) {
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
           }
-          String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+          String urlPublication = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
 	      pathString = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
 	      String namePath = spaceLabel + " > " + componentLabel;
 	      if (!pathString.equals("")) {

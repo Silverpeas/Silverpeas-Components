@@ -24,9 +24,9 @@
 
 package org.silverpeas.components.quizz.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.question.model.Question;
@@ -127,7 +127,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CLIPBOARD_COPY_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+        destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
         try {

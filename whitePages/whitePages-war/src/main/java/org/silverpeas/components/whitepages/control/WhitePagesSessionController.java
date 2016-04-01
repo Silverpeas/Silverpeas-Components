@@ -44,7 +44,7 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.component.model.CompoSpace;
@@ -763,7 +763,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         "org.silverpeas.whitePages.settings.whitePagesIcons",
         "org.silverpeas.whitePages.settings.settings");
     if (context == null) {
-      setComponentRootName(URLManager.CMP_WHITEPAGESPEAS);
+      setComponentRootName(URLUtil.CMP_WHITEPAGESPEAS);
     }
   }
 
@@ -807,7 +807,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   public void sendNotification(String bodyMessage) throws NotificationManagerException {
-    String url = URLManager.getURL(null, getComponentId()) + "consultIdentity?userCardId=" +
+    String url = URLUtil.getURL(null, getComponentId()) + "consultIdentity?userCardId=" +
         notifiedUserCard.getPK().getId();
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(

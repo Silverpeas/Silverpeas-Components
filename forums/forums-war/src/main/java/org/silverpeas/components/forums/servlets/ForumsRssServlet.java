@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.forums.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.RssServlet;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 import java.util.Collection;
 import java.util.Date;
@@ -63,7 +63,7 @@ public class ForumsRssServlet extends RssServlet {
   @Override
   public String getElementLink(Object element, String userId) {
     List message = (List) element;
-    String messageUrl = URLManager.getApplicationURL() + "/ForumsMessage/"
+    String messageUrl = URLUtil.getApplicationURL() + "/ForumsMessage/"
         + message.get(0) + "?ForumId="
         + message.get(4);
     return messageUrl;

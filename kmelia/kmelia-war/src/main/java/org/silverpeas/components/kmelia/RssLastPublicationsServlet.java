@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationServiceProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
@@ -140,7 +140,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
     item.setTitle(publication.getTitle());
     StringBuilder url = new StringBuilder(256);
     url.append(serverURL);
-    url.append(URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getPK().getId()));
+    url.append(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getPK().getId()));
     item.setLink(new URL(url.toString()));
     item.setDescription(publication.getDescription(lang));
     item.setDate(publication.getUpdateDate());
@@ -180,7 +180,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
       throws IOException {
     boolean isLoggedIn = util.getMainSessionController(req) != null;
     if (!isLoggedIn) {
-      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
       return;
     }
     res.sendRedirect("/weblib/notFound.html");

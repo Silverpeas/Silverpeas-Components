@@ -26,7 +26,7 @@ package org.silverpeas.components.classifieds.servlets.handler;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.net.URLEncoder;
@@ -41,8 +41,8 @@ public class ToWysiwygHeaderHandler extends FunctionHandler {
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
       throws Exception {
 
-    String returnURL = URLEncoder.encode(URLManager.getApplicationURL() +
-            URLManager.getURL(classifiedsSC.getSpaceId(), classifiedsSC.getComponentId()) +
+    String returnURL = URLEncoder.encode(URLUtil.getApplicationURL() +
+            URLUtil.getURL(classifiedsSC.getSpaceId(), classifiedsSC.getComponentId()) +
             "FromTopicWysiwyg", "UTF-8");
 
     StringBuilder destination = new StringBuilder();

@@ -222,7 +222,7 @@ var searchFolderId = "<%=id%>";
 </form>
 <script type="text/javascript">
 function getComponentPermalink() {
-	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, false)%>";
+	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, false)%>";
 }
 
 function deleteNode(nodeId, nodeLabel) {

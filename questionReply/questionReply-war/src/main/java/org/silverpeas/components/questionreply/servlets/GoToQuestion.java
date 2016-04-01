@@ -26,7 +26,7 @@ package org.silverpeas.components.questionreply.servlets;
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Question;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +43,7 @@ public class GoToQuestion extends GoTo {
         objectId));
     String componentId = question.getInstanceId();
 
-    String gotoURL = URLManager.getURL(null, componentId) + question._getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + question._getURL();
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 }

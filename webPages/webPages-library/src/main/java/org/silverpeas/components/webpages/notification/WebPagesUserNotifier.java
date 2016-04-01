@@ -31,7 +31,7 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavio
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -138,7 +138,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   @Override
   protected String getResourceURL(final NodePK resource) {
-    return URLManager.getURL(null, null, resource.getInstanceId()) + "Main";
+    return URLUtil.getURL(null, null, resource.getInstanceId()) + "Main";
   }
 
   @Override

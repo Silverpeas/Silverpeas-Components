@@ -30,15 +30,15 @@ import org.silverpeas.core.importexport.ExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -559,7 +559,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         if (keepIt) {
           SpaceInstLight si = getOrganisationController().getSpaceInstLightById(almanachInst.
               getDomainFatherId());
-          String url = URLManager.getApplicationURL() + URLManager.getURL(null, instanceId);
+          String url = URLUtil.getApplicationURL() + URLUtil.getURL(null, instanceId);
           AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setLabel(almanachInst.
               getLabel()).setSpaceId(si.getName()).setUrl(url);
           accessibleInstances.add(almanach);
@@ -764,7 +764,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   private String getObjectUrl(EventDetail eventDetail) {
-    return URLManager.getURL(null, getComponentId()) + eventDetail.getURL();
+    return URLUtil.getURL(null, getComponentId()) + eventDetail.getURL();
   }
 
   @Override

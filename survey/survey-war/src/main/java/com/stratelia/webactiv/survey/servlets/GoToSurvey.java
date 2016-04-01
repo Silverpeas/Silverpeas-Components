@@ -24,7 +24,7 @@
 package com.stratelia.webactiv.survey.servlets;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
@@ -50,7 +50,7 @@ public class GoToSurvey extends GoTo {
 
 
 
-      String gotoURL = URLManager.getURL(null, componentId) + survey.getURL();
+      String gotoURL = URLUtil.getURL(null, componentId) + survey.getURL();
 
       return "goto=" + URLEncoder.encode(gotoURL, UTF8);
     }

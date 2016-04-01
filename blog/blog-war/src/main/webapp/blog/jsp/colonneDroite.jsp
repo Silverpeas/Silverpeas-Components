@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.components.blog.model.Archive" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%
 Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", false);
 %>
@@ -93,7 +94,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 				<%
 				if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
 					String url = m_context + blogUrl + "Main";
-						String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
+						String lien = m_context + URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
 						out.println("<a href=\""+lien+"\">"+resource.getString("blog.links")+"</a>");
 				}
 				else {

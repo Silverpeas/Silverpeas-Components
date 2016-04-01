@@ -5,8 +5,8 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class GoToScheduleEvent extends GoTo {
 
@@ -18,7 +18,7 @@ public class GoToScheduleEvent extends GoTo {
 
 
 
-    String gotoURL =  URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT)
+    String gotoURL =  URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT)
         + "Detail?scheduleEventId=" + objectId;
 
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");

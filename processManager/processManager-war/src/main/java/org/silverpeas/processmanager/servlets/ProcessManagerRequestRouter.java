@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.workflow.api.model.AllowedAction;
 import org.silverpeas.core.workflow.api.model.AllowedActions;
 import org.silverpeas.core.workflow.api.model.Item;
@@ -49,7 +50,6 @@ import org.silverpeas.core.workflow.engine.model.ActionRefs;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -1153,7 +1153,7 @@ public class ProcessManagerRequestRouter
 
       try {
         String returnURL = URLEncoder.encode(
-            URLManager.getApplicationURL() + URLManager.getURL(null, session.getComponentId()) +
+            URLUtil.getApplicationURL() + URLUtil.getURL(null, session.getComponentId()) +
                 "FromWysiwygWelcome", "UTF-8");
         destination.append("/wysiwyg/jsp/htmlEditor.jsp?");
         destination.append("SpaceName=")

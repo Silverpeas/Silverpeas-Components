@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.blog.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.RssServlet;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
@@ -55,7 +55,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
 
   @Override
   public String getElementLink(PostDetail post, String userId) {
-    return URLManager.getApplicationURL() + "/Publication/"
+    return URLUtil.getApplicationURL() + "/Publication/"
         + post.getPublication().getPK().getId();
   }
 

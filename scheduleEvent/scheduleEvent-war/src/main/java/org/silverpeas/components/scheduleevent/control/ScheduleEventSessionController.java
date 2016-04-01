@@ -46,10 +46,10 @@ import org.silverpeas.components.scheduleevent.view.ScheduleEventDetailVO;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventVO;
 import org.silverpeas.components.scheduleevent.view.TimeVO;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -153,8 +153,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.getId();
       }
       String hostUrl =
-          m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
-      String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) +
+          m_context + URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
+      String cancelUrl = m_context + URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) +
           cancelDirection;
       sel.setGoBackURL(hostUrl);
       sel.setCancelURL(cancelUrl);

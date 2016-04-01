@@ -36,6 +36,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -43,13 +44,12 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -1777,14 +1777,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public String initUPToSelectValidator(String pubId) {
-    String mContext = URLManager.getApplicationURL();
+    String mContext = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("kmelia.SelectValidator"), "");
     String hostUrl =
-        mContext + URLManager.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
+        mContext + URLUtil.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
     String cancelUrl =
-        mContext + URLManager.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
+        mContext + URLUtil.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -2377,7 +2377,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public String initUserPanelForTopicProfile(String role, String nodeId, String[] groupIds,
       String[] userIds) {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("kmelia.SelectValidator"), "");
 
@@ -2387,9 +2387,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setHostComponentName(new Pair<>(getComponentLabel(), ""));
     sel.setHostPath(hostPath);
 
-    String hostUrl = m_context + URLManager.getURL("useless", getComponentId()) +
+    String hostUrl = m_context + URLUtil.getURL("useless", getComponentId()) +
         "TopicProfileSetUsersAndGroups?Role=" + role + "&NodeId=" + nodeId;
-    String cancelUrl = m_context + URLManager.getURL("useless", getComponentId()) + "CloseWindow";
+    String cancelUrl = m_context + URLUtil.getURL("useless", getComponentId()) + "CloseWindow";
 
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
@@ -2938,7 +2938,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       version = document.getVersionMaster();
     }
     if (version != null) {
-      return URLManager.getApplicationURL() + version.getAttachmentURL();
+      return URLUtil.getApplicationURL() + version.getAttachmentURL();
     }
     return null;
   }

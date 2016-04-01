@@ -42,6 +42,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 
@@ -298,7 +299,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
 				String instanceId = whitePagesCard.getInstanceId();
 				if(!card.getPK().getId().equals(String.valueOf(id))){
 					String label = whitePagesCard.getInstanceLabel();
-					String url = URLManager.getApplicationURL() + URLManager.getURL("whitePages", spaceId, instanceId);
+					String url = URLUtil.getApplicationURL() + URLUtil.getURL("whitePages", spaceId, instanceId);
 					out.println("<a href=\"javascript:changerChoice('"+id+"','"+url+"')\">"+label+"</a>");
 				}
 		}

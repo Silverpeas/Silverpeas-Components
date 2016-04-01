@@ -25,7 +25,7 @@ package org.silverpeas.components.gallery.constant;
 
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.Media;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.node.model.NodePK;
 
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
@@ -74,7 +74,7 @@ public final class GalleryResourceURIs {
     if (albumPk == null) {
       return null;
     }
-    return UriBuilder.fromUri(URLManager.getApplicationURL())
+    return UriBuilder.fromUri(URLUtil.getApplicationURL())
         .path(SilverpeasSettings.getRestWebServicesUriBase()).path(GALLERY_BASE_URI)
         .path(albumPk.getInstanceId()).path(GALLERY_ALBUMS_URI_PART).path(albumPk.getId()).build();
   }
@@ -103,7 +103,7 @@ public final class GalleryResourceURIs {
     if (media == null) {
       return null;
     }
-    UriBuilder uriBuilder = UriBuilder.fromUri(URLManager.getApplicationURL())
+    UriBuilder uriBuilder = UriBuilder.fromUri(URLUtil.getApplicationURL())
         .path(SilverpeasSettings.getRestWebServicesUriBase()).path(GALLERY_BASE_URI)
         .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
         .path(media.getId()).path(GALLERY_MEDIA_CONTENT_PART)
@@ -124,7 +124,7 @@ public final class GalleryResourceURIs {
     if (media == null) {
       return null;
     }
-    UriBuilder uriBuilder = UriBuilder.fromUri(URLManager.getApplicationURL())
+    UriBuilder uriBuilder = UriBuilder.fromUri(URLUtil.getApplicationURL())
         .path(SilverpeasSettings.getRestWebServicesUriBase()).path(GALLERY_BASE_URI)
         .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
         .path(media.getId()).path(GALLERY_MEDIA_EMBED_PART);
@@ -145,7 +145,7 @@ public final class GalleryResourceURIs {
       return null;
     }
     UriBuilder uriBuilder =
-        UriBuilder.fromUri(URLManager.getApplicationURL())
+        UriBuilder.fromUri(URLUtil.getApplicationURL())
             .path(SilverpeasSettings.getRestWebServicesUriBase()).path(GALLERY_BASE_URI)
             .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
             .path(media.getId()).path(GALLERY_MEDIA_THUMBNAIL_PART)

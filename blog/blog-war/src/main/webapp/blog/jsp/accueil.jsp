@@ -37,6 +37,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
@@ -68,7 +69,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
    operationPane.addOperation("useless", resource.getString("blog.viewCategory"), "ViewCategory");
 
    String url = m_context + blogUrl + "Main";
-   String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
+   String lien = m_context + URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
    operationPane.addOperation("useless", resource.getString("blog.viewLinks"), lien);
    operationPane.addOperation("useless", resource.getString("blog.customize"), "javascript:onClick=customize();");
    operationPane.addOperation("useless", resource.getString("blog.updateFooter"), "UpdateFooter");

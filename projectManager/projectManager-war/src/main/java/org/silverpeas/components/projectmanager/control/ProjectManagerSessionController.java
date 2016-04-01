@@ -29,10 +29,10 @@ import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
 import org.silverpeas.components.projectmanager.vo.DayVO;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.components.projectmanager.vo.WeekVO;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -373,8 +373,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public String initUserPanel() {
-    String urlContext = URLManager.getApplicationURL();
-    String hostUrl = urlContext + URLManager.getURL(getSpaceId(), getComponentId())
+    String urlContext = URLUtil.getApplicationURL();
+    String hostUrl = urlContext + URLUtil.getURL(getSpaceId(), getComponentId())
         + "FromUserPanel";
     Selection sel = getSelection();
     sel.resetAll();
@@ -403,8 +403,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public String initUserSelect() {
-    String urlContext = URLManager.getApplicationURL();
-    String hostUrl = urlContext + URLManager.getURL(getSpaceId(), getComponentId())
+    String urlContext = URLUtil.getApplicationURL();
+    String hostUrl = urlContext + URLUtil.getURL(getSpaceId(), getComponentId())
         + "FromUserSelect";
     Selection sel = getSelection();
     sel.resetAll();

@@ -54,7 +54,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail "%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
@@ -118,7 +118,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 	GallerySessionController gallerySC = (GallerySessionController) request.getAttribute("gallerySC");
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-	String m_context = URLManager.getApplicationURL();
+	String m_context = URLUtil.getApplicationURL();
 	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();

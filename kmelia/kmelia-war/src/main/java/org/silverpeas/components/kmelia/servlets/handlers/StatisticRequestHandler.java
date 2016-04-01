@@ -28,7 +28,7 @@ import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.stats.StatisticService;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -171,10 +171,10 @@ public class StatisticRequestHandler {
     sel.setElementSelectable(false);
 
     String hostUrl =
-        m_context + URLManager.getURL("useless", kmelia.getComponentId())
+        m_context + URLUtil.getURL("useless", kmelia.getComponentId())
             + "StatisticSetGroup?Role=";// + role
     String cancelUrl =
-        m_context + URLManager.getURL("useless", kmelia.getComponentId()) + "CloseWindow";
+        m_context + URLUtil.getURL("useless", kmelia.getComponentId()) + "CloseWindow";
 
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);

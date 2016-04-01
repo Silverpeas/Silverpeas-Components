@@ -22,7 +22,7 @@
 
 package org.silverpeas.components.kmelia.service;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -101,14 +101,14 @@ public class KmeliaHelper implements Serializable {
   public static String getPublicationUrl(PublicationDetail pubDetail, NodePK nodePK) {
     if (pubDetail.isAlias() && nodePK != null) {
       // app of the alias have to be defined
-      return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
+      return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId(),
           nodePK.getInstanceId(), false);
     }
-    return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(), false);
+    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId(), false);
   }
 
   public static String getNodeUrl(NodeDetail nodeDetail) {
-    return URLManager.getSimpleURL(URLManager.URL_TOPIC, nodeDetail.getNodePK().getId(), nodeDetail
+    return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, nodeDetail.getNodePK().getId(), nodeDetail
         .getNodePK().getInstanceId(), false);
   }
 

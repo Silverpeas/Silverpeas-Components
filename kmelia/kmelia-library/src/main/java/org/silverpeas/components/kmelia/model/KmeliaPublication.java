@@ -30,7 +30,7 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaService;
@@ -157,7 +157,7 @@ public class KmeliaPublication implements SilverpeasContent {
         getSilverpeasServerURL();
     String serverURL =
         ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", defaultURL);
-    return serverURL + URLManager.getSimpleURL(URLManager.URL_PUBLI, getPk().getId());
+    return serverURL + URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getPk().getId());
   }
 
   /**

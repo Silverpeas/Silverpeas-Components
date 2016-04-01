@@ -33,7 +33,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -210,7 +210,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
   }
 
   private String getObjectUrl(String pubId) {
-    return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubId, false);
+    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubId, false);
   }
 
   /**

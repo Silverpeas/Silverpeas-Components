@@ -25,7 +25,7 @@
 --%>
 <%@page import="org.silverpeas.components.classifieds.control.SearchContext"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -126,7 +126,7 @@ function viewClassifieds(fieldNumber, fieldValue) {
 					                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
 					                <%
 					                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-					                String url = URLManager.getApplicationURL() +  simpleDocument.getAttachmentURL();
+					                String url = URLUtil.getApplicationURL() +  simpleDocument.getAttachmentURL();
 					                %>
 					                  <a href="#"><img src="<%=url%>"/></a>
 					                </c:forEach>

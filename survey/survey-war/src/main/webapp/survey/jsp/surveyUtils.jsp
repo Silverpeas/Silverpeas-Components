@@ -802,7 +802,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	        r += "    <a title=\""+resources.getString("survey.CopySurveyLink")+"\" href=\""+m_context+"/Survey/"+surveyId+"\">";
 	        r += "      <img border=\"0\" alt=\""+resources.getString("survey.CopySurveyLink")+"\" src=\""+m_context+"/util/icons/link.gif\">";
 	        r += "    </a>"+resources.getString("GML.permalink")+"<br/>";
-	        r += "    <input type=\"text\" value=\""+URLManager.getServerURL(request)+surveyHeader.getPermalink()+"\" onFocus=\"select();\" class=\"inputPermalink\">";
+	        r += "    <input type=\"text\" value=\""+ URLUtil.getServerURL(request)+surveyHeader.getPermalink()+"\" onFocus=\"select();\" class=\"inputPermalink\">";
 	        r += "  </p>";
 	        r += "</div>";
 	        r += "</div>";

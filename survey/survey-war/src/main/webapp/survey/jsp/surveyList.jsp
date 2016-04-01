@@ -407,7 +407,7 @@ function closeSurvey(surveyId) {
 }
 
 function clipboardPaste() {     
-	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
+	  top.IdleFrame.document.location.replace('../..<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
 	}
 
 function openSPWindow(fonction, windowName){

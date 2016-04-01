@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.components.almanach.AlmanachContentManager;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
@@ -261,8 +261,8 @@ public class EventDetail extends AbstractBean
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks()) {
-      return URLManager.getApplicationURL() + "/Event/" + getId();
+    if (URLUtil.displayUniversalLinks()) {
+      return URLUtil.getApplicationURL() + "/Event/" + getId();
     }
 
     return null;

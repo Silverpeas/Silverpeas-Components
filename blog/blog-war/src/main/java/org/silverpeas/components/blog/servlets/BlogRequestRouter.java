@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.blog.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -363,8 +363,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
             URLEncoder.encode(blogSC.getComponentLabel(), CharEncoding.UTF_8));
         request.setAttribute("ObjectId", blogSC.getComponentId());
         request.setAttribute("Language", blogSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() +
-            URLManager.getURL("blog", "useless", blogSC.getComponentId()) + "Main");
+        request.setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
+            URLUtil.getURL("blog", "useless", blogSC.getComponentId()) + "Main");
         request.setAttribute("UserId", blogSC.getUserId());
         request.setAttribute("IndexIt", "false");
         destination = "/wysiwyg/jsp/htmlEditor.jsp";

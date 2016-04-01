@@ -25,7 +25,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.components.projectmanager.model.Filtre;
@@ -547,7 +547,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   private void alertResource(TaskDetail task, boolean onCreation) {
     NotificationSender notifSender = new NotificationSender(task.getInstanceId());
 
-    String url = URLManager.getURL("projectManager", null, task.getInstanceId())
+    String url = URLUtil.getURL("projectManager", null, task.getInstanceId())
         + "searchResult?Type=Task&Id=" + task.getId();
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(

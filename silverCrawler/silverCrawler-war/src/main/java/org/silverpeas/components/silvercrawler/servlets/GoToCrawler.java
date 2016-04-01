@@ -24,7 +24,7 @@
 package org.silverpeas.components.silvercrawler.servlets;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +40,7 @@ public class GoToCrawler extends GoTo {
     String path = req.getParameter("Path");
 
     String gotoURL =
-        URLManager.getURL(null, componentId) + "SubDirectoryFromResult?DirectoryPath=" + path;
+        URLUtil.getURL(null, componentId) + "SubDirectoryFromResult?DirectoryPath=" + path;
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 

@@ -58,7 +58,7 @@
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
@@ -95,7 +95,7 @@ String language = scc.getLanguage();
 
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
-String routerUrl = m_context + URLManager.getURL("questionReplyPDC", spaceId, componentId);
+String routerUrl = m_context + URLUtil.getURL("questionReplyPDC", spaceId, componentId);
 
 Window 			window 			= gef.getWindow();
 BrowseBar 		browseBar 		= window.getBrowseBar();

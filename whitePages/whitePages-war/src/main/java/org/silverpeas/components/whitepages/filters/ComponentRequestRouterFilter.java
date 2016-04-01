@@ -35,7 +35,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * Le filtre LoginFilter a pour effet de contrôler que l'utilisateur courant n'a pas une fiche à
@@ -54,7 +54,7 @@ public class ComponentRequestRouterFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String sURI = httpRequest.getRequestURI();
 
-    if (sURI.startsWith(URLManager.getApplicationURL() + "/R")) {
+    if (sURI.startsWith(URLUtil.getApplicationURL() + "/R")) {
       HttpSession session = httpRequest.getSession(false);
       if (session == null) {
         chain.doFilter(request, response);
@@ -63,7 +63,7 @@ public class ComponentRequestRouterFilter implements Filter {
       String componentId = (String) session.getAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
       if (isRedirectRequired(httpRequest, componentId)) {
         StringBuilder redirectURL = new StringBuilder(512);
-        redirectURL.append(URLManager.getURL(null, componentId));
+        redirectURL.append(URLUtil.getURL(null, componentId));
         redirectURL.append("ForceCardCreation");
         RequestDispatcher dispatcher = request.getRequestDispatcher(redirectURL.toString());
         dispatcher.forward(request, response);

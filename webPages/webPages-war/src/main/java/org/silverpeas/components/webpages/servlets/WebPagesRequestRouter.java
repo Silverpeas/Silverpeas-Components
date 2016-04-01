@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.webpages.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LookHelper;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionManagementContext;
@@ -30,7 +31,6 @@ import org.silverpeas.components.webpages.control.WebPagesSessionController;
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
@@ -115,7 +115,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           request.setAttribute("ObjectId", webPagesSC.getComponentId());
           request.setAttribute("Language", webPagesSC.getLanguage());
           request.setAttribute("ReturnUrl",
-              URLManager.getApplicationURL() + webPagesSC.getComponentUrl() + "Preview");
+              URLUtil.getApplicationURL() + webPagesSC.getComponentUrl() + "Preview");
           request.setAttribute("UserId", webPagesSC.getUserId());
           request.setAttribute("IndexIt", "false");
 

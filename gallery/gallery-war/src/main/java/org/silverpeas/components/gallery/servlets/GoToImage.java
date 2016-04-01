@@ -26,8 +26,8 @@ package org.silverpeas.components.gallery.servlets;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -46,7 +46,7 @@ public class GoToImage extends GoTo {
     Media media = getGalleryBm().getMedia(mediaPK);
     String componentId = media.getMediaPK().getInstanceId();
 
-    String gotoURL = URLManager.getURL(null, componentId) + media.getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + media.getURL();
 
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
   }

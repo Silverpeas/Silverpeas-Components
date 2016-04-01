@@ -42,6 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ page import="org.silverpeas.core.exception.SilverpeasException" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%
 	SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.publication.publicationSettings");
@@ -188,7 +189,7 @@ function closeWindows() {
 }
 
 function viewPublicVersions(docId) {
-	url = "<%=m_context+URLManager.getURL("VersioningPeas", spaceId, componentId)%>ListPublicVersionsOfDocument?DocId="+docId;
+	url = "<%=m_context+URLUtil.getURL("VersioningPeas", spaceId, componentId)%>ListPublicVersionsOfDocument?DocId="+docId;
     windowName = "publicVersionsWindow";
 	larg = "550";
 	haut = "350";

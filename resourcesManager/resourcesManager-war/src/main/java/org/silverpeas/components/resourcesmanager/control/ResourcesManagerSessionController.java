@@ -30,10 +30,10 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -319,7 +319,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         for (ResourceValidator validator : validators) {
           managers.add(new UserRecipient(String.valueOf(validator.getManagerId())));
         }
-        String url = URLManager.getURL(null, getComponentId()) +
+        String url = URLUtil.getURL(null, getComponentId()) +
             "ViewReservation?reservationId=" + reservationId;
 
         String subject = message.getString("resourcesManager.notifSubject");
@@ -384,9 +384,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public String initUserSelect(Collection<String> currentManagers) {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostUrl =
-        m_context + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserSelect";
+        m_context + URLUtil.getURL(getSpaceId(), getComponentId()) + "FromUserSelect";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -466,10 +466,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("resourcesManagerSC.SelectManager"), "");
     String hostUrl =
-        URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId()) +
+        URLUtil.getApplicationURL() + URLUtil.getURL("useless", getComponentId()) +
             "SetManager?PubId=" + pubId;
     String cancelUrl =
-        URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId()) +
+        URLUtil.getApplicationURL() + URLUtil.getURL("useless", getComponentId()) +
             "SetManager?PubId=" + pubId;
 
     Selection sel = getSelection();
@@ -503,14 +503,14 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   public String initUserPanelOtherPlanning() {
     Pair<String, String> hostComponentName =
-        new Pair<>(getString("resourcesManager.accueil"), URLManager.
+        new Pair<>(getString("resourcesManager.accueil"), URLUtil.
             getApplicationURL() + "/RresourcesManager/jsp/Main");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("resourcesManager.otherPlanning"),
-        URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) + "Main");
-    String hostUrl = URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) +
+        URLUtil.getApplicationURL() + URLUtil.getURL(null, getComponentId()) + "Main");
+    String hostUrl = URLUtil.getApplicationURL() + URLUtil.getURL(null, getComponentId()) +
         "ViewOtherPlanning";
-    String cancelUrl = URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) +
+    String cancelUrl = URLUtil.getApplicationURL() + URLUtil.getURL(null, getComponentId()) +
         "Main";
     Selection sel = getSelection();
     sel.resetAll();
@@ -576,7 +576,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
-    String url = URLManager.getURL(null, getComponentId()) +
+    String url = URLUtil.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(
@@ -622,7 +622,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
-    String url = URLManager.getURL(null, getComponentId()) +
+    String url = URLUtil.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(

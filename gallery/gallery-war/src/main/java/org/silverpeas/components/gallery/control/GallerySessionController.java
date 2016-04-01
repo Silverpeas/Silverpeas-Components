@@ -30,7 +30,8 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -44,7 +45,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -634,7 +634,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     OrganizationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("-1", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
-    String url = URLManager.getURL(null, getComponentId()) + "Main";
+    String url = URLUtil.getURL(null, getComponentId()) + "Main";
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
@@ -719,7 +719,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   private String getMediaUrl(Media media) {
-    return URLManager.getURL(null, getComponentId()) + media.getURL();
+    return URLUtil.getURL(null, getComponentId()) + media.getURL();
   }
 
   public Collection<String> getListSelected() {
@@ -886,7 +886,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     OrganizationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("-1", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
-    String url = URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
+    String url = URLUtil.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId;
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
@@ -929,7 +929,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     Order order = getOrder(orderId);
     String user = getOrganisationController().getUserDetail(order.
         getProcessUserId()).getDisplayedName();
-    String url = URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
+    String url = URLUtil.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId;
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,

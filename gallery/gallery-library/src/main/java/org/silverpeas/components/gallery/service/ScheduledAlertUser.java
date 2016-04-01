@@ -35,7 +35,7 @@ import org.silverpeas.core.notification.user.client.NotificationManagerException
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -137,7 +137,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       LocalizedContent localizedContent, NotificationMetaData notificationMetaData) {
     String nameInstance =
         getOrganisationController().getComponentInst(componentInstanceId).getLabel();
-    String url = URLManager.getComponentInstanceURL(componentInstanceId) + "Main";
+    String url = URLUtil.getComponentInstanceURL(componentInstanceId) + "Main";
     for (String language : DisplayI18NHelper.getLanguages()) {
       LocalizationBundle bundle = LocalizedContent.getBundle(language);
       String subject = bundle.getString("gallery.notifSubject");

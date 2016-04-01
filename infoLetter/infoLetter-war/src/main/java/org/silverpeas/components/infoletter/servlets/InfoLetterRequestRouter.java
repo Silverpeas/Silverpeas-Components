@@ -28,9 +28,9 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.components.infoletter.model.InfoLetter;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
@@ -328,7 +328,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           infoLetterSC.updateInfoLetterPublication(ilp);
           infoLetterSC.createIndex(ilp);
           String server = request.getRequestURL().substring(0,
-              request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
+              request.getRequestURL().toString().indexOf(URLUtil.getApplicationURL()));
           infoLetterSC.notifyInternalSuscribers(ilp, server);
 
           emailErrors = infoLetterSC.sendByMailToExternalSubscribers(ilp, server);
@@ -507,7 +507,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
 
           String server = request.getRequestURL().substring(0,
-              request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
+              request.getRequestURL().toString().indexOf(URLUtil.getApplicationURL()));
           emailErrors = infoLetterSC.notifyManagers(ilp, server);
         }
         request.setAttribute("EmailErrors", emailErrors);

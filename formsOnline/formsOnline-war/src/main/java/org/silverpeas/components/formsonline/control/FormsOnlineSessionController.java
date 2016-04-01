@@ -34,10 +34,10 @@ import org.silverpeas.components.formsonline.model.RequestsByStatus;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -125,7 +125,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private String initSelection(SelectionUsersGroups sug, String goFunction, List<String> userIds,
       List<String> groupIds) {
     String url = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL") +
-        URLManager.getURL(getSpaceId(), getComponentId());
+        URLUtil.getURL(getSpaceId(), getComponentId());
     String goUrl = url + goFunction;
     String cancelUrl = url + "SendersReceivers";
 

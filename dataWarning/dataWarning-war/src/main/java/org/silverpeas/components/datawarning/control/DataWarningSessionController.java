@@ -28,10 +28,10 @@ import org.silverpeas.components.datawarning.model.DataWarningGroup;
 import org.silverpeas.components.datawarning.model.DataWarningQuery;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
 import org.silverpeas.components.datawarning.model.DataWarningUser;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.Group;
@@ -128,9 +128,9 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     try {
       String curContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       String hostUrl =
-          curContext + URLManager.getURL(getSpaceId(), getComponentId()) + "SaveNotification";
+          curContext + URLUtil.getURL(getSpaceId(), getComponentId()) + "SaveNotification";
       String cancelUrl =
-          curContext + URLManager.getURL(getSpaceId(), getComponentId()) + "schedulerParameters";
+          curContext + URLUtil.getURL(getSpaceId(), getComponentId()) + "schedulerParameters";
       Pair<String, String> hostComponentName = new Pair<>("", "");
       String hostSpaceName = getSpaceLabel();
 

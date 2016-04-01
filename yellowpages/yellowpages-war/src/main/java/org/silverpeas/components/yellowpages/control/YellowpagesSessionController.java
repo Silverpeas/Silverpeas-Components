@@ -36,10 +36,10 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -479,8 +479,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("UserCreer"), "");
-    String hostUrl = mContext + URLManager.getURL(null, getComponentId()) + "saveUser";
-    String cancelUrl = mContext + URLManager.getURL(null, getComponentId()) + "ContactNew";
+    String hostUrl = mContext + URLUtil.getURL(null, getComponentId()) + "saveUser";
+    String cancelUrl = mContext + URLUtil.getURL(null, getComponentId()) + "ContactNew";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -535,8 +535,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("GroupAdd"), "");
-    String hostUrl = mContext + URLManager.getURL(null, getComponentId()) + "AddGroup";
-    String cancelUrl = mContext + URLManager.getURL(null, getComponentId()) + "AddGroup";
+    String hostUrl = mContext + URLUtil.getURL(null, getComponentId()) + "AddGroup";
+    String cancelUrl = mContext + URLUtil.getURL(null, getComponentId()) + "AddGroup";
 
     Selection sel = getSelection();
     sel.resetAll();

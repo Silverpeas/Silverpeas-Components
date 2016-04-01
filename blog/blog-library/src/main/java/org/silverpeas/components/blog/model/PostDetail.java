@@ -27,7 +27,7 @@ package org.silverpeas.components.blog.model;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
@@ -135,8 +135,8 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks()) {
-      return URLManager.getApplicationURL() + "/Post/" + publication.getPK().getId();
+    if (URLUtil.displayUniversalLinks()) {
+      return URLUtil.getApplicationURL() + "/Post/" + publication.getPK().getId();
     }
 
     return null;

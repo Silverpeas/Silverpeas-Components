@@ -24,7 +24,7 @@
 
 --%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
@@ -91,7 +91,8 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
                       	if (checkboxAllowed)
                       		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"-"+pub.getPK().getInstanceId()+"\"></td>");
 						out.print("<td width=\"1\">&#149;&nbsp;</td><td nowrap>");
-						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+EncodeHelper.javaStringToHtmlString(pub.getName(language))+"</b></a>");
+						out.print("<a href=\""+
+                URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+EncodeHelper.javaStringToHtmlString(pub.getName(language))+"</b></a>");
 						out.print("&nbsp;</td><td width=\"100%\">");
 						out.print("&nbsp;");
 						out.println("</td>");

@@ -31,7 +31,7 @@ import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
@@ -267,7 +267,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
    * @return the permalink string of a media.
    */
   public String getPermalink() {
-    return URLManager.getPermalink(URLManager.Permalink.Media, getId());
+    return URLUtil.getPermalink(URLUtil.Permalink.Media, getId());
   }
 
   /**
@@ -288,7 +288,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       mediaResolution = MediaResolution.PREVIEW;
     }
     String thumbnailUrl =
-        URLManager.getApplicationURL() + "/gallery/jsp/icons/" + getType().name().toLowerCase() +
+        URLUtil.getApplicationURL() + "/gallery/jsp/icons/" + getType().name().toLowerCase() +
             "_";
     switch (mediaResolution) {
       case TINY:

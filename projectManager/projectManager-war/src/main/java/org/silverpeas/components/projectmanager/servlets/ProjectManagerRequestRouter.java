@@ -38,9 +38,9 @@ import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.core.util.StringUtil;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
@@ -232,7 +232,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         List<Date> holidays = projectManagerSC.getHolidayDates();
         HttpSession session = request.getSession(true);
         session.setAttribute("Silverpeas_NonSelectableDays", holidays);
-        destination = URLManager.getURL(URLManager.CMP_AGENDA, null, null)
+        destination = URLUtil.getURL(URLUtil.CMP_AGENDA, null, null)
             + "calendar.jsp?JSCallback=" + jsFunction + "&indiceForm=0&indiceElem=" + inputId;
       } else if ("ToUserPanel".equals(function)) {
         try {

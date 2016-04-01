@@ -27,7 +27,7 @@ import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.MissingResourceException;
@@ -78,7 +78,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
 
   @Override
   protected String getResourceURL(final FormInstance resource) {
-    return URLManager.getComponentInstanceURL(resource.getComponentInstanceId()) +
+    return URLUtil.getComponentInstanceURL(resource.getComponentInstanceId()) +
         "/ViewRequest?Id=" + resource.getId();
   }
 

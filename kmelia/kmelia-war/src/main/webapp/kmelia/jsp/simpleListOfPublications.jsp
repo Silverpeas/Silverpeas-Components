@@ -61,7 +61,7 @@ String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //
 
 String language = kmeliaScc.getLanguage();
 
-String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);
+String urlTopic	= URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, true);
 
 String userId = kmeliaScc.getUserId();
 

@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -40,7 +41,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -1005,7 +1005,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.copyMedia(objectId);
         }
         destination =
-            URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+            URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
                 "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if ("CopySelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
@@ -1028,7 +1028,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.cutMedia(objectId);
         }
         destination =
-            URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+            URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
                 "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if ("CutSelectedMedia".equals(function)) {
         processSelection(request, gallerySC);

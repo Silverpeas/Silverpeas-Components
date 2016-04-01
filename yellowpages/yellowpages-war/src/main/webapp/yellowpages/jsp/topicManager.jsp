@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
@@ -182,7 +182,7 @@ function toAddOrUpdateFolder(action, id) {
   }
 
 	$.ajax({
-		url: webContext+'<%=URLManager.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
+		url: webContext+'<%=URLUtil.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
 		async: false,
 		type: "GET",
 		dataType: "html",

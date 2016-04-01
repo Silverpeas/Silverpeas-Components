@@ -29,7 +29,7 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentQuickInfosInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -59,8 +59,8 @@ public class SocialCommentQuickInfos implements SocialCommentQuickInfosInterface
       News news = QuickInfoServiceProvider.getQuickInfoService().getNews(resourceId);
 
       //set URL, title and description of the news
-      socialInformation.setUrl(URLManager
-          .getSimpleURL(URLManager.URL_PUBLI, news.getPublicationId(),
+      socialInformation.setUrl(URLUtil
+          .getSimpleURL(URLUtil.URL_PUBLI, news.getPublicationId(),
               news.getComponentInstanceId(), false));
       socialInformation.setTitle(news.getTitle());
     }

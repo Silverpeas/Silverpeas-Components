@@ -41,6 +41,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ include file="checkAlmanach.jsp" %>
 
 <%
@@ -316,7 +317,7 @@ $(document).ready(function(){
 				<p id="permalinkInfo">
 					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'/></a>
 					<%=resources.getString("GML.permalink")%> <br />
-					<input class="inputPermalink" type="text" onfocus="select();" value="<%=URLManager.getServerURL(request)+link %>" />
+					<input class="inputPermalink" type="text" onfocus="select();" value="<%=URLUtil.getServerURL(request)+link %>" />
 				</p>
 			<% } %>
 		   </div>

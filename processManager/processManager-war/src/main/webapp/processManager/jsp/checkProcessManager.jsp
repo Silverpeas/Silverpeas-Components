@@ -76,7 +76,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>

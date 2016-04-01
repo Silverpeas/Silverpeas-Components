@@ -32,9 +32,9 @@ import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -296,7 +296,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     boolean specificTemplateUsed = kmeliaScc.isCustomPublicationTemplateUsed();
 
     PublicationFragmentSettings fragmentSettings = new PublicationFragmentSettings();
-    fragmentSettings.displayLinks = URLManager.displayUniversalLinks();
+    fragmentSettings.displayLinks = URLUtil.displayUniversalLinks();
     fragmentSettings.showImportance = kmeliaScc.isFieldImportanceVisible();
     fragmentSettings.fileStorageShowExtraInfoPub =
         resources.getSetting("fileStorageShowExtraInfoPub", false);
@@ -795,10 +795,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       MultiSilverpeasBundle resources) throws IOException {
     String link;
     if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
-      link = URLManager
-          .getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), kmeliaScc.getComponentId());
+      link = URLUtil
+          .getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId(), kmeliaScc.getComponentId());
     } else {
-      link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId());
+      link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
     }
     return " - <a href=\"" + link + "\"><img src=\"" + resources.getIcon("kmelia.link") +
         "\" border=\"0\" align=\"absmiddle\" alt=\"" +
@@ -927,7 +927,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             getFilename()));
         String size = FileRepositoryManager.formatFileSize(attachment.getSize());
         String downloadTime = FileRepositoryManager.getFileDownloadTime(attachment.getSize());
-        String permalink = URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getId());
+        String permalink = URLUtil.getSimpleURL(URLUtil.URL_DOCUMENT, document.getId());
         String url = FileServerUtils.getApplicationContext() + attachment.getAttachmentURL();
 
         if (alias) {
@@ -1106,7 +1106,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       MultiSilverpeasBundle resources, GraphicElementFactory gef, Writer writer) throws IOException {
 
     List<KmeliaPublication> pubs = kmeliaScc.getLatestPublications();
-    boolean displayLinks = URLManager.displayUniversalLinks();
+    boolean displayLinks = URLUtil.displayUniversalLinks();
     PublicationDetail pub;
     KmeliaPublication kmeliaPub;
     String language = kmeliaScc.getCurrentLanguage();
@@ -1163,7 +1163,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           }
           writer.write(resources.getOutputDate(pub.getUpdateDate()));
           if (displayLinks) {
-            String link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId());
+            String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
             writer.write(" - <a href=\"" + link + "\"><img src=\"" + linkIcon +
                 "\" border=\"0\" align=\"absmiddle\" alt=\"" +
                 resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.model;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
@@ -157,7 +157,7 @@ public class Question extends SilverpeasBean {
   }
 
   public String _getPermalink() {
-    return URLManager.getSimpleURL(URLManager.URL_QUESTION, getPK().getId(), false);
+    return URLUtil.getSimpleURL(URLUtil.URL_QUESTION, getPK().getId(), false);
   }
 
   public String _getURL() {

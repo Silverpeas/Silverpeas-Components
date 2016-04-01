@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -212,7 +212,7 @@ public class SuggestionEntity implements WebEntity {
     if (suggestion == null || suggestion.getSuggestionBox() == null) {
       return null;
     }
-    return UriBuilder.fromUri(URLManager.getApplicationURL())
+    return UriBuilder.fromUri(URLUtil.getApplicationURL())
         .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(BOX_BASE_URI)
         .path(suggestion.getSuggestionBox().getComponentInstanceId())
         .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)

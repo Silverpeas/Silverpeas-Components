@@ -61,7 +61,7 @@ function openSPWindow(fonction, windowName){
     out.println(frame.printBefore());
 
 	out.flush();    
-	String url = URLManager.getURL("useless", componentId) + "PdcPositions?MediaId="+photoId;
+	String url = URLUtil.getURL("useless", componentId) + "PdcPositions?MediaId="+photoId;
 	getServletConfig().getServletContext().getRequestDispatcher("/RpdcClassify/jsp/NewPosition?ComponentId="+componentId+"&ReturnURL="+URLEncoder.encode(url)).include(request, response);
 
   	out.println(frame.printAfter());

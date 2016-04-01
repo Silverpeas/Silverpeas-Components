@@ -58,7 +58,7 @@ if (project != null)
 <script type="text/javascript">
 function editDate(indiceElem)
 {
-		chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+indiceElem;
+		chemin = "<%=m_context%><%=URLUtil.getURL(URLUtil.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+indiceElem;
 		largeur = "180";
 		hauteur = "200";
 		SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");

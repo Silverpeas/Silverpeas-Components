@@ -24,7 +24,7 @@
 package org.silverpeas.components.almanach.servlets;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventPK;
@@ -50,7 +50,7 @@ public class GoToEvent extends GoTo {
     // Set GEF and look helper space identifier
     setGefSpaceId(req, componentId);
 
-    String gotoURL = URLManager.getURL(null, componentId) + event.getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + event.getURL();
 
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }

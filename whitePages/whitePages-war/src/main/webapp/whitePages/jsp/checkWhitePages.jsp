@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.components.whitepages.control.WhitePagesSessionController"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
@@ -76,7 +76,7 @@ String returnURL = (String) request.getAttribute("ReturnURL");
 
 
 
-String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("whitePages", spaceId, componentId);
+String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL("whitePages", spaceId, componentId);
 
 String language = scc.getLanguage();
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");

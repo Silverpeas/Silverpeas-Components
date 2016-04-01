@@ -43,7 +43,7 @@
 
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
 <%@page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
@@ -422,7 +422,7 @@
         function addFavorite() {
           var name = $("#breadCrumb").text() + " > " + $(".publiName").text();
           var description = "<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
-          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+          var url = "<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId())%>";
           postNewLink(name, url, description);
         }
 
@@ -587,17 +587,17 @@
           <% } %>
 
 
-		    <% if (URLManager.displayUniversalLinks()) {
+		    <% if (URLUtil.displayUniversalLinks()) {
 		            String link = null;
 		            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
-		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
+		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId(),
 		                  contextComponentId);
 		            } else {
-		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
 		            }%>
 		        <p id="permalinkInfo">
 		        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
-		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
+		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLUtil.getServerURL(request)+link%>" />
 		        </p>
         <% }%>
         </div>
@@ -630,7 +630,7 @@
                 }
                 %>
         <c:set var="attachmentPosition"><%=resources.getSetting("attachmentPosition")%></c:set>
-        <c:set var="callbackUrl"><%=URLManager.getURL("useless", componentId) + "ViewPublication"%></c:set>
+        <c:set var="callbackUrl"><%=URLUtil.getURL("useless", componentId) + "ViewPublication"%></c:set>
         <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
                                      componentInstanceIdAlias="<%=alias%>"
                                      resourceId="<%=id%>"

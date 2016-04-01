@@ -34,14 +34,14 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
@@ -734,7 +734,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   private String getSurveyUrl(QuestionContainerDetail questionDetail) {
-    return URLManager.getURL(null, getComponentId()) + questionDetail.getHeader().getURL();
+    return URLUtil.getURL(null, getComponentId()) + questionDetail.getHeader().getURL();
   }
 
   public boolean isPollingStationMode() {
