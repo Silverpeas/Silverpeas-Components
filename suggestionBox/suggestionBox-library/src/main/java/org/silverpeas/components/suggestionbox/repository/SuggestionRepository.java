@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import com.silverpeas.notation.control.RatingService;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.core.comment.service.CommentService;
@@ -34,7 +34,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;

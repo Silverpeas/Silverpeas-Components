@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox.mock;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.notation.control.RatingService;
+import org.silverpeas.core.contribution.rating.control.RatingService;
 import org.mockito.Mockito;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;

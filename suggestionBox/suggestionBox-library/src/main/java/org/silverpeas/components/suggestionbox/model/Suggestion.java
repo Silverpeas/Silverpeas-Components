@@ -36,8 +36,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.Rateable;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.Rateable;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;

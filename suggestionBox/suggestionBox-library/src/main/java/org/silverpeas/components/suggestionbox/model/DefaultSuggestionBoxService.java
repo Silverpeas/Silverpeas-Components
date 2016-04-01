@@ -25,7 +25,7 @@ package org.silverpeas.components.suggestionbox.model;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.comment.service.CommentService;
-import com.silverpeas.notation.control.RatingService;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import org.silverpeas.core.admin.user.model.UserDetail;

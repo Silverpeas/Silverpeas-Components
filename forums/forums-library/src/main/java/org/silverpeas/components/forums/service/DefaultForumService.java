@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.forums.service;
 
-import com.silverpeas.notation.control.RatingService;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
@@ -54,7 +54,7 @@ import org.silverpeas.components.forums.subscription.ForumSubscriptionResource;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
-import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;

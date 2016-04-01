@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.forums.model;
 
-import com.silverpeas.notation.control.RatingService;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.Rateable;
+import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.Rateable;
 
 import java.io.Serializable;
 import java.util.Date;
