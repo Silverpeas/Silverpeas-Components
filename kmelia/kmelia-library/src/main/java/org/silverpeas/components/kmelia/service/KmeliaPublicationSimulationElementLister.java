@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import com.silverpeas.thumbnail.control.ThumbnailSimulationElement;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailSimulationElement;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;

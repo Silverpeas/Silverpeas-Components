@@ -26,8 +26,8 @@ package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;

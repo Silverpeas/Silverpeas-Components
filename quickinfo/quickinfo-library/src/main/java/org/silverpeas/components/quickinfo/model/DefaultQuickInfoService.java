@@ -25,8 +25,8 @@
 package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.core.ApplicationService;
-import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;

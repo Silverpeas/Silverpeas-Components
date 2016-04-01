@@ -42,7 +42,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.thumbnail.ThumbnailSettings;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;

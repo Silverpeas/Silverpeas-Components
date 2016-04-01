@@ -25,7 +25,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.thumbnail.ThumbnailSettings;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

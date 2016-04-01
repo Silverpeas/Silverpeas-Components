@@ -41,7 +41,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionManagementContext;
-import com.silverpeas.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;

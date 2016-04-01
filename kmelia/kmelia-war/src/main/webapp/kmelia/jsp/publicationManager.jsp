@@ -29,8 +29,8 @@
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
-<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
+<%@page import="org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings"%>
+<%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@page import="org.silverpeas.util.i18n.I18NHelper" %>

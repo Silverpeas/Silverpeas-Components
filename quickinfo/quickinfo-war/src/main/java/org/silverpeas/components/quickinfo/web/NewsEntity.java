@@ -36,7 +36,7 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.TimeData;
 import org.silverpeas.core.util.time.TimeUnit;
 
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.util.DateUtil;
 
 public class NewsEntity implements WebEntity {

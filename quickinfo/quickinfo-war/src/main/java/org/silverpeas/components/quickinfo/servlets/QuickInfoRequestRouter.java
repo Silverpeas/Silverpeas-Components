@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
