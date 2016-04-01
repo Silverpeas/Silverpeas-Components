@@ -54,7 +54,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;

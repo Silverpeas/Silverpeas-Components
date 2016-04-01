@@ -59,7 +59,7 @@ import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.CalendarEventEncoder;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ForeignPK;

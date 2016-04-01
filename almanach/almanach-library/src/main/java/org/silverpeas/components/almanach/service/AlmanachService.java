@@ -28,7 +28,7 @@ import org.silverpeas.components.almanach.model.PeriodicityException;
 import net.fortuna.ical4j.model.Calendar;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;

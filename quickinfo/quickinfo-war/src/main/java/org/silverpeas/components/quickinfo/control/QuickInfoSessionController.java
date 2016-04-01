@@ -43,7 +43,7 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;

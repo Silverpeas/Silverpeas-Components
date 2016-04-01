@@ -14,7 +14,7 @@ import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 

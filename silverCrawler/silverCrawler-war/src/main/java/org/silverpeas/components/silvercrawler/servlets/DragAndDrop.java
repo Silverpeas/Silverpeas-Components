@@ -31,7 +31,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.upload.UploadSession;
+import org.silverpeas.core.io.upload.UploadSession;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

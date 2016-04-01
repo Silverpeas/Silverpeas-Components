@@ -43,8 +43,8 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<%@ page import="org.silverpeas.upload.FileUploadManager"%>
-<%@ page import="org.silverpeas.upload.UploadedFile"%>
+<%@ page import="org.silverpeas.core.io.upload.FileUploadManager"%>
+<%@ page import="org.silverpeas.core.io.upload.UploadedFile"%>
 <%@ page import="org.silverpeas.util.NotifierUtil"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map" %>

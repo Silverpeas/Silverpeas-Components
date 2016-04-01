@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.upload.UploadSession;
+import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;

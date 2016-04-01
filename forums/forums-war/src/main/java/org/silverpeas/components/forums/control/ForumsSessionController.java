@@ -58,7 +58,7 @@ import org.silverpeas.components.forums.notification.ForumsForumSubscriptionUser
 import org.silverpeas.components.forums.notification.ForumsMessagePendingValidationUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessageValidationUserNotification;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.ForeignPK;

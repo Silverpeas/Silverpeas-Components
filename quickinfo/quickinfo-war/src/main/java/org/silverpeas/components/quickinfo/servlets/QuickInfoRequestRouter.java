@@ -42,7 +42,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 

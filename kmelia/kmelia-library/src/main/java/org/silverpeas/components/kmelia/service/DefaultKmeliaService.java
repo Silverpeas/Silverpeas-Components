@@ -117,7 +117,7 @@ import org.silverpeas.core.datereminder.persistence.service.PersistentDateRemind
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.util.*;
 import org.silverpeas.util.annotation.Action;
 import org.silverpeas.util.annotation.SourcePK;

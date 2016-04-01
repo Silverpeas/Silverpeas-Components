@@ -135,7 +135,7 @@ import org.silverpeas.core.contribution.publication.datereminder.PublicationNote
 import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
-import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.util.*;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
