@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 

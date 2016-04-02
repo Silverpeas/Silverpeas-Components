@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.common;
 
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
