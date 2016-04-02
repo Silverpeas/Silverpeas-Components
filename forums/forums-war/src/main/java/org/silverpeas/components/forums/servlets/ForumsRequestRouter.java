@@ -23,12 +23,6 @@
  */
 package org.silverpeas.components.forums.servlets;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.web.RequestHelper;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.control.helpers.ForumActionHelper;
 import org.silverpeas.components.forums.control.helpers.ForumHelper;
@@ -36,8 +30,13 @@ import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.webapi.rating.RaterRatingEntity;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -103,7 +102,11 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         }
         destination = displayForum(request, forumsSC, forumParentId);
       } else if (function.startsWith("viewForum")) {
-        int forumId = RequestHelper.getIntParameter(request, "forumId", 0);
+        int forumId = 0;
+        String param = request.getParameter("forumId");
+        if (StringUtil.isDefined(param)) {
+          forumId = Integer.parseInt(param.trim());
+        }
         destination = displayForum(request, forumsSC, forumId);
       } else if (function.startsWith("editForumInfo")) {
         destination = ROOT_DEST + "editForumInfo.jsp";

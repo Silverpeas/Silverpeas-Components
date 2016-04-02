@@ -23,16 +23,16 @@
  */
 package org.silverpeas.components.forums.control.helpers;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.web.RequestHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
@@ -64,7 +64,11 @@ public class ForumHelper {
   }
 
   public static int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
-    return RequestHelper.getIntParameter(request, name, defaultValue);
+    String param = request.getParameter(name);
+    if (StringUtil.isDefined(param)) {
+      return Integer.parseInt(param.trim());
+    }
+    return defaultValue;
   }
 
   public static String convertDate(Date date, MultiSilverpeasBundle resources) {
