@@ -32,8 +32,8 @@ package org.silverpeas.components.gallery.socialnetwork;
 
 import org.silverpeas.core.date.Date;
 import org.silverpeas.components.gallery.service.GalleryService;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.provider.SocialGalleryInterface;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.date.period.Period;

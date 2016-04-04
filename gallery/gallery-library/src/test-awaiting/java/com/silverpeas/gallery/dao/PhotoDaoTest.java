@@ -27,7 +27,7 @@ import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MediaWithStatus;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.DateUtil;

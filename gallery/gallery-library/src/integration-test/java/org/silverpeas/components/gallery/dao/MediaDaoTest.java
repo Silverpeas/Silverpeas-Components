@@ -33,7 +33,7 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;

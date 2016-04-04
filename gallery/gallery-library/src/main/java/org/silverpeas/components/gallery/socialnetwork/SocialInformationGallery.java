@@ -24,8 +24,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.MediaWithStatus;
-import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.StringUtil;
 
 public class SocialInformationGallery extends AbstractSocialInformation {

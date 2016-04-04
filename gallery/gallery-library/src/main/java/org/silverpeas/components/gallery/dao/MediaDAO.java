@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.dao;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.constant.MediaMimeType;

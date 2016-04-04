@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.service;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
