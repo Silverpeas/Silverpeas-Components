@@ -25,10 +25,10 @@ package org.silverpeas.components.classifieds.service;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.ClassifiedsRuntimeException;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerEvent;
-import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerEvent;
+import org.silverpeas.core.scheduler.SchedulerEventListener;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.initialization.Initialization;
