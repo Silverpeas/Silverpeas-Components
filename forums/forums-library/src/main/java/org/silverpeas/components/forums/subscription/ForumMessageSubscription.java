@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.subscription;
 
-import com.silverpeas.subscribe.service.PKSubscription;
+import org.silverpeas.core.subscription.service.PKSubscription;
 import org.silverpeas.components.forums.model.MessagePK;
 
 /**

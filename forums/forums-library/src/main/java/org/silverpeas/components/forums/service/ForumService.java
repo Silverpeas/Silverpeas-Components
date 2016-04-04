@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.forums.service;
 
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumDetail;
 import org.silverpeas.components.forums.model.ForumPK;

@@ -29,7 +29,7 @@ import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
-import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.silvertrace.SilverTrace;

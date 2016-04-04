@@ -40,8 +40,8 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionManagementContext;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

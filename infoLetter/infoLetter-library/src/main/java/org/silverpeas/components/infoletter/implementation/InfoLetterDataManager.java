@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.infoletter.implementation;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
-import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.components.infoletter.InfoLetterException;
 import org.silverpeas.components.infoletter.service.ByteArrayDataSource;

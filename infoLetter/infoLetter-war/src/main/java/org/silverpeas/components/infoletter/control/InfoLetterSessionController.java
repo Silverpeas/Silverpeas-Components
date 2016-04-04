@@ -25,8 +25,8 @@ package org.silverpeas.components.infoletter.control;
 
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;

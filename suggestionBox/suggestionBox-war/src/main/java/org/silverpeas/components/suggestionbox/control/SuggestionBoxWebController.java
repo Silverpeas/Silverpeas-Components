@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscription;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

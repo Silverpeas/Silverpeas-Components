@@ -25,8 +25,8 @@ package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.comment.service.CommentService;
 import org.silverpeas.core.contribution.rating.control.RatingService;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.Before;

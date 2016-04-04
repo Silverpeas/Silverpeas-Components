@@ -817,7 +817,7 @@
             <view:button label="${saveLabel}" action="${saveAction}">
               <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
               <c:if test="${not empty subscriptionManagementContext}">
-                <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+                <jsp:useBean id="subscriptionManagementContext" type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"/>
                 <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
                       and subscriptionManagementContext.entityStatusAfterPersistAction.validated
                       and subscriptionManagementContext.entityPersistenceAction.update}">

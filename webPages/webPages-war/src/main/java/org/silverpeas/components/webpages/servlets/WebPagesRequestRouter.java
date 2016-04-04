@@ -25,8 +25,8 @@ package org.silverpeas.components.webpages.servlets;
 
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LookHelper;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionManagementContext;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.components.webpages.control.WebPagesSessionController;
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

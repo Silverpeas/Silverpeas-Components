@@ -22,9 +22,9 @@ package org.silverpeas.components.quickinfo.control;
 
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscription;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.web.mvc.util.AlertUser;

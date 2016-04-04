@@ -25,11 +25,11 @@
 package org.silverpeas.components.forums.service;
 
 import org.silverpeas.core.contribution.rating.service.RatingService;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.tagcloud.service.TagCloudService;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;

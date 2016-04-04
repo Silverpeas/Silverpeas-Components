@@ -190,7 +190,7 @@
               <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
               <c:if test="${not empty subscriptionManagementContext}">
                 <c:set var="formData" value="<%=data%>"/>
-                <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+                <jsp:useBean id="subscriptionManagementContext" type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"/>
                 <c:if test="${not empty formData and not formData.new
                               and subscriptionManagementContext.entityStatusBeforePersistAction.validated
                               and subscriptionManagementContext.entityStatusAfterPersistAction.validated

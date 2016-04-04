@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.suggestionbox.mock;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionResource;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
-import com.silverpeas.subscribe.util.SubscriptionList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.util.SubscriptionList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.mockito.Mockito;
 
 import java.util.Collection;

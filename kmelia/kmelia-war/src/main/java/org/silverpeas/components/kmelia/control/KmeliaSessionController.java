@@ -42,7 +42,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationManager;

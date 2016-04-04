@@ -28,8 +28,8 @@ import org.silverpeas.components.questionreply.control.QuestionReplySessionContr
 import org.silverpeas.components.questionreply.model.Category;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscription;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

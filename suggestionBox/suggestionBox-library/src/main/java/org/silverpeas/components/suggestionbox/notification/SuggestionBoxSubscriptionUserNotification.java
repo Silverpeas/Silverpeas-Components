@@ -24,9 +24,9 @@
 package org.silverpeas.components.suggestionbox.notification;
 
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 

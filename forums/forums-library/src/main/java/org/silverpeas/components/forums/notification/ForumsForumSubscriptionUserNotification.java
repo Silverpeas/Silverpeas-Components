@@ -24,8 +24,8 @@
 package org.silverpeas.components.forums.notification;
 
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.components.forums.model.ForumDetail;
 
