@@ -31,9 +31,9 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.iptc.IptcDirectory;
 import org.silverpeas.components.gallery.model.MetaData;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.EncodingUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.EncodingUtil;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

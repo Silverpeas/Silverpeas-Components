@@ -45,7 +45,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <%@ page import="org.silverpeas.core.io.upload.FileUploadManager"%>
 <%@ page import="org.silverpeas.core.io.upload.UploadedFile"%>
-<%@ page import="org.silverpeas.util.NotifierUtil"%>
+<%@ page import="org.silverpeas.core.notification.message.MessageNotifier"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
@@ -142,7 +142,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                     "forums.message.unsubscribe.success";
-                NotifierUtil
+                MessageNotifier
                   .addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
                 break;
 
@@ -151,7 +151,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                     "forums.message.subscribe.success";
-                NotifierUtil.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
+                MessageNotifier.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
                 break;
         }
     }

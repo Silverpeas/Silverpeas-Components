@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;

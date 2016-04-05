@@ -1,7 +1,7 @@
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="java.text.ParseException" %>

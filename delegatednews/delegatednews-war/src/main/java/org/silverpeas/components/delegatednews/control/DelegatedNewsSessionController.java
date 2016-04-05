@@ -31,8 +31,8 @@ import org.silverpeas.components.delegatednews.web.DelegatedNewsEntity;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.exception.EncodingException;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.util.ArrayList;

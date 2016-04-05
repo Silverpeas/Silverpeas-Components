@@ -42,7 +42,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 

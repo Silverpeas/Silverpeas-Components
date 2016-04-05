@@ -45,7 +45,7 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.SQLException;

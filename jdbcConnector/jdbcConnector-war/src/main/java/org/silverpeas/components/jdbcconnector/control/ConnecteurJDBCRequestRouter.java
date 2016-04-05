@@ -29,7 +29,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -111,7 +111,7 @@ public class ConnecteurJDBCRequestRouter
       } catch (Exception e) {
         SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCRequestRouter.getDestination()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", e);
-        NotifierUtil.addError(connecteurJDBC.getString("erreurParametresConnectionIncorrects"));
+        MessageNotifier.addError(connecteurJDBC.getString("erreurParametresConnectionIncorrects"));
         destination = "connectionParameters.jsp";
       }
     } else if (function.startsWith("SetSQLRequest")) {
@@ -120,7 +120,7 @@ public class ConnecteurJDBCRequestRouter
         connecteurJDBC.updateSQLRequest(sqlRequest);
         destination = "connecteurJDBC.jsp";
       } catch (ConnecteurJDBCException ex) {
-        NotifierUtil.addError(
+        MessageNotifier.addError(
             connecteurJDBC.getString("erreurRequeteIncorrect") + ": " + ex.getExtraInfos());
         destination = "requestParameters.jsp";
       }

@@ -29,13 +29,13 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.ZipUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.ZipUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import static org.silverpeas.util.Charsets.UTF_8;
+import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * Class for unit and massive import

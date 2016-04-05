@@ -46,6 +46,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp" %>
@@ -228,7 +229,8 @@ function topicGoTo(id)
         }
         arrayCellText1.setCompareOn((String) ((user.getLastName() == null)?"":user.getLastName().toLowerCase()));
         arrayCellText2.setCompareOn((String) ((user.getFirstName() == null)?"":user.getFirstName().toLowerCase()));
-        arrayCellText4.setCompareOn((String) ((user.geteMail()==null)?"":EncodeHelper.javaStringToHtmlString(user.geteMail().toLowerCase())));
+        arrayCellText4.setCompareOn((String) ((user.geteMail()==null)?"":
+            EncodeHelper.javaStringToHtmlString(user.geteMail().toLowerCase())));
     }   
     if (arrayPane.getColumnToSort() == 0)
     {

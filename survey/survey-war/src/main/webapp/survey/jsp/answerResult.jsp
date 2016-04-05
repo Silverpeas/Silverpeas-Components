@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" %>
 <%--
 

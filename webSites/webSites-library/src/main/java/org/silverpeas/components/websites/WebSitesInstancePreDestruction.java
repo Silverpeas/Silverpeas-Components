@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.websites.siteManage.dao.SiteDAO;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

@@ -33,7 +33,7 @@
 <%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
-<%@page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="java.util.StringTokenizer" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>

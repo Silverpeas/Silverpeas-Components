@@ -30,11 +30,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;

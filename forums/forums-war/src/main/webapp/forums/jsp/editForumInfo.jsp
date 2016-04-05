@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="org.silverpeas.util.CollectionUtil" %>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1

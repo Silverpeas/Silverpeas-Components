@@ -53,9 +53,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
@@ -86,7 +86,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
-   * of thoose defined in a given workflow definition. The contents of a file is passed in as a
+   * of those defined in a given workflow definition. The contents of a file is passed in as a
    * single parameter. This file is uploaded into the process data and stored in the first field of
    * the file type.
    * @param componentId the ID of the component which defines the workflow (must be a workflow
@@ -108,7 +108,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
-   * of thoose defined in a given workflow definition.
+   * of those defined in a given workflow definition.
    * <p>
    * Some information may be specified that will fill in the creation form of the new process
    * instance. Such data should be placed into a map structure of key-value pairs where keys are

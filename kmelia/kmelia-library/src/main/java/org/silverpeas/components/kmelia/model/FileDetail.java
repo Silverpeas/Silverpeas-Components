@@ -24,9 +24,9 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 public class FileDetail implements java.io.Serializable {
   private static final long serialVersionUID = -9137458562237749139L;

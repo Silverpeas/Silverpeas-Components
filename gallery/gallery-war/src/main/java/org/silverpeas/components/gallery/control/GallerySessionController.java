@@ -30,7 +30,13 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -81,7 +87,6 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.util.*;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
@@ -246,7 +251,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       if (media != null) {
         media.setToAlbums(albums);
-        NotifierUtil.addSuccess(getString("gallery.media.path.choose.success"));
+        MessageNotifier.addSuccess(getString("gallery.media.path.choose.success"));
       }
     }
   }

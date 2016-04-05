@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>

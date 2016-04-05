@@ -29,7 +29,7 @@ import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.servlet.http.HttpServletRequest;

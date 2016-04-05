@@ -31,7 +31,7 @@ import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.util.ResourceLocator;
 

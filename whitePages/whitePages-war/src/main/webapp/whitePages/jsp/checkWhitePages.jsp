@@ -28,7 +28,7 @@
 <%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.components.whitepages.control.WhitePagesSessionController"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 

@@ -41,11 +41,11 @@
 <%@ page import="java.util.Collections" %>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.core.importexport.attachment.AttachmentDetail"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
@@ -81,9 +81,9 @@
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController"%>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException"%>
 
-<%@ page import="org.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.core.ForeignPK"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>

@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import java.util.List;
 

@@ -27,6 +27,9 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>kmax</name>
+  <behaviors>
+    <behavior>topicTracker</behavior>
+  </behaviors>
   <label>
     <message lang="fr">Gestion de contenu multi-axes</message>
     <message lang="en">Multi-level Tracker</message>

@@ -27,6 +27,7 @@ import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -61,15 +62,15 @@ import org.silverpeas.components.forums.notification.ForumsMessageValidationUser
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.ejb.EJBException;
 import java.util.ArrayList;
@@ -423,7 +424,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
     // Attach uploaded files
     try {
-      if (org.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
+      if (CollectionUtil.isNotEmpty(uploadedFiles)) {
         for (UploadedFile uploadedFile : uploadedFiles) {
           // Register attachment
           uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);

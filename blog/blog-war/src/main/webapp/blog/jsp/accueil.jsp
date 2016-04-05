@@ -28,7 +28,7 @@
 <%@page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.components.blog.model.Archive" %>

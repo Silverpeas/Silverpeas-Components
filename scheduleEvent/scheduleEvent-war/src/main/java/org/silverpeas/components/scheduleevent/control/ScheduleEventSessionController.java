@@ -55,9 +55,9 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
@@ -292,7 +292,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       UserNotificationHelper
           .buildAndSend(new ScheduleEventUserCallAgainNotification(currentScheduleEvent, message,
               getUserDetail()));
-      NotifierUtil.addSuccess(getString("scheduleevent.callagain.ok"));
+      MessageNotifier.addSuccess(getString("scheduleevent.callagain.ok"));
 
     } catch (Exception e) {
       SilverTrace.warn("scheduleevent",
@@ -405,7 +405,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     result.setUserId(Integer.parseInt(getUserId()));
     result.setOptionId(dateId);
 
-    NotifierUtil.addSuccess(getString("scheduleevent.form.confirmMessage"));
+    MessageNotifier.addSuccess(getString("scheduleevent.form.confirmMessage"));
     return result;
   }
 

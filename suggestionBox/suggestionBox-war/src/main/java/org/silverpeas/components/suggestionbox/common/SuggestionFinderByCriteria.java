@@ -35,9 +35,9 @@ import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import java.util.Arrays;
 import java.util.Collections;

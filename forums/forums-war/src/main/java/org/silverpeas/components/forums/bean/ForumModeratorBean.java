@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forums.bean;
 
-import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.components.forums.model.Moderator;
 
 import java.util.ArrayList;

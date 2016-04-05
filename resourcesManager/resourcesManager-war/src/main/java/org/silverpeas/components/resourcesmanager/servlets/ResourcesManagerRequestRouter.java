@@ -47,12 +47,12 @@ import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataViewType;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import java.text.ParseException;

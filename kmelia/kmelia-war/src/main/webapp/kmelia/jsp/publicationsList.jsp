@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
 
 <%@ page import="org.silverpeas.core.index.search.model.MatchingIndexEntry"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="java.util.Collection "%>
 <%@ page import="java.util.Iterator"%>

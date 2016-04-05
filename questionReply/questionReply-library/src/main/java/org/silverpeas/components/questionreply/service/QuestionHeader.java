@@ -24,7 +24,7 @@
 package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 

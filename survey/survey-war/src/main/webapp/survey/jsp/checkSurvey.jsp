@@ -42,11 +42,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParseException"%>
 
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.ForeignPK"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
@@ -83,11 +83,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader "%>
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail "%>
 
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.FileServerUtils"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.util.file.FileServerUtils"%>
 <%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 
-<%@ page import="org.silverpeas.core.util.FileUploadUtil"%>
+<%@ page import="org.silverpeas.core.util.file.FileUploadUtil"%>
 
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>

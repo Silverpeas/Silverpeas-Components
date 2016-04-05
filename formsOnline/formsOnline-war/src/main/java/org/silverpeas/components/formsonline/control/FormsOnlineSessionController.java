@@ -43,9 +43,9 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -99,9 +99,9 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     if (currentForm.getId() == -1) {
       currentForm.setCreatorId(getUserId());
       currentForm.setInstanceId(getComponentId());
-      NotifierUtil.addInfo(getString("formsOnline.form.creation.succeed"));
+      MessageNotifier.addInfo(getString("formsOnline.form.creation.succeed"));
     } else {
-      NotifierUtil.addSuccess("formsOnline.form.update.succeed");
+      MessageNotifier.addSuccess("formsOnline.form.update.succeed");
     }
     currentForm =
         getService().storeForm(currentForm, senderUserIds, senderGroupIds, receiverUserIds,
@@ -253,7 +253,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       }
     }
     if (nbDeletedRequests > 0) {
-      NotifierUtil.addSuccess(getString("formsOnline.requests.action.delete.succeed"),
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.delete.succeed"),
           nbDeletedRequests);
     }
     return nbDeletedRequests;

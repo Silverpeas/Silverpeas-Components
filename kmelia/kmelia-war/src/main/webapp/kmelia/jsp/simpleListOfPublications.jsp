@@ -30,7 +30,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 <%@ include file="checkKmelia.jsp" %>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>

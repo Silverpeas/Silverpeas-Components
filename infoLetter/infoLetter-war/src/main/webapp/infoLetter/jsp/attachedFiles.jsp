@@ -27,7 +27,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.core.util.URLEncoder" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.exception.SilverpeasRuntimeException" %>
 <%@ page import="org.silverpeas.components.infoletter.InfoLetterException" %>
 

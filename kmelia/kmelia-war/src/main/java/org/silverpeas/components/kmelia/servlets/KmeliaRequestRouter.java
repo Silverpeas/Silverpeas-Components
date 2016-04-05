@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -31,10 +33,15 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WAAttributeValuePair;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -73,14 +80,13 @@ import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.util.*;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 

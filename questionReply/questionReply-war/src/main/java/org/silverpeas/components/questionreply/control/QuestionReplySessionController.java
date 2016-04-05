@@ -30,10 +30,15 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.ZipUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
@@ -65,12 +70,11 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.*;
-import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -86,7 +90,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.util.Charsets.UTF_8;
+import static org.silverpeas.core.util.Charsets.UTF_8;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 

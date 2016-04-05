@@ -69,10 +69,10 @@
 <%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
 
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

@@ -20,6 +20,8 @@
  */
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -108,6 +110,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -118,11 +121,12 @@ import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.util.*;
-import org.silverpeas.util.annotation.Action;
-import org.silverpeas.util.annotation.SourcePK;
-import org.silverpeas.util.annotation.TargetPK;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.annotation.Action;
+import org.silverpeas.core.util.annotation.SourcePK;
+import org.silverpeas.core.util.annotation.TargetPK;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;

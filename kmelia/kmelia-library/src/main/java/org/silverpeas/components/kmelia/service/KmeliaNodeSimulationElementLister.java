@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;

@@ -30,9 +30,9 @@ import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.HtmlCleaner;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.MimeTypes;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;

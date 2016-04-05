@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@page import="org.silverpeas.util.i18n.I18NHelper"%>
+<%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@page import="org.silverpeas.core.i18n.I18NHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

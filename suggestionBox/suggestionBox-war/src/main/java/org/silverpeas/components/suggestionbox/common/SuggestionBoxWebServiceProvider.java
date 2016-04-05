@@ -34,13 +34,13 @@ import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.PaginationList;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
@@ -233,10 +233,10 @@ public class SuggestionBoxWebServiceProvider {
       boolean removed = suggestionBox.getSuggestions().remove(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
       if (removed) {
-        NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.removed",
+        MessageNotifier.addSuccess(getStringTranslation("suggestionBox.message.suggestion.removed",
             userPreferences.getLanguage()));
       } else {
-        NotifierUtil.addWarning(getStringTranslation("suggestionBox.message.suggestion.notRemoved",
+        MessageNotifier.addWarning(getStringTranslation("suggestionBox.message.suggestion.notRemoved",
             userPreferences.getLanguage()));
       }
     } else {
@@ -262,13 +262,13 @@ public class SuggestionBoxWebServiceProvider {
       UserPreferences userPreferences = fromUser.getUserPreferences();
       switch (actual.getValidation().getStatus()) {
         case PENDING_VALIDATION:
-          NotifierUtil.addInfo(
+          MessageNotifier.addInfo(
               getStringTranslation("suggestionBox.message.suggestion.pendingValidation",
                   userPreferences.getLanguage())
           );
           break;
         case VALIDATED:
-          NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.published",
+          MessageNotifier.addSuccess(getStringTranslation("suggestionBox.message.suggestion.published",
               userPreferences.getLanguage()))
               .setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
           break;
@@ -334,13 +334,13 @@ public class SuggestionBoxWebServiceProvider {
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getValidation().getStatus()) {
         case REFUSED:
-          NotifierUtil.addInfo(MessageFormat.format(
+          MessageNotifier.addInfo(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.refused",
                   userPreferences.getLanguage()), suggestion.getTitle()
           )).setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
           break;
         case VALIDATED:
-          NotifierUtil.addSuccess(MessageFormat.format(
+          MessageNotifier.addSuccess(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.validated",
                   userPreferences.getLanguage()), suggestion.getTitle()
           )).setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());

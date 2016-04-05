@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist.service.model.beans;
 
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.persistence.*;
 import java.util.Calendar;

@@ -43,7 +43,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.Link;
+import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;

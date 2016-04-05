@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.forums.ForumsContentManager;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.core.i18n.AbstractBean;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -32,7 +32,7 @@
 
 <%@ page import="java.util.Collection"%>
 <%@ page import="org.silverpeas.core.importexport.report.ExportReport"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.components.questionreply.model.Question" %>
 <%@ page import="org.silverpeas.components.questionreply.model.Reply" %>
 <%@ page import="org.silverpeas.components.questionreply.model.Category" %>
@@ -41,7 +41,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
@@ -64,7 +64,7 @@
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.components.questionreply.control.QuestionReplySessionController" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

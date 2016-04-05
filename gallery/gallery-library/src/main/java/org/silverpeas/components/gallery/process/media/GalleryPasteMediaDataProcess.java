@@ -34,7 +34,7 @@ import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.process.session.ProcessSession;

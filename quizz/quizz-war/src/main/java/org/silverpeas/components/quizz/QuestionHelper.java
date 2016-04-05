@@ -25,8 +25,8 @@ package org.silverpeas.components.quizz;
 
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.FileUploadUtil;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;

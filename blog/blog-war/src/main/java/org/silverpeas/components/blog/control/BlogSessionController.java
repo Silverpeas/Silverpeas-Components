@@ -57,17 +57,17 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.EncodingException;
+import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -336,12 +336,12 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public synchronized void addUserSubscription() {
     getBlogService().addSubscription(getUserId(), getComponentId());
-    NotifierUtil.addSuccess(getString("blog.addSubscriptionOk"));
+    MessageNotifier.addSuccess(getString("blog.addSubscriptionOk"));
   }
 
   public synchronized void removeUserSubscription() {
     getBlogService().removeSubscription(getUserId(), getComponentId());
-    NotifierUtil.addSuccess(getString("blog.removeSubscriptionOk"));
+    MessageNotifier.addSuccess(getString("blog.removeSubscriptionOk"));
   }
 
   public synchronized boolean isUserSubscribed() {

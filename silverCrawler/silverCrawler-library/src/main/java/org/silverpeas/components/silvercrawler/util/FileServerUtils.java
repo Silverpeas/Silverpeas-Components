@@ -28,7 +28,7 @@ import org.silverpeas.core.util.URLUtil;
 
 import javax.ws.rs.core.UriBuilder;
 
-public class FileServerUtils extends org.silverpeas.util.FileServerUtils {
+public class FileServerUtils extends org.silverpeas.core.util.file.FileServerUtils {
 
   public static String getSilverCrawlerUrl(String logicalName, String physicalName,
       String componentId) {

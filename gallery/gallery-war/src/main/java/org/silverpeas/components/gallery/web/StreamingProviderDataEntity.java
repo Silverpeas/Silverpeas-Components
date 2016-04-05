@@ -28,7 +28,7 @@ import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.webapi.media.MediaDefinitionEntity;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

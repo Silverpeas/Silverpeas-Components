@@ -30,10 +30,10 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.components.forums.service.ForumsException"%>
 <%@ page import="org.silverpeas.components.forums.model.Forum"%>

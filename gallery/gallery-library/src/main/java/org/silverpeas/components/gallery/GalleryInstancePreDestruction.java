@@ -4,8 +4,8 @@ import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

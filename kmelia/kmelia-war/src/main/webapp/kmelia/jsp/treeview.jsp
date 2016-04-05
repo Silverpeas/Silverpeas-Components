@@ -26,7 +26,7 @@
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>

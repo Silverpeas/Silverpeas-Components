@@ -24,7 +24,6 @@ import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import java.sql.SQLException;
 import javax.jms.QueueConnectionFactory;
 import javax.naming.InitialContext;
@@ -74,8 +73,8 @@ public abstract class AbstractMailingListTest {
     try {
       InitialContext ic = new InitialContext();
       ic.rebind("jdbc/Silverpeas", getDataSource());
-      ic.rebind(JNDINames.DATABASE_DATASOURCE, getDataSource());
-      ic.rebind(JNDINames.ADMIN_DATASOURCE, getDataSource());
+      /*ic.rebind(JNDINames.DATABASE_DATASOURCE, getDataSource());
+      ic.rebind(JNDINames.ADMIN_DATASOURCE, getDataSource());*/
       registerMockJMS(ic);
     } catch (Exception nex) {
       logger.error("Can't register datasource", nex);
@@ -84,12 +83,12 @@ public abstract class AbstractMailingListTest {
 
   protected void registerMockJMS(InitialContext ic) throws NamingException {
     QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
+    /*ic.rebind(JNDINames.JMS_FACTORY, refFactory);
     ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertThat(qconFactory, is(notNullValue()));
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
+    queue.clear();*/
   }
 
   protected IDatabaseConnection getConnection() throws SQLException, DatabaseUnitException {

@@ -29,8 +29,8 @@ import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.IOException;

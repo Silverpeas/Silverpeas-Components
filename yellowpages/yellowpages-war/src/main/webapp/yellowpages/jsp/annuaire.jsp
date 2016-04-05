@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.GroupDetail" %>

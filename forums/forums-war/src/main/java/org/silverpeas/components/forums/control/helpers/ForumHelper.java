@@ -31,8 +31,8 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;

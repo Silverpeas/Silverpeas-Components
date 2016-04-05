@@ -29,8 +29,8 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Alias" %>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 
 <%
 MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");

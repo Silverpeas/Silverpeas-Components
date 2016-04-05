@@ -35,7 +35,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.web.http.HttpRequest;

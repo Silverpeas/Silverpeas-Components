@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.gallery.constant;
 
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;

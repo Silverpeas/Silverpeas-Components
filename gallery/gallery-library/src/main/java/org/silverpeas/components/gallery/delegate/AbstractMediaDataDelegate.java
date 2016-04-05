@@ -39,7 +39,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 
 import java.text.ParseException;
 import java.util.Date;

@@ -45,10 +45,10 @@ import org.silverpeas.components.quickinfo.notification.NewsManualUserNotificati
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.core.exception.DecodingException;
 
 import java.util.Collection;
 import java.util.Iterator;

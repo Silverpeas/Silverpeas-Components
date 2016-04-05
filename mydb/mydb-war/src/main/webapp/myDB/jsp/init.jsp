@@ -56,7 +56,7 @@
 %><%@ page import="com.silverpeas.mydb.data.key.PrimaryKey"
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKey"
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKeys"
-%><%@ page import="org.silverpeas.util.MultiSilverpeasBundle"
+%><%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"
 %><%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"
 %><%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"
 %><%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.processing;
 
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.io.media.image.ImageLoader;
 
 import java.awt.image.BufferedImage;

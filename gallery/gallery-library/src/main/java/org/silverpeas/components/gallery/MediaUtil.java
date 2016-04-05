@@ -49,7 +49,7 @@ import org.silverpeas.core.io.media.video.VideoThumbnailExtractorProvider;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.io.file.HandledFile;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.io.media.image.ImageLoader;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.ResourceLocator;

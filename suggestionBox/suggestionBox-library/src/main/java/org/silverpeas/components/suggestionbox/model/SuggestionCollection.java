@@ -15,8 +15,8 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.ForeignPK;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.Collection;

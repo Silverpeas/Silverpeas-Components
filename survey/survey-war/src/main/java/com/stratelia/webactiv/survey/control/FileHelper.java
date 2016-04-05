@@ -28,7 +28,7 @@
  */
 package com.stratelia.webactiv.survey.control;
 
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.apache.commons.fileupload.FileItem;
 
 /**

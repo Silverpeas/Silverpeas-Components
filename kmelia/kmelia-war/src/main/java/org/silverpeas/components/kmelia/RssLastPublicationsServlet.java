@@ -44,7 +44,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.MimeTypes;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
