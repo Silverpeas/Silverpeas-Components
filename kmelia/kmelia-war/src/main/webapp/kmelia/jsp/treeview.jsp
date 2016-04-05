@@ -362,6 +362,7 @@ function displayTopicContent(id) {
 		clearSearchQuery();
 	}
 
+  var displayPublicationPromise;
 	if (id == getToValidateFolderId() || id == "1") {
 		muteDragAndDrop(); //mute dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
@@ -369,26 +370,30 @@ function displayTopicContent(id) {
 
 		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublications(id);
+			displayPublicationPromise = displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
             addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
 		} else {
 			displayOperations(id);
-			displayPublications(id);
+			displayPublicationPromise = displayPublications(id);
 			displayPath(id);
 		}
 	} else {
 		if (searchInProgress) {
 			doPagination(<%=currentPageIndex%>);
 		} else {
-			displayPublications(id);
+			displayPublicationPromise = displayPublications(id);
 		}
 		displayPath(id);
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
 	}
+
+  displayPublicationPromise.then(function() {
+    resizePart("#treeDiv1");
+  });
 
 	//display topic information
 	displayTopicInformation(id);
@@ -738,6 +743,28 @@ function getString(key) {
 	return $.i18n.prop(key)
 }
 
+function resizePart(idPart) {
+    var frame = window.frameElement;
+	
+    /* initialisation de la hauteur par celle de la frame*/
+    var hauteur = frame.scrollHeight ;
+	var hauteurPubList = $("#pubList").height();
+	
+	$(idPart).css("height",hauteurPubList);
+    var hauteurBody = $("body").height();
+    var hauteurFilAriane = $(".cellBrowseBar").height();
+
+    if(hauteurBody < hauteur){
+      /* si aucun ascenseur au niveau de la frame*/
+      hauteur = hauteur-hauteurFilAriane-70;
+    }else {
+      /* si un ascenseur au niveau de la frame*/
+      hauteur = hauteurPubList+64;
+    }
+
+    $(idPart).css("height",hauteur);
+}
+
 $(document).ready(
 	function () {
 		//build the tree
@@ -933,6 +960,14 @@ $(document).ready(
         });
       }
     });
+
+  var timer_resize;
+  window.addEventListener('resize', function(){
+    clearTimeout(timer_resize);
+    timer_resize = setTimeout(function(){
+      resizePart("#treeDiv1");
+    }, 75);
+  });
 
 	$.i18n.properties({
         name: 'kmeliaBundle',
