@@ -4,7 +4,8 @@
 	margin-top: 0px;
 }
 
-.deploy-item {
+.deploy-item,
+.processManager-main #filterLabel #refresh {
 	position:absolute;
 	top:1em;
 	right:1em;
@@ -36,4 +37,17 @@
 .inlineMessage.neutral {
 	background-color:#EFEFEF;
 	border-color:#CCC;
+}
+
+.processManager-main #filter,
+.processManager-main #filter #filterForm .forms {
+  margin: 1em;
+}
+
+.processManager-main #roles {
+  margin-left: 1em;
+}
+
+.noty_text a {
+  text-decoration: underline;
 }
