@@ -38,6 +38,8 @@ import org.silverpeas.core.contribution.content.form.form.HtmlForm;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
@@ -67,13 +69,10 @@ import org.silverpeas.core.workflow.engine.model.ItemImpl;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,9 +94,6 @@ import static org.silverpeas.core.contribution.attachment.AttachmentService.VERS
  */
 public class ProcessManagerSessionController extends AbstractComponentSessionController {
 
-  private SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.processManager.settings.processManagerSettings");
-
   /**
    * Builds and init a new session controller
    * @param mainSessionCtrl
@@ -107,7 +103,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) throws ProcessManagerException {
     super(mainSessionCtrl, context, "org.silverpeas.processManager.multilang.processManagerBundle",
-        "org.silverpeas.processManager.settings.processManagerIcons");
+        "org.silverpeas.processManager.settings.processManagerIcons",
+        "org.silverpeas.processManager.settings.processManagerSettings");
     // the peasId is the current component id.
     peasId = context.getCurrentComponentId();
     processModel = getProcessModel(peasId);
@@ -131,12 +128,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       userSettings = Workflow.getUserManager().getUserSettings(mainSessionCtrl.getUserId(), peasId);
     } catch (WorkflowException we) {
-      SilverTrace
-          .warn("processManager", "SessionController", "processManager.GET_USERSETTINGS_FAILED",
-              we);
+      SilverLogger.getLogger(this).error(we.getLocalizedMessage(), we);
     }
-
-
   }
 
   /**
@@ -149,8 +142,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, ProcessManagerException fatal) {
-    super(mainSessionCtrl, context, "org.silverpeas.processManager.multilang.processManagerBundle",
-        "org.silverpeas.processManager.settings.processManagerIcons");
+    super(mainSessionCtrl, context,
+        "org.silverpeas.processManager.multilang.processManagerBundle",
+        "org.silverpeas.processManager.settings.processManagerIcons",
+        "org.silverpeas.processManager.settings.processManagerSettings");
 
     fatalException = fatal;
   }
@@ -245,9 +240,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessInstance resetCurrentProcessInstance(String instanceId)
       throws ProcessManagerException {
-    SilverTrace
-        .info("processManager", "ProcessManagerSessionController.resetCurrentProcessInstance()",
-            "root.MSG_GEN_ENTER_METHOD", "instanceId = " + instanceId);
     this.setResumingInstance(false);
     if (instanceId != null) {
       ProcessInstance instance;
@@ -897,8 +889,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
       return data;
     } catch (WorkflowException | ProcessManagerException | FormException e) {
-      SilverTrace.warn("processManager", "SessionController.getAssignRecord",
-          "processManager.GET_DATARECORD_FAILED", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -965,11 +956,31 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Workflow.getWorkflowEngine().process((TaskSavedEvent) event);
       } else {
         Workflow.getWorkflowEngine().process((TaskDoneEvent) event);
+        feedbackUser("processManager.createProcess.feedback");
       }
+
+      // Wait to display processes list up-to-date
+      doAPause();
+
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
+    }
+  }
+
+  private void feedbackUser(String key) {
+    MessageNotifier.addSuccess(getString(key)).setDisplayLiveTime(10000);
+  }
+
+  private void doAPause() {
+    int duration = getSettings().getInteger("refresh.delay", 1000);
+    if (duration > 0) {
+      try {
+        Thread.sleep(duration);
+      } catch (InterruptedException ie) {
+        SilverLogger.getLogger(this).error(ie.getLocalizedMessage(), ie);
+      }
     }
   }
 
@@ -1012,9 +1023,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return null;
     } catch (ProcessManagerException e) {
-      SilverTrace
-          .warn("processManager", "SessionController", "processManager.GET_DELETE_ACTION_FAILED",
-              e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1092,7 +1101,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         TaskDoneEvent event = task.buildTaskDoneEvent(actionName, data);
         event.setResumingAction(this.isResumingInstance);
         Workflow.getWorkflowEngine().process(event);
+        feedbackUser("processManager.action.feedback");
       }
+
+      // Wait to display processes list up-to-date
+      doAPause();
 
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1287,8 +1300,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           HistoryStepContent stepContent = new HistoryStepContent(form, context, data);
           stepVO.setContent(stepContent);
         } catch (ProcessManagerException e) {
-          SilverTrace
-              .error("processManager", "sessionController", "processManager.ILL_DATA_STEP", e);
+          SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
         }
       }
 
@@ -1669,8 +1681,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             (UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager();
         pim.removeProcessInstance(processId);
       } else {
-        SilverTrace.warn("processManager", "ProcessManagerSessionController.removeProcess()",
-            "root.MSG_GEN_PARAM_VALUE", "Security alert from " + getUserId() + " on " + processId);
+        SilverLogger.getLogger(this).warn("Security alert from {0} on {1}", getUserId(), processId);
       }
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
@@ -1740,7 +1751,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   public boolean isAttachmentTabEnable() {
     String param = this.getComponentParameterValue("attachmentTabEnable");
-    return param == null || !("").equals(param) && !("no").equals(param.toLowerCase());
+    return param == null || (!("").equals(param) && !("no").equals(param.toLowerCase()));
   }
 
   public boolean isProcessIdVisible() {
@@ -1750,7 +1761,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   public boolean isViewReturn() {
     // Retrieve global parameter
-    boolean hideReturnGlobal = "yes".equalsIgnoreCase(settings.getString("hideReturn"));
+    boolean hideReturnGlobal = "yes".equalsIgnoreCase(getSettings().getString("hideReturn"));
     boolean viewReturn = !hideReturnGlobal;
 
     if (viewReturn) {
@@ -1841,8 +1852,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return csvRows;
     } catch (FormException e) {
-      SilverTrace.error("processManager", "ProcessManagerSessionController.exportAllFolderAsCSV()",
-          "FormException occured", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1918,9 +1928,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return csvRows;
     } catch (FormException e) {
-      SilverTrace
-          .error("processManager", "ProcessManagerSessionController.exportDefinedItemsAsCSV()",
-              "FormException occured", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1976,8 +1984,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         fileOutput.write("\n".getBytes());
       }
     } catch (IOException e) {
-      SilverTrace.error("processManager", "ProcessManagerSessionController.writeCSVFile()",
-          "IO exception when writing csv file", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       csvFilename = null;
     } finally {
       if (fileOutput != null) {
@@ -1986,8 +1993,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           fileOutput.close();
         } catch (IOException e) {
           csvFilename = null;
-          SilverTrace.error("processManager", "ProcessManagerSessionController.writeCSVFile()",
-              "error when closing fileOutput", e);
+          SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
         }
       }
     }
