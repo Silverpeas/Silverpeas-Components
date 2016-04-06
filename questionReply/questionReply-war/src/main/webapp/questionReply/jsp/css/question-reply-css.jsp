@@ -61,12 +61,14 @@ li.category {
   color:#333;
 }
 
-.action {
+.question .action,
+.category .action{
   position:absolute;
   top:0px;
   right:10px;
 }
-.action img{
+.question .action img,
+.category .action img{
   margin:5px 5px 0;
 }
 .status {
