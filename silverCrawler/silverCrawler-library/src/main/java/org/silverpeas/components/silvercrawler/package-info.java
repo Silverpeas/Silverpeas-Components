@@ -26,7 +26,4 @@
  * SilverCrawler is an application with which the user can browser some of its disk.
  * @author mmoquillon
  */
-@Module("silverCrawler")
 package org.silverpeas.components.silvercrawler;
-
-import org.silverpeas.core.annotation.Module;

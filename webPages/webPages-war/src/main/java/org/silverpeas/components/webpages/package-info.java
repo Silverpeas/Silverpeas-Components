@@ -22,7 +22,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mmoquillon
  */
-@Module("webPage")
 package org.silverpeas.components.webpages;
 
-import org.silverpeas.core.annotation.Module;

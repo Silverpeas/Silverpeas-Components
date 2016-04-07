@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.silvercrawler.servlets;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.control.UploadItem;
 import org.silverpeas.components.silvercrawler.control.UploadReport;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.io.upload.UploadSession;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -53,8 +53,8 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   public void init(ServletConfig config) {
     try {
       super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("silverCrawler", "DragAndDrop.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+    } catch (ServletException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

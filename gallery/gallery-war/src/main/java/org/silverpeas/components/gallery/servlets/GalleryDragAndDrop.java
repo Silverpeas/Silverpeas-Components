@@ -23,22 +23,23 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
-import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;
@@ -63,9 +64,8 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   public void init(ServletConfig config) {
     try {
       super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("importExportPeas", "ImportDragAndDrop.init",
-          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+    } catch (ServletException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

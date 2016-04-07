@@ -28,10 +28,10 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentInterfac
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class QuizzContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("quizz", "QuizzContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     return contentManager;

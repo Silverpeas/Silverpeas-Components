@@ -20,18 +20,18 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -202,8 +202,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("kmelia", "KmeliaContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     return contentManager;

@@ -24,19 +24,20 @@
 
 package org.silverpeas.components.gallery.servlets;
 
-import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
@@ -65,9 +66,8 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   public void init(ServletConfig config) {
     try {
       super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("gallery", "GalleryInWysiwygRouter.init",
-          "gallery.CANNOT_ACCESS_SUPERCLASS");
+    } catch (ServletException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

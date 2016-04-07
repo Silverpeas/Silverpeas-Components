@@ -22,7 +22,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mmoquillon
  */
-@Module("silverCrawler")
 package org.silverpeas.components.silvercrawler;
 
-import org.silverpeas.core.annotation.Module;

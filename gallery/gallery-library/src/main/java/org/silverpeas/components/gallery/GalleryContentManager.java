@@ -23,18 +23,19 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -151,7 +152,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("gallery", "GalleryContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     return contentManager;

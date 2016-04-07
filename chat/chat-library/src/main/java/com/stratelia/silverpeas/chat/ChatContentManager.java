@@ -163,8 +163,7 @@ public class ChatContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("chat", "ChatContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     return contentManager;
