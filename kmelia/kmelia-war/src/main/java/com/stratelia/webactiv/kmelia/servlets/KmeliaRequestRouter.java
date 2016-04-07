@@ -446,9 +446,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("ToUpdateTopic".equals(function)) {
         String id = request.getParameter("Id");
         NodeDetail node = kmelia.getSubTopicDetail(id);
-        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id))
-            && !SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(node.getFatherPK().
-            getId()))) {
+        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id)) &&
+            !SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(NodePK.ROOT_NODE_ID)) &&
+            !SilverpeasRole.admin
+                .isInRole(kmelia.getUserTopicProfile(node.getFatherPK().getId()))) {
           destination = "/admin/jsp/accessForbidden.jsp";
         } else {
           request.setAttribute("NodeDetail", node);

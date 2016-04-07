@@ -432,8 +432,7 @@ function customMenu(node) {
 	<% } %>
 
 	var nodeType = node.attr("rel");
-	var nodeId = node.attr("id");
-	var userRole = '<%=profile%>';
+  var userRole = '<%=profile%>';
 	if (params["rightsOnTopic"]) {
 		userRole = node.attr("role");
 	}
@@ -557,57 +556,65 @@ function customMenu(node) {
 
     if (userRole == "admin") {
     	// all actions are allowed
+    } else if (getUserProfile("0") == "admin") {
+      // a minimal contextual menu is always available for app admins
+      getMinimalContextualMenuForAdmins(items);
     } else if (userRole == "user") {
-		var parentProfile =  getTreeview()._get_parent(node).attr("role");
-		if (parentProfile != "admin") {
-			//do not show the menu
-			return;
-		} else {
-			items.addItem._disabled = true;
-			items.sortItem._disabled = true;
-			if (items.pdcItem) {
-				items.pdcItem._disabled = true;
-			}
-			items.copyItem._disabled = true;
-			items.cutItem._disabled = true;
-			items.pasteItem._disabled = true;
-			if (items.wysiwygItem) {
-            	items.wysiwygItem._disabled = true;
-            }
-            if (items.statusItem) {
-            	items.statusItem._disabled = true;
-            }
-		}
-	} else {
-		var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
-		var userId = "<%=kmeliaScc.getUserId()%>";
-		var creatorId = node.attr("creatorId");
-		if (isTopicManagementDelegated && userRole != "admin") {
-			if (creatorId != userId) {
-				//do not show the menu
-				return;
-			} else if (creatorId == userId) {
-				if (items.pdcItem) {
-					items.pdcItem._disabled = true;
-				}
-				items.copyItem._disabled = true;
-				items.cutItem._disabled = true;
-				items.pasteItem._disabled = true;
-                if (items.wysiwygItem) {
-                	items.wysiwygItem._disabled = true;
-                }
-                if (items.statusItem) {
-                	items.statusItem._disabled = true;
-                }
-			}
-		} else {
-			if (userRole != "admin") {
-				//do not show the menu
-				return;
-			}
-		}
-	}
+		  var parentProfile =  getTreeview()._get_parent(node).attr("role");
+		  if (parentProfile != "admin") {
+			  //do not show the menu
+			  return;
+		  } else {
+        // a minimal contextual menu is always available for folder admins
+        getMinimalContextualMenuForAdmins(items);
+		  }
+	  } else {
+      var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
+      var userId = "<%=kmeliaScc.getUserId()%>";
+      var creatorId = node.attr("creatorId");
+      if (isTopicManagementDelegated && userRole != "admin") {
+        if (creatorId != userId) {
+          //do not show the menu
+          return;
+        } else if (creatorId == userId) {
+          if (items.pdcItem) {
+            items.pdcItem._disabled = true;
+          }
+          items.copyItem._disabled = true;
+          items.cutItem._disabled = true;
+          items.pasteItem._disabled = true;
+          if (items.wysiwygItem) {
+            items.wysiwygItem._disabled = true;
+          }
+          if (items.statusItem) {
+            items.statusItem._disabled = true;
+          }
+        }
+      } else {
+        if (userRole != "admin") {
+          //do not show the menu
+          return;
+        }
+      }
+	  }
     return items;
+}
+
+function getMinimalContextualMenuForAdmins(items) {
+  items.addItem._disabled = true;
+  items.sortItem._disabled = true;
+  if (items.pdcItem) {
+    items.pdcItem._disabled = true;
+  }
+  items.copyItem._disabled = true;
+  items.cutItem._disabled = true;
+  items.pasteItem._disabled = true;
+  if (items.wysiwygItem) {
+    items.wysiwygItem._disabled = true;
+  }
+  if (items.statusItem) {
+    items.statusItem._disabled = true;
+  }
 }
 
 function spreadNbItems(children) {
