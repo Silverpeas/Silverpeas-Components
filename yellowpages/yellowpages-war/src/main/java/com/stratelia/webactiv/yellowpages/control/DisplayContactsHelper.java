@@ -24,7 +24,9 @@
 package com.stratelia.webactiv.yellowpages.control;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
@@ -147,8 +149,21 @@ public class DisplayContactsHelper {
         contactTextFunctions.put(nameColumn, new Function<ContactDetail, String>() {
           @Override
           public String apply(final ContactDetail contactDetail) {
+            String value = "";
             UserFull userFull = contactDetail.getUserFull();
-            return (userFull != null) ? userFull.getValue(property) : "";
+            if (userFull != null){
+              value = userFull.getValue(property);
+              if (StringUtil.isDefined(value) &&
+                  userFull.getPropertyType(property).equals(DomainProperty.PROPERTY_TYPE_USERID)) {
+                UserDetail anotherUser = UserDetail.getById(value);
+                if (anotherUser != null) {
+                  value = anotherUser.getLastName() + " " + anotherUser.getFirstName();
+                } else {
+                  value = "";
+                }
+              }
+            }
+            return value;
           }
         });
       } else if ("lastname".equals(nameColumn)) {
