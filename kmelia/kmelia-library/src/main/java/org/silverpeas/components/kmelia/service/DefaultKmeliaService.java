@@ -3578,7 +3578,8 @@ public class DefaultKmeliaService implements KmeliaService {
     if (CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
         // Register attachment
-        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(), false);
+        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(),
+            pubDetail.isIndexable());
       }
     }
   }
