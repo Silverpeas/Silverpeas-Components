@@ -27,7 +27,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 
 import java.util.Set;
 
@@ -55,8 +55,8 @@ public class MessageIndexer {
   }
 
   public static void unindexMessage(Message message) {
-    IndexEntryPK indexEntry =
-        new IndexEntryPK(message.getComponentId(), "message", message.getId());
+    IndexEntryKey indexEntry =
+        new IndexEntryKey(message.getComponentId(), "message", message.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

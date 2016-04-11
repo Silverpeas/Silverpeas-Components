@@ -22,6 +22,7 @@ package org.silverpeas.components.almanach.service;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
@@ -50,7 +51,6 @@ import org.silverpeas.components.almanach.model.PeriodicityException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
@@ -328,8 +328,8 @@ public class DefaultAlmanachService implements AlmanachService {
    */
   private void deleteIndex(EventPK eventPK) {
 
-    IndexEntryPK indexEntry =
-        new IndexEntryPK(eventPK.getComponentName(), "Event", eventPK.getId());
+    IndexEntryKey indexEntry =
+        new IndexEntryKey(eventPK.getComponentName(), "Event", eventPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

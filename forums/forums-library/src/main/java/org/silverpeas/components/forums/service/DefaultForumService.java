@@ -53,7 +53,7 @@ import org.silverpeas.components.forums.subscription.ForumSubscription;
 import org.silverpeas.components.forums.subscription.ForumSubscriptionResource;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -1032,7 +1032,7 @@ public class DefaultForumService implements ForumService {
    */
   private void deleteIndex(MessagePK messagePK) {
     IndexEngineProxy.removeIndexEntry(
-        new IndexEntryPK(messagePK.getComponentName(), "Message", messagePK.getId()));
+        new IndexEntryKey(messagePK.getComponentName(), "Message", messagePK.getId()));
   }
 
   /**
@@ -1054,7 +1054,7 @@ public class DefaultForumService implements ForumService {
    * @param forumPK
    */
   private void deleteIndex(ForumPK forumPK) {
-    IndexEngineProxy.removeIndexEntry(new IndexEntryPK(forumPK.getComponentName(), "Forum", forumPK.
+    IndexEngineProxy.removeIndexEntry(new IndexEntryKey(forumPK.getComponentName(), "Forum", forumPK.
         getId()));
   }
 

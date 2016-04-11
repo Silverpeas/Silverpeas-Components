@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
@@ -45,7 +46,6 @@ import org.silverpeas.components.classifieds.notification.ClassifiedValidationUs
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -468,8 +468,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   public void deleteIndex(ClassifiedDetail classified) {
-    IndexEntryPK indexEntry =
-        new IndexEntryPK(classified.getInstanceId(), "Classified", Integer.toString(classified
+    IndexEntryKey indexEntry =
+        new IndexEntryKey(classified.getInstanceId(), "Classified", Integer.toString(classified
         .getClassifiedId()));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

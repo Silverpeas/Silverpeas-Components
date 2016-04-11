@@ -28,7 +28,7 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.process.session.ProcessSession;
 
 public class GalleryDeindexMediaDataProcess extends AbstractGalleryDataProcess {
@@ -72,7 +72,7 @@ public class GalleryDeindexMediaDataProcess extends AbstractGalleryDataProcess {
 
 
 
-    final IndexEntryPK indexEntry = new IndexEntryPK(getMedia().getMediaPK().getComponentName(),
+    final IndexEntryKey indexEntry = new IndexEntryKey(getMedia().getMediaPK().getComponentName(),
         getMedia().getContributionType(), getMedia().getMediaPK().getId());
 
     IndexEngineProxy.removeIndexEntry(indexEntry);

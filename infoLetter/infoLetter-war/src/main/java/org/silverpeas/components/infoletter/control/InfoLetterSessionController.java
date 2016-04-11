@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.infoletter.control;
 
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.subscription.constant.SubscriberType;
@@ -52,7 +53,6 @@ import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
@@ -512,8 +512,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Suppression de l'index d'une publication
   private void deleteIndex(InfoLetterPublicationPdC ilp) {
-    IndexEntryPK indexEntry =
-        new IndexEntryPK(getComponentId(), "Publication", ilp.getPK().getId());
+    IndexEntryKey indexEntry =
+        new IndexEntryKey(getComponentId(), "Publication", ilp.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -530,7 +530,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Suppression de l'index d'une lettre
   private void deleteIndex(InfoLetter il) {
-    IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "Publication", il.getPK().getId());
+    IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "Publication", il.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

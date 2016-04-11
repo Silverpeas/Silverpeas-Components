@@ -40,7 +40,7 @@ import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.Link;
@@ -866,7 +866,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
   private void removeIndex(int id, String instanceId) {
 
-    IndexEntryPK indexEntry = new IndexEntryPK(instanceId, "Action", Integer.toString(id));
+    IndexEntryKey indexEntry = new IndexEntryKey(instanceId, "Action", Integer.toString(id));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

@@ -36,7 +36,7 @@ import org.silverpeas.components.resourcesmanager.model.ResourceStatus;
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ForeignPK;
@@ -391,7 +391,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private void deleteIndex(Long objectId, String objectType, String componentId) {
     if (objectId != null) {
-      IndexEntryPK indexEntry = new IndexEntryPK(componentId, objectType, String.valueOf(objectId));
+      IndexEntryKey indexEntry = new IndexEntryKey(componentId, objectType, String.valueOf(objectId));
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
   }

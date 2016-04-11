@@ -44,7 +44,7 @@ import org.silverpeas.components.silvercrawler.statistic.HistoryDetail;
 import org.silverpeas.components.silvercrawler.statistic.Statistic;
 import org.silverpeas.components.silvercrawler.util.FileServerUtils;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
@@ -375,7 +375,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
             }
           } else {
             // l'objet n'existe plus, suppression de son index
-            IndexEngineProxy.removeIndexEntry(new IndexEntryPK(getComponentId(), type, path));
+            IndexEngineProxy.removeIndexEntry(new IndexEntryKey(getComponentId(), type, path));
           }
         }
       }
