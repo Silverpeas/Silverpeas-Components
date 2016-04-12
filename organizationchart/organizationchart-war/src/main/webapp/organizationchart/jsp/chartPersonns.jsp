@@ -32,8 +32,8 @@
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.Iterator"%>
 
-<%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalChart"%>
-<%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalUnit"%>
+<%@ page import="org.silverpeas.components.organizationchart.model.OrganizationalChart"%>
+<%@ page import="org.silverpeas.components.organizationchart.model.OrganizationalUnit"%>
 <%@ include file="check.jsp"%>
 
 <%

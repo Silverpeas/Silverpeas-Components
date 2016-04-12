@@ -31,9 +31,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="com.silverpeas.importExport.report.ExportReport" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.importexport.report.ExportReport" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 
 <%
   ExportReport report = (ExportReport) request.getAttribute("ExportReport");

@@ -23,10 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
-<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
-<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
+<%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
+<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
@@ -222,7 +222,7 @@ var searchFolderId = "<%=id%>";
 </form>
 <script type="text/javascript">
 function getComponentPermalink() {
-	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, false)%>";
+	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, false)%>";
 }
 
 function deleteNode(nodeId, nodeLabel) {

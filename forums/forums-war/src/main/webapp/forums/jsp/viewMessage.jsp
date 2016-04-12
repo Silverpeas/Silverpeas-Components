@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
-<%@page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+<%@page import="org.silverpeas.components.forums.control.helpers.ForumHelper"%>
+<%@page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -43,12 +43,14 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<%@ page import="org.silverpeas.upload.FileUploadManager"%>
-<%@ page import="org.silverpeas.upload.UploadedFile"%>
-<%@ page import="org.silverpeas.util.NotifierUtil"%>
+<%@ page import="org.silverpeas.core.io.upload.FileUploadManager"%>
+<%@ page import="org.silverpeas.core.io.upload.UploadedFile"%>
+<%@ page import="org.silverpeas.core.notification.message.MessageNotifier"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map" %>
-<%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
+<%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -140,7 +142,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                     "forums.message.unsubscribe.success";
-                NotifierUtil
+                MessageNotifier
                   .addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
                 break;
 
@@ -149,7 +151,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                     "forums.message.subscribe.success";
-                NotifierUtil.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
+                MessageNotifier.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
                 break;
         }
     }
@@ -356,7 +358,7 @@
             if (authorLabel == null) {
                 authorLabel = resource.getString("inconnu");
             }
-            com.stratelia.webactiv.beans.admin.UserDetail author = fsc.getAuthor(authorId);
+            UserDetail author = fsc.getAuthor(authorId);
             String avatar = "/directory/jsp/icons/avatar.png";
             if(author != null) {
                avatar = author.getAvatar();

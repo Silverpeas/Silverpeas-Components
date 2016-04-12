@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>
 <%@ include file="checkAlmanach.jsp" %>
 
 <HTML>
@@ -54,7 +55,7 @@
 	  <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
 		<tr align=center> 
                 <td align="center" class="textePetitBold">
-                <%= almanach.getString(((AlmanachPrivateException)request.getAttribute("error")).getMessage())%>  
+                <%= almanach.getString(((AlmanachPrivateException)request.getAttribute("error")).getMessage())%>
 				</td>
         </tr>
       </table>

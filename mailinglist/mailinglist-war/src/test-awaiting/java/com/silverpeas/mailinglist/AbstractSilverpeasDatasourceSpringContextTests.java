@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -23,7 +23,6 @@ package com.silverpeas.mailinglist;
 import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import org.silverpeas.util.JNDINames;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -81,10 +80,10 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
       InitialContext ic = new InitialContext();
       rebind(ic, config.getJndiName(), datasource);
       ic.rebind(config.getJndiName(), datasource);
-      rebind(ic, JNDINames.DATABASE_DATASOURCE, datasource);
+      /*rebind(ic, JNDINames.DATABASE_DATASOURCE, datasource);
       ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
       rebind(ic, JNDINames.ADMIN_DATASOURCE, datasource);
-      ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
+      ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);*/
       registerMockJMS(ic);
     } catch (Exception nex) {
       logger.error("Can't register datasource", nex);
@@ -93,12 +92,12 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
 
   protected void registerMockJMS(InitialContext ic) throws NamingException {
     QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
+    /*rebind(ic, JNDINames.JMS_FACTORY, refFactory);
     rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertThat(qconFactory, is(notNullValue()));
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
+    queue.clear();*/
   }
 
   public boolean isOracle() {

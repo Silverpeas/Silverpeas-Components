@@ -8,20 +8,20 @@
   </parent>
 
   <groupId>org.silverpeas.components.mailinglist</groupId>
-  <artifactId>mailinglist-war</artifactId>
+  <artifactId>silverpeas-mailinglist-war</artifactId>
   <packaging>war</packaging>
-  <name>mailinglist Webapp</name>
+  <name>Mailinglist Web Application</name>
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>mailinglist-jar</artifactId>
+      <groupId>org.silverpeas.components.mailinglist</groupId>
+      <artifactId>silverpeas-mailinglist</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -35,13 +35,13 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>calendar</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-calendar</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -51,13 +51,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>personalization</artifactId>
+      <artifactId>silverpeas-core-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>

@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -32,7 +31,18 @@
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	%>
-	<%@ include file="checkAlmanach.jsp" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
+<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
+<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ include file="checkAlmanach.jsp" %>
 
 <%
 
@@ -132,8 +142,8 @@ $(document).ready(function(){
 </head>
 <body class="viewEvent" id="<%=instanceId%>">
   <%
-    Window 	window 	= graphicFactory.getWindow();
-    Frame 	frame	= graphicFactory.getFrame();
+    Window window 	= graphicFactory.getWindow();
+    Frame frame	= graphicFactory.getFrame();
     Board 	board 	= graphicFactory.getBoard();
     OperationPane operationPane = window.getOperationPane();
 
@@ -307,7 +317,7 @@ $(document).ready(function(){
 				<p id="permalinkInfo">
 					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'/></a>
 					<%=resources.getString("GML.permalink")%> <br />
-					<input class="inputPermalink" type="text" onfocus="select();" value="<%=URLManager.getServerURL(request)+link %>" />
+					<input class="inputPermalink" type="text" onfocus="select();" value="<%=URLUtil.getServerURL(request)+link %>" />
 				</p>
 			<% } %>
 		   </div>

@@ -25,7 +25,10 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.*,java.util.*,java.text.SimpleDateFormat,com.stratelia.silverpeas.silvertrace.*,com.stratelia.silverpeas.chat.control.*" %>
+<%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.*,java.util.*,java.text.SimpleDateFormat,org.silverpeas.core.silvertrace.*,com.stratelia.silverpeas.chat.control.*" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 <%@ include file="../configureme.jsp" %>
 <%@ include file="../checkChat.jsp" %>
 <jsp:useBean id="UserLogin" class="jChatBox.Service.UserLogin" scope="page" />

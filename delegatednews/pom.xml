@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>delegatednews</artifactId>
   <packaging>pom</packaging>
-  <name>delegatednews Component</name>
+  <name>Silverpeas DelegatedNews Component</name>
   <modules>
-    <module>delegatednews-jar</module>
+    <module>delegatednews-configuration</module>
+    <module>delegatednews-library</module>
     <module>delegatednews-war</module>
-    <module>delegatednews-config</module>
   </modules>
 </project>

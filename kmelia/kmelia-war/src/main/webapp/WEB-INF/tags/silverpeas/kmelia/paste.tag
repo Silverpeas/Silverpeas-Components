@@ -34,17 +34,17 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%@ attribute name="greatestUserRole" required="true"
-              type="com.stratelia.webactiv.SilverpeasRole"
+              type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The greatest role the user has" %>
 <%@ attribute name="componentInstanceId" required="true"
               type="java.lang.String"
               description="The component instance id associated to the drag and drop" %>
 
 <c:set var="kmeliaCtrl" value="${requestScope.kmelia}"/>
-<jsp:useBean id="kmeliaCtrl" type="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"/>
+<jsp:useBean id="kmeliaCtrl" type="org.silverpeas.components.kmelia.control.KmeliaSessionController"/>
 
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <c:set var="targetValidationEnabled" value="${kmeliaCtrl.targetValidationEnable || kmeliaCtrl.targetMultiValidationEnable}"/>

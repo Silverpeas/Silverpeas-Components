@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.classifieds</groupId>
-  <artifactId>classifieds-war</artifactId>
+  <artifactId>silverpeas-classifieds-war</artifactId>
   <packaging>war</packaging>
-  <name>classifieds Webapp</name>
+  <name>Classifieds Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -29,19 +29,19 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
 	 <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>comment</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>classifieds-jar</artifactId>
+      <artifactId>silverpeas-classifieds</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

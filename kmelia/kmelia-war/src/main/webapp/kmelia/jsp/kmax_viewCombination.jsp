@@ -30,9 +30,10 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="com.stratelia.webactiv.coordinates.model.Coordinate"%>
-<%@ page import="com.stratelia.webactiv.coordinates.model.CoordinatePoint"%>
-<%@ page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.core.node.coordinates.model.Coordinate"%>
+<%@ page import="org.silverpeas.core.node.coordinates.model.CoordinatePoint"%>
+<%@ page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
 
 
 <%@ include file="checkKmelia.jsp" %>

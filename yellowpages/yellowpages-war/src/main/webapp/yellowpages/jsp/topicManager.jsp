@@ -1,5 +1,3 @@
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -25,6 +23,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -175,7 +183,7 @@ function toAddOrUpdateFolder(action, id) {
   }
 
 	$.ajax({
-		url: webContext+'<%=URLManager.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
+		url: webContext+'<%=URLUtil.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
 		async: false,
 		type: "GET",
 		dataType: "html",

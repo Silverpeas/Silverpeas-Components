@@ -1,5 +1,9 @@
-<%@ page import="org.silverpeas.util.StringUtil" %>
-<%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -39,13 +43,14 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
-Form 			formUpdate 		= (Form) request.getAttribute("Form");
-DataRecord 		data 			= (DataRecord) request.getAttribute("Data");
+Form formUpdate 		= (Form) request.getAttribute("Form");
+DataRecord data 			= (DataRecord) request.getAttribute("Data");
 Collection		path 			= (Collection) request.getAttribute("Path");
 
 String 			charteUrl		= (String) request.getAttribute("CharteUrl");
 
-PagesContext 	context 		= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
+PagesContext
+		context 		= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
 context.setBorderPrinted(false);
 
 %>

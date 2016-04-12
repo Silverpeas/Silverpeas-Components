@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.mydb</groupId>
-  <artifactId>mydb-war</artifactId>
+  <artifactId>silverpeas-mydb-war</artifactId>
   <packaging>war</packaging>
-  <name>mydb Webapp</name>
+  <name>MyDB Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -29,22 +29,14 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.mydb</groupId>
-      <artifactId>mydb-ejb</artifactId>
-      <classifier>client</classifier>
+      <artifactId>silverpeas-mydb</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>formtemplate</artifactId>
-       <version>${core.version}</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 

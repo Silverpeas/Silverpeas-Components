@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>almanach</artifactId>
   <packaging>pom</packaging>
-  <name>almanach Component</name>
+  <name>Silverpeas Almanach Component</name>
   <modules>
-    <module>almanach-ejb</module>
+    <module>almanach-configuration</module>
+    <module>almanach-library</module>
     <module>almanach-war</module>
-    <module>almanach-config</module>
   </modules>
 </project>

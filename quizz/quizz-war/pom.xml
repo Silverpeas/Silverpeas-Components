@@ -8,14 +8,14 @@
   </parent>
 	
   <groupId>org.silverpeas.components.quizz</groupId>
-  <artifactId>quizz-war</artifactId>
+  <artifactId>silverpeas-quizz-war</artifactId>
   <packaging>war</packaging>
-  <name>quizz Webapp</name>
+  <name>Quizz Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -29,25 +29,25 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.quizz</groupId>
-      <artifactId>quizz-jar</artifactId>
+      <artifactId>silverpeas-quizz</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>questioncontainer</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-questioncontainer</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>pdc</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

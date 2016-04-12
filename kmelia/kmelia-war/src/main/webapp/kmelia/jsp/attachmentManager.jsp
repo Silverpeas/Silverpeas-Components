@@ -27,8 +27,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@include file="checkKmelia.jsp" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
@@ -42,7 +43,7 @@ String				wizardLast	= (String) request.getAttribute("WizardLast");
 String 				wizard		= (String) request.getAttribute("Wizard");
 String	 			wizardRow	= (String) request.getAttribute("WizardRow");
 String				currentLang = (String) request.getAttribute("Language");
-List				languages	= (List) request.getAttribute("Languages");
+List languages	= (List) request.getAttribute("Languages");
 String 				xmlForm		= (String) request.getAttribute("XmlFormForFiles");
 if (!StringUtil.isDefined(xmlForm))
 {

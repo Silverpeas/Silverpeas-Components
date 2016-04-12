@@ -28,19 +28,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page isErrorPage="true" %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="javax.ejb.FinderException, javax.ejb.NoSuchEntityException, java.rmi.RemoteException, java.sql.SQLException, javax.ejb.RemoveException, javax.ejb.CreateException, javax.naming.NamingException"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-
 <%@ include file="checkSurvey.jsp" %>
 
 <%!
@@ -73,21 +60,8 @@ private String displayUnexpectedError(SurveySessionController surveyScc) {
 <h2><%=surveyScc.getString("GML.error")%></h2>
 <h3><%=surveyScc.getString("RequestUncomplete")%></h3>
 <p>
-<% if (exception instanceof NamingException) {
-        out.println(displayNetworkError(surveyScc));
-    } else if (exception instanceof SQLException) {
-            out.println(displayDatabaseError(surveyScc));
-    } else if (exception instanceof CreateException) {
-            out.println(displayEJBCreationError(surveyScc));
-    } else if (exception instanceof RemoteException) {
-            out.println(displayNetworkError(surveyScc));
-    } else if (exception instanceof FinderException) {
-            out.println(displayEJBFinderError(surveyScc));
-    } else if (exception instanceof NoSuchEntityException) {
-            out.println(displayEJBFinderError(surveyScc));
-    } else {
-            out.println(displayUnexpectedError(surveyScc));
-    }
+<%
+  out.println(displayUnexpectedError(surveyScc));
 %>
 <p>
 <font color="red" size="3"><b><em><%= exception.getClass().getName() +"  "+ exception.getMessage() %></em></b></font>

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,10 +20,10 @@
  */
 package com.silverpeas.mydb.control;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.fieldType.DateField;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.fieldType.DateField;
 import com.silverpeas.mydb.control.ejb.MyDBBm;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.date.DateFormatter;
@@ -41,16 +41,16 @@ import com.silverpeas.mydb.exception.MyDBException;
 import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
 import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
 import com.silverpeas.mydb.model.MyDBRuntimeException;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import org.silverpeas.mydb.control.DriverManager;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.math.BigDecimal;

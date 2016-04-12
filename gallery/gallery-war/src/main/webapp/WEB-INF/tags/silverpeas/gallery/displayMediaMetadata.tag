@@ -34,7 +34,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%@ attribute name="media" required="true"
-              type="com.silverpeas.gallery.model.Media"
+              type="org.silverpeas.components.gallery.model.Media"
               description="The photo" %>
 <%@ attribute name="isViewMetadata" required="true"
               type="java.lang.Boolean"
@@ -50,7 +50,7 @@
     <div id="metadata_list">
       <c:forEach var="metaDataKey" items="${_photo.metaDataProperties}">
         <c:set var="metaData" value="${_photo.getMetaData(metaDataKey)}"/>
-        <jsp:useBean id="metaData" type="com.silverpeas.gallery.model.MetaData"/>
+        <jsp:useBean id="metaData" type="org.silverpeas.components.gallery.model.MetaData"/>
         <p id="metadata_${fn:replace(metaData.label, ' ', '_')}">${metaData.label}
           <b><c:out value="${metaData.date ? silfn:formatDateAndHour(metaData.dateValue, _userLanguage) : metaData.value}"/></b>
         </p>

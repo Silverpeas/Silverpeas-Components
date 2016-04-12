@@ -23,60 +23,68 @@
  */
 package com.stratelia.webactiv.survey.control;
 
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.answer.model.Answer;
-import com.stratelia.webactiv.answer.model.AnswerPK;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.question.model.Question;
-import com.stratelia.webactiv.question.model.QuestionPK;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerSelection;
-import com.stratelia.webactiv.questionResult.control.QuestionResultService;
-import com.stratelia.webactiv.questionResult.model.QuestionResult;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.questioncontainer.answer.model.Answer;
+import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.questioncontainer.question.model.Question;
+import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerSelection;
+import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
+import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
 import org.apache.commons.fileupload.FileItem;
 import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.*;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,7 +96,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * This class contains business layer of survey component
@@ -414,12 +422,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection<String> getUserByQuestion(ForeignPK questionPK) throws RemoteException {
+  public Collection<String> getUserByQuestion(ForeignPK questionPK) {
     return getUserByQuestion(questionPK, true);
   }
 
-  public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName)
-      throws RemoteException {
+  public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName) {
     // return list declaration
     Collection<String> users = new LinkedHashSet<>();
     Collection<QuestionResult> results =
@@ -437,12 +444,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return users;
   }
 
-  public Collection<QuestionResult> getResultByUser(String userId, ForeignPK questionPK)
-      throws RemoteException {
+  public Collection<QuestionResult> getResultByUser(String userId, ForeignPK questionPK) {
     return getQuestionResultService().getUserQuestionResultsToQuestion(userId, questionPK);
   }
 
-  public Collection<String> getResultByUser(String userId) throws RemoteException {
+  public Collection<String> getResultByUser(String userId) {
     Collection<QuestionResult> result = new ArrayList<>();
     Collection<String> resultId = new ArrayList<>();
     QuestionContainerDetail survey = getSessionSurvey();
@@ -459,7 +465,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return resultId;
   }
 
-  public Collection<String> getUserByAnswer(String answerId) throws RemoteException {
+  public Collection<String> getUserByAnswer(String answerId) {
     return getQuestionResultService().getUsersByAnswer(answerId);
   }
 
@@ -519,12 +525,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection<String> getUsersByAnswer(String answerId) throws RemoteException {
+  public Collection<String> getUsersByAnswer(String answerId) {
     return getUserByAnswer(answerId);
   }
 
-  public Collection<String> getUsersBySurvey(String surveyId)
-      throws RemoteException, SurveyException {
+  public Collection<String> getUsersBySurvey(String surveyId) throws SurveyException {
     Collection<String> users = new LinkedHashSet<String>();
     QuestionContainerDetail survey = getSurvey(surveyId);
     Collection<Question> questions = survey.getQuestions();
@@ -655,7 +660,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   // pour la notification
-  public String initAlertUser(String surveyId) throws RemoteException, SurveyException {
+  public String initAlertUser(String surveyId) throws SurveyException {
     AlertUser sel = getAlertUser();
     // Initialisation de AlertUser
     sel.resetAll();
@@ -734,7 +739,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   private String getSurveyUrl(QuestionContainerDetail questionDetail) {
-    return URLManager.getURL(null, getComponentId()) + questionDetail.getHeader().getURL();
+    return URLUtil.getURL(null, getComponentId()) + questionDetail.getHeader().getURL();
   }
 
   public boolean isPollingStationMode() {
@@ -1191,7 +1196,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   //pour la notification des résultats
   public void initAlertResultParticipants(QuestionContainerDetail surveyDetail)
-      throws RemoteException, SurveyException {
+      throws SurveyException {
     Collection<String> users = getUsersBySurvey(surveyDetail.getId());
     UserDetail[] participants = new UserDetail[users.size()];
     UserDetail userDetail;
@@ -1207,7 +1212,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   //pour la notification des résultats
-  public void initAlertResultUsers(QuestionContainerDetail surveyDetail) throws RemoteException {
+  public void initAlertResultUsers(QuestionContainerDetail surveyDetail) {
     UserDetail[] users = getOrganisationController().getAllUsers(getComponentId());
     String htmlPath = getQuestionContainerService().getHTMLQuestionPath(surveyDetail);
     UserNotificationHelper.buildAndSend(

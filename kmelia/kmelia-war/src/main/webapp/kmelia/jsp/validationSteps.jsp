@@ -25,7 +25,12 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ include file="checkKmelia.jsp" %>
 
 <%
@@ -91,7 +96,8 @@ function pubForceValidate() {
 		out.println("<br/>");
 	}
 	
-    ArrayPane arrayPane = gef.getArrayPane("validationSteps", "ViewValidationSteps", request, session);
+    ArrayPane
+				arrayPane = gef.getArrayPane("validationSteps", "ViewValidationSteps", request, session);
     arrayPane.setVisibleLineNumber(20);
 
     arrayPane.addArrayColumn(resources.getString("GML.user"));

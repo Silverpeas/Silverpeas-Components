@@ -1,5 +1,3 @@
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -25,6 +23,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
+<%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.GroupDetail" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="org.silverpeas.core.contact.model.ContactFatherDetail" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.admin.component.model.CompoSpace" %>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -38,7 +54,7 @@ private String afficheArbo(String idNodeSelected,
 			YellowpagesSessionController yellowpagesScc, int nbEsp)
 			throws Exception {
 		StringBuffer resultat = new StringBuffer();
-		List tree = yellowpagesScc.getTree();
+		List<NodeDetail> tree = yellowpagesScc.getTree();
 		StringBuffer espace = new StringBuffer();
 
 		NodeDetail nodeDetail = null;
@@ -73,7 +89,7 @@ private String afficheArbo(String idNodeSelected,
 	}
 %>
 <%
-  Collection contacts = (Collection) request.getAttribute("Contacts");
+  Collection<ContactFatherDetail> contacts = (Collection) request.getAttribute("Contacts");
 			TopicDetail currentTopic = (TopicDetail) request
 					.getAttribute("CurrentTopic");
 			GroupDetail group = (GroupDetail) request.getAttribute("Group");

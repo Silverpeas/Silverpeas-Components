@@ -23,19 +23,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@page import="org.silverpeas.util.i18n.I18NHelper"%>
+<%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@page import="org.silverpeas.core.i18n.I18NHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController" %>
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<% com.stratelia.webactiv.kmelia.control.KmeliaSessionController kmeliaScc = (com.stratelia.webactiv.kmelia.control.KmeliaSessionController) request.getAttribute("kmelia");%>
+<% KmeliaSessionController kmeliaScc = (KmeliaSessionController) request.getAttribute("kmelia");%>
 <% if(kmeliaScc == null ) {
     // No session controller in the request -> security exception
     String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");

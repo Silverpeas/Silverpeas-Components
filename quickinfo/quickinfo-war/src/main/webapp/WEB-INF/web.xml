@@ -29,7 +29,7 @@
   <servlet>
     <display-name>QuickInfoRequestRouter</display-name>
     <servlet-name>QuickInfoRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.quickinfo.servlets.QuickInfoRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.quickinfo.servlets.QuickInfoRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>QuickInfoRequestRouter</servlet-name>

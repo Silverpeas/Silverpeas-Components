@@ -33,15 +33,15 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%-- Constants --%>
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
 
 <%-- Attributes --%>
 <%@ attribute name="video" required="true"
-              type="com.silverpeas.gallery.model.Video"
+              type="org.silverpeas.components.gallery.model.Video"
               description="The Video" %>
 <c:set var="_mediaResolution" value="${PREVIEW_RESOLUTION}"/>
 <%@ attribute name="mediaResolution" required="false"
-              type="com.silverpeas.gallery.constant.MediaResolution"
+              type="org.silverpeas.components.gallery.constant.MediaResolution"
               description="The resolution of the video." %>
 <c:if test="${mediaResolution != null}">
   <c:set var="_mediaResolution" value="${mediaResolution}"/>

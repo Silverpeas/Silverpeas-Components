@@ -30,7 +30,7 @@
   <servlet>
     <display-name>DelegatedNewsRequestRouter</display-name>
     <servlet-name>DelegatedNewsRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.delegatednews.servlets.DelegatedNewsRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.delegatednews.servlets.DelegatedNewsRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>DelegatedNewsRequestRouter</servlet-name>

@@ -31,7 +31,8 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 
 <%@ include file="checkForums.jsp"%>
 <%

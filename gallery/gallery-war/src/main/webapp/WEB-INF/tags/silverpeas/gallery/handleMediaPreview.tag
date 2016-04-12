@@ -23,7 +23,7 @@
   --%>
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
-<%@ tag import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ tag import="org.silverpeas.components.gallery.GalleryComponentSettings" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>

@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -33,7 +32,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ include file="checkQuizz.jsp" %>
 
-<jsp:useBean id="currentQuizz" scope="session" class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
+<jsp:useBean id="currentQuizz" scope="session" class="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" />
 <jsp:useBean id="currentParticipationId" scope="session" class="java.lang.String" />
 
 <%!

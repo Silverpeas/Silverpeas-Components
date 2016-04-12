@@ -24,24 +24,24 @@
 
 package com.stratelia.webactiv.survey.servlets;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -223,7 +223,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_CLIPBOARD_COPY_FAILED", "function = " + function, e);
       }
-      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
           "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if (function.startsWith("paste")) {
       try {
@@ -232,7 +232,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_CLIPBOARD_PASTE_FAILED", "function = " + function, e);
       }
-      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
+      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) + "Idle.jsp";
     } else if ("QuestionsUpdate".equals(function) || "questionsUpdate.jsp".equals(function)) {
       String surveyId = request.getParameter("SurveyId");
 

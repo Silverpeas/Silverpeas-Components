@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

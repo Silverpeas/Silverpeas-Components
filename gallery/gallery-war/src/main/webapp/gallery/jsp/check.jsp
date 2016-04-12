@@ -30,7 +30,6 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="java.beans.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.File"%>
@@ -42,64 +41,58 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Calendar"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="java.text.ParsePosition"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.pagination.Pagination"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBarElement"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail "%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellLink"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
 
-<%@ page import="com.stratelia.webactiv.node.control.NodeService"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
+<%@ page import="org.silverpeas.core.node.service.NodeService"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
+<%@ page import="org.silverpeas.core.node.model.NodePK"%>
 
-<%@ page import="com.silverpeas.form.*"%>
+<%@ page import="org.silverpeas.components.gallery.constant.MediaResolution" %>
+<%@ page import="org.silverpeas.components.gallery.control.GallerySessionController"%>
+<%@ page import="org.silverpeas.components.gallery.model.AlbumDetail"%>
+<%@ page import="org.silverpeas.components.gallery.model.Media"%>
+<%@ page import="org.silverpeas.components.gallery.model.MetaData"%>
+<%@ page import="org.silverpeas.components.gallery.model.Order"%>
+<%@ page import="org.silverpeas.components.gallery.model.OrderRow"%>
+<%@ page import="org.silverpeas.components.gallery.model.Photo" %>
+<%@ page import="org.silverpeas.components.gallery.ParameterNames"%>
+<%@ page import="org.silverpeas.components.gallery.GalleryComponentSettings" %>
 
-<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
-<%@ page import="com.silverpeas.gallery.control.GallerySessionController"%>
-<%@ page import="com.silverpeas.gallery.model.AlbumDetail"%>
-<%@ page import="com.silverpeas.gallery.model.Media"%>
-<%@ page import="com.silverpeas.gallery.model.MetaData"%>
-<%@ page import="com.silverpeas.gallery.model.Order"%>
-<%@ page import="com.silverpeas.gallery.model.OrderRow"%>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
-<%@ page import="com.silverpeas.gallery.ParameterNames"%>
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -125,7 +118,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 	GallerySessionController gallerySC = (GallerySessionController) request.getAttribute("gallerySC");
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-	String m_context = URLManager.getApplicationURL();
+	String m_context = URLUtil.getApplicationURL();
 	MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();

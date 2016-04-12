@@ -26,7 +26,15 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkKmelia.jsp" %>
-
+<%@ page import="org.silverpeas.components.kmelia.model.FileFolder" %>
+<%@ page import="org.silverpeas.components.kmelia.model.FileDetail" %>
+<%@ page import="java.util.StringTokenizer" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellLink" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%!
 
 String displayFilePath(String path, String startPath) {
@@ -48,7 +56,7 @@ String displayFilePath(String path, String startPath) {
 %>
 
 <% 
-FileFolder 	folder 				= (FileFolder) request.getAttribute("Directory");
+FileFolder folder 				= (FileFolder) request.getAttribute("Directory");
 Collection 	path 				= (Collection) request.getAttribute("Path");
 String		linkedPathString	= (String) request.getAttribute("LinkedPathString");
 
@@ -107,7 +115,8 @@ if (files != null && files.size() > 0)
     Iterator i = files.iterator();
     String   fileName = "";
     
-    ArrayPane arrayPane = gef.getArrayPane("folderList", "GoToDirectory?Path="+folder.getPath(), request, session);
+    ArrayPane
+        arrayPane = gef.getArrayPane("folderList", "GoToDirectory?Path="+folder.getPath(), request, session);
 
     ArrayColumn columnType = arrayPane.addArrayColumn("");
     columnType.setWidth("40px");
@@ -117,7 +126,7 @@ if (files != null && files.size() > 0)
     while (i.hasNext())
     {
         FileDetail file = (FileDetail) i.next();
-        ArrayLine  arrayLine = arrayPane.addArrayLine();
+        ArrayLine arrayLine = arrayPane.addArrayLine();
 
         // icone du dossier
         IconPane icon = gef.getIconPane();

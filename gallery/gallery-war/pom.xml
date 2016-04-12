@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.gallery</groupId>
-  <artifactId>gallery-war</artifactId>
+  <artifactId>silverpeas-gallery-war</artifactId>
   <packaging>war</packaging>
-  <name>gallery Webapp</name>
+  <name>Gallery Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -29,55 +29,31 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.gallery</groupId>
-      <artifactId>gallery-ejb</artifactId>
+      <artifactId>silverpeas-gallery</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>formtemplate</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>pdc</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>comment</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>searchengine</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>node</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>clipboard</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>importExport</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-importexport</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -85,7 +61,7 @@
     <!-- TESTS -->
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>ws-test-core</artifactId>
+      <artifactId>silverpeas-core-web-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>

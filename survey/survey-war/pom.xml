@@ -8,20 +8,20 @@
   </parent>
 
   <groupId>org.silverpeas.components.survey</groupId>
-  <artifactId>survey-war</artifactId>
+  <artifactId>silverpeas-survey-war</artifactId>
   <packaging>war</packaging>
-  <name>survey Webapp</name>
+  <name>Survey Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.components.survey</groupId>
-      <artifactId>survey-jar</artifactId>
+      <artifactId>silverpeas-survey</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -35,19 +35,19 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>pdc</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>questioncontainer</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-questioncontainer</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

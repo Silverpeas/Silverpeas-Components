@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,8 +28,8 @@
  */
 package com.silverpeas.chat;
 
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

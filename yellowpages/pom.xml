@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>yellowpages</artifactId>
   <packaging>pom</packaging>
-  <name>yellowpages Component</name>
+  <name>Silverpeas YellowPages Component</name>
   <modules>
-    <module>yellowpages-ejb</module>
+    <module>yellowpages-configuration</module>
+    <module>yellowpages-library</module>
     <module>yellowpages-war</module>
-    <module>yellowpages-config</module>
   </modules>
 </project>

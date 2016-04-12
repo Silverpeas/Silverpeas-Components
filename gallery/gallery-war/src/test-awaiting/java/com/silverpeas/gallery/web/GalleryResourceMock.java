@@ -61,7 +61,7 @@ public class GalleryResourceMock extends GalleryResource {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.gallery.web.AbstractGalleryResource#getGalleryBm()
+   * @see AbstractGalleryResource#getGalleryBm()
    */
   @Override
   protected GalleryBm getMediaService() {
@@ -125,7 +125,7 @@ public class GalleryResourceMock extends GalleryResource {
   /*
    * (non-Javadoc)
    * @see
-   * com.silverpeas.gallery.web.AbstractGalleryResource#verifyViewAllPhotoAuthorized(com.silverpeas
+   * AbstractGalleryResource#verifyViewAllPhotoAuthorized(com.silverpeas
    * .gallery.model.PhotoDetail)
    */
   @Override

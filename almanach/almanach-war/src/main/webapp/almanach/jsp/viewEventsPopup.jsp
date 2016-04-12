@@ -30,13 +30,14 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.webactiv.almanach.control.AlmanachCalendarView"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.DisplayableEventOccurrence"%>
-<%@ page import="com.stratelia.webactiv.almanach.model.EventDetail"%>
+<%@ page import="org.silverpeas.components.almanach.control.AlmanachCalendarView"%>
+<%@ page import="org.silverpeas.components.almanach.control.DisplayableEventOccurrence"%>
+<%@ page import="org.silverpeas.components.almanach.model.EventDetail"%>
 
 <%@ page import="java.util.Calendar"%>
 <%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

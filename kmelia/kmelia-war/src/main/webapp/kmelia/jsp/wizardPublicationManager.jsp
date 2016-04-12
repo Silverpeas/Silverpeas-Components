@@ -33,6 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp" %>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -56,8 +57,6 @@ String id 			= (String) request.getAttribute("PubId");
 String wizardLast	= (String) request.getAttribute("WizardLast");
 String wizardRow	= (String) request.getAttribute("WizardRow");
 String currentLang 	= (String) request.getAttribute("Language");
-
-SilverTrace.info("kmelia","JSPdesign", "root.MSG_GEN_PARAM_VALUE","ACTION pubManager = "+action);
 
 TopicDetail currentTopic = null;
 

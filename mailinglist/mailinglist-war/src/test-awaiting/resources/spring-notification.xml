@@ -40,7 +40,7 @@
     <property name="searchSystemEnvironment" value="true" />
   </bean>
 
-  <bean id="notificationHelper" class="com.silverpeas.mailinglist.service.notification.SimpleNotificationHelper">
+  <bean id="notificationHelper" class="org.silverpeas.components.mailinglist.service.notification.SimpleNotificationHelper">
     <property name="session" ref="mailSession" />
     <property name="notificationSender" ref="notificationSender" />
     <property name="notificationFormatter" ref="notificationFormatter" />
@@ -50,7 +50,7 @@
     <property name="externalThread" value="false" />
   </bean>
 
-  <bean id="smtpConfiguration" class="org.silverpeas.mail.engine.SmtpConfiguration">
+  <bean id="smtpConfiguration" class="org.silverpeas.core.mail.engine.SmtpConfiguration">
     <property name="server" value="${SMTPServer}" />
     <property name="port" value="${SMTPPort}" />
     <property name="username" value="${SMTPUser}" />
@@ -59,12 +59,12 @@
   </bean>
 
   <bean id="notificationFormatter" name="notificationFormatter"
-        class="com.silverpeas.mailinglist.service.notification.SimpleNotificationFormatter">
+        class="org.silverpeas.components.mailinglist.service.notification.SimpleNotificationFormatter">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 
   <bean id="notificationSender" name="notificationSender"
-        class="com.stratelia.silverpeas.notificationManager.NotificationSender">
+        class="org.silverpeas.core.notification.user.client.NotificationSender">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 </beans>

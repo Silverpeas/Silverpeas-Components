@@ -27,15 +27,15 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<jsp:useBean id="greaterUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<jsp:useBean id="greaterUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
-<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <%@ attribute name="subAlbumList" required="true"
               type="java.util.List"
               description="The album path." %>
 <jsp:useBean id="subAlbumList"
-             type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"
+             type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"
              scope="page"/>
 
 <script type="text/javascript">

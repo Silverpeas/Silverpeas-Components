@@ -1,1 +1,0 @@
-DROP TABLE sc_quickinfo_news;

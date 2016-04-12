@@ -30,26 +30,26 @@
   <servlet>
     <display-name>GalleryRequestRouter</display-name>
     <servlet-name>GalleryRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.gallery.servlets.GalleryRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.gallery.servlets.GalleryRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>GalleryDragAndDrop</display-name>
     <servlet-name>GalleryDragAndDrop</servlet-name>
-    <servlet-class>com.silverpeas.gallery.servlets.GalleryDragAndDrop</servlet-class>
+    <servlet-class>org.silverpeas.components.gallery.servlets.GalleryDragAndDrop</servlet-class>
   </servlet>
   <servlet>
     <display-name>GalleryInWysiwyg</display-name>
     <servlet-name>GalleryInWysiwyg</servlet-name>
-    <servlet-class>com.silverpeas.gallery.servlets.GalleryInWysiwygRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.gallery.servlets.GalleryInWysiwygRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToImage</display-name>
     <servlet-name>GoToImage</servlet-name>
-    <servlet-class>com.silverpeas.gallery.servlets.GoToImage</servlet-class>
+    <servlet-class>org.silverpeas.components.gallery.servlets.GoToImage</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AlbumAjaxServlet</servlet-name>
-    <servlet-class>com.silverpeas.gallery.servlets.AjaxServlet</servlet-class>
+    <servlet-class>org.silverpeas.components.gallery.servlets.AjaxServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>GalleryRequestRouter</servlet-name>

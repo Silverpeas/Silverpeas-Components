@@ -24,18 +24,7 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.DateUtil"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
-<%@page import="org.silverpeas.components.quickinfo.model.News"%>
-<%@page import="java.util.List"%>
-<%@page import="javax.portlet.RenderRequest"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page import="com.silverpeas.portlets.FormNames" %>
-
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 
 <%@ include file="../portletImport.jsp"%>
 

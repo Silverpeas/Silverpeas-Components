@@ -1,2 +1,0 @@
-DROP INDEX SC_WhitePages_Card.WhitePages_InstId;
-DROP INDEX SC_WhitePages_SearchFields.WhitePages_SearchFieldsInstId;

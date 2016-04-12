@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
 
@@ -39,13 +38,13 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
 
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<jsp:useBean id="greaterUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<jsp:useBean id="greaterUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
@@ -123,17 +122,17 @@
 <c:url var="lastResultIcon" value="${lastResultIcon}"/>
 
 <c:set var="currentAlbum" value="${requestScope.CurrentAlbum}"/>
-<jsp:useBean id="currentAlbum" type="com.silverpeas.gallery.model.AlbumDetail"/>
+<jsp:useBean id="currentAlbum" type="org.silverpeas.components.gallery.model.AlbumDetail"/>
 <c:set var="albums" value="${requestScope.Albums}"/>
-<jsp:useBean id="albums" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<jsp:useBean id="albums" type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"/>
 
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="path" value="${requestScope.Path}"/>
-<jsp:useBean id="path" type="java.util.List<com.stratelia.webactiv.node.model.NodeDetail>"/>
+<jsp:useBean id="path" type="java.util.List<org.silverpeas.core.node.model.NodeDetail>"/>
 <c:set var="nbMediaPerPage" value="${requestScope.NbMediaPerPage}"/>
 <c:set var="currentPageIndex" value="${requestScope.CurrentPageIndex}"/>
 <c:set var="mediaResolution" value="${requestScope.MediaResolution}"/>
-<jsp:useBean id="mediaResolution" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<jsp:useBean id="mediaResolution" type="org.silverpeas.components.gallery.constant.MediaResolution"/>
 <c:set var="dragAndDropEnable" value="${requestScope.DragAndDropEnable}"/>
 <c:set var="isViewMetadata" value="${requestScope.IsViewMetadata}"/>
 <c:set var="isViewList" value="${requestScope.IsViewList}"/>
@@ -145,8 +144,8 @@
 <c:set var="isExportEnable" value="${requestScope.IsExportEnable}"/>
 <c:set var="isMediaSelectable" value="${greaterUserRole eq userRole and isBasket or isExportEnable}"/>
 
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<view:setConstant var="ORIGINAL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.ORIGINAL"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
+<view:setConstant var="ORIGINAL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.ORIGINAL"/>
 
 <c:set var="Silverpeas_Album_ComponentId" value="${componentId}" scope="session"/>
 

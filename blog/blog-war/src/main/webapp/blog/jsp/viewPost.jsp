@@ -23,17 +23,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.blog.control.StyleSheet"%>
-<%@page import="com.silverpeas.blog.control.WallPaper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="java.util.GregorianCalendar"%>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
+<%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
+<%@page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@ include file="check.jsp" %>
 
 <% 
 // recuperation des parametres
-PostDetail	post		= (PostDetail) request.getAttribute("Post");
+PostDetail post		= (PostDetail) request.getAttribute("Post");
 Collection<NodeDetail>	categories	= (Collection) request.getAttribute("Categories");
 Collection<Archive>		archives	= (Collection) request.getAttribute("Archives");
 Collection<LinkDetail>	links		= (Collection) request.getAttribute("Links");

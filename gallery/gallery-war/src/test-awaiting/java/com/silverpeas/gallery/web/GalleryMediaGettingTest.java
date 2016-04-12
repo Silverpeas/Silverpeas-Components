@@ -33,7 +33,6 @@ import org.junit.Test;
 
 import java.util.LinkedHashMap;
 
-import static com.silverpeas.gallery.web.GalleryResourceMock.*;
 import static com.silverpeas.gallery.web.GalleryTestResources.JAVA_PACKAGE;
 import static com.silverpeas.gallery.web.GalleryTestResources.SPRING_CONTEXT;
 import static com.silverpeas.gallery.web.MediaEntityMatcher.matches;

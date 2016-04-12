@@ -30,12 +30,12 @@
   <servlet>
     <display-name>QuizzRequestRouter</display-name>
     <servlet-name>QuizzRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.quizz.servlets.QuizzRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.quizz.servlets.QuizzRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToQuizz</display-name>
     <servlet-name>GoToQuizz</servlet-name>
-    <servlet-class>com.stratelia.webactiv.quizz.servlets.GoToQuizz</servlet-class>
+    <servlet-class>org.silverpeas.components.quizz.servlets.GoToQuizz</servlet-class>
   </servlet>
   
   <servlet-mapping>

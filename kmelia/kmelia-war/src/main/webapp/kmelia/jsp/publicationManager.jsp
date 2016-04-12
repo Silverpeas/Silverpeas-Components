@@ -29,11 +29,17 @@
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
-<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>
-<%@page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@page import="org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings"%>
+<%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@page import="org.silverpeas.core.i18n.I18NHelper" %>
+<%@ page import="java.util.StringTokenizer" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 
@@ -107,8 +113,6 @@
     if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
       errorThumbnail = true;
     }
-
-    SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION pubManager = " + action);
 
     //Icons
     mandatorySrc = m_context + "/util/icons/mandatoryField.gif";
@@ -264,7 +268,7 @@
       nextAction = "AddPublication";
 	}
 
-	String backUrl = URLManager.getFullApplicationURL(request) + URLManager.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
+	String backUrl = URLUtil.getFullApplicationURL(request) + URLUtil.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -518,7 +522,7 @@
           if (kmeliaScc.getSessionClone() == null && isNotificationAllowed) {
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
           }
-          String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+          String urlPublication = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
 	      pathString = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
 	      String namePath = spaceLabel + " > " + componentLabel;
 	      if (!pathString.equals("")) {
@@ -813,7 +817,7 @@
             <view:button label="${saveLabel}" action="${saveAction}">
               <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
               <c:if test="${not empty subscriptionManagementContext}">
-                <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+                <jsp:useBean id="subscriptionManagementContext" type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"/>
                 <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
                       and subscriptionManagementContext.entityStatusAfterPersistAction.validated
                       and subscriptionManagementContext.entityPersistenceAction.update}">

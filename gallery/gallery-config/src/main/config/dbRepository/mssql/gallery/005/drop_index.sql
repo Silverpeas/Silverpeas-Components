@@ -1,4 +1,0 @@
-DROP INDEX IND_Photo
-;
-DROP INDEX IND_Order
-;

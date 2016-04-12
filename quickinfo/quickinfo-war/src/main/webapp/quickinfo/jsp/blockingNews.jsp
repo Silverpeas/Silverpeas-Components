@@ -109,8 +109,8 @@
     }
 
     function acknowledgeCurrentNews() {
-      <%-- A promise is created in order to wait for successful
-      acknowledge before going to next news or homepage. --%>
+      /* A promise is created in order to wait for successful
+      acknowledge before going to next news or homepage. */
       var deferred = new $.Deferred();
       // save news reading by user
       $.ajax(webContext + "/services/news/" + currentNews.id + "/acknowledge", {

@@ -1,10 +1,11 @@
-<%@page import="org.silverpeas.util.StringUtil"%>
-<%@page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
-<%@ page import="java.text.ParseException"%>
-<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
+<%@page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="java.text.ParseException" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 
 <%!
 
@@ -801,7 +802,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	        r += "    <a title=\""+resources.getString("survey.CopySurveyLink")+"\" href=\""+m_context+"/Survey/"+surveyId+"\">";
 	        r += "      <img border=\"0\" alt=\""+resources.getString("survey.CopySurveyLink")+"\" src=\""+m_context+"/util/icons/link.gif\">";
 	        r += "    </a>"+resources.getString("GML.permalink")+"<br/>";
-	        r += "    <input type=\"text\" value=\""+URLManager.getServerURL(request)+surveyHeader.getPermalink()+"\" onFocus=\"select();\" class=\"inputPermalink\">";
+	        r += "    <input type=\"text\" value=\""+ URLUtil.getServerURL(request)+surveyHeader.getPermalink()+"\" onFocus=\"select();\" class=\"inputPermalink\">";
 	        r += "  </p>";
 	        r += "</div>";
 	        r += "</div>";

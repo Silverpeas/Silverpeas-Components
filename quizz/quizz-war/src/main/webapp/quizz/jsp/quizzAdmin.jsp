@@ -1,4 +1,5 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -36,7 +37,7 @@
 <%@ include file="checkQuizz.jsp"%>
 
 <jsp:useBean id="currentQuizz" scope="session"
-	class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
+	class="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" />
 
 <%
   String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
@@ -89,7 +90,7 @@ function deleteQuizz(quizz_id)
 }
 
 function clipboardPaste() { 
-  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=Rquizz&SpaceFrom=<%=quizzScc.getSpaceId()%>&ComponentFrom=<%=quizzScc.getComponentId()%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("Main"))%>&TargetFrame=MyMain&message=REFRESH');
+  top.IdleFrame.document.location.replace('../..<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>paste?compR=Rquizz&SpaceFrom=<%=quizzScc.getSpaceId()%>&ComponentFrom=<%=quizzScc.getComponentId()%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("Main"))%>&TargetFrame=MyMain&message=REFRESH');
   // forcer le rafraichissmeent de la page
   document.location.reload();   
 }

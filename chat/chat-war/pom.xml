@@ -8,20 +8,20 @@
   </parent>
 
   <groupId>org.silverpeas.components.chat</groupId>
-  <artifactId>chat-war</artifactId>
+  <artifactId>silverpeas-chat-war</artifactId>
   <packaging>war</packaging>
-  <name>chat Webapp</name>
+  <name>Chat Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.components.chat</groupId>
-      <artifactId>chat-jar</artifactId>
+      <artifactId>silverpeas-chat</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

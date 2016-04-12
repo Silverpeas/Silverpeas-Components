@@ -29,11 +29,11 @@
 
 <%-- Request attributes --%>
 <c:set var="media" value="${requestScope.media}"/>
-<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media"/>
+<jsp:useBean id="media" type="org.silverpeas.components.gallery.model.Media"/>
 <c:set var="definition" value="${requestScope.definition}"/>
-<jsp:useBean id="definition" type="org.silverpeas.media.Definition"/>
+<jsp:useBean id="definition" type="org.silverpeas.core.io.media.Definition"/>
 <c:set var="posterResolution" value="${requestScope.posterResolution}"/>
-<jsp:useBean id="posterResolution" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<jsp:useBean id="posterResolution" type="org.silverpeas.components.gallery.constant.MediaResolution"/>
 
 <%-- Request parameters --%>
 <c:set var="autoPlay" value="${silfn:booleanValue(requestScope.autoPlay)}"/>

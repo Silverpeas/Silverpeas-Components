@@ -25,7 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
 	isELIgnored="false"%>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>	
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
 <%@ include file="check.jsp" %>
 
 <%
@@ -39,7 +40,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <% 
-	PostDetail 	post			= (PostDetail) request.getAttribute("Post"); //never null
+	PostDetail post			= (PostDetail) request.getAttribute("Post"); //never null
 	Collection<NodeDetail> 	categories		= (Collection) request.getAttribute("AllCategories");
 	UserDetail  updater			= (UserDetail) request.getAttribute("Updater");
 	

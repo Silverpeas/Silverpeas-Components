@@ -30,9 +30,10 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 <%@ include file="checkKmelia.jsp" %>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
+<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 
 <c:set var='greatestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 
@@ -60,7 +61,7 @@ String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //
 
 String language = kmeliaScc.getLanguage();
 
-String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);
+String urlTopic	= URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, true);
 
 String userId = kmeliaScc.getUserId();
 

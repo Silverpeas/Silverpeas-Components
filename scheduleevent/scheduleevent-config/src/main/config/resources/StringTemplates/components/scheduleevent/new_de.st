@@ -1,2 +1,0 @@
-<b>$senderName$</b> möchte, dass Sie an dem Event teilnehmen <b>$eventName$</b>.
-Dafür danken wir Ihnen, Ihre Verfägbarkeit so schnell wie möglich zu kommunizieren, indem Sie den beigefägten Link anklicken.

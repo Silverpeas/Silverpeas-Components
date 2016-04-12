@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.DateUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -32,6 +31,12 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
+<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ include file="checkAlmanach.jsp" %>
 
 <%
@@ -375,8 +380,8 @@ $(document).ready(function(){
 </head>
 <body onload="document.eventForm.Title.focus()">
   <%
-    Window 		window 		= graphicFactory.getWindow();
-    Frame 		frame		= graphicFactory.getFrame();
+    Window window 		= graphicFactory.getWindow();
+    Frame frame		= graphicFactory.getFrame();
 
     OperationPane operationPane = window.getOperationPane();
 

@@ -33,16 +33,16 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%-- Constants --%>
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<jsp:useBean id="PREVIEW_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
+<jsp:useBean id="PREVIEW_RESOLUTION" type="org.silverpeas.components.gallery.constant.MediaResolution"/>
 
 <%-- Attributes --%>
 <%@ attribute name="streaming" required="true"
-              type="com.silverpeas.gallery.model.Streaming"
+              type="org.silverpeas.components.gallery.model.Streaming"
               description="The streaming" %>
 <c:set var="_mediaResolution" value="${PREVIEW_RESOLUTION}"/>
 <%@ attribute name="mediaResolution" required="false"
-              type="com.silverpeas.gallery.constant.MediaResolution"
+              type="org.silverpeas.components.gallery.constant.MediaResolution"
               description="The resolution of the video." %>
 <c:if test="${mediaResolution != null}">
   <c:set var="_mediaResolution" value="${mediaResolution}"/>

@@ -24,30 +24,17 @@
 
 --%>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
 
+<%@ page import="org.silverpeas.core.index.search.model.MatchingIndexEntry"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="java.text.NumberFormat"%>
-<%@ page import="java.text.ParsePosition"%>
-<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Collection "%>
 <%@ page import="java.util.Iterator"%>
-<%@ page import="java.net.URLEncoder"%>
-
-<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
-<%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%!
 String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaScc)
 {
@@ -104,7 +91,8 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
                       	if (checkboxAllowed)
                       		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"-"+pub.getPK().getInstanceId()+"\"></td>");
 						out.print("<td width=\"1\">&#149;&nbsp;</td><td nowrap>");
-						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+EncodeHelper.javaStringToHtmlString(pub.getName(language))+"</b></a>");
+						out.print("<a href=\""+
+                URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+EncodeHelper.javaStringToHtmlString(pub.getName(language))+"</b></a>");
 						out.print("&nbsp;</td><td width=\"100%\">");
 						out.print("&nbsp;");
 						out.println("</td>");

@@ -1,6 +1,6 @@
-<%@ tag import="com.silverpeas.form.DataRecord" %>
-<%@ tag import="com.silverpeas.form.Form" %>
-<%@ tag import="com.silverpeas.form.PagesContext" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
 
@@ -44,10 +44,10 @@
 <c:set var="userId" value="${sessionScope.SilverSessionController.userId}"/>
 <jsp:useBean id="userId" type="java.lang.String"/>
 
-<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
 
 <fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
 <c:url var="permalinkIconUrl" value="${permalinkIcon}"/>
@@ -81,7 +81,7 @@
 <%-- Request attributes --%>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="media" value="${requestScope.Media}" scope="request"/>
-<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
+<jsp:useBean id="media" type="org.silverpeas.components.gallery.model.Media" scope="request"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
 <c:set var="isNewMediaCase" value="${empty media.id}" scope="request"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
@@ -93,7 +93,7 @@
 <c:set var="searchKeyWord" value="${requestScope.SearchKeyWord}"/>
 
 <c:set var="albumPath" value="${requestScope.Path}"/>
-<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<jsp:useBean id="albumPath" type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"/>
 <c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].nodePK.id}"/>
 <jsp:useBean id="albumId" type="java.lang.String"/>
 

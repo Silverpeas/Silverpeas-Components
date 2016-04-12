@@ -1,6 +1,6 @@
-<%@ tag import="com.silverpeas.form.DataRecord" %>
-<%@ tag import="com.silverpeas.form.Form" %>
-<%@ tag import="com.silverpeas.form.PagesContext" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ tag import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
 
@@ -50,18 +50,18 @@
               description="Fragment to put the display of the media" %>
 
 <%-- Attributes --%>
-<%@ attribute name="mediaType" required="true" type="com.silverpeas.gallery.constant.MediaType"
+<%@ attribute name="mediaType" required="true" type="org.silverpeas.components.gallery.constant.MediaType"
               description="A type of media to create/update." %>
 <%@ attribute name="supportedMediaMimeTypes" required="false"
               type="java.util.Set"
               description="Supported media types." %>
 <c:if test="${not empty supportedMediaMimeTypes}">
-  <jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<com.silverpeas.gallery.constant.MediaMimeType>"/>
+  <jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<org.silverpeas.components.gallery.constant.MediaMimeType>"/>
 </c:if>
 
 <%-- Request attributes --%>
 <c:set var="media" value="${requestScope.Media}" scope="request"/>
-<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
+<jsp:useBean id="media" type="org.silverpeas.components.gallery.model.Media" scope="request"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
 <c:set var="isNewMediaCase" value="${empty media.id}" scope="request"/>
 <c:set var="isUpdateMediaFromAlbumCase" value="${requestScope.isUpdateMediaFromAlbumCase}" scope="request"/>
@@ -75,7 +75,7 @@
   <c:set var="bodyCss" value="editMedia"/>
 </c:if>
 <c:set var="albumPath" value="${requestScope.Path}"/>
-<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<jsp:useBean id="albumPath" type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"/>
 <c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].nodePK.id}"/>
 <jsp:useBean id="albumId" type="java.lang.String"/>
 
@@ -124,7 +124,7 @@
   </c:when>
   <c:when test="${isUpdateMediaFromAlbumCase}">
     <fmt:message key="GML.modify" var="modifyLabel"/>
-    <c:set var="additionalBrowseBarElements" value="${modifyLabel} '${silfn:truncate(mediaTitle, 50)}'@#"/>
+    <c:set var="additionalBrowseBarElements" value="${modifyLabel} ${'&quot;'}${silfn:truncate(mediaTitle, 50)}${'&quot;'}@#"/>
   </c:when>
   <c:otherwise>
     <fmt:message key="GML.modify" var="modifyLabel"/>

@@ -48,19 +48,19 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>api-core</artifactId>
+      <artifactId>silverpeas-core-api</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
+      <artifactId>silverpeas-core-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
@@ -78,7 +78,7 @@
           <appendAssemblyId>true</appendAssemblyId>
           <attach>true</attach>
           <skipAssembly>true</skipAssembly>
-          <finalName>${project.artifactId}-${project.version}-configuration</finalName>
+          <finalName>${project.artifactId}-${project.version}</finalName>
         </configuration>
         <executions>
           <execution>
@@ -163,28 +163,25 @@
 
   <modules>
     <module>hyperlink</module>
-    <module>datawarning</module>
+    <module>dataWarning</module>
     <module>quickinfo</module>
     <module>quizz</module>
-    <module>jdbc-connector</module>
-    <module>rssaggregator</module>
-    <module>mydb</module>
-    <module>project-manager</module>
-    <module>websites</module>
-    <module>whitepages</module>
-    <module>question-reply</module>
-    <module>webpages</module>
-    <module>chat</module>
+    <module>jdbcConnector</module>
+    <module>rssAggregator</module>
+    <!-- DEACTIVATED (to remove later): <module>mydb</module> -->
+    <module>projectManager</module>
+    <module>webSites</module>
+    <module>whitePages</module>
+    <module>questionReply</module>
+    <module>webPages</module>
+    <!-- DEACTIVATED (to remove later): <module>chat</module> -->
     <module>mailinglist</module>
-    <module>infoletter</module>
-    <!-- deprecated. In instance to be removed
-    <module>wiki</module>
-    -->
+    <module>infoLetter</module>
     <module>almanach</module>
     <module>yellowpages</module>
-    <module>silvercrawler</module>
-    <module>resources-manager</module>
-    <module>process-manager</module>
+    <module>silverCrawler</module>
+    <module>resourcesManager</module>
+    <module>processManager</module>
     <module>forums</module>
     <module>blog</module>
     <module>survey</module>
@@ -193,9 +190,9 @@
     <module>kmelia</module>
     <module>organizationchart</module>
     <module>classifieds</module>
-    <module>formsonline</module>
-    <module>scheduleevent</module>
-    <module>suggestion-box</module>
+    <module>formsOnline</module>
+    <module>scheduleEvent</module>
+    <module>suggestionBox</module>
     <module>spaceMembers</module>
   </modules>
 

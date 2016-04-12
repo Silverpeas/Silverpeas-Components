@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@page import="com.stratelia.webactiv.statistic.model.HistoryObjectDetail"%>
+<%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
+<%@page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -41,13 +41,15 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp" %>
 
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
-<%@page import="com.silverpeas.form.*"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
-<%@page import="org.silverpeas.rating.web.RaterRatingEntity" %>
-<%@page import="org.silverpeas.util.exception.SilverpeasException" %>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
+<%@page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -91,9 +93,6 @@
   if (action == null) {
     action = "View";
   }
-
-  SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE",
-      "ACTION pubManager = " + action);
 
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
   PublicationDetail pubDetail = kmeliaPublication.getDetail();
@@ -213,7 +212,7 @@
 
 <c:set var="kmeliaPubli" value="<%=kmeliaPublication%>"/>
 <c:set var="publication" value="<%=pubDetail%>"/>
-<jsp:useBean id="publication" type="com.stratelia.webactiv.publication.model.PublicationDetail"/>
+<jsp:useBean id="publication" type="org.silverpeas.core.contribution.publication.model.PublicationDetail"/>
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -423,7 +422,7 @@
         function addFavorite() {
           var name = $("#breadCrumb").text() + " > " + $(".publiName").text();
           var description = "<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
-          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+          var url = "<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId())%>";
           postNewLink(name, url, description);
         }
 
@@ -588,17 +587,17 @@
           <% } %>
 
 
-		    <% if (URLManager.displayUniversalLinks()) {
+		    <% if (URLUtil.displayUniversalLinks()) {
 		            String link = null;
 		            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
-		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
+		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId(),
 		                  contextComponentId);
 		            } else {
-		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
 		            }%>
 		        <p id="permalinkInfo">
 		        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
-		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
+		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLUtil.getServerURL(request)+link%>" />
 		        </p>
         <% }%>
         </div>
@@ -631,7 +630,7 @@
                 }
                 %>
         <c:set var="attachmentPosition"><%=resources.getSetting("attachmentPosition")%></c:set>
-        <c:set var="callbackUrl"><%=URLManager.getURL("useless", componentId) + "ViewPublication"%></c:set>
+        <c:set var="callbackUrl"><%=URLUtil.getURL("useless", componentId) + "ViewPublication"%></c:set>
         <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
                                      componentInstanceIdAlias="<%=alias%>"
                                      resourceId="<%=id%>"

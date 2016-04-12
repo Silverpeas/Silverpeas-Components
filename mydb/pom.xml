@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>mydb</artifactId>
   <packaging>pom</packaging>
-  <name>MyDB Component</name>
+  <name>Silverpeas MyDB Component</name>
   <modules>
-    <module>mydb-ejb</module>
+    <module>mydb-configuration</module>
+    <module>mydb-library</module>
     <module>mydb-war</module>
-    <module>mydb-config</module>
   </modules>
 </project>

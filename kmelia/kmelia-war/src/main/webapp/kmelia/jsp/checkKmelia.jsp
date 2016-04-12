@@ -25,87 +25,69 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.beans.*"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="java.io.File"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.sql.SQLException"%>
-<%@ page import="java.rmi.RemoteException"%>
 <%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.util.List" %>
 
-<%@ page import="javax.naming.Context"%>
-<%@ page import="javax.naming.InitialContext"%>
-<%@ page import="javax.naming.NamingException"%>
-<%@ page import="javax.rmi.PortableRemoteObject"%>
-<%@ page import="javax.ejb.RemoveException"%>
-<%@ page import="javax.ejb.CreateException"%>
-<%@ page import="javax.ejb.FinderException"%>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.Collections" %>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.DBUtil"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.importExport.attachment.AttachmentDetail"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.pagination.Pagination"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.importexport.attachment.AttachmentDetail"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 
-<%@ page import="org.silverpeas.util.exception.*"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationPK"%>
-<%@ page import="com.stratelia.webactiv.publication.model.CompletePublication"%>
-<%@ page import="com.stratelia.webactiv.publication.model.ValidationStep"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeI18NDetail"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationPK"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.CompletePublication"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.ValidationStep"%>
+<%@ page import="org.silverpeas.core.node.model.NodePK"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
+<%@ page import="org.silverpeas.core.node.model.NodeI18NDetail"%>
 
 
-<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
+<%@ page import="org.silverpeas.components.kmelia.KmeliaException"%>
+<%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper"%>
+<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 
-<%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
-<%@ page import="com.stratelia.webactiv.kmelia.KmeliaException"%>
-<%@ page import="com.stratelia.webactiv.kmelia.model.*"%>
-<%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper"%>
-<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.core.comment.model.Comment"%>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController"%>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException"%>
 
-<%@ page import="com.silverpeas.comment.model.Comment"%>
-<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-
-<%@ page import="org.silverpeas.util.ForeignPK"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.i18n.*"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
-<%@page import="com.silverpeas.kmelia.KmeliaConstants"%>
-<%@ page import="com.silverpeas.form.*"%>
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.ForeignPK"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -127,7 +109,7 @@
 	String spaceId = browseContext[2];
 	String componentId = browseContext[3];
 
-	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("kmelia", spaceId, componentId);
+	String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL("kmelia", spaceId, componentId);
 
 	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 

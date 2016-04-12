@@ -35,12 +35,12 @@
 
 <%-- Request attributes --%>
 <c:set var="media" value="${requestScope.Media}" scope="request"/>
-<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
+<jsp:useBean id="media" type="org.silverpeas.components.gallery.model.Media" scope="request"/>
 
 <c:set var="albumListIds" value="${requestScope.PathList}"/>
 <jsp:useBean id="albumListIds" type="java.util.List<java.lang.String>"/>
 <c:set var="allAlbums" value="${requestScope.Albums}"/>
-<jsp:useBean id="allAlbums" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<jsp:useBean id="allAlbums" type="java.util.List<org.silverpeas.components.gallery.model.AlbumDetail>"/>
 
 <%-- Labels --%>
 <fmt:message key="GML.validate" var="validateLabel"/>

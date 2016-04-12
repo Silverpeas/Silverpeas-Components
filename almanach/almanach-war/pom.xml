@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.components.almanach</groupId>
-  <artifactId>almanach-war</artifactId>
+  <artifactId>silverpeas-almanach-war</artifactId>
   <packaging>war</packaging>
-  <name>almanach Webapp</name>
+  <name>Almanach Web Application</name>
 
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -29,31 +29,19 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.components.almanach</groupId>
-      <artifactId>almanach-ejb</artifactId>
+      <artifactId>silverpeas-almanach</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>clipboard</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>personalization</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>pdc</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -63,13 +51,13 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
+      <artifactId>silverpeas-core-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>ws-test-core</artifactId>
+      <artifactId>silverpeas-core-web-test</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>

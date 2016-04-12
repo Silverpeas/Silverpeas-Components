@@ -10,13 +10,13 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>quickinfo</artifactId>
   <packaging>pom</packaging>
-  <name>Quickinfo Component</name>
+  <name>Silverpeas Quickinfo Component</name>
 
 
   <modules>
-    <module>quickinfo-jar</module>
+    <module>quickinfo-configuration</module>
+    <module>quickinfo-library</module>
     <module>quickinfo-war</module>
-    <module>quickinfo-config</module>
   </modules>
 
 </project>

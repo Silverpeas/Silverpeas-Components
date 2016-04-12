@@ -37,7 +37,7 @@
 
 <gallery:viewMediaLayout>
   <jsp:attribute name="specificSpecificationBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Sound"/>
+    <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Sound"/>
     <c:if test="${media.duration gt 0}">
       <span class="fileCharacteristicDuration"><fmt:message key="gallery.duration"/> <b>${silfn:getTimeData(media.duration).formattedDurationAsHMS}</b></span>
     </c:if>

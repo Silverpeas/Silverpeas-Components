@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>organizationchart</artifactId>
   <packaging>pom</packaging>
-  <name>organizationchart Component</name>
+  <name>Silverpeas Organizationchart Component</name>
   <modules>
-    <module>organizationchart-jar</module>
+    <module>organizationchart-configuration</module>
+    <module>organizationchart-library</module>
     <module>organizationchart-war</module>
-    <module>organizationchart-config</module>
   </modules>
 </project>

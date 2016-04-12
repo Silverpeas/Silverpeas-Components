@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>blog</artifactId>
   <packaging>pom</packaging>
-  <name>blog Component</name>
+  <name>Silverpeas Blog Component</name>
   <modules>
-    <module>blog-jar</module>
+    <module>blog-configuration</module>
+    <module>blog-library</module>
     <module>blog-war</module>
-    <module>blog-config</module>
   </modules>
 </project>

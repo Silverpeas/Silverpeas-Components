@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
+<%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
 <%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -41,8 +41,9 @@
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
 
 <%
 News news = (News) request.getAttribute("info");
@@ -82,7 +83,8 @@ if (quickInfoDetail != null) {
   	if (news.isMandatory()) {
   	  broadcastBlockingChecked = "checked=\"checked\"";
   	}
-  	pageContext.setAttribute("thumbnailBackURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId)+"View?Id="+news.getId(), PageContext.PAGE_SCOPE);
+  	pageContext.setAttribute("thumbnailBackURL", URLUtil.getFullApplicationURL(request)+
+				URLUtil.getURL("useless", componentId)+"View?Id="+news.getId(), PageContext.PAGE_SCOPE);
 }
 %>
 

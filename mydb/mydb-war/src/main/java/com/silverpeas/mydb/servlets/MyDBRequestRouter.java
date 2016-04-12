@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,10 +24,10 @@
 
 package com.silverpeas.mydb.servlets;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import com.silverpeas.mydb.MyDBConstants;
 import com.silverpeas.mydb.control.MyDBSessionController;
 import com.silverpeas.mydb.control.TableManager;
@@ -37,12 +37,12 @@ import com.silverpeas.mydb.data.key.ForeignKey;
 import com.silverpeas.mydb.data.key.PrimaryKey;
 import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.exception.MyDBException;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 

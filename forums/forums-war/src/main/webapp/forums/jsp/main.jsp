@@ -41,14 +41,14 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodeDetail" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumActionHelper"%>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumHelper"%>
+<%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(

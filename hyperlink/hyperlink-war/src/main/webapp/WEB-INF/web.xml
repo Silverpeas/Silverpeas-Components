@@ -30,7 +30,7 @@
   <servlet>
     <display-name>HyperlinkRequestRouter</display-name>
     <servlet-name>HyperlinkRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.hyperlink.servlets.HyperlinkRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.hyperlink.servlets.HyperlinkRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>HyperlinkRequestRouter</servlet-name>

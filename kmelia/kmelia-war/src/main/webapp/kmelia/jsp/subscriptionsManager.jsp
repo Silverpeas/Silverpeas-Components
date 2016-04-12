@@ -1,5 +1,4 @@
 <%--
-
     Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
@@ -34,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%!
-void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIcon, String hLineSrc, MultiSilverpeasBundle resources, JspWriter out) throws IOException, CreateException, FinderException, NamingException, SQLException {
+void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIcon, String hLineSrc, MultiSilverpeasBundle resources, JspWriter out) throws IOException{
 
   String cssClass = null;
   boolean peer = true;
@@ -105,8 +104,6 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.close"), "javas
 if ("AddSubscription".equals(action)) {
         try {
             kmeliaScc.addSubscription(topicId);
-        } catch (Exception e) {
-			SilverTrace.warn("kmelia","JSPsubscriptionsManager", "kmelia.EX_SUBSCRIBE_TOPIC_FAILED","topicId = " + topicId,e);
         } finally {
             action = "View";
         }

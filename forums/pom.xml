@@ -10,10 +10,10 @@
   <groupId>org.silverpeas.components</groupId>
   <artifactId>forums</artifactId>
   <packaging>pom</packaging>
-  <name>forums Component</name>
+  <name>Silverpeas Forums Component</name>
   <modules>
-    <module>forums-ejb</module>
+    <module>forums-configuration</module>
+    <module>forums-library</module>
     <module>forums-war</module>
-    <module>forums-config</module>
   </modules>
 </project>
