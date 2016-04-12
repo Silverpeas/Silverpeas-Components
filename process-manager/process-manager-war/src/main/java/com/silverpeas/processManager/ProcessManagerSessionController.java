@@ -94,7 +94,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.NotifierUtil;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
@@ -102,9 +102,6 @@ import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
  * The ProcessManager Session controller
  */
 public class ProcessManagerSessionController extends AbstractComponentSessionController {
-
-  private ResourceLocator resources = new ResourceLocator(
-      "com.silverpeas.processManager.settings.processManagerSettings", "");
 
   /**
    * Builds and init a new session controller
@@ -115,8 +112,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) throws ProcessManagerException {
-    super(mainSessionCtrl, context, "com.silverpeas.processManager.multilang.processManagerBundle",
-        "com.silverpeas.processManager.settings.processManagerIcons");
+    super(mainSessionCtrl, context, "org.silverpeas.processManager.multilang.processManagerBundle",
+        "org.silverpeas.processManager.settings.processManagerIcons",
+        "org.silverpeas.processManager.settings.processManagerSettings");
     // the peasId is the current component id.
     peasId = context.getCurrentComponentId();
     processModel = getProcessModel(peasId);
@@ -163,8 +161,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, ProcessManagerException fatal) {
     super(mainSessionCtrl, context,
-        "com.silverpeas.processManager.multilang.processManagerBundle",
-        "com.silverpeas.processManager.settings.processManagerIcons");
+        "org.silverpeas.processManager.multilang.processManagerBundle",
+        "org.silverpeas.processManager.settings.processManagerIcons",
+        "org.silverpeas.processManager.settings.processManagerSettings");
 
     fatalException = fatal;
   }
@@ -1024,11 +1023,32 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Workflow.getWorkflowEngine().process((TaskSavedEvent) event);
       } else {
         Workflow.getWorkflowEngine().process((TaskDoneEvent) event);
+        feedbackUser("processManager.createProcess.feedback");
       }
+
+      // Wait to display processes list up-to-date
+      doAPause();
+
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
+    }
+  }
+
+  private void feedbackUser(String key) {
+    NotifierUtil.addSuccess(getString(key)).setDisplayLiveTime(10000);
+  }
+
+  private void doAPause() {
+    int duration = getSettings().getInteger("refresh.delay", 1000);
+    if (duration > 0) {
+      try {
+        Thread.sleep(duration);
+      } catch (InterruptedException ie) {
+        SilverTrace.warn("processManager", "SessionController.doAPause",
+            "root.EX_IGNORED", ie);
+      }
     }
   }
 
@@ -1153,7 +1173,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         TaskDoneEvent event = task.buildTaskDoneEvent(actionName, data);
         event.setResumingAction(this.isResumingInstance);
         Workflow.getWorkflowEngine().process(event);
+        feedbackUser("processManager.action.feedback");
       }
+
+      // Wait to display processes list up-to-date
+      doAPause();
 
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1850,7 +1874,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     boolean viewReturn = true;
 
     // récupérer le paramètre global
-    boolean hideReturnGlobal = "yes".equalsIgnoreCase(resources.getString("hideReturn"));
+    boolean hideReturnGlobal = "yes".equalsIgnoreCase(getSettings().getString("hideReturn"));
 
     viewReturn = !hideReturnGlobal;
 
