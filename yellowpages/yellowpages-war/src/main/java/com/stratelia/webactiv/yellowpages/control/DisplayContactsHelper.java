@@ -25,6 +25,7 @@ package com.stratelia.webactiv.yellowpages.control;
 
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
@@ -148,7 +149,18 @@ public class DisplayContactsHelper {
           @Override
           public String apply(final ContactDetail contactDetail) {
             UserFull userFull = contactDetail.getUserFull();
-            return (userFull != null) ? userFull.getValue(property) : "";
+            if (userFull != null){
+              String value = userFull.getValue(property);
+              if (userFull.getPropertyType(property).equals(DomainProperty.PROPERTY_TYPE_USERID)) {
+                UserDetail anotherUser = UserDetail.getById(value);
+                if (anotherUser != null) {
+                  return anotherUser.getLastName() + " " + anotherUser.getFirstName();
+                }
+                return "";
+              }
+              return value;
+            }
+            return "";
           }
         });
       } else if ("lastname".equals(nameColumn)) {
