@@ -1089,15 +1089,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         boolean newThumbnail =
             ThumbnailController.processThumbnail(new ForeignPK(newPubId, kmelia.getComponentId()),
                 PublicationDetail.getResourceType(), parameters);
-        // force indexation to taking into account new thumbnail
-        if (newThumbnail && pubDetail.isIndexable()) {
-          kmelia.getPublicationBm().createIndex(pubDetail.getPK());
-        }
 
         //process files
         Collection<UploadedFile> uploadedFiles = FileUploadManager
             .getUploadedFiles(request, kmelia.getUserDetail());
         kmelia.addUploadedFilesToPublication(pubDetail, uploadedFiles);
+
+        // force indexation to add thumbnail and files to publication index
+        if ((newThumbnail || !uploadedFiles.isEmpty()) && pubDetail.isIndexable()) {
+          kmelia.getPublicationBm().createIndex(pubDetail.getPK());
+        }
 
         request.setAttribute("PubId", newPubId);
         processPath(kmelia, newPubId);

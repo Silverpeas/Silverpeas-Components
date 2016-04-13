@@ -148,6 +148,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.silverpeas.util.StringUtil.*;
+import static com.stratelia.webactiv.kmelia.control.ejb.KmeliaServiceContext.*;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
 import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
@@ -1087,7 +1088,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return pubId;
   }
 
-  public String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
+  private String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
       NodePK fatherPK, PdcClassification classification) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.createPublicationIntoTopic()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1109,6 +1110,8 @@ public class KmeliaBmEJB implements KmeliaBm {
         // subscribers are notified later (only if publication is valid)
         service.classifyContent(pubDetail, classification, false);
       }
+
+      createdIntoRequestContext(pubDetail);
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.createPublicationIntoTopic()", ERROR,
@@ -1296,8 +1299,12 @@ public class KmeliaBmEJB implements KmeliaBm {
           }
         }
       }
-      // notification pour modification
-      if (!isPublicationInBasket) {
+
+      // Sending a subscription notification if the publication updated comes not from the
+      // basket, has not been created or already updated from the same request
+      if (!isPublicationInBasket &&
+          !hasPublicationBeenCreatedFromRequestContext(pubDetail) &&
+          !hasPublicationBeenUpdatedFromRequestContext(pubDetail)) {
         sendSubscriptionsNotification(pubDetail, NotifAction.UPDATE, false);
       }
 
@@ -1309,6 +1316,9 @@ public class KmeliaBmEJB implements KmeliaBm {
         callBackManager.invoke(CallBackManager.ACTION_HEADER_PUBLICATION_UPDATE,
             Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
       }
+
+      updatedIntoRequestContext(pubDetail);
+
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updatePublication()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", e);
@@ -1525,7 +1535,9 @@ public class KmeliaBmEJB implements KmeliaBm {
         || pubPK.getInstanceId().startsWith("kmax"))) {
 
       PublicationDetail pubDetail = null;
+      boolean isPublicationInBasketBeforeUpdate = false;
       try {
+        isPublicationInBasketBeforeUpdate = isPublicationInBasket(pubPK);
         pubDetail = getPublicationDetail(pubPK);
       } catch (Exception e) {
         // publication no longer exists do not throw exception because this method is called by JMS
@@ -1566,6 +1578,10 @@ public class KmeliaBmEJB implements KmeliaBm {
               "kmelia.PROBLEM_DETECTED", "user " + userId + " is not allowed to update publication "
               + pubDetail.getPK());
         }
+      }
+
+      if (KmeliaHelper.isIndexable(pubDetail) && !isPublicationInBasketBeforeUpdate) {
+        publicationBm.createIndex(pubDetail);
       }
 
       // index all attached files to taking into account visibility period
@@ -3900,7 +3916,8 @@ public class KmeliaBmEJB implements KmeliaBm {
     if (CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
         // Register attachment
-        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(), false);
+        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(),
+            pubDetail.isIndexable());
       }
     }
   }
