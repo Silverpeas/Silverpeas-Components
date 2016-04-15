@@ -152,14 +152,17 @@ function displayPublications(id) {
   var ieFix = new Date().getTime();
   var componentId = getComponentId();
   var url = getWebContext() + "/RAjaxPublicationsListServlet";
-  $.get(url, {Id: id, ComponentId: componentId, PubIdToHighlight: pubIdToHighlight, IEFix: ieFix},
-  function(data) {
-    //$('#pubList').html(data);
-	updateHtmlContainingAngularDirectives($('#pubList'), data);
-    activateUserZoom();
-  }, "html");
+  return new Promise(function(resolve, reject) {
+    $.get(url, {
+      Id : id, ComponentId : componentId, PubIdToHighlight : pubIdToHighlight, IEFix : ieFix
+    }, function(data) {
+      //$('#pubList').html(data);
+      updateHtmlContainingAngularDirectives($('#pubList'), data);
+      activateUserZoom();
+      resolve();
+    }, "html");
+  });
 }
-
 function displayOperations(id) {
   var ieFix = new Date().getTime();
   var componentId = getComponentId();
