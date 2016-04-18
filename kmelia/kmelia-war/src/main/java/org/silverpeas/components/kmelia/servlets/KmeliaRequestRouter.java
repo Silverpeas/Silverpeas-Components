@@ -1091,7 +1091,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         }
       } else if (function.equals("SelectValidator")) {
-        destination = kmelia.initUPToSelectValidator("");
+        String formElementName = request.getParameter("FormElementName");
+        String formElementId = request.getParameter("FormElementId");
+        destination = kmelia.initUPToSelectValidator(formElementName, formElementId);
       } else if (function.equals("PublicationPaths")) {
         // paramètre du wizard
         request.setAttribute("Wizard", kmelia.getWizard());

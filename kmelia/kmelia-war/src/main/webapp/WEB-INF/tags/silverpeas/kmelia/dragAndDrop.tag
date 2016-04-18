@@ -64,6 +64,10 @@
     <c:set var="isPublicationAlwaysVisible" value="${silfn:booleanValue(publicationAlwaysVisiblePramValue)}"/>
     <c:set var="isVersionActive" value="${not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}"/>
 
+    <c:set var="targetValidationEnabled" value="${kmeliaCtrl.targetValidationEnable || kmeliaCtrl.targetMultiValidationEnable}"/>
+    <c:set var="validationMandatory" value="${targetValidationEnabled && greatestUserRole.equals(writerRole)}"/>
+    <fmt:message var="ValidatorLabel" key="kmelia.Valideur"/>
+
     <view:includePlugin name="dragAndDropUpload"/>
 
     <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
@@ -164,7 +168,6 @@
         </div>
       </c:if>
       <c:if test="${isVersionActive}">
-
         <div>
           <br/>
           <span class="label"><fmt:message key="attachment.dragAndDrop.question" bundle="${attachment}"/></span>
@@ -174,6 +177,31 @@
             <label for="publicVersion"><fmt:message key="attachment.version_public.label" bundle="${attachment}"/></label><br/>
             <input value="1" type="radio" name="versionType" id="workVersion"/>
             <label for="workVersion"><fmt:message key="attachment.version_wip.label" bundle="${attachment}"/></label>
+          </div>
+        </div>
+      </c:if>
+      <c:if test="${validationMandatory}">
+        <c:set var="oneValidator" value="${kmeliaCtrl.targetValidationEnable}"/>
+        <c:url var="validatorIcon" value="/util/icons/user.gif"/>
+        <div>
+          <br/>
+          <span class="label">${ValidatorLabel}</span>
+
+          <div>
+            <c:choose>
+              <c:when test="${oneValidator}">
+                <input type="text" name="DropValideur" id="DropValideur" value="" size="50" readonly="readonly"/>
+              </c:when>
+              <c:otherwise>
+                <c:url var="validatorIcon" value="/util/icons/groupe.gif"/>
+                <textarea name="DropValideur" id="DropValideur" rows="3" cols="40" readonly="readonly"></textarea>
+              </c:otherwise>
+            </c:choose>
+            <input type="hidden" name="DropValideurId" id="DropValideurId" value=""/>
+            <fmt:message var="selectLabel" key="kmelia.SelectValidator"/>
+            <a href="#" onclick="javascript:SP_openWindow('SelectValidator?FormElementName=DropValideur&FormElementId=DropValideurId','selectUser',800,600,'');">
+              <img src="${validatorIcon}" width="15" height="15" border="0" alt="${selectLabel}" title="${selectLabel}" align="absmiddle"/>
+            </a>
           </div>
         </div>
       </c:if>
@@ -227,7 +255,7 @@
           var severalFilesToUpload = fileUpload.uploadSession.severalFilesToUpload &&
               (!fileUpload.uploadSession.existsAtLeastOneFolder || ${ignoreFolders});
           var displayDialog = !fileUpload.uploadSession.id &&
-              (severalFilesToUpload || ${isVersionActive} || ${publicationStateConfirmation} || ${_ddIsI18n});
+              (severalFilesToUpload || ${validationMandatory} || ${isVersionActive} || ${publicationStateConfirmation} || ${_ddIsI18n});
           if (!displayDialog) {
             return Promise.resolve();
           }
@@ -292,6 +320,14 @@
                     </c:if>
                   }
                 }
+                <c:if test="${validationMandatory}">
+                var targetValidatorIds = jQuery('input[name=DropValideurId]', this).val();
+                if (StringUtil.isNotDefined(targetValidatorIds)) {
+                  SilverpeasError.add("<b>${ValidatorLabel}</b> <fmt:message key='GML.MustBeFilled'/>");
+                } else {
+                  uploadCompletedUrl += '&ValidatorIds=' + targetValidatorIds;
+                }
+                </c:if>
                 fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;
 
                 if (!SilverpeasError.show()) {
