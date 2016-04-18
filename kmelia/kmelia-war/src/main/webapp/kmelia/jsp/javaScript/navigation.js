@@ -502,12 +502,10 @@ function setCurrentTopicStatus(status) {
 
 function setCurrentTopicName(name) {
   currentTopicName = name;
-  $("#addOrUpdateNode #folderName").html(name);
 }
 
 function setCurrentTopicDescription(desc) {
   currentTopicDescription = desc;
-  $("#addOrUpdateNode #folderDescription").html(desc);
 }
 function setCurrentTopicTranslations(trans) {
   currentTopicTranslations = trans;
@@ -538,15 +536,13 @@ function showTranslation(lang) {
   while (!found && i < translations.length) {
     if (translations[i].language === lang) {
       found = true;
-      $("#addOrUpdateNode #folderName").val(translations[i].name);
-      $("#addOrUpdateNode #folderDescription").val(translations[i].description);
+      setDataInFolderDialog(translations[i].name, translations[i].description);
       $('select[name="I18NLanguage"] option:selected').val(translations[i].language + "_" + translations[i].id);
     }
     i++;
   }
   if (!found) {
-    $("#addOrUpdateNode #folderName").val("");
-    $("#addOrUpdateNode #folderDescription").val("");
+    setDataInFolderDialog("", "");
   }
 }
 
@@ -636,8 +632,7 @@ function topicAdd(topicId, isLinked) {
     location.href = url;
   } else {
     document.topicForm.action = "AddTopic";
-    $("#addOrUpdateNode #folderName").val("");
-    $("#addOrUpdateNode #folderDescription").val("");
+    setDataInFolderDialog("", "");
     $("#addOrUpdateNode #parentId").val(topicId);
     translations = null;
     //remove delete operation
@@ -679,8 +674,7 @@ function updateCurrentNode() {
   if (params["i18n"]) {
     storeTranslations(currentTopicTranslations);
   } else {
-    $("#addOrUpdateNode #folderName").val(currentTopicName);
-    $("#addOrUpdateNode #folderDescription").val(currentTopicDescription);
+    setDataInFolderDialog(currentTopicName, currentTopicDescription);
   }
   topicUpdate(getCurrentNodeId());
 }
@@ -951,4 +945,9 @@ function movePublication(id, sourceId, targetId) {
       publicationMovedInError(id, data);
     }
   }, 'text');
+}
+
+function setDataInFolderDialog(name, desc) {
+  $("#addOrUpdateNode #folderName").val(name.unescapeHTML());
+  $("#addOrUpdateNode #folderDescription").val(desc.unescapeHTML());
 }
