@@ -50,13 +50,13 @@
     <profile name="admin">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Adinistrators</message>
-        <message lang="de">Adinistrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
-        <message lang="en">Adinistrators set up the Classification Scheme.</message>
-        <message lang="de">Adinistrator</message>
+        <message lang="en">Managers set up the Classification Scheme.</message>
+        <message lang="de">Managers set up the Classification Scheme.</message>
       </help>
     </profile>
     <profile name="publisher">

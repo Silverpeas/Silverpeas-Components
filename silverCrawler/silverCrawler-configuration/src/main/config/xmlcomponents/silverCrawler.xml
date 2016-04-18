@@ -44,13 +44,13 @@
 		<profile name="admin">
 			<label>
 				<message lang="fr">Gestionnaires</message>
-				<message lang="en">Administrators</message>
-				<message lang="de">Administrator</message>
+				<message lang="en">Managers</message>
+				<message lang="de">Manager</message>
 			</label>
 			<help>
 				<message lang="fr">Gestionnaires</message>
-				<message lang="en">Administrators</message>
-				<message lang="de">Administrator</message>
+				<message lang="en">Managers</message>
+				<message lang="de">Manager</message>
 			</help>
 		</profile>
 		<profile name="publisher">
@@ -60,7 +60,7 @@
 				<message lang="de">Herausgeber</message>
 			</label>
 			<help>
-				<message lang="fr">Les publieurs créent, modifient et suppriments des fichiers.</message>
+				<message lang="fr">Les publieurs créent, modifient et suppriment des fichiers.</message>
 				<message lang="en">Publishers create, modify and remove files.</message>
 				<message lang="de">Herausgeber</message>
 			</help>

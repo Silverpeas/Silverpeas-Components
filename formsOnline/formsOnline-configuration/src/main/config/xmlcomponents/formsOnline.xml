@@ -54,13 +54,13 @@
     <profile name="Administrator">
       <label>
         <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits d'utilisation sur chaque formulaire (émetteurs / valideurs).</message>
-        <message lang="en">Administrators manage forms and assign rights on each form (senders/validators).</message>
-        <message lang="de">Administrator</message>
+        <message lang="en">Managers manage forms and assign rights on each form (senders/validators).</message>
+        <message lang="de">Managers manage forms and assign rights on each form (senders/validators).</message>
       </help>
     </profile>
     <profile name="SenderReceiver">
