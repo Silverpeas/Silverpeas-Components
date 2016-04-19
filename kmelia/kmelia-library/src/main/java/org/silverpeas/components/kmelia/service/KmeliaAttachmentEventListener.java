@@ -25,35 +25,20 @@
 package org.silverpeas.components.kmelia.service;
 
 
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.JMSResourceEventListener;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 
 /**
  * @author neysseri
  */
-@MessageDriven(name = "KmeliaAttachmentEventListener", activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup",
-        propertyValue = "topic/attachments"),
-    @ActivationConfigProperty(propertyName = "destinationType",
-        propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "acknowledgeMode",
-        propertyValue = "Auto-acknowledge")})
-public class AttachmentKmeliaListener extends JMSResourceEventListener<AttachmentEvent> {
+public class KmeliaAttachmentEventListener extends CDIResourceEventListener<AttachmentEvent> {
 
   @Inject
   private KmeliaService kmeliaService;
-
-
-  @Override
-  protected Class<AttachmentEvent> getResourceEventClass() {
-    return AttachmentEvent.class;
-  }
 
   @Override
   public void onDeletion(final AttachmentEvent event) throws Exception {
