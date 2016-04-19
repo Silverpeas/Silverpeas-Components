@@ -62,7 +62,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.NodeTree;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
@@ -697,77 +696,17 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<NodeDetail> getTreeview(NodePK nodePK, String profile, boolean coWritingEnable,
       boolean draftVisibleWithCoWriting, String userId, boolean displayNb,
       boolean isRightsOnTopicsUsed) {
+
     String instanceId = nodePK.getInstanceId();
-    List<NodeDetail> tree = nodeService.getSubTree(nodePK);
+    List<NodeDetail> allowedTree = nodeService.getSubTree(nodePK);
 
     if (profile == null) {
       profile = getProfile(userId, nodePK);
     }
 
-    OrganizationController orga = getOrganisationController();
-    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
-    if (isRightsOnTopicsUsed) {
-      // filter allowed nodes
-      for (NodeDetail node2Check : tree) {
-        if (!node2Check.haveRights()) {
-          node2Check.setUserRole(profile);
-          allowedTree.add(node2Check);
-          if (node2Check.getNodePK().isRoot()) {// case of root. Check if publications on root are
-            // allowed
-            int nbPublisOnRoot = Integer.parseInt(orga.getComponentParameterValue(nodePK.
-                getInstanceId(), "nbPubliOnRoot"));
-            if (nbPublisOnRoot != 0) {
-              node2Check.setUserRole("user");
-            }
-          }
-        } else {
-          int rightsDependsOn = node2Check.getRightsDependsOn();
-          String[] profiles =
-              orga.getUserProfiles(userId, instanceId, rightsDependsOn, ObjectType.NODE);
-          if (profiles != null && profiles.length > 0) {
-            node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
-            allowedTree.add(node2Check);
-          } else { // check if at least one descendant is available
-            Iterator<NodeDetail> descendants = nodeService.getDescendantDetails(node2Check).
-                iterator();
-            NodeDetail descendant;
-            boolean node2CheckAllowed = false;
-            while (!node2CheckAllowed && descendants.hasNext()) {
-              descendant = descendants.next();
-              if (descendant.getRightsDependsOn() != rightsDependsOn) {
-                // different rights of father check if it is available
-                profiles = orga.getUserProfiles(userId, instanceId, descendant.getRightsDependsOn(),
-                    ObjectType.NODE);
-                if (profiles != null && profiles.length > 0) {
-                  node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
-                  allowedTree.add(node2Check);
-                  node2CheckAllowed = true;
-                }
-              }
-            }
-          }
-        }
-      }
-    } else {
-      if (tree != null && !tree.isEmpty()) {
-        // case of root. Check if publications on root are allowed
-        String sNB = orga.getComponentParameterValue(nodePK.getInstanceId(), "nbPubliOnRoot");
-        if (!isDefined(sNB)) {
-          sNB = "0";
-        }
-        int nbPublisOnRoot = Integer.parseInt(sNB);
-        if (nbPublisOnRoot != 0) {
-          NodeDetail root = tree.get(0);
-          root.setUserRole("user");
-        }
-        for (NodeDetail node : tree) {
-          if (!node.getNodePK().isRoot()) {
-            node.setUserRole(profile);
-          }
-        }
-      }
-      allowedTree.addAll(tree);
-    }
+    KmeliaUserTreeViewFilter
+        .from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
+        .setBestUserRoleAndFilter(allowedTree);
 
     if (displayNb) {
       boolean checkVisibility = false;
@@ -811,25 +750,34 @@ public class DefaultKmeliaService implements KmeliaService {
             .append("')");
       }
 
-      NodeTree root = publicationService
+      Map<String, Integer> numbers = publicationService
           .getDistributionTree(nodePK.getInstanceId(), statusSubQuery.toString(), checkVisibility);
 
       // set right number of publications in basket
       NodePK trashPk = new NodePK(NodePK.BIN_NODE_ID, nodePK.getInstanceId());
       int nbPubsInTrash = getPublicationsInBasket(trashPk, profile, userId).size();
-      for (NodeTree node : root.getChildren()) {
-        if (node.getKey().isTrash()) {
-          node.setNbPublications(nbPubsInTrash);
-        }
-      }
+      numbers.put(NodePK.BIN_NODE_ID, nbPubsInTrash);
 
-      Map<NodePK, NodeDetail> allowedNodes = new HashMap<NodePK, NodeDetail>(allowedTree.size());
-      for (NodeDetail allowedNode : allowedTree) {
-        allowedNodes.put(allowedNode.getNodePK(), allowedNode);
-      }
-      countPublisInNodes(allowedNodes, root);
+      decorateWithNumberOfPublications(allowedTree, numbers);
     }
+
     return allowedTree;
+  }
+
+  private void decorateWithNumberOfPublications(List<NodeDetail> nodes,
+      Map<String, Integer> numbers) {
+    for (NodeDetail node : nodes) {
+       decorateWithNumberOfPublications(node, numbers);
+    }
+  }
+
+  private int decorateWithNumberOfPublications(NodeDetail node, Map<String, Integer> numbers) {
+    Integer nb = numbers.get(node.getNodePK().getId());
+    for (NodeDetail child : node.getChildrenDetails()) {
+      nb += decorateWithNumberOfPublications(child, numbers);
+    }
+    node.setNbObjects(nb);
+    return nb;
   }
 
   private Collection<PublicationDetail> getPublicationsInBasket(NodePK pk, String userProfile,
@@ -847,69 +795,6 @@ public class DefaultKmeliaService implements KmeliaService {
       throw new KmeliaRuntimeException("DefaultKmeliaService.getPublicationsInBasket()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CONTENU_DE_LA_CORBEILLE", e);
     }
-  }
-
-  /**
-   * Counts number of publications recursively in allowed nodes only
-   * @param allowedNodes a Map of all nodes allowed to user
-   * @param tree the whole tree which contains the number of publications in each node
-   * independently
-   * of rights
-   */
-  private void countPublisInNodes(Map<NodePK, NodeDetail> allowedNodes, NodeTree tree) {
-    for (NodeDetail node : allowedNodes.values()) {
-      NodeTree nodeTree = findNode(node, tree);
-      if (nodeTree != null) {
-        int nbPublis = countNbPublis(nodeTree);
-        node.setNbObjects(nbPublis);
-      }
-    }
-  }
-
-  private NodeTree findNode(NodeDetail node, NodeTree tree) {
-    String path = node.getFullPath();
-    if (path.length() > 1) {
-      path = path.substring(1, path.length() - 1); // remove starting and ending slash
-      ArrayList<String> pathItems = new ArrayList<String>(Arrays.asList(path.split("/")));
-      pathItems.remove(0); // remove root
-      NodeTree current = tree;
-      for (String pathItem : pathItems) {
-        if (current != null) {
-          current = findNodeTree(pathItem, current.getChildren());
-        }
-      }
-      if (current != null) {
-        return current;
-      }
-    }
-    SilverLogger.getLogger(this).error("Node {0} not found!", node.getNodePK().getId());
-    return null;
-  }
-
-  private NodeTree findNodeTree(String nodeId, List<NodeTree> children) {
-    for (NodeTree node : children) {
-      if (node.getKey().getId().equals(nodeId)) {
-        return node;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Counts the number of publications in the node and all its descendants
-   * @param tree the subtree which have tree.currentNode as root
-   * @return the number of publications in this node and all its descendants
-   */
-  private int countNbPublis(NodeTree tree) {
-    if (tree == null) {
-      return 0;
-    }
-    int nb = tree.getNbPublications();
-    // add nb of each descendant
-    for (NodeTree node : tree.getChildren()) {
-      nb += countNbPublis(node);
-    }
-    return nb;
   }
 
   /**

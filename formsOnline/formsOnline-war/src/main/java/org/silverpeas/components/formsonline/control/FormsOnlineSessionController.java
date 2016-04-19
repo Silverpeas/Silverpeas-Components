@@ -101,7 +101,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       currentForm.setInstanceId(getComponentId());
       MessageNotifier.addInfo(getString("formsOnline.form.creation.succeed"));
     } else {
-      MessageNotifier.addSuccess("formsOnline.form.update.succeed");
+      MessageNotifier.addSuccess(getString("formsOnline.form.update.succeed"));
     }
     currentForm =
         getService().storeForm(currentForm, senderUserIds, senderGroupIds, receiverUserIds,
