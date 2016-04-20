@@ -24,35 +24,21 @@
 package org.silverpeas.components.webpages;
 
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.notification.system.JMSResourceEventListener;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 
 /**
  * @author mmoquillon
  */
-@MessageDriven(name = "WebPagesWysiwygEventListener",
-    activationConfig = {@ActivationConfigProperty(propertyName = "destinationLookup",
-        propertyValue = "topic/wysiwyg"),
-        @ActivationConfigProperty(propertyName = "destinationType",
-            propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode",
-            propertyValue = "Auto-acknowledge")})
-public class WebPagesWysiwygEventListener extends JMSResourceEventListener<WysiwygEvent> {
+public class WebPagesWysiwygEventListener extends CDIResourceEventListener<WysiwygEvent> {
 
   @Inject
   private OrganizationController organisationController;
-
-  @Override
-  protected Class<WysiwygEvent> getResourceEventClass() {
-    return WysiwygEvent.class;
-  }
 
   @Override
   public void onUpdate(final WysiwygEvent event) throws Exception {
