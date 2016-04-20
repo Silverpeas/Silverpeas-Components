@@ -65,6 +65,8 @@
 <%@ page import="org.silverpeas.components.questionreply.control.QuestionReplySessionController" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext" %>
+<%@ page import="java.util.Iterator" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
