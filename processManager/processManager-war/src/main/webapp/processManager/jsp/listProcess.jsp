@@ -103,7 +103,6 @@ Item getItem(Item[] items, String itemName)
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<link rel="stylesheet" type="text/css" href="<%=m_context%>/processManager/jsp/css/processManager.css"/>
 <%
 	if (collapse.equals("false")) {
 		form.displayScripts(out, context);
@@ -136,34 +135,22 @@ Item getItem(Item[] items, String itemName)
 	}
 </script>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam processManager-main">
 <%
    out.println(window.printBefore());
 %>
 <view:frame>
-<center>
 <% if (roles != null && roles.length > 1) { %>
+  <div id="roles">
 <form name="roleChoice" method="post" action="changeRole">
-<table cellpadding="1" cellspacing="0" border="0" width="98%">
-	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("processManager.yourRole") %> :&nbsp;</td>
-		<td>
-			<table cellpadding="2" cellspacing="1" border="0" width="100%" bgcolor="000000">
-				<tr>
-					<td class="intfdcolor" align="center" nowrap width="100%" height="24">
-						<select name="role" onchange="document.roleChoice.submit()">
-						   <% for (int i=0; i<roles.length ; i++) { %>
-							   <option <%=currentRole.equals(roles[i].name)?"selected":""%> value="<%=roles[i].name%>"><%=roles[i].value%></option>
-							<% } %>
-						</select>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<td width="100%">&nbsp;</td>
-	</tr>
-</table>
+		<span class="textePetitBold"><%=resource.getString("processManager.yourRole") %> :&nbsp;</span>
+    <select name="role" onchange="document.roleChoice.submit()">
+       <% for (int i=0; i<roles.length ; i++) { %>
+         <option <%=currentRole.equals(roles[i].name)?"selected":""%> value="<%=roles[i].name%>"><%=roles[i].value%></option>
+      <% } %>
+    </select>
 </form>
+  </div>
 <br/>
 <% } %>
 
@@ -171,47 +158,28 @@ Item getItem(Item[] items, String itemName)
 	<span class="inlineMessage"><%=welcomeMessage %></span>
 <% } %>
 <view:areaOfOperationOfCreation/>
-<form name="<%=context.getFormName()%>" method="post" action="filterProcess" enctype="multipart/form-data">
-	<% out.println(board.printBefore()); %>
-			<table cellpadding="0" cellspacing="0" border="0" width="100%">
-				<tr>
-					<td rowspan="2" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
-						<a href="listProcess"><img border="0" src="<%=resource.getIcon("processManager.refresh")%>" alt="<%=resource.getString("processManager.refresh")%>" align="absmiddle"/></a>
-						<span class="txtNav">
-						<%=resource.getString("processManager.filter") %>
-						</span>
-					</td>
-					<td><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"/></td>
-					<td><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"/></td>
-				</tr>
-				<tr>
-					<td height="0" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td>
-					<td align="center" valign="bottom" nowrap>
-					<%if (collapse.equals("true")) {
-						out.println("<a href=\"javascript:collapseFilter('false')\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
-					} else {
-						out.println("<a href=\"javascript:collapseFilter('true')\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
-					}
-					%>
-					<img border="0" height="1" width="3" src="<%=resource.getIcon("processManager.px") %>"/>
-					</td>
-				</tr>
-			</table>
+<form id="filter" name="<%=context.getFormName()%>" method="post" action="filterProcess" enctype="multipart/form-data">
+  <div class="bgDegradeGris">
+        <div id="filterLabel">
+          <p>
+            <%if (collapse.equals("true")) { %>
+            <a href="javascript:collapseFilter('false')"><img border="0" src="<%=resource.getIcon("processManager.boxDown")%>"/></a>
+            <% } else { %>
+            <a href="javascript:collapseFilter('true')"><img border="0" src="<%=resource.getIcon("processManager.boxUp")%>"/></a>
+            <% } %>
+            <span class="txtNav"><%=resource.getString("processManager.filter") %></span>
+          </p>
+
+          <div id="refresh"><a href="listProcess"><img border="0" src="<%=resource.getIcon("processManager.refresh")%>" alt="<%=resource.getString("processManager.refresh")%>" align="absmiddle"/></a></div>
+        </div>
 				<% if (collapse.equals("false")) { %>
-					<table cellpadding="5" cellspacing="0" border="0" width="100%">
-						<tr>
-							<td>
-						      <br/><% form.display(out, context, data); %>
-							  <br/><% out.println(buttonPane.print()); %>
-							</td>
-						</tr>
-					</table>
-				<% } else { %>
-					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td></tr></table>
+        <div id="filterForm">
+					<% form.display(out, context, data); %>
+					<% out.println(buttonPane.print()); %>
+        </div>
 				<% } %>
-	<% out.println(board.printAfter()); %>
-   <input type="hidden" name="collapse" value="<%=collapse%>"/>
+	 <input type="hidden" name="collapse" value="<%=collapse%>"/>
+  </div>
 </form>
 <%
 	ArrayColumn arrayColumn;
@@ -326,7 +294,6 @@ Item getItem(Item[] items, String itemName)
 	}
 	out.println(arrayPane.print());
 %>
-</center>
 </view:frame>
 <%
 out.println(window.printAfter());
