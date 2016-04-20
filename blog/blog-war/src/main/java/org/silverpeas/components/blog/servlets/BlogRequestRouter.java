@@ -404,7 +404,6 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-
     return destination;
   }
 

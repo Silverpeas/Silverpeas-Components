@@ -75,7 +75,7 @@ public class MailCheckerInitialize implements Initialization {
         scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
       if (hasToCheckForNewMails()) {
-        SilverLogger.getLogger("mailinglist").info("Check mails from mailing lists every "
+        SilverLogger.getLogger(this).info("Check mails from mailing lists every "
         + getFrequency() + " minutes");
         MessageChecker checker = getMessageChecker();
         JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);

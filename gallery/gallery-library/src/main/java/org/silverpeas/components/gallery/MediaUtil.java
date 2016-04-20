@@ -332,7 +332,7 @@ public class MediaUtil {
       try {
         createThumbnails(handledImageFile, photo, image, watermark, nameForWatermark);
       } catch (final Exception e) {
-        SilverLogger.getLogger("gallery")
+        SilverLogger.getLogger(MediaUtil.class)
             .error("image = " + photo.getTitle() + " (#" + photo.getId() + ")");
       }
     }
@@ -362,7 +362,7 @@ public class MediaUtil {
             photo.addMetaData(meta);
           }
         } catch (UnsupportedEncodingException e) {
-          SilverLogger.getLogger("gallery")
+          SilverLogger.getLogger(MediaUtil.class)
               .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
         }
       }
@@ -559,7 +559,7 @@ public class MediaUtil {
         try {
           fromDir.delete();
         } catch (Exception e) {
-          SilverLogger.getLogger("gallery").error(
+          SilverLogger.getLogger(MediaUtil.class).error(
               "Unable to delete source folder : folder path = " + fromDir.getFile().getPath(), e);
         }
       }
@@ -576,7 +576,7 @@ public class MediaUtil {
           fromFile.copyFile(toFile);
         }
       } catch (final Exception e) {
-        SilverLogger.getLogger("gallery").error(
+        SilverLogger.getLogger(MediaUtil.class).error(
             "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
                 toFile.getFile().getPath(), e);
       }
@@ -623,10 +623,10 @@ public class MediaUtil {
           }
         }
       } catch (MediaMetadataException e) {
-        SilverLogger.getLogger("gallery")
+        SilverLogger.getLogger(MediaUtil.class)
             .error("Bad image file format " + image.getFile().getPath() + ": " + e.getMessage());
       } catch (UnsupportedEncodingException e) {
-        SilverLogger.getLogger("gallery").error(
+        SilverLogger.getLogger(MediaUtil.class).error(
             "Bad metadata encoding in image " + image.getFile().getPath() + ": " + e.getMessage());
       }
     }

@@ -285,7 +285,7 @@ public class EventDetail extends AbstractBean
       AlmanachService almanachService = ServiceProvider.getService(AlmanachService.class);
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
-      SilverLogger.getLogger("attachment").error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new AlmanachRuntimeException("EventDetail.getAttachments()",
           SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS",
           ex);
