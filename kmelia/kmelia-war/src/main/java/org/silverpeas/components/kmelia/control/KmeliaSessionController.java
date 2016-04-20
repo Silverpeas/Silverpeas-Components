@@ -819,6 +819,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     NodeDetail node = getNodeHeader(topicId);
     // check if user is allowed to delete this topic
     if (SilverpeasRole.admin.isInRole(getUserTopicProfile(topicId)) ||
+        SilverpeasRole.admin.isInRole(getUserTopicProfile(NodePK.ROOT_NODE_ID)) ||
         SilverpeasRole.admin.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
       // First, remove rights on topic and its descendants
       List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
