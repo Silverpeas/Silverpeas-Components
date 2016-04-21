@@ -821,7 +821,7 @@ a.button.refuse span {
   width: 7px;
   display:block !important;
   cursor: e-resize;
-  right: -5px;
+  right: -9px;
   top: 0;
   bottom: 0;
 }
@@ -906,3 +906,32 @@ a.button.refuse span {
   background:transparent url(/silverpeas/util/icons/talk2user.gif) 0 0 no-repeat;
   padding-left:20px;
 }
+/******** on style la scroll bar pour alléger l'ensemble ********/
+/******************** WEBKIT **************/
+#treeDiv1::-webkit-scrollbar {
+    width: 7px;
+	height:7px;
+}
+#treeDiv1::-webkit-scrollbar-track {
+    -webkit-box-shadow:0;
+	background-color:#f1f1f1;
+}
+#treeDiv1::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius:0.5em;
+}
+#treeDiv1::-webkit-scrollbar-button { 
+}
+
+/******************** IE **************/
+#treeDiv1{
+	  scrollbar-base-color: #d6d6d6;
+	  scrollbar-3dlight-color: #f1f1f1;
+	  scrollbar-highlight-color: #f1f1f1;
+	  scrollbar-track-color: #f1f1f1;
+	  scrollbar-arrow-color: #a3a3a3;
+	  scrollbar-dark-shadow-color: #FFF;
+	   scrollbar-shadow-color: #d6d6d6;
+	  scrollbar-dark-shadow-color: #f1f1f1;
+	  scrollbar-darkshadow-color: #f1f1f1;
+	}
