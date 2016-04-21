@@ -23,13 +23,15 @@
  */
 package org.silverpeas.components.yellowpages.control;
 
+import org.silverpeas.components.yellowpages.model.UserContact;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
-import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
@@ -144,8 +146,21 @@ public class DisplayContactsHelper {
       if (nameColumn.startsWith("domain.")) {
         final String property = nameColumn.substring(7);
         contactTextFunctions.put(nameColumn, contactDetail -> {
+          String value = "";
           UserFull userFull = contactDetail.getUserFull();
-          return (userFull != null) ? userFull.getValue(property) : "";
+          if (userFull != null){
+            value = userFull.getValue(property);
+            if (StringUtil.isDefined(value) &&
+                userFull.getPropertyType(property).equals(DomainProperty.PROPERTY_TYPE_USERID)) {
+              UserDetail anotherUser = UserDetail.getById(value);
+              if (anotherUser != null) {
+                value = anotherUser.getLastName() + " " + anotherUser.getFirstName();
+              } else {
+                value = "";
+              }
+            }
+          }
+          return value;
         });
       } else if ("lastname".equals(nameColumn)) {
         contactTextFunctions.put(nameColumn, ContactDetail::getLastName);
