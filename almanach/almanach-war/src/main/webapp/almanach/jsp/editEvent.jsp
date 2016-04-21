@@ -90,7 +90,7 @@
 <script type="text/javascript">
 <!--
 function getCKEditor() {
-	return CKEDITOR.instances.Description;
+	return CKEDITOR.instances.editorDescription;
 }
 function reallyUpdate() {
 	$('.WeekDayWeek').attr("disabled", false); 
@@ -373,7 +373,7 @@ $(document).ready(function(){
 	
 	changeUnity();
 
-	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${true}" objectId="<%=event.getId()%>" componentId="<%=event.getInstanceId()%>"/>
+	<view:wysiwyg replace="editorDescription" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${true}" objectId="<%=event.getId()%>" componentId="<%=event.getInstanceId()%>"/>
 });
 //-->
 </script>
@@ -409,9 +409,9 @@ $(document).ready(function(){
 			</div>
 			
 			<div class="field" id="eventDescriptionArea">
-				<label for="Description" class="txtlibform"><fmt:message key='GML.description'/></label>
+				<label for="editorDescription" class="txtlibform"><fmt:message key='GML.description'/></label>
 				<div class="champs">
-					<textarea rows="5" cols="10" name="Description" id="Description"><%=description %></textarea>
+					<textarea rows="5" cols="10" name="editorDescription" id="editorDescription"><%=description %></textarea>
 				</div>
 			</div>
 			

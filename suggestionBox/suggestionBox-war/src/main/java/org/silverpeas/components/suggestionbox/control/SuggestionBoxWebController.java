@@ -371,7 +371,7 @@ public class SuggestionBoxWebController extends
   public void addSuggestion(SuggestionBoxWebRequestContext context) {
     SuggestionBox suggestionBox = context.getSuggestionBox();
     String title = context.getRequest().getParameter("title");
-    String content = context.getRequest().getParameter("content");
+    String content = context.getRequest().getParameter("editorContent");
     Suggestion suggestion = new Suggestion(title);
     suggestion.setContent(content);
     suggestion.setCreator(context.getUser());
@@ -465,7 +465,7 @@ public class SuggestionBoxWebController extends
         throw new WebApplicationException(Status.FORBIDDEN);
       }
       suggestion.setTitle(context.getRequest().getParameter("title"));
-      suggestion.setContent(context.getRequest().getParameter("content"));
+      suggestion.setContent(context.getRequest().getParameter("editorContent"));
       suggestion.setLastUpdater(context.getUser());
       suggestion.save();
       context.getMessager()

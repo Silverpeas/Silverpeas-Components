@@ -239,7 +239,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String id = FileUploadUtil.getParameter(items, "Id");
     String name = FileUploadUtil.getParameter(items, "Name");
     String description = FileUploadUtil.getParameter(items, "Description");
-    String content = FileUploadUtil.getParameter(items, "Content");
+    String content = FileUploadUtil.getParameter(items, "editorContent");
     String pubId = FileUploadUtil.getParameter(items, "PubId");
     boolean important =
         StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastImportant"));

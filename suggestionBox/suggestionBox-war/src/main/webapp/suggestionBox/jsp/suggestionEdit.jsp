@@ -71,7 +71,7 @@
   <view:includePlugin name="popup"/>
   <script type="text/javascript">
     $(document).ready(function() {
-      <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>
+      <view:wysiwyg replace="editorContent" language="${null}" toolbar="suggestionBox"/>
       $('#title').focus();
     });
 
@@ -154,7 +154,7 @@
           <label class="txtlibform" for="suggestionDescription"><fmt:message key='GML.description'/></label>
 
           <div class="champs">
-            <textarea rows="5" cols="10" name="content" id="suggestionDescription">${suggestion.content}</textarea>
+            <textarea rows="5" cols="10" name="editorContent" id="suggestionDescription">${suggestion.content}</textarea>
           </div>
         </div>
       </div>

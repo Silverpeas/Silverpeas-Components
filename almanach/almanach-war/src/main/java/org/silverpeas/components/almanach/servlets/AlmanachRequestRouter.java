@@ -218,7 +218,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         EventDetail event = new EventDetail();
 
         String title = request.getParameter("Title");
-        String description = request.getParameter("Description");
+        String description = request.getParameter("editorDescription");
         String startDate = request.getParameter("StartDate");
         String startHour = request.getParameter("StartHour");
         String endDate = request.getParameter("EndDate");
@@ -349,7 +349,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         EventDetail event = almanach.getEventDetail(id);
 
         String title = request.getParameter("Title");
-        String description = request.getParameter("Description");
+        String description = request.getParameter("editorDescription");
         String startDate = request.getParameter("StartDate");
         String startHour = request.getParameter("StartHour");
         String endDate = request.getParameter("EndDate");

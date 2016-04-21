@@ -109,7 +109,7 @@ public class SuggestionBoxWebControllerTest {
     final String content = "A suggestion content";
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getRequest().getParameter("title")).thenReturn(title);
-    when(context.getRequest().getParameter("content")).thenReturn(content);
+    when(context.getRequest().getParameter("editorContent")).thenReturn(content);
     SuggestionBox box = context.getSuggestionBox();
 
     controller.addSuggestion(context);
@@ -455,7 +455,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     when(context.getRequest().getParameter("title")).thenReturn(modifiedTitle);
-    when(context.getRequest().getParameter("content")).thenReturn(modifiedContent);
+    when(context.getRequest().getParameter("editorContent")).thenReturn(modifiedContent);
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
     UserDetail user = context.getUser();
@@ -474,7 +474,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     when(context.getRequest().getParameter("title")).thenReturn(modifiedTitle);
-    when(context.getRequest().getParameter("content")).thenReturn(modifiedContent);
+    when(context.getRequest().getParameter("editorContent")).thenReturn(modifiedContent);
     SuggestionBox box = context.getSuggestionBox();
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
