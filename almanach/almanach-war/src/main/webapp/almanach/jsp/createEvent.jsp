@@ -224,7 +224,7 @@ $(document).ready(function() {
 	$('#eventFrequencyArea').hide();
 	$('.eventPeriodicityDateArea').hide();
 
-	<view:wysiwyg replace="Description" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${true}" objectId="${event.id}" componentId="${event.instanceId}"/>
+	<view:wysiwyg replace="editorDescription" language="${language}" width="98%" height="300" toolbar="almanach" displayFileBrowser="${true}" objectId="${event.id}" componentId="${event.instanceId}"/>
 });
 </script>
 </head>
@@ -246,9 +246,9 @@ $(document).ready(function() {
 				</div>
 				
 				<div class="field" id="eventDescriptionArea">
-					<label for="Description" class="txtlibform"><fmt:message key='GML.description'/></label>
+					<label for="editorDescription" class="txtlibform"><fmt:message key='GML.description'/></label>
 					<div class="champs">
-						<textarea rows="5" cols="10" name="Description" id="Description"></textarea>
+						<textarea rows="5" cols="10" name="editorDescription" id="editorDescription"></textarea>
 					</div>
 				</div>
 				
