@@ -72,8 +72,9 @@ public class KmeliaResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response savePublication(@PathParam("nodeId") String nodeId,
-      final PublicationEntity publicationEntity) {
+      PublicationEntity publicationEntity) {
     try {
+      publicationEntity.setCreator(getUserDetail());
       PublicationDetail publication = publicationEntity.toPublicationDetail();
 
       NodePK nodePK = getNodePK(nodeId);
