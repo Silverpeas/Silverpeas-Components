@@ -20,63 +20,9 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
-import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.subscription.Subscription;
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
-import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.coordinates.service.CoordinatesService;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.coordinates.model.CoordinatePK;
-import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.ValidationStep;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.components.kmelia.InstanceParameters;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaContentManager;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
@@ -97,38 +43,92 @@ import org.silverpeas.components.kmelia.notification.KmeliaSubscriptionPublicati
 import org.silverpeas.components.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
 import org.silverpeas.components.kmelia.notification.KmeliaTopicUserNotification;
 import org.silverpeas.components.kmelia.notification.KmeliaValidationPublicationUserNotification;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.TodoDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.ValidationStep;
+import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.coordinates.service.CoordinatesService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.process.annotation.SimulationActionProcess;
+import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.NodeSubscription;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
-import org.silverpeas.core.process.annotation.SimulationActionProcess;
-import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
-import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -141,10 +141,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.*;
 
+import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider
+    .getOrganisationController;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
-import static org.silverpeas.core.util.StringUtil.*;
 import static org.silverpeas.core.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * This is the KMelia Service controller of the MVC. It controls all the activities that happen in a
@@ -984,7 +986,7 @@ public class DefaultKmeliaService implements KmeliaService {
     return pubId;
   }
 
-  public String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
+  private String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
       NodePK fatherPK, PdcClassification classification) {
     PublicationPK pubPK = null;
     try {
@@ -1002,6 +1004,8 @@ public class DefaultKmeliaService implements KmeliaService {
         // subscribers are notified later (only if publication is valid)
         pdcClassificationService.classifyContent(pubDetail, classification, false);
       }
+
+      createdIntoRequestContext(pubDetail);
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.createPublicationIntoTopic()", ERROR,
@@ -1171,10 +1175,17 @@ public class DefaultKmeliaService implements KmeliaService {
           }
         }
       }
-      // notification pour modification
-      if (!isPublicationInBasket) {
+
+      // Sending a subscription notification if the publication updated comes not from the
+      // basket, has not been created or already updated from the same request
+      if (!isPublicationInBasket &&
+          !hasPublicationBeenCreatedFromRequestContext(pubDetail) &&
+          !hasPublicationBeenUpdatedFromRequestContext(pubDetail)) {
         sendSubscriptionsNotification(pubDetail, NotifAction.UPDATE, false);
       }
+
+
+      updatedIntoRequestContext(pubDetail);
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.updatePublication()", ERROR,
@@ -1388,7 +1399,9 @@ public class DefaultKmeliaService implements KmeliaService {
         pubPK.getInstanceId().startsWith("kmax"))) {
 
       PublicationDetail pubDetail = null;
+      boolean isPublicationInBasketBeforeUpdate = false;
       try {
+        isPublicationInBasketBeforeUpdate = isPublicationInBasket(pubPK);
         pubDetail = getPublicationDetail(pubPK);
       } catch (Exception e) {
         // publication no longer exists do not throw exception because this method is called by JMS
@@ -1427,6 +1440,10 @@ public class DefaultKmeliaService implements KmeliaService {
           SilverLogger.getLogger(this).warn("User {0} not allowed to update publication {1}",
               userId, pubDetail.getPK().getId());
         }
+      }
+
+      if (KmeliaHelper.isIndexable(pubDetail) && !isPublicationInBasketBeforeUpdate) {
+        publicationService.createIndex(pubDetail);
       }
 
       // index all attached files to taking into account visibility period
@@ -3578,7 +3595,8 @@ public class DefaultKmeliaService implements KmeliaService {
     if (CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
         // Register attachment
-        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(), false);
+        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(),
+            pubDetail.isIndexable());
       }
     }
   }
