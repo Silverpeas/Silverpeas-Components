@@ -1681,7 +1681,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             (UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager();
         pim.removeProcessInstance(processId);
       } else {
-        SilverLogger.getLogger(this).warn("Security alert from {0} on {1}", getUserId(), processId);
+        SilverLogger.getLogger(this)
+            .warn("Security alert from userId {0} on processId {1}", getUserId(), processId);
       }
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
