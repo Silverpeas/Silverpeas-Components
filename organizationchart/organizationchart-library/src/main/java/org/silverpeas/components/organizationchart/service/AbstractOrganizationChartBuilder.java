@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class AbstractOrganizationChartServiceImpl {
+abstract class AbstractOrganizationChartBuilder {
 
-  public AbstractOrganizationChartServiceImpl() {
+  AbstractOrganizationChartBuilder() {
     super();
   }
 
@@ -44,8 +44,8 @@ public class AbstractOrganizationChartServiceImpl {
    * @param person person
    * @param function person's function
    */
-  protected void defineUnitChartRoles(OrganizationalPerson person, String function,
-      OrganizationChartConfiguration config) {
+  void defineUnitChartRoles(OrganizationalPerson person, String function,
+      AbstractOrganizationChartConfiguration config) {
 
     // Priority to avoid conflicted syntaxes : right, left and then central
     boolean roleDefined = false;
@@ -89,8 +89,8 @@ public class AbstractOrganizationChartServiceImpl {
    * @param pers the oraganizational person
    * @param function person's function
    */
-  protected void defineDetailledChartRoles(OrganizationalPerson pers, String function,
-      OrganizationChartConfiguration config) {
+  void defineDetailledChartRoles(OrganizationalPerson pers, String function,
+      AbstractOrganizationChartConfiguration config) {
 
     // Priority to avoid conflicted syntaxes : central then categories
     boolean roleDefined = false;
@@ -134,7 +134,7 @@ public class AbstractOrganizationChartServiceImpl {
         function.toLowerCase().contains(role.getLdapKey().toLowerCase()));
   }
 
-  protected List<OrganizationalPerson> getMainActors(List<OrganizationalPerson> users) {
+  List<OrganizationalPerson> getMainActors(List<OrganizationalPerson> users) {
     List<OrganizationalPerson> mainActors = new ArrayList<>();
     for (OrganizationalPerson person : users) {
       if (person.isVisibleOnCenter()) {
@@ -149,7 +149,7 @@ public class AbstractOrganizationChartServiceImpl {
    * @param personList the person list
    * @return a Set of PersonCategory
    */
-  protected Set<PersonCategory> getCategories(List<OrganizationalPerson> personList) {
+  Set<PersonCategory> getCategories(List<OrganizationalPerson> personList) {
     Set<PersonCategory> categories = new TreeSet<>();
 
     for (OrganizationalPerson person : personList) {

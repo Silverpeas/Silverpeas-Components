@@ -23,23 +23,5 @@
  */
 package org.silverpeas.components.organizationchart.service;
 
-import org.silverpeas.core.util.ServiceProvider;
-
-public class OrganizationChartServicesProvider {
-
-  public static OrganizationChartService getOrganizationChartLDAPService(
-      OrganizationChartLDAPConfiguration config) {
-    OrganizationChartService service =
-        ServiceProvider.getService(OrganizationChartLdapServiceImpl.class);
-    service.configure(config);
-    return service;
-  }
-
-  public static OrganizationChartService getOrganizationChartGroupService(
-      OrganizationChartConfiguration config) {
-    OrganizationChartService service =
-        ServiceProvider.getService(OrganizationChartGroupServiceImpl.class);
-    service.configure(config);
-    return service;
-  }
+public class GroupOrganizationChartConfiguration extends AbstractOrganizationChartConfiguration {
 }

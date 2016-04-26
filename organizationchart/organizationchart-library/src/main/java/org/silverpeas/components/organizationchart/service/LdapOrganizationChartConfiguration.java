@@ -30,7 +30,7 @@ import javax.naming.Context;
 
 import org.silverpeas.core.util.StringUtil;
 
-public class OrganizationChartLDAPConfiguration extends OrganizationChartConfiguration {
+public class LdapOrganizationChartConfiguration extends AbstractOrganizationChartConfiguration {
   private Map<String, String> env = null;
 
   private String ldapClassPerson = null;
@@ -42,7 +42,7 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   private String ldapAttActif = null;
   private String domainId = null;
 
-  public OrganizationChartLDAPConfiguration() {
+  public LdapOrganizationChartConfiguration() {
     this.env = new Hashtable<>();
     env.put(Context.REFERRAL, "ignore");
   }
@@ -50,15 +50,8 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   /**
    * @return the env
    */
-  public Map<String, String> getEnv() {
+  Map<String, String> getEnv() {
     return env;
-  }
-
-  /**
-   * @param env the env to set
-   */
-  public void setEnv(Map<String, String> env) {
-    this.env = env;
   }
 
   /**
@@ -113,7 +106,7 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   /**
    * @return the ldapClassPerson
    */
-  public String getLdapClassPerson() {
+  String getLdapClassPerson() {
     return ldapClassPerson;
   }
 
@@ -127,7 +120,7 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   /**
    * @return the ldapClassUnit
    */
-  public String getLdapClassUnit() {
+  String getLdapClassUnit() {
     return ldapClassUnit;
   }
 
@@ -141,7 +134,7 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   /**
    * @return the ldapAttAccount
    */
-  public String getLdapAttAccount() {
+  String getLdapAttAccount() {
     return ldapAttAccount;
   }
 
@@ -155,7 +148,7 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
   /**
    * @return the ldapAttActif
    */
-  public String getLdapAttActif() {
+  String getLdapAttActif() {
     return ldapAttActif;
   }
 
@@ -170,7 +163,7 @@ public class OrganizationChartLDAPConfiguration extends OrganizationChartConfigu
     this.ldapAttCSSClass = StringUtil.isDefined(ldapAttCSSClass) ? ldapAttCSSClass : null;
   }
 
-  public String getLdapAttCSSClass() {
+  String getLdapAttCSSClass() {
     return ldapAttCSSClass;
   }
 

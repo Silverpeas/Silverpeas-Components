@@ -24,6 +24,16 @@
 
 package org.silverpeas.components.organizationchart.stub;
 
+import org.silverpeas.components.organizationchart.model.OrganizationalChart;
+import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
+import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
+import org.silverpeas.components.organizationchart.model.OrganizationalRole;
+import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
+import org.silverpeas.components.organizationchart.model.PersonCategory;
+import org.silverpeas.components.organizationchart.service.LdapOrganizationChartConfiguration;
+import org.silverpeas.core.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,24 +42,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.silverpeas.components.organizationchart.model.OrganizationalChart;
-import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
-import org.silverpeas.components.organizationchart.model.OrganizationalRole;
-import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import org.silverpeas.components.organizationchart.model.PersonCategory;
-import org.silverpeas.components.organizationchart.service.OrganizationChartConfiguration;
-import org.silverpeas.components.organizationchart.service.OrganizationChartLDAPConfiguration;
-import org.silverpeas.components.organizationchart.service.OrganizationChartService;
-import org.silverpeas.core.util.StringUtil;
+class StubbedOrganizationChartBuilder {
 
-public class OrganizationChartSimpleService implements OrganizationChartService {
+  final private LdapOrganizationChartConfiguration config;
 
-  private OrganizationChartLDAPConfiguration config = null;
+  static StubbedOrganizationChartBuilder from(LdapOrganizationChartConfiguration config) {
+    return new StubbedOrganizationChartBuilder(config);
+  }
 
-  @Override
-  public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type) {
+  private StubbedOrganizationChartBuilder(final LdapOrganizationChartConfiguration config) {
+    this.config = config;
+  }
+
+  public OrganizationalChart buildFor(String baseOu, OrganizationalChartType type) {
 
     List<OrganizationalPerson> ouMembers;
     List<OrganizationalUnit> units = null;
@@ -92,8 +97,7 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     return chart;
   }
 
-  @Override
-  public void configure(OrganizationChartLDAPConfiguration config) {
+  private void configure() {
     config.setRoot("OU=Bands,dc=mondomain,dc=com");
     config.setAttUnit("");
     List<OrganizationalRole> rightRoles = new ArrayList<>();
@@ -111,13 +115,6 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     List<OrganizationalRole> categories = new ArrayList<>();
     categories.add(new OrganizationalRole("Musiciens", "musicien"));
     config.setPersonnsChartCategoriesLabel(categories);
-
-    this.config = config;
-  }
-
-  @Override
-  public void configure(OrganizationChartConfiguration config) {
-    throw new UnsupportedOperationException();
   }
 
   private List<OrganizationalPerson> getOUMembers(String rootOu, OrganizationalChartType type) {

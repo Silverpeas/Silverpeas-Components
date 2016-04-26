@@ -29,12 +29,11 @@ import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
 import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import org.silverpeas.components.organizationchart.model.PersonCategory;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,14 +42,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-@Singleton
-public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChartServiceImpl
-    implements OrganizationChartService {
+class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
-  OrganizationChartConfiguration config = null;
+  private final GroupOrganizationChartConfiguration config;
 
-  @Override
-  public OrganizationalChart getOrganizationChart(String groupId, OrganizationalChartType type) {
+  static GroupOrganizationChartBuilder from(GroupOrganizationChartConfiguration config) {
+    return new GroupOrganizationChartBuilder(config);
+  }
+
+  private GroupOrganizationChartBuilder(final GroupOrganizationChartConfiguration config) {
+    this.config = config;
+  }
+
+  OrganizationalChart buildFor(String groupId, OrganizationalChartType type) {
     // check rootId
     if (!StringUtil.isDefined(groupId)) {
       groupId = config.getRoot();
@@ -173,15 +177,5 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
     }
 
     return units;
-  }
-
-  @Override
-  public void configure(OrganizationChartLDAPConfiguration config) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void configure(OrganizationChartConfiguration config) {
-    this.config = config;
   }
 }

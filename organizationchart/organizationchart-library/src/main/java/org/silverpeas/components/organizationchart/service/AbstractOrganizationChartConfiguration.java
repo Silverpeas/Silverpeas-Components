@@ -28,7 +28,7 @@ import org.silverpeas.components.organizationchart.model.OrganizationalRole;
 import java.util.List;
 import java.util.Map;
 
-public class OrganizationChartConfiguration {
+public abstract class AbstractOrganizationChartConfiguration {
 
   private String root = null;
 
@@ -48,7 +48,7 @@ public class OrganizationChartConfiguration {
   private Map<String, String> unitsChartOthersInfosKeys = null;
   private Map<String, String> personnsChartOthersInfosKeys = null;
 
-  public OrganizationChartConfiguration() {
+  AbstractOrganizationChartConfiguration() {
   }
 
   /**

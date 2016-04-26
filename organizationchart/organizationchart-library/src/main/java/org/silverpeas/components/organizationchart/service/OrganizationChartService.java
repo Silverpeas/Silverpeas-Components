@@ -25,12 +25,21 @@ package org.silverpeas.components.organizationchart.service;
 
 import org.silverpeas.components.organizationchart.model.OrganizationalChart;
 import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface OrganizationChartService {
 
-  public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type);
+  static OrganizationChartService get() {
+    return ServiceProvider.getService(OrganizationChartService.class);
+  }
 
-  public void configure(OrganizationChartLDAPConfiguration config);
-
-  public void configure(OrganizationChartConfiguration config);
+  /**
+   * Gets the {@link OrganizationalChart} instance corresponding the the given parameters.
+   * @param config the configuration of the requested chart.
+   * @param base the base from which the organizational chart must be build.
+   * @param type the organizational chart type.
+   * @return the built organizational chart.
+   */
+  OrganizationalChart getOrganizationChart(AbstractOrganizationChartConfiguration config,
+      String base, OrganizationalChartType type);
 }

@@ -29,10 +29,9 @@ import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
 import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import org.silverpeas.components.organizationchart.model.PersonCategory;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -53,24 +52,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-@Singleton
-public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartServiceImpl
-    implements OrganizationChartService {
+class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
-  private OrganizationChartLDAPConfiguration config = null;
+  private final LdapOrganizationChartConfiguration config;
 
-  public void configure(OrganizationChartLDAPConfiguration config) {
+  static LdapOrganizationChartBuilder from(LdapOrganizationChartConfiguration config) {
+    return new LdapOrganizationChartBuilder(config);
+  }
+
+  private LdapOrganizationChartBuilder(final LdapOrganizationChartConfiguration config) {
     this.config = config;
   }
 
-  @Override
-  public void configure(OrganizationChartConfiguration config) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type) {
-
+  OrganizationalChart buildFor(String baseOu, OrganizationalChartType type) {
 
     Map<String, String> env = config.getEnv();
 
@@ -110,18 +104,14 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
       }
 
     } catch (NamingException e) {
-      SilverTrace
-          .error("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart",
-              "organizationChart.ldap.closing.context.error", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     } finally {
       if (ctx != null) {
         try {
           ctx.close();
         } catch (NamingException e) {
-          SilverTrace
-              .error("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart",
-                  "organizationChart.ldap.conection.error", e);
+          SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
         }
       }
     }
@@ -236,8 +226,6 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
     NamingEnumeration<SearchResult> results =
         ctx.search(rootOu, "(objectclass=" + config.getLdapClassUnit() + ")", ctls);
 
-
-
     while (results != null && results.hasMore()) {
       SearchResult entry = results.next();
       Attributes attrs = entry.getAttributes();
@@ -277,10 +265,8 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
           unit.setSpecificCSSClass(cssClass);
         }
       } catch (Exception e) {
-        SilverTrace
-            .error("organizationchart", "OrganizationChartLdapServiceImpl.getSubOrganizationUnits",
-                "organizationchart.ERROR_GET_SUBUNIT_MAINACTORS", "dn : " + unit.getCompleteName(),
-                e);
+        SilverLogger.getLogger(this).error("cannot get organization unit of dn ''{0}'' ({1})",
+            new String[]{unit.getCompleteName(), e.getLocalizedMessage()}, e);
       }
 
     }
@@ -290,20 +276,10 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
 
   private OrganizationalUnit getOrganizationalUnit(DirContext ctx, SearchControls ctls,
       String rootOu) throws NamingException {
-    SilverTrace
-        .info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationalUnit()",
-            "root.MSG_GEN_ENTER_METHOD", "rootOu = " + rootOu);
     Attributes attrs = ctx.getAttributes(rootOu);
-
-    SilverTrace
-        .info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationalUnit()",
-            "root.MSG_GEN_PARAM_VALUE", "OU retrieved !");
 
     String ou = getFirstAttributeValue(attrs.get(config.getAttUnit()));
     OrganizationalUnit unit = new OrganizationalUnit(ou, rootOu);
-    SilverTrace
-        .info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationalUnit()",
-            "root.MSG_GEN_PARAM_VALUE", "ou = " + ou);
     if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
       unit.setSpecificCSSClass(getFirstAttributeValue(attrs.get(config.getLdapAttCSSClass())));
     }
@@ -397,9 +373,8 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
         }
       }
     } catch (InvalidNameException e1) {
-      SilverTrace.warn("organizationchart",
-          "OrganizationChartLdapServiceImpl.getOrganizationalPersonDetails",
-          "organizationchart.ERROR_GET_SERVICE", "dn : " + dn, e1);
+      SilverLogger.getLogger(this).error("cannot load organizational person from dn ''{0}'' ({1})",
+          new String[]{dn, e1.getLocalizedMessage()}, e1);
     }
 
     // build OrganizationalPerson object
@@ -462,8 +437,8 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
 
           details.put(attribute.getValue(), detail);
         } catch (NamingException e) {
-          SilverTrace.warn("organizationchart", "OrganizationChartLdapServiceImpl.getDetails",
-              "organizationchart.ERROR_GET_DETAIL", "attribute : " + attribute.getKey(), e);
+          SilverLogger.getLogger(this).error("cannot get data of attribute ''{0}'' ({1})",
+              new String[]{attribute.getKey(), e.getLocalizedMessage()}, e);
         }
       }
     }
@@ -471,7 +446,7 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
   }
 
   private String escapeHTML(String s) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     int n = s.length();
     for (int i = 0; i < n; i++) {
       char c = s.charAt(i);
@@ -522,9 +497,8 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
         }
       }
     } catch (NamingException e1) {
-      SilverTrace
-          .warn("organizationchart", "OrganizationChartLdapServiceImpl.getFirstAttributeValue",
-              "organizationchart.ERROR_GET_ATTRIBUTE_VALUE", "attribute : " + att.getID(), e1);
+      SilverLogger.getLogger(this).error("cannot get first value of attribute ''{0}'' ({1})",
+          new String[]{att.getID(), e1.getLocalizedMessage()}, e1);
     }
 
     return result;
