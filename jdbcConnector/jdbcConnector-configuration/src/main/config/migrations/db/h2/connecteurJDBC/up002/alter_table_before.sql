@@ -1,0 +1,1 @@
+ALTER TABLE sc_connecteurjdbc_connectinfo ADD COLUMN dataSource VARCHAR(250) NULL;

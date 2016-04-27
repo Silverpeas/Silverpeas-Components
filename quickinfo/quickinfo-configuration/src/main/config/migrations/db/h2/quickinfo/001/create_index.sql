@@ -1,0 +1,1 @@
+CREATE INDEX idx_news ON sc_quickinfo_news (instanceId, id);
