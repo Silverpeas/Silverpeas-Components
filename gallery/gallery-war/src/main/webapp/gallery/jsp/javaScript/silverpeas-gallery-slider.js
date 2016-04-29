@@ -184,7 +184,7 @@
       autoplay : (options.waitInSeconds * 1000),
       lightbox : false,
       imageCrop : false,
-      trueFullscreen : false,
+      trueFullscreen : true,
       popupLinks : false,
       keepSource : false,
       width : options.width,

@@ -135,7 +135,7 @@
 
     function clickDay(day) {
       <c:if test="${profile != 'user'}">
-      top.bottomFrame.MyMain.location.href = "NewReservation?objectView=${objectView}&Day=" + day;
+      top.reloadBodyContentPart("NewReservation?objectView=${objectView}&Day=" + day);
       </c:if>
     }
 
