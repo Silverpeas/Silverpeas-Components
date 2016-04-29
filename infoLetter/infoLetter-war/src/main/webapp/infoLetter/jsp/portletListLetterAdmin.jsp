@@ -141,7 +141,7 @@ int i=0;
 
 		        //arrayPane.setVisibleLineNumber(10);
 
-				arrayPane.addArrayColumn(resource.getString(""));
+				arrayPane.addArrayColumn("");
 				arrayPane.addArrayColumn(resource.getString("infoLetter.name"));
 				arrayPane.addArrayColumn(resource.getString("GML.date"));
 				ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.status"));

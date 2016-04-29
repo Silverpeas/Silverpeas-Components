@@ -110,7 +110,7 @@ int i=0;
 ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
 //arrayPane.setVisibleLineNumber(10);
 
-arrayPane.addArrayColumn(resource.getString(""));
+arrayPane.addArrayColumn("");
 arrayPane.addArrayColumn(resource.getString("infoLetter.name"));
 arrayPane.addArrayColumn(resource.getString("GML.date"));
 // ArrayColumn arrayColumn = arrayPane.addArrayColumn(resource.getString("GML.operation"));
