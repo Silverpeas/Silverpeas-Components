@@ -111,7 +111,6 @@
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="userZoom"/>
   <view:includePlugin name="embedPlayer"/>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script language="javascript">
 
     var notifyWindow = window;
