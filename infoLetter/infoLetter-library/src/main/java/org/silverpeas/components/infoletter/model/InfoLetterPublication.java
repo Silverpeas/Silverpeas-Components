@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.infoletter.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.WAPrimaryKey;
@@ -167,6 +168,27 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
       return 0;
     }
     return (String.valueOf(getPK().getId())).compareTo(String.valueOf(obj.getPK().getId()));
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof InfoLetter)) {
+      return false;
+    }
+
+    final InfoLetter that = (InfoLetter) o;
+    return compareTo(that) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(getPK().getId())
+        .append(getPK().getInstanceId())
+        .toHashCode();
   }
 
   public String _getTableName() {

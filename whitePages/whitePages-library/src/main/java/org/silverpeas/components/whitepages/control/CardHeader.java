@@ -23,17 +23,18 @@
  */
 package org.silverpeas.components.whitepages.control;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.i18n.AbstractBean;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.i18n.AbstractBean;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.util.ResourceLocator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,8 @@ import java.util.Map;
 /**
  * The fileboxplus implementation of SilverContentInterface
  */
-public final class CardHeader extends AbstractBean implements SilverContentInterface, Comparable {
+public final class CardHeader extends AbstractBean
+    implements SilverContentInterface, Comparable<CardHeader> {
 
   private static final long serialVersionUID = -8781512864589764317L;
   private long id;
@@ -177,12 +179,26 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
     return this.date;
   }
 
-  public int compareTo(Object other) {
-    if (other instanceof CardHeader) {
-      CardHeader otherCard = (CardHeader) other;
-      return this.getName().compareTo(otherCard.getName());
-    } else {
-      return 1;
+  public int compareTo(CardHeader other) {
+    return this.getName().compareTo(other.getName());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
+    if (!(o instanceof CardHeader)) {
+      return false;
+    }
+
+    final CardHeader that = (CardHeader) o;
+    return compareTo(that) == 0;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getName()).toHashCode();
   }
 }
