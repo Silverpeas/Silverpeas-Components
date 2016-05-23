@@ -23,33 +23,32 @@
  */
 package org.silverpeas.components.websites.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.websites.control.WebSiteSessionController;
 import org.silverpeas.components.websites.siteManage.model.FolderDetail;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.components.websites.control.WebSiteSessionController;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Class declaration
@@ -90,10 +89,6 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
    */
   @Override
   public String getDestination(String function, WebSiteSessionController scc, HttpRequest request) {
-
-    SilverTrace
-        .info("webSites", "WebSitesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "fonction = " + function);
     String destination = "";
 
     // the flag is the best user's profile
@@ -184,17 +179,17 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
         int begin = 0;
         int end = listeIcones.indexOf(',', begin);
-        String listeMessage = "";
+        StringBuilder listeMessage = new StringBuilder("");
 
         // parcours des icones
         while (end != -1) {
           String nom = listeIcones.substring(begin, end);
-          listeMessage += "- " + nom + "\n";
+          listeMessage.append("- ").append(nom).append("\n");
           begin = end + 1;
           end = listeIcones.indexOf(',', begin);
         }
 
-        scc.notifyPublishers(auteur, nomSite, description, nomPage, listeMessage, date);
+        scc.notifyPublishers(auteur, nomSite, description, nomPage, listeMessage.toString(), date);
 
         request.setAttribute("SuggestionName", nomSite);
         request.setAttribute("SuggestionUrl", nomPage);
@@ -1203,26 +1198,21 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
     SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
 
-    String machine = settings.getString("Machine", ""); // ex :
+    StringBuilder machine = new StringBuilder(settings.getString("Machine", "").trim());
     String context = (generalSettings.getString("ApplicationURL")).substring(1);
-
-    if (machine.equals("")) {
-      StringBuffer url = request.getRequestURL();
-
-      List<String> a = construitTab(url.toString());
-
+    if (machine.length() == 0) {
+      List<String> a = construitTab(request.getRequestURL().toString());
       int j = 1;
-
       while (true) {
         if (j > a.size()) {
           break;
         }
 
         if (!a.get(j).equals(context)) {
-          if (machine.equals("")) {
-            machine += a.get(j);
+          if (machine.length() == 0) {
+            machine.append(a.get(j));
           } else {
-            machine = machine + "/" + a.get(j);
+            machine.append("/").append(a.get(j));
           }
         } else {
           break;
@@ -1230,7 +1220,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         j++;
       }
     }
-    return machine;
+    return machine.toString();
   }
 
   /* getFlag */
@@ -1255,38 +1245,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   }
 
   private String doubleAntiSlash(String path) {
-    int i = 0;
-    String res = path;
-    boolean ok = true;
-
-    while (ok) {
-      int j = i + 1;
-      if ((i < res.length()) && (j < res.length())) {
-        char car1 = res.charAt(i);
-        char car2 = res.charAt(j);
-
-        if ((car1 == '\\' && car2 == '\\') || (car1 != '\\' && car2 != '\\')) {
-        } else {
-          String avant = res.substring(0, j);
-          String apres = res.substring(j);
-          if ((apres.startsWith("\\\\")) || (avant.endsWith("\\\\"))) {
-          } else {
-            res = avant + '\\' + apres;
-            i++;
-          }
-        }
-      } else {
-        if (i < res.length()) {
-          char car = res.charAt(i);
-          if (car == '\\') {
-            res = res + '\\';
-          }
-        }
-        ok = false;
-      }
-      i = i + 2;
-    }
-    return res;
+    return path.replaceAll("\\\\", "\\\\\\\\");
   }
 
   public String ignoreAntiSlash(String chemin) {
@@ -1310,21 +1269,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   public String supprDoubleAntiSlash(String chemin) {
     /* ex : id\\rep1\\rep11\\rep111 */
     /* res = id\rep1\rep11\re111 */
-
-    String res = "";
-    int i = 0;
-
-    while (i < chemin.length()) {
-      char car = chemin.charAt(i);
-      if (car == '\\') {
-        res = res + car;
-        i++;
-      } else {
-        res = res + car;
-      }
-      i++;
-    }
-    return res;
+    return chemin.replaceAll("\\\\\\\\", "\\\\");
   }
 
   public String finNode(WebSiteSessionController scc, String path) {

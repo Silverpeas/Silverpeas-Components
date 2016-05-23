@@ -722,16 +722,15 @@ public class DefaultAlmanachService implements AlmanachService {
    * @return
    */
   private String getSpacesPath(String componentId) {
-    String spacesPath = "";
+    StringBuilder spacesPath = new StringBuilder();
     List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(componentId);
     Iterator<SpaceInst> iSpaces = spaces.iterator();
     SpaceInst spaceInst;
     while (iSpaces.hasNext()) {
       spaceInst = iSpaces.next();
-      spacesPath += spaceInst.getName();
-      spacesPath += " > ";
+      spacesPath.append(spaceInst.getName()).append(" > ");
     }
-    return spacesPath;
+    return spacesPath.toString();
   }
 
   /**

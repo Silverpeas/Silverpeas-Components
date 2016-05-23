@@ -235,13 +235,13 @@ public class EventDAO {
 
     ResultSet rs = null;
     Statement selectStmt = null;
-    String paramInstanceIds = "";
+    StringBuilder paramInstanceIds = new StringBuilder();
     if (instanceIds != null && instanceIds.length > 0) {
-      paramInstanceIds = " where (instanceId='" + instanceIds[0] + "'";
+      paramInstanceIds.append(" where (instanceId='").append(instanceIds[0]).append("'");
       for (int i = 1; i < instanceIds.length; i++) {
-        paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
+        paramInstanceIds.append(" or instanceId='").append(instanceIds[i]).append("'");
       }
-      paramInstanceIds += ")";
+      paramInstanceIds.append(")");
     } else {
       throw new SQLException("Missing instance identifiers");
     }
@@ -250,7 +250,7 @@ public class EventDAO {
       String selectQuery =
           "select distinct * " + " from " + EventPK.TABLE_NAME + " left outer join " +
               Periodicity.getTableName() + " on " + EventPK.TABLE_NAME + ".eventId = " +
-              Periodicity.getTableName() + ".eventId" + paramInstanceIds +
+              Periodicity.getTableName() + ".eventId" + paramInstanceIds.toString() +
               " order by eventStartDay";
 
       selectStmt = connection.createStatement();

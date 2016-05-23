@@ -2824,7 +2824,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     List<SpaceInstLight> spaces = getOrganisationController().getSpaceTreeview(getUserId());
     for (SpaceInstLight space : spaces) {
-      String path = "";
+      StringBuilder path = new StringBuilder();
       String[] componentIds =
           getOrganisationController().getAvailCompoIdsAtRoot(space.getId(), getUserId());
       for (String componentId : componentIds) {
@@ -2840,19 +2840,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
                 isRightsOnTopicsEnabled());
           }
 
-          if (!StringUtil.isDefined(path)) {
+          if (path.length() == 0) {
             List<SpaceInst> sPath = getOrganisationController().getSpacePath(space.getId());
             boolean first = true;
             for (SpaceInst spaceInPath : sPath) {
               if (!first) {
-                path += " > ";
+                path.append(" > ");
               }
-              path += spaceInPath.getName();
+              path.append(spaceInPath.getName());
               first = false;
             }
           }
 
-          Treeview treeview = new Treeview(path + " > " +
+          Treeview treeview = new Treeview(path.toString() + " > " +
               getOrganisationController().getComponentInstLight(instanceId).getLabel(), tree,
               instanceId);
 

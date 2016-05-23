@@ -216,16 +216,16 @@ public class DataWarningScheduler extends SilverpeasBean {
 
   private String cronSystem(int nb, int numberOfTimes, boolean startFromOne) {
     int multiplicateur = nb / numberOfTimes;
-    String temp = "";
+    StringBuilder temp = new StringBuilder();
     for (int i = 1; i < numberOfTimes + 1; i++) {
       if (startFromOne) {
-        temp += (multiplicateur * i) + ",";
+        temp.append(multiplicateur * i).append(",");
       } else {
-        temp += (multiplicateur * i) - 1 + ",";
+        temp.append((multiplicateur * i) - 1).append(",");
       }
     }
-    temp = temp.substring(0, temp.length() - 1);
-    return temp;
+    temp.deleteCharAt(temp.length() - 1);
+    return temp.toString();
   }
 
   @Override

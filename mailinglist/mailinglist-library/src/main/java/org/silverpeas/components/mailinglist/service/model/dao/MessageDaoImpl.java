@@ -210,7 +210,9 @@ public class MessageDaoImpl implements MessageDao {
         if (existingFile != null
             && !existingFile.getPath().equals(attachment.getPath())) {
           attachment.setPath(existingFile.getPath());
-          file.delete();
+          if (!file.delete()) {
+            SilverLogger.getLogger(this).warn("Cannot delete file {0}", file.getPath());
+          }
         }
       }
     } catch (UtilException ex) {
