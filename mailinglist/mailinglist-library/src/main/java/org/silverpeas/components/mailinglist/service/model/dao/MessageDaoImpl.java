@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.mailinglist.service.model.dao;
 
-import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.components.mailinglist.service.model.beans.Activity;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.security.encryption.cipher.CryptMD5;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
@@ -205,14 +205,11 @@ public class MessageDaoImpl implements MessageDao {
         attachment.setSize(file.length());
         String hash = CryptMD5.encrypt(file);
         attachment.setMd5Signature(hash);
-        Attachment existingFile = findAlreadyExistingAttachment(hash, file
-            .length(), attachment.getFileName(), null);
-        if (existingFile != null
-            && !existingFile.getPath().equals(attachment.getPath())) {
+        Attachment existingFile = findAlreadyExistingAttachment(hash, file.length(),
+            attachment.getFileName(), null);
+        if (existingFile != null && !existingFile.getPath().equals(attachment.getPath())) {
           attachment.setPath(existingFile.getPath());
-          if (!file.delete()) {
-            SilverLogger.getLogger(this).warn("Cannot delete file {0}", file.getPath());
-          }
+          deleteFile(file);
         }
       }
     } catch (UtilException ex) {
@@ -227,7 +224,7 @@ public class MessageDaoImpl implements MessageDao {
           .getMd5Signature(), attachment.getSize(), attachment.getFileName(),
           attachment.getId());
       if (existingFile == null) {
-        file.delete();
+        deleteFile(file);
       }
     }
   }
@@ -252,5 +249,11 @@ public class MessageDaoImpl implements MessageDao {
       result = attachments.get(0);
     }
     return result;
+  }
+
+  private void deleteFile(File file) {
+    if (!file.delete()) {
+      SilverLogger.getLogger(this).warn("Cannot delete file {0}", file.getPath());
+    }
   }
 }

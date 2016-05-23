@@ -639,8 +639,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
         SilverLogger.getLogger(this).warn("Cannot delete directory {0}", dir.getPath());
       }
     } catch (Exception e) {
-      SilverLogger.getLogger(this).warn("Cannot delete directory {0}. Reason: {1}",
-          dir.getPath(), e.getMessage());
+      SilverLogger.getLogger(this).error("Directory deletion failure: " + dir.getPath(), e);
     }
   }
 
