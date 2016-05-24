@@ -76,7 +76,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                     "<form name=\"verification\" action=\"design.jsp\" method=\"POST\">"+
                     "<input type=\"hidden\" name=\"Action\" value=\""+action+"\">"+
                     "<input type=\"hidden\" name=\"Id\" value=\""+id+"\">"+
-                    "<input type=\"hidden\" name=\"path\" value=\""+currentPath+"\">"+
+                    "<input type=\"hidden\" name=\"Path\" value=\""+currentPath+"\">"+
                     "<input type=\"hidden\" name=\"name\" value=\""+name+"\">"+
                     "<input type=\"hidden\" name=\"newName\" value=\""+newName+"\">"+
                     "<input type=\"hidden\" name=\"Code\" value=\""+code+"\">"+
@@ -138,7 +138,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     action = (String) request.getParameter("Action");
     id = (String) request.getParameter("Id");
-    currentPath = (String) request.getParameter("path");
+    currentPath = (String) request.getParameter("Path");
     name = (String) request.getParameter("name");
     newName = (String) request.getParameter("newName");
     code = (String) request.getParameter("Code");
@@ -158,7 +158,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     String nameSite = scc.getSiteName();
     Collection collectionRep = affichageChemin(scc, currentPath);
-    String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nameSite);
+    String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nameSite);
 
     if (resultat.equals("ok")) {
         debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);

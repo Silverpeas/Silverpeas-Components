@@ -186,7 +186,7 @@ function sendData() {
       <HEAD>
       <script language="Javascript">
           function verifServer(id, path, name, newname) {
-                window.opener.location.replace("verif.jsp?Action=renamePage&Id="+id+"&path="+path+"&name="+name+"&newName="+newname);
+                window.opener.location.replace("verif.jsp?Action=renamePage&Id="+id+"&Path="+path+"&name="+name+"&newName="+newname);
               window.close();
           }
       </script>

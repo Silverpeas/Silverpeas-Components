@@ -176,7 +176,7 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 	String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
 
 	String id = request.getParameter("Id");
-	String currentPath = request.getParameter("path"); /* = null ou rempli si type= design */
+	String currentPath = request.getParameter("Path"); /* = null ou rempli si type= design */
 	String type = request.getParameter("type"); // null  ou design
 
 	SiteDetail site = (SiteDetail) request.getAttribute("Site");
@@ -196,7 +196,7 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 		if (nom == null) {
 		  nom = "";
 		}
-		description = request.getParameter("Description");
+		description = request.getParameter("description");
 		if (description == null) {
 		  description = "";
 		}
@@ -242,7 +242,7 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 	}
 
 	Collection collectionRep = affichageChemin(scc, currentPath);
-	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nom);
+	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nom);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -430,7 +430,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
 <form name="descriptionSite" action="<%=theAction%>" method="post">
   <input type="hidden" name="Action" value="updateDescription"/>
   <input type="hidden" name="Id" value="<%=id%>"/>
-  <input type="hidden" name="path" value="<%=currentPath%>"/>
+  <input type="hidden" name="Path" value="<%=currentPath%>"/>
   <input type="hidden" name="ListeIcones"/>
   <input type="hidden" name="ListeTopics"/>
   <input type="hidden" name="etat" value="<%=String.valueOf(site.getState())%>" />

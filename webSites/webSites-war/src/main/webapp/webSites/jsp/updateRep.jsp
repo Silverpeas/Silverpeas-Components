@@ -204,7 +204,7 @@ else if (action.equals("Update")) {
       <HEAD>
       <script language="Javascript">
           function verifServer(id, path, name, newname) {
-                window.opener.location.replace("verif.jsp?Action=renameFolder&Id="+id+"&path="+path+"&name="+name+"&newName="+newname);
+                window.opener.location.replace("verif.jsp?Action=renameFolder&Id="+id+"&Path="+path+"&name="+name+"&newName="+newname);
               window.close();
           }
       </script>

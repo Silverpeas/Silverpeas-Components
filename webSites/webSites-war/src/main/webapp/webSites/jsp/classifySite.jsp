@@ -117,12 +117,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
     String id = (String) request.getParameter("Id");
-    String path = (String) request.getParameter("path");
+    String path = (String) request.getParameter("Path");
     path = doubleAntiSlash(path);
     SiteDetail site = scc.getWebSite(id);
 
    Collection collectionRep = affichageChemin(scc, path);
-   String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", site.getName());
+   String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", site.getName());
 
 %>
 
@@ -171,7 +171,7 @@ out.println("}");
 <FORM NAME="descriptionSite" ACTION="design.jsp" METHOD="POST">
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=id%>">
-  <input type="hidden" name="path" value="<%=path%>">
+  <input type="hidden" name="Path" value="<%=path%>">
   <input type="hidden" name="ListeTopics">
 
 <%

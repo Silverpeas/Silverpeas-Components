@@ -84,7 +84,7 @@ function sendData() {
 		window.opener.document.liste.Action.value = "Update";
 		window.opener.document.liste.ChildId.value = document.topicForm.ChildId.value;
 		window.opener.document.liste.Name.value = stripInitialWhitespace(document.topicForm.Name.value);
-		window.opener.document.liste.Description.value = stripInitialWhitespace(document.topicForm.Description.value);
+		window.opener.document.liste.description.value = stripInitialWhitespace(document.topicForm.description.value);
 		window.opener.document.liste.submit();
 		window.close();
       }
@@ -162,7 +162,7 @@ function isCorrectForm() {
 
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.description")%> : </TD>
-            <TD><input type="text" name="Description" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="50"></TD>
+            <TD><input type="text" name="description" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="50"></TD>
         </TR>
           <TR>
             <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">

@@ -51,7 +51,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   String action = request.getParameter("Action");
   String id = request.getParameter("Id"); //jamais null sauf en creation ou en update de description
-  String currentPath = request.getParameter("path");
+  String currentPath = request.getParameter("Path");
   String date = "";
   String auteur = "";
   int popup = 0;
@@ -82,7 +82,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	auteur = user.getDisplayedName();
 	}
 	Collection collectionRep = affichageChemin(scc, currentPath);
-	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nomSite);
+	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nomSite);
 	SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "infoPath = "+infoPath);
 %>
 
@@ -100,16 +100,14 @@ if (! searchOk) {
     out.println("alert(\""+resources.getString("PrincipalPageNotCorrectDesign")+"\")");
     if (description == null) {
 		description = "";
-    }out.println("location.replace(\"modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+theListeIcones+"\");");
+    }out.println("location.replace(\"modifDesc.jsp?Id="+id+"&Path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+theListeIcones+"\");");
 
 }
 
 %>
 
 function URLENCODE(URL){
-    URL = escape(URL);
-    URL = URL.replace(/\+/g, "%2B");
-    return URL;
+  return encodeURIComponent(URL);
 }
 
 /**********************************************/
@@ -170,7 +168,7 @@ function pageAdd(path, nomsite) {
     if (window.pageAddWindow != null) {
         window.pageAddWindow.close();
     }
-    url = "addPage.jsp?Action=View&path="+URLENCODE(path)+"&nameSite="+URLENCODE(nomsite)+"&id=<%=id%>";
+    url = "addPage.jsp?Action=View&Path="+URLENCODE(path)+"&nameSite="+URLENCODE(nomsite)+"&id=<%=id%>";
     windowName = "pageAddWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
     pageAddWindow = open(url, windowName, windowParams, false);
@@ -189,7 +187,7 @@ function uploadFile(path) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    url = "uploadFile.jsp?path="+URLENCODE(path);
+    url = "uploadFile.jsp?Path="+URLENCODE(path);
     windowName = "uploadFileWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
     uploadFileWindow = open(url, windowName, windowParams, false);
@@ -232,7 +230,7 @@ function deleteFolder(id, path, name) {
     if (window.confirm("<%=resources.getString("MessageSuppressionFolder")%>")) {
         document.design.Action.value = "deleteFolder";
         document.design.Id.value = id;
-        document.design.path.value = path;
+        document.design.Path.value = path;
         document.design.name.value = name;
         document.design.submit();
     }
@@ -253,7 +251,7 @@ function pageRedesign(path, name, namesite) {
       if (path.indexOf('..') >= 0)
         alert("<%= resources.getString("GML.error.AccessForbidden") %>");
       else
-        location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
+        location.href="ToWysiwyg?Path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
 }
 
 /**********************************************/
@@ -292,7 +290,7 @@ function deletePage(id, path, name) {
     if (window.confirm("<%=resources.getString("MessageSuppressionFile")%>")) {
           document.design.Action.value = "deletePage";
           document.design.Id.value = id;
-          document.design.path.value = path;
+          document.design.Path.value = path;
           document.design.name.value = name;
           document.design.submit();
     }
@@ -305,7 +303,7 @@ function deletePage(id, path, name) {
 <form name="design" action="verif.jsp" method="post">
   <input type="hidden" name="Action">
   <input type="hidden" name="Id">
-  <input type="hidden" name="path">
+  <input type="hidden" name="Path">
   <input type="hidden" name="name">
   <input type="hidden" name="newName">
 </form>
@@ -324,7 +322,7 @@ function deletePage(id, path, name) {
 	Frame frame = gef.getFrame();
 
 	//Le tableau des repertoires
-	ArrayPane arrayPaneRep = gef.getArrayPane("foldersList", "design.jsp?Action=design&path="+currentPath+"&Id="+id, request, session);
+	ArrayPane arrayPaneRep = gef.getArrayPane("foldersList", "design.jsp?Action=design&Path="+currentPath+"&Id="+id, request, session);
 	arrayPaneRep.setVisibleLineNumber(10);
 	arrayPaneRep.setTitle(resources.getString("ListeRepertoires"));
 
@@ -352,7 +350,7 @@ function deletePage(id, path, name) {
 		folderName = folder.getName();
 
 		ArrayLine arrayLine = arrayPaneRep.addArrayLine();
-		arrayLine.addArrayCellLink(folderName, "design.jsp?Action=view&path="+currentPath+"/"+folderName);
+		arrayLine.addArrayCellLink(folderName, "design.jsp?Action=view&Path="+currentPath+"/"+folderName);
 
 		IconPane iconPane = gef.getIconPane();
 		Icon updateIcon = iconPane.addIcon();
@@ -372,7 +370,7 @@ function deletePage(id, path, name) {
 
 
 	//Le tableau des fichiers
-	ArrayPane arrayPaneFile = gef.getArrayPane("fileList", "design.jsp?Action=design&path="+currentPath+"&Id="+id, request, session);
+	ArrayPane arrayPaneFile = gef.getArrayPane("fileList", "design.jsp?Action=design&Path="+currentPath+"&Id="+id, request, session);
 	arrayPaneFile.setVisibleLineNumber(10);
 	arrayPaneFile.setTitle(resources.getString("ListeFichiers"));
 
@@ -438,13 +436,13 @@ function deletePage(id, path, name) {
   operationPane.addLine();
   operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+EncodeHelper.javaStringToJsString(currentPath)+"')");
   operationPane.addLine();
-  operationPane.addOperation(addLib,resources.getString("ClasserSite"), "classifySite.jsp?Id="+id+"&path="+currentPath);
+  operationPane.addOperation(addLib,resources.getString("ClasserSite"), "classifySite.jsp?Id="+id+"&Path="+currentPath);
 
   int indexSup = infoPath.indexOf(" > ");
 
   if (indexSup == -1) {//on est a la racine
 	operationPane.addLine();
-	operationPane.addOperation(updateDescription,resources.getString("ModificationDescription"), "modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design");
+	operationPane.addOperation(updateDescription,resources.getString("ModificationDescription"), "modifDesc.jsp?Id="+id+"&Path="+currentPath+"&type=design");
   }
 
 

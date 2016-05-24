@@ -1,4 +1,5 @@
-<%@ page import="org.silverpeas.core.util.SettingBundle" %><%--
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.components.websites.servlets.WebSitesRequestRouter" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -42,9 +43,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     *
     */
     private boolean dejaPublie(String siteId, Collection liste) {
-          SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-                           "deja publie : id = "+siteId);
-
           Iterator l = liste.iterator();
           while(l.hasNext()) {
             SiteDetail site = (SiteDetail) l.next();
@@ -63,9 +61,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     */
     private Collection remove(Collection c, SiteDetail site) {
           String theId = site.getSitePK().getId();
-          SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-                           "remove : id = "+theId);
-
           ArrayList resultat = new ArrayList();
           Iterator k = c.iterator();
           while(k.hasNext()) {
@@ -92,7 +87,8 @@ String action = request.getParameter("Action"); //jamais null
 String id = request.getParameter("TopicId");//jamais null
 String linkedPathString = request.getParameter("Path");//jamais null
 Collection listeSites = (Collection) request.getAttribute("ListSites");
-FolderDetail webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
+FolderDetail webSitesCurrentFolder =
+    (FolderDetail) request.getAttribute(WebSitesRequestRouter.CURRENT_FOLDER_PARAM);
 %>
 
 <!-- classifyDeclassify -->
@@ -188,11 +184,7 @@ function publicationGoTo(type, theURL, nom){
 
 <%
 
-	SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-					 "taille de l'array site  = "+listeSites.size());
 	Collection listeSitesPublies = webSitesCurrentFolder.getPublicationDetails();
-	SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-					 "taille de la liste des sites publiés  = "+listeSitesPublies.size());
 
 	if (listeSitesPublies.size() > 0) {
 		 Iterator k = listeSitesPublies.iterator();

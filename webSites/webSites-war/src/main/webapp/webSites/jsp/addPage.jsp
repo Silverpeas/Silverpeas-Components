@@ -32,7 +32,7 @@
 
 //Recuperation des parametres
 String nameSite = (String) request.getParameter("nameSite");
-String path = (String) request.getParameter("path");
+String path = (String) request.getParameter("Path");
 String action = (String) request.getParameter("Action");
 String id = (String) request.getParameter("id");
 
@@ -186,7 +186,7 @@ function sendData() {
 
 <FORM NAME="topicDetailForm" ACTION="addPage.jsp" METHOD=POST>
   <input type="hidden" name="Action" value="verif">
-  <input type="hidden" name="path" value="<%=path%>">
+  <input type="hidden" name="Path" value="<%=path%>">
   <input type="hidden" name="nomPage">
   <input type="hidden" name="nameSite" value="<%=nameSite%>">
 	<input type="hidden" name="id" value="<%=id%>">
@@ -203,9 +203,9 @@ else if (action.equals("verif")) { //vient de addPage
 %>
       <HTML>
       <HEAD>
-      <script language="Javascript">
+      <script type="text/javascript">
           function verifServer(path, name, nameSite, id) {
-              window.opener.location.replace("verifAjoutPage.jsp?path="+URLENCODE(path)+"&nomPage="+URLENCODE(name)+"&nameSite="+URLENCODE(nameSite)+"&id="+id);
+              window.opener.location.replace("verifAjoutPage.jsp?Path="+URLENCODE(path)+"&nomPage="+URLENCODE(name)+"&nameSite="+URLENCODE(nameSite)+"&id="+id);
               window.close();
           }
       </script>
@@ -235,13 +235,13 @@ else if (action.equals("addPage")) { //vient de verifAjoutPage
       <HTML>
       <BODY>
 	      <form name="frm_addpage" action="ToWysiwyg">
-		<input type="hidden" name="path" value="<%=path%>">
+		<input type="hidden" name="Path" value="<%=path%>">
 		<input type="hidden" name="name" value="<%=name%>">
 		<input type="hidden" name="nameSite" value="<%=nameSite%>">
 		<input type="hidden" name="id" value="<%=id%>">
 	      </form>
       </BODY>
-      <script language="Javascript">
+      <script type="text/javascript">
 		document.frm_addpage.submit();
       </script>
       </HTML>
@@ -251,10 +251,8 @@ else if (action.equals("addPage")) { //vient de verifAjoutPage
 
 %>
 
-	<script language="Javascript">
+	<script type="text/javascript">
        function URLENCODE(URL){
-        URL = escape(URL);
-        URL = URL.replace(/\+/g, "%2B");
-        return URL;
+         return encodeURIComponent(URL);
         }
 	</script>

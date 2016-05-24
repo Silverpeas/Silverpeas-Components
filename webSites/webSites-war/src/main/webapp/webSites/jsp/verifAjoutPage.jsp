@@ -109,7 +109,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     String resultat;
 
-    currentPath = (String) request.getParameter("path");
+    currentPath = (String) request.getParameter("Path");
     nomPage = (String) request.getParameter("nomPage");
     nameSite = (String) request.getParameter("nameSite");
 		String id = (String) request.getParameter("id");
@@ -117,7 +117,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     resultat = scc.verif(action, currentPath, "", "", nomPage);
 
     Collection collectionRep = affichageChemin(scc, currentPath);
-    String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nameSite);
+    String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nameSite);
 
     if (resultat.equals("ok")) {
         debutAffichage(out, "ok", action, currentPath, nomPage, nameSite, gef, id, resources);

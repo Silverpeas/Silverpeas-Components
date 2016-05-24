@@ -62,9 +62,7 @@ Collection listeSites = (Collection) request.getAttribute("ListSites");
 <script type="text/javascript">
 
 function URLENCODE(URL){
-    URL = escape(URL);
-    URL = URL.replace(/\+/g, "%2B");
-    return URL;
+	return encodeURIComponent(URL);
 }
 
     /*************************************************/
@@ -128,7 +126,7 @@ function updateDescription (id) {
 
     /* modification des contenus et de l'arborescence du site crees et uploades */
 function designSite(path, id) {
-    location.href = "design.jsp?Action=design&path="+URLENCODE(path)+"&Id="+id;
+    location.href = "design.jsp?Action=design&Path="+URLENCODE(path)+"&Id="+id;
 }
 
 function openSPWindow(fonction, windowName){
