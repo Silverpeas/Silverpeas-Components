@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="java.net.URLEncoder" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
