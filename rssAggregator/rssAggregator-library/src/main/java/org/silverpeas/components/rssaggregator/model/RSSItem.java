@@ -26,6 +26,7 @@ package org.silverpeas.components.rssaggregator.model;
 import de.nava.informa.core.ImageIF;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -304,6 +305,12 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
     this.nbDisplayedItems = nbDisplayedItems;
   }
 
+  /**
+   * Compares this RSS item with the specified one by their respective date. So, this method
+   * breaks the property <code>(x.compareTo(y)==0) == (x.equals(y))</code>
+   * @param other the other RSS item.
+   * @return the comparing between their date.
+   */
   @Override
   public int compareTo(RSSItem other) {
     if (this.getItemDate() != null && other.getItemDate() != null) {
@@ -314,5 +321,31 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
       return -1;
     }
     return 0;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof RSSItem)) {
+      return false;
+    }
+
+    final RSSItem rssItem = (RSSItem) o;
+
+    if (itemTitle != null ? !itemTitle.equals(rssItem.itemTitle) : rssItem.itemTitle != null) {
+      return false;
+    }
+    if (channelId != null ? !channelId.equals(rssItem.channelId) : rssItem.channelId != null) {
+      return false;
+    }
+    return compareTo(rssItem) == 0;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(itemTitle).append(channelId).append(itemDate).toHashCode();
   }
 }

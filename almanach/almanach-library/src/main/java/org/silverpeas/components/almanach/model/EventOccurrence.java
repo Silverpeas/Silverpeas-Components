@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.almanach.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.DateTime;
@@ -189,6 +190,13 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
     this.endDate = endDate;
   }
 
+  /**
+   * Compares this event occurrence with the specified one in the time. The two occurrences can
+   * be related to a different event and hence this method breaks the property
+   * <code>(x.compareTo(y)==0) == (x.equals(y))</code>
+   * @param otherOccurrence an other occurrence either of the same event or of another event.
+   * @return the comparing between their two start dates.
+   */
   @Override
   public int compareTo(EventOccurrence otherOccurrence) {
     Datable<?> otherStartDate = otherOccurrence.getStartDate();
@@ -203,5 +211,30 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
       result = dateTime.compareTo(otherDateTime);
     }
     return result;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof EventOccurrence)) {
+      return false;
+    }
+
+    final EventOccurrence that = (EventOccurrence) o;
+    return eventDetail.getId().equals(that.eventDetail.getId()) &&
+        eventDetail.getInstanceId().equals(that.eventDetail.getInstanceId()) &&
+        compareTo(that) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(eventDetail.getId())
+        .append(eventDetail.getInstanceId())
+        .append(getStartDateTimeInISO())
+        .append(getEndDateTimeInISO())
+        .append(isPriority())
+        .toHashCode();
   }
 }

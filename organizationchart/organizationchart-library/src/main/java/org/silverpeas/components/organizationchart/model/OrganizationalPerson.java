@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.organizationchart.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Map;
 
 public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
@@ -188,6 +190,13 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
     this.lastName = lastName;
   }
 
+  /**
+   * Compares this person with the specified one by their respective name. So, as the name cannot
+   * be unique, the method breaks the property <code>(x.compareTo(y)==0) == (x.equals(y))</code>
+   * @param other the other person.
+   * @return the comparing between their last names or, if the last names are equal, between their
+   * first names.
+   */
   @Override
   public int compareTo(OrganizationalPerson other) {
     int compare = lastName.compareToIgnoreCase(other.getLastName());
@@ -198,4 +207,26 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
     }
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof OrganizationalPerson)) {
+      return false;
+    }
+
+    final OrganizationalPerson that = (OrganizationalPerson) o;
+
+    if (id != that.id) {
+      return false;
+    }
+    return parentId == that.parentId;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getId()).append(getParentId()).toHashCode();
+  }
 }
