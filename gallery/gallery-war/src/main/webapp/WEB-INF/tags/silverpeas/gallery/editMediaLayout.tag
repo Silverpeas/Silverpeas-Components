@@ -113,7 +113,6 @@
       formUpdate.displayScripts(out, context);
     }
   %>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <jsp:invoke fragment="headerBloc"/>
 </head>
 <body class="gallery ${bodyCss} yui-skin-sam" id="${instanceId}">

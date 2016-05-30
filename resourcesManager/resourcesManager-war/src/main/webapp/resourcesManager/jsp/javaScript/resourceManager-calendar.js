@@ -491,7 +491,7 @@ function goToResource(id, objectView, isPortlet) {
  */
 function goToLink(link, objectView, isPortlet) {
   if (isPortlet) {
-    top.bottomFrame.MyMain.location.href = link;
+    spLayout.getBody().getContent().load(link);
   } else {
     location.href = link;
   }

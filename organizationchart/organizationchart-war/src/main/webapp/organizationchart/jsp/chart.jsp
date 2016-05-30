@@ -46,7 +46,7 @@
 
 <html>
   <head>
-	<link type="text/css" href="<c:url value="/organizationchart/css/organizationchart.css" />" rel="StyleSheet"/>
+	<view:link href="/organizationchart/css/organizationchart.css"/>
     <view:looknfeel />
     <style type="text/css">
     <c:if test="${not displayLabels}">
