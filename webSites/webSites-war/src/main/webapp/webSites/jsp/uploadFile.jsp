@@ -35,7 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkScc.jsp" %>
 
 <%
-	String thePath = (String) request.getParameter("path");
+	String thePath = (String) request.getParameter("Path");
 	Boolean uploadOk = (Boolean) request.getAttribute("UploadOk");
 
     //Icons
@@ -52,7 +52,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				out.println("alert(\""+resources.getString("FileToUploadNotCorrect")+"\");");
 			}
 			else if (uploadOk != null && uploadOk.equals(Boolean.TRUE)) {
-				out.println("window.opener.location.replace(\"design.jsp?Action=view&path="+thePath+"\");");
+				out.println("window.opener.location.replace(\"design.jsp?Action=view&Path="+thePath+"\");");
 				out.println("window.close();");
 			}
        %>
@@ -107,7 +107,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
      <TABLE CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
 		 <FORM NAME="descriptionFile" ACTION="EffectiveUploadFile" METHOD="POST" ENCTYPE="multipart/form-data">
-		 <input type="hidden" name="path" value="<%=thePath%>">
+		 <input type="hidden" name="Path" value="<%=thePath%>">
 	    <TR>
 	        <TD class="txtlibform"><%=resources.getString("FichierUpload")%> : </TD>
 	        <td valign="top"><input type="file" name="fichier">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>

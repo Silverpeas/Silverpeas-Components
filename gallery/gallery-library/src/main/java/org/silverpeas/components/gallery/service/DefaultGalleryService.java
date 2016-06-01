@@ -464,13 +464,12 @@ public class DefaultGalleryService implements GalleryService {
   }
 
   private String getSpacesPath(final String componentId) {
-    String spacesPath = "";
+    StringBuilder spacesPath = new StringBuilder();
     final List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(componentId);
     for (final SpaceInst spaceInst : spaces) {
-      spacesPath += spaceInst.getName();
-      spacesPath += " > ";
+      spacesPath.append(spaceInst.getName()).append(" > ");
     }
-    return spacesPath;
+    return spacesPath.toString();
   }
 
   private String getComponentLabel(final String componentId) {

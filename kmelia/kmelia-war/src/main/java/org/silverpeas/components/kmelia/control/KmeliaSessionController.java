@@ -23,66 +23,14 @@
  */
 package org.silverpeas.components.kmelia.control;
 
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.contribution.converter.DocumentFormat;
-import org.silverpeas.core.importexport.ExportDescriptor;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.util.*;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.notification.user.client.NotificationManager;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodeSelection;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.PublicationSelection;
-import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.core.security.authorization.NodeAccessController;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.components.kmelia.FileImport;
 import org.silverpeas.components.kmelia.InstanceParameters;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
@@ -97,11 +45,52 @@ import org.silverpeas.components.kmelia.model.updatechain.UpdateChainDescriptor;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationSelection;
+import org.silverpeas.core.contribution.publication.model.ValidationStep;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.datereminder.exception.DateReminderException;
+import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
+import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ComponentReport;
@@ -112,6 +101,15 @@ import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeSelection;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.user.client.NotificationManager;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -120,27 +118,29 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.NodeAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.datereminder.exception.DateReminderException;
-import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
-import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
-import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
-import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
-import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.subscription.SubscriptionContext;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -151,8 +151,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
-import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
+import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -613,7 +613,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public File generateDocument(final DocumentFormat inFormat, String fromPubId) {
 
     if (!isFormatSupported(inFormat.name())) {
-      throw new KmeliaRuntimeException("kmelia", SilverTrace.TRACE_LEVEL_ERROR,
+      throw new KmeliaRuntimeException("kmelia", SilverpeasException.ERROR,
           "kmelia.EX_EXPORT_FORMAT_NOT_SUPPORTED");
     }
     File document = null;
@@ -632,9 +632,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             inFormat(inFormat.name());
         aKmeliaPublicationExporter().export(descriptor, publication);
       } catch (Exception ex) {
-        SilverTrace
-            .error("kmelia", "KmeliaSessionControl.KmeliaSessionController.generateDocument()",
-                "root.EX_CANT_EXPORT_PUBLICATION", ex);
+        SilverLogger.getLogger(this).error("Publication export failure", ex);
         if (document != null) {
           FileUtils.deleteQuietly(document);
         }
@@ -796,8 +794,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (isTopicAdmin(nd.getNodePK().getId())) {
       return getKmeliaBm().updateTopic(nd, alertType);
     }
-    SilverTrace.warn("kmelia", "KmeliaSessionControl.updateTopicHeader",
-        "Security alert from " + getUserId());
+    SilverLogger.getLogger(this).warn("Security alert from {0}", getUserId());
     return null;
   }
 
@@ -895,10 +892,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             .createPublicationIntoTopic(pubDetail, getCurrentFolderPK(), withClassification);
       }
     }
-
-
-    SilverTrace.spy("kmelia", "KmeliaSessionController.createPublication(pubDetail)", getSpaceId(),
-        getComponentId(), result, getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
     return result;
   }
 
@@ -1004,9 +997,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else {
       getKmeliaBm().sendPublicationToBasket(getPublicationPK(pubId), kmaxMode);
     }
-    SilverTrace
-        .spy("kmelia", "KmeliaSessionController.deletePublication", getSpaceId(), getComponentId(),
-            pubId, getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
   }
 
   public List<String> deleteSelectedPublications() {
@@ -1047,9 +1037,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
       getKmeliaBm().updatePublication(pubDetail);
 
-      SilverTrace
-          .spy("kmelia", "KmeliaSessionController.deleteClone", getSpaceId(), getComponentId(),
-              cloneId, getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
     }
   }
 
@@ -1415,9 +1402,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public List<WAAttributeValuePair> getAllPublicationsIds() {
     List<WAAttributeValuePair> allPublicationsIds = new ArrayList<>();
     Collection<PublicationDetail> allPublications = getAllPublications("pubName asc");
-    SilverTrace
-        .info("kmelia", "KmeliaSessionController.getAllPublicationsIds()", "root.MSG_PARAM_VALUE",
-            "NbPubli=" + allPublications.size());
     for (PublicationDetail pubDetail : allPublications) {
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
         allPublicationsIds
@@ -1948,8 +1932,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     try {
       silverObjectId = getKmeliaBm().getSilverObjectId(getPublicationPK(objectId));
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.getSilverObjectId()",
-          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return silverObjectId;
   }
@@ -2580,9 +2563,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       PublicationSelection pubSelect = new PublicationSelection(pub);
       addClipboardSelection(pubSelect);
     } else {
-      SilverTrace.warn("kmelia", "KmeliaSessionController.copyPublication",
-          "Security alert from user " + getUserId() + ", trying to copy publication " + pubId);
-      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+      SilverLogger.getLogger(this)
+          .warn("Security alert from user {0} trying to copy publication {1}", getUserId(), pubId);
+      throw new ClipboardException("kmelia", SilverpeasException.WARNING,
           "Security purpose, access to publication is forbidden");
     }
   }
@@ -2610,9 +2593,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
       addClipboardSelection(pubSelect);
     } else {
-      SilverTrace.warn("kmelia", "KmeliaSessionController.cutPublication",
-          "Security alert from user " + getUserId() + ", trying to cut publication " + pubId);
-      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+      SilverLogger.getLogger(this)
+          .warn("Security alert from user {0} trying to cut publication {1}", getUserId(), pubId);
+      throw new ClipboardException("kmelia", SilverpeasException.WARNING,
           "Security purpose, access to publication is forbidden");
     }
   }
@@ -2638,9 +2621,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
       addClipboardSelection(nodeSelect);
     } else {
-      SilverTrace.warn("kmelia", "KmeliaSessionController.copyTopic",
-          "Security alert from user " + getUserId() + ", trying to copy topic " + id);
-      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+      SilverLogger.getLogger(this)
+          .warn("Security alert from user {0} trying to copy topic {1}", getUserId(), id);
+      throw new ClipboardException("kmelia", SilverpeasException.WARNING,
           "Security purpose : access to node is forbidden");
     }
   }
@@ -2655,9 +2638,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
       addClipboardSelection(nodeSelect);
     } else {
-      SilverTrace.warn("kmelia", "KmeliaSessionController.cutTopic",
-          "Security alert from user " + getUserId() + ", trying to cut topic " + id);
-      throw new ClipboardException("kmelia", SilverTrace.TRACE_LEVEL_INFO,
+      SilverLogger.getLogger(this)
+          .warn("Security alert from user {0} trying to cut topic {1}", getUserId(), id);
+      throw new ClipboardException("kmelia", SilverpeasException.WARNING,
           "Security purpose : access to node is forbidden");
     }
   }
@@ -2667,39 +2650,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     pasteDetail.setUserId(getUserId());
     List<Object> pastedItems = new ArrayList<Object>();
     try {
-      NodeDetail folder = getNodeHeader(pasteDetail.getToPK().getId());
-      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-      for (ClipboardSelection clipObject : clipObjects) {
-        if (clipObject != null) {
-          if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
-            PublicationDetail pub = (PublicationDetail) clipObject
-                .getTransferData(PublicationSelection.PublicationDetailFlavor);
-            if (clipObject.isCutted()) {
-              movePublication(pub.getPK(), folder.getNodePK());
-            } else {
-              KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
-              getKmeliaBm().copyPublication(pub, copyDetail);
-            }
-            pastedItems.add(pub);
-          } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
-            NodeDetail node =
-                (NodeDetail) clipObject.getTransferData(NodeSelection.NodeDetailFlavor);
-            // check if current topic is a subTopic of node
-            boolean pasteAllowed = !node.equals(folder) && !node.isFatherOf(folder);
-
-            if (pasteAllowed) {
-              if (clipObject.isCutted()) {
-                // move node
-                getKmeliaBm().moveNode(node.getNodePK(), folder.getNodePK(), getUserId());
-              } else {
-                // copy node
-                KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
-                copyDetail.setFromNodePK(node.getNodePK());
-                getKmeliaBm().copyNode(copyDetail);
-              }
-              pastedItems.add(node);
-            }
-          }
+      Collection<ClipboardSelection> selectedObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection selection : selectedObjects) {
+        if (selection == null) {
+          continue;
+        }
+        Object pastedItem = pasteClipboardSelection(selection, pasteDetail);
+        if (pastedItem != null) {
+          pastedItems.add(pastedItem);
         }
       }
     } catch (ClipboardException | UnsupportedFlavorException e) {
@@ -2710,22 +2668,54 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return pastedItems;
   }
 
+  private Object pasteClipboardSelection(ClipboardSelection selection,
+      KmeliaPasteDetail pasteDetail) throws UnsupportedFlavorException {
+    NodeDetail folder = getNodeHeader(pasteDetail.getToPK().getId());
+    if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+      PublicationDetail pub = (PublicationDetail) selection.getTransferData(
+          PublicationSelection.PublicationDetailFlavor);
+      if (selection.isCutted()) {
+        movePublication(pub.getPK(), folder.getNodePK());
+      } else {
+        KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
+        getKmeliaBm().copyPublication(pub, copyDetail);
+      }
+      return pub;
+    } else if (selection.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
+      NodeDetail node = (NodeDetail) selection.getTransferData(NodeSelection.NodeDetailFlavor);
+      // check if current topic is a subTopic of node
+      boolean pasteAllowed = !node.equals(folder) && !node.isFatherOf(folder);
+      if (pasteAllowed) {
+        if (selection.isCutted()) {
+          // move node
+          getKmeliaBm().moveNode(node.getNodePK(), folder.getNodePK(), getUserId());
+        } else {
+          // copy node
+          KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
+          copyDetail.setFromNodePK(node.getNodePK());
+          getKmeliaBm().copyNode(copyDetail);
+        }
+        return node;
+      }
+    }
+    return null;
+  }
+
   public boolean isClipboardContainsSomeCopiedItems() {
     try {
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
-        if (clipObject != null) {
-          if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
-            if (!clipObject.isCutted()) {
-              return true;
-            }
-          } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
-            if (!clipObject.isCutted()) {
-              return true;
-            }
+        if (clipObject == null) {
+          continue;
+        }
+        if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) &&
+            !clipObject.isCutted()) {
+          return true;
+        } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor) &&
+            !clipObject.isCutted()) {
+          return true;
           }
         }
-      }
     } catch (ClipboardException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.paste()",
           SilverpeasRuntimeException.ERROR, "kmelia.EX_PASTE_ERROR", e);
@@ -2743,9 +2733,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
       getKmeliaBm().movePublication(pubPK, currentNodePK, getUserId());
     } catch (Exception ex) {
-      SilverTrace
-          .error("kmelia", getClass().getSimpleName() + ".pastePublication()", "root.EX_NO_MESSAGE",
-              ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
   }
 
@@ -2824,7 +2812,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     List<SpaceInstLight> spaces = getOrganisationController().getSpaceTreeview(getUserId());
     for (SpaceInstLight space : spaces) {
-      String path = "";
+      StringBuilder path = new StringBuilder();
       String[] componentIds =
           getOrganisationController().getAvailCompoIdsAtRoot(space.getId(), getUserId());
       for (String componentId : componentIds) {
@@ -2840,19 +2828,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
                 isRightsOnTopicsEnabled());
           }
 
-          if (!StringUtil.isDefined(path)) {
+          if (path.length() == 0) {
             List<SpaceInst> sPath = getOrganisationController().getSpacePath(space.getId());
             boolean first = true;
             for (SpaceInst spaceInPath : sPath) {
               if (!first) {
-                path += " > ";
+                path.append(" > ");
               }
-              path += spaceInPath.getName();
+              path.append(spaceInPath.getName());
               first = false;
             }
           }
 
-          Treeview treeview = new Treeview(path + " > " +
+          Treeview treeview = new Treeview(path.toString() + " > " +
               getOrganisationController().getComponentInstLight(instanceId).getLabel(), tree,
               instanceId);
 
@@ -3309,7 +3297,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       GlobalContext aContext = new GlobalContext(getSpaceId(), getComponentId());
       templates = getPublicationTemplateManager().getPublicationTemplates(aContext);
     } catch (PublicationTemplateException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.getForms()", "root.CANT_GET_FORMS", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return templates;
   }
@@ -3379,7 +3367,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       for (String exportFormat : exportFormats.trim().split(" ")) {
         if (!availableFormats.contains(exportFormat)) {
           throw new KmeliaRuntimeException("KmeliaSessionController.getSupportedFormats()",
-              SilverTrace.TRACE_LEVEL_ERROR, "kmelia.EX_UNKNOWN_EXPORT_FORMAT");
+              SilverpeasException.ERROR, "kmelia.EX_UNKNOWN_EXPORT_FORMAT");
         }
         supportedFormats.add(exportFormat);
       }

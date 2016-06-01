@@ -420,14 +420,15 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
       Attribute att = attrs.get(attribute.getKey());
       if (att != null) {
         try {
-          String detail = "";
+          String detail;
           if (att.size() > 1) {
+            StringBuilder listOfVals = new StringBuilder();
             NamingEnumeration<?> vals = att.getAll();
             while (vals.hasMore()) {
               String val = (String) vals.next();
-              detail += val + ", ";
+              listOfVals.append(val).append(", ");
             }
-            detail = detail.substring(0, detail.length() - 2);
+            detail = listOfVals.toString().substring(0, listOfVals.length() - 2);
           } else {
             detail = getFirstAttributeValue(att);
           }

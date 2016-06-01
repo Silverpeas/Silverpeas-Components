@@ -30,10 +30,10 @@ import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.components.forums.model.Moderator;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -945,17 +945,17 @@ public class ForumsDAO {
       throws SQLException {
     ArrayList<Message> messages = new ArrayList<Message>();
     if (forumPKs.length > 0) {
-      String selectQuery =
+      StringBuilder selectQuery = new StringBuilder(
           "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + " FROM " + MESSAGE_TABLE + " WHERE " +
               MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?" + " AND " + MESSAGE_COLUMN_FORUM_ID +
-              " IN(";
+              " IN(");
       for (int i = 0, n = forumPKs.length; i < n; i++) {
         if (i > 0) {
-          selectQuery += ", ";
+          selectQuery.append(", ");
         }
-        selectQuery += forumPKs[i].getId();
+        selectQuery.append(forumPKs[i].getId());
       }
-      selectQuery += ") ORDER BY " + MESSAGE_COLUMN_MESSAGE_DATE + " DESC";
+      selectQuery.append(") ORDER BY ").append(MESSAGE_COLUMN_MESSAGE_DATE).append(" DESC");
 
 
       ArrayList<String> messageIds = new ArrayList<String>(count);
@@ -963,7 +963,7 @@ public class ForumsDAO {
       PreparedStatement selectStmt = null;
       ResultSet rs = null;
       try {
-        selectStmt = con.prepareStatement(selectQuery);
+        selectStmt = con.prepareStatement(selectQuery.toString());
         selectStmt.setInt(1, 0);
         rs = selectStmt.executeQuery();
         while (rs.next() && messagesCount < count) {
@@ -995,17 +995,17 @@ public class ForumsDAO {
       int count) throws SQLException {
     ArrayList<Message> messages = new ArrayList<Message>();
     if (forumPKs.length > 0) {
-      String selectQuery =
+      StringBuilder selectQuery = new StringBuilder(
           "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + ", " + MESSAGE_COLUMN_FORUM_ID + " FROM " +
               MESSAGE_TABLE + " WHERE " + MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?" + " AND " +
-              MESSAGE_COLUMN_FORUM_ID + " IN(";
+              MESSAGE_COLUMN_FORUM_ID + " IN(");
       for (int i = 0, n = forumPKs.length; i < n; i++) {
         if (i > 0) {
-          selectQuery += ", ";
+          selectQuery.append(", ");
         }
-        selectQuery += forumPKs[i].getId();
+        selectQuery.append(forumPKs[i].getId());
       }
-      selectQuery += ") ORDER BY " + MESSAGE_COLUMN_MESSAGE_DATE + " DESC";
+      selectQuery.append(") ORDER BY " + MESSAGE_COLUMN_MESSAGE_DATE + " DESC");
 
 
       ArrayList<String> messageIds = new ArrayList<String>(count);
@@ -1023,7 +1023,7 @@ public class ForumsDAO {
       ResultSet rs2 = null;
       int sonsCount;
       try {
-        selectStmt = con.prepareStatement(selectQuery);
+        selectStmt = con.prepareStatement(selectQuery.toString());
         selectStmt.setInt(1, 0);
         rs = selectStmt.executeQuery();
         while (rs.next() && messagesCount < count) {
@@ -1142,34 +1142,36 @@ public class ForumsDAO {
    */
   public static Message getLastMessage(Connection con, ForumPK forumPK,
       List<String> messageParentIds, String status) throws SQLException {
-    String selectQuery = "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + " FROM " + MESSAGE_TABLE;
+    StringBuilder selectQuery =
+        new StringBuilder("SELECT " + MESSAGE_COLUMN_MESSAGE_ID + " FROM " + MESSAGE_TABLE);
 
     int messageParentIdsCount = (messageParentIds != null ? messageParentIds.size() : 0);
     if (messageParentIdsCount > 0) {
-
-
-      selectQuery += " WHERE " + MESSAGE_COLUMN_STATUS + " = ? AND ";
-      selectQuery += " (";
+      selectQuery.append(" WHERE ").append(MESSAGE_COLUMN_STATUS).append(" = ? AND ");
+      selectQuery.append(" (");
       for (int i = 0; i < messageParentIdsCount; i++) {
         if (i > 0) {
-          selectQuery += " OR ";
+          selectQuery.append(" OR ");
         }
-        selectQuery +=
-            MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?" + " OR " + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
+        selectQuery.append(MESSAGE_COLUMN_MESSAGE_PARENT_ID)
+            .append(" = ?")
+            .append(" OR ")
+            .append(MESSAGE_COLUMN_MESSAGE_ID)
+            .append(" = ?");
       }
-      selectQuery += ")";
+      selectQuery.append(")");
     }
-    selectQuery +=
-        " ORDER BY " + MESSAGE_COLUMN_MESSAGE_DATE + " DESC, " + MESSAGE_COLUMN_MESSAGE_ID +
-            " DESC";
-
+    selectQuery.append(" ORDER BY ")
+        .append(MESSAGE_COLUMN_MESSAGE_DATE)
+        .append(" DESC, ")
+        .append(MESSAGE_COLUMN_MESSAGE_ID)
+        .append(" DESC");
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
-
     String messageId = "";
     try {
-      selectStmt = con.prepareStatement(selectQuery);
+      selectStmt = con.prepareStatement(selectQuery.toString());
       selectStmt.setString(1, status);
       if (messageParentIdsCount > 0) {
         int index = 2;
@@ -1663,21 +1665,21 @@ public class ForumsDAO {
    */
   public static Date getLastVisit(Connection con, String userId, List<String> messageIds)
       throws SQLException {
-    String selectQuery =
+    StringBuilder selectQuery = new StringBuilder(
         "SELECT " + HISTORY_COLUMN_LAST_ACCESS + " FROM " + HISTORY_TABLE + " WHERE " +
-            HISTORY_COLUMN_USER_ID + " = ?";
+            HISTORY_COLUMN_USER_ID + " = ?");
 
     int messageIdsCount = (messageIds != null ? messageIds.size() : 0);
     if (messageIdsCount > 0) {
 
-      selectQuery += " AND (";
+      selectQuery.append(" AND (");
       for (int i = 0; i < messageIdsCount; i++) {
         if (i > 0) {
-          selectQuery += " OR ";
+          selectQuery.append(" OR ");
         }
-        selectQuery += HISTORY_COLUMN_MESSAGE_ID + " = ?";
+        selectQuery.append(HISTORY_COLUMN_MESSAGE_ID).append(" = ?");
       }
-      selectQuery += ") ORDER BY " + HISTORY_COLUMN_LAST_ACCESS + " DESC";
+      selectQuery.append(") ORDER BY ").append(HISTORY_COLUMN_LAST_ACCESS).append(" DESC");
     }
 
 
@@ -1685,7 +1687,7 @@ public class ForumsDAO {
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
-      selectStmt = con.prepareStatement(selectQuery);
+      selectStmt = con.prepareStatement(selectQuery.toString());
       int index = 1;
       int messageId;
       selectStmt.setString(index++, userId);

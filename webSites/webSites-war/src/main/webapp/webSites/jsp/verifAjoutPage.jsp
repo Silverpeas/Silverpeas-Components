@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                     "<BODY bgcolor=\"white\" topmargin=\"15\" leftmargin=\"20\" onLoad=\"submit_form('"+rep+"')\">"+
                     "<form name=\"verification\" action=\"addPage.jsp\" method=\"POST\">"+
                     "<input type=\"hidden\" name=\"Action\" value=\""+action+"\">"+
-                    "<input type=\"hidden\" name=\"path\" value=\""+currentPath+"\">"+
+                    "<input type=\"hidden\" name=\"Path\" value=\""+currentPath+"\">"+
                     "<input type=\"hidden\" name=\"nomPage\" value=\""+nomPage+"\">"+
                     "<input type=\"hidden\" name=\"nameSite\" value=\""+nameSite+"\">"+
                     "<input type=\"hidden\" name=\"id\" value=\""+id+"\">"+
@@ -109,7 +109,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     String resultat;
 
-    currentPath = (String) request.getParameter("path");
+    currentPath = (String) request.getParameter("Path");
     nomPage = (String) request.getParameter("nomPage");
     nameSite = (String) request.getParameter("nameSite");
 		String id = (String) request.getParameter("id");
@@ -117,7 +117,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     resultat = scc.verif(action, currentPath, "", "", nomPage);
 
     Collection collectionRep = affichageChemin(scc, currentPath);
-    String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nameSite);
+    String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nameSite);
 
     if (resultat.equals("ok")) {
         debutAffichage(out, "ok", action, currentPath, nomPage, nameSite, gef, id, resources);

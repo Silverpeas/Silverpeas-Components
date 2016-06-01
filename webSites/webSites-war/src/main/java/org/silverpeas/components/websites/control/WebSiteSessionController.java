@@ -34,6 +34,7 @@ import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -634,10 +635,11 @@ public class WebSiteSessionController extends AbstractComponentSessionController
           delDir(dirFile);
         }
       }
-      dir.delete();
+      if (!dir.delete()) {
+        SilverLogger.getLogger(this).warn("Cannot delete directory {0}", dir.getPath());
+      }
     } catch (Exception e) {
-      SilverTrace.warn("webSites", "WebSiteSessionController.delDir()",
-          "webSites.EXE_DELETE_DIRECTORY_FAIL", "path = " + dir.getPath(), e);
+      SilverLogger.getLogger(this).error("Directory deletion failure: " + dir.getPath(), e);
     }
   }
 

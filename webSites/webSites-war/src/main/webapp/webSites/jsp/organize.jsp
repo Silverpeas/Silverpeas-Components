@@ -488,7 +488,7 @@ function pubUp(pubId) {
   <input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>"/>
   <input type="hidden" name="ChildId"/>
   <input type="hidden" name="Name"/>
-  <input type="hidden" name="Description"/>
+  <input type="hidden" name="description"/>
   <input type="hidden" name="SiteList"/>
 </form>
 

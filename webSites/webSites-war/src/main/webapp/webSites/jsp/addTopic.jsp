@@ -74,7 +74,7 @@ function sendData() {
       if (isCorrectForm()) {
             document.topicDetailForm.Action.value = "Add";
             document.topicDetailForm.Name.value = stripInitialWhitespace(document.topicForm.Name.value);
-            document.topicDetailForm.Description.value = stripInitialWhitespace(document.topicForm.Description.value);
+            document.topicDetailForm.description.value = stripInitialWhitespace(document.topicForm.description.value);
             document.topicDetailForm.submit();
       }
 }
@@ -139,7 +139,7 @@ function isCorrectForm() {
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.description")%> : </TD>
             <TD valign="top">
-                <input type="text" name="Description" value="" size="60" maxlength="50"/></TD>
+                <input type="text" name="description" value="" size="60" maxlength="50"/></TD>
         </TR>
 
         <TR>
@@ -161,7 +161,7 @@ function isCorrectForm() {
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=fatherId%>">
   <input type="hidden" name="Name">
-  <input type="hidden" name="Description">
+  <input type="hidden" name="description">
 </FORM>
 </BODY>
 </HTML>

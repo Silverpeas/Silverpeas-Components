@@ -53,7 +53,7 @@ public class JdbcFieldDisplayer {
   public void display(PrintWriter out, FieldUpdateChainDescriptor field,
       FieldsContext fieldsContext, boolean mandatory) throws FormException {
     String value = "";
-    String html = "";
+    StringBuilder html = new StringBuilder();
     Collection<String> listRes = null;
 
     String mandatoryImg = Util.getIcon("mandatoryField");
@@ -116,107 +116,140 @@ public class JdbcFieldDisplayer {
           Integer.parseInt(fieldsContext.getCurrentFieldIndex())) * 9000;
 
       // list of values
-      html += "<script type=\"text/javascript\">\n";
-      html += "listArray" + fieldName + " = [\n";
+      html.append("<script type=\"text/javascript\">\n");
+      html.append("listArray" + fieldName + " = [\n");
       for (String val : listRes) {
-        html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
+        html.append("\"" + EncodeHelper.javaStringToJsString(val) + "\",\n");
       }
       // remove last useless comma
-      html = html.substring(0, html.length() - 1);
+      html.deleteCharAt(html.length() - 1);
+      html.append("];\n");
+      html.append("</script>\n");
 
-      html += "];\n";
-      html += "</script>\n";
+      html.append("<script type=\"text/javascript\" src=\"")
+          .append(mContext)
+          .append("/util/yui/yuiloader/yuiloader-min.js\"></script>");
+      html.append("<script type=\"text/javascript\">\n");
+      html.append("var loader = new YAHOO.util.YUILoader({require: ['fonts', 'autocomplete', ")
+          .append("'animation'], base: '")
+          .append(mContext)
+          .append("/util/yui/', Optional: false, \n");
+      html.append("onSuccess: function(displayList) {\n");
 
-      html += "<script type=\"text/javascript\" src=\"" + mContext +
-          "/util/yui/yuiloader/yuiloader-min.js\"></script>";
-      html += "<script type=\"text/javascript\">\n";
-      html += "var loader = new YAHOO.util.YUILoader({require: ['fonts', 'autocomplete', " +
-          "'animation'], base: '" +
-          mContext + "/util/yui/', Optional: false, \n";
-      html += "onSuccess: function(displayList) {\n";
-
-      html += " this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
-          ");\n";
-      html += " this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
-          "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
-      html += " this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
-      html += " this.oAutoComp" + fieldName + ".typeAhead = true;\n";
-      html += " this.oAutoComp" + fieldName + ".useIFrame = true;\n";
-      html += " this.oAutoComp" + fieldName + ".useShadow = true;\n";
-      html += " this.oAutoComp" + fieldName + ".minQueryLength = 0;\n";
+      html.append(" this.oACDS")
+          .append(fieldName)
+          .append(" = new YAHOO.widget.DS_JSArray(listArray")
+          .append(fieldName)
+          .append(");\n");
+      html.append(" this.oAutoComp")
+          .append(fieldName)
+          .append(" = new YAHOO.widget.AutoComplete('")
+          .append(fieldName)
+          .append("','container")
+          .append(fieldName)
+          .append("', this.oACDS")
+          .append(fieldName)
+          .append(");\n");
+      html.append(" this.oAutoComp")
+          .append(fieldName)
+          .append(".prehighlightClassName = \"yui-ac-prehighlight\";\n");
+      html.append(" this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");
+      html.append(" this.oAutoComp").append(fieldName).append(".useIFrame = true;\n");
+      html.append(" this.oAutoComp").append(fieldName).append(".useShadow = true;\n");
+      html.append(" this.oAutoComp").append(fieldName).append(".minQueryLength = 0;\n");
 
       // Values :  1 = list constraint, 2 = free input, default value is 1
       if ("1".equals(valueFieldType)) {
-        html += " this.oAutoComp" + fieldName + ".forceSelection = true;\n";
+        html.append(" this.oAutoComp").append(fieldName).append(".forceSelection = true;\n");
       }
 
-      html += " this.oAutoComp" + fieldName + ".textboxFocusEvent.subscribe(function(){\n";
-      html += "   var sInputValue = YAHOO.util.Dom.get('" + fieldName + "').value;\n";
-      html += "   if(sInputValue.length == 0) {\n";
-      html += "     var oSelf = this;\n";
-      html += "     setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n";
-      html += "   }\n";
-      html += " });\n";
-      html += "}\n";
+      html.append(" this.oAutoComp")
+          .append(fieldName)
+          .append(".textboxFocusEvent.subscribe(function(){\n");
+      html.append("   var sInputValue = YAHOO.util.Dom.get('")
+          .append(fieldName)
+          .append("').value;\n");
+      html.append("   if(sInputValue.length == 0) {\n");
+      html.append("     var oSelf = this;\n");
+      html.append("     setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
+      html.append("   }\n");
+      html.append(" });\n");
+      html.append("}\n");
 
-      html += ",\n";
-      html += "onFailure: function(o)      {\n";
-      html += "alert(\"Error\");\n";
-      html += "}\n";
-      html += "});\n";
-      html += "loader.insert();\n";
-      html += "</script>\n";
+      html.append(",\n");
+      html.append("onFailure: function(o)      {\n");
+      html.append("alert(\"Error\");\n");
+      html.append("}\n");
+      html.append("});\n");
+      html.append("loader.insert();\n");
+      html.append("</script>\n");
 
-      html += "<style type=\"text/css\">\n";
+      html.append("<style type=\"text/css\">\n");
 
-      html += "	#listAutocomplete" + fieldName + " {\n";
-      html += "		width:" + size / 2 + "em;\n";
-      html += "		padding-bottom:2em;\n";
-      html += "	}\n";
-      html += "	#listAutocomplete" + fieldName + " {\n";
-      html += "		z-index:" + zindex +
-          "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
-      html += "	}\n";
-      html += "	#" + fieldName + " {\n";
-      html += "		_position:absolute; /* abs pos needed for ie quirks */\n";
-      html += "	}\n";
-      html += "</style>\n";
+      html.append("	#listAutocomplete").append(fieldName).append(" {\n");
+      html.append("		width:").append(size / 2).append("em;\n");
+      html.append("		padding-bottom:2em;\n");
+      html.append("	}\n");
+      html.append("	#listAutocomplete").append(fieldName).append(" {\n");
+      html.append("		z-index:")
+          .append(zindex)
+          .append(
+              "; /* z-index needed on top instance for ie & sf absolute inside relative issue " +
+                  "*/\n");
+      html.append("	}\n");
+      html.append("	#").append(fieldName).append(" {\n");
+      html.append("		_position:absolute; /* abs pos needed for ie quirks */\n");
+      html.append("	}\n");
+      html.append("</style>\n");
 
-      html += "<div id=\"listAutocomplete" + fieldName + "\">\n";
-      html += "<input id=\"" + fieldName + "\" size=\"" + size + "\" name=\"" + fieldName +
-          "\" type=\"text\"";
+      html.append("<div id=\"listAutocomplete").append(fieldName).append("\">\n");
+      html.append("<input id=\"")
+          .append(fieldName)
+          .append("\" size=\"")
+          .append(size)
+          .append("\" name=\"")
+          .append(fieldName)
+          .append("\" type=\"text\"");
       if (value != null) {
-        html += " value=\"" + value + "\"";
+        html.append(" value=\"").append(value).append("\"");
       }
-      html += "/>\n";
-      html += "<div id=\"container" + fieldName + "\"/>\n";
-      html += "</div>\n";
+      html.append("/>\n");
+      html.append("<div id=\"container").append(fieldName).append("\"/>\n");
+      html.append("</div>\n");
 
       if (mandatory) {
         String sizeMandatory = Integer.toString(size / 2 + 1);
-        html += "<img src=\"" + mandatoryImg +
-            "\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:" +
-            sizeMandatory + "em;top:5px\">\n";
+        html.append("<img src=\"")
+            .append(mandatoryImg)
+            .append("\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:")
+            .append(sizeMandatory)
+            .append("em;top:5px\">\n");
       }
 
     } else {
       // Values :  1 = list constraint, 2 = free input, default value is 1
       if ("1".equals(valueFieldType)) {
-        html += "<SELECT name=\"" + EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
-        html += " >\n";
-        html += "</SELECT>\n";
+        html.append("<SELECT name=\"")
+            .append(EncodeHelper.javaStringToHtmlString(fieldName))
+            .append("\"");
+        html.append(" >\n");
+        html.append("</SELECT>\n");
       } else {
-        html += "<input type=\"text\" size=\"" + size + "\" name=\"" +
-            EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
-        html += " >\n";
+        html.append("<input type=\"text\" size=\"")
+            .append(size)
+            .append("\" name=\"")
+            .append(EncodeHelper.javaStringToHtmlString(fieldName))
+            .append("\"");
+        html.append(" >\n");
       }
       if (mandatory) {
-        html += "&nbsp;<img src=\"" + mandatoryImg +
-            "\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n";
+        html.append("&nbsp;<img src=\"")
+            .append(mandatoryImg)
+            .append("\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n");
       }
     }
 
-    out.println(html);
+    out.println(html.toString());
   }
 
   public Connection connectJdbc(String driverName, String url, String login, String password)
@@ -248,11 +281,11 @@ public class JdbcFieldDisplayer {
           while (rs.next()) {
             ResultSetMetaData metadata = rs.getMetaData();
             int nbColumns = metadata.getColumnCount();
-            String value = "";
+            StringBuilder value = new StringBuilder();
             for (int i = 1; i <= nbColumns; i++) {
-              value += rs.getString(i) + " ";
+              value.append(rs.getString(i)).append(" ");
             }
-            result.add(value.trim());
+            result.add(value.toString().trim());
           }
         }
       } catch (SQLException e) {

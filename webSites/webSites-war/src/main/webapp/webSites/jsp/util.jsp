@@ -143,7 +143,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         return res;
   }
 
-  /* supprDoubleAntiSlash */
+  /* removeDoubleAntiSlash */
   public String supprDoubleAntiSlash(String chemin) {
     /* ex : id\\rep1\\rep11\\rep111 */
     /* res = id\rep1\rep11\re111 */

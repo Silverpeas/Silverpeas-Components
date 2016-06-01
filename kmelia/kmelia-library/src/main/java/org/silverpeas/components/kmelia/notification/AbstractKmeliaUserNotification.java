@@ -113,17 +113,17 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
   }
 
   private String getSpacesPath(final String componentId, final String language) {
-    String spacesPath = "";
+    StringBuilder spacesPath = new StringBuilder();
     final List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(
         componentId);
     final Iterator<SpaceInst> iSpaces = spaces.iterator();
     SpaceInst spaceInst;
     while (iSpaces.hasNext()) {
       spaceInst = iSpaces.next();
-      spacesPath += spaceInst.getName(language);
-      spacesPath += " > ";
+      spacesPath.append(spaceInst.getName(language));
+      spacesPath.append(" > ");
     }
-    return spacesPath;
+    return spacesPath.toString();
   }
 
   private String getComponentLabel(final String componentId, final String language) {

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -39,10 +41,13 @@ import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.workflow.api.model.*;
-import org.silverpeas.processmanager.record.QuestionRecord;
-import org.silverpeas.processmanager.record.QuestionTemplate;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowEngine;
@@ -58,6 +63,7 @@ import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
+import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
@@ -66,14 +72,8 @@ import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.model.ItemImpl;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.processmanager.record.QuestionRecord;
+import org.silverpeas.processmanager.record.QuestionTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileOutputStream;
@@ -387,21 +387,21 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         QualifiedUsers workingUsers = state.getWorkingUsers();
 
         RelatedUser[] relatedUsers = workingUsers.getRelatedUsers();
-        String role = "";
+        StringBuilder role = new StringBuilder();
         if (relatedUsers != null) {
           for (RelatedUser relatedUser : relatedUsers) {
             if (role.length() > 0) {
-              role += ", ";
+              role.append(", ");
             }
             // Process participants
             Participant participant = relatedUser.getParticipant();
             String relation = relatedUser.getRelation();
             if (participant != null && relation == null) {
-              role += participant.getLabel(currentRole, getLanguage());
+              role.append(participant.getLabel(currentRole, getLanguage()));
             } else if (participant != null && relation != null) {
               UserInfo userInfo = userSettings.getUserInfo(relation);
               if (userInfo != null) {
-                role += getUserDetail(userInfo.getValue()).getDisplayedName();
+                role.append(getUserDetail(userInfo.getValue()).getDisplayedName());
               }
             }
 
@@ -414,7 +414,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 if (userId != null) {
                   UserDetail user = getUserDetail(userId);
                   if (user != null) {
-                    role += user.getDisplayedName();
+                    role.append(user.getDisplayedName());
                   }
                 }
               } else if (field instanceof MultipleUserField) {
@@ -425,9 +425,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                     UserDetail user = getUserDetail(userId);
                     if (user != null) {
                       if (role.length() > 0) {
-                        role += ", ";
+                        role.append(", ");
                       }
-                      role += user.getDisplayedName();
+                      role.append(user.getDisplayedName());
                     }
                   }
                 }
@@ -440,10 +440,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         if (userInRoles != null) {
           for (UserInRole userInRole : userInRoles) {
             if (role.length() > 0) {
-              role += ", ";
+              role.append(", ");
             }
-            role +=
-                processModel.getRole(userInRole.getRoleName()).getLabel(currentRole, getLanguage());
+            role.append(processModel.getRole(userInRole.getRoleName())
+                .getLabel(currentRole, getLanguage()));
           }
         }
 
@@ -452,7 +452,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           for (RelatedGroup relatedGroup : relatedGroups) {
             if (relatedGroup != null) {
               if (role.length() > 0) {
-                role += ", ";
+                role.append(", ");
               }
 
               // Process folder item
@@ -462,14 +462,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 if (groupId != null) {
                   Group group = getOrganisationController().getGroup(groupId);
                   if (group != null) {
-                    role += group.getName();
+                    role.append(group.getName());
                   }
                 }
               }
             }
           }
         }
-        roles[i] = role;
+        roles[i] = role.toString();
       } catch (WorkflowException ignored) {
         // ignore unknown state
         continue;
