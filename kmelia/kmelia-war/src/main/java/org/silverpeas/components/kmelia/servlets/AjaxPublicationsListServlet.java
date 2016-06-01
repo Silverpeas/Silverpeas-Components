@@ -1073,8 +1073,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         result.append("&#160;<a href=\"").append(permalink)
             .append("\" target=\"_blank\"><img src=\"").append(resources.getIcon("kmelia.link"))
             .append("\" border=\"0\" valign=\"absmiddle\" alt=\"")
-            .append(resources.getString("toolbox.CopyFileLink")).append("\" title=\"")
-            .append(resources.getString("toolbox.CopyFileLink")).append("\"/></a>");
+            .append(resources.getString("kmelia.CopyFileLink")).append("\" title=\"")
+            .append(resources.getString("kmelia.CopyFileLink")).append("\"/></a>");
       }
       result.append("<br/>");
       // displays extra information if parameter is true
