@@ -140,7 +140,7 @@ function B_VALIDER_ONCLICK() {
 <%
     ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
     arrayPane.setVisibleLineNumber(1000);
-    ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(yellowpagesScc.getString("NomThemes"));
+    ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(yellowpagesScc.getString("TopicTitle"));
     arrayColumnTopic.setSortable(false);
     ArrayColumn arrayColumnContact = arrayPane.addArrayColumn("");
     arrayColumnContact.setSortable(false);
