@@ -102,7 +102,7 @@ function submitOnHomepage() {
 		<fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete('${news.id}', '${deleteConfirmMsg}')"/>
 		<view:operationSeparator/>
-		<c:if test="${appSettings.delegatedNewsEnabled && (empty news.delegatedNews || news.delegatedNews.denied)}">
+		<c:if test="${appSettings.delegatedNewsEnabled && (not news.draft) && (empty news.delegatedNews || news.delegatedNews.denied)}">
 			<fmt:message var="submitOnHomepage" key="quickinfo.news.delegated.operation"/>
 			<view:operation altText="${submitOnHomepage}" action="javascript:onclick=submitOnHomepage()"/>
 		</c:if>
