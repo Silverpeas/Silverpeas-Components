@@ -135,7 +135,7 @@ function submitOnHomepage() {
 		</c:if>
 									
 		<p id="permalinkInfo">
-			<a title="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" href="/silverpeas/Publication/18040"><img alt="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" src="/silverpeas/util/icons/link.gif" /></a> Permalien <br />
+			<a title="<fmt:message key="quickinfo.news.permalink"/>" href="<c:url value="/Publication/${news.publicationId}"/>"><img alt="<fmt:message key="quickinfo.news.permalink"/>" src="<c:url value='/util/icons/link.gif'/>" /></a> Permalien <br />
 			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.publicationId}"/>" onmouseup="return false" onfocus="select();" />
 		</p>
 	</div>
