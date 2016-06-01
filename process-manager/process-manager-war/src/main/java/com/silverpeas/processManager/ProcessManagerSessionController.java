@@ -314,7 +314,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public DataRecord[] getCurrentProcessList() throws ProcessManagerException {
     if (currentProcessList == null) {
-      return resetCurrentProcessList();
+      return resetCurrentProcessList(false);
     } else {
       return currentProcessList;
     }
@@ -324,7 +324,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Updates the current process instance list with current filter and returns this list. Doesn't
    * change the current process instance when an error occurs.
    */
-  public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
+  public DataRecord[] resetCurrentProcessList(boolean doAPause) throws ProcessManagerException {
+    // Wait to display processes list up-to-date
+    if (doAPause) {
+      doAPause();
+    }
+
     try {
       String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
       ProcessInstance[] processList = Workflow.getProcessInstanceManager().getProcessInstances(
@@ -691,7 +696,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
     resetCreationRights();
     resetProcessFilter();
-    resetCurrentProcessList();
+    resetCurrentProcessList(false);
     resetCurrentProcessListHeaders();
   }
 
@@ -1026,9 +1031,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         feedbackUser("processManager.createProcess.feedback");
       }
 
-      // Wait to display processes list up-to-date
-      doAPause();
-
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1175,10 +1177,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Workflow.getWorkflowEngine().process(event);
         feedbackUser("processManager.action.feedback");
       }
-
-      // Wait to display processes list up-to-date
-      doAPause();
-
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
