@@ -304,7 +304,9 @@ public class ProcessManagerRequestRouter
       request.setAttribute("listHeaders", listHeaders);
       DataRecord[] processList;
       if (request.getAttribute("dontreset") == null) {
-        processList = session.resetCurrentProcessList();
+        String from = (String) request.getAttribute("From");
+        boolean doAPause = "Creation".equals(from) || "Action".equals(from);
+        processList = session.resetCurrentProcessList(doAPause);
       } else {
         processList = session.getCurrentProcessList();
       }
@@ -609,6 +611,8 @@ public class ProcessManagerRequestRouter
               .unlock(new UnlockContext(attachmentId, session.getUserId(), null));
         }
 
+        request.setAttribute("From", "Creation");
+
         return listProcessHandler.getDestination(function, session, request);
       } catch (FormException e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
@@ -748,6 +752,8 @@ public class ProcessManagerRequestRouter
 
         session.processAction(stateName, actionName, data, false, true);
 
+        request.setAttribute("From", "Action");
+
         return listProcessHandler.getDestination(function, session, request);
       } else {
         // a form is associated to this action, display it to process action
@@ -806,6 +812,8 @@ public class ProcessManagerRequestRouter
           form.update(items, data, context);
         }
         session.processAction(stateName, actionName, data, isDraft, isFirstTimeSaved);
+
+        request.setAttribute("From", "Action");
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
