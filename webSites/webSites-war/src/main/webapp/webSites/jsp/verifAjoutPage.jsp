@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                     "<BODY bgcolor=\"white\" topmargin=\"15\" leftmargin=\"20\" onLoad=\"submit_form('"+rep+"')\">"+
                     "<form name=\"verification\" action=\"addPage.jsp\" method=\"POST\">"+
                     "<input type=\"hidden\" name=\"Action\" value=\""+action+"\">"+
-                    "<input type=\"hidden\" name=\"path\" value=\""+currentPath+"\">"+
+                    "<input type=\"hidden\" name=\"Path\" value=\""+currentPath+"\">"+
                     "<input type=\"hidden\" name=\"nomPage\" value=\""+nomPage+"\">"+
                     "<input type=\"hidden\" name=\"nameSite\" value=\""+nameSite+"\">"+
                     "<input type=\"hidden\" name=\"id\" value=\""+id+"\">"+
