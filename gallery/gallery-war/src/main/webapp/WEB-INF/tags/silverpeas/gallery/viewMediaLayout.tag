@@ -108,6 +108,7 @@
   <view:looknfeel/>
   <view:progressMessage/>
   <view:includePlugin name="popup"/>
+  <view:includePlugin name="preview"/>
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="userZoom"/>
   <view:includePlugin name="embedPlayer"/>
