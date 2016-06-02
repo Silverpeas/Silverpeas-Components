@@ -28,7 +28,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class MediaServiceProvider {
 
@@ -36,12 +36,6 @@ public class MediaServiceProvider {
    * @return an instance of {@link GalleryService} gallery service layer using JEE CDI BeanManager.
    */
   public static GalleryService getMediaService() {
-    try {
-      return ServiceProvider.getService(GalleryService.class);
-    } catch (Exception e) {
-      throw new GalleryRuntimeException("MediaServiceProvider.getMediaService()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return ServiceProvider.getService(GalleryService.class);
   }
-
 }

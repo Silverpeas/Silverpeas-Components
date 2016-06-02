@@ -74,6 +74,10 @@ public interface GalleryService {
 
   public Collection<Photo> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
+  public long countAllMedia(NodePK nodePK);
+
+  public long countAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+
   public Collection<Media> getAllMedia(NodePK nodePK);
 
   public Collection<Media> getAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
