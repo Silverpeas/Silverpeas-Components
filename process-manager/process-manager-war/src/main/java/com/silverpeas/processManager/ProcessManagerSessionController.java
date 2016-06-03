@@ -421,9 +421,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             if (participant != null && relation == null) {
               role += participant.getLabel(currentRole, getLanguage());
             } else if (participant != null && relation != null) {
-              UserInfo userInfo = userSettings.getUserInfo(relation);
-              if (userInfo != null) {
-                role += getUserDetail(userInfo.getValue()).getDisplayedName();
+              // userSettings of requester (not current user)
+              String requesterId = getCreatorIdOfCurrentProcessInstance();
+              if (requesterId != null) {
+                UserInfo userInfo = getSettingsOfUser(requesterId).getUserInfo(relation);
+                if (userInfo != null) {
+                  role += getUserDetail(userInfo.getValue()).getDisplayedName();
+                }
               }
             }
 
@@ -560,9 +564,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           users.add(getUserId());
         }
       } else if (participant != null && relation != null) {
-        UserInfo userInfo = userSettings.getUserInfo(relation);
-        if (userInfo != null) {
-          users.add(userInfo.getValue());
+        String requesterId = getCreatorIdOfCurrentProcessInstance();
+        if (requesterId != null) {
+          UserInfo userInfo = getSettingsOfUser(requesterId).getUserInfo(relation);
+          if (userInfo != null) {
+            users.add(userInfo.getValue());
+          }
         }
       }
 
@@ -1714,6 +1721,30 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (ProcessManagerException pme) {
       return false;
     }
+  }
+
+  private String getCreatorIdOfCurrentProcessInstance() {
+    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
+    if (steps.length > 0) {
+      HistoryStep initialStep = steps[0];
+      try {
+        return initialStep.getUser().getUserId();
+      } catch (WorkflowException e) {
+        SilverTrace.warn("processManager", "SessionController.getCreatorIdOfCurrentProcessInstance",
+            "processManager.GET_CREATOR_FAILED", e);
+      }
+    }
+    return null;
+  }
+
+  private UserSettings getSettingsOfUser(String userId) {
+    try {
+      return Workflow.getUserManager().getUserSettings(userId, peasId);
+    } catch (WorkflowException we) {
+      SilverTrace.warn("processManager", "SessionController",
+          "processManager.GET_USERSETTINGS_FAILED", we);
+    }
+    return null;
   }
 
   /**
