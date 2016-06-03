@@ -397,9 +397,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             if (participant != null && relation == null) {
               role.append(participant.getLabel(currentRole, getLanguage()));
             } else if (participant != null && relation != null) {
-              UserInfo userInfo = userSettings.getUserInfo(relation);
-              if (userInfo != null) {
-                role.append(getUserDetail(userInfo.getValue()).getDisplayedName());
+              // userSettings of requester (not current user)
+              String requesterId = getCreatorIdOfCurrentProcessInstance();
+              if (requesterId != null) {
+                UserInfo userInfo = getSettingsOfUser(requesterId).getUserInfo(relation);
+                if (userInfo != null) {
+                  role.append(getUserDetail(userInfo.getValue()).getDisplayedName());
+                }
               }
             }
 
@@ -536,9 +540,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           users.add(getUserId());
         }
       } else if (participant != null && relation != null) {
-        UserInfo userInfo = userSettings.getUserInfo(relation);
-        if (userInfo != null) {
-          users.add(userInfo.getValue());
+        String requesterId = getCreatorIdOfCurrentProcessInstance();
+        if (requesterId != null) {
+          UserInfo userInfo = getSettingsOfUser(requesterId).getUserInfo(relation);
+          if (userInfo != null) {
+            users.add(userInfo.getValue());
+          }
         }
       }
 
@@ -1613,6 +1620,30 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (ProcessManagerException pme) {
       return false;
     }
+  }
+
+  private String getCreatorIdOfCurrentProcessInstance() {
+    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
+    if (steps.length > 0) {
+      HistoryStep initialStep = steps[0];
+      try {
+        return initialStep.getUser().getUserId();
+      } catch (WorkflowException e) {
+        SilverLogger.getLogger(this)
+            .error("can not get the creator of the current process instance", e);
+      }
+    }
+    return null;
+  }
+
+  private UserSettings getSettingsOfUser(String userId) {
+    try {
+      return Workflow.getUserManager().getUserSettings(userId, peasId);
+    } catch (WorkflowException we) {
+      SilverLogger.getLogger(this)
+          .error("can not get the user settings (id ''{0}'') ", new String[]{userId}, we);
+    }
+    return null;
   }
 
   /**
