@@ -77,6 +77,17 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countAllMedia() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO.countByCriteria(connection, defaultMediaCriteria());
+        assertThat(nbMedia, is(8L));
+      }
+    });
+  }
+
+  @Test
   public void getAllMediaOfAlbum() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -113,6 +124,41 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countAllMediaOfAlbum() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia =
+            MediaDAO.countByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("1"));
+        assertThat(nbMedia, is(6L));
+
+        nbMedia =
+            MediaDAO.countByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("2"));
+        assertThat(nbMedia, is(3L));
+
+        // Album that does not exist
+        nbMedia = MediaDAO
+            .countByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("999"));
+        assertThat(nbMedia, is(0L));
+
+        // Several albums
+        nbMedia = MediaDAO.countByCriteria(connection,
+            defaultMediaCriteria().albumIdentifierIsOneOf("1", "999", "2", "89"));
+        assertThat(nbMedia, is(8L));
+
+        // Removing the identifier of component instance
+        nbMedia = MediaDAO.countByCriteria(connection,
+            defaultMediaCriteria().albumIdentifierIsOneOf("1").onComponentInstanceId(null));
+        assertThat(nbMedia, is(6L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            defaultMediaCriteria().albumIdentifierIsOneOf("2").onComponentInstanceId(null));
+        assertThat(nbMedia, is(3L));
+      }
+    });
+  }
+
+  @Test
   public void getAllPhotos() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -126,6 +172,18 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countAllPhotos() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO
+            .countByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo));
+        assertThat(nbMedia, is(2L));
+      }
+    });
+  }
+
+  @Test
   public void getAllVideos() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -134,6 +192,18 @@ public class MediaDaoTest extends BaseGalleryTest {
             .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Video));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Video, Video.class);
+      }
+    });
+  }
+
+  @Test
+  public void countAllVideos() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO
+            .countByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Video));
+        assertThat(nbMedia, is(2L));
       }
     });
   }
@@ -156,6 +226,18 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countAllPhotosAndVideos() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO.countByCriteria(connection,
+            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video));
+        assertThat(nbMedia, is(4L));
+      }
+    });
+  }
+
+  @Test
   public void getAllSounds() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -169,6 +251,18 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countAllSounds() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO
+            .countByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Sound));
+        assertThat(nbMedia, is(2L));
+      }
+    });
+  }
+
+  @Test
   public void getAllStreamings() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -177,6 +271,18 @@ public class MediaDaoTest extends BaseGalleryTest {
             defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Streaming));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
+      }
+    });
+  }
+
+  @Test
+  public void countAllStreamings() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO.countByCriteria(connection,
+            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Streaming));
+        assertThat(nbMedia, is(2L));
       }
     });
   }
@@ -322,6 +428,78 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countStreamingsAccordingToRequesterAndVisibility() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
+        assertThat(nbMedia, is(1L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .setRequester(adminAccessUser));
+        assertThat(nbMedia, is(2L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .setRequester(publisherUser));
+        assertThat(nbMedia, is(2L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .setRequester(writerUser));
+        assertThat(nbMedia, is(1L));
+
+        // Simulating a connected publisher user
+        CacheServiceFactory.getSessionCacheService()
+            .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
+        assertThat(nbMedia, is(2L));
+
+        // Simulating a connected writer user
+        CacheServiceFactory.getSessionCacheService()
+            .put(UserDetail.CURRENT_REQUESTER_KEY, writerUser);
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
+        assertThat(nbMedia, is(1L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .withVisibility(FORCE_GET_ALL));
+        assertThat(nbMedia, is(2L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .withVisibility(HIDDEN_ONLY));
+        assertThat(nbMedia, is(1L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .withVisibility(VISIBLE_ONLY));
+        assertThat(nbMedia, is(1L));
+
+        // Simulating a connected publisher user
+        CacheServiceFactory.getSessionCacheService()
+            .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .withVisibility(HIDDEN_ONLY));
+        assertThat(nbMedia, is(1L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+                .withVisibility(VISIBLE_ONLY));
+        assertThat(nbMedia, is(1L));
+      }
+    });
+  }
+
+  @Test
   public void getSoundsAccordingToRequesterAndVisibility() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -361,6 +539,38 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void countSoundsAccordingToRequesterAndVisibility() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        long nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound));
+        assertThat(nbMedia, is(1L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(adminAccessUser));
+        assertThat(nbMedia, is(2L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(publisherUser));
+        assertThat(nbMedia, is(2L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(writerUser));
+        assertThat(nbMedia, is(2L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(userUser));
+        assertThat(nbMedia, is(1L));
+      }
+    });
+  }
+
+  @Test
   public void getMediaThatWillBeNotVisible() throws Exception {
     performDAOTest(new DAOTest() {
       @Override
@@ -377,6 +587,27 @@ public class MediaDaoTest extends BaseGalleryTest {
         media = MediaDAO.findByCriteria(connection,
             MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(2).referenceDateOf(today));
         assertThat(media, hasSize(0));
+      }
+    });
+  }
+
+  @Test
+  public void countMediaThatWillBeNotVisible() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        Date today = Timestamp.valueOf("2014-03-30 11:33:45.854");
+        long nbMedia = MediaDAO.countByCriteria(connection,
+            MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(0).referenceDateOf(today));
+        assertThat(nbMedia, is(0L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(1).referenceDateOf(today));
+        assertThat(nbMedia, is(1L));
+
+        nbMedia = MediaDAO.countByCriteria(connection,
+            MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(2).referenceDateOf(today));
+        assertThat(nbMedia, is(0L));
       }
     });
   }

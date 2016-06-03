@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.FORCE_GET_ALL;
+import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.VISIBLE_ONLY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
@@ -68,6 +69,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
+    MediaServiceFactory.getInstance().setMediaService(null);
     // Simulating a connected publisher user
     CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
   }
@@ -111,6 +113,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
     });
 
     galleryBmEJB = new GalleryBmEJBMock(nodeBm, getDataSource());
+    MediaServiceFactory.getInstance().setMediaService(galleryBmEJB);
   }
 
   @Test
@@ -257,5 +260,21 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
 
     media = galleryBmEJB.getAllMedia(albumPK, FORCE_GET_ALL);
     assertThat(media, hasSize(6));
+
+    media = galleryBmEJB.getAllMedia(albumPK, VISIBLE_ONLY);
+    assertThat(media, hasSize(3));
+  }
+
+  @Test
+  public void testCountAllMediaOfAlbum() {
+    NodePK albumPK = new NodePK("1", INSTANCE_A);
+    long nbMedia = galleryBmEJB.countAllMedia(albumPK);
+    assertThat(nbMedia, is(6L));
+
+    nbMedia = galleryBmEJB.countAllMedia(albumPK, FORCE_GET_ALL);
+    assertThat(nbMedia, is(6L));
+
+    nbMedia = galleryBmEJB.countAllMedia(albumPK, VISIBLE_ONLY);
+    assertThat(nbMedia, is(3L));
   }
 }

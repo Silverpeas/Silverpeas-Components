@@ -102,12 +102,7 @@ public class GalleryBmEJB implements GalleryBm {
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, MediaCriteria.VISIBILITY visibility) {
     try {
-      final AlbumDetail album = new AlbumDetail(nodeBm.getDetailTransactionally(nodePK));
-      // Loading the media
-      final Collection<Media> media = getAllMedia(nodePK, visibility);
-      // Setting the media into the album object instance.
-      album.setMedia(media);
-      return album;
+      return new AlbumDetail(nodeBm.getDetailTransactionally(nodePK), visibility);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
@@ -238,6 +233,29 @@ public class GalleryBmEJB implements GalleryBm {
               .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public long countAllMedia(final NodePK nodePK) {
+    return countAllMedia(nodePK, MediaCriteria.VISIBILITY.BY_DEFAULT);
+  }
+
+  @Override
+  public long countAllMedia(final NodePK nodePK,
+      final MediaCriteria.VISIBILITY visibility) {
+    final Connection con = initCon();
+    try {
+      final String albumId = nodePK.getId();
+      final String instanceId = nodePK.getInstanceId();
+      return MediaDAO.countByCriteria(con,
+          MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
+              .withVisibility(visibility));
+    } catch (final Exception e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.countAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
       DBUtil.close(con);
