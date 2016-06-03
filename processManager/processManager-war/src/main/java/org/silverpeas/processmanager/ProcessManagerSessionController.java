@@ -78,14 +78,7 @@ import org.silverpeas.processmanager.record.QuestionTemplate;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 
@@ -849,6 +842,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           fieldTemplate.addLabel(state.getLabel(currentRole, getLanguage()), getLanguage());
           fieldTemplate.setDisplayerName("user");
           fieldTemplate.setMandatory(true);
+          fieldTemplate.addParameter("roles", actors[j].getUserRoleName());
           rt.addFieldTemplate(fieldTemplate);
         }
       }
@@ -906,6 +900,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     Actor[] oldUsers = null;
     List<Actor> oldActors = new ArrayList<>();
     List<Actor> newActors = new ArrayList<>();
+    Map<String, String> changes = new HashMap<String, String>();
 
     try {
       WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
@@ -919,21 +914,54 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           oldActors.add(oldUser);
         }
 
+        RelatedUser[] relatedUsers =
+            processModel.getState(activeStates[i]).getWorkingUsers().getRelatedUsers();
+
         // assign new working users
         for (int j = 0; oldUsers != null && j < oldUsers.length; j++) {
-          Field field =
-              data.getField(activeStates[i] + "_" + oldUsers[j].getUserRoleName() + "_" + j);
+          String roleName = oldUsers[j].getUserRoleName();
+          Field field = data.getField(activeStates[i] + "_" + roleName + "_" + j);
           String userId = field.getStringValue();
           User user = Workflow.getUserManager().getUser(userId);
-          Actor newActor = Workflow.getProcessInstanceManager()
-              .createActor(user, oldUsers[j].getUserRoleName(), oldUsers[j].getState());
+          Actor newActor = Workflow.getProcessInstanceManager().createActor(
+              user, roleName, oldUsers[j].getState());
           newActors.add(newActor);
+
+          // detect folderItem where old userIds are stored
+          for (RelatedUser relatedUser : relatedUsers) {
+            Item item = relatedUser.getFolderItem();
+            if (item != null && relatedUser.getRole() != null &&
+                relatedUser.getRole().equals(roleName)) {
+              try {
+                Field folderField = currentProcessInstance.getField(item.getName());
+                if (folderField instanceof UserField) {
+                  changes.put(item.getName(), userId);
+                }
+              } catch (WorkflowException we) {
+                // ignore it.
+              }
+            }
+          }
         }
       }
 
       wfEngine.reAssignActors((UpdatableProcessInstance) currentProcessInstance,
           oldActors.toArray(new Actor[oldActors.size()]),
           newActors.toArray(new Actor[newActors.size()]), currentUser);
+
+      // update folder
+      if (!changes.isEmpty()) {
+        GenericRecordTemplate rt = new GenericRecordTemplate();
+        for (String fieldName : changes.keySet()) {
+          GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(fieldName, "user");
+          rt.addFieldTemplate(fieldTemplate);
+        }
+        DataRecord folder = rt.getEmptyRecord();
+        for (String fieldName : changes.keySet()) {
+          folder.getField(fieldName).setStringValue(changes.get(fieldName));
+        }
+        currentProcessInstance.updateFolder(folder);
+      }
     } catch (WorkflowException | FormException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.RE_ASSIGN_FAILED", we);
@@ -1262,7 +1290,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       String activity = "";
       if (step.getResolvedState() != null) {
         State resolvedState = processModel.getState(step.getResolvedState());
-        activity = resolvedState.getLabel(currentRole, getLanguage());
+        if (resolvedState != null) {
+          activity = resolvedState.getLabel(currentRole, getLanguage());
+        }
       }
       stepVO.setActivity(activity);
 
