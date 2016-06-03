@@ -30,6 +30,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>clipboard</artifactId>
+      <version>${core.version}</version>
+      <classifier>client</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.components.process-manager</groupId>
       <artifactId>process-manager-ejb</artifactId>
       <classifier>client</classifier>

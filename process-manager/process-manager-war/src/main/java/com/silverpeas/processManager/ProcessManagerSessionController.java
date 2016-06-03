@@ -893,7 +893,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
               getLanguage());
           fieldTemplate.setDisplayerName("user");
           fieldTemplate.setMandatory(true);
-          fieldTemplate.addParameter("usersOfInstanceOnly", "true");
+          fieldTemplate.addParameter("roles", actors[j].getUserRoleName());
           rt.addFieldTemplate(fieldTemplate);
         }
       }
