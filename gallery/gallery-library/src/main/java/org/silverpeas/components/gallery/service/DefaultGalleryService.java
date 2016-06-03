@@ -98,12 +98,7 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, MediaCriteria.VISIBILITY visibility) {
     try {
-      final AlbumDetail album = new AlbumDetail(nodeService.getDetailTransactionally(nodePK));
-      // Loading the media
-      final Collection<Media> media = getAllMedia(nodePK, visibility);
-      // Setting the media into the album object instance.
-      album.setMedia(media);
-      return album;
+      return new AlbumDetail(nodeService.getDetailTransactionally(nodePK), visibility);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.getAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
@@ -223,6 +218,25 @@ public class DefaultGalleryService implements GalleryService {
               .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.getAllMedia()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    }
+  }
+
+  @Override
+  public long countAllMedia(final NodePK nodePK) {
+    return countAllMedia(nodePK, MediaCriteria.VISIBILITY.BY_DEFAULT);
+  }
+
+  @Override
+  public long countAllMedia(final NodePK nodePK, final MediaCriteria.VISIBILITY visibility) {
+    try {
+      final String albumId = nodePK.getId();
+      final String instanceId = nodePK.getInstanceId();
+      return MediaDAO.countByCriteria(
+          MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
+              .withVisibility(visibility));
+    } catch (final Exception e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.countAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }

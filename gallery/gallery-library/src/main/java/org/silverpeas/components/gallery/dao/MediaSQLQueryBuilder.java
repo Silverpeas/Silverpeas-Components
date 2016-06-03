@@ -44,6 +44,7 @@ import java.util.List;
  */
 public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
 
+  private final boolean count;
   private StringBuilder orderBy = null;
   private boolean done = false;
   private final StringBuilder sqlQuery = new StringBuilder();
@@ -55,19 +56,35 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   private boolean distinct = false;
   private int resultLimit = 0;
 
+  static MediaSQLQueryBuilder selectBuilder() {
+    return new MediaSQLQueryBuilder(false);
+  }
+
+  static MediaSQLQueryBuilder countBuilder() {
+    return new MediaSQLQueryBuilder(true);
+  }
+
+  private MediaSQLQueryBuilder(boolean count) {
+    this.count = count;
+  }
+
   @Override
   public void startProcessing() {
-    sqlQuery.append("M.mediaId, M.mediaType, M.instanceId")
-        .append(", M.title, M.description, M.author, M.keyWord")
-        .append(", M.beginVisibilityDate, M.endVisibilityDate")
-        .append(", M.createDate, M.createdBy, M.lastUpdateDate, M.lastUpdatedBy ");
+    if (!count) {
+      sqlQuery.append("select M.mediaId, M.mediaType, M.instanceId")
+          .append(", M.title, M.description, M.author, M.keyWord")
+          .append(", M.beginVisibilityDate, M.endVisibilityDate")
+          .append(", M.createDate, M.createdBy, M.lastUpdateDate, M.lastUpdatedBy ");
+    } else {
+      sqlQuery.append("select count(M.mediaId) ");
+    }
     from.append("from SC_Gallery_Media M ");
   }
 
   @Override
   public void endProcessing() {
     if (distinct) {
-      sqlQuery.insert(0, " distinct ");
+      sqlQuery.insert((count ? 13 : 7), "distinct ");
     }
     sqlQuery.append(from.toString());
     if (where.length() > 0) {
@@ -82,7 +99,7 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   @SuppressWarnings("unchecked")
   @Override
   public JdbcSqlQuery result() {
-    return JdbcSqlQuery.createSelect(sqlQuery.toString(), parameters)
+    return JdbcSqlQuery.create(sqlQuery.toString(), parameters)
         .configure(config -> config.withResultLimit(resultLimit));
   }
 

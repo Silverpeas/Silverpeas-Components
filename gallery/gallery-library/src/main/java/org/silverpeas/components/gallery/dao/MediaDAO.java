@@ -90,7 +90,7 @@ public class MediaDAO {
    * @return the media list corresponding to the given criteria.
    */
   public static List<Media> findByCriteria(final MediaCriteria criteria) throws SQLException {
-    MediaSQLQueryBuilder queryBuilder = new MediaSQLQueryBuilder();
+    MediaSQLQueryBuilder queryBuilder = MediaSQLQueryBuilder.selectBuilder();
     criteria.processWith(queryBuilder);
 
     JdbcSqlQuery selectQuery = queryBuilder.result();
@@ -308,6 +308,20 @@ public class MediaDAO {
     iMedia.setFileMimeType(MediaMimeType.fromMimeType(rsw.getString(4)));
     iMedia.setDownloadAuthorized(rsw.getInt(5) == 1);
     iMedia.setDownloadPeriod(getPeriod(rsw, 6, 7));
+  }
+
+  /**
+   * Counts media according to the given criteria.
+   * @param criteria the media criteria.
+   * @return the number of media count corresponding to the given criteria.
+   */
+  public static long countByCriteria(final MediaCriteria criteria) throws SQLException {
+    MediaSQLQueryBuilder queryBuilder = MediaSQLQueryBuilder.countBuilder();
+    criteria.processWith(queryBuilder);
+
+    JdbcSqlQuery selectQuery = queryBuilder.result();
+
+    return selectQuery.executeUnique(row -> row.getLong(1));
   }
 
   /**

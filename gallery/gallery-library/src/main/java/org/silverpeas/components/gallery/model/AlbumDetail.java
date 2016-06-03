@@ -24,16 +24,20 @@
 package org.silverpeas.components.gallery.model;
 
 
+import org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY;
 import org.silverpeas.core.node.model.NodeDetail;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
+
 public class AlbumDetail extends NodeDetail {
 
   private static final long serialVersionUID = 1L;
-  private List<Media> media;
-  private int nbMedia;
+  private VISIBILITY mediaVisibility = VISIBILITY.BY_DEFAULT;
+  private List<Media> media = null;
+  private long nbMedia = 0;
 
   public AlbumDetail(NodeDetail node) {
     setNodePK(node.getNodePK());
@@ -51,19 +55,33 @@ public class AlbumDetail extends NodeDetail {
     setTranslations(node.getTranslations());
   }
 
+  public AlbumDetail(NodeDetail node, VISIBILITY mediaVisibility) {
+    this(node);
+    this.mediaVisibility = mediaVisibility;
+  }
+
   public List<Media> getMedia() {
+    if (media == null) {
+      // Loading lazily the media data
+      final Collection<Media> media = getMediaService().getAllMedia(getNodePK(), mediaVisibility);
+      // Setting the media into the instance.
+      setMedia(media);
+    }
     return media;
   }
 
   public void setMedia(Collection<Media> media) {
     this.media = new ArrayList<>(media);
+    if (nbMedia == 0 && media.size() > 0) {
+      setNbMedia(nbMedia);
+    }
   }
 
-  public int getNbMedia() {
+  public long getNbMedia() {
     return nbMedia;
   }
 
-  public void setNbMedia(int nbMedia) {
+  public void setNbMedia(long nbMedia) {
     this.nbMedia = nbMedia;
   }
 

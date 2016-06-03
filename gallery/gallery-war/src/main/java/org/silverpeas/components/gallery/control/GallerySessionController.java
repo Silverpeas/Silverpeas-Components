@@ -875,11 +875,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     clipboardPasteDone();
   }
 
-  public Collection<Media> getAllMedia(AlbumDetail album) {
+  public long countAllMediaOf(AlbumDetail album) {
     try {
-      return getMediaService().getAllMedia(album.getNodePK());
+      return getMediaService().countAllMedia(album.getNodePK());
     } catch (Exception e) {
-      return null;
+      return 0;
     }
   }
 
@@ -1264,14 +1264,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // retourne la liste des albums avec leurs nombre de médias
     for (AlbumDetail album : albums) {
       // pour chaque sous album, rechercher le nombre de médias
-      int nbMedia;
-      Collection<Media> allMedia = getAllMedia(album);
-      nbMedia = allMedia.size();
+      long nbMedia = countAllMediaOf(album);
       // parcourir ses sous albums pour comptabiliser aussi ses médias
       AlbumDetail thisAlbum = getAlbumLight(Integer.toString(album.getId()));
       Collection<AlbumDetail> subAlbums = addNbMedia(thisAlbum.getChildrenAlbumsDetails());
       for (AlbumDetail oneSubAlbum : subAlbums) {
-        nbMedia = nbMedia + oneSubAlbum.getNbMedia();
+        nbMedia += oneSubAlbum.getNbMedia();
       }
       album.setNbMedia(nbMedia);
     }
