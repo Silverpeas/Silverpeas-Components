@@ -133,7 +133,7 @@
 				
 				if (form == null || data == null || ( !step.isVisible() && !("supervisor".equalsIgnoreCase(currentRole))) ) {
 				%>
-					ICI
+					<%--nothing to do here--%>
 				<%
 				}
 				else
