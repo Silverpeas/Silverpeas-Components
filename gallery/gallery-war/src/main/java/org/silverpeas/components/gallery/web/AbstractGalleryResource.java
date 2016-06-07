@@ -23,27 +23,30 @@
  */
 package org.silverpeas.components.gallery.web;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jboss.resteasy.plugins.providers.html.View;
+import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodePK;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.jboss.resteasy.plugins.providers.html.View;
-import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -53,13 +56,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
 import java.util.EnumSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.nio.file.StandardOpenOption.READ;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractGalleryResource extends RESTWebService {
+abstract class AbstractGalleryResource extends RESTWebService {
+
+  private static final int BUFFER_LENGTH = 1024 * 16;
+  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24;
+  private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
 
   @PathParam("componentInstanceId")
   private String componentInstanceId;
@@ -78,7 +96,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param album the album.
    * @return the corresponding photo entity.
    */
-  protected AlbumEntity asWebEntity(AlbumDetail album) {
+  AlbumEntity asWebEntity(AlbumDetail album) {
     checkNotFoundStatus(album);
     AlbumEntity albumEntity = AlbumEntity.createFrom(album, getUserPreferences().getLanguage())
         .withURI(getUriInfo().getRequestUri()).withParentURI(GalleryResourceURIs.buildAlbumURI(album.getFatherPK()));
@@ -133,10 +151,10 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param expectedMediaType expected media type
    * @param albumId the identifier of the album in which the media must exist
    * @param mediaId the identifier of the expected media
-   * @return
+   * @return the corresponding media entity.
    */
-  protected AbstractMediaEntity getMediaEntity(final MediaType expectedMediaType,
-      final String albumId, final String mediaId) {
+  AbstractMediaEntity getMediaEntity(final MediaType expectedMediaType, final String albumId,
+      final String mediaId) {
     try {
       final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -160,14 +178,14 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Centralization of getting of media content.
+   * Gets the media and verifies the user rights.
    * @param expectedMediaType expected media type
    * @param mediaId the media identifier
    * @param requestedMediaResolution requested media resolution
-   * @return
+   * @return the requested media.
    */
-  protected Response getMediaContent(final MediaType expectedMediaType, final String mediaId,
-      final MediaResolution requestedMediaResolution) {
+  private Pair<Media, SilverpeasFile> getCheckedMedia(final MediaType expectedMediaType,
+      final String mediaId, final MediaResolution requestedMediaResolution) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
@@ -186,24 +204,108 @@ public abstract class AbstractGalleryResource extends RESTWebService {
       if (!file.exists() || expectedMediaType != media.getType()) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
-      return Response.ok(new StreamingOutput() {
-        @Override
-        public void write(final OutputStream output) throws IOException, WebApplicationException {
-          final InputStream mediaStream;
-          try {
-            mediaStream = FileUtils.openInputStream(file);
+      return Pair.of(media, file);
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Centralization of getting of media content.
+   * @param expectedMediaType expected media type
+   * @param mediaId the media identifier
+   * @param requestedMediaResolution requested media resolution
+   * @return the response.
+   */
+  Response getMediaContent(final MediaType expectedMediaType, final String mediaId,
+      final MediaResolution requestedMediaResolution) {
+    try {
+      final Pair<Media, SilverpeasFile> checkedMedia =
+          getCheckedMedia(expectedMediaType, mediaId, requestedMediaResolution);
+      final Media media = checkedMedia.getLeft();
+      final SilverpeasFile file = checkedMedia.getRight();
+
+      java.nio.file.Path mediaPath = Paths.get(file.toURI());
+      String mediaMimeType = getHttpRequest().getParameter("forceMimeType");
+      if (StringUtil.isNotDefined(mediaMimeType)) {
+        mediaMimeType = ((InternalMedia) media).getFileMimeType().getMimeType();
+      }
+
+      int length = (int) Files.size(mediaPath);
+      int start = 0;
+      int end = length - 1;
+
+      String range = defaultStringIfNotDefined(getHttpServletRequest().getHeader("Range"), "");
+      Matcher matcher = RANGE_PATTERN.matcher(range);
+      boolean isPartialRequest = matcher.matches();
+
+      if (isPartialRequest) {
+        String startGroup = matcher.group("start");
+        start = startGroup.isEmpty() ? start : Integer.valueOf(startGroup);
+        start = start < 0 ? 0 : start;
+
+        String endGroup = matcher.group("end");
+        end = endGroup.isEmpty() ? end : Integer.valueOf(endGroup);
+        end = end > length - 1 ? length - 1 : end;
+      }
+
+      final int finalStart = start;
+      final int finalContentLength = end - finalStart + 1;
+
+      final Response.ResponseBuilder responseBuilder;
+      if (isPartialRequest) {
+
+        // Handling here a partial response (pseudo streaming)
+
+        final HttpServletResponse response = getHttpServletResponse();
+        response.setBufferSize(BUFFER_LENGTH);
+
+        responseBuilder =
+            Response.status(Status.PARTIAL_CONTENT).entity((StreamingOutput) output -> {
+
+              int bytesRead;
+              int bytesLeft = finalContentLength;
+              ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
+
+              try (SeekableByteChannel input = Files.newByteChannel(mediaPath, READ)) {
+                input.position(finalStart);
+                while ((bytesRead = input.read(buffer)) != -1 && bytesLeft > 0) {
+                  buffer.clear();
+                  output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
+                  bytesLeft -= bytesRead;
+                }
+              } catch (IOException ioe) {
+                SilverLogger.getLogger(AbstractGalleryResource.class).warn(
+                    "client stopping the streaming HTTP Request of media content represented by " +
+                        "''{0}'' identifier (original message ''{1}'')", media.getId(),
+                    ioe.getMessage());
+              }
+            }).header("Accept-Ranges", "bytes")
+              .header("ETag", media.getId())
+              .lastModified(Date.from(Files.getLastModifiedTime(mediaPath).toInstant()))
+              .expires(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + EXPIRE_TIME)))
+              .header("Content-Range", String.format("bytes %s-%s/%s", start, end, length));
+
+      } else {
+
+        // Handling here a full response
+
+        responseBuilder = Response.ok((StreamingOutput) output -> {
+          try (final InputStream mediaStream = FileUtils.openInputStream(file)) {
+            IOUtils.copy(mediaStream, output);
           } catch (IOException e) {
             throw new WebApplicationException(Status.NOT_FOUND);
           }
-          try {
-            IOUtils.copy(mediaStream, output);
-          } finally {
-            IOUtils.closeQuietly(mediaStream);
-          }
-        }
-      }).header("Content-Type", ((InternalMedia) media).getFileMimeType().getMimeType())
-          .header("Content-Length", file.length())
-          .header("Content-Disposition", "inline; filename=\"" + file.getName() + "\"").build();
+        });
+      }
+
+      return responseBuilder
+          .type(mediaMimeType)
+          .header("Content-Length", finalContentLength)
+          .header("Content-Disposition", String.format("inline;filename=\"%s\"", file.getName()))
+          .build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -217,7 +319,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param mediaId the media identifier
    * @param requestedMediaResolution requested media resolution
    */
-  protected View getMediaEmbed(final MediaType expectedMediaType, final String mediaId,
+  View getMediaEmbed(final MediaType expectedMediaType, final String mediaId,
       final MediaResolution requestedMediaResolution) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -268,9 +370,9 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param mediaId the media identifier
    * @param thumbnailId the thumbnail identifier
    * @param sizeDirective the size directive with pattern (optional)
-   * @return
+   * @return the response.
    */
-  protected Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
+  Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
       final String thumbnailId, final String sizeDirective) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -319,7 +421,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * Indicates if the current user is a privileged one.
    * @return true if user has privileged
    */
-  protected boolean isUserPrivileged() {
+  private boolean isUserPrivileged() {
     Collection<SilverpeasRole> userRoles = getUserRoles();
     return EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
         SilverpeasRole.privilegedUser).stream().filter(role -> userRoles.contains(role)).findFirst()
@@ -330,7 +432,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * Centralization
    * @param object any object
    */
-  protected void checkNotFoundStatus(Object object) {
+  void checkNotFoundStatus(Object object) {
     boolean isNotFound = false;
     if (object == null) {
       isNotFound = true;
@@ -362,7 +464,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param media the media to check access
    * @return true if user has media access
    */
-  protected boolean hasUserMediaAccess(Media media) {
+  private boolean hasUserMediaAccess(Media media) {
     return media.canBeAccessedBy(getUserDetail());
   }
 
@@ -371,7 +473,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param media
    * @throws javax.ws.rs.WebApplicationException if user is not authorized to view the media
    */
-  protected void verifyUserMediaAccess(Media media) {
+  void verifyUserMediaAccess(Media media) {
     if (!hasUserMediaAccess(media)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
@@ -388,7 +490,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @throws javax.ws.rs.WebApplicationException if the given media is not included in the given
    * album.
    */
-  protected void verifyMediaIsInAlbum(Media media, AlbumDetail album) {
+  private void verifyMediaIsInAlbum(Media media, AlbumDetail album) {
     if (!album.getMedia().contains(media)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
@@ -397,7 +499,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   /**
    * @return gallery media service layer
    */
-  protected GalleryService getMediaService() {
+  GalleryService getMediaService() {
     return MediaServiceProvider.getMediaService();
   }
 }

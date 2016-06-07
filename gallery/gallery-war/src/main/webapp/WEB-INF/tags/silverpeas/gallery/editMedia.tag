@@ -125,8 +125,8 @@
       if (media && media.length > 0) {
         var fileRegExprCheck = /[.](${supportedMediaTypeRegExpr})$/;
         if (fileRegExprCheck.exec(media.toLowerCase()) == null) {
-          errorMsg +=
-              "<li>'<fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>' <fmt:message key="gallery.format"/></li>";
+          <fmt:message key="gallery.${fn:toLowerCase(mediaType)}" var="mediaTypeLabel"/>
+          errorMsg += "<li><fmt:message key="gallery.format"><fmt:param>${fn:toLowerCase(mediaTypeLabel)}</fmt:param></fmt:message></li>";
           errorNb++;
         }
       }
