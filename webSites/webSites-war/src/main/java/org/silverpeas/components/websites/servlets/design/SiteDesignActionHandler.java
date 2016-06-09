@@ -338,10 +338,8 @@ public class SiteDesignActionHandler {
         }
       }
     }
-
           /* recuperation de l'id */
     String id = controller.getNextId();
-
           /* Creer le repertoire id */
     controller.createFolder(controller.getWebSitePathById(id));
 
@@ -392,7 +390,6 @@ public class SiteDesignActionHandler {
   public String ignoreAntiSlash(String chemin) {
     /* ex : \\\rep1\\rep2\\rep3 */
     /* res = rep1\\rep2\\re3 */
-
     String res = chemin;
     boolean ok = false;
     while (!ok) {
@@ -609,6 +606,18 @@ public class SiteDesignActionHandler {
   }
 
   private String doubleAntiSlash(String path) {
-    return path.replaceAll("\\\\", "\\\\\\\\");
+    StringBuilder res = new StringBuilder(path);
+    int k = 0;
+    for (int i = 0, j = 1; i < path.length(); i++, j++) {
+      if (path.charAt(i) == '\\') {
+        boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
+        boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
+        if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
+          res.insert(k+i, '\\');
+          k++;
+        }
+      }
+    }
+    return res.toString();
   }
 }

@@ -104,43 +104,20 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 
   /* doubleAntiSlash */
-  public String doubleAntiSlash(String chemin) {
-        int i = 0;
-        String res = chemin;
-        boolean ok = true;
-
-        while (ok) {
-          int j = i + 1;
-          if ((i < res.length()) && (j < res.length())) {
-              char car1 = res.charAt(i);
-              char car2 = res.charAt(j);
-
-              if ( (car1 == '\\' && car2 == '\\') ||
-                   (car1 != '\\' && car2 != '\\') ) {
-              }
-              else {
-                      String avant = res.substring(0, j);
-                      String apres = res.substring(j);
-                      if ( (apres.startsWith("\\\\")) ||
-                           (avant.endsWith("\\\\")) ) {
-                      }
-                      else {
-                          res = avant + '\\' + apres;
-                          i++;
-                      }
-              }
-          }
-          else {
-              if (i < res.length()) {
-                  char car = res.charAt(i);
-                  if (car == '\\')
-                      res = res + '\\';
-              }
-              ok = false;
-          }
-          i = i + 2;
+  public String doubleAntiSlash(String path) {
+    StringBuilder res = new StringBuilder(path);
+    int k = 0;
+    for (int i = 0, j = 1; i < path.length(); i++, j++) {
+      if (path.charAt(i) == '\\') {
+        boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
+        boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
+        if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
+          res.insert(k+i, '\\');
+          k++;
         }
-        return res;
+      }
+    }
+    return res.toString();
   }
 
   /* removeDoubleAntiSlash */
