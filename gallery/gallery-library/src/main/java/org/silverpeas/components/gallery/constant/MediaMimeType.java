@@ -128,6 +128,14 @@ public enum MediaMimeType {
   }
 
   /**
+   * Indicates if the mime type is one of handled media types.
+   * @return true if it is a handled one, false otherwise.
+   */
+  public boolean isSupportedMediaType() {
+    return ALL_VALIDS.contains(this);
+  }
+
+  /**
    * Indicates if the mime type is one of handled photo types.
    * @return true if it is a handled one, false otherwise.
    */

@@ -23,16 +23,16 @@
  */
 package org.silverpeas.components.gallery.web;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodePK;
-import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -213,7 +213,7 @@ public class GalleryResource extends AbstractGalleryResource {
   }
 
   /**
-   * Gets the provider data of a streamin from its url. If it doesn't exist, a 404 HTTP code is
+   * Gets the provider data of a streaming from its url. If it doesn't exist, a 404 HTTP code is
    * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
    * when
    * processing the request, a 503 HTTP code is returned.
