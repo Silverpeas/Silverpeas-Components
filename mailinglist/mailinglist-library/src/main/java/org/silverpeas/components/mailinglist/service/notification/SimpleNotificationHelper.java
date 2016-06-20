@@ -29,9 +29,9 @@ import org.silverpeas.core.notification.user.client.NotificationManagerException
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.calendar.service.CalendarRuntimeException;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
-import org.silverpeas.core.calendar.model.ToDoHeader;
+import org.silverpeas.core.personalorganizer.service.CalendarRuntimeException;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalGroupSubscriber;
