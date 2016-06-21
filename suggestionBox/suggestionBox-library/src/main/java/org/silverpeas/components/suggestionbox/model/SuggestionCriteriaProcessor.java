@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
 
 import java.util.List;
@@ -75,7 +75,7 @@ public interface SuggestionCriteriaProcessor {
    * @param creator the user concerned by the criterion.
    * @return the processor itself.
    */
-  SuggestionCriteriaProcessor processCreator(final UserDetail creator);
+  SuggestionCriteriaProcessor processCreator(final User creator);
 
   /**
    * Processes the criterion on suggestion status.

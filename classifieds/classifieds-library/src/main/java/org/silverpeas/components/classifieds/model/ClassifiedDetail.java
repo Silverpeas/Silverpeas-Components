@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.classifieds.model;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -193,8 +193,8 @@ public class ClassifiedDetail implements SilverpeasContent {
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(creatorId);
+  public User getCreator() {
+    return User.getById(creatorId);
   }
 
   @Override
@@ -221,7 +221,7 @@ public class ClassifiedDetail implements SilverpeasContent {
    * @return true if the user can access this classified, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

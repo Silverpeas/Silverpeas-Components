@@ -26,7 +26,7 @@ package com.silverpeas.mydb.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * Primary key for a MyDB database connection.

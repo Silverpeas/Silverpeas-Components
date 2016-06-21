@@ -50,6 +50,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -96,7 +97,7 @@
 
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
   PublicationDetail pubDetail = kmeliaPublication.getDetail();
-  UserDetail ownerDetail = kmeliaPublication.getCreator();
+  User ownerDetail = kmeliaPublication.getCreator();
   String pubName = pubDetail.getName(language);
   String resourceType = pubDetail.getContributionType();
   String id = pubDetail.getPK().getId();

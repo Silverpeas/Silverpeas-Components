@@ -32,9 +32,9 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.fieldType.DateField;
-import org.silverpeas.core.contribution.content.form.fieldType.JdbcRefField;
-import org.silverpeas.core.contribution.content.form.fieldType.TextField;
+import org.silverpeas.core.contribution.content.form.field.DateField;
+import org.silverpeas.core.contribution.content.form.field.JdbcRefField;
+import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
@@ -46,8 +46,8 @@ import com.silverpeas.mydb.data.db.DbTable;
 import com.silverpeas.mydb.data.db.DbUtil;
 import com.silverpeas.mydb.exception.MyDBException;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Database record form manager.

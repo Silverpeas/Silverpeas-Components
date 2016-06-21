@@ -23,21 +23,21 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ValidableContribution;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
-import org.silverpeas.core.contribution.rating.model.ContributionRating;
-import org.silverpeas.core.contribution.rating.model.Rateable;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -251,7 +251,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * @param user the aimed user.
    * @return true if the suggestion is publishable by the specified user, false otherwise.
    */
-  public boolean isPublishableBy(UserDetail user) {
+  public boolean isPublishableBy(User user) {
     return (getValidation().isInDraft() || getValidation().isRefused()) && (user.isAccessAdmin()
         || (getCreator().equals(user) && getSuggestionBox().getGreaterUserRole(user)
         .isGreaterThanOrEquals(SilverpeasRole.writer)));
@@ -291,7 +291,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * @return true if the user can access this suggestion, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

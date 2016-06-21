@@ -29,7 +29,7 @@ import com.silverpeas.mydb.data.db.DbColumn;
 import com.silverpeas.mydb.data.db.DbTable;
 import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 /**
  * Table foreign keys list.

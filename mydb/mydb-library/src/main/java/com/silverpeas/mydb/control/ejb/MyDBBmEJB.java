@@ -20,18 +20,16 @@
  */
 package com.silverpeas.mydb.control.ejb;
 
-import java.util.Collection;
+import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
+import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-
-import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
-import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
-
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import java.util.Collection;
 
 /**
  * MyDB EJB-tier controller of the MVC.

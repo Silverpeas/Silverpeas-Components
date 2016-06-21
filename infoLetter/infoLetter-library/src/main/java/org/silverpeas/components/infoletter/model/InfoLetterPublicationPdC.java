@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.infoletter.model;
 
+import org.silverpeas.components.infoletter.InfoLetterContentManager;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.components.infoletter.InfoLetterContentManager;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Date;
@@ -138,8 +138,8 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(this.getCreatorId());
+  public User getCreator() {
+    return User.getById(this.getCreatorId());
   }
 
   @Override
@@ -162,7 +162,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
    * @return true if the user can access this letter, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController =
         AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

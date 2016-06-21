@@ -25,6 +25,7 @@ package org.silverpeas.components.gallery;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -148,7 +149,7 @@ public abstract class BaseGalleryTest extends DataSetTest {
 
   @After
   public void tearDown() throws Exception {
-    CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
+    CacheServiceProvider.getSessionCacheService().put(User.CURRENT_REQUESTER_KEY, null);
   }
 
   protected OrganizationController getOrganisationControllerMock() {

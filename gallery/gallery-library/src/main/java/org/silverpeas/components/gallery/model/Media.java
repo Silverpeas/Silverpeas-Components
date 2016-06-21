@@ -23,26 +23,26 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.process.io.file.FileBasePath;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -65,10 +65,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   private Period visibilityPeriod = Period.UNDEFINED;
   private Date createDate;
   private String createdBy;
-  private UserDetail creator;
+  private User creator;
   private Date lastUpdateDate;
   private String lastUpdatedBy;
-  private UserDetail lastUpdater;
+  private User lastUpdater;
   private String silverpeasContentId;
   private String iconUrl;
 
@@ -179,10 +179,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   @Override
-  public UserDetail getCreator() {
+  public User getCreator() {
     if (StringUtil.isDefined(getCreatorId())) {
       if (creator == null || !getCreatorId().equals(creator.getId())) {
-        creator = UserDetail.getById(getCreatorId());
+        creator = User.getById(getCreatorId());
       }
     } else {
       creator = null;
@@ -190,7 +190,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     return creator;
   }
 
-  public void setCreator(UserDetail creator) {
+  public void setCreator(User creator) {
     this.creator = creator;
     setCreatorId((creator != null) ? creator.getId() : null);
   }
@@ -216,10 +216,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public UserDetail getLastUpdater() {
+  public User getLastUpdater() {
     if (StringUtil.isDefined(getLastUpdatedBy())) {
       if (lastUpdater == null || !getLastUpdatedBy().equals(lastUpdater.getId())) {
-        lastUpdater = UserDetail.getById(getLastUpdatedBy());
+        lastUpdater = User.getById(getLastUpdatedBy());
       }
     } else {
       setLastUpdater(getCreator());
@@ -227,7 +227,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     return lastUpdater;
   }
 
-  public void setLastUpdater(UserDetail lastUpdater) {
+  public void setLastUpdater(User lastUpdater) {
     this.lastUpdater = lastUpdater;
     setLastUpdatedBy((lastUpdater != null) ? lastUpdater.getId() : null);
   }
@@ -245,7 +245,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
@@ -506,10 +506,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
    * @param user the current user detail
    * @return the greatest user role
    */
-  protected SilverpeasRole getGreatestUserRole(final UserDetail user) {
+  protected SilverpeasRole getGreatestUserRole(final User user) {
     Set<SilverpeasRole> userRoles =
         SilverpeasRole.from(OrganizationControllerProvider.getOrganisationController()
             .getUserProfiles(user.getId(), getComponentInstanceId()));
-    return SilverpeasRole.getGreaterFrom(userRoles);
+    return SilverpeasRole.getGreatestFrom(userRoles);
   }
 }

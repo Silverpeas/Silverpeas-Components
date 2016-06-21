@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 
@@ -150,7 +150,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    * @param user the aimed user.
    * @return a {@link SilverpeasRole} instance.
    */
-  public SilverpeasRole getGreaterUserRole(UserDetail user) {
+  public SilverpeasRole getGreaterUserRole(User user) {
     String[] profiles = OrganizationControllerProvider.getOrganisationController()
         .getUserProfiles(user.getId(), getComponentInstanceId());
     Set<SilverpeasRole> userRoles = SilverpeasRole.from(profiles);

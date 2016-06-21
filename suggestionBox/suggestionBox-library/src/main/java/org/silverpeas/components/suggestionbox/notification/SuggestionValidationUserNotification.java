@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -72,7 +72,7 @@ public class SuggestionValidationUserNotification extends AbstractSuggestionActi
   }
 
   @Override
-  protected UserDetail getSenderDetail() {
+  protected User getSenderDetail() {
     return getResource().getValidation().getValidator();
   }
 

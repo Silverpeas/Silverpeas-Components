@@ -20,10 +20,6 @@
  */
 package com.silverpeas.mydb.control;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.fieldType.DateField;
 import com.silverpeas.mydb.control.ejb.MyDBBm;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.date.DateFormatter;
@@ -41,17 +37,21 @@ import com.silverpeas.mydb.exception.MyDBException;
 import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
 import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
 import com.silverpeas.mydb.model.MyDBRuntimeException;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.field.DateField;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.persistence.PersistenceException;
 import org.silverpeas.mydb.control.DriverManager;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
 
 import java.math.BigDecimal;
 import java.sql.*;

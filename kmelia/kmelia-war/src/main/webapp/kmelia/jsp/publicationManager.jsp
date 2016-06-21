@@ -40,6 +40,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 
@@ -92,8 +93,8 @@
     SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
 
     KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
-    UserDetail ownerDetail = null;
-    UserDetail updater = null;
+    User ownerDetail = null;
+    User updater = null;
 
     PublicationDetail pubDetail = null;
 

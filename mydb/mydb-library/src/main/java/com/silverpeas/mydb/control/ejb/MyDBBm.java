@@ -27,7 +27,7 @@ import javax.ejb.Local;
 import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
 import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
 
-import com.stratelia.webactiv.persistence.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 
 /**
  * MyDB EJB-tier controller of the MVC.

@@ -26,6 +26,7 @@
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ page import="org.silverpeas.components.kmelia.model.TopicDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -66,7 +67,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   kmeliaScc.setSessionPublication(kmeliaPublication);
   pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
-  UserDetail ownerDetail = kmeliaPublication.getCreator();
+  User ownerDetail = kmeliaPublication.getCreator();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -113,7 +114,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   }
 
   if (userId != null && userId.length() > 0) {
-    UserDetail user = kmeliaScc.getUserDetail(userId);
+    User user = kmeliaScc.getUserDetail(userId);
 	if (user != null) {
 %>
 			</td>

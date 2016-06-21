@@ -23,20 +23,20 @@
  */
 package org.silverpeas.components.suggestionbox.common;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -76,11 +76,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionCollection#findInDraftFor
-   * (UserDetail)
+   * @see SuggestionCollection#findInDraftFor(User)
    */
   public List<SuggestionEntity> getSuggestionsInDraftFor(SuggestionBox suggestionBox,
-      UserDetail creator) {
+      User creator) {
     return asWebEntities(suggestionBox.getSuggestions().findInDraftFor(creator));
   }
 
@@ -89,11 +88,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionCollection#findOutOfDraftFor
-   * (UserDetail)
+   * @see SuggestionCollection#findOutOfDraftFor(User)
    */
   public List<SuggestionEntity> getSuggestionsOutOfDraftFor(SuggestionBox suggestionBox,
-      UserDetail creator) {
+      User creator) {
     return asWebEntities(suggestionBox.getSuggestions().findOutOfDraftFor(creator));
   }
 
@@ -102,11 +100,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionCollection#findPublishedFor
-   * (UserDetail)
+   * @see SuggestionCollection#findPublishedFor(User)
    */
   public List<SuggestionEntity> getPublishedSuggestionsFor(SuggestionBox suggestionBox,
-      UserDetail creator) {
+      User creator) {
     return asWebEntities(suggestionBox.getSuggestions().findPublishedFor(creator));
   }
 
@@ -116,10 +113,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the asked suggestion entities.
-   * @see SuggestionCollection#findAllProposedBy(UserDetail)
+   * @see SuggestionCollection#findAllProposedBy(User)
    */
   public List<SuggestionEntity> getAllSuggestionsProposedBy(SuggestionBox suggestionBox,
-      UserDetail creator) {
+      User creator) {
     return asWebEntities(suggestionBox.getSuggestions().findAllProposedBy(creator));
   }
 
@@ -178,9 +175,9 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param user the user that requests for all suggestions.
    * @return the asked suggestion entities.
-   * @see SuggestionCollection#findAllProposedBy(UserDetail)
+   * @see SuggestionCollection#findAllProposedBy(User)
    */
-  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, UserDetail user) {
+  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, User user) {
     Map<String, SuggestionEntity> uniqueSuggestionResult = new HashMap<String, SuggestionEntity>();
     // Suggestions proposed by the user
     for (SuggestionEntity entity : getAllSuggestionsProposedBy(suggestionBox, user)) {
@@ -222,7 +219,7 @@ public class SuggestionBoxWebServiceProvider {
    * @see SuggestionCollection#remove(Object)
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
-      UserDetail fromUser) {
+      User fromUser) {
     SilverpeasRole highestRole = getHighestUserRoleFrom(fromUser, suggestionBox);
     if (suggestion.isDefined() &&
         (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused() ||
@@ -253,7 +250,7 @@ public class SuggestionBoxWebServiceProvider {
    * @see SuggestionCollection#publish(Suggestion)
    */
   public SuggestionEntity publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
-      UserDetail fromUser) {
+      User fromUser) {
     if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
         getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
@@ -286,10 +283,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param validationComment the comment associated to the approval.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see #validateSuggestion(SuggestionBox, Suggestion, ContributionStatus, String, UserDetail)
+   * @see #validateSuggestion(SuggestionBox, Suggestion, ContributionStatus, String, User)
    */
   public SuggestionEntity approveSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
-      String validationComment, UserDetail fromUser) {
+      String validationComment, User fromUser) {
     return validateSuggestion(suggestionBox, suggestion, ContributionStatus.VALIDATED,
         validationComment, fromUser);
   }
@@ -301,10 +298,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param validationComment the comment associated to the refusal.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see #validateSuggestion(SuggestionBox, Suggestion, ContributionStatus, String, UserDetail)
+   * @see #validateSuggestion(SuggestionBox, Suggestion, ContributionStatus, String, User)
    */
   public SuggestionEntity refuseSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
-      String validationComment, UserDetail fromUser) {
+      String validationComment, User fromUser) {
     return validateSuggestion(suggestionBox, suggestion, ContributionStatus.REFUSED,
         validationComment, fromUser);
   }
@@ -321,7 +318,7 @@ public class SuggestionBoxWebServiceProvider {
    * ContributionValidation)
    */
   private SuggestionEntity validateSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
-      ContributionStatus newStatus, String validationComment, UserDetail fromUser) {
+      ContributionStatus newStatus, String validationComment, User fromUser) {
     if (suggestion.isDefined() && suggestion.getValidation().isPendingValidation()) {
       checkAdminAccessOrUserIsModerator(fromUser, suggestionBox);
       UserPreferences userPreferences = fromUser.getUserPreferences();
@@ -367,7 +364,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param user the user to verify.
    * @param suggestion the suggestion to check.
    */
-  public static void checkAdminAccessOrUserIsCreator(UserDetail user, Suggestion suggestion) {
+  public static void checkAdminAccessOrUserIsCreator(User user, Suggestion suggestion) {
     assertSuggestionIsDefined(suggestion);
     if (!user.isAccessAdmin() && !user.equals(suggestion.getCreator())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -379,7 +376,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param user the user to verify.
    * @param suggestion the suggestion to check.
    */
-  public static void checkAdminAccessOrAdminRoleOrUserIsCreator(UserDetail user,
+  public static void checkAdminAccessOrAdminRoleOrUserIsCreator(User user,
       Suggestion suggestion) {
     assertSuggestionIsDefined(suggestion);
     if (!user.isAccessAdmin() && !user.equals(suggestion.getCreator())) {
@@ -395,7 +392,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param user the user to verify.
    * @param suggestionBox the suggestion box the user is working on.
    */
-  public static void checkAdminAccessOrUserIsModerator(UserDetail user,
+  public static void checkAdminAccessOrUserIsModerator(User user,
       SuggestionBox suggestionBox) {
     SilverpeasRole highestRole = getHighestUserRoleFrom(user, suggestionBox);
     if (!user.isAccessAdmin() && !MODERATOR_ROLES.contains(highestRole)) {
@@ -410,7 +407,7 @@ public class SuggestionBoxWebServiceProvider {
    * @return a {@link SilverpeasRole} that represents the highest role the user has on the
    * suggestion box.
    */
-  private static SilverpeasRole getHighestUserRoleFrom(UserDetail user,
+  private static SilverpeasRole getHighestUserRoleFrom(User user,
       SuggestionBox suggestionBox) {
     return SilverpeasRole.getGreatestFrom(SilverpeasRole.from(OrganizationController.get()
             .getUserProfiles(user.getId(), suggestionBox.getComponentInstanceId())));

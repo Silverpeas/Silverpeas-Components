@@ -24,7 +24,7 @@
 
 package com.silverpeas.mydb.model;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 
 /**
  * Description of a connection to a database.

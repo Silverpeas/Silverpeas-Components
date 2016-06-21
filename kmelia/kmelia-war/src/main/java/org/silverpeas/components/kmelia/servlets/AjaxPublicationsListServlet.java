@@ -38,7 +38,7 @@ import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -325,7 +325,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (pub.haveGotClone() && !pub.isClone()) {
           pubOrClone = kmeliaScc.getPublicationDetail(pub.getCloneId());
         }
-        UserDetail currentUser = aPub.getCreator();
+        User currentUser = aPub.getCreator();
 
         String pubColor = "";
         String pubState = null;
@@ -880,10 +880,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String getUserName(KmeliaPublication userPub, KmeliaSessionController kmeliaScc) {
-    UserDetail currentUser = userPub.getCreator(); // contains creator
+    User currentUser = userPub.getCreator(); // contains creator
     PublicationDetail pub = userPub.getDetail();
     String updaterId = pub.getUpdaterId();
-    UserDetail updater = null;
+    User updater = null;
     if (updaterId != null && updaterId.length() > 0) {
       updater = kmeliaScc.getUserDetail(updaterId);
     }

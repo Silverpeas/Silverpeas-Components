@@ -23,25 +23,6 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.core.contribution.converter.HTMLConverter;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.RenderingContext;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
-import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextAElement;
@@ -52,19 +33,38 @@ import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RenderingContext;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.HTMLConverter;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
 import java.util.Calendar;
@@ -72,12 +72,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
-import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
 import static org.silverpeas.components.kmelia.export.DocumentTemplateParts.*;
 import static org.silverpeas.components.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
 import static org.silverpeas.components.kmelia.export.ODTDocumentsMerging.atSection;
 import static org.silverpeas.components.kmelia.export.ODTDocumentsMerging.decorates;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
 import static org.silverpeas.core.util.DateUtil.formatDate;
 import static org.silverpeas.core.util.DateUtil.getOutputDate;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -91,7 +91,7 @@ public class ODTDocumentBuilder {
   private static final String DOCUMENT_TEMPLATE = "kmelia.export.template";
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
-  private UserDetail user;
+  private User user;
   private String language = "";
   private String topicIdToConsider;
   private LocalizationBundle messages;
@@ -111,7 +111,7 @@ public class ODTDocumentBuilder {
    * @param user the user for which the build of the documents should be done.
    * @return itself.
    */
-  public ODTDocumentBuilder forUser(final UserDetail user) {
+  public ODTDocumentBuilder forUser(final User user) {
     this.user = user;
     return this;
   }
@@ -485,7 +485,7 @@ public class ODTDocumentBuilder {
     return this.language;
   }
 
-  private UserDetail getUser() {
+  private User getUser() {
     return this.user;
   }
 

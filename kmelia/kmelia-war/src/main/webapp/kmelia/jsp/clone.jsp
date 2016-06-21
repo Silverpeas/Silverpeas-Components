@@ -43,6 +43,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.exception.SilverpeasException" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <%
 	SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.publication.publicationSettings");
@@ -64,7 +65,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	CompletePublication 		pubComplete 	= kmeliaPublication.getCompleteDetail();
 	PublicationDetail 			pubDetail 		= pubComplete.getPublicationDetail();
-	UserDetail 					ownerDetail 	= kmeliaPublication.getCreator();
+	User ownerDetail 	= kmeliaPublication.getCreator();
 	String						pubName			= pubDetail.getName();
 	String 						id 				= pubDetail.getPK().getId();
 

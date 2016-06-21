@@ -25,7 +25,6 @@
 --%>
 
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
@@ -35,13 +34,14 @@
 <%@ page import="java.text.NumberFormat"%>
 <%@ page import="java.util.Collection "%>
 <%@ page import="java.util.Iterator"%>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%!
 String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaScc)
 {
-	UserDetail			user		= kmeliaPub.getCreator(); //contains creator
+	User user		= kmeliaPub.getCreator(); //contains creator
 	PublicationDetail	pub			= kmeliaPub.getDetail();
 	String 				updaterId	= pub.getUpdaterId();
-	UserDetail			updater		= null;
+	User			updater		= null;
 	if (updaterId != null && updaterId.length()>0)
 		updater = kmeliaScc.getUserDetail(updaterId);
 	if (updater == null)
@@ -60,7 +60,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 
     PublicationDetail 	pub;
     KmeliaPublication 	kmeliaPub;
-    UserDetail 			user;
+    User 			user;
    	String				language = kmeliaScc.getCurrentLanguage();
 
     Iterator iterator = pubs.iterator();
@@ -131,7 +131,7 @@ out.println("</table>");
 void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, MultiSilverpeasBundle resources, JspWriter out) throws IOException, java.text.ParseException {
 
     NumberFormat				percent		= NumberFormat.getPercentInstance();
-	UserDetail					user		= null;
+	User					user		= null;
 
       out.println("<!-- Publications Header -->");
           out.println("<table width=\"98%\" align=center border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");

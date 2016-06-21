@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 import javax.persistence.Transient;
 import java.util.Date;
@@ -147,7 +147,7 @@ public class FormInstance implements SilverpeasContent {
   }
 
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     return false;
   }
 
@@ -236,12 +236,12 @@ public class FormInstance implements SilverpeasContent {
     return !isValidated() && !isDenied() && !isArchived();
   }
 
-  public UserDetail getCreator() {
-    return UserDetail.getById(getCreatorId());
+  public User getCreator() {
+    return User.getById(getCreatorId());
   }
 
-  public UserDetail getValidator() {
-    return UserDetail.getById(getValidatorId());
+  public User getValidator() {
+    return User.getById(getValidatorId());
   }
 
   public FormPK getFormPK() {

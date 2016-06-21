@@ -34,6 +34,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -45,7 +46,7 @@ String nextAction 		= "";
 String screenMessage 	= "";
   
 KmeliaPublication kmeliaPublication = null;
-UserDetail ownerDetail = null;
+User ownerDetail = null;
 
 CompletePublication pubComplete = null;
 PublicationDetail pubDetail = null;

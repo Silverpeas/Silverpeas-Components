@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.suggestionbox;
 
-import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.user.model.User;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -42,7 +42,7 @@ public class SuggestionBoxInstancePostConstruction implements ComponentInstanceP
   @Override
   public void postConstruct(final String componentInstanceId) {
     SuggestionBox newBox = new SuggestionBox(componentInstanceId);
-    newBox.setCreatedBy(UserDetail.getCurrentRequester().getId());
+    newBox.setCreatedBy(User.getCurrentRequester().getId());
     SuggestionBoxService.get().saveSuggestionBox(newBox);
   }
 }

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Class that permits to set suggestion search criteria for suggestion box application.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @Vetoed
 public class SuggestionCriteria {
@@ -92,7 +92,7 @@ public class SuggestionCriteria {
   }
 
   private SuggestionBox suggestionBox;
-  private UserDetail creator;
+  private User creator;
   private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
   private final List<JOIN_DATA_APPLY> joinDataApplyList = new ArrayList<JOIN_DATA_APPLY>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
@@ -120,7 +120,7 @@ public class SuggestionCriteria {
    * @param user the user that must be the creator of the suggestion(s).
    * @return the suggestion criteria itself with the new criterion on the suggestion creator.
    */
-  public SuggestionCriteria createdBy(UserDetail user) {
+  public SuggestionCriteria createdBy(User user) {
     this.creator = user;
     return this;
   }
@@ -198,10 +198,10 @@ public class SuggestionCriteria {
 
   /**
    * Gets the creator criteria value.
-   * {@link #createdBy(UserDetail)}
+   * {@link #createdBy(User)}
    * @return the criterion on the creator of the suggestions.
    */
-  private UserDetail getCreator() {
+  private User getCreator() {
     return creator;
   }
 
