@@ -35,6 +35,7 @@ import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.webapi.node.NodeType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -203,7 +204,7 @@ public class FolderResource extends RESTWebService {
     String parentNodeId = getNodeIdFromURI(path);
     NodePK nodePK = getNodePK(parentNodeId);
 
-    String nodeName = nodeEntity.getData();
+    String nodeName = nodeEntity.getText();
     if (StringUtils.isEmpty(nodeName)) {
       throw new WebApplicationException(Status.NO_CONTENT);
     }
@@ -245,8 +246,8 @@ public class FolderResource extends RESTWebService {
   }
 
   private void decorateRoot(NodeEntity root, String lang) {
-    root.setState("open");
-    root.getAttr().setRel("root");
+    root.getState().setOpened(true);
+    root.setType(NodeType.ROOT);
     decorateRootChildren(root.getChildren(), lang);
   }
 
@@ -256,14 +257,14 @@ public class FolderResource extends RESTWebService {
         ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaBundle", lang);
     for (NodeEntity child : children) {
       if (child.getAttr().getId().equalsIgnoreCase("tovalidate")) {
-        child.getAttr().setRel("tovalidate");
-        child.setState("");
-        child.setData(Encode.forHtml(messages.getString("ToValidateShort")));
+        child.setType(NodeType.TO_VALIDATE);
+        child.getState().opened(false).setSelected(false);
+        child.setText(Encode.forHtml(messages.getString("ToValidateShort")));
         child.getAttr().setDescription(messages.getString("kmelia.tovalidate.desc"));
       } else if (child.getAttr().getId().equalsIgnoreCase("1")) {
-        child.getAttr().setRel("bin");
-        child.setState("");
-        child.setData(Encode.forHtml(messages.getString("kmelia.basket")));
+        child.setType(NodeType.BIN);
+        child.getState().opened(false).setSelected(false);
+        child.setText(Encode.forHtml(messages.getString("kmelia.basket")));
         child.getAttr().setDescription(messages.getString("kmelia.basket.desc"));
       }
     }
@@ -305,7 +306,7 @@ public class FolderResource extends RESTWebService {
   private void setOpenState(NodeEntity[] children, List<NodeDetail> path) {
     for (NodeEntity child : children) {
       if (isInPath(child, path)) {
-        child.setState("open");
+        child.getState().setOpened(true);
         setOpenState(child.getChildren(), path);
       }
     }
