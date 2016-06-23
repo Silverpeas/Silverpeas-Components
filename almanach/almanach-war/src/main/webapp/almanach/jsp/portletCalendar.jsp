@@ -48,7 +48,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
-    <script type="text/javascript" src="<c:url value='/util/javaScript/date.js'/>"></script>
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       function viewEvent( id, date, componentId )

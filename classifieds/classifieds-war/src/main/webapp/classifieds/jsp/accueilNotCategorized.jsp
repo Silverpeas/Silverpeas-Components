@@ -72,7 +72,7 @@ function sendData() {
 
 function viewClassifieds(fieldNumber, fieldValue) {
 	var id = $("#searchForm select").get(fieldNumber).id;
-	$("#searchForm #"+id+" option[value='"+fieldValue+"']").attr('selected','selected');
+	$("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected', true);
 	sendData();
 }
 </script>
