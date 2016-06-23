@@ -21,6 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#navigation {
+  background-color:#EAEAEA;
+  padding: 5px;
+  width:99%;
+  min-height:24px;
+  position:relative;
+}
 
 .titrePanier {
   margin: 3px;

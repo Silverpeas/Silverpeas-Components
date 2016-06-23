@@ -377,7 +377,7 @@
   function __buildDialogContainer($sliderContainer) {
     var $base = $("#slideshow");
     var $fullscreenSwitcher = $("#slideshow_fullscreenSwitcher");
-    if ($base.size() == 0) {
+    if ($base.length == 0) {
       $base = $("<div>").attr('id', 'slideshow').css('display', 'block').css('border',
           '0px').css('padding', '0px').css('margin', '0px auto').css('text-align',
           'center').css('background-color', 'white');

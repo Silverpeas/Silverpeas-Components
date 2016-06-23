@@ -71,37 +71,30 @@
        
         var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
         var slotCount = 0;
-        var now = new Date();
-        var nextday = new Date();
-        nextday.setDate(nextday.getDate() + 1);
-        
-        function inTwoDigits( t )
-        {
-          if (t < 10) t = "0" + t;
-          return t;
-        }
+        var now = moment();
+        var nextday = now.add(1, 'days');
         
         function computeIdFrom( date )
         {
-          var year = date.getFullYear(), month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
-          return year + "-" + month + "-" + day;
+          //var year = date.year(), month = inTwoDigits(date.month()+1), day = inTwoDigits(date.date());
+          return date.format('YYYY-MM-DD'); //year + "-" + month + "-" + day;
         }
-        
+
         function formatDate( date )
         {
-          var year = date.getFullYear(), month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
-          return year + "/" + month + "/" + day;
+          //var year = date.year(), month = inTwoDigits(date.month()+1), day = inTwoDigits(date.date());
+          return date.format('YYYY/MM/DD'); //year + "/" + month + "/" + day;
         }
         
         function areDateEquals( date1, date2 ) {        	
-          return date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() && date1.getDate() == date2.getDate();
+          return date1.isSame(date2);
         }
         
         function startTimeOf( event ) {
           if (event.startTimeDefined)
           {
-            var hours = inTwoDigits(startDate.getHours()), minutes = inTwoDigits(startDate.getMinutes());
-            var startTime =  " <fmt:message key='GML.at'/> " + hours + ":" + minutes;
+            //var hours = inTwoDigits(startDate.getHours()), minutes = inTwoDigits(startDate.getMinutes());
+            var startTime =  " <fmt:message key='GML.at'/> " + startDate.format('HH:mm'); // hours + ":" + minutes;
             return $("<span>").addClass("eventBeginHours").html(startTime);
           }
           return "";
@@ -121,7 +114,7 @@
       
         function shortFormatOf( date )
         {
-          var month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
+          var month = date.format('MM'), day = date.format('DD');
           return $("<div>").addClass("eventShortDate").
             append($("<span>").addClass("number").append(day)).
             append("/").
@@ -136,10 +129,10 @@
             return $("<div>").addClass("eventLongDate").append(TOMORROW);
           else
             return $("<div>").addClass("eventLongDate").
-              append($("<span>").addClass("day").html(DAY_NAMES[date.getDay()] + " ")).
-              append($("<span>").addClass("number").html(inTwoDigits(date.getDate()) + " ")).
-              append($("<span>").addClass("month").html(MONTH_NAMES[date.getMonth()] + " ")).
-              append($("<span>").addClass("year").html(date.getFullYear()));
+              append($("<span>").addClass("day").html(DAY_NAMES[date.day()] + " ")).
+              append($("<span>").addClass("number").html(date.format('DD') + " ")).
+              append($("<span>").addClass("month").html(MONTH_NAMES[date.month()] + " ")).
+              append($("<span>").addClass("year").html(date.format('YYYY')));
         }
         
         function daySlotOf( event )
@@ -164,8 +157,9 @@
         for (var i = 0; i < events.length && slotCount < SLOTS_MAX; i++) {
           var event = events[i];
           var eventCss = event.className.join(' ');
-          var startDate = $.fullCalendar.parseDate(event.start);
-          if (Date.today().compareTo(startDate) == 1) {
+          var startDate = moment(event.start);
+
+          if (now.isAfter(startDate)) {
             startDate = now;
           }
           

@@ -166,7 +166,7 @@
       weeklyView : ${viewContext.viewType.weeklyView},
       language : '${language}',
       objectView : '${objectView}',
-      currentDay : new Date().setDay(${refDay.year}, ${refDay.month}, ${refDay.dayOfMonth}),
+      currentDay : moment({'year': ${refDay.year}, 'month': ${refDay.month}, 'date': ${refDay.dayOfMonth}}),
       planningOfUser : ${not empty viewContext.selectedUserId}
     };
 

@@ -161,37 +161,23 @@
          * Formats the specified date into a string according the pattern 'yyyy/MM/dd'.
          */
         function formatDate(date) {
-          var year = date.getFullYear(), month = date.getMonth()+1, day = date.getDate();
-          if (month < 10) month = "0" + month;
-          if (day < 10) day = "0" + day;
-          return year + "/" + month + "/" + day;
+          return date.format('YYYY/MM/DD');
         }
 
         function formatToLocaleDateString(date, lang) {
-          var year = date.getFullYear(), month = date.getMonth()+1, day = date.getDate();
-          if (month < 10) month = "0" + month;
-          if (day < 10) day = "0" + day;
-          var sep = getDateSeparator(lang);
-          if (lang === "en") {
-            return month + sep + day + sep + year;
-          }
-          return day + sep + month + sep + year;
+          return date.locale(lang).format('L');
         }
 
         /**
          * Formats the specified date and time into a string according the patterm 'HH:mm'.
          */
         function formatTime(time) {
-          var hours = time.getHours(), minutes = time.getMinutes();
-          if (hours < 10) hours = "0" + hours;
-          if (minutes < 10) minutes = "0" + minutes;
-          return hours + ":" + minutes;
+          return time.format('HH:mm');
         }
 
         function updateDate(dateTimeToUpdate, withDate) {
-          dateTimeToUpdate.setYear(withDate.getYear());
-          dateTimeToUpdate.setMonth(withDate.getMonth());
-          dateTimeToUpdate.setDate(withDate.getDate())
+          dateTimeToUpdate.set({'year': withDate.year(), 'month': withDate.month(),
+            'date': withDate.date()});
         }
 
         /**
@@ -226,19 +212,19 @@
          * The months and built by browsing the events and are remembered for month selection.
          */
         function buildCalendarView( events, monthsHavingEvents ) {
-          var currentMonth = -1, currentYear = -1, monthSection = null, today = new Date();
+          var currentMonth = -1, currentYear = -1, monthSection = null, today = moment();
           $("#calendar").children().remove();
           $("<ul>").attr("id", "eventList").appendTo("#calendar");
           $.each(events, function(index, event) {
-            var eventStartDate = $.fullCalendar.parseDate(event.start);
-            var startDate = $.fullCalendar.parseDate(event.start);
-            var endDate = $.fullCalendar.parseDate(event.end);
+            var eventStartDate = $.fullCalendar.moment(event.start);
+            var startDate = $.fullCalendar.moment(event.start);
+            var endDate = $.fullCalendar.moment(event.end);
       <c:if test="${calendarView.viewType.nextEventsView}">
-            if (startDate < today) startDate.setDate(today.getDate());
+            if (startDate.isBefore(today)) startDate.date(today.date());
       </c:if>
-            if (startDate.getMonth() != currentMonth || startDate.getFullYear() != currentYear) {
-              currentYear = startDate.getFullYear();
-              currentMonth = startDate.getMonth();
+            if (startDate.month() != currentMonth || startDate.year() != currentYear) {
+              currentYear = startDate.year();
+              currentMonth = startDate.month();
               monthSection = $("<ul>").addClass("eventList")
               .appendTo($("<li>").attr("id", MONTH_NAMES[currentMonth] + currentYear)
               .append($("<h3>").addClass("eventMonth").html(MONTH_NAMES[currentMonth] + ' ' + currentYear))
@@ -246,10 +232,10 @@
               monthsHavingEvents.push(MONTH_NAMES[currentMonth] + ' ' + currentYear);
             }
             var startTime = "", endTime = "";
-            if (eventStartDate.valueOf() == endDate.valueOf() && event.startTimeDefined && event.endTimeDefined) {
+            if (eventStartDate.isSame(endDate) && event.startTimeDefined && event.endTimeDefined) {
               startTime = "<fmt:message key='GML.at'/> " + formatTime(startDate);
             } else {
-              if (eventStartDate < startDate) {
+              if (eventStartDate.isBefore(startDate)) {
                 startTime = "<fmt:message key='GML.From'/> " + formatToLocaleDateString(eventStartDate, '${language}');
               }
               if (event.startTimeDefined) {
@@ -260,8 +246,7 @@
                 }
                 startTime = startTime + formatTime(startDate);
               }
-              if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
-                endDate.getDate() > startDate.getDate()) {
+              if (endDate.isAfter(startDate)) {
                 endTime = "<fmt:message key='GML.to'/> " + formatToLocaleDateString(endDate, '${language}');
               }
               if (event.endTimeDefined) {
@@ -272,10 +257,10 @@
               viewEvent(event.id, formatDate(eventStartDate), event.instanceId);
             })
             .append($("<div>").addClass("eventBeginDate")
-            .append($("<span>").addClass("day").html(DAY_NAMES[startDate.getDay()]))
-            .append($("<span>").addClass("number").html(startDate.getDate()))
+            .append($("<span>").addClass("day").html(DAY_NAMES[startDate.day()]))
+            .append($("<span>").addClass("number").html(startDate.format('DD')))
             .append($("<span>").addClass("month").html(MONTH_NAMES[currentMonth]))
-            .append($("<span>").addClass("year").html(startDate.getFullYear())))
+            .append($("<span>").addClass("year").html(startDate.format('YYYY'))))
             .append($("<h2>").addClass("eventName")
             .append($("<a>").addClass(event.className.join(' ')).attr({
               "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
