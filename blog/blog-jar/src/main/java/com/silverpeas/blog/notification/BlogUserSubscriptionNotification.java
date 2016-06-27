@@ -40,52 +40,30 @@ import java.util.Collection;
  * The centralization of the construction of the blog notifications
  * @author Yohann Chastagnier
  */
-public class BlogUserNotification extends AbstractTemplateUserNotificationBuilder<PostDetail>
+public class BlogUserSubscriptionNotification extends AbstractBlogUserNotification
     implements UserSubscriptionNotificationBehavior {
 
-  private final UserDetail userDetail;
-  private final String componentInstanceId;
-  private final Comment comment;
   private final String fileName;
   private final NotifAction action;
-  private final String senderId;
   private final Collection<String> newSubscribers;
+  private final Comment comment;
 
-  public BlogUserNotification(final String componentInstanceId, final PostDetail postDetail,
-      final UserDetail userDetail) {
-    this(componentInstanceId, postDetail, null, null, userDetail.getId(), null, userDetail);
-  }
-
-  public BlogUserNotification(final String componentInstanceId, final PostDetail postDetail, final Comment comment,
+  public BlogUserSubscriptionNotification(final PostDetail postDetail, final Comment comment,
       final String type, final String senderId, final Collection<String> newSubscribers) {
-    this(componentInstanceId, postDetail, comment, type, senderId, newSubscribers, null);
-  }
-
-  private BlogUserNotification(final String componentInstanceId, final PostDetail postDetail, final Comment comment,
-      final String type, final String senderId, final Collection<String> newSubscribers, final UserDetail userDetail) {
-    super(postDetail, null, null);
-    this.componentInstanceId = componentInstanceId;
-    this.comment = comment;
+    super(postDetail, UserDetail.getById(senderId));
     if ("create".equals(type)) {
       fileName = "blogNotificationSubscriptionCreate";
       action = NotifAction.CREATE;
-    } else if ("update".equals(type)) {
+    } else {
       fileName = "blogNotificationSubscriptionUpdate";
       action = NotifAction.UPDATE;
-    } else {
-      fileName = "blogNotification";
-      action = NotifAction.REPORT;
     }
-    this.senderId = senderId;
     this.newSubscribers = newSubscribers;
-    this.userDetail = userDetail;
+    this.comment = comment;
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    if (action.equals(NotifAction.REPORT)) {
-      return "blog.notifSubject";
-    }
     return "blog.subjectSubscription";
   }
 
@@ -100,47 +78,20 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   }
 
   @Override
-  protected boolean stopWhenNoUserToNotify() {
-    return !NotifAction.REPORT.equals(action);
-  }
-
-  @Override
-  protected void perform(final PostDetail resource) {
-    super.perform(resource);
-    getNotificationMetaData().displayReceiversInFooter();
-  }
-
-  @Override
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
-    template.setAttribute("blog", resource);
-    template.setAttribute("blogName", resource.getPublication().getName(language));
-    template.setAttribute("blogDate", DateUtil.getOutputDate(resource.getDateEvent(), language));
+    super.performTemplateData(language, resource, template);
     template.setAttribute("comment", comment);
     String commentMessage = null;
     if (comment != null) {
       commentMessage = comment.getMessage();
     }
     template.setAttribute("commentMessage", commentMessage);
-    final Category categorie = resource.getCategory();
-    String categorieName = null;
-    if (categorie != null) {
-      categorieName = categorie.getName(language);
-    }
-    template.setAttribute("blogCategorie", categorieName);
-    template.setAttribute("senderName", (userDetail != null ? userDetail.getDisplayedName() : ""));
   }
 
   @Override
-  protected void performNotificationResource(final String language, final PostDetail resource,
-      final NotificationResourceData notificationResourceData) {
-    notificationResourceData.setResourceName(resource.getPublication().getName(language));
-  }
-
-  @Override
-  protected String getTemplatePath() {
-    return "blog";
+  protected boolean stopWhenNoUserToNotify() {
+    return true;
   }
 
   @Override
@@ -148,23 +99,4 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
     return action;
   }
 
-  @Override
-  protected String getComponentInstanceId() {
-    return componentInstanceId;
-  }
-
-  @Override
-  protected String getSender() {
-    return senderId;
-  }
-
-  @Override
-  protected String getMultilangPropertyFile() {
-    return "org.silverpeas.blog.multilang.blogBundle";
-  }
-
-  @Override
-  protected String getContributionAccessLinkLabelBundleKey() {
-    return "blog.notifPostLinkLabel";
-  }
 }

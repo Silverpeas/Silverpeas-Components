@@ -29,7 +29,7 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.blog.notification.BlogUserNotification;
+import com.silverpeas.blog.notification.BlogUserSubscriptionNotification;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
@@ -218,9 +218,8 @@ public class DefaultBlogService implements BlogService {
       }
 
       if (!newSubscribers.isEmpty()) {
-        UserNotificationHelper.buildAndSend(new BlogUserNotification(fatherPK.getInstanceId(),
-            post, comment, type,
-            senderId, newSubscribers));
+        UserNotificationHelper.buildAndSend(
+            new BlogUserSubscriptionNotification(post, comment, type, senderId, newSubscribers));
       }
     }
   }
