@@ -23,18 +23,6 @@
  */
 package org.silverpeas.components.blog.control;
 
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.blog.access.BlogPostWriteAccessControl;
@@ -42,32 +30,44 @@ import org.silverpeas.components.blog.model.Archive;
 import org.silverpeas.components.blog.model.BlogRuntimeException;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.components.blog.notification.BlogUserNotification;
+import org.silverpeas.components.blog.notification.BlogUserAlertNotification;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.webapi.node.NodeEntity;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.webapi.node.NodeEntity;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -271,7 +271,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String postId) {
     return UserNotificationHelper
-        .build(new BlogUserNotification(getComponentId(), getPost(postId), getUserDetail()));
+        .build(new BlogUserAlertNotification(getPost(postId), getUserDetail()));
   }
 
   public synchronized void deletePost(String postId) {
