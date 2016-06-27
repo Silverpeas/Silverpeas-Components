@@ -80,7 +80,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
   <title></title>
   <view:looknfeel withCheckFormScript="true"/>
 <view:script src="/util/javaScript/browseBarComplete.js"/>
-<view:script src="/util/javaScript/jquery/jquery-migrate-1.4.1.min.js"/>
 <view:script src="/util/javaScript/jquery/jstree.min.js"/>
 <view:script src="/util/javaScript/jquery/jquery.cookie.js"/>
   <view:link href="/util/javaScript/jquery/themes/default/style.min.css"/>
