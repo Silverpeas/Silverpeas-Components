@@ -44,6 +44,8 @@
         <c:out value=".fc-event.${almanach.instanceId} { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
+    <!-- Modifier l'appel de la css dans le plugin -->
+    <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/fullcalendar-silverpeas.css'/>" />
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       <!--
