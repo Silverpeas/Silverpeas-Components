@@ -54,22 +54,25 @@ public class KmeliaCallBack implements CallBack {
   public void doInvoke(int action, int iParam, String componentId,
       Object extraParam) {
     SilverTrace.info("kmelia", "KmeliaCallback.doInvoke()", "root.MSG_GEN_ENTER_METHOD",
-        "action = " + action + ", iParam = " + iParam + ", componentId = " + componentId
-        + ", extraParam = " + extraParam.toString());
+        "action = " + action + ", iParam = " + iParam + ", componentId = " + componentId);
+
+    if (extraParam != null) {
+      SilverTrace.info("kmelia", "KmeliaCallback.doInvoke()", "root.MSG_GEN_PARAM_VALUE",
+          "extraParam = " + extraParam.toString());
+    }
 
     if (iParam == -1) {
       SilverTrace.info("kmelia", "KmeliaCallback.doInvoke()", "root.MSG_GEN_PARAM_VALUE",
-          "userId is null. Callback stopped ! action = " + action + ", componentId = "
-          + componentId + ", extraParam = " + extraParam.toString());
+          "userId is null. Callback stopped !");
       return;
     }
+
+    // extraction userId
+    String sUserId = Integer.toString(iParam);
 
     if (componentId != null && (componentId.startsWith("kmelia")
         || componentId.startsWith("toolbox") || componentId.startsWith("kmax"))) {
       try {
-        // extraction userId
-        String sUserId = Integer.toString(iParam);
-
         if (action == CallBackManager.ACTION_CUTANDPASTE) {
           if (extraParam instanceof PublicationPK) {
             PublicationPK pubPK = (PublicationPK) extraParam;
@@ -106,6 +109,10 @@ public class KmeliaCallBack implements CallBack {
         throw new KmeliaRuntimeException("KmeliaCallback.doInvoke()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
+    } else {
+      if (action == CallBackManager.ACTION_BEFORE_REMOVE_USER) {
+        getKmeliaBm().userHaveBeenDeleted(sUserId);
+      }
     }
   }
 
@@ -122,6 +129,7 @@ public class KmeliaCallBack implements CallBack {
     callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_ADD, this);
     callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_UPDATE, this);
     callBackManager.subscribeAction(CallBackManager.ACTION_CUTANDPASTE, this);
+    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_USER, this);
   }
 
   private boolean isPublicationModified(String pubId, int action) {
