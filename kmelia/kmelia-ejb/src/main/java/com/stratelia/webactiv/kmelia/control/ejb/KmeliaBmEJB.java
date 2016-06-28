@@ -4987,4 +4987,13 @@ public class KmeliaBmEJB implements KmeliaBm {
     return dateReminderService;
   }
 
+  @Override
+  public void userHaveBeenDeleted(String userId) {
+    List<PublicationDetail> publications = publicationBm.removeUserFromTargetValidators(userId);
+    SilverTrace
+        .info("kmelia", getClass().getSimpleName() + ".userHaveBeenDeleted()", "root.EX_NO_MESSAGE",
+            "User #" + userId + " have been removed from " + publications.size() +
+                " publications as target validator");
+  }
+
 }

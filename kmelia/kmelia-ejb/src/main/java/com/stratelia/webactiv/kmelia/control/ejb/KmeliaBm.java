@@ -731,4 +731,6 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
       String userId);
 
+  public void userHaveBeenDeleted(String userId);
+
 }
