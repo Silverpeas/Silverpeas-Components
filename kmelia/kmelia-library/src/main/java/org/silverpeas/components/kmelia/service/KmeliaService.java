@@ -677,4 +677,5 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile, String userId);
 
+  void userHaveBeenDeleted(String userId);
 }

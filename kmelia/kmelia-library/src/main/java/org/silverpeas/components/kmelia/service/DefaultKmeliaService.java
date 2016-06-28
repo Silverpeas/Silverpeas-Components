@@ -4656,4 +4656,13 @@ public class DefaultKmeliaService implements KmeliaService {
     return dateReminderService;
   }
 
+  @Override
+  public void userHaveBeenDeleted(String userId) {
+    List<PublicationDetail> publications =
+        publicationService.removeUserFromTargetValidators(userId);
+    SilverLogger.getLogger(this)
+        .info("User ''{0}'' have been removed from {1} publications as target validator", userId,
+            publications.size());
+  }
+
 }
