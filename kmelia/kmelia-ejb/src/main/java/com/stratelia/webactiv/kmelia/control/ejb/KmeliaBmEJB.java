@@ -51,6 +51,7 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
@@ -1268,6 +1269,17 @@ public class KmeliaBmEJB implements KmeliaBm {
           if (statusChanged) {
             // creates todos for publishers
             this.createTodosForPublication(pubDetail, false);
+          } else {
+            // alert new validators
+            String[] oldValidatorIds = old.getTargetValidatorIds();
+            String[] newValidatorIds = pubDetail.getTargetValidatorIds();
+            List<String> toAlert = new ArrayList<String>();
+            for (String newValidatorId : newValidatorIds) {
+              if (!ArrayUtil.contains(oldValidatorIds, newValidatorId)) {
+                toAlert.add(newValidatorId);
+              }
+            }
+            addTodoAndSendNotificationToValidators(pubDetail, toAlert);
           }
 
           updateSilverContentVisibility(pubDetail);
@@ -2280,6 +2292,23 @@ public class KmeliaBmEJB implements KmeliaBm {
     return allValidators;
   }
 
+  public void setValidators(PublicationPK pubPK, String userIds) {
+    PublicationDetail publication = getPublicationDetail(pubPK);
+
+    String[] validatorIds = StringUtil.split(userIds, ',');
+
+    if (!ArrayUtil.isEmpty(validatorIds)) {
+      // set new validators in database
+      publication.setTargetValidatorId(userIds);
+      publication.setStatusMustBeChecked(false);
+      publication.setIndexOperation(IndexManager.NONE);
+      publicationBm.setDetail(publication);
+
+      //notify them...
+      sendValidationAlert(publication, validatorIds);
+    }
+  }
+
   /**
    *
    * @param pubPK
@@ -3096,11 +3125,18 @@ public class KmeliaBmEJB implements KmeliaBm {
         publicationBm.removeValidationSteps(pubDetail.getPK());
       }
       List<String> validators = getAllValidators(pubDetail.getPK());
+      addTodoAndSendNotificationToValidators(pubDetail, validators);
+    }
+  }
+
+  private void addTodoAndSendNotificationToValidators(PublicationDetail pub,
+      List<String> validators) {
+    if (validators != null && !validators.isEmpty()) {
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
-      addTodo(pubDetail, users);
+      addTodo(pub, users);
       // Send a notification to alert admins and publishers
-      sendValidationAlert(pubDetail, users);
+      sendValidationAlert(pub, users);
     }
   }
 

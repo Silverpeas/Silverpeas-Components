@@ -358,6 +358,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
 
   public List<String> getAllValidators(PublicationPK pubPK);
 
+  public void setValidators(PublicationPK pubPK, String userIds);
+
   /**
    * @param pubPK id of the publication to validate. If publication is always visible, clone is
    * processed.
