@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.control;
 
-import org.silverpeas.core.cache.service.SimpleCacheService;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportExportDescriptor;
@@ -1408,7 +1408,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           fileName.substring(fileName.indexOf("/") + 1, fileName.indexOf("."));
       String registerId = getComponentId() + ":" + xmlFormShortName;
       final String sessionCacheKey = this.getClass().getName() + registerId;
-      SimpleCacheService sessionCache = getSessionCacheService().getCurrentSessionCache();
+      SimpleCache sessionCache = getSessionCacheService().getCache();
       if (sessionCache.get(sessionCacheKey) == null) {
         getPublicationTemplateManager().addDynamicPublicationTemplate(registerId, fileName);
         sessionCache.put(sessionCacheKey, registerId);

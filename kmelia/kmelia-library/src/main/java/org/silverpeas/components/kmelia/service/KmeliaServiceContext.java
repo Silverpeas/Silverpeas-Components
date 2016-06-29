@@ -39,7 +39,7 @@ class KmeliaServiceContext {
    */
   static void createdIntoRequestContext(final PublicationDetail publication) {
     String cacheKey = buildKey("publicationCreation", publication);
-    getRequestCacheService().put(cacheKey, Boolean.TRUE);
+    getRequestCacheService().getCache().put(cacheKey, Boolean.TRUE);
   }
 
   /**
@@ -49,7 +49,7 @@ class KmeliaServiceContext {
    */
   static boolean hasPublicationBeenCreatedFromRequestContext(PublicationDetail publication) {
     String cacheKey = buildKey("publicationCreation", publication);
-    return Boolean.TRUE == getRequestCacheService().get(cacheKey, Boolean.class);
+    return Boolean.TRUE == getRequestCacheService().getCache().get(cacheKey, Boolean.class);
   }
 
 
@@ -59,7 +59,7 @@ class KmeliaServiceContext {
    */
   static void updatedIntoRequestContext(final PublicationDetail publication) {
     String cacheKey = buildKey("publicationModification", publication);
-    getRequestCacheService().put(cacheKey, Boolean.TRUE);
+    getRequestCacheService().getCache().put(cacheKey, Boolean.TRUE);
   }
 
   /**
@@ -69,7 +69,7 @@ class KmeliaServiceContext {
    */
   static boolean hasPublicationBeenUpdatedFromRequestContext(PublicationDetail publication) {
     String cacheKey = buildKey("publicationModification", publication);
-    return Boolean.TRUE == getRequestCacheService().get(cacheKey, Boolean.class);
+    return Boolean.TRUE == getRequestCacheService().getCache().get(cacheKey, Boolean.class);
   }
 
   /**
