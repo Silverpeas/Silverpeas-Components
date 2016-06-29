@@ -27,9 +27,7 @@ import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -129,7 +127,6 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
     try {
 
       final UserDetail user = UserDetail.getById(userId);
-      CacheServiceProvider.getSessionCacheService().put(User.CURRENT_REQUESTER_KEY, user);
       final MediaDataCreateDelegate delegate =
           new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(), albumId);
       delegate.getHeaderData().setDownloadAuthorized(download);
