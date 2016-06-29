@@ -23,50 +23,50 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
+import org.apache.commons.io.FilenameUtils;
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.KmeliaConstants;
+import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.model.TopicSearch;
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.apache.commons.io.FilenameUtils;
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.webapi.rating.RaterRatingEntity;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.viewer.service.ViewerProvider;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
 import org.silverpeas.core.web.util.viewgenerator.html.board.Board;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
-import org.silverpeas.core.viewer.service.ViewerProvider;
+import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -83,9 +83,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author ehugonnet
@@ -287,6 +287,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     SettingBundle publicationSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
+    boolean targetValidationEnabled =
+        kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable();
 
     String language = kmeliaScc.getCurrentLanguage();
     String currentUserId = kmeliaScc.getUserDetail().getId();
@@ -346,6 +348,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 currentUserId.equals(currentUser.getId())) {
               pubColor = "red";
               pubState = resources.getString("kmelia.PubStateToValidate");
+              if (targetValidationEnabled) {
+                pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
+                    pub.getTargetValidatorNames());
+              }
             }
           } else {
             if (pub.isNotYetVisible()) {
@@ -388,6 +394,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 pubState = resources.getString("kmelia.PubStateUnvalidate");
               } else {
                 pubState = resources.getString("kmelia.PubStateToValidate");
+                if (targetValidationEnabled) {
+                  pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
+                      pub.getTargetValidatorNames());
+                }
               }
             }
           }
