@@ -160,16 +160,22 @@
   // display message according to current state of publication
   if (!StringUtil.isDefined(screenMessage)) {
     if (pubDetail.isRefused()) {
-	  screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
-	} else if (pubDetail.isValidationRequired()) {
-	  screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.publication.tovalidate.state");
-	  if (userCanValidate) {
-	    screenMessage += " " + resources.getString("kmelia.publication.tovalidate.action")+"<br/>";
-	    screenMessage += "<a href=\"javascript:onclick=pubValidate()\" class=\"button validate\"><span>"+resources.getString("PubValidate?")+"</span></a>";
-	    screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
-	  }
-	  screenMessage += "</div>";
-	}
+	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
+	  } else if (pubDetail.isValidationRequired()) {
+	    screenMessage = "<div class=\"inlineMessage\">";
+      if (StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+        String validatorNames = pubDetail.getTargetValidatorNames();
+        screenMessage += resources.getStringWithParam("kmelia.publication.tovalidate.state.by", validatorNames);
+      } else {
+        screenMessage += resources.getString("kmelia.publication.tovalidate.state");
+      }
+      if (userCanValidate) {
+        screenMessage += "<br/>" + resources.getString("kmelia.publication.tovalidate.action")+"<br/>";
+        screenMessage += "<a href=\"javascript:onclick=pubValidate()\" class=\"button validate\"><span>"+resources.getString("PubValidate?")+"</span></a>";
+        screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
+      }
+      screenMessage += "</div>";
+  	}
   }
 
   if (action.equals("ValidateView")) {
