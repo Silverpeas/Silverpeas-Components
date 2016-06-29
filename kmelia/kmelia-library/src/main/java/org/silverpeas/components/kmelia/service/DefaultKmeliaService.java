@@ -107,6 +107,7 @@ import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -1142,6 +1143,17 @@ public class DefaultKmeliaService implements KmeliaService {
           if (statusChanged) {
             // creates todos for publishers
             this.createTodosForPublication(pubDetail, false);
+          } else {
+            // alert new validators
+            String[] oldValidatorIds = old.getTargetValidatorIds();
+            String[] newValidatorIds = pubDetail.getTargetValidatorIds();
+            List<String> toAlert = new ArrayList<String>();
+            for (String newValidatorId : newValidatorIds) {
+              if (!ArrayUtil.contains(oldValidatorIds, newValidatorId)) {
+                toAlert.add(newValidatorId);
+              }
+            }
+            addTodoAndSendNotificationToValidators(pubDetail, toAlert);
           }
 
           updateSilverContentVisibility(pubDetail);
@@ -2064,6 +2076,23 @@ public class DefaultKmeliaService implements KmeliaService {
     return allValidators;
   }
 
+  public void setValidators(PublicationPK pubPK, String userIds) {
+    PublicationDetail publication = getPublicationDetail(pubPK);
+
+    String[] validatorIds = StringUtil.split(userIds, ',');
+
+    if (!ArrayUtil.isEmpty(validatorIds)) {
+      // set new validators in database
+      publication.setTargetValidatorId(userIds);
+      publication.setStatusMustBeChecked(false);
+      publication.setIndexOperation(IndexManager.NONE);
+      publicationService.setDetail(publication);
+
+      //notify them...
+      sendValidationAlert(publication, validatorIds);
+    }
+  }
+
   /**
    * @param pubPK
    * @param allValidators
@@ -2830,11 +2859,18 @@ public class DefaultKmeliaService implements KmeliaService {
         publicationService.removeValidationSteps(pubDetail.getPK());
       }
       List<String> validators = getAllValidators(pubDetail.getPK());
+      addTodoAndSendNotificationToValidators(pubDetail, validators);
+    }
+  }
+
+  private void addTodoAndSendNotificationToValidators(PublicationDetail pub,
+      List<String> validators) {
+    if (validators != null && !validators.isEmpty()) {
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
-      addTodo(pubDetail, users);
+      addTodo(pub, users);
       // Send a notification to alert admins and publishers
-      sendValidationAlert(pubDetail, users);
+      sendValidationAlert(pub, users);
     }
   }
 
