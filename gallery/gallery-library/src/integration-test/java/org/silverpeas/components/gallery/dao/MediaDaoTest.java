@@ -23,6 +23,13 @@
  */
 package org.silverpeas.components.gallery.dao;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.silverpeas.components.gallery.BaseGalleryTest;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -33,20 +40,13 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.apache.commons.lang3.time.DateUtils;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ITable;
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.test.rule.DbSetupRule.TableRow;
 import org.silverpeas.core.util.DateUtil;
 
@@ -58,10 +58,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
-import static org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
+import static org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY.*;
 import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 import static org.silverpeas.core.test.rule.DbSetupRule.getTableRowFor;
 
@@ -280,8 +280,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     assertThat(media.get(0).getId(), is("stream_2"));
 
     // Simulating a connected publisher user
-    CacheServiceProvider.getSessionCacheService()
-        .put(User.CURRENT_REQUESTER_KEY, publisherUser);
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(publisherUser);
 
     media = MediaDAO
         .findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
@@ -289,7 +289,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     assertMediaType(media, MediaType.Streaming, Streaming.class);
 
     // Simulating a connected writer user
-    CacheServiceProvider.getSessionCacheService().put(User.CURRENT_REQUESTER_KEY, writerUser);
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(writerUser);
 
     media = MediaDAO
         .findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
@@ -318,8 +319,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     assertThat(media.get(0).getId(), is("stream_2"));
 
     // Simulating a connected publisher user
-    CacheServiceProvider.getSessionCacheService()
-        .put(User.CURRENT_REQUESTER_KEY, publisherUser);
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(publisherUser);
 
     media = MediaDAO.findByCriteria(
         mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
@@ -358,15 +359,16 @@ public class MediaDaoTest extends BaseGalleryTest {
     assertThat(nbMedia, is(1L));
 
     // Simulating a connected publisher user
-    CacheServiceProvider.getSessionCacheService()
-        .put(User.CURRENT_REQUESTER_KEY, publisherUser);
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(publisherUser);
 
     nbMedia = MediaDAO
         .countByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
     assertThat(nbMedia, is(2L));
 
     // Simulating a connected writer user
-    CacheServiceProvider.getSessionCacheService().put(User.CURRENT_REQUESTER_KEY, writerUser);
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(writerUser);
 
     nbMedia = MediaDAO
         .countByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
@@ -388,8 +390,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     assertThat(nbMedia, is(1L));
 
     // Simulating a connected publisher user
-    CacheServiceProvider.getSessionCacheService()
-        .put(User.CURRENT_REQUESTER_KEY, publisherUser);
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(publisherUser);
 
     nbMedia = MediaDAO.countByCriteria(
         mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
