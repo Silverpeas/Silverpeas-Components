@@ -138,12 +138,14 @@ div.selected {
   background-position:center center;
   background-repeat:	no-repeat;
 }
-.sousNavBulle .list-mode.active  {
+.sousNavBulle .list-mode.active, 
+.sousNavBulle .list-mode:hover {
   background-image: url(../icons/list-mode-active.png) ;
   background-position:center center;
   background-repeat:	no-repeat;
 }
-.sousNavBulle .calendar-mode.active   {
+.sousNavBulle .calendar-mode.active,
+.sousNavBulle .calendar-mode:hover   {
   background-image: url(../icons/calendar-mode-active.png)  ;
   background-position:center center;
   background-repeat:	no-repeat;
