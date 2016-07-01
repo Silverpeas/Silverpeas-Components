@@ -151,7 +151,7 @@ public abstract class BaseGalleryTest extends DataSetTest {
 
   @After
   public void tearDown() throws Exception {
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(null);
+    CacheServiceProvider.clearAllThreadCaches();
   }
 
   protected OrganizationController getOrganisationControllerMock() {
