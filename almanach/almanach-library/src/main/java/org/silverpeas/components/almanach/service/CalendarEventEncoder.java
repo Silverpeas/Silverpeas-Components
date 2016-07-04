@@ -32,7 +32,7 @@ import org.silverpeas.core.calendar.CalendarEventRecurrence;
 import org.silverpeas.core.calendar.DayOfWeek;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.TimeUnit;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
@@ -50,7 +50,7 @@ import java.util.TimeZone;
 
 import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
 import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
-import static org.silverpeas.core.util.DateUtil.asDatable;
+import static org.silverpeas.core.util.DateUtil.asTemporal;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -71,7 +71,7 @@ public class CalendarEventEncoder {
     List<CalendarEvent> events = new ArrayList<>();
     TimeZone timeZone = TimeZone.getTimeZone(settings.getString("almanach.timezone"));
     for (EventDetail eventDetail : eventDetails) {
-      Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
+      Temporal<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
               inTimeZone(timeZone);
       String endTime = eventDetail.getEndHour();
       if (startDate instanceof org.silverpeas.core.date.Date) {
@@ -79,7 +79,7 @@ public class CalendarEventEncoder {
       } else if (!isDefined(endTime)) {
         endTime = eventDetail.getStartHour();
       }
-      Datable<?> endDate = createDatable(eventDetail.getEndDate(), endTime).inTimeZone(timeZone);
+      Temporal<?> endDate = createDatable(eventDetail.getEndDate(), endTime).inTimeZone(timeZone);
 
       CalendarEvent event = anEventAt(startDate)
           .endingAt(endDate)
@@ -150,7 +150,7 @@ public class CalendarEventEncoder {
     }
     CalendarEventRecurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
     if (periodicity.getUntilDatePeriod() != null) {
-      recurrence.upTo(asDatable(periodicity.getUntilDatePeriod(), true));
+      recurrence.upTo(asTemporal(periodicity.getUntilDatePeriod(), true));
     }
 
     return recurrence;
@@ -220,25 +220,25 @@ public class CalendarEventEncoder {
   }
 
   /**
-   * Creates a Datable object from the specified date and time
+   * Creates a Temporal object from the specified date and time
    *
    * @param date the date (day in month in year).
    * @param time the time if any. If the time is null or empty, then no time is defined and the
-   * returned datable is a Date.
-   * @return a Datable object corresponding to the specified date and time.
+   * returned temporal is a Date.
+   * @return a Temporal object corresponding to the specified date and time.
    */
-  private Datable<?> createDatable(final Date date, final String time) {
-    Datable<?> datable;
+  private Temporal<?> createDatable(final Date date, final String time) {
+    Temporal<?> temporal;
     if (isDefined(time)) {
       String[] timeComponents = time.split(":");
       Calendar dateAndTime = Calendar.getInstance();
       dateAndTime.setTime(date);
       dateAndTime.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeComponents[0]));
       dateAndTime.set(Calendar.MINUTE, Integer.valueOf(timeComponents[1]));
-      datable = asDatable(dateAndTime.getTime(), true);
+      temporal = asTemporal(dateAndTime.getTime(), true);
     } else {
-      datable = asDatable(date, false);
+      temporal = asTemporal(date, false);
     }
-    return datable;
+    return temporal;
   }
 }

@@ -24,7 +24,7 @@
 package org.silverpeas.components.scheduleevent.service;
 
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventStatus;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
-import static org.silverpeas.core.util.DateUtil.asDatable;
+import static org.silverpeas.core.util.DateUtil.asTemporal;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.
@@ -56,19 +56,19 @@ public class CalendarEventEncoder {
   }
 
   /**
-   * Creates a Datable object from the specified date and time
+   * Creates a Temporal object from the specified date and time
    *
    * @param date the date (day in month in year).
    * @param time : the hour 8 if morning, 14 if after meridian.
-   * @return a Datable object corresponding to the specified date and time.
+   * @return a Temporal object corresponding to the specified date and time.
    */
-  private Datable<?> createDatable(final Date date, final int time) {
+  private Temporal<?> createDatable(final Date date, final int time) {
     Calendar dateAndTime = GregorianCalendar.getInstance();
     dateAndTime.setTime(date);
     dateAndTime.set(Calendar.HOUR_OF_DAY, time);
     dateAndTime.set(Calendar.MINUTE, 0);
-    Datable<?> datable = asDatable(dateAndTime.getTime(), true);
-    return datable;
+    Temporal<?> temporal = asTemporal(dateAndTime.getTime(), true);
+    return temporal;
   }
 
   /**
@@ -84,7 +84,7 @@ public class CalendarEventEncoder {
     if(eventDetail.getStatus() == ScheduleEventStatus.CLOSED && listResponse.size() > 0) {
       TimeZone timeZone = TimeZone.getTimeZone(getSettings().getString("scheduleevent.timezone"));
       for(DateOption eventDateOption : listDateOption) {
-        Datable<?> startDate = createDatable(eventDateOption.getDay(), eventDateOption.getHour()).
+        Temporal<?> startDate = createDatable(eventDateOption.getDay(), eventDateOption.getHour()).
             inTimeZone(timeZone);
         int endTime = DateOption.MORNING_END_HOUR;
         if(eventDateOption.getHour() == DateOption.MORNING_BEGIN_HOUR) {
@@ -92,7 +92,7 @@ public class CalendarEventEncoder {
         } else if(eventDateOption.getHour() == DateOption.AFTERNOON_BEGIN_HOUR) {
           endTime = DateOption.AFTERNOON_END_HOUR;
         }
-        Datable<?> endDate = createDatable(eventDateOption.getDay(), endTime).inTimeZone(timeZone);
+        Temporal<?> endDate = createDatable(eventDateOption.getDay(), endTime).inTimeZone(timeZone);
 
         CalendarEvent calendarEvent = anEventAt(startDate)
             .endingAt(endDate)

@@ -24,9 +24,10 @@
 package org.silverpeas.components.almanach.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.DateTime;
+
 import java.util.Calendar;
 import static org.silverpeas.core.util.StringUtil.*;
 import static org.silverpeas.core.util.DateUtil.*;
@@ -40,8 +41,8 @@ import static org.silverpeas.core.util.DateUtil.*;
 public class EventOccurrence implements Comparable<EventOccurrence> {
 
   private EventDetail eventDetail;
-  private Datable<?> startDate;
-  private Datable<?> endDate;
+  private Temporal<?> startDate;
+  private Temporal<?> endDate;
   private boolean priority = false;
 
   /**
@@ -51,8 +52,8 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @param event the event.
    * @return an occurrence of the specified event.
    */
-  public static EventOccurrence anOccurrenceOf(final EventDetail event, final Datable<?> startDate,
-      final Datable<?> endDate) {
+  public static EventOccurrence anOccurrenceOf(final EventDetail event, final Temporal<?> startDate,
+      final Temporal<?> endDate) {
     return new EventOccurrence(event, startDate, endDate);
   }
 
@@ -64,8 +65,8 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    */
   public static EventOccurrence anOccurrenceOf(final EventDetail event, final Date startDate,
       final Date endDate) {
-    Datable<?> startDateTime = startDate;
-    Datable<?> endDateTime = endDate;
+    Temporal<?> startDateTime = startDate;
+    Temporal<?> endDateTime = endDate;
     String startTime = event.getStartHour();
     String endTime = event.getEndHour();
     if (isDefined(startTime)) {
@@ -90,7 +91,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @param startingDate the start date of the occurrence.
    * @return the start date.
    */
-  public static Datable<?> startingAt(final Datable<?> startingDate) {
+  public static Temporal<?> startingAt(final Temporal<?> startingDate) {
     return startingDate;
   }
 
@@ -99,7 +100,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @param endingDate the end date of the occurrence.
    * @return the end date.
    */
-  public static Datable<?> endingAt(final Datable<?> endingDate) {
+  public static Temporal<?> endingAt(final Temporal<?> endingDate) {
     return endingDate;
   }
 
@@ -107,7 +108,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * Gets the end date of this occurrence.
    * @return the end date.
    */
-  public Datable<?> getEndDate() {
+  public Temporal<?> getEndDate() {
     return endDate;
   }
 
@@ -115,7 +116,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * Gets the start date of this occurrence.
    * @return the start date.
    */
-  public Datable<?> getStartDate() {
+  public Temporal<?> getStartDate() {
     return startDate;
   }
 
@@ -152,7 +153,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @return true if the event is occurring all the day.
    */
   public boolean isAllDay() {
-    boolean allDay = startDate instanceof Date || endDate instanceof Date;
+    boolean allDay = !startDate.isTimeSupported() || !endDate.isTimeSupported();
     if (!allDay) {
       Date startDay = new Date(startDate.asDate());
       Date endDay = new Date(endDate.asDate());
@@ -183,8 +184,8 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * Constructs a new occurrence of the specified event.
    * @param event the detail about the event for which an occurrence is constructed.
    */
-  protected EventOccurrence(final EventDetail event, final Datable<?> startDate,
-      final Datable<?> endDate) {
+  protected EventOccurrence(final EventDetail event, final Temporal<?> startDate,
+      final Temporal<?> endDate) {
     this.eventDetail = event;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -199,9 +200,9 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    */
   @Override
   public int compareTo(EventOccurrence otherOccurrence) {
-    Datable<?> otherStartDate = otherOccurrence.getStartDate();
+    Temporal<?> otherStartDate = otherOccurrence.getStartDate();
     int result;
-    if (otherStartDate instanceof Date || getStartDate() instanceof Date) {
+    if (!otherStartDate.isTimeSupported() || !getStartDate().isTimeSupported()) {
       Date date = new Date(getStartDate().asDate());
       Date otherDate = new Date(otherStartDate.asDate());
       result = date.compareTo(otherDate);
