@@ -23,10 +23,21 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
-import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.DateUtil.asDatable;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import org.silverpeas.components.almanach.model.EventDetail;
+import org.silverpeas.components.almanach.model.Periodicity;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventRecurrence;
+import org.silverpeas.core.calendar.DayOfWeek;
+import org.silverpeas.core.calendar.DayOfWeekOccurrence;
+import org.silverpeas.core.calendar.TimeUnit;
+import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,22 +48,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventRecurrence;
-import org.silverpeas.core.date.Datable;
-import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.calendar.DayOfWeek;
-import org.silverpeas.core.calendar.DayOfWeekOccurrence;
-import org.silverpeas.core.calendar.TimeUnit;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.Periodicity;
-import org.silverpeas.core.util.ResourceLocator;
+import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
+import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
+import static org.silverpeas.core.util.DateUtil.asDatable;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.
@@ -82,11 +81,12 @@ public class CalendarEventEncoder {
       }
       Datable<?> endDate = createDatable(eventDetail.getEndDate(), endTime).inTimeZone(timeZone);
 
-      CalendarEvent event = anEventAt(startDate).
-              endingAt(endDate).
-              from(eventDetail).
-              withDescription(eventDetail.getWysiwyg()).
-              withPriority(eventDetail.getPriority());
+      CalendarEvent event = anEventAt(startDate)
+          .endingAt(endDate)
+          .identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
+          .withTitle(eventDetail.getTitle())
+          .withDescription(eventDetail.getWysiwyg())
+          .withPriority(eventDetail.getPriority());
       if (isDefined(eventDetail.getPlace())) {
         event.withLocation(eventDetail.getPlace());
       }

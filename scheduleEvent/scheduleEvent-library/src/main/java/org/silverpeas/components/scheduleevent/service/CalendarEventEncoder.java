@@ -94,9 +94,11 @@ public class CalendarEventEncoder {
         }
         Datable<?> endDate = createDatable(eventDateOption.getDay(), endTime).inTimeZone(timeZone);
 
-        CalendarEvent calendarEvent = anEventAt(startDate).
-            endingAt(endDate).
-            from(eventDetail);
+        CalendarEvent calendarEvent = anEventAt(startDate)
+            .endingAt(endDate)
+            .identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
+            .withTitle(eventDetail.getTitle())
+            .withDescription(eventDetail.getDescription());
         events.add(calendarEvent);
       }
     }
