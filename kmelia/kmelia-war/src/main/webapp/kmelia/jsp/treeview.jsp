@@ -982,7 +982,7 @@ $(document).on("dnd_stop.vakata", function(event, data) {
   var target = $(data.event.target);
   var canBeDropped = false;
   var treeview = getTreeview();
-  if (target.closest('#treeDiv1').length) {
+  if (target.closest('#treeDiv1').length && target.hasClass('jstree-anchor')) {
     var targetId = extractFolderId(target.attr('id'));
     if (targetId) {
       target = treeview.get_node('#' + targetId);
