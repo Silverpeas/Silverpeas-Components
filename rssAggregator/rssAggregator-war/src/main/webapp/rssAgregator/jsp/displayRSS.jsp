@@ -167,7 +167,6 @@ function deleteChannel(id) {
 function loadChannelsItem() {
   $.ajax({
     url: '<c:out value="${ctxPath}/services/rss/${componentId}"/>',
-    async: false,
     data: { agregate: 'yes'},
     success: function(data){
       alert('loadChannelsItem succeeded on application id : <%=componentId%>');

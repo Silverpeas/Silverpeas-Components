@@ -182,25 +182,30 @@ function toAddOrUpdateFolder(action, id) {
     dialogTitle = '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>';
   }
 
-	$.ajax({
-		url: webContext+'<%=URLUtil.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
-		async: false,
-		type: "GET",
-		dataType: "html",
-		success: function(data) {
-			  $('#folderDialog').html(data);
-		}
-	});
-
-	$('#folderDialog').popup('validation', {
+  new Promise(function(resolve, reject) {
+    $.ajax({
+      url: webContext+'<%=URLUtil.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
+      type: "GET",
+      dataType: "html",
+      success: function(data) {
+        $('#folderDialog').html(data);
+        resolve();
+      },
+      error: function() {
+        resolve();
+      }
+    });
+  }).then(function() {
+    $('#folderDialog').popup('validation', {
       title : dialogTitle,
-	    callback : function() {
-	      if (isCorrectForm()) {
-			  window.document.AddAndUpdateFolderForm.submit();
-		  }
-	      return true;
-	    }
-	});
+      callback : function() {
+        if (isCorrectForm()) {
+          window.document.AddAndUpdateFolderForm.submit();
+        }
+        return true;
+      }
+    });
+  });
 }
 
 </script>

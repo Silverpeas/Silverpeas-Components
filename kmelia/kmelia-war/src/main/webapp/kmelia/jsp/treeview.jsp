@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -80,9 +80,9 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
   <title></title>
   <view:looknfeel withCheckFormScript="true"/>
 <view:script src="/util/javaScript/browseBarComplete.js"/>
-<view:script src="/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"/>
-<view:script src="/util/javaScript/jquery/jquery.jstree.js"/>
+<view:script src="/util/javaScript/jquery/jstree.min.js"/>
 <view:script src="/util/javaScript/jquery/jquery.cookie.js"/>
+  <view:link href="/util/javaScript/jquery/themes/default/style.min.css"/>
 
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
@@ -96,7 +96,8 @@ function topicGoTo(id) {
     closeWindows();
     displayTopicContent(id);
     getTreeview().deselect_all();
-    getTreeview().select_node($('#'+id));
+    var node = getTreeview().get_node('#'+id);
+    getTreeview().select_node(node);
 }
 
 function getCurrentUserId() {
@@ -130,6 +131,14 @@ function getTranslation() {
 
 function getToValidateFolderId() {
 	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+}
+
+function getCurrentFolderId() {
+  return "<%=id%>";
+}
+
+function arePublicationsOnRootAllowed() {
+  return <%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>;
 }
 
 var icons = new Object();
@@ -225,8 +234,10 @@ function getComponentPermalink() {
 	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, false)%>";
 }
 
-function deleteNode(nodeId, nodeLabel) {
+function deleteNode(nodeId) {
 	// removing nb items displayed in nodeLabel
+  var node = getTreeview().get_node('#' + nodeId);
+  var nodeLabel = node.text;
 	if (params["nbPublisDisplayed"]) {
 		var idx = nodeLabel.lastIndexOf('(');
 		if (idx > 1) {
@@ -263,7 +274,7 @@ function nodeDeleted(nodeId) {
 	if (params["nbPublisDisplayed"]) {
 		// change nb publications on each parent of deleted node (except root)
 		var nbPublisRemoved = getNbPublis(nodeId);
-		var path = getTreeview().get_path("#"+nodeId, true);
+		var path = getTreeview().get_path("#"+nodeId, false, true);
 		for (i=0; i<path.length; i++) {
 			var elementId = path[i];
 			if (elementId != "0" && elementId != nodeId) {
@@ -321,21 +332,20 @@ function cutCurrentNode() {
 
 function changeCurrentTopicStatus() {
 	var node = getTreeview()._get_node("#"+getCurrentNodeId());
-	changeStatus(getCurrentNodeId(), node.attr("status"));
+	changeStatus(getCurrentNodeId(), node.original.attr["status"]);
 }
 
 function updateUIStatus(nodeId, newStatus, recursive) {
 	// updating data stored in treeview
-	var node = getTreeview()._get_node("#"+nodeId);
-	node.attr("status", newStatus);
+	var node = getTreeview().get_node("#"+nodeId);
+	node.original.attr["status"] = newStatus;
 
 	//changing label style according to topic's new status
-	node.removeClass("Visible Invisible");
-	node.addClass(newStatus);
+	$('#' + nodeId).removeClass("Visible Invisible").addClass(newStatus);
 
 	//
 	if (recursive == "1") {
-		var children = getTreeview()._get_children("#"+nodeId);
+		var children = node.children;
 		for (var i=0; i<children.length; i++) {
 			try {
 				updateUIStatus(children[i].id, newStatus, recursive);
@@ -374,8 +384,8 @@ function displayTopicContent(id) {
 			displayPublicationPromise = displayPublications(id);
 
 			//update breadcrumb
-            removeBreadCrumbElements();
-            addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
+      removeBreadCrumbElements();
+      addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
 		} else {
 			displayOperations(id);
 			displayPublicationPromise = displayPublications(id);
@@ -428,7 +438,7 @@ function showRightClickHelp() {
 }
 
 function getTreeview() {
-	return $.jstree._reference("#treeDiv1");
+	return $.jstree.reference("#treeDiv1");
 }
 
 function customMenu(node) {
@@ -437,10 +447,10 @@ function customMenu(node) {
 		return false;
 	<% } %>
 
-	var nodeType = node.attr("rel");
+	var nodeType = node.type;
   var userRole = '<%=profile%>';
 	if (params["rightsOnTopic"]) {
-		userRole = node.attr("role");
+		userRole = node.original.attr["role"];
 	}
 	if (nodeType == getToValidateFolderId()) {
     	return false;
@@ -461,36 +471,40 @@ function customMenu(node) {
     	addItem: {
         	label: "<%=resources.getString("CreerSousTheme")%>",
             action: function (obj) {
-            	topicAdd(obj.attr("id"), false);
+              var node = getTreeview().get_node(obj.reference);
+            	topicAdd(node.id, false);
             }
         },
     	editItem: {
             label: "<%=resources.getString("ModifierSousTheme")%>",
             action: function (obj) {
-            	var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+obj.attr("id");
+              var node = getTreeview().get_node(obj.reference);
+            	var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+node.id;
         		$.getJSON(url, function(topic){
-        					var name = topic.data;
+        					var name = topic.text;
         					var desc = topic.attr["description"];
         					if (params["i18n"]) {
         						storeTranslations(topic.translations);
         					} else {
                     setDataInFolderDialog(name, desc);
         					}
-        					topicUpdate(topic.attr["id"]);
+        					topicUpdate(topic.id);
         				});
             }
         },
         deleteItem: {
             label: "<%=resources.getString("SupprimerSousTheme")%>",
             action: function (obj) {
-            	deleteNode(obj.attr("id"), getTreeview().get_text(obj));
+              var node = getTreeview().get_node(obj.reference);
+            	deleteNode(node.id);
             }
         },
         sortItem: {
             label: "<%=resources.getString("kmelia.SortTopics")%>",
             action: function (obj) {
+              var node = getTreeview().get_node(obj.reference);
             	closeWindows();
-        		SP_openWindow("ToOrderTopics?Id="+obj.attr("id"), "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
+        		SP_openWindow("ToOrderTopics?Id="+node.id, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
             },
         	"separator_after" : true
         },
@@ -498,7 +512,8 @@ function customMenu(node) {
         pdcItem: {
         	label: "<%=resources.getString("GML.PDCPredefinePositions")%>",
             action: function (obj) {
-            	openPredefinedPdCClassification(obj.attr("id"));
+              var node = getTreeview().get_node(obj.reference);
+            	openPredefinedPdCClassification(node.id);
             },
         	"separator_after" : true
         },
@@ -506,19 +521,22 @@ function customMenu(node) {
         copyItem: {
             label: "<%=resources.getString("GML.copy")%>",
             action: function (obj) {
-            	copyNode(obj.attr("id"));
+              var node = getTreeview().get_node(obj.reference);
+            	copyNode(node.id);
             }
         },
         cutItem: {
             label: "<%=resources.getString("GML.cut")%>",
             action: function (obj) {
-            	cutNode(obj.attr("id"));
+              var node = getTreeview().get_node(obj.reference);
+            	cutNode(node.id);
             }
         },
         pasteItem: {
             label: "<%=resources.getString("GML.paste")%>",
             action: function (obj) {
-            	pasteNode(obj.attr("id"));
+              var node = getTreeview().get_node(obj.reference);
+            	pasteNode(node.id);
             },
         	"separator_after" : true
         }
@@ -527,7 +545,8 @@ function customMenu(node) {
         wysiwygItem: {
             label: "<%=resources.getString("TopicWysiwyg")%>",
             action: function (obj) {
-            	updateTopicWysiwyg(obj.attr("id"));
+              var node = getTreeview().get_node(obj.reference);
+            	updateTopicWysiwyg(node.id);
             }
         }
         <% } %>
@@ -536,7 +555,8 @@ function customMenu(node) {
         statusItem: {
             label: "<%=resources.getString("TopicVisible2Invisible")%>",
             action: function (obj) {
-            	changeStatus(obj.attr("id"), obj.attr("status"));
+              var node = getTreeview().get_node(obj.reference);
+            	changeStatus(node.id, node.original.attr["status"]);
             }
         }
     	<% } %>
@@ -555,7 +575,7 @@ function customMenu(node) {
     }
 
     if (items.statusItem) {
-    	if (node.attr("status") == "Invisible") {
+    	if (node.original.attr["status"] == "Invisible") {
     		items.statusItem.label = "<%=resources.getString("TopicInvisible2Visible")%>";
     	}
     }
@@ -577,7 +597,7 @@ function customMenu(node) {
 	  } else {
       var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
       var userId = "<%=kmeliaScc.getUserId()%>";
-      var creatorId = node.attr("creatorId");
+      var creatorId = node.original.attr["creatorId"];
       if (isTopicManagementDelegated && userRole != "admin") {
         if (creatorId != userId) {
           //do not show the menu
@@ -629,14 +649,18 @@ function spreadNbItems(children) {
 			var child = children[i];
 			child.attr['title'] = child.attr['description'].unescapeHTML();
 			<% if (kmeliaScc.isOrientedWebContent()) { %>
-				child.attr['class'] = child.attr['status'];
+      child.li_attr = { class: child.attr['status'] };
 			<% } %>
-			if (child.attr['nbItems']) {
-				child.data = child.data + " ("+child.attr['nbItems']+")";
-				spreadNbItems(child.children);
+			if (child.attr['nbItems'] >= 0) {
+				child.text = child.text + " ("+child.attr['nbItems']+")";
+        if (child.children && child.children.length > 0) {
+          spreadNbItems(child.children);
+        } else {
+          child.children = true;
+        }
 			}
-		}
-	}
+    }
+  }
 }
 
 function getUserProfile(id) {
@@ -672,13 +696,23 @@ function extractPublicationId(id) {
 	return id.substring(4, id.length);
 }
 
+function extractFolderId(id) {
+  if (id) {
+    var idx = id.indexOf('_');
+    if (idx > 0) {
+      id = id.substr(0, idx);
+    }
+  }
+  return id;
+}
+
 function publicationMovedSuccessfully(id, targetId) {
 	var pubName = getPublicationName(id);
   notySuccess("<%=resources.getString("kmelia.drag.publication.success1")%>" + pubName + "<%=resources.getString("kmelia.drag.publication.success2")%>");
 
 	if (params["nbPublisDisplayed"]) {
 		// add one publi to target node and its parents
-		var path = getTreeview().get_path("#"+targetId, true);
+		var path = getTreeview().get_path("#"+targetId, false, true);
 		for (i=0; i<path.length; i++) {
 			var elementId = path[i];
 			if (elementId != "0") {
@@ -687,7 +721,7 @@ function publicationMovedSuccessfully(id, targetId) {
 		}
 
 		// remove one publi to current node and its parents
-		var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+		var path = getTreeview().get_path("#"+getCurrentNodeId(), false, true);
 		for (i=0; i<path.length; i++) {
 			var elementId = path[i];
 			if (elementId != "0") {
@@ -726,7 +760,7 @@ function publicationsRemovedSuccessfully(nb) {
 		} else {
 			// publications goes to trash
 			// remove nb publi to current node and its parents except root
-			var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+			var path = getTreeview().get_path("#"+getCurrentNodeId(), false, true);
 			for (i=0; i<path.length; i++) {
 				var elementId = path[i];
 				if (elementId != "0") {
@@ -766,181 +800,117 @@ function resizePart(idPart) {
     $(idPart).css("height",hauteur);
 }
 
-$(document).ready(
-	function () {
-		//build the tree
-		$("#treeDiv1").bind("loaded.jstree", function (event, data) {
-			//alert("TREE IS LOADED");
-		}).bind("select_node.jstree", function (e, data) {
-    		// data.inst is the instance which triggered this event
-    		var nodeId = $(data.rslt.obj).attr('id');
-
-    		// open topic in treeview
-    		var idSelector = "#"+nodeId;
-    		$.jstree._reference(idSelector).open_node(idSelector);
-
-		// display topic content in right panel
-    		displayTopicContent(nodeId);
-    	})
-    	.jstree({
-    	"core" : {
-        html_titles: true
-    			//"load_open" : true
-    	},
-    	"ui" :{
-            "select_limit" : 1,
-          	"initially_select" : "#<%=id%>",
-          	"select_prev_on_delete" : false
+$(document).ready(function() {
+  //build the tree
+  $("#treeDiv1").jstree({
+    "core" : {
+      force_text : false,
+      "data" : {
+        "url" : function (node) {
+          var url = getWebContext() + "/services/folders/" + getComponentId() + "/" +
+              getCurrentFolderId() + "/treeview?lang=" + getTranslation() + "&IEFix=" +
+              new Date().getTime();
+          if (node && node.id !== '#') {
+            url = getWebContext() + "/services/folders/" + getComponentId() + "/" + node.id +
+                "/children?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+          }
+          return url;
         },
-	"json_data" : {
-			"ajax" : {
-				"url": function (node) {
-					var nodeId = "";
-					var url = "<%=m_context%>/services/folders/<%=componentId%>/<%=id%>/treeview?lang="+getTranslation()+"&IEFix="+new Date().getTime();
-					if (node != -1) {
-						url = "<%=m_context%>/services/folders/<%=componentId%>/"+node.attr("id")+"/children?lang="+getTranslation()+"&IEFix="+new Date().getTime();
-					}
-					return url;
-				},
-				success: function(n) {
-					if (n) {
-						if (n.length) {
-							// this is subfolders
-							spreadNbItems(n);
-						} else {
-							if (n.data) {
-								// this is the root
-								n.data = "<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>";
-								if (n.attr['nbItems']) {
-									n.data = n.data + " ("+n.attr['nbItems']+")";
-								}
-								<% if (kmeliaScc.isOrientedWebContent()) { %>
-									n.attr['class'] = n.attr['status'];
-								<% } %>
-								spreadNbItems(n.children);
-							}
-						}
-					}
-				    return n;
-				}
-			}
-		},
-		// Using types - most of the time this is an overkill
-		// read the docs carefully to decide whether you need types
-		"types" : {
-			// I set both options to -2, as I do not need depth and children count checking
-			// Those two checks may slow jstree a lot, so use only when needed
-			"max_depth" : -2,
-			"max_children" : -2,
-			// I want only `drive` nodes to be root nodes
-			// This will prevent moving or creating any other type as a root node
-			"valid_children" : [ "root" ],
-			"types" : {
-				// The `root` node
-				"root" : {
-					"valid_children" : [ "bin", getToValidateFolderId() ],
-					// those prevent the functions with the same name to be used on `root` nodes
-					// internally the `before` event is used
-					"start_drag" : false,
-					"move_node" : false,
-					"delete_node" : false,
-					"remove" : false
-				},
-				// The `bin` node
-				"bin" : {
-					// can have files and folders inside, but NOT other `drive` nodes
-					"valid_children" : "none",
-					"icon" : {
-						"image" : "icons/treeview/basket.jpg"
-					},
-					// those prevent the functions with the same name to be used on `bin` nodes
-					// internally the `before` event is used
-					"start_drag" : false,
-					"move_node" : false,
-					"delete_node" : false,
-					"remove" : false
-				},
-				// The `to validate` node
-				"<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>" : {
-					// can have files and folders inside, but NOT other `drive` nodes
-					"valid_children" : "none",
-					"icon" : {
-						"image" : "<%=m_context%>/util/icons/ok_alpha.gif"
-					},
-					// those prevent the functions with the same name to be used on `tovalidate` nodes
-					// internally the `before` event is used
-					"start_drag" : false,
-					"move_node" : false,
-					"delete_node" : false,
-					"remove" : false
-				},
-				"folder" : {
-					"valid_children" : [ "folder" ],
-					// those prevent the functions with the same name to be used on `root` nodes
-					// internally the `before` event is used
-					"start_drag" : false,
-					"move_node" : false,
-					"delete_node" : false,
-					"remove" : false
-				}
-			}
-		},
-		"themes" : {
-			"theme" : "default",
-			"dots" : false,
-			"icons" : true
-		},
-		"contextmenu" : {
-			"show_at_node" : false,
-			"items" : customMenu
-		},
-		"dnd" : {
-			"drop_finish" : function () {
-				alert("drop_finish");
-			},
-			"drag_check" : function (data) {
-				var targetId = data.r.attr("id");
-				var targetType = data.r.attr("rel");
-				if (targetId == getCurrentNodeId()) {
-					return false;
-				} else if (targetType == getToValidateFolderId()) {
-					return false;
-				} else if (targetType == "root") {
-					if (<%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>) {
-						var profile = getUserProfile(targetId);
-						//writeInConsole("drag_check : current user is "+profile+" in root");
-						if (profile != "<%=SilverpeasRole.user.toString()%>") {
-							return {
-								after : false,
-								before : false,
-								inside : true
-							};
-						}
-					}
-				} else if (targetId != "treeDiv1"){
-					var profile = getUserProfile(targetId);
-					//writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
-					if (profile != "<%=SilverpeasRole.user.toString()%>") {
-						return {
-							after : false,
-							before : false,
-							inside : true
-						};
-					}
-				}
-				return false;
-			},
-			"drag_finish" : function (data) {
-				var pubId = extractPublicationId(data.o.id);
-				var targetId = data.r.attr("id");
+        "success" : function(node) {
+          if (node) {
+            if (node.length) {
+              // this is subfolders
+              spreadNbItems(node);
+            } else {
+              if (node.text) {
+                // this is the root
+                node.text = "<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>";
+                if (node.attr['nbItems'] >= 0) {
+                  node.text = node.text + " ("+node.attr['nbItems']+")";
+                }
+                <% if (kmeliaScc.isOrientedWebContent()) { %>
+                node.li_attr = {class: node.attr['status']};
+                <% } %>
+                spreadNbItems(node.children);
+              }
+            }
+          }
+          return node;
+        }
+      },
+      "check_callback" : true,
+      "themes" : {
+        "dots" : false,
+        "icons" : true
+      },
+      "multiple" : false
+    },
+    // Using types - most of the time this is an overkill
+    // read the docs carefully to decide whether you need types
+    "types" : {
+      "#" : {
+        // I set both options to -2, as I do not need depth and children count checking
+        // Those two checks may slow jstree a lot, so use only when needed
+        "max_depth" : -2, // I want only `drive` nodes to be root nodes
+        "max_children" : -2, // This will prevent moving or creating any other type as a root node
+        "valid_children" : ["root"],
+      },
+      // The `root` node
+      "root" : {
+        // those prevent the functions with the same name to be used on `root` nodes
+        "valid_children" : ["bin", getToValidateFolderId()]
+      },
+      // The `bin` node
+      "bin" : {
+        // can have files and folders inside, but NOT other `drive` nodes
+        "valid_children" : -1,
+        "icon" : getWebContext() + "/util/icons/treeview/basket.jpg"
+      },
+      // The `to validate` node
+      "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>" : {
+        // can have files and folders inside, but NOT other `drive` nodes
+        "valid_children" : -1,
+        "icon" : getWebContext() + "/util/icons/ok_alpha.gif"
+      },
+      "folder" : {
+        // those prevent the functions with the same name to be used on `root` nodes
+        "valid_children" : ["folder"]
+      }
+    },
+    "contextmenu" : {
+      "show_at_node" : false,
+      "items" : customMenu
+    },
+    "dnd" : {
+      "is_draggable" : false
+      //"check_while_dragging": true,
+      //"use_html5" : false
+    },
+    // the `plugins` array allows you to configure the active plugins on this instance
+    "plugins" : ["types", "contextmenu", "dnd"]
+  }).on("loaded.jstree", function(event, data) {
+    console.info('jstree loaded');
+  }).on("ready.jstree", function(event, data) {
+    var node = data.instance.get_node('#' + getCurrentFolderId());
+    data.instance.select_node(node);
+  }).on("select_node.jstree", function(e, data) {
+    // data.inst is the instance which triggered this event
+    var nodeId = data.node.id;
 
-				// store new parent of publication
-				movePublication(pubId, getCurrentNodeId(), targetId);
-			}
-		},
-		// the `plugins` array allows you to configure the active plugins on this instance
-		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
-    });
+    // open topic in treeview
+    if (nodeId >= 0) {
+      data.instance.open_node(data.node);
+    }
+
+    // display topic content in right panel
+    displayTopicContent(nodeId);
+  }).on("move_node.jstree", function(e, data) {
+    var pubId = extractPublicationId(data.node.id);
+    var targetId = data.parent;
+
+    // store new parent of publication
+    movePublication(pubId, getCurrentNodeId(), targetId);
+  });
 
     // init splitter
     $(".resizable1").resizable({
@@ -987,6 +957,56 @@ $(document).ready(
 	<% } %>
 	}
 );
+
+// starts the dragging when a publication is holden to be dragged off
+$(document).on('mousedown', '.jstree-draggable', function(e) {
+  return $.vakata.dnd.start(e,
+      {
+        'jstree' : true, 'obj' : $(this),
+        'nodes' : [{id : $(this).attr('id'), text : $(this).text()}]
+      },
+      '<div id="jstree-dnd" class="jstree-default"><i class="jstree-icon jstree-er"></i>' +
+        $(this).text() + '</div>');
+});
+
+$(document).on("dnd_stop.vakata", function(event, data) {
+  var treeview = getTreeview();
+  if (!treeview.settings.dnd.check_while_dragging) {
+    var target = $(data.event.target);
+    var targetId = extractFolderId(target.attr('id'));
+    var pubId = extractPublicationId(data.data.nodes[0].id);
+    // store new parent of publication
+    movePublication(pubId, getCurrentNodeId(), targetId);
+  }
+}).on("dnd_move.vakata", function(event, data) {
+  var target = $(data.event.target);
+  var canBeDropped = false;
+  var treeview = getTreeview();
+  if (target.closest('#treeDiv1').length && target.hasClass('jstree-anchor')) {
+    var targetId = extractFolderId(target.attr('id'));
+    if (targetId) {
+      target = treeview.get_node('#' + targetId);
+      if (targetId == getToValidateFolderId() || targetId == getCurrentNodeId()) {
+        canBeDropped = false;
+      } else if (target.type === 'root' && arePublicationsOnRootAllowed()) {
+        var profile = getUserProfile(targetId);
+        if (profile != "<%=SilverpeasRole.user.toString()%>") {
+          canBeDropped = true;
+        }
+      } else {
+        var profile = getUserProfile(targetId);
+        if (profile != "<%=SilverpeasRole.user.toString()%>") {
+          canBeDropped = true;
+        }
+      }
+    }
+  }
+  if (canBeDropped) {
+    treeview.settings.dnd.check_while_dragging = false;
+  } else {
+    treeview.settings.dnd.check_while_dragging = true;
+  }
+});
 </script>
 </div>
 <div id="visibleInvisible-message" style="display: none;">

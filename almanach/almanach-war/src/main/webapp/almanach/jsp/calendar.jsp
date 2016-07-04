@@ -179,25 +179,18 @@
       </c:if>
 
         $(document).ready(function() {
-
-          // page is now ready, initialize the calendar...
-
-          var currentDay = new Date();
-          currentDay.setDate(${currentDay.dayOfMonth});
-          currentDay.setFullYear(${currentDay.year});
-          currentDay.setMonth(${currentDay.month});
-
         // page is now ready, initialize the calendar...
         <c:if test='${not calendarView.viewType.nextEventsView}'>
           $("#calendar").calendar({
             view: "${fn:toLowerCase(calendarView.viewType.name)}",
             weekends: ${calendarView.weekendVisible},
             firstDayOfWeek: ${calendarView.firstDayOfWeek},
-            currentDate: currentDay,
+            currentDate: moment({'year': ${currentDay.year}, 'month': ${currentDay.month},
+              'date': ${currentDay.dayOfMonth}}),
             events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>,
             onday: clickDay,
             onevent: function(event) {
-              var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
+              var eventDate = event.start.format("YYYY/MM/DD");
               clickEvent(event.id, eventDate, event.instanceId);
             }
           });

@@ -21,6 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#navigation {
+  background-color:#EAEAEA;
+  padding: 5px;
+  width:99%;
+  min-height:24px;
+  position:relative;
+}
 
 .titrePanier {
   margin: 3px;
@@ -131,12 +138,14 @@ div.selected {
   background-position:center center;
   background-repeat:	no-repeat;
 }
-.sousNavBulle .list-mode.active  {
+.sousNavBulle .list-mode.active, 
+.sousNavBulle .list-mode:hover {
   background-image: url(../icons/list-mode-active.png) ;
   background-position:center center;
   background-repeat:	no-repeat;
 }
-.sousNavBulle .calendar-mode.active   {
+.sousNavBulle .calendar-mode.active,
+.sousNavBulle .calendar-mode:hover   {
   background-image: url(../icons/calendar-mode-active.png)  ;
   background-position:center center;
   background-repeat:	no-repeat;

@@ -56,30 +56,6 @@ if (typeof String.prototype.endsWith !== 'function') {
 }
 
 /**
- * Useful date function.
- */
-if (typeof Date.prototype.setDay !== 'function') {
-  Date.prototype.setDay = function(year, month, dayOfMonth) {
-    this.setFullYear(year, month, dayOfMonth);
-    return this;
-  };
-}
-
-/**
- * Useful date function.
- */
-if (typeof Date.prototype.getHoursAndMinutes !== 'function') {
-  Date.prototype.getHoursAndMinutes = function() {
-    var result = this.getHours() + ':';
-    if (this.getMinutes() < 10) {
-      result += '0';
-    }
-    result += this.getMinutes();
-    return result;
-  };
-}
-
-/**
  * Prepare calendar event according to view parameters.
  * @param reservationEvents
  * @param labels
@@ -272,9 +248,9 @@ function renderReservationListing(reservationEvents, labels, filters) {
     var oldDate;
     var isFirstReservationOfWeek;
     $.each(reservationEvents, function(index, reservationEvent) {
-      var reservationBeginDate = $.fullCalendar.parseISO8601(reservationEvent.start);
+      var reservationBeginDate =$.fullCalendar.moment(reservationEvent.start);
       if (index == 0 ||
-          $.datepicker.iso8601Week(oldDate) != $.datepicker.iso8601Week(reservationBeginDate)) {
+          oldDate.isoWeek() != reservationBeginDate.isoWeek()) {
         $listing.append(renderWeekSeparation(reservationBeginDate, labels));
         oldDate = reservationBeginDate;
         isFirstReservationOfWeek = true;
@@ -297,7 +273,7 @@ function renderReservationListing(reservationEvents, labels, filters) {
  */
 function renderWeekSeparation(date, labels) {
   var $separation = $('<h3>').addClass('reservationPeriode');
-  $separation.append(labels.week + ' ' + $.datepicker.iso8601Week(date));
+  $separation.append(labels.week + ' ' + date.isoWeek());
   return $('<li>').append($separation);
 }
 
@@ -315,13 +291,8 @@ function renderReservationSeparation() {
  * @param filters
  */
 function renderReservation(reservation, labels, filters) {
-  if (!filters.dateFormat) {
-    var dateFormat = $.datepicker.regional[filters.language];
-    if (dateFormat) {
-      filters.dateFormat = dateFormat.dateFormat;
-    } else {
-      filters.dateFormat = $.datepicker.regional[''].dateFormat;
-    }
+  if (!filters.language) {
+    filters.language = '';
   }
 
   // Initialization
@@ -423,12 +394,11 @@ function renderReservationAuthor(reservation, labels, filters) {
 function renderReservationDates(reservation, labels, filters) {
   var $result = $('<span>').addClass('reservationDate');
   var isReservationOnOneDay = true;
-  var beginDate = $.fullCalendar.parseISO8601(reservation.start);
-  var endDate = $.fullCalendar.parseISO8601(reservation.end);
+  var beginDate = $.fullCalendar.moment(reservation.start);
+  var endDate = $.fullCalendar.moment(reservation.end);
 
   // Is the reservation on one day ?
-  if (beginDate.getYear() != endDate.getYear() || beginDate.getMonth() != endDate.getMonth() ||
-      beginDate.getDate() != endDate.getDate()) {
+  if (!beginDate.isSame(endDate)) {
     $result.append(labels.from);
     isReservationOnOneDay = false;
   } else {
@@ -436,24 +406,24 @@ function renderReservationDates(reservation, labels, filters) {
   }
 
   // First date
-  $result.append(' ').append($.datepicker.formatDate(filters.dateFormat, beginDate, null));
+  $result.append(' ').append(beginDate.locale(filters.language).format('L'));
   if (isReservationOnOneDay) {
     $result.append(' ').append(labels.hourFrom);
   }
 
   // First hour
-  $result.append(' ').append(beginDate.getHoursAndMinutes());
+  $result.append(' ').append(beginDate.format('HH:mm'));
 
   // Second date
   if (isReservationOnOneDay) {
     $result.append(' ').append(labels.hourTo);
   } else {
     $result.append(' ').append(labels.to);
-    $result.append(' ').append($.datepicker.formatDate(filters.dateFormat, endDate, null));
+    $result.append(' ').append(endDate.locale(filters.language).format('L'));
   }
 
   // Second hour
-  $result.append(' ').append(endDate.getHoursAndMinutes());
+  $result.append(' ').append(endDate.format('HH:mm'));
 
   // Result
   return $result;

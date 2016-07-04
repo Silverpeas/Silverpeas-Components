@@ -139,8 +139,8 @@ function displayPath(id) {
     //remove topic breadcrumb
     removeBreadCrumbElements();
     $(data).each(function(i, topic) {
-      if (topic.attr["id"] != 0) {
-        addBreadCrumbElement("javascript:topicGoTo(" + topic.attr["id"] + ")", topic.data);
+      if (topic.id !== '0') {
+        addBreadCrumbElement("javascript:topicGoTo(" + topic.id + ")", topic.text);
       }
     });
   });
@@ -563,7 +563,7 @@ function displayTopicInformation(id) {
     $("#footer").css({'visibility': 'visible'});
     var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id;
     $.getJSON(url, function(topic) {
-      var name = topic.data;
+      var name = topic.text;
       var desc = topic.attr["description"];
       var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));
       ;
@@ -647,8 +647,8 @@ function topicAdd(topicId, isLinked) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
       $(data).each(function(i, topic) {
-        var item = " > " + topic.data;
-        if (topic.attr["id"] == 0) {
+        var item = " > " + topic.text;
+        if (topic.id == 0) {
           item = getComponentLabel();
         }
         $("#addOrUpdateNode #path").html($("#addOrUpdateNode #path").html() + item);
@@ -697,8 +697,8 @@ function topicUpdate(id) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
       $(data).each(function(i, topic) {
-        var item = " > " + topic.data;
-        if (topic.attr["id"] == 0) {
+        var item = " > " + topic.text;
+        if (topic.id == 0) {
           item = getComponentLabel();
         } else {
           if (i === data.length - 1) {
