@@ -1143,7 +1143,7 @@ public class DefaultKmeliaService implements KmeliaService {
           if (statusChanged) {
             // creates todos for publishers
             this.createTodosForPublication(pubDetail, false);
-          } else {
+          } else if (pubDetail.getTargetValidatorIds() != null) {
             // alert new validators
             String[] oldValidatorIds = old.getTargetValidatorIds();
             String[] newValidatorIds = pubDetail.getTargetValidatorIds();
