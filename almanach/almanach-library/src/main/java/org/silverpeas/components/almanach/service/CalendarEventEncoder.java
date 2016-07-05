@@ -32,23 +32,26 @@ import org.silverpeas.core.calendar.CalendarEventRecurrence;
 import org.silverpeas.core.calendar.DayOfWeek;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.TimeUnit;
-import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
 import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
+import static org.silverpeas.core.calendar.CalendarEvent.anEventOn;
 import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
 import static org.silverpeas.core.util.DateUtil.asTemporal;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -71,19 +74,25 @@ public class CalendarEventEncoder {
     List<CalendarEvent> events = new ArrayList<>();
     TimeZone timeZone = TimeZone.getTimeZone(settings.getString("almanach.timezone"));
     for (EventDetail eventDetail : eventDetails) {
-      Temporal<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
-              inTimeZone(timeZone);
-      String endTime = eventDetail.getEndHour();
-      if (startDate instanceof org.silverpeas.core.date.Date) {
-        endTime = "";
-      } else if (!isDefined(endTime)) {
-        endTime = eventDetail.getStartHour();
+      CalendarEvent event;
+      LocalDate startDate =
+          LocalDateTime.ofInstant(eventDetail.getStartDate().toInstant(), timeZone.toZoneId())
+              .toLocalDate();
+      LocalDate endDate =
+          LocalDateTime.ofInstant(eventDetail.getStartDate().toInstant(), timeZone.toZoneId())
+              .toLocalDate();
+      if (isDefined(eventDetail.getStartHour()) && isDefined(eventDetail.getEndHour())) {
+        OffsetDateTime startDateTime = startDate.atTime(LocalTime.parse(eventDetail.getStartHour()))
+            .atZone(timeZone.toZoneId())
+            .toOffsetDateTime();
+        OffsetDateTime endDateTime = endDate.atTime(LocalTime.parse(eventDetail.getEndHour()))
+            .atZone(timeZone.toZoneId())
+            .toOffsetDateTime();
+        event = anEventAt(startDateTime, endDateTime);
+      } else {
+        event = anEventOn(startDate, endDate);
       }
-      Temporal<?> endDate = createDatable(eventDetail.getEndDate(), endTime).inTimeZone(timeZone);
-
-      CalendarEvent event = anEventAt(startDate)
-          .endingAt(endDate)
-          .identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
+      event.identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
           .withTitle(eventDetail.getTitle())
           .withDescription(eventDetail.getWysiwyg())
           .withPriority(eventDetail.getPriority());
@@ -98,8 +107,7 @@ public class CalendarEventEncoder {
         try {
           event.withUrl(new URL(url));
         } catch (MalformedURLException e) {
-          SilverTrace.warn("almanach", "CalendarEventEncoder.encode", "root.ERROR",
-              "Following URL '" + url + "' is malformed !");
+          SilverLogger.getLogger(this).error("Following URL '" + url + "' is malformed !");
         }
       }
       if (eventDetail.getPeriodicity() != null) {
@@ -219,26 +227,4 @@ public class CalendarEventEncoder {
     return daysOfWeek;
   }
 
-  /**
-   * Creates a Temporal object from the specified date and time
-   *
-   * @param date the date (day in month in year).
-   * @param time the time if any. If the time is null or empty, then no time is defined and the
-   * returned temporal is a Date.
-   * @return a Temporal object corresponding to the specified date and time.
-   */
-  private Temporal<?> createDatable(final Date date, final String time) {
-    Temporal<?> temporal;
-    if (isDefined(time)) {
-      String[] timeComponents = time.split(":");
-      Calendar dateAndTime = Calendar.getInstance();
-      dateAndTime.setTime(date);
-      dateAndTime.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeComponents[0]));
-      dateAndTime.set(Calendar.MINUTE, Integer.valueOf(timeComponents[1]));
-      temporal = asTemporal(dateAndTime.getTime(), true);
-    } else {
-      temporal = asTemporal(date, false);
-    }
-    return temporal;
-  }
 }
