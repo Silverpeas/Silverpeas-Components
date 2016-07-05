@@ -25,7 +25,7 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.blog.notification.BlogUserNotification;
+import com.silverpeas.blog.notification.BlogUserAlertNotification;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -282,8 +282,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String postId) {
-    return UserNotificationHelper.build(new BlogUserNotification(getComponentId(), getPost(postId),
-        getUserDetail()));
+    return UserNotificationHelper
+        .build(new BlogUserAlertNotification(getPost(postId), getUserDetail()));
   }
 
   public synchronized void deletePost(String postId) {
