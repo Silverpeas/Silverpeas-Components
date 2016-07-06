@@ -3344,6 +3344,24 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
+  private void setModelUsed(NodePK from, NodePK to) {
+    Connection con = getConnection();
+    try {
+      // get templates defined for the 'from' node
+      Collection<String> modelIds = com.silverpeas.formTemplate.dao.ModelDAO.getModelUsed(con,
+          from.getInstanceId(), from.getId());
+      for (String modelId : modelIds) {
+        // set template to 'to' node
+        ModelDAO.addModel(con, to.getInstanceId(), modelId, to.getId());
+      }
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.setModelUsed()", ERROR,
+          "kmelia.IMPOSSIBLE_DE_RECUPERER_LES_MODELES", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
   @Override
   public List<NodeDetail> getAxis(String componentId) {
     ResourceLocator nodeSettings = new ResourceLocator(
@@ -4734,6 +4752,9 @@ public class KmeliaBmEJB implements KmeliaBm {
     // paste wysiwyg attached to node
     WysiwygController.copy(nodePKToCopy.getInstanceId(), "Node_" + nodePKToCopy.getId(),
         nodePK.getInstanceId(), "Node_" + nodePK.getId(), userId);
+
+    // associate model used by copied folder to new folder
+    setModelUsed(nodePKToCopy, nodePK);
 
     // paste publications of topics
     KmeliaCopyDetail folderContentCopy = new KmeliaCopyDetail(copyDetail);
