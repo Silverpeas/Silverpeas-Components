@@ -40,6 +40,7 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.Date;
@@ -52,6 +53,10 @@ import java.util.Map;
  * @author Nicolas Eysseric
  */
 public interface KmeliaService extends ApplicationService<KmeliaPublication> {
+
+  static KmeliaService get() {
+    return ServiceProvider.getService(KmeliaService.class);
+  }
 
   /**
    * Return the detail of a topic.
@@ -340,10 +345,13 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * processed.
    * @param userId id of the user who validate
    * @param force if true, force to validate publication (bypass pending validations)
+   * @param hasUserNoMoreValidationRight true if the given id represents a user which has no more
+   *        validation right (deleted user for example)
    * @return true if the validation process is complete (ie all validators have validate)
    * @
    */
-  boolean validatePublication(PublicationPK pubPK, String userId, boolean force);
+  boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
+      final boolean hasUserNoMoreValidationRight);
 
   void unvalidatePublication(PublicationPK pubPK, String userId, String refusalMotive,
       int validationType);

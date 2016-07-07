@@ -32,17 +32,7 @@ import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.model.TopicComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
-import org.silverpeas.components.kmelia.notification.KmeliaDefermentPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification
-    .KmeliaDocumentSubscriptionPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaModificationPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaNotifyPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification
-    .KmeliaPendingValidationPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaTopicUserNotification;
-import org.silverpeas.components.kmelia.notification.KmeliaValidationPublicationUserNotification;
+import org.silverpeas.components.kmelia.notification.*;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.ObjectType;
@@ -1992,6 +1982,19 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
+  private void sendNoMoreValidatorNotification(final NodePK fatherPK,
+      final PublicationDetail pubDetail) {
+    if (pubDetail.isValidationRequired() || pubDetail.isValid()) {
+      try {
+        UserNotificationHelper.buildAndSend(
+            new KmeliaNoMoreValidatorPublicationUserNotification(fatherPK, pubDetail));
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error("fatherId = {0}, pubPK = {1}",
+            new String[]{fatherPK.getId(), pubDetail.getPK().toString()}, e);
+      }
+    }
+  }
+
   private int getValidationType(String instanceId) {
     String sParam = getOrganisationController()
         .getComponentParameterValue(instanceId, InstanceParameters.validation);
@@ -2087,22 +2090,32 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
+      final boolean hasUserNoMoreValidationRight) {
     boolean validationComplete = false;
     try {
       CompletePublication currentPub = publicationService.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
+      PublicationDetail currentPubOrCloneDetail = currentPubDetail;
       boolean validationOnClone = currentPubDetail.haveGotClone();
       PublicationPK validatedPK = pubPK;
       if (validationOnClone) {
         validatedPK = currentPubDetail.getClonePK();
+        currentPubOrCloneDetail = getPublicationDetail(validatedPK);
       }
-      if (!isUserCanValidatePublication(validatedPK, userId)) {
+      if (!hasUserNoMoreValidationRight && !isUserCanValidatePublication(validatedPK, userId)) {
+        SilverLogger.getLogger(this)
+            .info("user ''{0}'' is not allowed to validate publication {1}", userId,
+                pubPK.toString());
         return false;
       }
+
+      String validatorUserId = userId;
+      Date validationDate = new Date();
+
       if (force) {
         validationComplete = true;
-      } else {
+      } else if (!hasUserNoMoreValidationRight) {
         int validationType = getValidationType(pubPK.getInstanceId());
         if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
             validationType == KmeliaHelper.VALIDATION_TARGET_1) {
@@ -2139,6 +2152,56 @@ public class DefaultKmeliaService implements KmeliaService {
           }
         }
 
+      } else {
+
+        // User has no more validation right
+        int validationType = getValidationType(pubPK.getInstanceId());
+
+        boolean alertPublicationOwnerThereIsNoMoreValidator = false;
+
+        switch (validationType) {
+          case KmeliaHelper.VALIDATION_CLASSIC:
+          case KmeliaHelper.VALIDATION_TARGET_1:
+            alertPublicationOwnerThereIsNoMoreValidator = true;
+            break;
+          default:
+            // get all users who have to validate
+            List<String> allValidators = getAllValidators(validatedPK);
+
+            if (allValidators.isEmpty()) {
+              alertPublicationOwnerThereIsNoMoreValidator = true;
+            } else {
+
+              // check if all validators have give their decision
+              validationComplete = isValidationComplete(validatedPK, allValidators);
+              if (validationComplete) {
+
+                // taking the last effective validator for the state change.
+                validationDate = new Date(0);
+                for (ValidationStep validationStep : publicationService
+                    .getValidationSteps(validatedPK)) {
+                  final String validationStepUserId = validationStep.getUserId();
+                  if (!validationStepUserId.equals(userId) &&
+                      validationStep.getValidationDate().compareTo(validationDate) > 0) {
+                    validationDate = validationStep.getValidationDate();
+                    validatorUserId = validationStepUserId;
+                  }
+                }
+              } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
+                  StringUtil.isNotDefined(currentPubOrCloneDetail.getTargetValidatorId())) {
+                // Case of fallback solution when no more validator is defined, all publishers
+                // must validate (as collegiate method)
+                alertPublicationOwnerThereIsNoMoreValidator = true;
+              }
+            }
+        }
+
+        if (alertPublicationOwnerThereIsNoMoreValidator) {
+          Collection<NodePK> fatherPks = getPublicationFathers(currentPubDetail.getPK());
+          if (!fatherPks.isEmpty()) {
+            sendNoMoreValidatorNotification(fatherPks.iterator().next(), currentPubDetail);
+          }
+        }
       }
 
       if (validationComplete) {
@@ -2147,10 +2210,10 @@ public class DefaultKmeliaService implements KmeliaService {
           removeAllTodosForPublication(pubPK);
         }
         if (currentPubDetail.haveGotClone()) {
-          currentPubDetail = mergeClone(currentPub, userId);
+          currentPubDetail = mergeClone(currentPub, validatorUserId, validationDate);
         } else if (currentPubDetail.isValidationRequired()) {
-          currentPubDetail.setValidatorId(userId);
-          currentPubDetail.setValidateDate(new Date());
+          currentPubDetail.setValidatorId(validatorUserId);
+          currentPubDetail.setValidateDate(validationDate);
           currentPubDetail.setStatus(PublicationDetail.VALID);
         }
         KmeliaHelper.checkIndex(currentPubDetail);
@@ -2165,7 +2228,7 @@ public class DefaultKmeliaService implements KmeliaService {
             sendSubscriptionsNotification(currentPubDetail, NotifAction.PUBLISHED, false);
 
         // publication's creator must be alerted
-        sendValidationNotification(oneFather, currentPubDetail, null, userId);
+        sendValidationNotification(oneFather, currentPubDetail, null, validatorUserId);
 
         // alert supervisors
         sendAlertToSupervisors(oneFather, currentPubDetail);
@@ -2241,8 +2304,20 @@ public class DefaultKmeliaService implements KmeliaService {
     return clone;
   }
 
-  private PublicationDetail mergeClone(CompletePublication currentPub, String userId)
-      throws FormException, PublicationTemplateException, AttachmentException {
+  /**
+   * In charge of merging data from the clone with the stable one.
+   * @param currentPub all the necessary data about a publication as {@link CompletePublication}.
+   * @param validatorUserId the identifier of the last user validating the given publication.
+   * @param validationDate the date of validation to register. Date of day is taken if null is
+   * given.
+   * @return the merged publication as {@link PublicationDetail}.
+   * @throws FormException
+   * @throws PublicationTemplateException
+   * @throws AttachmentException
+   */
+  private PublicationDetail mergeClone(CompletePublication currentPub, String validatorUserId,
+      final Date validationDate) throws
+      FormException, PublicationTemplateException, AttachmentException {
     PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
     String memInfoId = currentPubDetail.getInfoId();
     PublicationPK pubPK = currentPubDetail.getPK();
@@ -2256,9 +2331,9 @@ public class DefaultKmeliaService implements KmeliaService {
       currentPubDetail = getClone(tempPubliDetail);
 
       currentPubDetail.setPk(pubPK);
-      if (userId != null) {
-        currentPubDetail.setValidatorId(userId);
-        currentPubDetail.setValidateDate(new Date());
+      if (validatorUserId != null) {
+        currentPubDetail.setValidatorId(validatorUserId);
+        currentPubDetail.setValidateDate(validationDate != null ? validationDate : new Date());
       }
       currentPubDetail.setStatus(PublicationDetail.VALID);
       currentPubDetail.setCloneId("-1");
@@ -2468,7 +2543,7 @@ public class DefaultKmeliaService implements KmeliaService {
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
       if (userProfile.equals("publisher") || userProfile.equals("admin")) {
         if (pubDetail.haveGotClone()) {
-          pubDetail = mergeClone(currentPub, null);
+          pubDetail = mergeClone(currentPub, null, null);
         }
         pubDetail.setStatus(PublicationDetail.VALID);
         changedPublication = pubDetail;
@@ -4663,6 +4738,8 @@ public class DefaultKmeliaService implements KmeliaService {
     SilverLogger.getLogger(this)
         .info("User ''{0}'' have been removed from {1} publications as target validator", userId,
             publications.size());
-  }
 
+    // Validation process is performed, maybe some must be validated.
+    KmeliaValidation.by(userId).validatorHasNoMoreRight().validate(publications);
+  }
 }

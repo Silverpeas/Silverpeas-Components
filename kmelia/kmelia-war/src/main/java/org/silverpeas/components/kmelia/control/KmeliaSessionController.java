@@ -1461,8 +1461,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized boolean validatePublication(String publicationId) {
-    boolean validationComplete =
-        getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), false);
+    boolean validationComplete = getKmeliaBm()
+        .validatePublication(getPublicationPK(publicationId), getUserId(), false, false);
     if (validationComplete) {
       setSessionClone(null);
       refreshSessionPubliAndClone();
@@ -1471,7 +1471,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized boolean forcePublicationValidation(String publicationId) {
-    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), true);
+    return getKmeliaBm()
+        .validatePublication(getPublicationPK(publicationId), getUserId(), true, false);
   }
 
   public synchronized void unvalidatePublication(String publicationId, String refusalMotive) {
