@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,40 +23,50 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaActionPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
+public class KmeliaNoMoreValidatorPublicationUserNotification
+    extends AbstractKmeliaActionPublicationUserNotification {
 
-  public AbstractKmeliaActionPublicationUserNotification(NodePK nodePK, PublicationDetail resource, NotifAction action) {
-    super(nodePK, resource, action);
+  public KmeliaNoMoreValidatorPublicationUserNotification(final NodePK nodePK,
+      final PublicationDetail resource) {
+    super(nodePK, resource, null);
+  }
+
+  @Override
+  protected String getBundleSubjectKey() {
+    return "kmelia.publication.validators.nomore";
+  }
+
+  @Override
+  protected String getFileName() {
+    return "notificationNoMoreValidator";
+  }
+
+  @Override
+  protected Collection<String> getUserIdsToNotify() {
+    return Collections.singletonList(getMostRecentPublicationUpdater());
   }
 
   @Override
   protected String getSender() {
-    return getMostRecentPublicationUpdater();
+    return "-1";
   }
 
-  /**
-   * Gets the most recent identifier of the user which performed the last modification.<br/>
-   * If no identifier is retrieved, {@link #stop()} method is called and the process of
-   * notification building is terminated.
-   * @return a user identifier as string.
-   */
-  String getMostRecentPublicationUpdater() {
-    String userId = getResource().getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = getResource().getCreatorId();
-    }
-    if (!isDefined(userId)) {
-      stop();
-    }
-    return userId;
+  @Override
+  protected NotifAction getAction() {
+    return NotifAction.PENDING_VALIDATION;
   }
 }

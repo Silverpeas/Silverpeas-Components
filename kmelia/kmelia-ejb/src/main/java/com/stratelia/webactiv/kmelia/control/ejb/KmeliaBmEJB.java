@@ -30,15 +30,7 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.formTemplate.dao.ModelDAO;
-import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaNotifyPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.*;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
@@ -2198,6 +2190,20 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
+  private void sendNoMoreValidatorNotification(final NodePK fatherPK,
+      final PublicationDetail pubDetail) {
+    if (pubDetail.isValidationRequired() ||  pubDetail.isValid()) {
+      try {
+        UserNotificationHelper.buildAndSend(
+            new KmeliaNoMoreValidatorPublicationUserNotification(fatherPK, pubDetail));
+      } catch (Exception e) {
+        SilverTrace.warn("kmelia", "KmeliaBmEJB.sendNoMoreValidatorNotification()",
+            "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS",
+            "fatherId = " + fatherPK.getId() + ", pubPK = " + pubDetail.getPK(), e);
+      }
+    }
+  }
+
   private int getValidationType(String instanceId) {
     String sParam = getOrganisationController().getComponentParameterValue(instanceId,
         InstanceParameters.validation);
@@ -2304,7 +2310,8 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @see com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmBusinessSkeleton#validatePublication(com.stratelia.webactiv.util.publication.model.PublicationPK, java.lang.String, boolean)
    */
   @Override
-  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
+      final boolean hasUserNoMoreValidationRight) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
     try {
@@ -2315,14 +2322,18 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (validationOnClone) {
         validatedPK = currentPubDetail.getClonePK();
       }
-      if (!isUserCanValidatePublication(validatedPK, userId)) {
+      if (!hasUserNoMoreValidationRight && !isUserCanValidatePublication(validatedPK, userId)) {
         SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_PARAM_VALUE",
             "user " + userId + " is not allowed to validate publication " + pubPK.toString());
         return false;
       }
+
+      String validatorUserId = userId;
+      Date validationDate = new Date();
+
       if (force) {
         validationComplete = true;
-      } else {
+      } else if (!hasUserNoMoreValidationRight) {
         int validationType = getValidationType(pubPK.getInstanceId());
         if (validationType == KmeliaHelper.VALIDATION_CLASSIC || validationType
             == KmeliaHelper.VALIDATION_TARGET_1) {
@@ -2359,6 +2370,55 @@ public class KmeliaBmEJB implements KmeliaBm {
           }
         }
 
+      } else {
+
+        // User has no more validation right
+        int validationType = getValidationType(pubPK.getInstanceId());
+
+        boolean alertPublicationOwnerThereIsNoMoreValidator = false;
+
+        switch (validationType) {
+          case KmeliaHelper.VALIDATION_CLASSIC:
+          case KmeliaHelper.VALIDATION_TARGET_1:
+            alertPublicationOwnerThereIsNoMoreValidator = true;
+            break;
+          default:
+            // get all users who have to validate
+            List<String> allValidators = getAllValidators(validatedPK);
+
+            if (allValidators.isEmpty()) {
+              alertPublicationOwnerThereIsNoMoreValidator = true;
+            } else {
+
+              // check if all validators have give their decision
+              validationComplete = isValidationComplete(validatedPK, allValidators);
+              if (validationComplete) {
+
+                // taking the last effective validator for the state change.
+                validationDate = new Date(0);
+                for (ValidationStep validationStep : publicationBm.getValidationSteps(validatedPK)) {
+                  final String validationStepUserId = validationStep.getUserId();
+                  if (!validationStepUserId.equals(userId) &&
+                      validationStep.getValidationDate().compareTo(validationDate) > 0) {
+                    validationDate = validationStep.getValidationDate();
+                    validatorUserId = validationStepUserId;
+                  }
+                }
+              } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
+                  StringUtil.isNotDefined(currentPubDetail.getTargetValidatorId())) {
+                // Case of fallback solution when no more validator is defined, all publishers
+                // must validate (as collegiate method)
+                alertPublicationOwnerThereIsNoMoreValidator = true;
+              }
+            }
+        }
+
+        if (alertPublicationOwnerThereIsNoMoreValidator) {
+          Collection<NodePK> fatherPks = getPublicationFathers(currentPubDetail.getPK());
+          if (!fatherPks.isEmpty()) {
+            sendNoMoreValidatorNotification(fatherPks.iterator().next(), currentPubDetail);
+          }
+        }
       }
 
       if (validationComplete) {
@@ -2367,10 +2427,10 @@ public class KmeliaBmEJB implements KmeliaBm {
           removeAllTodosForPublication(pubPK);
         }
         if (currentPubDetail.haveGotClone()) {
-          currentPubDetail = mergeClone(currentPub, userId);
+          currentPubDetail = mergeClone(currentPub, validatorUserId, validationDate);
         } else if (currentPubDetail.isValidationRequired()) {
-          currentPubDetail.setValidatorId(userId);
-          currentPubDetail.setValidateDate(new Date());
+          currentPubDetail.setValidatorId(validatorUserId);
+          currentPubDetail.setValidateDate(validationDate);
           currentPubDetail.setStatus(PublicationDetail.VALID);
         }
         KmeliaHelper.checkIndex(currentPubDetail);
@@ -2385,7 +2445,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             sendSubscriptionsNotification(currentPubDetail, NotifAction.PUBLISHED, false);
 
         // publication's creator must be alerted
-        sendValidationNotification(oneFather, currentPubDetail, null, userId);
+        sendValidationNotification(oneFather, currentPubDetail, null, validatorUserId);
 
         // alert supervisors
         sendAlertToSupervisors(oneFather, currentPubDetail);
@@ -2463,7 +2523,19 @@ public class KmeliaBmEJB implements KmeliaBm {
     return clone;
   }
 
-  private PublicationDetail mergeClone(CompletePublication currentPub, String userId) throws
+  /**
+   * In charge of merging data from the clone with the stable one.
+   * @param currentPub all the necessary data about a publication as {@link CompletePublication}.
+   * @param validatorUserId the identifier of the last user validating the given publication.
+   * @param validationDate the date of validation to register. Date of day is taken if null is
+   * given.
+   * @return the merged publication as {@link PublicationDetail}.
+   * @throws FormException
+   * @throws PublicationTemplateException
+   * @throws AttachmentException
+   */
+  private PublicationDetail mergeClone(CompletePublication currentPub, String validatorUserId,
+      final Date validationDate) throws
       FormException, PublicationTemplateException, AttachmentException {
     PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
     String memInfoId = currentPubDetail.getInfoId();
@@ -2478,9 +2550,9 @@ public class KmeliaBmEJB implements KmeliaBm {
       currentPubDetail = getClone(tempPubliDetail);
 
       currentPubDetail.setPk(pubPK);
-      if (userId != null) {
-        currentPubDetail.setValidatorId(userId);
-        currentPubDetail.setValidateDate(new Date());
+      if (validatorUserId != null) {
+        currentPubDetail.setValidatorId(validatorUserId);
+        currentPubDetail.setValidateDate(validationDate != null ? validationDate : new Date());
       }
       currentPubDetail.setStatus(PublicationDetail.VALID);
       currentPubDetail.setCloneId("-1");
@@ -2705,7 +2777,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
       if (userProfile.equals("publisher") || userProfile.equals("admin")) {
         if (pubDetail.haveGotClone()) {
-          pubDetail = mergeClone(currentPub, null);
+          pubDetail = mergeClone(currentPub, null, null);
         }
         pubDetail.setStatus(PublicationDetail.VALID);
         changedPublication = pubDetail;
@@ -4990,10 +5062,13 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public void userHaveBeenDeleted(String userId) {
     List<PublicationDetail> publications = publicationBm.removeUserFromTargetValidators(userId);
+
     SilverTrace
         .info("kmelia", getClass().getSimpleName() + ".userHaveBeenDeleted()", "root.EX_NO_MESSAGE",
             "User #" + userId + " have been removed from " + publications.size() +
                 " publications as target validator");
-  }
 
+    // Validation process is performed, maybe some must be validated.
+    KmeliaValidation.by(userId).validatorHasNoMoreRight().validate(publications);
+  }
 }

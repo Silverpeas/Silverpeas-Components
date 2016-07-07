@@ -22,7 +22,6 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
-import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
@@ -364,10 +363,13 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * processed.
    * @param userId id of the user who validate
    * @param force if true, force to validate publication (bypass pending validations)
+   * @param hasUserNoMoreValidationRight true if the given id represents a user which has no more
+   *        validation right (deleted user for example)
    * @return true if the validation process is complete (ie all validators have validate)
    * @
    */
-  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force);
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
+      final boolean hasUserNoMoreValidationRight);
 
   public void unvalidatePublication(PublicationPK pubPK, String userId, String refusalMotive,
       int validationType);
