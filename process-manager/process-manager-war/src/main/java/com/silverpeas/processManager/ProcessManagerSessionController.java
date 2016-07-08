@@ -1634,7 +1634,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         HtmlForm htmlForm = new HtmlForm(processModel.getDataFolder().toRecordTemplate(currentRole,
             getLanguage(), true));
 
-        htmlForm.setFileName(form.getHTMLFileName());
+        htmlForm.setFileName(
+            WorkflowHub.getProcessModelManager().getProcessModelDir() + form.getHTMLFileName());
         return htmlForm;
       }
     } catch (Exception e) {
