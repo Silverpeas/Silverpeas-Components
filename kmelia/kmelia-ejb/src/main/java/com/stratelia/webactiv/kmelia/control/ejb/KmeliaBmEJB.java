@@ -51,6 +51,7 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
@@ -1260,6 +1261,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (isClone) {
         // update only updateDate
         publicationBm.setDetail(pubDetail, forceUpdateDate);
+        performValidatorChanges(old, pubDetail);
       } else {
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
         publicationBm.setDetail(pubDetail, forceUpdateDate);
@@ -1268,6 +1270,8 @@ public class KmeliaBmEJB implements KmeliaBm {
           if (statusChanged) {
             // creates todos for publishers
             this.createTodosForPublication(pubDetail, false);
+          } else {
+            performValidatorChanges(old, pubDetail);
           }
 
           updateSilverContentVisibility(pubDetail);
@@ -1317,6 +1321,36 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()",
         "root.MSG_GEN_EXIT_METHOD");
+  }
+
+  /**
+   * Performs the treatments associated to changes about set of validators linked to a publication.
+   * @param previousPublication the publication data (or clone data) before changes.
+   * @param currentPublication the publication data (or clone data if previousPublication is a
+   * clone) containing the changes.
+   */
+  private void performValidatorChanges(final PublicationDetail previousPublication,
+      final PublicationDetail currentPublication) {
+
+    // The publication (or the clone) must be into "ToValidate" state, and validator identifiers
+    // must exist.
+    if (currentPublication.isValidationRequired() &&
+        currentPublication.getTargetValidatorIds() != null) {
+
+      // Getting validator identifiers from previous and current data.
+      List<String> oldValidatorIds = Arrays.asList(previousPublication.getTargetValidatorIds());
+      List<String> newValidatorIds = Arrays.asList(currentPublication.getTargetValidatorIds());
+
+      // Computing identifiers of removed validators, and the ones of added validators.
+      List<String> toRemoveToDo = new ArrayList<String>(oldValidatorIds);
+      List<String> toAlert = new ArrayList<String>(newValidatorIds);
+      toRemoveToDo.removeAll(newValidatorIds);
+      toAlert.removeAll(oldValidatorIds);
+
+      // Performing the actions.
+      removeTodoForPublication(currentPublication.getPK(), toRemoveToDo);
+      addTodoAndSendNotificationToValidators(currentPublication, toAlert);
+    }
   }
 
   private boolean isVisibilityPeriodUpdated(PublicationDetail pubDetail, PublicationDetail old) {
@@ -2280,6 +2314,23 @@ public class KmeliaBmEJB implements KmeliaBm {
     return allValidators;
   }
 
+  public void setValidators(PublicationPK pubPK, String userIds) {
+    PublicationDetail publication = getPublicationDetail(pubPK);
+
+    String[] validatorIds = StringUtil.split(userIds, ',');
+
+    if (!ArrayUtil.isEmpty(validatorIds)) {
+      // set new validators in database
+      publication.setTargetValidatorId(userIds);
+      publication.setStatusMustBeChecked(false);
+      publication.setIndexOperation(IndexManager.NONE);
+      publicationBm.setDetail(publication);
+
+      //notify them...
+      sendValidationAlert(publication, validatorIds);
+    }
+  }
+
   /**
    *
    * @param pubPK
@@ -3096,11 +3147,18 @@ public class KmeliaBmEJB implements KmeliaBm {
         publicationBm.removeValidationSteps(pubDetail.getPK());
       }
       List<String> validators = getAllValidators(pubDetail.getPK());
+      addTodoAndSendNotificationToValidators(pubDetail, validators);
+    }
+  }
+
+  private void addTodoAndSendNotificationToValidators(PublicationDetail pub,
+      List<String> validators) {
+    if (validators != null && !validators.isEmpty()) {
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
-      addTodo(pubDetail, users);
+      addTodo(pub, users);
       // Send a notification to alert admins and publishers
-      sendValidationAlert(pubDetail, users);
+      sendValidationAlert(pub, users);
     }
   }
 
@@ -3144,6 +3202,14 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
     todoBBA.removeEntriesFromExternal("useless", pubPK.getInstanceId(), pubPK.getId());
+  }
+
+  private void removeTodoForPublication(PublicationPK pubPK, List<String> userIds) {
+    if (userIds != null) {
+      for(String userId : userIds) {
+        removeTodoForPublication(pubPK, userId);
+      }
+    }
   }
 
   private void removeTodoForPublication(PublicationPK pubPK, String userId) {

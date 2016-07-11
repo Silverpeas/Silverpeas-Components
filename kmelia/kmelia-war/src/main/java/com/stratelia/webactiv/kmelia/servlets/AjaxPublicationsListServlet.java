@@ -289,6 +289,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     ResourceLocator publicationSettings = new ResourceLocator(
         "org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
+    boolean targetValidationEnabled =
+        kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable();
 
     String language = kmeliaScc.getCurrentLanguage();
     String currentUserId = kmeliaScc.getUserDetail().getId();
@@ -322,6 +324,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<ul>");
       for (KmeliaPublication aPub : pubs) {
         PublicationDetail pub = aPub.getDetail();
+        PublicationDetail pubOrClone = pub;
+        if (pub.haveGotClone() && !pub.isClone()) {
+          pubOrClone = kmeliaScc.getPublicationDetail(pub.getCloneId());
+        }
         UserDetail currentUser = aPub.getCreator();
 
         String pubColor = "";
@@ -348,6 +354,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 || currentUserId.equals(currentUser.getId())) {
               pubColor = "red";
               pubState = resources.getString("kmelia.PubStateToValidate");
+              if (targetValidationEnabled) {
+                pubState = resources.getStringWithParam("kmelia.PubStateToValidateBy",
+                    pubOrClone.getTargetValidatorNames());
+              }
             }
           } else {
             if (pub.isNotYetVisible()) {
@@ -390,6 +400,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 pubState = resources.getString("kmelia.PubStateUnvalidate");
               } else {
                 pubState = resources.getString("kmelia.PubStateToValidate");
+                if (targetValidationEnabled) {
+                  pubState = resources.getStringWithParam("kmelia.PubStateToValidateBy",
+                      pubOrClone.getTargetValidatorNames());
+                }
               }
             }
           }
