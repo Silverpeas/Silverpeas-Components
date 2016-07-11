@@ -155,9 +155,11 @@
 	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
 	  } else if (pubDetail.isValidationRequired()) {
 	    screenMessage = "<div class=\"inlineMessage\">";
-      if (StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+      if ((validationType == KmeliaHelper.VALIDATION_TARGET_1 ||
+          validationType == KmeliaHelper.VALIDATION_TARGET_N) &&
+          StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
         String validatorNames = pubDetail.getTargetValidatorNames();
-        screenMessage += resources.getStringWithParam("kmelia.publication.tovalidate.state.by", validatorNames);
+        screenMessage += resources.getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
       } else {
         screenMessage += resources.getString("kmelia.publication.tovalidate.state");
       }

@@ -321,6 +321,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<ul>");
       for (KmeliaPublication aPub : pubs) {
         PublicationDetail pub = aPub.getDetail();
+        PublicationDetail pubOrClone = pub;
+        if (pub.haveGotClone() && !pub.isClone()) {
+          pubOrClone = kmeliaScc.getPublicationDetail(pub.getCloneId());
+        }
         UserDetail currentUser = aPub.getCreator();
 
         String pubColor = "";
@@ -350,7 +354,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubState = resources.getString("kmelia.PubStateToValidate");
               if (targetValidationEnabled) {
                 pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
-                    pub.getTargetValidatorNames());
+                    pubOrClone.getTargetValidatorNames());
               }
             }
           } else {
@@ -396,7 +400,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 pubState = resources.getString("kmelia.PubStateToValidate");
                 if (targetValidationEnabled) {
                   pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
-                      pub.getTargetValidatorNames());
+                      pubOrClone.getTargetValidatorNames());
                 }
               }
             }

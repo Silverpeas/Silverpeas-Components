@@ -51,6 +51,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
 	KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
+  int validationType = (Integer) request.getAttribute("ValidationType");
 	boolean 				attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
 	boolean 				userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
 	boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
@@ -100,9 +101,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
     } else if (pubDetail.isValidationRequired()) {
 	    screenMessage = "<div class=\"inlineMessage\">";
-      if (StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+      if ((validationType == KmeliaHelper.VALIDATION_TARGET_1 ||
+          validationType == KmeliaHelper.VALIDATION_TARGET_N) &&
+          StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
         String validatorNames = pubDetail.getTargetValidatorNames();
-        screenMessage += resources.getStringWithParam("kmelia.publication.tovalidate.state.by", validatorNames);
+        screenMessage += resources.getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
       } else {
         screenMessage += resources.getString("kmelia.publication.tovalidate.state");
       }
