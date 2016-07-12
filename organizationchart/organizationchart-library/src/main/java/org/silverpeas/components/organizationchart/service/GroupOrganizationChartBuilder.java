@@ -99,7 +99,10 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     List<OrganizationalPerson> personList = new ArrayList<>(userIds.length);
 
     for (String userId : userIds) {
-      personList.add(loadOrganizationalPerson(userId, type));
+      OrganizationalPerson person = loadOrganizationalPerson(userId, type);
+      if (person != null) {
+        personList.add(person);
+      }
     }
     Collections.sort(personList, new OrganizationalPersonComparator());
     return personList;
@@ -107,6 +110,10 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
   private OrganizationalPerson loadOrganizationalPerson(String id, OrganizationalChartType type) {
     UserFull user = OrganizationControllerProvider.getOrganisationController().getUserFull(id);
+
+    if (!user.isActivatedState()) {
+      return null;
+    }
 
     String userFunction = user.getValue(config.getAttTitle());
     String userDescription = user.getValue(config.getAttDesc());
