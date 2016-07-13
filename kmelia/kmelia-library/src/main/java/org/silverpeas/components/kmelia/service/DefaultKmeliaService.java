@@ -3056,6 +3056,28 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
+  /**
+   * Copy model used from a node to an other one.
+   * @param from the node the models used are linked to.
+   * @param to the node the models must be copied.
+   */
+  private void copyUsedModel(NodePK from, NodePK to) {
+    Connection con = getConnection();
+    try {
+      // get templates defined for the 'from' node
+      Collection<String> modelIds = ModelDAO.getModelUsed(con, from.getInstanceId(), from.getId());
+      for (String modelId : modelIds) {
+        // set template to 'to' node
+        ModelDAO.addModel(con, to.getInstanceId(), modelId, to.getId());
+      }
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.setModelUsed()", ERROR,
+          "kmelia.IMPOSSIBLE_DE_RECUPERER_LES_MODELES", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
   @Override
   public List<NodeDetail> getAxis(String componentId) {
     SettingBundle nodeSettings =
@@ -4405,6 +4427,9 @@ public class DefaultKmeliaService implements KmeliaService {
     WysiwygController
         .copy(nodePKToCopy.getInstanceId(), "Node_" + nodePKToCopy.getId(), nodePK.getInstanceId(),
             "Node_" + nodePK.getId(), userId);
+
+    // associate model used by copied folder to new folder
+    copyUsedModel(nodePKToCopy, nodePK);
 
     // paste publications of topics
     KmeliaCopyDetail folderContentCopy = new KmeliaCopyDetail(copyDetail);
