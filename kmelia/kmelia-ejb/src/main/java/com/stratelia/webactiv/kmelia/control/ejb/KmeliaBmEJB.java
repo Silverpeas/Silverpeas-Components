@@ -2368,10 +2368,12 @@ public class KmeliaBmEJB implements KmeliaBm {
     try {
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
+      PublicationDetail currentPubOrCloneDetail = currentPubDetail;
       boolean validationOnClone = currentPubDetail.haveGotClone();
       PublicationPK validatedPK = pubPK;
       if (validationOnClone) {
         validatedPK = currentPubDetail.getClonePK();
+        currentPubOrCloneDetail = getPublicationDetail(validatedPK);
       }
       if (!hasUserNoMoreValidationRight && !isUserCanValidatePublication(validatedPK, userId)) {
         SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_PARAM_VALUE",
@@ -2456,7 +2458,7 @@ public class KmeliaBmEJB implements KmeliaBm {
                   }
                 }
               } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
-                  StringUtil.isNotDefined(currentPubDetail.getTargetValidatorId())) {
+                  StringUtil.isNotDefined(currentPubOrCloneDetail.getTargetValidatorId())) {
                 // Case of fallback solution when no more validator is defined, all publishers
                 // must validate (as collegiate method)
                 alertPublicationOwnerThereIsNoMoreValidator = true;
