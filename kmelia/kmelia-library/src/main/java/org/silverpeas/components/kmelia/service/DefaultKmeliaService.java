@@ -107,6 +107,7 @@ import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -1134,6 +1135,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (isClone) {
         // update only updateDate
         publicationService.setDetail(pubDetail, forceUpdateDate);
+        performValidatorChanges(old, pubDetail);
       } else {
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
         publicationService.setDetail(pubDetail, forceUpdateDate);
@@ -1142,6 +1144,8 @@ public class DefaultKmeliaService implements KmeliaService {
           if (statusChanged) {
             // creates todos for publishers
             this.createTodosForPublication(pubDetail, false);
+          } else {
+            performValidatorChanges(old, pubDetail);
           }
 
           updateSilverContentVisibility(pubDetail);
@@ -1180,6 +1184,36 @@ public class DefaultKmeliaService implements KmeliaService {
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.updatePublication()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", e);
+    }
+  }
+
+  /**
+   * Performs the treatments associated to changes about set of validators linked to a publication.
+   * @param previousPublication the publication data (or clone data) before changes.
+   * @param currentPublication the publication data (or clone data if previousPublication is a
+   * clone) containing the changes.
+   */
+  private void performValidatorChanges(final PublicationDetail previousPublication,
+      final PublicationDetail currentPublication) {
+
+    // The publication (or the clone) must be into "ToValidate" state, and validator identifiers
+    // must exist.
+    if (currentPublication.isValidationRequired() &&
+        currentPublication.getTargetValidatorIds() != null) {
+
+      // Getting validator identifiers from previous and current data.
+      List<String> oldValidatorIds = Arrays.asList(previousPublication.getTargetValidatorIds());
+      List<String> newValidatorIds = Arrays.asList(currentPublication.getTargetValidatorIds());
+
+      // Computing identifiers of removed validators, and the ones of added validators.
+      List<String> toRemoveToDo = new ArrayList<String>(oldValidatorIds);
+      List<String> toAlert = new ArrayList<String>(newValidatorIds);
+      toRemoveToDo.removeAll(newValidatorIds);
+      toAlert.removeAll(oldValidatorIds);
+
+      // Performing the actions.
+      removeTodoForPublication(currentPublication.getPK(), toRemoveToDo);
+      addTodoAndSendNotificationToValidators(currentPublication, toAlert);
     }
   }
 
@@ -2064,6 +2098,23 @@ public class DefaultKmeliaService implements KmeliaService {
     return allValidators;
   }
 
+  public void setValidators(PublicationPK pubPK, String userIds) {
+    PublicationDetail publication = getPublicationDetail(pubPK);
+
+    String[] validatorIds = StringUtil.split(userIds, ',');
+
+    if (!ArrayUtil.isEmpty(validatorIds)) {
+      // set new validators in database
+      publication.setTargetValidatorId(userIds);
+      publication.setStatusMustBeChecked(false);
+      publication.setIndexOperation(IndexManager.NONE);
+      publicationService.setDetail(publication);
+
+      //notify them...
+      sendValidationAlert(publication, validatorIds);
+    }
+  }
+
   /**
    * @param pubPK
    * @param allValidators
@@ -2830,11 +2881,18 @@ public class DefaultKmeliaService implements KmeliaService {
         publicationService.removeValidationSteps(pubDetail.getPK());
       }
       List<String> validators = getAllValidators(pubDetail.getPK());
+      addTodoAndSendNotificationToValidators(pubDetail, validators);
+    }
+  }
+
+  private void addTodoAndSendNotificationToValidators(PublicationDetail pub,
+      List<String> validators) {
+    if (validators != null && !validators.isEmpty()) {
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
-      addTodo(pubDetail, users);
+      addTodo(pub, users);
       // Send a notification to alert admins and publishers
-      sendValidationAlert(pubDetail, users);
+      sendValidationAlert(pub, users);
     }
   }
 
@@ -2872,6 +2930,14 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   private void removeAllTodosForPublication(PublicationPK pubPK) {
     calendar.removeToDoFromExternal("useless", pubPK.getInstanceId(), pubPK.getId());
+  }
+
+  private void removeTodoForPublication(PublicationPK pubPK, List<String> userIds) {
+    if (userIds != null) {
+      for(String userId : userIds) {
+        removeTodoForPublication(pubPK, userId);
+      }
+    }
   }
 
   private void removeTodoForPublication(PublicationPK pubPK, String userId) {

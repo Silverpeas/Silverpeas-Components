@@ -1794,6 +1794,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setPopupMode(true);
     sel.setSetSelectable(false);
 
+    if (getSessionPubliOrClone() != null) {
+      String[] userIds = getSessionPubliOrClone().getDetail().getTargetValidatorIds();
+      sel.setSelectedElements(userIds);
+    }
+
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
@@ -3630,11 +3635,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void setPublicationValidator(String userIds) {
-    PublicationDetail publication = getSessionPubliOrClone().getDetail();
-    publication.setTargetValidatorId(userIds);
-    publication.setStatusMustBeChecked(false);
-    publication.setIndexOperation(IndexManager.NONE);
-    getPublicationBm().setDetail(publication);
+    getKmeliaBm().setValidators(getSessionPubliOrClone().getDetail().getPK(), userIds);
   }
 
   /**

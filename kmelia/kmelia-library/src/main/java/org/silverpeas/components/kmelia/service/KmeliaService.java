@@ -340,6 +340,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   List<String> getAllValidators(PublicationPK pubPK);
 
+  void setValidators(PublicationPK pubPK, String userIds);
+
   /**
    * @param pubPK id of the publication to validate. If publication is always visible, clone is
    * processed.
