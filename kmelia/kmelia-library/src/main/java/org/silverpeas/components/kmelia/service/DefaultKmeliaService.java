@@ -2098,8 +2098,8 @@ public class DefaultKmeliaService implements KmeliaService {
     return allValidators;
   }
 
-  public void setValidators(PublicationPK pubPK, String userIds) {
-    PublicationDetail publication = getPublicationDetail(pubPK);
+  public void setValidators(PublicationPK pubOrClonePK, String userIds) {
+    PublicationDetail publication = getPublicationDetail(pubOrClonePK);
 
     String[] validatorIds = StringUtil.split(userIds, ',');
 
@@ -2110,8 +2110,10 @@ public class DefaultKmeliaService implements KmeliaService {
       publication.setIndexOperation(IndexManager.NONE);
       publicationService.setDetail(publication);
 
-      //notify them...
-      sendValidationAlert(publication, validatorIds);
+      //notify them if the publication (or the clone) is in validation required state...
+      if (publication.isValidationRequired()) {
+        sendValidationAlert(publication, validatorIds);
+      }
     }
   }
 
