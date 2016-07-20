@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -36,7 +37,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * <p/>
  * @author mmoquillon
  */
-public interface SuggestionBoxService {
+public interface SuggestionBoxService extends ApplicationService<Suggestion> {
 
   /**
    * Gets an object of this interface. The default implementation is used.

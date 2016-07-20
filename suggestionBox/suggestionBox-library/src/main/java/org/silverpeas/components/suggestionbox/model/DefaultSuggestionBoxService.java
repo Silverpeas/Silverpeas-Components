@@ -47,8 +47,7 @@ import javax.transaction.Transactional;
  * @author mmoquillon
  */
 @Singleton
-public class DefaultSuggestionBoxService
-    implements SuggestionBoxService, ApplicationService<Suggestion> {
+public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Inject
   private SuggestionBoxRepository suggestionBoxRepository;

@@ -53,8 +53,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class DefaultFormsOnlineService
-    implements FormsOnlineService, ApplicationService<FormInstance> {
+public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Inject
   private OrganizationController organizationController;
