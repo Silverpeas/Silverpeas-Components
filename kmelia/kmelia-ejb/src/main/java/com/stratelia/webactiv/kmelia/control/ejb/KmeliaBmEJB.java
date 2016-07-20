@@ -2326,8 +2326,10 @@ public class KmeliaBmEJB implements KmeliaBm {
       publication.setIndexOperation(IndexManager.NONE);
       publicationBm.setDetail(publication);
 
-      //notify them...
-      sendValidationAlert(publication, validatorIds);
+      //notify them if the publication (or the clone) is in validation required state...
+      if (publication.isValidationRequired()) {
+        sendValidationAlert(publication, validatorIds);
+      }
     }
   }
 
