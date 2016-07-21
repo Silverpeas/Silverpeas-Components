@@ -644,7 +644,6 @@ function getMinimalContextualMenuForAdmins(items) {
 }
 
 function decorateNodeName(node) {
-  console.debug(node);
   <%-- This data is filled only if the application parameter 'displayNB' is activated --%>
   var nbPublicationsTheNodeContains = node.attr['nbItems'];
   if (nbPublicationsTheNodeContains) {
