@@ -643,6 +643,15 @@ function getMinimalContextualMenuForAdmins(items) {
   }
 }
 
+function decorateNodeName(node) {
+  console.debug(node);
+  <%-- This data is filled only if the application parameter 'displayNB' is activated --%>
+  var nbPublicationsTheNodeContains = node.attr['nbItems'];
+  if (nbPublicationsTheNodeContains) {
+    node.text = node.text + " (" + nbPublicationsTheNodeContains + ")";
+  }
+}
+
 function spreadNbItems(children) {
 	if (children) {
 		for(var i = 0; i < children.length; i++) {
@@ -651,14 +660,12 @@ function spreadNbItems(children) {
 			<% if (kmeliaScc.isOrientedWebContent()) { %>
       child.li_attr = { class: child.attr['status'] };
 			<% } %>
-			if (child.attr['nbItems'] >= 0) {
-				child.text = child.text + " ("+child.attr['nbItems']+")";
-        if (child.children && child.children.length > 0) {
-          spreadNbItems(child.children);
-        } else {
-          child.children = true;
-        }
-			}
+      decorateNodeName(child);
+      if (child.children && child.children.length > 0) {
+        spreadNbItems(child.children);
+      } else {
+        child.children = true;
+      }
     }
   }
 }
@@ -825,9 +832,7 @@ $(document).ready(function() {
               if (node.text) {
                 // this is the root
                 node.text = "<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>";
-                if (node.attr['nbItems'] >= 0) {
-                  node.text = node.text + " ("+node.attr['nbItems']+")";
-                }
+                decorateNodeName(node);
                 <% if (kmeliaScc.isOrientedWebContent()) { %>
                 node.li_attr = {class: node.attr['status']};
                 <% } %>
@@ -988,12 +993,7 @@ $(document).on("dnd_stop.vakata", function(event, data) {
       target = treeview.get_node('#' + targetId);
       if (targetId == getToValidateFolderId() || targetId == getCurrentNodeId()) {
         canBeDropped = false;
-      } else if (target.type === 'root' && arePublicationsOnRootAllowed()) {
-        var profile = getUserProfile(targetId);
-        if (profile != "<%=SilverpeasRole.user.toString()%>") {
-          canBeDropped = true;
-        }
-      } else {
+      } else if (target.type !== 'root' || arePublicationsOnRootAllowed()) {
         var profile = getUserProfile(targetId);
         if (profile != "<%=SilverpeasRole.user.toString()%>") {
           canBeDropped = true;
