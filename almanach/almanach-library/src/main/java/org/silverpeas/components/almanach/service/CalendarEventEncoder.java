@@ -29,10 +29,8 @@ import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventRecurrence;
-import org.silverpeas.core.calendar.DayOfWeek;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.TimeUnit;
-import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -41,6 +39,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,7 +51,6 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
-import static org.silverpeas.core.util.DateUtil.asTemporal;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -125,7 +123,9 @@ public class CalendarEventEncoder {
     ExceptionDatesGenerator generator = new ExceptionDatesGenerator();
     Set<Date> exceptionDates = generator.generateExceptionDates(event);
     for (Date anExceptionDate : exceptionDates) {
-      recurrence.excludeEventOccurrencesStartingAt(new DateTime(anExceptionDate, timeZone));
+      OffsetDateTime excludedDateTime =
+          anExceptionDate.toInstant().atZone(timeZone.toZoneId()).toOffsetDateTime();
+      recurrence.excludeEventOccurrencesStartingAt(excludedDateTime);
     }
     return recurrence;
   }
@@ -157,7 +157,11 @@ public class CalendarEventEncoder {
     }
     CalendarEventRecurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
     if (periodicity.getUntilDatePeriod() != null) {
-      recurrence.upTo(asTemporal(periodicity.getUntilDatePeriod(), true));
+      OffsetDateTime endDateTime = periodicity.getUntilDatePeriod()
+          .toInstant()
+          .atZone(TimeZone.getDefault().toZoneId())
+          .toOffsetDateTime();
+      recurrence.upTo(endDateTime);
     }
 
     return recurrence;
