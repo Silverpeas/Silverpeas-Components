@@ -28,6 +28,7 @@ import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -37,8 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
-
-import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.
@@ -83,7 +82,7 @@ public class CalendarEventEncoder {
                 .withMinute(0)
             .atZone(timeZone.toZoneId())
             .toOffsetDateTime();
-        CalendarEvent calendarEvent = anEventAt(startDateTime, endDateTime)
+        CalendarEvent calendarEvent = CalendarEvent.on(Period.between(startDateTime, endDateTime))
             .identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
             .withTitle(eventDetail.getTitle())
             .withDescription(eventDetail.getDescription());

@@ -33,6 +33,7 @@ import org.silverpeas.core.calendar.DayOfWeek;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.TimeUnit;
 import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -50,8 +51,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
-import static org.silverpeas.core.calendar.CalendarEvent.anEventOn;
 import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
 import static org.silverpeas.core.util.DateUtil.asTemporal;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -88,9 +87,9 @@ public class CalendarEventEncoder {
         OffsetDateTime endDateTime = endDate.atTime(LocalTime.parse(eventDetail.getEndHour()))
             .atZone(timeZone.toZoneId())
             .toOffsetDateTime();
-        event = anEventAt(startDateTime, endDateTime);
+        event = CalendarEvent.on(Period.between(startDateTime, endDateTime));
       } else {
-        event = anEventOn(startDate, endDate);
+        event = CalendarEvent.on(Period.between(startDate, endDate));
       }
       event.identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
           .withTitle(eventDetail.getTitle())
