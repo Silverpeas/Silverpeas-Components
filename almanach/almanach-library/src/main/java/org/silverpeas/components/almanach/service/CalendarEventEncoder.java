@@ -28,6 +28,7 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.date.TimeUnit;
@@ -92,7 +93,7 @@ public class CalendarEventEncoder {
       event.identifiedBy(eventDetail.getComponentInstanceId(), eventDetail.getId())
           .withTitle(eventDetail.getTitle())
           .withDescription(eventDetail.getWysiwyg())
-          .withPriority(eventDetail.getPriority());
+          .withPriority(Priority.valueOf(eventDetail.getPriority()));
       if (isDefined(eventDetail.getPlace())) {
         event.withLocation(eventDetail.getPlace());
       }
