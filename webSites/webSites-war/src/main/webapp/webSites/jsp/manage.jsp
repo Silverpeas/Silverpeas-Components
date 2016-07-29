@@ -107,11 +107,12 @@ function deleteWebSites(nbSite) {
 
 
       if (listeSite != "") {   //on a coch� au - un site
-        if (window.confirm("<%=resources.getString("MessageSuppressionLien")%>")) {
-        document.liste_liens.Action.value = "deleteWebSites";
-        document.liste_liens.SiteList.value = listeSite;
-        document.liste_liens.submit();
-        }
+        var label = "<%=resources.getString("MessageSuppressionLien")%>";
+        jQuery.popup.confirm(label, function() {
+          document.liste_liens.Action.value = "deleteWebSites";
+          document.liste_liens.SiteList.value = listeSite;
+          document.liste_liens.submit();
+        });
       }
     }
 }

@@ -377,11 +377,12 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  if(window.confirm("<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?")){
-      document.surveysForm.Action.value = "DeleteSurvey";
-      document.surveysForm.SurveyId.value = surveyId;
-      document.surveysForm.submit();
-  }
+  var label = "<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?";
+  jQuery.popup.confirm(label, function() {
+    document.surveysForm.Action.value = "DeleteSurvey";
+    document.surveysForm.SurveyId.value = surveyId;
+    document.surveysForm.submit();
+  });
 }
 
 function updateSurvey(surveyId, name, nbVotes)

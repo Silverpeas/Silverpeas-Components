@@ -770,8 +770,9 @@ else {
 <!--
 function confirmCancel()
 {
-	if (confirm('<%=resources.getString("ConfirmCancel")%>'))
-		self.location="Main.jsp";
+  jQuery.popup.confirm('<%=resources.getString("ConfirmCancel")%>', function() {
+    self.location = "Main.jsp";
+  });
 }
 
 function update_suggestion(quizz_id)
@@ -782,7 +783,7 @@ function update_suggestion(quizz_id)
       if (!isValidTextArea(document.quizz.txa_suggestion)) {
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n";
             errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("EducationSuggestion")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
-            window.alert(errorMsg);
+            jQuery.popup.error(errorMsg);
             return;
       }
       else

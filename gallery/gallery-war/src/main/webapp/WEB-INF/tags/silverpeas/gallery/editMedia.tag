@@ -87,22 +87,30 @@
   // Form validation
   function sendData() {
     <c:choose>
-    <c:when test="${formUpdate != null}">
-    if (isCorrectForm() && isCorrectLocalForm()) {
+      <c:when test="${formUpdate != null}">
+        ifCorrectHeaderFormExecute(function() {
+          ifCorrectLocalForm(function() {
+            reallySendData();
+          });
+        });
       </c:when>
       <c:otherwise>
-      if (isCorrectLocalForm()) {
-        </c:otherwise>
-        </c:choose>
-        <c:if test="${isUsePdc and isNewMediaCase}">
-        <view:pdcPositions setIn="document.${_formName}.Positions.value"/>
-        </c:if>
-        $.progressMessage();
-        document.${_formName}.submit();
-      }
-    }
+        ifCorrectLocalForm(function() {
+          reallySendData();
+        });
+      </c:otherwise>
+    </c:choose>
+  }
 
-    function isCorrectLocalForm() {
+  function reallySendData() {
+    <c:if test="${isUsePdc and isNewMediaCase}">
+    <view:pdcPositions setIn="document.${_formName}.Positions.value"/>
+    </c:if>
+    $.progressMessage();
+    document.${_formName}.submit();
+  }
+
+    function ifCorrectLocalForm(callback) {
       var errorMsg = "";
       var errorNb = 0;
       var title = stripInitialWhitespace(document.${_formName}.${MediaTitleInputName}.value);
@@ -186,25 +194,21 @@
       <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg" errorWebRender="true"/>;
       </c:if>
 
-      var result = true;
       switch (errorNb) {
         case 0 :
+          callback.call(this);
           break;
         case 1 :
           errorMsg =
               "<b><fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : </b><ul>" +
               errorMsg + "</ul>";
-          notyError(errorMsg);
-          result = false;
+          jQuery.popup.error(errorMsg);
           break;
         default :
           errorMsg = "<b><fmt:message key="GML.ThisFormContains"/> " + errorNb +
               " <fmt:message key="GML.errors"/> :</b><ul>" + errorMsg + "</ul>";
-          notyError(errorMsg);
-          result = false;
-          break;
+          jQuery.popup.error(errorMsg);
       }
-      return result;
     }
 
 </script>

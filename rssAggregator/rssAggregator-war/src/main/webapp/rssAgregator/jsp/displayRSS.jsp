@@ -174,7 +174,7 @@ function loadChannelsItem() {
     error: function(HttpRequest, textStatus, errorThrown) {
       //alert('XMLHttpRequest error');
       //HttpRequest, textStatus, errorThrown
-      alert(HttpRequest.status + " - " + textStatus+" - "+errorThrown);
+      notyError(HttpRequest.status + " - " + textStatus+" - "+errorThrown);
     },
     dataType: 'json'
   });

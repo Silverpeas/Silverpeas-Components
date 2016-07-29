@@ -84,13 +84,6 @@ if (action == null) {
 <view:includePlugin name="datepicker"/>
 <script language="javascript">
 function sendData() {
-  if (isCorrectForm()) {
-    <view:pdcPositions setIn="document.quizzForm.Positions.value"/>;    
-    document.quizzForm.submit();
-  }
-}
-
-function isCorrectForm() {
   var errorMsg = "";
   var errorNb = 0;
   var title = stripInitialWhitespace(document.quizzForm.title.value);
@@ -191,25 +184,21 @@ function isCorrectForm() {
   
   switch(errorNb) {
     case 0 :
-        result = true;
+        <view:pdcPositions setIn="document.quizzForm.Positions.value"/>;
+        document.quizzForm.submit();
         break;
     case 1 :
         errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
     default :
         errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
   }
-  return result;
 }
-
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
 if (action.equals("CreateQuizz")) {
   cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);

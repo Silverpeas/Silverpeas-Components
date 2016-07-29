@@ -63,15 +63,6 @@
 // fonctions de controle des zones du formulaire avant validation
 function sendData(creation)
 {
-    if (isCorrectForm())
-    {
-        document.forms["categoryForm"].action = (creation ? "CreateCategory" : "UpdateCategory");
-        document.forms["categoryForm"].submit();
-    }
-}
-
-function isCorrectForm()
-{
     var errorMsg = "";
     var errorNb = 0;
     var name = stripInitialWhitespace(document.categoryForm.Name.value);
@@ -83,14 +74,14 @@ function isCorrectForm()
 
     if (errorNb > 0)
     {
-        window.alert("<fmt:message key="GML.ThisFormContains" /> " + errorNb
+        jQuery.popup.error("<fmt:message key="GML.ThisFormContains" /> " + errorNb
             + " " + (errorNb == 1 ? "<fmt:message key="GML.error" />" : "<fmt:message key="GML.errors"/>")
             + " : \n" + errorMsg);
-        return false;
     }
     else
     {
-        return true;
+        document.forms["categoryForm"].action = (creation ? "CreateCategory" : "UpdateCategory");
+        document.forms["categoryForm"].submit();
     }
 }
   </script>

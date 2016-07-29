@@ -93,7 +93,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
     });
 
     if (criterias.length == 0) {
-      window.alert("Vous devez sélectionnez au moins un axe !");
+      jQuery.popup.error("Vous devez sélectionnez au moins un axe !");
     } else {
       document.managerForm.action = "KmaxAddCoordinate";
       document.managerForm.SearchCombination.value = criterias;
@@ -102,11 +102,12 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 	}
 
 	function deleteCoordinate(coordinateId) {
-	    if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteCoordinate")%> ?")){
-	        document.managerForm.CoordinateId.value = coordinateId;
-	        document.managerForm.action = "KmaxDeleteCoordinate";
-	        document.managerForm.submit();
-	    }
+    var label = "<%=kmeliaScc.getString("ConfirmDeleteCoordinate")%> ?";
+    jQuery.popup.confirm(label, function() {
+      document.managerForm.CoordinateId.value = coordinateId;
+      document.managerForm.action = "KmaxDeleteCoordinate";
+      document.managerForm.submit();
+    });
 	}
 </script>
 </head>

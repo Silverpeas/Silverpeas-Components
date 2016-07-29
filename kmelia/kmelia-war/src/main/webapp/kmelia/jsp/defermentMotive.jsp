@@ -44,14 +44,6 @@ Button validateButton 	= gef.getFormButton(resources.getString("GML.validate"), 
 <view:looknfeel withCheckFormScript="true"/>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {
-      if (isCorrectForm()) {
-			window.opener.document.defermentForm.Motive.value = stripInitialWhitespace(document.refusalForm.Motive.value);
-			window.opener.document.defermentForm.submit();
-			window.close();
-      }
-}
-
-function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
@@ -62,20 +54,18 @@ function isCorrectForm() {
      switch(errorNb)
      {
         case 0 :
-            result = true;
+            window.opener.document.defermentForm.Motive.value = stripInitialWhitespace(document.refusalForm.Motive.value);
+            window.opener.document.defermentForm.submit();
+            window.close();
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 </script>
 </HEAD>

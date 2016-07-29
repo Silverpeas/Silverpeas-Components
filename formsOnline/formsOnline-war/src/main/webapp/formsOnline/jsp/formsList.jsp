@@ -56,10 +56,11 @@
 <view:looknfeel/>
 <script type="text/javascript">
   function deleteForm(idModel) {
-    if (window.confirm("<fmt:message key="formsOnline.deleteFormConfirm"/>")) {
+    var label = "<fmt:message key="formsOnline.deleteFormConfirm"/>";
+    jQuery.popup.confirm(label, function() {
       document.deleteForm.formId.value = idModel;
       document.deleteForm.submit();
-    }
+    });
   }
 
   function allRequests() {

@@ -94,7 +94,7 @@ function simpleTopicGoToSelected() {
 }
 
 <% if (profile.equals("admin")) { %>
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
    var errorMsg = "";
    var errorNb = 0;
    var title = stripInitialWhitespace(window.document.AddAndUpdateFolderForm.Name.value);
@@ -104,28 +104,25 @@ function isCorrectForm() {
    }
    switch(errorNb) {
       case 0 :
-          result = true;
+          callback.call(this);
           break;
       case 1 :
           errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
+          jQuery.popup.error(errorMsg);
           break;
       default :
           errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
-          break;
+          jQuery.popup.error(errorMsg);
    }
-   return result;
 }
 
 function topicDeleteConfirm(childId, name) {
-    if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?")){
-          document.topicDetailForm.action = "DeleteFolder";
-          document.topicDetailForm.ToDeleteId.value = childId;
-          document.topicDetailForm.submit();
-    }
+  var label = "<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?";
+  jQuery.popup.confirm(label, function() {
+    document.topicDetailForm.action = "DeleteFolder";
+    document.topicDetailForm.ToDeleteId.value = childId;
+    document.topicDetailForm.submit();
+  });
 }
 function deleteBasketContent()
 {
@@ -134,11 +131,12 @@ function deleteBasketContent()
 }
 
 function groupDeleteConfirm(childId, name) {
-    if(window.confirm("<%=resources.getString("ConfirmDeleteTopic")%> '" + name + "' ?")){
-      document.topicDetailForm.action = "RemoveGroup";
-      document.topicDetailForm.ToDeleteId.value = childId;
-      document.topicDetailForm.submit();
-    }
+  var label = "<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?";
+  jQuery.popup.confirm(label, function() {
+    document.topicDetailForm.action = "RemoveGroup";
+    document.topicDetailForm.ToDeleteId.value = childId;
+    document.topicDetailForm.submit();
+  });
 }
 <% } %>
 
@@ -164,11 +162,12 @@ function contactGoTo(id) {
 }
 
 function contactDeleteConfirm(id) {
-    if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?")){
-          document.contactDeleteForm.action = "DeleteContact";
-          document.contactDeleteForm.ContactId.value = id;
-          document.contactDeleteForm.submit();
-    }
+  var label = "<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?";
+  jQuery.popup.confirm(label, function() {
+    document.contactDeleteForm.action = "DeleteContact";
+    document.contactDeleteForm.ContactId.value = id;
+    document.contactDeleteForm.submit();
+  });
 }
 
 function consult() {
@@ -199,9 +198,9 @@ function toAddOrUpdateFolder(action, id) {
     $('#folderDialog').popup('validation', {
       title : dialogTitle,
       callback : function() {
-        if (isCorrectForm()) {
+        ifCorrectFormExecute(function() {
           window.document.AddAndUpdateFolderForm.submit();
-        }
+        });
         return true;
       }
     });

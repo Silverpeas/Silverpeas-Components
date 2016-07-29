@@ -64,7 +64,7 @@ function validerNom(){
 function verification(){
 	if(document.getElementById("name").value == 0 )
 		{
-      alert('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>'
+      jQuery.popup.error('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>'
     )
       ;
     }
@@ -75,7 +75,6 @@ function verification(){
 }
 
 </script>
-
 </head>
 <body>
 <%

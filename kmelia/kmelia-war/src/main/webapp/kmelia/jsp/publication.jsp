@@ -275,10 +275,10 @@
             buttons: {
               'OK': function() {
             	  if (!$.trim($("#refusal-motive").val())) {
-            		  window.alert("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
+                  jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
             		  return true;
             	  } else {
-			  		document.refusalForm.submit();
+			  		      document.refusalForm.submit();
             	  }
               },
               '<%= resources.getString("GML.cancel") %>': function() {
@@ -312,11 +312,12 @@
 
       function pubDeleteConfirm() {
         closeWindows();
-        if(window.confirm("<%=resources.getString("ConfirmDeletePub")%>")){
+        var label = "<%=resources.getString("ConfirmDeletePub")%>";
+        jQuery.popup.confirm(label, function() {
           document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
           document.toRouterForm.PubId.value = "<%=id%>";
           document.toRouterForm.submit();
-        }
+        });
       }
 
       function pubValidate() {
@@ -369,11 +370,10 @@
       function alertUsers()
       {
       <% if (!pubDetail.isValid()) {%>
-          if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString(
-              "kmelia.AlertButPubNotValid"))%>"))
-                  {
-                    goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
-                  }
+        var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+        jQuery.popup.confirm(label, function() {
+          goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+        });
       <% } else {%>
           goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
       <% }%>
@@ -382,11 +382,10 @@
         function alertUsersAttachment(attachmentId)
         {
       <% if (!pubDetail.isValid()) {%>
-          if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString(
-              "kmelia.AlertButPubNotValid"))%>"))
-                  {
-                    goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
-                  }
+          var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          jQuery.popup.confirm(label, function() {
+            goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
+          });
       <% } else {%>
           goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
       <% }%>
@@ -395,11 +394,10 @@
         function alertUsersDocument(documentId)
         {
       <% if (!pubDetail.isValid()) {%>
-          if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString(
-              "kmelia.AlertButPubNotValid"))%>"))
-                  {
-                    goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
-                  }
+          var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          jQuery.popup.confirm(label, function() {
+            goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
+          });
       <% } else {%>
           goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
       <% }%>

@@ -118,7 +118,7 @@ function B_VALIDER_ONCLICK() {
         document.AddTopicLink.ListeTopics.value = f;
         document.AddTopicLink.submit();
     } else {
-        alert('<%=yellowpagesScc.getString("ErrorAddLink")%>');
+        jQuery.popup.error('<%=yellowpagesScc.getString("ErrorAddLink")%>');
     }
 }
 //-->

@@ -58,7 +58,7 @@
   <script type="text/javascript">
     function validateMessage() {
       if (!$('textarea').val().trim()) {
-        window.alert("'<fmt:message key="RefusalMotive" /> <fmt:message key="GML.MustBeFilled" />'");
+        jQuery.popup.error("'<fmt:message key="RefusalMotive" /> <fmt:message key="GML.MustBeFilled" />'");
       } else {
         document.refusalForm.action = "RefuseMessage";
         document.refusalForm.submit();

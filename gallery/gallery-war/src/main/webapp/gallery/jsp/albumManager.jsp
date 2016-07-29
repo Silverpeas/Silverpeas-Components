@@ -56,18 +56,14 @@
     $("#galleryEditor").popup({
       title: title,
       callback: function() {
-        var isCorrect = validateGalleryForm();
-        if (isCorrect)
-        {
+        ifValidGalleryFormExecute(function() {
           document.galleryForm.submit();
-
-        }
-        return isCorrect;
+        });
       }
     });
   }
 
-  function validateGalleryForm()
+  function ifValidGalleryFormExecute(callback)
   {
     var errorMsg = "";
     var errorNb = 0;
@@ -80,20 +76,16 @@
     switch(errorNb)
     {
       case 0 :
-        result = true;
+        callback.call(this);
         break;
       case 1 :
         errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/>: \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
       default :
         errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.error"/>:\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
       }
-      return result;
     }
 </script>
 

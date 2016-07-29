@@ -83,19 +83,21 @@
     function sendData() {
       <c:choose>
       <c:when test="${not empty formUpdate}">
-      if (isCorrectHeaderForm() && isCorrectForm()) {
-        document.mediaForm.submit();
-      }
+      ifCorrectHeaderFormExecute(function() {
+        ifCorrectFormExecute(function() {
+          document.mediaForm.submit();
+        });
+      });
       </c:when>
       <c:otherwise>
-      if (isCorrectHeaderForm()) {
+      ifCorrectHeaderFormExecute(function() {
         document.mediaForm.submit();
-      }
+      });
       </c:otherwise>
       </c:choose>
     }
 
-    function isCorrectHeaderForm() {
+    function ifCorrectHeaderFormExecute(callback) {
       var errorMsg = "";
       var errorNb = 0;
       var title = stripInitialWhitespace(document.mediaForm.Media$Title.value);
@@ -129,24 +131,21 @@
         errorNb++;
       });
 
-      var result = false;
       switch (errorNb) {
         case 0 :
-          result = true;
+          callback.call(this);
           break;
         case 1 :
           errorMsg =
               "<b><%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : </b><ul>" +
               errorMsg + "</ul>";
-          notyError(errorMsg);
+          jQuery.popup.error(errorMsg);
           break;
         default :
           errorMsg = "<b><%=resource.getString("GML.ThisFormContains")%> " + errorNb +
               " <%=resource.getString("GML.errors")%> :</b><ul>" + errorMsg + "</ul>";
-          notyError(errorMsg);
-          break;
+          jQuery.popup.error(errorMsg);
       }
-      return result;
     }
   </script>
 

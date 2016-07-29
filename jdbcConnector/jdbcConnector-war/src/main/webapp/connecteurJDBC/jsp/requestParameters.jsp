@@ -50,14 +50,13 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 <script type="text/javascript">
 	function processUpdate()
 	{
-
 		if( isValidTextMaxi(document.processForm.SQLReq))
 		{
 			document.processForm.action = "SetSQLRequest";
 			document.processForm.submit();
     } else {
       var err = '<%=connecteurJDBC.getString("erreurChampsTropLong")%>';
-      alert(err);
+      jQuery.popup.error(err);
     }
 	}
 

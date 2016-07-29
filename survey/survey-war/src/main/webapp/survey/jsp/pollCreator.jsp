@@ -207,8 +207,8 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
 <script type="text/javascript">
   function sendData()
   {
-    if (isCorrectForm()) {
-      if (checkAnswers()) {
+    ifCorrectFormExecute(function() {
+      ifCorrectAnswersExecute(function() {
         if (window.document.pollForm.suggestion.checked) {
           window.document.pollForm.SuggestionAllowed.value = "1";
         }
@@ -220,11 +220,11 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
         <view:pdcPositions setIn="document.pollForm.Positions.value"/>;
 <% } %>
         window.document.pollForm.submit();
-      }
-    }
+      });
+    });
   }
 
-  function checkAnswers()
+  function ifCorrectAnswersExecute(callback)
   {
     var errorMsg = "";
     var errorNb = 0;
@@ -271,7 +271,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
     }
     switch(errorNb) {
       case 0 :
-        result = true;
+        callback.call(this);
         break;
       default :
         fields = fieldsEmpty.split(",");
@@ -283,14 +283,12 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
             errorMsg += "<%=resources.getString("OtherAnswer")%> \n";
           }
         }
-        window.alert("<%=resources.getString("EmptyAnswerNotAllowed")%> \n" + errorMsg);
-        result = false;
+        jQuery.popup.error("<%=resources.getString("EmptyAnswerNotAllowed")%> \n" + errorMsg);
         break;
       }
-      return result;
     }
 
-    function isCorrectForm() {
+    function ifCorrectFormExecute(callback) {
       var errorMsg = "";
       var errorNb = 0;
       var title = stripInitialWhitespace(window.document.pollForm.title.value);
@@ -372,20 +370,16 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
    
    	  switch(errorNb) {
         case 0 :
-          result = true;
+          callback.call(this);
           break;
         case 1 :
           errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
+          jQuery.popup.error(errorMsg);
           break;
         default :
           errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
-          break;
+          jQuery.popup.error(errorMsg);
         }
-        return result;
       }
 
       var galleryWindow = window;

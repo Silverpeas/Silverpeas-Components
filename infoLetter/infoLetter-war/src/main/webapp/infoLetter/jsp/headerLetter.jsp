@@ -52,10 +52,11 @@ String parution = (String) request.getAttribute("parution");
   }
 
 function goValidate () {
-	if (window.confirm('<fmt:message key="infoLetter.sendLetter" />')) {
+  var label = "<fmt:message key="infoLetter.sendLetter" />";
+  jQuery.popup.confirm(label, function() {
 		$.progressMessage();
 		document.validateParution.submit();
-	}
+	});
 }
 
 function goView (){
@@ -72,18 +73,6 @@ function goTemplate (){
 }
 
 function submitForm() {
-  if (isCorrectForm()) {
-    <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;
-    document.changeParutionHeaders.action = "ChangeParutionHeaders";
-    $.progressMessage();
-    document.changeParutionHeaders.submit();
-  }
-}
-/**
- * This function control form
- * return true if form can be submitted, false else if
- */
-function isCorrectForm() {
   var errorMsg = "";
   var errorNb = 0;
 
@@ -101,20 +90,19 @@ function isCorrectForm() {
 
   switch(errorNb) {
   case 0 :
-      result = true;
+      <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;
+      document.changeParutionHeaders.action = "ChangeParutionHeaders";
+      $.progressMessage();
+      document.changeParutionHeaders.submit();
       break;
   case 1 :
       errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
   default :
       errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 function cancelForm() {

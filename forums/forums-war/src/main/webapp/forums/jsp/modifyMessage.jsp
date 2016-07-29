@@ -56,11 +56,11 @@
         {
             if (document.forms["forumsForm"].elements["messageTitle"].value == "")
             {
-                alert('<%=resource.getString("emptyMessageTitle")%>');
+                jQuery.popup.error('<%=resource.getString("emptyMessageTitle")%>');
             }
             else if (!isTextFilled())
             {
-                alert('<%=resource.getString("emptyMessageText")%>');
+                jQuery.popup.error('<%=resource.getString("emptyMessageText")%>');
             }
             else
             {

@@ -108,14 +108,14 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 	        notifyWindow.close();
 	    notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 	}
-	function deletePost(postId)
-	{
-		if (window.confirm("<%=resource.getString("blog.confirmDeletePost")%>"))
-	    {
-	    	document.postForm.action = "DeletePost";
-	    	document.postForm.PostId.value = postId;
-			document.postForm.submit();
-	    }
+
+	function deletePost(postId) {
+    var label = "<%=resource.getString("blog.confirmDeletePost")%>";
+    jQuery.popup.confirm(label, function() {
+      document.postForm.action = "DeletePost";
+      document.postForm.PostId.value = postId;
+      document.postForm.submit();
+    });
 	}
 </script>
 </head>

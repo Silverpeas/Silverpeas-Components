@@ -78,11 +78,12 @@
 <script type="text/javascript">
 	function deleteConfirm(id) {
 		// confirmation de suppression de l'annonce
-		if (window.confirm("<c:out value='${deletionConfirm}'/>")) {
+    var label = "<c:out value='${deletionConfirm}'/>";
+    jQuery.popup.confirm(label, function() {
 			document.classifiedForm.action = "DeleteClassified";
 			document.classifiedForm.ClassifiedId.value = id;
 			document.classifiedForm.submit();
-		}
+		});
 	}
 
 	function updateClassified(id) {
@@ -121,12 +122,6 @@
 	}
 	
 	function sendRefusalForm() {
-		if (isRefusalFormOK()) {
-			document.refusalForm.submit();
-		}
-	}
-
-	function isRefusalFormOK() {
 		var errorMsg = "";
 		var errorNb = 0;
 		var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
@@ -136,22 +131,18 @@
 		}
 		switch (errorNb) {
 		case 0:
-			result = true;
+      document.refusalForm.submit();
 			break;
 		case 1:
 			errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
 					+ errorMsg;
-			window.alert(errorMsg);
-			result = false;
+      jQuery.popup.error(errorMsg);
 			break;
 		default:
 			errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
 					+ " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-			window.alert(errorMsg);
-			result = false;
-			break;
+      jQuery.popup.error(errorMsg);
 		}
-		return result;
 	}
 	
 	$(document).ready(function() {

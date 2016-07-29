@@ -129,7 +129,9 @@ function getExtension(filename) {
   return null;
 }
 
-function areFilesCorrect(wallPaper, styleSheet) {
+function ifFilesCorrectExecute(callback) {
+  var wallPaper = $("#customizationDialog #WallPaperNewFile").val();
+  var styleSheet = $("#customizationDialog #StyleSheetNewFile").val();
   var errorMsg = "";
   var errorNb = 0;
 
@@ -165,20 +167,16 @@ function areFilesCorrect(wallPaper, styleSheet) {
 
   switch(errorNb) {
     case 0 :
-      result = true;
+      callback.call(this);
       break;
      case 1 :
       errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
      default :
       errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 $(function() {
@@ -190,11 +188,9 @@ $(function() {
   width: 750,
   buttons: {
     "<%=resource.getString("GML.ok")%>": function() {
-      var wallPaperNewFile = $("#customizationDialog #WallPaperNewFile").val();
-      var styleSheetNewFile = $("#customizationDialog #StyleSheetNewFile").val();
-      if (areFilesCorrect(wallPaperNewFile, styleSheetNewFile)) {
+      ifFilesCorrectExecute(function() {
         document.customizationFiles.submit();
-      }
+      });
     },
     "<%=resource.getString("GML.cancel")%>": function() {
       $(this).dialog("close");

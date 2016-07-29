@@ -80,18 +80,18 @@ function isCorrect(nom) {
 /************************************************************************************/
 
 function sendData() {
-	if (isCorrectForm()) {
+	ifCorrectFormExecute(function() {
 		window.opener.document.liste.Action.value = "Update";
 		window.opener.document.liste.ChildId.value = document.topicForm.ChildId.value;
 		window.opener.document.liste.Name.value = stripInitialWhitespace(document.topicForm.Name.value);
 		window.opener.document.liste.description.value = stripInitialWhitespace(document.topicForm.description.value);
 		window.opener.document.liste.submit();
 		window.close();
-      }
+      });
 }
 
 /************************************************************************************/
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
@@ -105,26 +105,20 @@ function isCorrectForm() {
      }
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
-
 </script>
 </HEAD>
-
-<BODY bgcolor="white" topmargin="15" leftmargin="20" onload="document.topicForm.Name.focus()">
+<BODY onload="document.topicForm.Name.focus()">
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();

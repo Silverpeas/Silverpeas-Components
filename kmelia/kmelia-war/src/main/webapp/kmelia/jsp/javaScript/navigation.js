@@ -590,7 +590,8 @@ function writeInConsole(text) {
 }
 
 function deleteFolder(nodeId, nodeLabel) {
-  if (window.confirm(getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?")) {
+  var label = getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?";
+  jQuery.popup.confirm(label, function() {
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
@@ -605,10 +606,11 @@ function deleteFolder(nodeId, nodeLabel) {
         // go to parent node
         displayTopicContent(data);
       } else {
-        alert(data);
+        notyError(data);
       }
     }, 'text');
-  }
+    return true;
+  });
 }
 
 function deleteCurrentNode() {
@@ -735,20 +737,18 @@ function submitTopic() {
     errorMsg += "  - '" + getString('TopicTitle') + "' " + getString('GML.MustBeFilled') + "\n";
     errorNb++;
   }
+  var result = false;
   switch (errorNb) {
     case 0 :
       result = true;
       break;
     case 1 :
       errorMsg = getString('GML.ThisFormContains') + " 1 " + getString('GML.error') + " : \n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
     default :
       errorMsg = getString('GML.ThisFormContains') + " " + errorNb + " " + getString('GML.errors') + " :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
   if (result) {
     document.topicForm.submit();
@@ -756,7 +756,7 @@ function submitTopic() {
 }
 
 function emptyTrash() {
-  if (window.confirm(getString('ConfirmFlushTrashBean'))) {
+  jQuery.popup.confirm(getString('ConfirmFlushTrashBean'), function() {
     $.progressMessage();
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
@@ -766,10 +766,11 @@ function emptyTrash() {
       if (data === "ok") {
         displayTopicContent("1");
       } else {
-        alert(data);
+        notyError(data);
       }
     }, 'text');
-  }
+    return true;
+  });
 }
 
 function checkDnD(id, operations) {
@@ -926,7 +927,7 @@ function _updateTopicStatus(nodeId, status, recursive) {
     if (data === "ok") {
       updateUIStatus(nodeId, status, recursive);
     } else {
-      alert(data);
+      notyError(data);
     }
   }, 'text');
 }

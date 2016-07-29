@@ -155,13 +155,13 @@ if ("UpdateSurveyHeader".equals(action))
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
 function sendData() {
-    if (isCorrectForm()) {
-		document.surveyForm.anonymous.disabled = false;
-        document.surveyForm.submit();
-    }
+    ifCorrectFormExecute(function() {
+		  document.surveyForm.anonymous.disabled = false;
+      document.surveyForm.submit();
+    });
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.surveyForm.title.value);
@@ -227,32 +227,37 @@ function isCorrectForm() {
   	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
   
      switch(errorNb) {
-        case 0 :
-            result = true;
+       case 0 :
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 function updateQuestions(surveyId, name, nbVotes)
 {
   var voteNumbers = parseInt(nbVotes);
-  if(voteNumbers == 0 || window.confirm("<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?")) {
-    document.surveyForm.action = "QuestionsUpdate";
-    document.surveyForm.Action.value = "UpdateQuestions";
-    document.surveyForm.SurveyId.value = surveyId;
-    document.surveyForm.submit();
+  if(voteNumbers == 0) {
+    reallyUpdateQuestions(surveyId);
+  } else {
+    var label = "<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?";
+    jQuery.popup.confirm(label, function() {
+      reallyUpdateQuestions(surveyId);
+    });
   }
+}
+
+function reallyUpdateQuestions(surveyId) {
+  document.surveyForm.action = "QuestionsUpdate";
+  document.surveyForm.Action.value = "UpdateQuestions";
+  document.surveyForm.SurveyId.value = surveyId;
+  document.surveyForm.submit();
 }
 
 </script>

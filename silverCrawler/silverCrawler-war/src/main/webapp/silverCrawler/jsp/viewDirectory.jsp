@@ -89,53 +89,56 @@ var downloadWindow = window;
 
 function indexFolder(folderName)
 {
-    if(window.confirm("<%=resource.getString("silverCrawler.folderIndexConfirmation")%> '" + folderName + "' ?")){
-          $.progressMessage();
-          document.folderDetailForm.action = "IndexPath";
-          document.folderDetailForm.FolderName.value = folderName;
-          document.folderDetailForm.submit();
-    }
+  var label = "<%=resource.getString("silverCrawler.folderIndexConfirmation")%> '" + folderName + "' ?";
+  jQuery.popup.confirm(label, function() {
+    $.progressMessage();
+    document.folderDetailForm.action = "IndexPath";
+    document.folderDetailForm.FolderName.value = folderName;
+    document.folderDetailForm.submit();
+  });
 }
 
 function removeFolder(folderName)
 {
-    if(window.confirm("<%=resource.getString("silverCrawler.folderRemoveConfirmation")%> '" + folderName + "' ?")){
-          $.progressMessage();
-          document.folderDetailForm.action = "RemoveFolder";
-          document.folderDetailForm.FolderName.value = folderName;
-          document.folderDetailForm.submit();
-    }
+  var label = "<%=resource.getString("silverCrawler.folderRemoveConfirmation")%> '" + folderName + "' ?";
+  jQuery.popup.confirm(label, function() {
+    $.progressMessage();
+    document.folderDetailForm.action = "RemoveFolder";
+    document.folderDetailForm.FolderName.value = folderName;
+    document.folderDetailForm.submit();
+  });
 }
 
 function removeFile(fileName)
 {
-    if(window.confirm("<%=resource.getString("silverCrawler.fileRemoveConfirmation")%> '" + fileName + "' ?")){
-          $.progressMessage();
-          document.folderDetailForm.action = "RemoveFile";
-          document.folderDetailForm.FolderName.value = "";
-          document.folderDetailForm.FileName.value = fileName;
-          document.folderDetailForm.submit();
-    }
+  var label = "<%=resource.getString("silverCrawler.fileRemoveConfirmation")%> '" + fileName + "' ?";
+  jQuery.popup.confirm(label, function() {
+    $.progressMessage();
+    document.folderDetailForm.action = "RemoveFile";
+    document.folderDetailForm.FolderName.value = "";
+    document.folderDetailForm.FileName.value = fileName;
+    document.folderDetailForm.submit();
+  });
 }
 
 function removeFilesByLot() {
 	var selectedFiles = "<%=resource.getString("silverCrawler.filesRemoveConfirmation")%> : \n\n";
 	$('input:checkbox[name=checkedFile]:checked').each(function() {selectedFiles = selectedFiles + $(this).val() + "\n";});
-	if(window.confirm(selectedFiles)){
-        $.progressMessage();
-        document.liste_file.action = "RemoveSelectedFiles";
-        document.liste_file.submit();
-  }
+  jQuery.popup.confirm(selectedFiles, function() {
+    $.progressMessage();
+    document.liste_file.action = "RemoveSelectedFiles";
+    document.liste_file.submit();
+  });
 }
 
 function removeFoldersByLot() {
 	var selectedFolders = "<%=resource.getString("silverCrawler.foldersRemoveConfirmation")%> : \n\n";
 	$('input:checkbox[name=checkedDir]:checked').each(function() {selectedFolders = selectedFolders + $(this).val() + "\n";});
-	if(window.confirm(selectedFolders)){
-        $.progressMessage();
-        document.liste_dir.action = "RemoveSelectedFolders";
-        document.liste_dir.submit();
-  }
+  jQuery.popup.confirm(selectedFolders, function() {
+    $.progressMessage();
+    document.liste_dir.action = "RemoveSelectedFolders";
+    document.liste_dir.submit();
+  });
 }
 
 function renameFolder(folderName) {
@@ -223,13 +226,13 @@ function performPost(url, formId) {
         document.folderDetailForm.submit();
       } else {
         $.closeProgressMessage();
-        alert(data);
+        notyError(data);
         $("#newName").focus();
       }
     },
     error : function() {
       $.closeProgressMessage();
-      alert('erreur inconnue');
+      notyError('erreur inconnue');
       $("#newName").focus();
     }
   });
@@ -237,40 +240,44 @@ function performPost(url, formId) {
 
 function indexFile(fileName)
 {
-    if(window.confirm("<%=resource.getString("silverCrawler.fileIndexConfirmation")%> '" + fileName + "' ?")){
-          $.progressMessage();
-          document.folderDetailForm.action = "IndexFile";
-          document.folderDetailForm.FileName.value = fileName;
-          document.folderDetailForm.submit();
-    }
+  var label = "<%=resource.getString("silverCrawler.fileIndexConfirmation")%> '" + fileName + "' ?";
+  jQuery.popup.confirm(label, function() {
+    $.progressMessage();
+    document.folderDetailForm.action = "IndexFile";
+    document.folderDetailForm.FileName.value = fileName;
+    document.folderDetailForm.submit();
+  });
 }
 
 function indexDisk()
 {
-    if(window.confirm("<%=resource.getString("silverCrawler.diskIndexConfirmation")%>")){
-          $.progressMessage();
-          document.folderDetailForm.action = "IndexPath";
-          document.folderDetailForm.FolderName.value = "";
-          document.folderDetailForm.submit();
-    }
+  var label = "<%=resource.getString("silverCrawler.diskIndexConfirmation")%>";
+  jQuery.popup.confirm(label, function() {
+    $.progressMessage();
+    document.folderDetailForm.action = "IndexPath";
+    document.folderDetailForm.FolderName.value = "";
+    document.folderDetailForm.submit();
+  });
 }
 
 function indexDirByLot()
 {
-	if(window.confirm("<%=resource.getString("silverCrawler.fileIndexByLotConfirmation")%>")){
-	$.progressMessage();
+  var label = "<%=resource.getString("silverCrawler.fileIndexByLotConfirmation")%>";
+  jQuery.popup.confirm(label, function() {
+  	$.progressMessage();
 		document.liste_dir.action = "IndexDirSelected";
 		document.liste_dir.submit();
-	}
+	});
 }
 
 function indexFileByLot()
 {
-	if(window.confirm("<%=resource.getString("silverCrawler.fileIndexByLotConfirmation")%>")){
-	$.progressMessage();
+  var label = "<%=resource.getString("silverCrawler.fileIndexByLotConfirmation")%>";
+  jQuery.popup.confirm(label, function() {
+  	$.progressMessage();
 		document.liste_file.action = "IndexFileSelected";
 		document.liste_file.submit();
-	}
+	});
 }
 
 function downloadFolder(folderName)

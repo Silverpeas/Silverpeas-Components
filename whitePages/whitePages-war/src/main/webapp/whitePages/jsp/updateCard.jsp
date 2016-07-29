@@ -51,12 +51,10 @@
 <script language="JavaScript">
 <!--
 	function B_VALIDER_ONCLICK(idCard) {
-		if (isCorrectForm())
-		{
-
+		ifCorrectFormExecute(function() {
 			document.myForm.action = "<%=routerUrl%>effectiveUpdate?userCardId="+idCard;
 			document.myForm.submit();
-		}
+		});
 	}
 
 	function B_ANNULER_ONCLICK(idCard) {
@@ -79,8 +77,8 @@
 </FORM>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK('"+card.getPK().getId()+"');", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK('"+card.getPK().getId()+"');", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK('"+card.getPK().getId()+"');", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK('"+card.getPK().getId()+"');", false));
     out.println(buttonPane.print());
 %>
 </view:frame>

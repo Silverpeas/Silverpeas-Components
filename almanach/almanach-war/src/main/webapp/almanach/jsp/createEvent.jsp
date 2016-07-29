@@ -70,7 +70,7 @@ function reallyAdd() {
   	$(document.eventForm).submit();
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
 	var errorMsg = "";
     var errorNb = 0;
     var title = stripInitialWhitespace(document.eventForm.Title.value);
@@ -114,26 +114,22 @@ function isCorrectForm() {
 
   switch (errorNb) {
     case 0 :
-      result = true;
+      callback.call(this);
       break;
     case 1 :
       errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
     default :
       errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 function sendEventData() {
-  if (isCorrectForm()) {
+  ifCorrectFormExecute(function() {
     reallyAdd();
-  }
+  });
 }
 
 function changeUnity() {

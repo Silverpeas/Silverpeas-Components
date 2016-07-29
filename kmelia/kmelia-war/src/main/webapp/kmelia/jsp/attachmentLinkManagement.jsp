@@ -86,7 +86,7 @@ function buildTree() {
    mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.ProcessMenu(request,MenuConstants.THEME_MENU_TYPE)%>);
     mes = YAHOO.lang.JSON.parse(mes);
    }catch(x){
-      alert("JSON Parse failed: "+x);
+      notyError("JSON Parse failed: "+x);
 	  return;
 	}
    for (var i=0, j=mes.length; i<j; i++) {

@@ -293,7 +293,8 @@ function resetNbPublis(nodeId) {
 }
 
 function emptyTrash() {
-	if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>")) {
+  var label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
+  jQuery.popup.confirm(label, function() {
 		$.progressMessage();
 		$.post('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
@@ -308,10 +309,10 @@ function emptyTrash() {
 						}
 						displayTopicContent("1");
 					} else {
-						alert(data);
+						notyError(data);
 					}
 				}, 'text');
-	}
+	});
 }
 
 function copyNode(id)	{

@@ -140,11 +140,12 @@ function openSPWindow(fonction, windowName) {
 }
 
 function deleteConfirm(id, nom) {
-  if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
+  var label = "<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?";
+  jQuery.popup.confirm(label, function() {
     document.albumForm.action = "DeleteAlbum";
     document.albumForm.Id.value = id;
     document.albumForm.submit();
-  }
+  });
 }
 
 function askMedia() {

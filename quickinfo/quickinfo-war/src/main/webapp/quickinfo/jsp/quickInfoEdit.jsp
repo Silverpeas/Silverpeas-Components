@@ -142,20 +142,16 @@ function isCorrectForm() {
     
  	switch(error.nb) {
     	case 0 :
-        	result = true;
         	break;
     	case 1 :
       		error.msg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + error.msg;
-        	window.alert(error.msg);
-        	result = false;
+          jQuery.popup.error(error.msg);
         	break;
     	default :
       		error.msg = "<%=resources.getString("GML.ThisFormContains")%> " + error.nb + " <%=resources.getString("GML.errors")%> :\n" + error.msg;
-    	    window.alert(error.msg);
-    	    result = false;
-    	    break;
+          jQuery.popup.error(error.msg);
  	}
- 	return result;
+ 	return (error.nb == 0);
 }
 
 function saveNews() {

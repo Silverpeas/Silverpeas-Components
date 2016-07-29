@@ -74,7 +74,7 @@ function SubmitWithVerif(verifParams)
     }
     else
     {
-        window.alert(errorMsg);
+        jQuery.popup.error(errorMsg);
     }
 }
 

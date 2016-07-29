@@ -91,22 +91,20 @@
         <fmt:message key="confirmDeleteForum" var="confirmationSuppressionForum" />
           <fmt:message key="confirmDeleteMessage" var="confirmationSuppressionMessage" />
         function confirmDeleteForum(forumId) {
-          if (confirm("<view:encodeJs string="${confirmationSuppressionForum}"/>"))
-          {
+          jQuery.popup.confirm("<view:encodeJs string="${confirmationSuppressionForum}"/>", function() {
             document.forms['forumForm'].elements['action'].value = 4;
             document.forms['forumForm'].elements['params'].value = forumId;
             document.forms['forumForm'].elements['forumId'].value=<%=forumId%>;
             document.forms['forumForm'].submit();
-          }
+          });
         }
         function deleteMessage(messageId, parentId, scroll) {
-          if (confirm("<view:encodeJs string="${confirmationSuppressionMessage}"/>"))
-          {
+          jQuery.popup.confirm("<view:encodeJs string="${confirmationSuppressionMessage}"/>", function() {
             document.forms['forumForm'].elements['action'].value = 9;
             document.forms['forumForm'].elements['params'].value = messageId;
             document.forms['forumForm'].elements['forumId'].value=<%=forumId%>;
             document.forms['forumForm'].submit();
-          }
+          });
         }
       <% } %>
 

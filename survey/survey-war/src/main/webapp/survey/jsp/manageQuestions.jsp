@@ -109,14 +109,14 @@ String nbMaxAnswers = surveySettings.getString("NbMaxAnswers");
 <script type="text/javascript">
 
 function sendData() {
-  if (isCorrectForm()) {
-    if (checkAnswers()) {
+  ifCorrectFormExecute(function() {
+    ifCorrectAnswersExecute(function() {
       if ($('input[name=suggestion]').is(':checked')) {
         $("#hiddenSuggestionAllowedId").val("1");
       }
       document.surveyForm.submit();
-    }
-  }
+    });
+  });
 }
 
 function cancelUpdate() {
@@ -127,7 +127,7 @@ function backQuestions() {
   cancelUpdate();
 }
 
-function checkAnswers() {
+function ifCorrectAnswersExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
   var answerEmpty = false;
@@ -173,7 +173,7 @@ function checkAnswers() {
  </c:if>
   switch(errorNb) {
     case 0 :
-        result = true;
+        callback.call(this);
         break;
     default :
         fields = fieldsEmpty.split(",");
@@ -185,14 +185,14 @@ function checkAnswers() {
           errorMsg += "<fmt:message key="OtherAnswer" /> \n";
         }
     </c:if>
-        window.alert("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
+        jQuery.popup.error("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
         result = false;
         break;
   }
   return result;
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
   var question = stripInitialWhitespace(document.surveyForm.question.value);
@@ -241,20 +241,16 @@ function isCorrectForm() {
   }
   switch(errorNb) {
     case 0 :
-        result = true;
+        callback.call(this);
         break;
     case 1 :
         errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
     default :
         errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 function goToEnd() {
@@ -375,8 +371,7 @@ function updateQuestionForm() {
 function udpateListAnswer(nbAnswer) {
   //alert("Nombre de reponse = " + nbAnswer + " compare to " + nbAnswerForm);
   var curNbAnswer = parseInt(nbAnswer);
-  if (isCorrectForm()) {
-    
+  ifCorrectFormExecute(function() {
     if (curNbAnswer > nbAnswerForm) {
       // Add new answer form
       for (var cptAnswer = nbAnswerForm; cptAnswer < nbAnswer; cptAnswer++) {
@@ -399,9 +394,7 @@ function udpateListAnswer(nbAnswer) {
     //alert("valeur courante de nbAnswerForm = " + nbAnswerForm);
     //Display data
     showQuestionOptions($("#questionStyle").val());
-  } else {
-    $("#nbAnswersId").val(nbAnswerForm);
-  }
+  });
 }
 /**
  * insertHTMLAnswer

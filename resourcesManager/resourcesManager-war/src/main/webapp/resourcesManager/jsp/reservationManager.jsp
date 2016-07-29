@@ -87,7 +87,7 @@
       document.getElementById('validationNom').style.display = 'none';
     }
   }
-  function isCorrectForm() {
+  function verification() {
     var errorNb = 0;
     var errorMsg = "";
 
@@ -116,28 +116,18 @@
 
     switch (errorNb) {
       case 0 :
-        result = true;
+        document.createForm.submit();
         break;
       case 1 :
         errorMsg =
             "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" +
                 errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
       default :
         errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb +
             " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
-    }
-    return result;
-  }
-
-  function verification() {
-    if (isCorrectForm()) {
-      document.createForm.submit();
+        jQuery.popup.error(errorMsg);
     }
   }
 </script>

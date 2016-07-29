@@ -104,16 +104,17 @@ function reallyUpdate() {
 }
 
 function eventDeleteConfirm() {
-    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?")){
-    	<% if (event.getPeriodicity() != null ) { %>
-    		displayBoxOnDelete();
-    	<% } else { %>
-    		sendEvent('RemoveEvent', 'ReallyDelete');
-    	<% } %>
-    }
+  var label = "<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?";
+  jQuery.popup.confirm(label, function() {
+    <% if (event.getPeriodicity() != null ) { %>
+      displayBoxOnDelete();
+    <% } else { %>
+      sendEvent('RemoveEvent', 'ReallyDelete');
+    <% } %>
+  });
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.eventForm.Title.value);
@@ -155,20 +156,16 @@ function isCorrectForm() {
 
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 function closeMessage()
@@ -188,7 +185,7 @@ function displayBoxOnDelete()
 }
 
 function sendEventData() {
-    if (isCorrectForm()) {
+    ifCorrectFormExecute(function() {
     	var isChanged = 0;
     	<% if(event.getPeriodicity() != null) { %>
     		var unity = document.eventForm.Unity.value;
@@ -271,7 +268,7 @@ function sendEventData() {
     	{
     		reallyUpdate();
     	}
-    }
+    });
 }
 
 function changeUnity() {

@@ -173,18 +173,18 @@ while (itemIter.hasNext()) {
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script language="JavaScript1.2">
 function sendData() {
-    if (isCorrectForm()) {
-        if (checkAnswers()) {
+    ifCorrectFormExecute(function() {
+        ifCorrectAnswersExecute(function() {
             if (document.surveyForm.suggestion.checked)
             {
                 document.surveyForm.SuggestionAllowed.value = "1";
             }
             document.surveyForm.submit();
-        }
-    }
+        });
+    });
 }
 
-function checkAnswers() {
+function ifCorrectAnswersExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var answerEmpty = false;
@@ -230,7 +230,7 @@ function checkAnswers() {
      }
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         default :
             fields = fieldsEmpty.split(",");
@@ -242,14 +242,11 @@ function checkAnswers() {
                     errorMsg += "<%=resources.getString("OtherAnswer")%> \n";
                 }
             }
-            window.alert("<%=resources.getString("EmptyAnswerNotAllowed")%> \n" + errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error("<%=resources.getString("EmptyAnswerNotAllowed")%> \n" + errorMsg);
      }
-     return result;
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var question = stripInitialWhitespace(document.surveyForm.question.value);
@@ -302,20 +299,16 @@ function isCorrectForm() {
 	 }
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 function goToEnd() {

@@ -88,12 +88,13 @@ function listCheckedCard(nbCard) {
 }
 
 function B_DELETE_ONCLICK(nbCard) {
-          if (listCheckedCard(nbCard) != "") {   //on a coch� au - une fiche
-			if (window.confirm("<%=resource.getString("whitePages.messageSuppressions")%>")) {
-				document.liste_card.action = "<%=routerUrl%>delete";
-				document.liste_card.submit();
-			}
-		  }
+  if (listCheckedCard(nbCard) != "") {   //on a coch� au - une fiche
+    var label = "<%=resource.getString("whitePages.messageSuppressions")%>";
+    jQuery.popup.confirm(label, function() {
+      document.liste_card.action = "<%=routerUrl%>delete";
+      document.liste_card.submit();
+    });
+  }
 }
 
 function B_HIDE_ONCLICK(nbCard) {

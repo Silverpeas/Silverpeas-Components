@@ -150,29 +150,29 @@ function declassify(nbTopic, nbSite) {
 
     if (okTopic != "false"  || okSites != "false") { //au moins un theme ou un site est selectionne
 
-    if (window.confirm("<%=resources.getString("FolderSiteDeleteConfirmation")%>")){
-          listeSite = "";
+    var label = "<%=resources.getString("FolderSiteDeleteConfirmation")%>";
+    jQuery.popup.confirm(label, function() {
+      listeSite = "";
 
       if (nbSite > 0) {
-            if (nbSite == 1) {
-                if (document.liste.supSite.checked)
-                        listeSite += document.liste.supSite.value + ",";
-            }
-            else {
-                for (i=0; i<nbSite; i++) {
-                    if (document.liste.supSite[i] != null) {
-                        if (document.liste.supSite[i].checked)
-                                    listeSite += document.liste.supSite[i].value + ",";
-                    }
-                    else break;
-                }
-            }
-       }
+        if (nbSite == 1) {
+          if (document.liste.supSite.checked)
+            listeSite += document.liste.supSite.value + ",";
+        } else {
+          for (i=0; i<nbSite; i++) {
+              if (document.liste.supSite[i] != null) {
+                if (document.liste.supSite[i].checked)
+                  listeSite += document.liste.supSite[i].value + ",";
+              }
+              else break;
+          }
+        }
+      }
 
-	  document.liste.Action.value = "Delete";
-	  document.liste.SiteList.value = listeSite;
-	  document.liste.submit();
-	}
+      document.liste.Action.value = "Delete";
+      document.liste.SiteList.value = listeSite;
+      document.liste.submit();
+	  });
      }
 }
 

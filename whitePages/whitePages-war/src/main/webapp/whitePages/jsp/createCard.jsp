@@ -68,24 +68,27 @@
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 	function goToMain() {
-		if (window.confirm("<%=resource.getString("whitePages.messageCancelCreate")%>")) {
+    var label = "<%=resource.getString("whitePages.messageCancelCreate")%>";
+    jQuery.popup.confirm(label, function() {
 			<% if (containerContext == null) { %>
 			   location.href = "Main";
 			<% } else { %>
 			   location.href = "<%= m_context + containerContext.getReturnURL()%>";
 			<% } %>
-		}
+		});
 	}
 	function B_VALIDER_ONCLICK() {
-		if (isCorrectForm()) {
-			<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
-			if (errorNb > 0) {
-				alert(errorMsg);
-			} else {
-				<view:pdcPositions setIn="document.myForm.Positions.value"/>
-				document.myForm.submit();
-			}
-		}
+    var errorNb = 0;
+    var errorMsg = "";
+    <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+    if (errorNb > 0) {
+      jQuery.popup.error(errorMsg);
+    } else {
+      ifCorrectFormExecute(function() {
+        <view:pdcPositions setIn="document.myForm.Positions.value"/>
+        document.myForm.submit();
+      });
+    }
 	}
 
 	function B_ANNULER_ONCLICK() {

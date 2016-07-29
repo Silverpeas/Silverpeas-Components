@@ -118,12 +118,13 @@ if ("View".equals(action)) {
 <view:looknfeel/>
 <script language="javaScript">
 function subscriptionRemoveConfirm(id) {
-    if(window.confirm("<%=kmeliaScc.getString("SubscriptionRemoveQuestion")%>")){
-        document.subscriptionForm.Id.value = id;
-        document.subscriptionForm.Action.value = "Remove";
-        document.subscriptionForm.action = "subscriptionsManager.jsp";
-        document.subscriptionForm.submit();
-    }
+  var label = "<%=kmeliaScc.getString("SubscriptionRemoveQuestion")%>";
+  jQuery.popup.confirm(label, function() {
+    document.subscriptionForm.Id.value = id;
+    document.subscriptionForm.Action.value = "Remove";
+    document.subscriptionForm.action = "subscriptionsManager.jsp";
+    document.subscriptionForm.submit();
+  });
 }
 
 function goToSubscription(id) {

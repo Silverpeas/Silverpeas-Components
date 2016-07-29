@@ -208,7 +208,7 @@
             </c:otherwise>
             </c:choose>
           }).error(function(jqXHR, textStatus, errorThrown) {
-            alert(errorThrown);
+            notyError(errorThrown);
           });
     });
 

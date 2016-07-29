@@ -53,6 +53,14 @@
   <view:looknfeel/>
   <% formUpdate.displayScripts(out, context);%>
   <script type="text/javascript">
+    function isCorrectForm() {
+      var result = false;
+      ifCorrectFormExecute(function() {
+        result = true;
+      });
+      return result;
+    }
+
     function save() {
       if (isCorrectForm()) {
         $.progressMessage();

@@ -94,7 +94,7 @@ function isCorrect(nom) {
 /************************************************************************************/
 
 
-function isCorrectForm(title) {
+function ifCorrectFormExecute(title, callback) {
      var result;
      var errorMsg = "";
      var errorNb = 0;
@@ -111,37 +111,33 @@ function isCorrectForm(title) {
 
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "${thisFormContainsTxt} 1 ${errorsTxt} : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "${thisFormContainsTxt} " + errorNb + " ${errorsTxt} :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 /************************************************************************************/
 
 function sendData() {
       var nameFile = stripInitialWhitespace(document.topicForm.Name.value);
-      if (isCorrectForm(nameFile)) {
+      ifCorrectFormExecute(nameFile, function() {
             document.topicDetailForm.Action.value = "Update";
             document.topicDetailForm.NewName.value = nameFile;
             document.topicDetailForm.submit();
-      }
+      });
 }
 
 </script>
 </HEAD>
 
-<BODY bgcolor="white" topmargin="15" leftmargin="20" onload="document.topicForm.Name.focus()">
+<BODY onload="document.topicForm.Name.focus()">
   <view:window>
     <view:browseBar componentId="${componentLabel}" path="${pageUpdateTitle}"/>
     <view:frame>

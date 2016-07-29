@@ -39,7 +39,7 @@ if (channel.getDisplayImage() == 1)
 <view:looknfeel withCheckFormScript="true"/>
 <!-- LANGUAGE JAVASCRIPT -->
 <script language="javascript">
-	function isCorrectForm() {
+	function sendData() {
 		var errorMsg = "";
 		var errorNb = 0;
 		var url 	= document.channel.Url.value;
@@ -60,26 +60,15 @@ if (channel.getDisplayImage() == 1)
 		switch(errorNb)
 		{
 			case 0 :
-				result = true;
+        document.channel.submit();
 				break;
 			case 1 :
 				errorMsg = "<%=resource.getString("GML.ThisFormContains")%>1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-				window.alert(errorMsg);
-				result = false;
+        jQuery.popup.error(errorMsg);
 				break;
 			default :
 				errorMsg = "<%=resource.getString("GML.ThisFormContains")%>" + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-				window.alert(errorMsg);
-				result = false;
-				break;
-		}
-		return result;
-	}
-
-	// envoi les donn�es entr�es par l'utilisateur
-	function sendData(){
-		if (isCorrectForm()) {
-			document.channel.submit();
+        jQuery.popup.error(errorMsg);
 		}
 	}
 </script>

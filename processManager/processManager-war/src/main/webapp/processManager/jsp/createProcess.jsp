@@ -58,18 +58,17 @@
 <script type="text/javascript">
 <!--
 	function B_VALIDER_ONCLICK() {
-		if (isCorrectForm()) {
+    ifCorrectFormExecute(function() {
 			$.progressMessage();
-		setTimeout("document.<%=context.getFormName()%>.submit();", 500);
-		}
+		  setTimeout("document.<%=context.getFormName()%>.submit();", 500);
+		});
 	}
 
 	function B_SAUVEGARDER_ONCLICK() {
 		$.progressMessage();
 		var field = document.getElementById("isDraft");
 		field.value = "yes";
-
-	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
+	  setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	}
 
 	function B_ANNULER_ONCLICK() {

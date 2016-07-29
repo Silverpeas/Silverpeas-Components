@@ -66,21 +66,18 @@
 <!--
 	function B_VALIDER_ONCLICK()
 	{
-		if (isCorrectForm())
-		{
+		ifCorrectFormExecute(function() {
 			document.<%=context.getFormName()%>.submit();
-		}
+		});
 	}
 
 	function B_ANNULER_ONCLICK() {
 		location.href = "adminViewProcess";
 	}
-
 //-->
 </SCRIPT>
 </HEAD>
-
-<BODY class="yui-skin-sam" marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY class="yui-skin-sam">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());

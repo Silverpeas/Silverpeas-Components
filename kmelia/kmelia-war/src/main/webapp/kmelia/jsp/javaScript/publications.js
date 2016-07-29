@@ -70,7 +70,7 @@ function deletePublications() {
   if (getCurrentNodeId() === "1") {
     confirm = getString('kmelia.publications.delete.confirm');
   }
-  if (window.confirm(confirm)) {
+  jQuery.popup.confirm(confirm, function() {
     var componentId = getComponentId();
     var selectedPublicationIds = getSelectedPublicationIds();
     var notSelectedPublicationIds = getNotSelectedPublicationIds();
@@ -95,7 +95,7 @@ function deletePublications() {
         publicationsRemovedInError(data);
       }
     }, 'text');
-  }
+  });
 }
 
 function publicationsRemovedInError(data) {

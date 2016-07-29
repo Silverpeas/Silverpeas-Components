@@ -122,11 +122,12 @@ if (profile.equals("admin") || profile.equals("publisher") || profile.equals("su
 <script type="text/javascript">
 function seeAlsoDeleteConfirm() {
 	if (document.seeAlsoForm.PubIds != null && $("input[type='checkbox']").is(":checked")){
-	    if(window.confirm("<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>")){
-	    	document.seeAlsoForm.PubId.value = "<%=id%>";
+    var label = "<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>";
+    jQuery.popup.confirm(label, function() {
+      document.seeAlsoForm.PubId.value = "<%=id%>";
 			document.seeAlsoForm.Action = "<%=routerUrl%>DeleteSeeAlso";
-	       	document.seeAlsoForm.submit();
-		}
+      document.seeAlsoForm.submit();
+		});
 	}
 }
 

@@ -1,7 +1,7 @@
 function confirmDelete(id, msg) {
-  if (window.confirm(msg)) {
+  jQuery.popup.confirm(msg, function() {
     document.newsForm.action = "Remove";
     document.newsForm.Id.value = id;
     document.newsForm.submit();
-  }
+  });
 }

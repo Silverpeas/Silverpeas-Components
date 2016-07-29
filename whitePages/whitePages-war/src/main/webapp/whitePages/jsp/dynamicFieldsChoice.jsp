@@ -57,7 +57,7 @@ function confirmChoices(){
 	if(testCheckBoxes()){
 		document.validform.submit();
 	}else{
-		alert('${whitePagesNoCheckFields}')
+    jQuery.popup.error('${whitePagesNoCheckFields}')
 	}
 }
 

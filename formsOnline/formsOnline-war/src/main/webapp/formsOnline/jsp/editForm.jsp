@@ -61,8 +61,7 @@
 <title></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript">
-
-function isCorrectForm() {
+function valider() {
   var errorMsg = "";
   var errorNb = 0;
 
@@ -87,26 +86,16 @@ function isCorrectForm() {
 
   switch(errorNb) {
     case 0 :
-        result = true;
+        document.creationForm.submit();
         break;
     case 1 :
         errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
     default :
         errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
   }
-  return result;
-}
-
-function valider() {
-	if (isCorrectForm()) {
-		document.creationForm.submit();
-	}
 }
 
 function viewForm() {
