@@ -28,9 +28,9 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventRecurrence;
+import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
-import org.silverpeas.core.calendar.TimeUnit;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static org.silverpeas.core.calendar.CalendarEventRecurrence.every;
+import static org.silverpeas.core.calendar.Recurrence.every;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -116,8 +116,8 @@ public class CalendarEventEncoder {
     return events;
   }
 
-  private CalendarEventRecurrence withTheRecurrenceRuleOf(final EventDetail event) {
-    CalendarEventRecurrence recurrence = asCalendarEventRecurrence(event.getPeriodicity());
+  private Recurrence withTheRecurrenceRuleOf(final EventDetail event) {
+    Recurrence recurrence = asCalendarEventRecurrence(event.getPeriodicity());
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     TimeZone timeZone = registry.getTimeZone(settings.getString("almanach.timezone"));
     ExceptionDatesGenerator generator = new ExceptionDatesGenerator();
@@ -136,7 +136,7 @@ public class CalendarEventEncoder {
    * @param periodicity the periodicity to convert.
    * @return the event recurrence corresponding to the specified periodicity.
    */
-  private CalendarEventRecurrence asCalendarEventRecurrence(final Periodicity periodicity) {
+  private Recurrence asCalendarEventRecurrence(final Periodicity periodicity) {
     TimeUnit timeUnit;
     List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<>();
     switch (periodicity.getUnity()) {
@@ -155,7 +155,7 @@ public class CalendarEventEncoder {
         timeUnit = TimeUnit.DAY;
         break;
     }
-    CalendarEventRecurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
+    Recurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
     if (periodicity.getUntilDatePeriod() != null) {
       OffsetDateTime endDateTime = periodicity.getUntilDatePeriod()
           .toInstant()
@@ -179,19 +179,19 @@ public class CalendarEventEncoder {
     int nth = periodicity.getNumWeek();
     if (nth != 0) {
       if (periodicity.getDay() == java.util.Calendar.MONDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.MONDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.MONDAY));
       } else if (periodicity.getDay() == java.util.Calendar.TUESDAY) {// Tuesday
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.TUESDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.TUESDAY));
       } else if (periodicity.getDay() == java.util.Calendar.WEDNESDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.WEDNESDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.WEDNESDAY));
       } else if (periodicity.getDay() == java.util.Calendar.THURSDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.THURSDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.THURSDAY));
       } else if (periodicity.getDay() == java.util.Calendar.FRIDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.FRIDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.FRIDAY));
       } else if (periodicity.getDay() == java.util.Calendar.SATURDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.SATURDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.SATURDAY));
       } else if (periodicity.getDay() == java.util.Calendar.SUNDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.SUNDAY));
+        daysOfWeek.add(DayOfWeekOccurrence.nth(nth, DayOfWeek.SUNDAY));
       }
     }
     return daysOfWeek;
@@ -207,25 +207,25 @@ public class CalendarEventEncoder {
     List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<>();
     String encodedDaysOfWeek = periodicity.getDaysWeekBinary();
     if (encodedDaysOfWeek.charAt(0) == '1') {// Monday
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.MONDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.MONDAY));
     }
     if (encodedDaysOfWeek.charAt(1) == '1') {// Tuesday
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.TUESDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.TUESDAY));
     }
     if (encodedDaysOfWeek.charAt(2) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.WEDNESDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.WEDNESDAY));
     }
     if (encodedDaysOfWeek.charAt(3) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.THURSDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.THURSDAY));
     }
     if (encodedDaysOfWeek.charAt(4) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.FRIDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.FRIDAY));
     }
     if (encodedDaysOfWeek.charAt(5) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SATURDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.SATURDAY));
     }
     if (encodedDaysOfWeek.charAt(6) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SUNDAY));
+      daysOfWeek.add(DayOfWeekOccurrence.all(DayOfWeek.SUNDAY));
     }
     return daysOfWeek;
   }
