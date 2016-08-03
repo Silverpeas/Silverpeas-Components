@@ -159,10 +159,11 @@ var suspendMotiveWindow = window;
 var attachmentWindow = window;
 
 function deleteCloneConfirm() {
-    if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>")){
-          document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
-          document.toRouterForm.submit();
-    }
+  var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
+  jQuery.popup.confirm(label, function() {
+    document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
+    document.toRouterForm.submit();
+  });
 }
 
 function pubValidate() {
@@ -239,10 +240,10 @@ $(function() {
         buttons: {
           'OK': function() {
         	  if (!$.trim($("#refusal-motive").val())) {
-        		  window.alert("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
+              jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
         		  return true;
         	  } else {
-		  		document.refusalForm.submit();
+		  		    document.refusalForm.submit();
         	  }
           },
           '<%= resources.getString("GML.cancel") %>': function() {

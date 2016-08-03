@@ -69,8 +69,8 @@ window.onload = function()
 			document.location = "<%=EncodeHelper.javaStringToJsString(url)%>"; 
 		} 
 		else 
-		{ 
-			alert("Login et/ou Mot de passe incorrect !");
+		{
+      jQuery.popup.error("Login et/ou Mot de passe incorrect !");
 		} 
 		return false;
 	}

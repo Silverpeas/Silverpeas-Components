@@ -115,9 +115,9 @@ Item getItem(Item[] items, String itemName)
 	}
 
 	function setFilter() {
-		if (isCorrectForm()) {
+    ifCorrectFormExecute(function() {
 			document.<%=context.getFormName()%>.submit();
-		}
+		});
 	}
 
 	function resetFilter() {

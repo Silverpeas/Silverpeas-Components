@@ -84,7 +84,7 @@ function isCorrect(nom) {
 /************************************************************************************/
 
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
@@ -101,31 +101,26 @@ function isCorrectForm() {
 
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(true);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 /************************************************************************************/
 
 function sendData() {
-      if (isCorrectForm()) {
-
+      ifCorrectFormExecute(function() {
             document.topicDetailForm.Action.value = "Update";
             document.topicDetailForm.NewName.value = stripInitialWhitespace(document.topicForm.Name.value);
             document.topicDetailForm.submit();
-      }
+      });
 }
 
 </script>

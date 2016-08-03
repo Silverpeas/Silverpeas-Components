@@ -64,14 +64,14 @@ var albumWindow = window;
 function sendDataDelete()
 {
 	//Remove selected photo media from basket confirm message
-	if(window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> "))
-	{
+  var label = "<fmt:message key="gallery.confirmDeleteMedias"/> ";
+  jQuery.popup.confirm(label, function() {
 		// envoi des photos selectionnees pour la suppression
 		document.mediaForm.SelectedIds.value 	= getObjects(true);
 		document.mediaForm.NotSelectedIds.value = getObjects(false);
 		document.mediaForm.action				= "BasketDeleteSelectedMedia";
 		document.mediaForm.submit();
-	}
+	});
 }
 
 function getObjects(selected)
@@ -114,12 +114,12 @@ function doPagination(index)
 
 function deleteConfirm(id) {
 	// Delete a media from basket confirm message
-	if(window.confirm("<fmt:message key="gallery.confirmDeleteMedia"/>  ?"))
-	{
+  var label = "<fmt:message key="gallery.confirmDeleteMedia"/> ?";
+  jQuery.popup.confirm(label, function() {
 			document.mediaFormDelete.action = "BasketDeleteMedia";
 			document.mediaFormDelete.MediaId.value = id;
 			document.mediaFormDelete.submit();
-	}
+	});
 }
 
 function exportBasket() {

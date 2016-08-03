@@ -110,18 +110,20 @@
 	function sendData()
 	{
 		<c:if test="${not empty formUpdate}">
-			if (isCorrectLocalForm() && isCorrectForm()) {
+      ifCorrectLocalFormExecute(function() {
+        ifCorrectFormExecute(function() {
 		    	document.classifiedForm.submit();
-		    }
+		    });
+      });
 		 </c:if>
 		<c:if test="${empty formUpdate}">
-				if (isCorrectLocalForm()) {
+        ifCorrectLocalFormExecute(function() {
 					document.classifiedForm.submit();
-		    	}
+        });
 		</c:if>
 	}
 
-	function isCorrectLocalForm()
+	function ifCorrectLocalFormExecute(callback)
 	{
 		  var errorMsg = "";
 	   	var errorNb = 0;
@@ -179,20 +181,16 @@
 	   	switch(errorNb)
 	   	{
 	       	case 0 :
-	           	result = true;
+              callback.call(this);
 	           	break;
 	       	case 1 :
 	           	errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
-	           	window.alert(errorMsg);
-	           	result = false;
+              jQuery.popup.error(errorMsg);
 	           	break;
 	       	default :
 	           	errorMsg = "${GML_ThisFormContains} " + errorNb + " ${GML_errors} :\n" + errorMsg;
-	           	window.alert(errorMsg);
-	           	result = false;
-	           	break;
+              jQuery.popup.error(errorMsg);
 	   	}
-	   	return result;
 	}
 
 	function setData()

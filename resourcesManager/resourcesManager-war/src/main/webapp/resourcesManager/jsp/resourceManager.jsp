@@ -88,7 +88,7 @@
 	}
 %>
 <script language=JavaScript>
-function isCorrectResourceForm()
+function ifCorrectResourceFormExecute(callback)
 {
 	var errorNb = 0;
 	var errorMsg = "";
@@ -99,33 +99,30 @@ function isCorrectResourceForm()
 	switch(errorNb)
 	{
 	case 0 :
-		result = true;
+		callback.call(this);
 		break;
 	case 1 :
 		errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-		window.alert(errorMsg);
-		result = false;
+    jQuery.popup.error(errorMsg);
 		break;
 	default :
 		errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-		window.alert(errorMsg);
-		result = false;
-		break;
+    jQuery.popup.error(errorMsg);
 	}
-	return result;
 }
 
 function verification(){
-	var xmlFormCorrect = false;
 	<% if (formUpdate != null) { %>
-			xmlFormCorrect = isCorrectForm();
+    ifCorrectResourceFormExecute(function() {
+      ifCorrectFormExecute(function() {
+        document.createForm.submit();
+      });
+    });
 	<% } else { %>
-			xmlFormCorrect = true;
+    ifCorrectResourceFormExecute(function() {
+      document.createForm.submit();
+    });
 	<% } %>
-
-	if (isCorrectResourceForm() && xmlFormCorrect){
-		document.createForm.submit();
-	}
 }
 
 function selectManagers()

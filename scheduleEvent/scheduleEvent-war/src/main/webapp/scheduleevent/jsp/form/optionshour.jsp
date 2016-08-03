@@ -54,9 +54,9 @@
 		});
 
 		if (alertFlag) {
-	      alert('<fmt:message key="scheduleevent.form.hour.mandatoryCheck"/> ' + $.trim(dateValue));
+        jQuery.popup.error('<fmt:message key="scheduleevent.form.hour.mandatoryCheck"/> ' + $.trim(dateValue));
 		} else {
-	  document.addOptionsHour.submit();
+	    document.addOptionsHour.submit();
 		}
     }
 

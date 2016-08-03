@@ -193,10 +193,11 @@ function exportTasks(){
 	SP_openWindow('Export', 'exportTasks', '750', '550','scrollbars=yes, menubar=yes, resizable, alwaysRaised');
 }
 function deleteTask(id) {
-    if(window.confirm("<%=resource.getString("projectManager.SupprimerTacheConfirmation")%>")){
-      document.listForm.Id.value = id;
-      document.listForm.submit();
-    }
+  var label = "<%=resource.getString("projectManager.SupprimerTacheConfirmation")%>";
+  jQuery.popup.confirm(label, function() {
+    document.listForm.Id.value = id;
+    document.listForm.submit();
+  });
 }
 function callUserPanel()
 {
@@ -219,7 +220,7 @@ function isCorrectDate(input)
     }
     return true;
 }
-function isCorrectForm() {
+function sendFilterData() {
      var errorMsg 			= "";
      var errorNb 			= 0;
 
@@ -246,25 +247,15 @@ function isCorrectForm() {
 
      switch(errorNb) {
         case 0 :
-            result = true;
+            document.actionForm.submit();
             break;
         case 1 :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
-}
-
-function sendFilterData() {
-    if (isCorrectForm()) {
-         document.actionForm.submit();
+            jQuery.popup.error(errorMsg);
      }
 }
 </script>

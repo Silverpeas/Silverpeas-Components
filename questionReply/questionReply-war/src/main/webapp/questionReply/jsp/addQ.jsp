@@ -52,7 +52,7 @@
 <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script language="JavaScript">
 <!--
-function isCorrectForm() {
+function save() {
   var errorMsg = "";
   var errorNb = 0;
 
@@ -74,28 +74,17 @@ function isCorrectForm() {
   switch(errorNb)
   {
     case 0 :
-        result = true;
+        <view:pdcPositions setIn="document.myForm.Positions.value"/>;
+        document.forms[0].submit();
         break;
     case 1 :
         errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
     default :
         errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
   }
-  return result;
-
-}
-function save()
-{
-	if (isCorrectForm()) {
-    <view:pdcPositions setIn="document.myForm.Positions.value"/>;
-    document.forms[0].submit();
-	}
 }
 //-->
 </script>

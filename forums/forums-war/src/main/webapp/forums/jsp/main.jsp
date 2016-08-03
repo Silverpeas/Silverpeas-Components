@@ -118,21 +118,19 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 
       function confirmDeleteForum(forumId)
       {
-        if (confirm("<view:encodeJs string="${removeForum}"/>"))
-        {
+        jQuery.popup.confirm("<view:encodeJs string="${removeForum}"/>", function() {
           $('#action').val('4');
           $('#params').val(forumId);
           $('#forumForm').attr('action', 'main.jsp').submit();
-        }
+        });
       }
 
       function confirmDeleteCategory(categoryId)
       {
-        if (confirm("<view:encodeJs string="${removeCategory}"/>"))
-        {
+        jQuery.popup.confirm("<view:encodeJs string="${removeCategory}"/>", function() {
           $('#CategoryId').val(categoryId);
           $('#forumForm').attr('action', 'DeleteCategory').submit();
-        }
+        });
       }
 
       function openSPWindow(fonction, windowName)

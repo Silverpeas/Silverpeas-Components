@@ -51,19 +51,19 @@ function SubmitWithVerif(verifParams) {
     var errorMsg = "";
 
     if (verifParams) {
-         if (isWhitespace(csvFilefld)) {
-            errorMsg = "<% out.print(resource.getString("GML.thefield")+resource.getString("GML.csvFile")+resource.getString("GML.mandatory")); %>";
-         } else {
-			var ext = csvFilefld.substring(csvFilefld.length - 4);
-	    if (ext.toLowerCase() != ".csv") {
-			errorMsg = "<% out.print(resource.getString("GML.errorCsvFile")); %>";
-		}
-		}
+      if (isWhitespace(csvFilefld)) {
+        errorMsg = "<% out.print(resource.getString("GML.thefield")+resource.getString("GML.csvFile")+resource.getString("GML.mandatory")); %>";
+      } else {
+			  var ext = csvFilefld.substring(csvFilefld.length - 4);
+	      if (ext.toLowerCase() != ".csv") {
+			    errorMsg = "<% out.print(resource.getString("GML.errorCsvFile")); %>";
+		    }
+		  }
     }
     if (errorMsg == "") {
         document.csvFileForm.submit();
     } else {
-        window.alert(errorMsg);
+        jQuery.popup.error(errorMsg);
     }
 }
 </script>

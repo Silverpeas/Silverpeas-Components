@@ -94,7 +94,7 @@ function isCorrectExtension(filename){
 
 /************************************************************************************/
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
@@ -123,27 +123,23 @@ function isCorrectForm() {
      switch(errorNb)
      {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
             window.alert(errorMsg);
-            result = false;
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
             window.alert(errorMsg);
-            result = false;
-            break;
      }
-     return result;
 }
 
 /************************************************************************************/
 
 function sendData() {
 
-      if (isCorrectForm()) {
+      ifCorrectFormExecute(function() {
             var nameFile = stripInitialWhitespace(document.topicForm.Name.value);
             var indexPoint = nameFile.lastIndexOf(".");
             // on verifie qu'il existe une extension au nom du fichier propos�
@@ -152,7 +148,7 @@ function sendData() {
             }
             document.topicDetailForm.nomPage.value = nameFile;
             document.topicDetailForm.submit();
-      }
+      });
 }
 </script>
 </HEAD>

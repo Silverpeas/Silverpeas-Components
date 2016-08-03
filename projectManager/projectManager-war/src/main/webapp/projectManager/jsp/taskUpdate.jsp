@@ -131,7 +131,7 @@ function dateDansPeriodeMere(beginDate)
 		}
 	%>
 }
-function isCorrectForm() {
+function sendTaskData() {
 	 var i=0;
 	 var str = "";
 	 var hasNext = 1;
@@ -217,24 +217,22 @@ function isCorrectForm() {
      }
      switch(errorNb) {
         case 0 :
-            result = true;
+            document.getElementById("HiddenDateFin").value = document.getElementById("DisplayDateFin").innerHTML;
+            document.actionForm.PreviousId.value = extractPreviousId();
+            document.actionForm.submit();
             break;
         case 1 :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 
-function isCorrectFormResponsable() {
+function sendTaskDataResponsable() {
 	   var i=0;
 	   var str = "";
 	   //while(document.getElementById("Resource"+i).value != null)
@@ -279,35 +277,16 @@ function isCorrectFormResponsable() {
 	}
      switch(errorNb) {
         case 0 :
-            result = true;
+            document.actionForm.submit();
             break;
         case 1 :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
-}
-
-function sendTaskData() {
-    if (isCorrectForm()) {
-	document.getElementById("HiddenDateFin").value = document.getElementById("DisplayDateFin").innerHTML;
-
-	document.actionForm.PreviousId.value = extractPreviousId();
-	document.actionForm.submit();
-    }
-}
-
-function sendTaskDataResponsable() {
-    if (isCorrectFormResponsable()) {
-		document.actionForm.submit();
-    }
 }
 
 function callUserPanel()

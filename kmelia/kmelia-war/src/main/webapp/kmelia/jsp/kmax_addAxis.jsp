@@ -44,38 +44,29 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 <view:looknfeel withCheckFormScript="true"/>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {
-  if (isCorrectForm()) {
-	  document.axisForm.action = "KmaxAddAxis";
-	  document.axisForm.submit();
+  var errorMsg = "";
+  var errorNb = 0;
+  var title = stripInitialWhitespace(document.axisForm.Name.value);
+  var description = stripInitialWhitespace(document.axisForm.Description.value);
+  if (isWhitespace(title)) {
+   errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
+   errorNb++;
   }
-}
-
-function isCorrectForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var title = stripInitialWhitespace(document.axisForm.Name.value);
-     var description = stripInitialWhitespace(document.axisForm.Description.value);
-     if (isWhitespace(title)) {
-       errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
-       errorNb++; 
-     }
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb)
+  {
+    case 0 :
+        document.axisForm.action = "KmaxAddAxis";
+        document.axisForm.submit();
+        break;
+    case 1 :
+        errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
+        jQuery.popup.error(errorMsg);
+        break;
+    default :
+        errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
+        jQuery.popup.error(errorMsg);
+  }
+  return result;
 }
 </script>
 </HEAD>

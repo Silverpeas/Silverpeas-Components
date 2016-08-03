@@ -43,7 +43,7 @@
 		if (title != null && title.length > 0) {
 			document.addInfoGene.submit();
 		} else {
-			alert('${scheduleEventNoTitle}');
+      jQuery.popup.error('${scheduleEventNoTitle}');
 		}
 	}
 </script>

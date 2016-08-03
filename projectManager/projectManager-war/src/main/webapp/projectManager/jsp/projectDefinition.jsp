@@ -63,7 +63,7 @@ function editDate(indiceElem)
 		hauteur = "200";
 		SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
 }
-function isCorrectForm() {
+function sendActionData() {
 
      var errorMsg 			= "";
      var errorNb 			= 0;
@@ -86,25 +86,15 @@ function isCorrectForm() {
      }
      switch(errorNb) {
         case 0 :
-            result = true;
+            document.projectForm.submit();
             break;
         case 1 :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
-}
-
-function sendActionData() {
-    if (isCorrectForm()) {
-         document.projectForm.submit();
+            jQuery.popup.error(errorMsg);
      }
 }
 </script>

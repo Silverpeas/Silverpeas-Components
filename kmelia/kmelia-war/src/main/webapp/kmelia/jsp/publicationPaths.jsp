@@ -117,7 +117,7 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "View
 function sendData() {
 	var selectedPaths = getSelectedOjects();
 	if (selectedPaths.indexOf(',<%=componentId%>,') == -1) {
-		alert('<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(resources.getString("kmelia.paths.mandatory")))%>');
+    jQuery.popup.error('<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(resources.getString("kmelia.paths.mandatory")))%>');
 	} else {
 		document.getElementById("LoadedComponentIds").value=","+loadedPanes+",";
 		document.paths.submit();

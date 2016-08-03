@@ -57,13 +57,13 @@
   function processUpdate() {
     if (isValidTextField($('#login').val()) === false) {
       $('#login').focus()
-      alert("<fmt:message key='erreurChampsTropLong'/>");
+      notyError("<fmt:message key='erreurChampsTropLong'/>");
     } else if (isValidTextField($('#password').val()) == false) {
       $('#password').focus();
-      alert("<fmt:message key='erreurChampsTropLong'/>");
+      notyError("<fmt:message key='erreurChampsTropLong'/>");
     } else if (isFinite($('#rowLimit').val()) == false) {
       $('#rowLimit').focus();
-      alert("<fmt:message key='erreurChampsNonEntier'/>");
+      notyError("<fmt:message key='erreurChampsNonEntier'/>");
     } else {
       $('#processForm').attr('action', 'UpdateConnection');
       $('#processForm').submit();

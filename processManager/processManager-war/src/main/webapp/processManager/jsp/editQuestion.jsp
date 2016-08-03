@@ -64,10 +64,9 @@
 <!--
 	function B_VALIDER_ONCLICK()
 	{
-		if (isCorrectForm())
-		{
+    ifCorrectFormExecute(function() {
 			document.<%=context.getFormName()%>.submit();
-		}
+		});
 	}
 
 	function B_ANNULER_ONCLICK() {

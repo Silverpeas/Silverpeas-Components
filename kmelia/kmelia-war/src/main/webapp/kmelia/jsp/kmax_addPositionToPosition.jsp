@@ -52,43 +52,32 @@ Button validateButton = gef.getFormButton(kmeliaScc.getString("GML.validate"), "
 
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {
-  if (isCorrectForm()) {
-        document.axisForm.action = "KmaxAddPosition";
-        document.axisForm.submit();
-        window.close();
-  }
-}
-
-function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.axisForm.Name.value);
-     var description = stripInitialWhitespace(document.axisForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
        errorNb++;
      }
-	if (!isValidTextArea(document.axisForm.Description)) {
+	  if (!isValidTextArea(document.axisForm.Description)) {
           errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
           errorNb++;
     }
      switch(errorNb)
      {
         case 0 :
-            result = true;
+            document.axisForm.action = "KmaxAddPosition";
+            document.axisForm.submit();
+            window.close();
             break;
         case 1 :
             errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 </script>
 </HEAD>

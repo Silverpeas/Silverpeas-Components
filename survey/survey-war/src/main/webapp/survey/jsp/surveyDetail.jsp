@@ -320,8 +320,7 @@
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript">
 function sendVote(roundId) {
-  if (isCorrectForm()) {
-
+  ifCorrectFormExecute(function() {
 	 try
 	 {
  		document.survey.anonymousComment.disabled = false;
@@ -344,7 +343,7 @@ function sendVote(roundId) {
           document.survey.Action.value="RecordQuestionsResponses";
           document.survey.submit();
     }
-  }
+  });
 }
 
 function checkRadioAndCheckboxes()
@@ -395,7 +394,7 @@ function checkRadioAndCheckboxes()
     return ok;
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
 
@@ -418,20 +417,16 @@ function isCorrectForm() {
    }
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 function checkButton(input) {
@@ -585,41 +580,13 @@ function clipboardCopy() {
     		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
     	}
     }
-    
-    function isCorrectForm() {
-    	  var errorMsg = "";
-    	  var errorNb = 0;
-    	                                      
-    	    switch(errorNb) {
-    	        case 0 :
-    	            result = true;
-    	            break;
-    	        case 1 :
-    	            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-    	            window.alert(errorMsg);
-    	            result = false;
-    	            break;
-    	        default :
-    	            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-    	            window.alert(errorMsg);
-    	            result = false;
-    	            break;
-    	     } 
-    	    return result;
-    	}
 
-    	function sendData() {
-    	  document.publishResultForm.submit();
-    	}
-    
     function showDialog(title) {
 	 	  $("#publishResultDialog").popup({
 	      title: title,
 	      callback: function() {
-	        if (isCorrectForm()) {
-	          sendData();
-	        }
-	        return isCorrect;
+          document.publishResultForm.submit();
+	        return true;
 	      }
 	    });
     }

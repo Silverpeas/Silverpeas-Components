@@ -58,10 +58,7 @@ function showDialog(title) {
 	$("#categoryManager").popup({
 	      title: title,
 	      callback: function() {
-	        if (isCorrectForm()) {
-	        	sendData();
-	        }
-	        return isCorrect;
+	        sendData();
 	      }
 	    });
 }
@@ -80,7 +77,7 @@ function editCategory(id) {
 	showDialog(title);
 }
 
-function isCorrectForm() {
+function sendData() {
  	var errorMsg = "";
  	var errorNb = 0;
  	var name = stripInitialWhitespace($("#categoryManager #Name").val());
@@ -92,32 +89,25 @@ function isCorrectForm() {
 	   				     			     				    
    	switch(errorNb) {
        	case 0 :
-           	result = true;
+            document.categoryForm.submit();
            	break;
        	case 1 :
            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-           	window.alert(errorMsg);
-           	result = false;
+            jQuery.popup.error(errorMsg);
            	break;
        	default :
            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-           	window.alert(errorMsg);
-           	result = false;
-           	break;
-     } 
-    return result;
-}
-
-function sendData() {
-	document.categoryForm.submit();
+            jQuery.popup.error(errorMsg);
+     }
 }
 	
 function deleteConfirm(id,nom) {
-	if(window.confirm("<%=resource.getString("blog.confirmDeleteCategory")%> '" + nom + "' ?")) {
+  var label = "<%=resource.getString("blog.confirmDeleteCategory")%> '" + nom + "' ?";
+  jQuery.popup.confirm(label, function() {
 		document.categoryForm.action = "DeleteCategory";
 		document.categoryForm.CategoryId.value = id;
 		document.categoryForm.submit();
-	}
+	});
 }
 
 var listNodeJSON = ${requestScope.ListCategoryJSON};
@@ -158,7 +148,7 @@ function sortNode(updatedNodeJSON)
         ,
         error: function(jqXHR, textStatus, errorThrown) {
           if (onError == null)
-           alert(errorThrown);
+           notyError(errorThrown);
           else
            onError({
              status: jqXHR.status,

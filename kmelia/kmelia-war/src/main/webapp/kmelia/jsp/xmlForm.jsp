@@ -77,6 +77,14 @@
         location.href="GoToTopic?Id="+id;
       }
 
+      function isCorrectForm() {
+        var result = false;
+        ifCorrectFormExecute(function() {
+          result = true;
+        });
+        return result;
+      }
+
       function B_VALIDER_ONCLICK() {
         if (isCorrectForm()) {
           $.progressMessage();

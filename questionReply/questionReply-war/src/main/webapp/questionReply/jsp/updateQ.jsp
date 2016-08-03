@@ -60,7 +60,7 @@
 <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript" >
 <!--
-function isCorrectForm() {
+function save() {
 	var errorMsg = "";
 	var errorNb = 0;
 
@@ -81,28 +81,18 @@ function isCorrectForm() {
 
   switch(errorNb) {
     case 0 :
-      result = true;
+      document.forms[0].submit();
       break;
     case 1 :
       errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
     default :
       errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
-function save()
-{
-	if (isCorrectForm()) {
-    document.forms[0].submit();
-	}
-}
 function cancel(id)
 {
 	document.QForm.action = "ConsultQuestionQuery";

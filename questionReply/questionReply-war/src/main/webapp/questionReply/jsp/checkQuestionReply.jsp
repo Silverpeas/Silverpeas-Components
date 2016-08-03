@@ -147,17 +147,17 @@ boolean existPublicR(Collection replies)
 <script type="text/javascript">
 
 <!--
-function DeleteQ(id)
-{
-  if (window.confirm("<%=resource.getString("MessageSuppressionQ")%>")) {
+function DeleteQ(id) {
+  var label = "<%=resource.getString("MessageSuppressionQ")%>";
+  jQuery.popup.confirm(label, function() {
     self.location = "<%=routerUrl%>DeleteQuestions?checkedQuestion="+id;
-  }
+  });
 }
-function CloseQ(id)
-{
-  if (window.confirm("<%=resource.getString("MessageCloseQ")%>")) {
+function CloseQ(id) {
+  var label = "<%=resource.getString("MessageCloseQ")%>";
+  jQuery.popup.confirm(label, function() {
     self.location = "<%=routerUrl%>CloseQuestion?questionId="+id;
-  }
+  });
 }
 
 function existSelected()

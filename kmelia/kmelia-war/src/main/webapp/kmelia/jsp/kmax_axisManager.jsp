@@ -94,60 +94,55 @@ function axisAdd() {
 }
 
 function axisUpdate() {
-	closeWindows();
-    if (isCorrectAxisForm()) {
-    	document.managerForm.action = "KmaxUpdateAxis";
-        document.managerForm.AxisName.value = document.axisManagerForm.Name.value;
-        document.managerForm.AxisDescription.value = document.axisManagerForm.Description.value;
-        document.managerForm.AxisId.value = document.axisManagerForm.Id.value;
-        <% if (I18NHelper.isI18nContentActivated)  { %>
-        	document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
-        <% } %>
-        if (document.getElementById('TranslationRemoveIt'))  { 
-        	document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
-		}
-        document.managerForm.submit();
-    }
-}
-
-function isCorrectAxisForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var title = stripInitialWhitespace(document.axisManagerForm.Name.value);
-	 var description = stripInitialWhitespace(document.axisManagerForm.Description.value);
-     if (isWhitespace(title)) {
-       errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
-       errorNb++;
-     }
+  closeWindows();
+  var errorMsg = "";
+  var errorNb = 0;
+  var title = stripInitialWhitespace(document.axisManagerForm.Name.value);
+	if (isWhitespace(title)) {
+    errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
 	if (!isValidTextArea(document.axisManagerForm.Description)) {
-          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
-          errorNb++;
+    errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
+    errorNb++;
+  }
+  var result = false;
+  switch(errorNb) {
+    case 0 :
+      result = true;
+      break;
+    case 1 :
+      errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
+
+  if (result) {
+    document.managerForm.action = "KmaxUpdateAxis";
+    document.managerForm.AxisName.value = document.axisManagerForm.Name.value;
+    document.managerForm.AxisDescription.value = document.axisManagerForm.Description.value;
+    document.managerForm.AxisId.value = document.axisManagerForm.Id.value;
+    <% if (I18NHelper.isI18nContentActivated)  { %>
+      document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
+    <% } %>
+    if (document.getElementById('TranslationRemoveIt'))  {
+      document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
     }
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+    document.managerForm.submit();
+  }
 }
 
 function axisDelete() {
 	closeWindows();
-    if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteAxis")%> ?")){
+  var label = "<%=kmeliaScc.getString("ConfirmDeleteAxis")%> ?";
+  jQuery.popup.confirm(label, function() {
 		document.managerForm.action = "KmaxDeleteAxis";
 		document.managerForm.AxisId.value = document.axisManagerForm.Id.value;
 		document.managerForm.submit();
-    }
+  });
 }
 
 function axisManage(id) {
@@ -193,59 +188,53 @@ function addPositionToAxis(axisId) {
 
 function positionUpdate() {
 	closeWindows();
-    if (isCorrectComponentForm()) {
-      document.managerForm.action = "KmaxUpdatePosition";
-      document.managerForm.PositionName.value = document.axisManagerForm.Name.value;
-      document.managerForm.PositionDescription.value = document.axisManagerForm.Description.value;
-      document.managerForm.PositionId.value = document.axisManagerForm.Id.value;
-      <% if (I18NHelper.isI18nContentActivated)  { %>
-      	document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
-      <% } %>
-      if (document.getElementById('TranslationRemoveIt'))  { 
-     	 document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
-		} 
-      document.managerForm.submit();
+  var errorMsg = "";
+  var errorNb = 0;
+  var title = stripInitialWhitespace(document.axisManagerForm.Name.value);
+  if (isWhitespace(title)) {
+    errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+  if (!isValidTextArea(document.axisManagerForm.Description)) {
+    errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
+    errorNb++;
+  }
+  var result = false;
+  switch(errorNb) {
+    case 0 :
+      result = true;
+      break;
+    case 1 :
+      errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
+  if (result) {
+    document.managerForm.action = "KmaxUpdatePosition";
+    document.managerForm.PositionName.value = document.axisManagerForm.Name.value;
+    document.managerForm.PositionDescription.value = document.axisManagerForm.Description.value;
+    document.managerForm.PositionId.value = document.axisManagerForm.Id.value;
+    <% if (I18NHelper.isI18nContentActivated)  { %>
+      document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
+    <% } %>
+    if (document.getElementById('TranslationRemoveIt'))  {
+      document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
     }
-}
-
-function isCorrectComponentForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var title = stripInitialWhitespace(document.axisManagerForm.Name.value);
-	 var description = stripInitialWhitespace(document.axisManagerForm.Description.value);
-     if (isWhitespace(title)) {
-       errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
-       errorNb++;
-     }
-	if (!isValidTextArea(document.axisManagerForm.Description)) {
-          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
-          errorNb++;
-    }
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> 1 <%=kmeliaScc.getString("Error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=kmeliaScc.getString("ThisFormContains")%> " + errorNb + " <%=kmeliaScc.getString("Errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+    document.managerForm.submit();
+  }
 }
 
 function positionDelete() {
 	closeWindows();
-    if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteComponent")%> ?")){
-    	document.managerForm.action = "KmaxDeletePosition";
-        document.managerForm.PositionId.value = document.axisManagerForm.Id.value;
-        document.managerForm.submit();
-    }
+  var label = "<%=kmeliaScc.getString("ConfirmDeleteComponent")%> ?";
+  jQuery.popup.confirm(label, function() {
+    document.managerForm.action = "KmaxDeletePosition";
+    document.managerForm.PositionId.value = document.axisManagerForm.Id.value;
+    document.managerForm.submit();
+  });
 }
 
 function showTranslation(lang)

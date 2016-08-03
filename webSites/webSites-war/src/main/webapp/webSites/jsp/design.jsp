@@ -97,7 +97,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 
 if (! searchOk) {
-    out.println("alert(\""+resources.getString("PrincipalPageNotCorrectDesign")+"\")");
+    out.println("notyError(\""+resources.getString("PrincipalPageNotCorrectDesign")+"\")");
     if (description == null) {
 		description = "";
     }out.println("location.replace(\"modifDesc.jsp?Id="+id+"&Path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+theListeIcones+"\");");
@@ -227,13 +227,14 @@ function deleteFolder(id, path, name) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    if (window.confirm("<%=resources.getString("MessageSuppressionFolder")%>")) {
-        document.design.Action.value = "deleteFolder";
-        document.design.Id.value = id;
-        document.design.Path.value = path;
-        document.design.name.value = name;
-        document.design.submit();
-    }
+  var label = "<%=resources.getString("MessageSuppressionFolder")%>";
+  jQuery.popup.confirm(label, function() {
+    document.design.Action.value = "deleteFolder";
+    document.design.Id.value = id;
+    document.design.Path.value = path;
+    document.design.name.value = name;
+    document.design.submit();
+  });
 }
 
 /**********************************************/
@@ -249,7 +250,7 @@ function pageRedesign(path, name, namesite) {
       if (window.pageAddWindow != null)
           window.pageAddWindow.close();
       if (path.indexOf('..') >= 0)
-        alert("<%= resources.getString("GML.error.AccessForbidden") %>");
+        notyError("<%= resources.getString("GML.error.AccessForbidden") %>");
       else
         location.href="ToWysiwyg?Path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
 }
@@ -287,13 +288,14 @@ function deletePage(id, path, name) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    if (window.confirm("<%=resources.getString("MessageSuppressionFile")%>")) {
-          document.design.Action.value = "deletePage";
-          document.design.Id.value = id;
-          document.design.Path.value = path;
-          document.design.name.value = name;
-          document.design.submit();
-    }
+    var label = "<%=resources.getString("MessageSuppressionFile")%>";
+    jQuery.popup.confirm(label, function() {
+      document.design.Action.value = "deletePage";
+      document.design.Id.value = id;
+      document.design.Path.value = path;
+      document.design.name.value = name;
+      document.design.submit();
+});
 }
 </script>
 

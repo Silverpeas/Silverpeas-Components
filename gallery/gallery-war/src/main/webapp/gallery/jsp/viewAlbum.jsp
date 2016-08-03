@@ -174,12 +174,13 @@ function addFavorite(name, description, url) {
 <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
 function deleteConfirm(id, nom) {
   // confirmation de suppression de l'album
-  if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + $('<span>').html(nom).text() + "' ?")) {
+  var label = "<fmt:message key="gallery.confirmDeleteAlbum"/> '" + $('<span>').html(nom).text() + "' ?";
+  jQuery.popup.confirm(label, function() {
     $.progressMessage();
     document.albumForm.action = "DeleteAlbum";
     document.albumForm.Id.value = id;
     document.albumForm.submit();
-  }
+  });
 }
 </c:if>
 
@@ -206,14 +207,15 @@ function sendDataDelete() {
   //confirmation de suppression de l'album
   var selectedPhotos = getMediaIds(true);
   if (selectedPhotos && selectedPhotos.length > 0) {
-    if (window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> ")) {
+    var label = "<fmt:message key="gallery.confirmDeleteMedias"/> ";
+    jQuery.popup.confirm(label, function() {
       $.progressMessage();
       // envoi des photos selectionnees pour la modif par lot
       document.mediaForm.SelectedIds.value = selectedPhotos;
       document.mediaForm.NotSelectedIds.value = getMediaIds(false);
       document.mediaForm.action = "DeleteSelectedMedia";
       document.mediaForm.submit();
-    }
+    });
   }
 }
     <c:if test="${isPdcUsed}">

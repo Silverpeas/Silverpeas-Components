@@ -226,7 +226,7 @@ function SendQuestions(nb)
 	if (Number(nb) > 0) {
 		self.location = "questionsUpdate.jsp?Action=SendQuestions";
 	} else {
-		alert('<%=resources.getString("MustContainsAQuestion")%>');
+    jQuery.popup.error('<%=resources.getString("MustContainsAQuestion")%>');
 	}
 }
 </script>

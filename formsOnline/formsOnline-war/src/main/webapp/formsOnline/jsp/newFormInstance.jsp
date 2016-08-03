@@ -53,9 +53,9 @@
 <% formUpdate.displayScripts(out, context); %>
 <script type="text/javascript">
   function sendRequest() {
-		if (isCorrectForm()) {
+		ifCorrectFormExecute(function() {
 			document.newInstanceForm.submit();
-		}
+		});
 	}
 </script>
 </head>

@@ -125,15 +125,19 @@ function topicAddGoTo() {
 
 function sendContactData() {
     <% if (formUpdate != null) { %>
-    if (isCorrectAppForm() && isCorrectForm()) {
+      ifCorrectAppFormExecute(function() {
+        ifCorrectFormExecute(function() {
+          document.contactForm.submit();
+        });
+      });
     <% } else { %>
-    if (isCorrectAppForm()) {
+      ifCorrectAppFormExecute(function() {
+        document.contactForm.submit();
+      });
     <% } %>
-         document.contactForm.submit();
-     }
 }
 
-function isCorrectAppForm() {
+function ifCorrectAppFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var lastName = stripInitialWhitespace(document.contactForm.LastName.value);
@@ -144,20 +148,16 @@ function isCorrectAppForm() {
      }
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 </script>
 <%

@@ -342,7 +342,7 @@ function displaySubTopics(id) {
 function getSubFolder(folder) {
 	var id = folder.attr["id"];
 	var nbItems = folder.attr["nbItems"];
-	var name = folder.data;
+	var name = folder.text;
 	var desc = folder.attr["description"];
 	var str = '<li id="topic_'+id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';

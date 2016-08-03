@@ -70,7 +70,7 @@ function search() {
         }
     }
     if (nbSelectedAxis != 1) {
-		window.alert("Vous devez s�lectionnez au moins un axe !");
+      jQuery.popup.error("Vous devez s�lectionnez au moins un axe !");
     } else {
 		document.managerForm.TimeCriteria.value = timeCriteria;
 		document.managerForm.SearchCombination.value = z;

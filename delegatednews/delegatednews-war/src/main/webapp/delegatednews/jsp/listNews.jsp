@@ -75,7 +75,7 @@
       $("#datesDialog").dialog("open");
     }
     
-    function areDatesCorrect() {
+    function ifDatesCorrectExecute(callback) {
       var errorMsg = "";
       var errorNb = 0;
       
@@ -89,20 +89,16 @@
          
       switch(errorNb) {
       	case 0 :
-			result = true;
-            break;
-		case 1 :
+          callback.call(this);
+          break;
+		    case 1 :
         	errorMsg = '<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n' + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-		default :
+          jQuery.popup.error(errorMsg);
+          break;
+		    default :
         	errorMsg = '<fmt:message key="GML.ThisFormContains" /> ' + errorNb + ' <fmt:message key="GML.errors"/> :\n' + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-	  }
-      return result;
+          jQuery.popup.error(errorMsg);
+	    }
     }
     
     $(function() {
@@ -133,14 +129,14 @@
         width: 500,
         buttons: {
           "<fmt:message key="GML.ok"/>": function() {
-            if (areDatesCorrect()) {
+            ifDatesCorrectExecute(function() {
               document.listDelegatedNews.action = "UpdateDateDelegatedNews";
               document.listDelegatedNews.BeginDate.value = $("#datesDialog #BeginDate").val();
               document.listDelegatedNews.BeginHour.value = $("#datesDialog #BeginHour").val();
               document.listDelegatedNews.EndDate.value = $("#datesDialog #EndDate").val();
               document.listDelegatedNews.EndHour.value = $("#datesDialog #EndHour").val();
               document.listDelegatedNews.submit();
-            }
+            });
           },
           "<fmt:message key="GML.cancel" />": function() {
             $(this).dialog("close");
@@ -187,7 +183,7 @@
               ,
               error: function(jqXHR, textStatus, errorThrown) {
                 if (onError == null)
-                 alert(errorThrown);
+                 notyError(errorThrown);
                 else
                  onError({
                    status: jqXHR.status, 

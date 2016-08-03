@@ -43,7 +43,7 @@
   <script type='text/javascript'>
     function validateResource() {
       if (!$('textarea').val()) {
-        window.alert("'<%=resource.getString("resourcesManager.RefusalMotive")%>' <%=resource.getString("GML.MustBeFilled")%>\n");
+        jQuery.popup.error("'<%=resource.getString("resourcesManager.RefusalMotive")%>' <%=resource.getString("GML.MustBeFilled")%>\n");
       } else {
         document.refusalForm.action = "RefuseResource";
         document.refusalForm.submit();

@@ -117,7 +117,7 @@
             loadingComplete();
           }
         }, function(classification, error) {
-          window.alert(error.message);
+          notyError(error.message);
         })
       }
       
@@ -153,7 +153,7 @@
               multiValuation     : true,
               onValuesSelected   : function(positions) {
                 if (areAlreadyInClassification(positions, classifications[startIndex])) {
-                  alert(alreadyExistingPositionError);
+                  notyError(alreadyExistingPositionError);
                 } else {
                   addPositionsInClassifications($elt, positions, startIndex, endIndex);
                 }
@@ -176,7 +176,7 @@
               values             : position.values,
               onValuesSelected   : function(positions) {
                 if (isAlreadyInClassification(positions[0], classifications[startIndex]))
-                  alert(alreadyExistingPositionError);
+                  notyError(alreadyExistingPositionError);
                 else
                   updatePositionInClassifications($elt, position, positions[0].values, startIndex, endIndex);
               }
@@ -231,9 +231,9 @@
           }
         }, function(error) {
           if (error.status == 409 )
-            alert(positionErrorMessage);
+            notyError(positionErrorMessage);
           else
-            alert(error.message);
+            notyError(error.message);
         });
       }
       
@@ -298,7 +298,7 @@
             appendTo($("#classification-modification").show());
           renderClassifications($("#classification-modification"), pdc, 0, classifications.length - 1);
         }, function(pdc, error) {
-          alert(error.message);
+          notyError(error.message);
         })
       }
       
@@ -325,7 +325,7 @@
             renderClassifications($("#publi-<c:out value='${importedPublications[i].id}'/>"), pdc, <c:out value="${i}"/>, <c:out value="${i}"/>);
       </c:forEach>
           }, function(pdc, error) {
-            alert(error);
+            notyError(error);
           })
         }
       

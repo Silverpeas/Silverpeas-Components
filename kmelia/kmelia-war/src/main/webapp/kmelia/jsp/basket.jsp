@@ -56,8 +56,8 @@ function doPagination(index)
 
 function emptyTrash()
 {
-	if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>"))
-	{
+  var label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
+  jQuery.popup.confirm(label, function() {
 		$.progressMessage();
 		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
@@ -68,10 +68,10 @@ function emptyTrash()
 					}
 					else
 					{
-						alert(data);
+						notyError(data);
 					}
 				}, 'text');
-	}
+	});
 }
 
 $(document).ready(function() {

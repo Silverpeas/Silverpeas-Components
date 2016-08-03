@@ -56,7 +56,7 @@ function validateForm() {
 	fileName = document.frm_import.file_name.value;
 	if (document.frm_import.opt_importmode[0].checked || document.frm_import.opt_importmode[1].checked) {
 		if (fileName.indexOf(".zip")== -1) {
-			alert("<%=resources.getString("kmelia.FileNotZip")%>");
+      jQuery.popup.error("<%=resources.getString("kmelia.FileNotZip")%>");
 		} else {
 			formValid = true;
 		}

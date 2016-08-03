@@ -79,11 +79,10 @@
 	function B_VALIDER_ONCLICK()
 	{
 	<% if (form != null) { %>
-		if (isCorrectForm())
-		{
+    ifCorrectFormExecute(function() {
 			$.progressMessage();
-		setTimeout("document.<%=context.getFormName()%>.submit();", 500);
-		}
+		  setTimeout("document.<%=context.getFormName()%>.submit();", 500);
+		});
 	<% } else { %>
 		$.progressMessage();
 		setTimeout("document.<%=context.getFormName()%>.submit();", 500);

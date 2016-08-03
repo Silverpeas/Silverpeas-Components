@@ -185,7 +185,7 @@ function isCorrectExtension(filename){
 
 /************************************************************************************/
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
   var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
@@ -234,26 +234,22 @@ function isCorrectForm() {
    switch(errorNb)
    {
       case 0 :
-          result = true;
+          callback.call(this);
           break;
       case 1 :
           errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
     default :
         errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 /******************************************************/
 
 function B_VALIDER_ONCLICK(nbthemes, nbicones) {
-  if (isCorrectForm()) {
+  ifCorrectFormExecute(function() {
     var indexPoint = document.descriptionSite.nomPage.value.lastIndexOf(".");
     var ext = document.descriptionSite.nomPage.value.substring(indexPoint + 1);
     if ((ext != "html") && (ext != "htm") && (ext != "HTML") && (ext != "HTM") ) {
@@ -284,7 +280,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
     document.descriptionSite.ListeTopics.value = f;
     <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;
     document.descriptionSite.submit(); /* et on a bien une page html */
-  }
+  });
 }
 
 

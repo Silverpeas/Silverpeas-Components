@@ -45,9 +45,10 @@
 <view:looknfeel/>
 	<script type="text/javascript">
     function removeRequests() {
-      if (window.confirm("<fmt:message key="formsOnline.requests.action.delete.confirm"/>")) {
+      var label = "<fmt:message key="formsOnline.requests.action.delete.confirm"/>";
+      jQuery.popup.confirm(label, function() {
         document.deleteForm.submit();
-      }
+      });
     }
 	</script>
 </head>

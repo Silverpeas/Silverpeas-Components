@@ -160,17 +160,17 @@
 <script type="text/javascript">
 
 function sendData() {
-    if (isCorrectForm()) {
-        if (checkAnswers()) {
+    ifCorrectFormExecute(function() {
+        ifCorrectAnswersExecute(function() {
             if (document.surveyForm.suggestion.checked) {
                 document.surveyForm.SuggestionAllowed.value = "1";
             }
             document.surveyForm.submit();
-        }
-    }
+        });
+    });
 }
 
-function checkAnswers() {
+function ifCorrectAnswersExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var answerEmpty = false;
@@ -213,7 +213,7 @@ function checkAnswers() {
  </c:if>
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         default :
             fields = fieldsEmpty.split(",");
@@ -225,15 +225,12 @@ function checkAnswers() {
                     errorMsg += "<fmt:message key="OtherAnswer" /> \n";
                 }
             </c:if>
-            window.alert("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
      }
-     return result;
 }
 
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
      var errorMsg = "";
      var errorNb = 0;
      var question = stripInitialWhitespace(document.surveyForm.question.value);
@@ -284,20 +281,16 @@ function isCorrectForm() {
 	 }
      switch(errorNb) {
         case 0 :
-            result = true;
+            callback.call(this);
             break;
         case 1 :
             errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
+            jQuery.popup.error(errorMsg);
             break;
         default :
             errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+            jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 function goToEnd() {

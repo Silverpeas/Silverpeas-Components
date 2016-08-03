@@ -105,13 +105,14 @@ function goToNotify(url)
 }
 
 function eventDeleteConfirm() {
-    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?")){
-    	<% if (event.isPeriodic()) { %>
-    		$("#modalDialogOnDelete").dialog("open");
-    	<% } else { %>
-    		sendEvent('RemoveEvent', 'ReallyDelete');
-    	<% } %>
-    }
+  var label = "<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?";
+  jQuery.popup.confirm(label, function() {
+    <% if (event.isPeriodic()) { %>
+      $("#modalDialogOnDelete").dialog("open");
+    <% } else { %>
+      sendEvent('RemoveEvent', 'ReallyDelete');
+    <% } %>
+  });
 }
 
 function editEvent() {

@@ -66,9 +66,9 @@ if (formUpdate != null) {
 function B_VALIDER_ONCLICK()
 {
 	<% if (formUpdate != null) { %>
-		if (isCorrectForm()) {
+		ifCorrectFormExecute(function() {
 			checkAcceptation();
-		}
+		});
 	<% } else { %>
 		checkAcceptation();
 	<% } %>
@@ -77,7 +77,7 @@ function B_VALIDER_ONCLICK()
 function checkAcceptation() {
 	if (<%=StringUtil.isDefined(charteUrl)%> && !document.myForm.CheckCharte.checked) {
 		var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
-		window.alert(errorMsg);
+    jQuery.popup.error(errorMsg);
 	} else {
 	  $.progressMessage();
 		document.myForm.submit();

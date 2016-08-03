@@ -301,37 +301,36 @@ function openSPWindow(fonction, windowName)
 function deleteConfirm(id)
 {
 	//confirmation de suppression de la question
-	if(window.confirm('<fmt:message key="MessageSuppressionQ" />'))
-	{
-			document.QForm.action = "DeleteQ";
-			document.QForm.Id.value = id;
-			document.QForm.submit();
-	}
+  var label = "<fmt:message key="MessageSuppressionQ" />";
+  jQuery.popup.confirm(label, function() {
+    document.QForm.action = "DeleteQ";
+    document.QForm.Id.value = id;
+    document.QForm.submit();
+	});
 }
 
 // clore une question
 function closeQ(id)
 {
 	//confirmation de cloture de la question
-	if(window.confirm('<fmt:message key="MessageCloseQ" />'))
-	{
-
-			document.QForm.action = "CloseQ";
-			document.QForm.Id.value = id;
-			document.QForm.submit();
-	}
+  var label = "<fmt:message key="MessageCloseQ" />";
+  jQuery.popup.confirm(label, function() {
+    document.QForm.action = "CloseQ";
+    document.QForm.Id.value = id;
+    document.QForm.submit();
+	});
 }
 
 //reouvrir une question
 function openQ(id)
 {
 	//confirmation de l'ouverture de la question
-	if(window.confirm("<%=resource.getString("MessageOpenQ")%>"))
-	{
-      document.QForm.action = "OpenQ";
-      document.QForm.Id.value = id;
-      document.QForm.submit();
-	}
+  var label = "<fmt:message key="MessageOpenQ" />";
+  jQuery.popup.confirm(label, function() {
+    document.QForm.action = "OpenQ";
+    document.QForm.Id.value = id;
+    document.QForm.submit();
+	});
 }
 
 // supprimer toutes les questions selectionnees
@@ -340,14 +339,14 @@ function DeletesAdmin()
 	if (existSelected())
 	{
 		if (existStatusError('2', '0'))
-			alert("<%=resource.getString("questionReply.delStatusErr")%>");
+			notyError("<%=resource.getString("questionReply.delStatusErr")%>");
 		else
 		{
-			if (window.confirm("<%=resource.getString("MessageSuppressionsQ")%>"))
-			{
+      var label = "<fmt:message key="MessageSuppressionsQ" />";
+      jQuery.popup.confirm(label, function() {
 				document.forms[0].action = "<%=routerUrl%>DeleteQuestions";
 				document.forms[0].submit();
-			}
+			});
 		}
 	}
 }
@@ -358,14 +357,14 @@ function Closes()
 	if (existSelected())
 	{
 		if (existStatusError('1'))
-			alert("<%=resource.getString("questionReply.closeStatusErr")%>");
+			notyError("<%=resource.getString("questionReply.closeStatusErr")%>");
 		else
 		{
-			if (window.confirm("<%=resource.getString("MessageClosesQ")%>"))
-			{
+      var label = "<fmt:message key="MessageClosesQ" />";
+      jQuery.popup.confirm(label, function() {
 				document.forms[0].action = "<%=routerUrl%>CloseQuestions";
 				document.forms[0].submit();
-			}
+			});
 		}
 	}
 }
@@ -452,18 +451,20 @@ function existSelect()
 function deleteConfirmR(replyId, questionId)
 {
   //confirmation de suppression de la question
-  if(window.confirm("<%=resource.getString("MessageSuppressionR")%>")) {
+  var label = "<fmt:message key="MessageSuppressionR" />";
+  jQuery.popup.confirm(label, function() {
     document.RForm.action = "DeleteR";
     document.RForm.replyId.value = replyId;
     document.RForm.QuestionId.value = questionId;
     document.RForm.submit();
-  }
+  });
 }
 
 function confirmDeleteCategory(categoryId) {
-	if (confirm("<%=resource.getString("questionReply.confirmDeleteCategory")%>")) {
+  var label = "<fmt:message key="questionReply.confirmDeleteCategory" />";
+  jQuery.popup.confirm(label, function() {
 		window.location.href=("DeleteCategory?CategoryId=" + categoryId + "");
-	}
+	});
 }
 <fmt:message key="GML.subscribe" var="labelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>

@@ -80,5 +80,5 @@ out.println("<BR>");
 		out.println("<BR>");
 	}
 
-out.println("<script language=\"Javascript\">alert(\'"+resource.getString("projectManager.CSV")+"\');</script>");
+out.println("<script language=\"Javascript\">notyWarning(\'"+resource.getString("projectManager.CSV")+"\');</script>");
 %>

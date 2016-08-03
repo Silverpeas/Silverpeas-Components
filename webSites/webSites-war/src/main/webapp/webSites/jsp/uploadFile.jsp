@@ -49,7 +49,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       <Script language="JavaScript">
       <%
 			if (uploadOk != null && uploadOk.equals(Boolean.FALSE)) {
-				out.println("alert(\""+resources.getString("FileToUploadNotCorrect")+"\");");
+				out.println("notyError(\""+resources.getString("FileToUploadNotCorrect")+"\");");
 			}
 			else if (uploadOk != null && uploadOk.equals(Boolean.TRUE)) {
 				out.println("window.opener.location.replace(\"design.jsp?Action=view&Path="+thePath+"\");");
@@ -77,18 +77,18 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			var file = stripInitialWhitespace(document.descriptionFile.fichier.value);
 
 			if (isWhitespace(file)) {
-				alert("<%=resources.getString("GML.theField")%> '<%=resources.getString("FichierUpload")%>' <%=resources.getString("GML.MustBeFilled")%>");
+        jQuery.popup.error("<%=resources.getString("GML.theField")%> '<%=resources.getString("FichierUpload")%>' <%=resources.getString("GML.MustBeFilled")%>");
 			} else {
 
 				var indexPoint = file.lastIndexOf(".");
 
 				if(indexPoint == -1) {
-					alert("<%=resources.getString("ErreurFichierUpload")%>");
+          jQuery.popup.error("<%=resources.getString("ErreurFichierUpload")%>");
 				} else {
 					var nomFile = file.substring(0, indexPoint);
 
 					if (! isCorrect(nomFile)) {// verif caract�res speciaux contenus dans le nom du fichier
-						alert("<%=resources.getString("NameFile")%> <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char7"))%>\n");
+            jQuery.popup.error("<%=resources.getString("NameFile")%> <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char7"))%>\n");
 					}
 					else {
 						document.descriptionFile.submit();

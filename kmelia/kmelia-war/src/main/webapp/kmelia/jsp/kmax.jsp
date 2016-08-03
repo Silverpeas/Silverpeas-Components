@@ -86,7 +86,7 @@ function search() {
     }
   });
     if (criterias.length == 0) {
-		  window.alert("Vous devez sélectionnez au moins un axe !");
+      jQuery.popup.error("Vous devez sélectionnez au moins un axe !");
     } else {
       document.managerForm.TimeCriteria.value = timeCriteria;
       document.managerForm.SearchCombination.value = criterias;

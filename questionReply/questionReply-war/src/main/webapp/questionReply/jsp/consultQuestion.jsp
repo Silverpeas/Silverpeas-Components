@@ -53,12 +53,12 @@
 <script type="text/javascript">
 function deleteConfirm(replyId) {
 	//confirmation de suppression de la question
-	if(window.confirm("<%=resource.getString("MessageSuppressionR")%>"))
-	{
+  var label = "<%=resource.getString("MessageSuppressionR")%>";
+  jQuery.popup.confirm(label, function() {
 			document.RForm.action = "DeleteR";
 			document.RForm.replyId.value = replyId;
 			document.RForm.submit();
-	}
+	});
 }
 </script>
 </head>

@@ -219,19 +219,19 @@
 
       function validateMessage() {
         if ($("#messageTitle").val() === "") {
-          alert('<%=resource.getString("emptyMessageTitle")%>');
+          jQuery.popup.confirm('<%=resource.getString("emptyMessageTitle")%>');
         } else if (!isTextFilled()) {
-          alert('<%=resource.getString("emptyMessageText")%>');
+          jQuery.popup.confirm('<%=resource.getString("emptyMessageText")%>');
         } else {
           $(document.forumsForm).submit();
         }
       }
 
         function deleteMessage(messageId, parentId, scroll) {
-            if (confirm('<%=resource.getString("confirmDeleteMessage")%>')) {
+            jQuery.popup.confirm('<%=resource.getString("confirmDeleteMessage")%>', function() {
               window.location.href = (parentId == 0 ? "viewForum.jsp" : "viewMessage.jsp")
                     + "?action=9"  + "&params=" + messageId  + "&forumId=<%=reqForum%>" + "&scroll=" + (scroll && parentId != 0);
-            }
+            });
         }
 
         function initCKeditor() {

@@ -297,18 +297,20 @@
       }
 
       function pubDeleteConfirm(id) {
-        if(window.confirm("<%=resources.getString("ConfirmDeletePub")%>")){
+        var label = "<%=resources.getString("ConfirmDeletePub")%>";
+        jQuery.popup.confirm(label, function() {
           document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
           document.toRouterForm.PubId.value = id;
           document.toRouterForm.submit();
-        }
+        });
       }
 
       function deleteCloneConfirm() {
-        if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>")){
+        var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
+        jQuery.popup.confirm(label, function() {
           document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
           document.toRouterForm.submit();
-        }
+        });
       }
 
   function pubDraftIn() {
@@ -328,10 +330,10 @@
       <%
          if (!"Valid".equals(pubDetail.getStatus())) {
       %>
-          if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"    ))
-              {
-                goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
-              }
+          var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          jQuery.popup.confirm(label, function() {
+            goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+          }
       <%
               } else {
       %>
@@ -424,21 +426,19 @@
         checkThumbnail(error);
         <% } %>
 
-        var result = false;
         switch(error.nb) {
           case 0 :
-            result = true;
             break;
           case 1 :
             error.msg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + error.msg;
-            window.alert(error.msg);
+            jQuery.popup.error(error.msg);
             break;
           default :
             error.msg = "<%=resources.getString("GML.ThisFormContains")%> " + error.nb + " <%=resources.getString("GML.errors")%> :\n" + error.msg;
-            window.alert(error.msg);
-            break;
+            jQuery.popup.error(error.msg);
         }
-        return result;
+
+        return (error.nb == 0);
       }
 
       <%

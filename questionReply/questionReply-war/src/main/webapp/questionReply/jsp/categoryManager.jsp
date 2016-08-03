@@ -79,23 +79,21 @@
 	// fonctions de contr�le des zones du formulaire avant validation
 	function sendData()
 	{
-		if (isCorrectForm())
-		{
+		ifCorrectFormExecute(function() {
 			document.categoryForm.action = "CreateCategory";
 			document.categoryForm.submit();
-		}
+    });
 	}
 
 	function sendDataUpdate()
 	{
-		if (isCorrectForm())
-		{
+    ifCorrectFormExecute(function() {
 			document.categoryForm.action = "UpdateCategory";
 			document.categoryForm.submit();
-		}
+		});
 	}
 
-	function isCorrectForm()
+	function ifCorrectFormExecute(callback)
 	{
 	var errorMsg = "";
 	var errorNb = 0;
@@ -110,23 +108,18 @@
 		switch(errorNb)
 		{
 		case 0 :
-			result = true;
+			callback.call(this);
 			break;
 		case 1 :
 			errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-			window.alert(errorMsg);
-			result = false;
+      jQuery.popup.error(errorMsg);
 			break;
 		default :
 			errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-			window.alert(errorMsg);
-			result = false;
-			break;
+      jQuery.popup.error(errorMsg);
 		}
-		return result;
-		}
-	</script>
-
+  }
+</script>
 </head>
 <body id="<%=componentId%>" class="questionReply categoryManager" onload="javascript:document.categoryForm.Name.focus();">
 <%

@@ -153,9 +153,10 @@ function openSPWindow(fonction,windowName){
 
 /*****************************************************************************/
 	function B_DELETE_ONCLICK(idCard) {
-		if (window.confirm("<%=resource.getString("whitePages.messageSuppression")%>")) {
+    var label = "<%=resources.getString("whitePages.messageSuppression")%>";
+    jQuery.popup.confirm(label, function() {
 			location.href = "<%=routerUrl%>delete?checkedCard="+idCard;
-		}
+		});
 	}
 
 /*****************************************************************************/

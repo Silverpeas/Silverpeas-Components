@@ -34,7 +34,7 @@
 <script type="text/javascript">
 	function submitForm() {
 		if (!isValidTextArea(document.addmails.newmails)) {
-			window.alert("<%= resource.getString("infoLetter.makeMyDay") %>");
+      jQuery.popup.error("<%= resource.getString("infoLetter.makeMyDay") %>");
 		} else {
 			document.addmails.action = "NewMail";
 			document.addmails.submit();

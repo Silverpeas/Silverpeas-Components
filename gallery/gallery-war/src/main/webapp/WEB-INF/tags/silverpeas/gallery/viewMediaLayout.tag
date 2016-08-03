@@ -128,10 +128,11 @@
 
     <c:if test="${requestScope.UpdateMediaAllowed}">
     function deleteConfirm() {
-      if (window.confirm($('#deleteConfirmationDialog').text())) {
+      var label = $('#deleteConfirmationDialog').text();
+      jQuery.popup.confirm(label, function() {
         document.mediaForm.action = "DeleteMedia?MediaId=${mediaId}";
         document.mediaForm.submit();
-      }
+      });
     }
     function manageLocations() {
       displaySingleFreePopupFrom('<c:url value="${silfn:componentURL(componentId)}/AccessPath?MediaId=${mediaId}"/>', {

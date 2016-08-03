@@ -56,12 +56,6 @@
         location.href = "GoToTopic?Id="+id;
       }
 
-      function sendData() {
-        if (isCorrectForm()) {
-          document.topicForm.submit();
-        }
-      }
-
       function cancelData()
       {
       <c:choose>
@@ -74,7 +68,7 @@
       </c:choose>
         }
 
-        function isCorrectForm() {
+      function sendData() {
           var errorMsg = "";
           var errorNb = 0;
           var title = stripInitialWhitespace(document.topicForm.Name.value);
@@ -91,20 +85,16 @@
           switch(errorNb)
           {
             case 0 :
-              result = true;
+              document.topicForm.submit();
               break;
             case 1 :
               errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-              window.alert(errorMsg);
-              result = false;
+              jQuery.popup.error(errorMsg);
               break;
             default :
               errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-              window.alert(errorMsg);
-              result = false;
-              break;
+              jQuery.popup.error(errorMsg);
             }
-            return result;
           }
     </script>
   </head>

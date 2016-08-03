@@ -120,13 +120,14 @@ function download(photoId) {
 
 function updateOrder() {
   if (isCorrectForm()) {
-    if (window.confirm("<fmt:message key="gallery.confirmValidOrder"/> ")) {
+    var label = "<fmt:message key="gallery.confirmValidOrder"/> ";
+    jQuery.popup.confirm(label, function() {
       document.orderForm.action = "OrderUpdate";
       document.orderForm.submit();
-    }
+    });
   } else {
     var errorMsg = "<fmt:message key="gallery.checkAll"/>";
-    window.alert(errorMsg);
+    jQuery.popup.error(errorMsg);
   }
 }
 

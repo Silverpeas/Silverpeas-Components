@@ -141,7 +141,7 @@ function sortItems(orderedList)
 				data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
 				if (data == "error")
 				{
-					alert("Une erreur s'est produite !");
+					notyError("Une erreur s'est produite !");
 				}
 				else
 				{

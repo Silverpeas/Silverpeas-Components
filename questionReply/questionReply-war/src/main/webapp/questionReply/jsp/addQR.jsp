@@ -52,7 +52,7 @@
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 <!--
-function isCorrectForm() {
+function save() {
 	var errorMsg = "";
 	var errorNb = 0;
 
@@ -79,28 +79,17 @@ function isCorrectForm() {
   switch(errorNb)
   {
      case 0 :
-         result = true;
+         <view:pdcPositions setIn="document.myForm.Positions.value"/>;
+         document.forms[0].submit();
          break;
      case 1 :
          errorMsg = "<fmt:message key="GML.ThisFormContains" /> 1 <fmt:message key="GML.error" /> : \n" + errorMsg;
-         window.alert(errorMsg);
-         result = false;
+         jQuery.popup.error(errorMsg);
          break;
      default :
          errorMsg = "<fmt:message key="GML.ThisFormContains" /> " + errorNb + " <fmt:message key="GML.errors" /> :\n" + errorMsg;
-         window.alert(errorMsg);
-         result = false;
-         break;
+         jQuery.popup.error(errorMsg);
   }
-  return result;
-
-}
-
-function save() {
-	if (isCorrectForm()) {
-		<view:pdcPositions setIn="document.myForm.Positions.value"/>;
-		document.forms[0].submit();
-	}
 }
 
 $(document).ready(function() {

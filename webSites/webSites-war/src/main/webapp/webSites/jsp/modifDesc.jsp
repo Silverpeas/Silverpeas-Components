@@ -289,7 +289,7 @@ function isCorrect(nom) {
 
 /************************************************************************************/
 
-function isCorrectForm(type) {
+function ifCorrectFormExecute(type, callback) {
   var errorMsg = "";
   var errorNb = 0;
   var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
@@ -341,26 +341,22 @@ function isCorrectForm(type) {
   switch(errorNb)
   {
     case 0 :
-        result = true;
+        callback.call(this);
         break;
     case 1 :
         errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
+        jQuery.popup.error(errorMsg);
         break;
     default :
         errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-        window.alert(errorMsg);
-        result = false;
-        break;
+        jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 /**************************************************************************************/
 
 function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
-  if (isCorrectForm(type)) {
+  ifCorrectFormExecute(type, function(){
 		f = "";
 		if (document.descriptionSite.radio[0].checked) {
 			f += "0,";
@@ -386,7 +382,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
 		}
 		document.descriptionSite.ListeTopics.value = f;
 		document.descriptionSite.submit();
-  }
+  });
 }
 
 

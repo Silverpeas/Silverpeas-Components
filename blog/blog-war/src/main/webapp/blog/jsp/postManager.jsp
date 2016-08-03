@@ -87,7 +87,7 @@
 				<view:pdcPositions setIn="document.postForm.Positions.value"/>
 				document.postForm.action = "UpdatePost";
 				document.postForm.submit();
-    		}
+      }
 		}
 		
 		function isCorrectForm() {
@@ -96,7 +96,7 @@
 	     	var title = stripInitialWhitespace(document.postForm.Title.value);
 
 	     	if (title == "") { 
-				errorMsg+="  - '${GML_title}'  ${GML_MustBeFilled}\n";
+				errorMsg+="  - '${GML_title}' ${GML_MustBeFilled}\n";
 	           	errorNb++;
 	     	}
 	     	
@@ -104,28 +104,24 @@
 	   				     			     				    
 	     	switch(errorNb) {
 	        	case 0 :
-	            	result = true;
-	            	break;
+                break;
 	        	case 1 :
 	            	errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
-	            	window.alert(errorMsg);
-	            	result = false;
+                jQuery.popup.error(errorMsg);
 	            	break;
 	        	default :
 	            	errorMsg = "${GML_ThisFormContains} " + errorNb + " ${GML_errors} :\n" + errorMsg;
-	            	window.alert(errorMsg);
-	            	result = false;
-	            	break;
-	     	} 
-	     	return result;
+                jQuery.popup.error(errorMsg);
+	     	}
+      return (errorNb == 0);
 		}
 		
 		function sendDataAndDraftOut() {
-			if (isCorrectForm()) {
+      if (isCorrectForm()) {
 				<view:pdcPositions setIn="document.postForm.Positions.value"/>
 				document.postForm.action = "UpdatePostAndDraftOut";
 				document.postForm.submit();
-    		}
+      }
 		}
 		
 		function deletePost()
@@ -252,7 +248,6 @@
 </form>
 </div>
 	<br/>
-	<center>
 	<fmt:message key="GML.validate" var="validateLabel"/>
     <fmt:message key="GML.publish" var="publishLabel"/>
     <fmt:message key="GML.draft.save" var="draftLabel"/>
@@ -287,7 +282,6 @@
 	}
 	%>
     </view:buttonPane>
-    </center>
 </view:frame>
 </view:window>
 </div>

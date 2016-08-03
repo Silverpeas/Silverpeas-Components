@@ -34,10 +34,10 @@
 <script type="text/javascript">
 function submitForm() {
 	if (!isValidTextArea(document.changeLetterHeaders.description)) {
-		window.alert("<%= resource.getString("infoLetter.soLongPal") %>");
+    jQuery.popup.error("<%= resource.getString("infoLetter.soLongPal") %>");
 	} else {
 		if (document.changeLetterHeaders.name.value=="") {
-			alert("<%= resource.getString("infoLetter.fuckingNameRequired") %>");
+      jQuery.popup.error("<%= resource.getString("infoLetter.fuckingNameRequired") %>");
 		} else {
 			document.changeLetterHeaders.action = "ChangeLetterHeaders";
 			document.changeLetterHeaders.submit();
