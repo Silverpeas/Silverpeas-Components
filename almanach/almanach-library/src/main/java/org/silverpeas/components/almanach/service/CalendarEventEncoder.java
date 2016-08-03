@@ -95,18 +95,14 @@ public class CalendarEventEncoder {
           .withDescription(eventDetail.getWysiwyg())
           .withPriority(Priority.valueOf(eventDetail.getPriority()));
       if (isDefined(eventDetail.getPlace())) {
-        event.withLocation(eventDetail.getPlace());
+        event.getAttributes().add("location", eventDetail.getPlace());
       }
       String url = eventDetail.getEventUrl();
       if (isDefined(url)) {
         if (!StringUtil.startsWithIgnoreCase(url, "http")) {
           url = "http://" + url;
         }
-        try {
-          event.withUrl(new URL(url));
-        } catch (MalformedURLException e) {
-          SilverLogger.getLogger(this).error("Following URL '" + url + "' is malformed !");
-        }
+        event.getAttributes().add("url", url);
       }
       if (eventDetail.getPeriodicity() != null) {
         event.recur(withTheRecurrenceRuleOf(eventDetail));
