@@ -154,7 +154,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   }
 
   public void setCreatorId(String userId) {
-    super.setCreatedBy(userId);
+    super.createdBy(userId);
     getPublication().setCreatorId(userId);
   }
 

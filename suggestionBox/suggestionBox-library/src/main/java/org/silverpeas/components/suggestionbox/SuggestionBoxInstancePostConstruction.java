@@ -42,7 +42,7 @@ public class SuggestionBoxInstancePostConstruction implements ComponentInstanceP
   @Override
   public void postConstruct(final String componentInstanceId) {
     SuggestionBox newBox = new SuggestionBox(componentInstanceId);
-    newBox.setCreatedBy(User.getCurrentRequester().getId());
+    newBox.createdBy(User.getCurrentRequester().getId());
     SuggestionBoxService.get().saveSuggestionBox(newBox);
   }
 }
