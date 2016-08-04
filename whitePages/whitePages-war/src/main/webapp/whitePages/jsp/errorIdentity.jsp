@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkWhitePages.jsp" %>
@@ -32,19 +34,12 @@
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<BODY>
 <%
    browseBar.setDomainName(spaceLabel);
-   if (containerContext == null) {
-       browseBar.setComponentName(componentLabel, "Main");
-   } else {
-      browseBar.setComponentName(componentLabel,
-	                              m_context+containerContext.getReturnURL());
-   }
+   browseBar.setComponentName(componentLabel, "Main");
 
 	out.println(window.printBefore());
-
-
 	out.println(frame.printBefore());
 %>
 
@@ -67,7 +62,7 @@
 <br>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.back"), routerUrl+"Main", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.back"), routerUrl+"Main", false));
     out.println(buttonPane.print());
 %>
 

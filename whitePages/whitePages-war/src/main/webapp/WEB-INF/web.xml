@@ -40,10 +40,6 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>whitePagesLoginFilter</filter-name>
-    <url-pattern>/admin/jsp/MainFrameSilverpeasV4.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>whitePagesLoginFilter</filter-name>
     <url-pattern>/admin/jsp/MainFrameSilverpeasV5.jsp</url-pattern>
   </filter-mapping>
   <servlet>
@@ -53,14 +49,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>WhitePagesRequestRouter</servlet-name>
-    <url-pattern>/RwhitePagesPDC/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>WhitePagesRequestRouter</servlet-name>
     <url-pattern>/RwhitePages/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>WhitePagesRequestRouter</servlet-name>
-    <url-pattern>/RwhitePagesPeas/*</url-pattern>
   </servlet-mapping>
 </web-app>

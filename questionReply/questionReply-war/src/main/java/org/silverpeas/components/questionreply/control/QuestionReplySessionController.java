@@ -27,6 +27,8 @@ import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.DateUtil;
@@ -52,8 +54,6 @@ import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.web.panel.GenericPanel;
@@ -99,9 +99,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private Reply currentReply;
   private Question newQuestion;
   private Reply newReply;
-  // attributs utiles a l'intégration du PDC
-  private ContainerContext containerContext;
-  private String returnURL = "";
 
   /*
    * Recupère la liste des questions selon le profil de l'utilisateur courant
@@ -527,9 +524,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Récupère la liste des positions d'une question
    */
-  public ContainerPositionInterface getSilverContentIdPosition() throws QuestionReplyException {
+  public SearchContext getSilverContentIdPosition() throws QuestionReplyException {
     try {
-      return containerContext
+      return new GlobalPdcManager()
           .getSilverContentIdSearchContext(Integer.parseInt(getCurrentQuestionContentId()),
               getComponentId());
     } catch (Exception e) {
@@ -612,10 +609,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
       // recupere la liste de tous les experts du domaine de classement de la
       // question
-      ContainerPositionInterface position = getSilverContentIdPosition();
+      SearchContext position = getSilverContentIdPosition();
       if (position != null && !position.isEmpty()) {
-        List<Integer> liste =
-            containerContext.getSilverContentIdByPosition(position, listeInstanceId);
+        //List<Integer> liste = containerContext.getSilverContentIdByPosition(position, listeInstanceId);
+        List<Integer> liste = new ArrayList<>();
+        //TODO implement this !
 
         CardManager cardManager = CardManager.getInstance();
         for (Integer silverContentId : liste) {
@@ -732,22 +730,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       return true;
     }
     return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
-  }
-
-  public void setContainerContext(ContainerContext containerContext) {
-    this.containerContext = containerContext;
-  }
-
-  public ContainerContext getContainerContext() {
-    return containerContext;
-  }
-
-  public void setReturnURL(String returnURL) {
-    this.returnURL = returnURL;
-  }
-
-  public String getReturnURL() {
-    return returnURL;
   }
 
   public boolean isReplyVisible(Question question, Reply reply) {

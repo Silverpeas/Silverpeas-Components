@@ -31,7 +31,6 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -80,35 +79,6 @@ public class QuestionReplyRequestRouter
   }
 
   /**
-   * Extract the container context from the request and save it in the session controller. If this
-   * context is null then get the last one from the session controller. So the containerContext is
-   * the same in the request and the session.
-   */
-  private void resetContainerContext(QuestionReplySessionController scc,
-      HttpServletRequest request) {
-    ContainerContext containerContext = (ContainerContext) request.getAttribute("ContainerContext");
-
-    if (containerContext != null) {
-
-      scc.setContainerContext(containerContext);
-    } else {
-      containerContext = scc.getContainerContext();
-      request.setAttribute("ContainerContext", containerContext);
-    }
-  }
-
-  private void resetReturnURL(QuestionReplySessionController scc, HttpServletRequest request) {
-    String returnURL = request.getParameter("ReturnURL");
-    if (StringUtil.isDefined(returnURL)) {
-
-      scc.setReturnURL(returnURL);
-    } else {
-      returnURL = scc.getReturnURL();
-    }
-    request.setAttribute("ReturnURL", returnURL);
-  }
-
-  /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
@@ -126,8 +96,6 @@ public class QuestionReplyRequestRouter
     SilverpeasRole role = scc.getUserRole();
 
     try {
-      resetContainerContext(scc, request);
-      resetReturnURL(scc, request);
       if (function.startsWith("Main")) {
         scc.setUserProfil();
         flag = scc.getUserProfil();

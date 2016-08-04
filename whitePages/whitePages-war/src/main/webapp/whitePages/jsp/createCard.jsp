@@ -70,11 +70,7 @@
 	function goToMain() {
     var label = "<%=resource.getString("whitePages.messageCancelCreate")%>";
     jQuery.popup.confirm(label, function() {
-			<% if (containerContext == null) { %>
-			   location.href = "Main";
-			<% } else { %>
-			   location.href = "<%= m_context + containerContext.getReturnURL()%>";
-			<% } %>
+			location.href = "Main";
 		});
 	}
 	function B_VALIDER_ONCLICK() {
@@ -92,11 +88,7 @@
 	}
 
 	function B_ANNULER_ONCLICK() {
-		<% if (containerContext == null) { %>
 		   location.href = "Main";
-		<% } else { %>
-		   location.href = "<%=m_context+containerContext.getReturnURL()%>";
-		<% } %>
 	}
 
 	function changerChoice() {

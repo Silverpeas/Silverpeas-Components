@@ -28,7 +28,6 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.URLIcone"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyValue"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Value" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull" %>
@@ -92,23 +91,6 @@
 				operationPane.addOperation(resource.getIcon("whitePages.showCard"), resource.getString("whitePages.op.showCard"), "javascript:onClick=B_REVERSEHIDE_ONCLICK('"+userCardId+"');");
 			}
 		}
-
-		if (containerContext != null)
-		{
-			URLIcone classify = containerContext.getClassifyURLIcone();
-			String classifyURL = null;
-			if (contentId != null)
-			{
-				classifyURL = containerContext.getClassifyURLWithParameters(
-					componentId, contentId);
-			}
-			if (classifyURL != null)
-			{
-				operationPane.addOperation(classify.getIconePath(),
-													"Classer",
-													"javascript:openSPWindow('"+m_context+classifyURL+"','classify')");
-			}
-		}
 	}
 
 	ButtonPane buttonPane = gef.getButtonPane();
@@ -153,7 +135,7 @@ function openSPWindow(fonction,windowName){
 
 /*****************************************************************************/
 	function B_DELETE_ONCLICK(idCard) {
-    var label = "<%=resources.getString("whitePages.messageSuppression")%>";
+    var label = "<%=resource.getString("whitePages.messageSuppression")%>";
     jQuery.popup.confirm(label, function() {
 			location.href = "<%=routerUrl%>delete?checkedCard="+idCard;
 		});

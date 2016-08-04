@@ -32,7 +32,6 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
@@ -102,8 +101,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   // permet la gestion du modèle des fiches
   private PublicationTemplate cardTemplate = null;
   private String[] hostParameters = null;
-  private String returnURL = "";
-  private ContainerContext containerContext;
   private Card notifiedUserCard;
   private PdcManager pdcManager = null;
   private static DomainDriverManager mDDManager = new DomainDriverManager();
@@ -704,30 +701,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     hostParameters[3] = hostPath;
   }
 
-  public String[] getHostParameters() {
-    if (hostParameters == null) {
-      hostParameters = new String[4];
-    }
-    if (hostParameters[0] == null) {
-      hostParameters[0] = getComponentLabel();
-    }
-    if (hostParameters[1] == null) {
-      if (containerContext != null) {
-        hostParameters[1] = containerContext.getReturnURL();
-      } else {
-        hostParameters[1] = "Main";
-      }
-    }
-    if (hostParameters[2] == null) {
-      hostParameters[2] = getSpaceLabel();
-    }
-    if (hostParameters[3] == null) {
-      hostParameters[3] =
-          getString("whitePages.usersList") + " > " + getString("whitePages.consultCard");
-    }
-    return hostParameters;
-  }
-
   private Collection<String> getUserInstanceIds() {
     if (userInstanceIds == null) {
       userInstanceIds = new ArrayList<>();
@@ -785,25 +758,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return contentId;
   }
 
-  public void setContainerContext(ContainerContext containerContext) {
-    this.containerContext = containerContext;
-  }
-
-  public ContainerContext getContainerContext() {
-    return containerContext;
-  }
-
-  public void setReturnURL(String returnURL) {
-    this.returnURL = returnURL;
-  }
-
-  public String getReturnURL() {
-    return returnURL;
-  }
-
   public void setNotifiedUserCard(Card card) {
     this.notifiedUserCard = card;
-
   }
 
   public void sendNotification(String bodyMessage) throws NotificationManagerException {
