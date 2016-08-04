@@ -195,7 +195,6 @@
     <module>whitePages</module>
     <module>questionReply</module>
     <module>webPages</module>
-    <!-- DEACTIVATED (to remove later): <module>chat</module> -->
     <module>mailinglist</module>
     <module>infoLetter</module>
     <module>almanach</module>
