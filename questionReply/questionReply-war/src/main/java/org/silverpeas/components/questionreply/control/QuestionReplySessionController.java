@@ -33,11 +33,9 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -56,7 +54,6 @@ import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.web.panel.GenericPanel;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -536,45 +533,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public String genericWriters() throws QuestionReplyException {
-    GenericPanel gp = new GenericPanel();
-    String webContext = URLUtil.getApplicationURL();
-    String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
-    String cancelURL =
-        webContext + "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId=" +
-            getCurrentQuestion().getPK().getId();
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
-        webContext + "/RquestionReply/" + getComponentId() + "/Main");
-    Pair<String, String> hostPath1 = new Pair<>(getCurrentQuestion().getTitle(),
-        "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId=" +
-            getCurrentQuestion().getPK().getId());
-    Pair<String, String>[] hostPath = new Pair[]{hostPath1};
-
-    gp.resetAll();
-
-    gp.setHostSpaceName(getSpaceLabel());
-    gp.setHostComponentName(hostComponentName);
-    gp.setHostPath(hostPath);
-
-    gp.setCancelURL(cancelURL);
-
-    gp.setGoBackURL(theURL);
-
-    gp.setPanelProvider(new ExpertPanel(getLanguage(), getCurrentQuestionWriters()));
-
-    gp.setPopupMode(false);
-    gp.setMultiSelect(true);
-    gp.setSelectable(true);
-    setGenericPanel("QR", gp);
-
-    return GenericPanel.getGenericPanelURL("QR");
+    // This method is no more used at the moment (Silverpeas 6.0)
+    return "";
   }
 
   /*
    * Relance et modifie la question courante
    */
   public void relaunchRecipients() throws QuestionReplyException {
-    GenericPanel gp = getGenericPanel("QR");
-    String[] uids = gp.getSelectedElements();
+    String[] uids = new String[0];
+    // This method is no more used at the moment (Silverpeas 6.0)
+    //String[] uids = gp.getSelectedElements();
     Collection<Recipient> recipients = new ArrayList<Recipient>();
 
     if (uids != null) {
