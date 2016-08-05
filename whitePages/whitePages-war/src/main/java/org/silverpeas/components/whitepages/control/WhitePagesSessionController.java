@@ -735,9 +735,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     super(mainSessionCtrl, context, "org.silverpeas.whitePages.multilang.whitePagesBundle",
         "org.silverpeas.whitePages.settings.whitePagesIcons",
         "org.silverpeas.whitePages.settings.settings");
-    if (context == null) {
-      setComponentRootName(URLUtil.CMP_WHITEPAGESPEAS);
-    }
   }
 
   public String getCurrentCardContentId() {
