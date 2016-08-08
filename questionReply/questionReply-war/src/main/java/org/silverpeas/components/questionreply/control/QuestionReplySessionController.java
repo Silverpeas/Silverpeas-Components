@@ -538,12 +538,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-   * Relance et modifie la question courante
+   * @deprecated (This method is no more used at the moment - Silverpeas 6.0. If necessary,
+   * implementation must be completed to get recipients)
    */
+  @Deprecated
   public void relaunchRecipients() throws QuestionReplyException {
     String[] uids = new String[0];
-    // This method is no more used at the moment (Silverpeas 6.0)
-    //String[] uids = gp.getSelectedElements();
     Collection<Recipient> recipients = new ArrayList<Recipient>();
 
     if (uids != null) {
@@ -570,19 +570,16 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       // recupere la liste de toutes les instances d'annuaire
       String[] instances = orga.getCompoId("whitePages");
       List<String> listeInstanceId = new ArrayList<String>();
-      int i = 0;
-      while (i < instances.length) {
-        listeInstanceId.add("whitePages" + instances[i]);
-        i++;
+      for(String id : instances) {
+        listeInstanceId.add("whitePages" + id);
       }
 
       // recupere la liste de tous les experts du domaine de classement de la
       // question
       SearchContext position = getSilverContentIdPosition();
       if (position != null && !position.isEmpty()) {
-        //List<Integer> liste = containerContext.getSilverContentIdByPosition(position, listeInstanceId);
-        List<Integer> liste = new ArrayList<>();
-        //TODO implement this !
+        GlobalPdcManager pdc = new GlobalPdcManager();
+        List<Integer> liste = pdc.findSilverContentIdByPosition(position, listeInstanceId);
 
         CardManager cardManager = CardManager.getInstance();
         for (Integer silverContentId : liste) {

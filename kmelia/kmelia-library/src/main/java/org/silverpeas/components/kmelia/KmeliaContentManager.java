@@ -51,12 +51,10 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  public List getSilverContentById(List ids, String peasId, String userId) {
     if (getContentManager() == null) {
       return new ArrayList();
     }

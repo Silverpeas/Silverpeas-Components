@@ -53,12 +53,11 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId, List<String> userRoles) {
+      String userId) {
     if (getContentManager() == null) {
       return new ArrayList<>();
     }

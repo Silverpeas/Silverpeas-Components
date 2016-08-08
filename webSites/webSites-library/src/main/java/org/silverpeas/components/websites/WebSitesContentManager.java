@@ -52,12 +52,10 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    * @param ids list of silverContentId to retrieve
    * @param sComponentId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List<Integer> ids, String sComponentId, String userId,
-      List<String> userRoles) {
+  public List getSilverContentById(List<Integer> ids, String sComponentId, String userId) {
     return getHeaders(getSiteIds(ids), sComponentId);
   }
 

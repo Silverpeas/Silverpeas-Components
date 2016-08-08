@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The kmelia implementation of ContentInterface.
+ * The quizz implementation of ContentInterface.
  */
 public class QuizzContentManager implements ContentInterface {
 
@@ -48,7 +48,7 @@ public class QuizzContentManager implements ContentInterface {
 
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId, List<String> userRoles) {
+      String userId) {
     if (getContentManager() == null) {
       return new ArrayList<>();
     }

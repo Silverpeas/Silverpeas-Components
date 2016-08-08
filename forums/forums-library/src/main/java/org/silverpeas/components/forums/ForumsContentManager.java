@@ -52,7 +52,7 @@ public class ForumsContentManager implements ContentInterface {
 
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
-      String sComponentId, String sUserId, List<String> alContentUserRoles) {
+      String sComponentId, String sUserId) {
     if (getContentManager() == null) {
       return new ArrayList<>();
     }

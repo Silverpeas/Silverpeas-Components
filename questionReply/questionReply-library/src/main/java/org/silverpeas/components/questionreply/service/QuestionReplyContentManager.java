@@ -55,11 +55,10 @@ public class QuestionReplyContentManager implements ContentInterface {
    * @param ids
    * @param userId
    * @param peasId
-   * @param userRoles
    */
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId, List<String> userRoles) {
+      String userId) {
     return getHeaders(makeIdArray(ids), peasId);
   }
 
