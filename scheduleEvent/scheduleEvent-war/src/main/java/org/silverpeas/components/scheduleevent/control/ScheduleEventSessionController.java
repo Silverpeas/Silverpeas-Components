@@ -161,9 +161,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
       sel.setMultiSelect(true);
       sel.setPopupMode(true);
-      sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
-      return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+      return Selection.getSelectionURL();
     } else {
       SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.initSelectUsersPanel",
           "Security alert from user " + getUserId());

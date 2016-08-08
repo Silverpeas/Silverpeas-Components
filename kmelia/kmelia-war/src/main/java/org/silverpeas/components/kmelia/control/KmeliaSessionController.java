@@ -1816,7 +1816,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     sel.setExtraParams(sug);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public String initAlertUser() {
@@ -2400,7 +2400,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       sel.setSelectedSets(groupIds);
     }
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   private void deleteTopicRoles(NodeDetail node) {

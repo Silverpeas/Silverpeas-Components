@@ -1490,7 +1490,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } catch (Exception e) {
           SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
-        destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+        destination = Selection.getSelectionURL();
       } else if (function.equals("TopicProfileSetUsersAndGroups")) {
         String role = request.getParameter("Role");
         String nodeId = request.getParameter("NodeId");

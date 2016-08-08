@@ -387,7 +387,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
-    sel.setFirstPage(Selection.FIRST_PAGE_SEARCH_ELEMENT);
 
     ArrayList<String> roles = new ArrayList<String>();
     roles.add("admin");
@@ -399,7 +398,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     sug.setProfileNames(roles);
     sel.setExtraParams(sug);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public String initUserSelect() {
@@ -417,7 +416,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
-    sel.setFirstPage(Selection.FIRST_PAGE_SEARCH_ELEMENT);
 
     ArrayList<String> roles = new ArrayList<String>();
     roles.add("admin");
@@ -439,7 +437,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
     sel.setSelectedElements(users);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public boolean isFiltreActif() {

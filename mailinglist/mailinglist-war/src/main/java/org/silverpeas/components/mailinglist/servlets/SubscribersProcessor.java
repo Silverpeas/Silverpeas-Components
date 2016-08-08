@@ -65,7 +65,7 @@ public class SubscribersProcessor implements MailingListRoutage {
             rest.getComponentId() + '/' + DESTINATION_ACTIVITIES + '/' + rest.getComponentId();
       case RestRequest.UPDATE:
         prepareSelection(selection, controller, mailingList, rest.getComponentId());
-        return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+        return Selection.getSelectionURL();
       case RestRequest.CREATE:
       default:
         List<String> userIds = Arrays.asList(selection.getSelectedElements());
@@ -110,11 +110,6 @@ public class SubscribersProcessor implements MailingListRoutage {
     String[] users = convertInternalSubscribers(mailingList.getInternalSubscribers());
     selection.setSelectedElements(users);
     selection.setSelectedSets(groups);
-    if (users.length == 0 || groups.length == 0) {
-      selection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-    } else {
-      selection.setFirstPage(Selection.FIRST_PAGE_CART);
-    }
   }
 
   private static String[] convertInternalSubscribers(

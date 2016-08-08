@@ -152,12 +152,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     // Groups
     sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds());
 
-    if (sel.getSelectedElements().length == 0 && sel.getSelectedSets().length == 0) {
-      sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-    } else {
-      sel.setFirstPage(Selection.FIRST_PAGE_CART);
-    }
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*

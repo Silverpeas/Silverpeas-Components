@@ -145,14 +145,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
       sel.setMultiSelect(true);
       sel.setPopupMode(true);
 
-      if ((idUsers == null || idUsers.length == 0) && (idGroups == null || idGroups.length == 0)) {
-        //Display welcome page if user has no selection
-        sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-      } else {
-        //Display basket if user has already done selection
-        sel.setFirstPage(Selection.FIRST_PAGE_CART);
-      }
-      retour = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+      retour = Selection.getSelectionURL();
     } catch (Exception e) {
       SilverTrace.error("dataWarning", "DataWarningSessionController.initSelectionPeas",
           "DataWarning.MSG_CANT_INIT_SELECTIONPEAS", null, e);

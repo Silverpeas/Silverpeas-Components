@@ -496,7 +496,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     sel.setPopupMode(false);
     sel.setSetSelectable(false);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**
@@ -553,7 +553,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     sel.setSetSelectable(true);
     sel.setElementSelectable(false);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public void setGroupSelected() {

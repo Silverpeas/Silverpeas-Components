@@ -626,7 +626,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     sel.setPopupMode(false);
     sel.setSetSelectable(false);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

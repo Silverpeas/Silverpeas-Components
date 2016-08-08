@@ -401,7 +401,6 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
-    sel.setFirstPage(Selection.FIRST_PAGE_DEFAULT);
 
     ArrayList<String> roles = new ArrayList<>();
     roles.add("responsable");
@@ -420,7 +419,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
     sel.setSelectedElements(users);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public Reservation getReservationCourante() {
@@ -498,7 +497,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     profiles.add(SilverpeasRole.admin.toString());
     sug.setProfileNames(profiles);
     sel.setExtraParams(sug);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public String initUserPanelOtherPlanning() {
@@ -523,7 +522,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     sel.setMultiSelect(false);
     sel.setSetSelectable(false);
     sel.setElementSelectable(true);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public UserDetail getSelectedUser() {
