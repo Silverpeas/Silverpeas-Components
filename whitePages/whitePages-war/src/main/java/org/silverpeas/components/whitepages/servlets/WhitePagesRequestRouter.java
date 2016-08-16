@@ -27,7 +27,6 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -93,13 +92,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
     request.setAttribute("isAdmin", scc.isAdmin());
 
     try {
-
-      /*
-       * Extracts container context.
-       */
-      resetContainerContext(scc, request);
-      resetReturnURL(scc, request);
-
       /*
        * Default page.
        */
@@ -455,34 +447,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         .info("whitePages", "WhitePagesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
             "destination " + destination);
     return destination;
-  }
-
-  /**
-   * Extract the container context from the request and save it in the session controller. If this
-   * context is null then get the last one from the session controller. So the containerContext is
-   * the same in the request and the session.
-   */
-  private void resetContainerContext(WhitePagesSessionController scc, HttpServletRequest request) {
-    ContainerContext containerContext = (ContainerContext) request.getAttribute("ContainerContext");
-
-    if (containerContext != null) {
-      scc.setContainerContext(containerContext);
-    } else {
-      containerContext = scc.getContainerContext();
-      request.setAttribute("ContainerContext", containerContext);
-    }
-  }
-
-  private void resetReturnURL(WhitePagesSessionController scc, HttpServletRequest request) {
-    String returnURL = request.getParameter("ReturnURL");
-
-    if (returnURL != null && returnURL.length() > 0) {
-
-      scc.setReturnURL(returnURL);
-    } else {
-      returnURL = scc.getReturnURL();
-    }
-    request.setAttribute("ReturnURL", returnURL);
   }
 
   private SearchContext getPdcContext(WhitePagesSessionController scc, HttpServletRequest request)

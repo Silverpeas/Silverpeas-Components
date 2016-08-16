@@ -48,8 +48,8 @@ public class WhitePagesContentManager implements ContentInterface {
   /**
    * Find all the SilverContent with the given SilverContentId
    */
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId, String userId,
-      List<String> userRoles) {
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
+      String userId) {
     return getHeaders(makeIdArray(ids), peasId);
   }
 

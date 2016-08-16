@@ -25,7 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.components.whitepages.control.WhitePagesSessionController"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
@@ -70,9 +69,7 @@ String componentLabel = browseContext[1];
 String spaceId = browseContext[2];
 String componentId = browseContext[3];
 
-ContainerContext containerContext = (ContainerContext) request.getAttribute("ContainerContext");
 String   contentId = (String) request.getAttribute("contentId");
-String returnURL = (String) request.getAttribute("ReturnURL");
 
 
 
@@ -89,13 +86,6 @@ OperationPane operationPane = window.getOperationPane();
 TabbedPane tabbedPane = gef.getTabbedPane();
 Frame frame = gef.getFrame();
 
-if (containerContext == null) {
-	if (returnURL != null && returnURL.length() > 0)
-		browseBar.setComponentName(componentLabel, m_context+returnURL);
-	else
-		browseBar.setComponentName(componentLabel, "Main");
-} else {
-	browseBar.setComponentName(componentLabel, m_context+containerContext.getReturnURL());
-}
+browseBar.setComponentName(componentLabel, "Main");
 
 %>

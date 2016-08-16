@@ -194,11 +194,9 @@ public class StatisticRequestHandler {
     profileNames.add(writerProfile.getName());
     sug.setProfileNames(profileNames);
 
-    sug.addProfileId(readerProfile.getId());
-    sug.addProfileId(writerProfile.getId());
     sel.setExtraParams(sug);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
 }

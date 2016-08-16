@@ -62,16 +62,12 @@ function B_SELECTUSER_ONCLICK() {
 
 /*****************************************************************************/
 function B_RETOUR_ONCLICK() {
-		<% if (containerContext == null) { %>
-		   location.href = "Main";
-		<% } else { %>
-		   location.href = "<%= m_context + containerContext.getReturnURL()%>";
-		<% } %>
+  location.href = "Main";
 }
 </script>
 
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY>
 
 <%
 

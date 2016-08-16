@@ -144,14 +144,13 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     m_Selection.setHostComponentName(hostComponentName);
     m_Selection.setHostSpaceName(getSpaceLabel());
-    m_Selection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
     m_Selection.setPopupMode(true);
     m_Selection.setHtmlFormElementId(goFunction);
     m_Selection.setHtmlFormName("dummy");
 
     // Add extra params
     m_Selection.setExtraParams(sug);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public String initSelectionSenders(List<String> userIds, List<String> groupIds)

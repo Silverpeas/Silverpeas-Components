@@ -51,12 +51,11 @@ public class QuickInfoContentManager implements ContentInterface {
    * @param ids list of silverContentId to retrieve
    * @param componentId the id of the instance
    * @param sUserId the id of the user who wants to retrieve silverContent
-   * @param alContentUserRoles the roles of the user
    * @return a List of SilverContent
    */
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String componentId,
-      String sUserId, List<String> alContentUserRoles) {
+      String sUserId) {
     if (getContentManager() == null) {
       return new ArrayList<>();
     }
