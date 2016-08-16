@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.control;
 
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.ExporterProvider;

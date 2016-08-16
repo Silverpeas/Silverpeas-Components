@@ -27,7 +27,7 @@ import org.silverpeas.components.scheduleevent.service.model.ScheduleEventStatus
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
