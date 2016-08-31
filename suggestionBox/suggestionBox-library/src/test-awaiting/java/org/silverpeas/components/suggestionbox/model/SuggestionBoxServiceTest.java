@@ -45,7 +45,6 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepositor
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -103,7 +102,7 @@ public class SuggestionBoxServiceTest {
     service.saveSuggestionBox(box);
 
     SuggestionBoxRepository repository = getSuggestionBoxRepository();
-    verify(repository, times(1)).save(any(OperationContext.class), eq(box));
+    verify(repository, times(1)).save(eq(box));
   }
 
   /**

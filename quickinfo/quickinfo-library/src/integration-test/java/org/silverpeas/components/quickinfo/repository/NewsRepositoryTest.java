@@ -13,7 +13,6 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -96,8 +95,9 @@ public class NewsRepositoryTest {
           new News("test", "test", Period.from(new Date(), PeriodType.month), true, true, false);
       news.setComponentInstanceId("quickinfo1");
       news.setPublicationId("45789");
+      news.createdBy(user);
       assertThat(news.getLastUpdateDate(), Matchers.nullValue());
-      return newsRepository.save(OperationContext.fromUser(userId), news);
+      return newsRepository.save(news);
     });
     assertThat(savedNews.getLastUpdateDate(), Matchers.notNullValue());
     assertThat(savedNews.getLastUpdatedBy(), Matchers.is(userId));

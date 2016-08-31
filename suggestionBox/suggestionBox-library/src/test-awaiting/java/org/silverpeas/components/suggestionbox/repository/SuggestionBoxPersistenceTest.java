@@ -29,7 +29,6 @@ import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -63,8 +62,8 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
   public void saveSuggestionBox() throws Exception {
     UserDetail creator = aUser();
     SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
-    OperationContext ctx = OperationContext.fromUser(creator.getId());
-    getPersistenceService().saveSuggestionBox(ctx, box);
+    box.createdBy(creator.getId());
+    getPersistenceService().saveSuggestionBox(box);
 
     // Verification
     IDataSet actualDataSet = getActualDataSet();
@@ -77,10 +76,9 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void saveSuggestionBoxWithAnInvalidOperationContext() throws Exception {
+  public void saveSuggestionBoxWithAnInvalidContext() throws Exception {
     SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
-    OperationContext ctx = OperationContext.createInstance();
-    getPersistenceService().saveSuggestionBox(ctx, box);
+    getPersistenceService().saveSuggestionBox(box);
 
     fail("An exception should be raised!");
   }

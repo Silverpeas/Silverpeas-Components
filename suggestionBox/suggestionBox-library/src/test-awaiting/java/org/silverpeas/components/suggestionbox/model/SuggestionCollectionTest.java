@@ -49,7 +49,6 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -104,7 +103,7 @@ public class SuggestionCollectionTest {
     suggestionBox.getSuggestions().add(suggestion);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    verify(suggestionRepository, times(1)).save(eq(suggestion));
     verify(suggestionRepository, times(0)).index(suggestion);
   }
 
@@ -126,7 +125,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
 
-    verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(0)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
 
     verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
@@ -152,7 +151,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
 
-    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(1)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.PENDING_VALIDATION));
 
     verify(getUserNotificationManager(), times(1))
@@ -179,7 +178,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
 
-    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(1)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.VALIDATED));
 
     verify(getUserNotificationManager(), times(1))
@@ -210,7 +209,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
 
-    verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(0)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
 
     verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
@@ -240,7 +239,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
 
-    verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(0)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.REFUSED));
 
     verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuilder.class));
@@ -270,7 +269,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
 
-    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(1)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.VALIDATED));
 
     ArgumentCaptor<UserNotificationBuilder> argCaptor =
@@ -308,7 +307,7 @@ public class SuggestionCollectionTest {
 
     Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
 
-    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+    verify(suggestionRepository, times(1)).save(eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.REFUSED));
 
     verify(getUserNotificationManager(), times(1))

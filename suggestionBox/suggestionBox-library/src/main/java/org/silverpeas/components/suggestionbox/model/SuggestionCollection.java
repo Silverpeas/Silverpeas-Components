@@ -15,7 +15,6 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.enterprise.inject.Vetoed;
@@ -101,12 +100,11 @@ public class SuggestionCollection implements Collection<Suggestion> {
       @Override
       public Void execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        final User author = suggestion.getLastUpdater();
         SuggestionBox actual =
             SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
         suggestion.setSuggestionBox(actual);
         actual.persistedSuggestions().add(suggestion);
-        suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+        suggestionRepository.save(suggestion);
 
         // Attach uploaded files
         if (CollectionUtil.isNotEmpty(uploadedFiles)) {
@@ -159,12 +157,11 @@ public class SuggestionCollection implements Collection<Suggestion> {
       public Void execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
         for (Suggestion suggestion : suggestions) {
-          final User author = suggestion.getLastUpdater();
           SuggestionBox actual =
               SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
           suggestion.setSuggestionBox(actual);
           actual.persistedSuggestions().add(suggestion);
-          suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+          suggestionRepository.save(suggestion);
         }
         return null;
       }
@@ -310,7 +307,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
                     } else {
                       validation.setStatus(ContributionStatus.PENDING_VALIDATION);
                     }
-                    suggestionRepository.save(OperationContext.fromUser(updater), actual);
+                    suggestionRepository.save(actual);
                     triggerNotif = true;
                   }
                 }
@@ -369,7 +366,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
                     actualValidation.setDate(new Date());
                     actualValidation.setValidator(updater);
                   }
-                  suggestionRepository.save(OperationContext.fromUser(updater), actual);
+                  suggestionRepository.save(actual);
                   triggerNotif = true;
                 }
                 return Pair.of(actual, triggerNotif);

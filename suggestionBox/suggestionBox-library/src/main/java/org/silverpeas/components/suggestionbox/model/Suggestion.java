@@ -34,7 +34,6 @@ import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
@@ -224,7 +223,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
     Transaction.performInOne(new Transaction.Process<Void>() {
       @Override
       public Void execute() {
-        SuggestionRepository.get().save(OperationContext.fromUser(getLastUpdater()), suggestion);
+        SuggestionRepository.get().save(suggestion);
         return null;
       }
     });

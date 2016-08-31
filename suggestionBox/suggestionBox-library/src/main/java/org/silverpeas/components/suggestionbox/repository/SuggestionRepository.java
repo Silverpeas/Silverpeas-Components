@@ -23,21 +23,20 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.contribution.rating.model.ContributionRating;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -104,8 +103,8 @@ public class SuggestionRepository implements
   }
 
   @Override
-  public Suggestion save(final OperationContext context, final Suggestion suggestion) {
-    suggestionManager.save(context, suggestion);
+  public Suggestion save(final Suggestion suggestion) {
+    suggestionManager.save(suggestion);
     suggestionManager.flush();
 
     if (suggestion.isContentModified()) {
@@ -117,14 +116,14 @@ public class SuggestionRepository implements
   }
 
   @Override
-  public List<Suggestion> save(final OperationContext context, final Suggestion... suggestions) {
-    return save(context, Arrays.asList(suggestions));
+  public List<Suggestion> save(final Suggestion... suggestions) {
+    return save(Arrays.asList(suggestions));
   }
 
   @Override
-  public List<Suggestion> save(final OperationContext context, final List<Suggestion> suggestions) {
+  public List<Suggestion> save(final List<Suggestion> suggestions) {
     for (Suggestion suggestion : suggestions) {
-      save(context, suggestion);
+      save(suggestion);
     }
     return suggestions;
   }

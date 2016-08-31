@@ -26,12 +26,10 @@ package org.silverpeas.components.suggestionbox.model;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -72,8 +70,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Transactional
   @Override
   public void saveSuggestionBox(final SuggestionBox box) {
-    final User author = box.getLastUpdater();
-    suggestionBoxRepository.save(OperationContext.fromUser(author), box);
+    suggestionBoxRepository.save(box);
   }
 
   /**
