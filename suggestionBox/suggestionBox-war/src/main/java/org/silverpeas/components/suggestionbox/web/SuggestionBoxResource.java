@@ -87,12 +87,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}")
   @Produces(MediaType.APPLICATION_JSON)
   public SuggestionEntity getSuggestion(@PathParam("suggestionId") final String suggestionId) {
-    return process(new WebTreatment<SuggestionEntity>() {
-      @Override
-      public SuggestionEntity execute() {
-        final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        return suggestionBoxWebServiceProvider.asWebEntity(suggestion);
-      }
+    return process(() -> {
+      final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
+      return suggestionBoxWebServiceProvider.asWebEntity(suggestion);
     }).execute();
   }
 
@@ -104,14 +101,11 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @DELETE
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}")
   public void deleteSuggestion(@PathParam("suggestionId") final String suggestionId) {
-    process(new WebTreatment<Void>() {
-      @Override
-      public Void execute() {
-        final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        suggestionBoxWebServiceProvider.deleteSuggestion(getSuggestionBox(), suggestion,
-            getUserDetail());
-        return null;
-      }
+    process(() -> {
+      final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
+      suggestionBoxWebServiceProvider
+          .deleteSuggestion(getSuggestionBox(), suggestion, getUserDetail());
+      return null;
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
@@ -126,13 +120,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}/publish")
   @Produces(MediaType.APPLICATION_JSON)
   public SuggestionEntity publishSuggestion(@PathParam("suggestionId") final String suggestionId) {
-    return process(new WebTreatment<SuggestionEntity>() {
-      @Override
-      public SuggestionEntity execute() {
-        final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        return suggestionBoxWebServiceProvider
-            .publishSuggestion(getSuggestionBox(), suggestion, getUserDetail());
-      }
+    return process(() -> {
+      final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
+      return suggestionBoxWebServiceProvider
+          .publishSuggestion(getSuggestionBox(), suggestion, getUserDetail());
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
@@ -148,13 +139,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/inDraft")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInDraft() {
-    return process(new WebTreatment<Collection<SuggestionEntity>>() {
-      @Override
-      public List<SuggestionEntity> execute() {
-        return suggestionBoxWebServiceProvider
-            .getSuggestionsInDraftFor(getSuggestionBox(), getUserDetail());
-      }
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    return process(() -> suggestionBoxWebServiceProvider
+        .getSuggestionsInDraftFor(getSuggestionBox(), getUserDetail()))
+        .lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
   /**
@@ -169,13 +156,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/outOfDraft")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsOutOfDraft() {
-    return process(new WebTreatment<Collection<SuggestionEntity>>() {
-      @Override
-      public List<SuggestionEntity> execute() {
-        return suggestionBoxWebServiceProvider
-            .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUserDetail());
-      }
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    return process(() -> suggestionBoxWebServiceProvider
+        .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUserDetail()))
+        .lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
   /**
@@ -189,13 +172,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/pendingValidation")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInPendingValidation() {
-    return process(new WebTreatment<Collection<SuggestionEntity>>() {
-      @Override
-      public List<SuggestionEntity> execute() {
-        return suggestionBoxWebServiceProvider.getSuggestionsInPendingValidation(
-            getSuggestionBox());
-      }
-    }).lowestAccessRole(SilverpeasRole.publisher).execute();
+    return process(
+        () -> suggestionBoxWebServiceProvider.getSuggestionsInPendingValidation(getSuggestionBox()))
+        .lowestAccessRole(SilverpeasRole.publisher).execute();
   }
 
   /**
@@ -221,36 +200,33 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @QueryParam("author") final String authorId,
       @QueryParam("page") final String page,
       @QueryParam("sortby") final String property) {
-    return process(new WebTreatment<Collection<SuggestionEntity>>() {
-      @Override
-      public List<SuggestionEntity> execute() {
-        PaginationPage pagination = fromPage(page);
-        User author = (StringUtil.isDefined(authorId) ? User.getById(authorId):null);
-        if (pagination != null || StringUtil.isDefined(property)) {
-          JOIN_DATA_APPLY commentJoinData = null;
-          QUERY_ORDER_BY orderBy = QUERY_ORDER_BY.fromPropertyName(property);
-          if (QUERY_ORDER_BY.COMMENT_COUNT_DESC.equals(orderBy)) {
-            commentJoinData = JOIN_DATA_APPLY.COMMENT;
-          }
-          List<SuggestionEntity> suggestions = suggestionBoxWebServiceProvider.
-              getSuggestionsByCriteria(getSuggestionBox(),
-                  SuggestionCriteria.from(getSuggestionBox())
-                  .createdBy(author)
-                  .statusIsOneOf(ContributionStatus.VALIDATED)
-                  .paginatedBy(pagination)
-                  .applyJoinOnData(commentJoinData)
-                  .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
-          if (suggestions instanceof PaginationList) {
-            String maxlength = String.valueOf(((PaginationList) suggestions).originalListSize());
-            getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
-          }
-          return suggestions;
-        } else if (author != null) {
-          return suggestionBoxWebServiceProvider.getPublishedSuggestionsFor(getSuggestionBox(),
-              author);
+    return process(() -> {
+      PaginationPage pagination = fromPage(page);
+      User author = (StringUtil.isDefined(authorId) ? User.getById(authorId) : null);
+      if (pagination != null || StringUtil.isDefined(property)) {
+        JOIN_DATA_APPLY commentJoinData = null;
+        QUERY_ORDER_BY orderBy = QUERY_ORDER_BY.fromPropertyName(property);
+        if (QUERY_ORDER_BY.COMMENT_COUNT_DESC.equals(orderBy)) {
+          commentJoinData = JOIN_DATA_APPLY.COMMENT;
         }
-        return suggestionBoxWebServiceProvider.getPublishedSuggestions(getSuggestionBox());
+        List<SuggestionEntity> suggestions = suggestionBoxWebServiceProvider.
+            getSuggestionsByCriteria(getSuggestionBox(),
+                SuggestionCriteria.from(getSuggestionBox())
+                    .createdBy(author)
+                    .statusIsOneOf(ContributionStatus.VALIDATED)
+                    .paginatedBy(pagination)
+                    .applyJoinOnData(commentJoinData)
+                    .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
+        if (suggestions instanceof PaginationList) {
+          String maxlength = String.valueOf(((PaginationList) suggestions).originalListSize());
+          getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
+        }
+        return suggestions;
+      } else if (author != null) {
+        return suggestionBoxWebServiceProvider
+            .getPublishedSuggestionsFor(getSuggestionBox(), author);
       }
+      return suggestionBoxWebServiceProvider.getPublishedSuggestions(getSuggestionBox());
     }).execute();
   }
 

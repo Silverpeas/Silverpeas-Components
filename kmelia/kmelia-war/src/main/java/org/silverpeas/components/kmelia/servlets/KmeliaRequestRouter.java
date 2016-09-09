@@ -149,7 +149,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     boolean profileError = false;
     boolean kmaxMode = false;
     boolean toolboxMode;
-    SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic = SilverpeasRole.getGreaterFrom(
+    SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic = SilverpeasRole.getHighestFrom(
         SilverpeasRole.from(kmelia.getUserTopicProfile(kmelia.getCurrentFolderId())));
     try {
       if ("kmax".equals(kmelia.getComponentRootName())) {

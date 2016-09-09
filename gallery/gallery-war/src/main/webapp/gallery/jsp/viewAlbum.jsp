@@ -43,8 +43,8 @@
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
 
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<jsp:useBean id="greaterUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
+<jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
@@ -142,8 +142,8 @@
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
 <c:set var="isExportEnable" value="${requestScope.IsExportEnable}"/>
-<c:set var="basketOperationsAllowed" value="${greaterUserRole eq userRole and isBasket}"/>
-<c:set var="isMediaSelectable" value="${basketOperationsAllowed or isExportEnable or greaterUserRole.isGreaterThanOrEquals(publisherRole)}"/>
+<c:set var="basketOperationsAllowed" value="${highestUserRole eq userRole and isBasket}"/>
+<c:set var="isMediaSelectable" value="${basketOperationsAllowed or isExportEnable or highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
 
 <view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
 <view:setConstant var="ORIGINAL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.ORIGINAL"/>
@@ -171,7 +171,7 @@ function addFavorite(name, description, url) {
   postNewLink(name, url, description);
 }
 
-<c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
+<c:if test="${highestUserRole eq adminRole or userId eq currentAlbum.creatorId}">
 function deleteConfirm(id, nom) {
   // confirmation de suppression de l'album
   var label = "<fmt:message key="gallery.confirmDeleteAlbum"/> '" + $('<span>').html(nom).text() + "' ?";
@@ -184,14 +184,14 @@ function deleteConfirm(id, nom) {
 }
 </c:if>
 
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+<c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
   <c:if test="${dragAndDropEnable}">
 function uploadCompleted(s) {
   location.href =
       "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>&deselectAll=true";
 }
   </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
 
 function sendData() {
   // envoi des photos selectionnees pour la modif par lot
@@ -249,7 +249,7 @@ function sendToBasket() {
   }
 }
 
-<c:if test="${greaterUserRole eq adminRole}">
+<c:if test="${highestUserRole eq adminRole}">
 function sendDataForAddPath() {
   // envoi des photos selectionnees pour le placement par lot
   var selectedPhotos = getMediaIds(true);
@@ -350,17 +350,17 @@ function CutSelectedMedia() {
 <body>
 <gallery:browseBar albumPath="${path}"/>
 <view:operationPane>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <%-- Actions on album --%>
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
-    <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
+    <c:if test="${highestUserRole eq adminRole or userId eq currentAlbum.creatorId}">
       <view:operation action="javaScript:openGalleryEditor(currentGallery)" altText="${updateAlbumLabel}" icon="${updateAlbumIcon}"/>
       <c:set var="tmpLabel"><c:out value="${currentAlbum.name}"/></c:set>
       <view:operation action="javaScript:deleteConfirm('${currentAlbum.id}','${silfn:escapeHtml(silfn:escapeJs(tmpLabel))}')" altText="${deleteAlbumLabel}" icon="${deleteAlbumIcon}"/>
     </c:if>
     <view:operationSeparator/>
     <%-- Copy/Cut of albums --%>
-    <c:if test="${greaterUserRole eq adminRole}">
+    <c:if test="${highestUserRole eq adminRole}">
       <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyAlbumLabel}" icon="${copyAlbumIcon}"/>
       <view:operation action="javascript:onClick=clipboardCut()" altText="${cutAlbumLabel}" icon="${cutAlbumIcon}"/>
       <view:operationSeparator/>
@@ -371,24 +371,24 @@ function CutSelectedMedia() {
     </c:if>
   </c:if>
   <%-- Manage media by massively way --%>
-  <c:if test="${not (greaterUserRole eq userRole and not isBasket)}">
+  <c:if test="${not (highestUserRole eq userRole and not isBasket)}">
     <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
   </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operation action="javascript:onClick=sendData()" altText="${updateSelectedMediaLabel}" icon="${updateSelectedMediaIcon}"/>
     <view:operation action="javascript:onClick=sendDataDelete()" altText="${deleteSelectedMediaLabel}" icon="${deleteSelectedMediaIcon}"/>
     <c:if test="${isPdcUsed}">
       <view:operation action="javascript:onClick=sendDataCategorize()" altText="${categorizedSelectedMediaLabel}" icon="${categorizedSelectedMediaIcon}"/>
     </c:if>
   </c:if>
-  <c:if test="${greaterUserRole eq adminRole}">
+  <c:if test="${highestUserRole eq adminRole}">
     <view:operation action="javascript:onClick=sendDataForAddPath()" altText="${addPathForSelectedMediaLabel}" icon="${addPathForSelectedMediaIcon}"/>
     <view:operation action="javascript:onClick=CopySelectedMedia()" altText="${copySelectedMediaLabel}" icon="${copySelectedMediaIcon}"/>
     <view:operation action="javascript:onClick=CutSelectedMedia()" altText="${cutSelectedMediaLabel}" icon="${cutSelectedMediaIcon}"/>
     <view:operation action="javascript:onClick=clipboardPaste()" altText="${pasteSelectedMediaLabel}" icon="${pasteSelectedMediaIcon}"/>
   </c:if>
   <%-- Manage one media --%>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
     <view:operationSeparator/>
     <view:operationOfCreation action="${addPhotoAction}" altText="${addPhotoLabel}" icon="${addPhotoIcon}"/>
     <view:operationOfCreation action="${addVideoAction}" altText="${addVideoLabel}" icon="${addVideoIcon}"/>
@@ -438,13 +438,13 @@ function CutSelectedMedia() {
                                  isViewList="${isViewList}"
                                  selectable="${isMediaSelectable}"/>
     <c:choose>
-      <c:when test="${empty currentAlbum.media and empty albums and greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+      <c:when test="${empty currentAlbum.media and empty albums and highestUserRole.isGreaterThanOrEquals(publisherRole)}">
         <c:set var="templateUserRole" value="${publisherRole}"/>
       </c:when>
-      <c:when test="${empty currentAlbum.media and greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:when test="${empty currentAlbum.media and highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <c:set var="templateUserRole" value="${writerRole}"/>
       </c:when>
-      <c:when test="${empty currentAlbum.media and greaterUserRole.isGreaterThanOrEquals(userRole)}">
+      <c:when test="${empty currentAlbum.media and highestUserRole.isGreaterThanOrEquals(userRole)}">
         <c:set var="templateUserRole" value="${userRole}"/>
       </c:when>
     </c:choose>
@@ -492,7 +492,7 @@ function CutSelectedMedia() {
   <input type="hidden" name="Id"/>
 </form>
 <view:progressMessage/>
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and dragAndDropEnable}">
+<c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole) and dragAndDropEnable}">
   <c:url var="uploadCompletedUrl" value="/RgalleryDragAndDrop/jsp/Drop">
     <c:param name="ComponentId" value="${componentId}"/>
     <c:param name="AlbumId" value="${currentAlbum.id}"/>

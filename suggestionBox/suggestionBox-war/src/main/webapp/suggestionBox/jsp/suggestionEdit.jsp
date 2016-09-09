@@ -30,7 +30,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
@@ -50,7 +50,7 @@
   <c:set var="target" value="${suggestion.id}"/>
 </c:if>
 
-<c:if test="${not greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+<c:if test="${not highestUserRole.isGreaterThanOrEquals(writerRole)}">
   <c:redirect url="/Error403.jsp"/>
 </c:if>
 

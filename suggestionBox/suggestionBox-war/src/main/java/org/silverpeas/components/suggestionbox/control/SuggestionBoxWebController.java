@@ -402,7 +402,7 @@ public class SuggestionBoxWebController extends
       context.getRequest().setAttribute("suggestion", entity);
       boolean isPublishable = entity.isPublishableBy(context.getUser());
       boolean isModeratorView = entity.getValidation().isPendingValidation() && context.
-          getGreaterUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher);
+          getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher);
       context.getRequest().setAttribute("isModeratorView", isModeratorView);
       context.getRequest().setAttribute("isPublishable", isPublishable);
       context.getRequest().setAttribute("isEditable", (isPublishable || isModeratorView));

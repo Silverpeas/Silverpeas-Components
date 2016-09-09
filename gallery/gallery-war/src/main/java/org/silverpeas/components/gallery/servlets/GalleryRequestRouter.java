@@ -125,7 +125,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     String userId = gallerySC.getUserId();
 
     request.setAttribute("Profile", highestUserRole.getName());
-    request.setAttribute("greaterUserRole", highestUserRole);
+    request.setAttribute("highestUserRole", highestUserRole);
     request.setAttribute("UserId", userId);
     request.setAttribute("IsGuest", gallerySC.isGuest());
     request.setAttribute("IsExportEnable", gallerySC.isExportEnable());

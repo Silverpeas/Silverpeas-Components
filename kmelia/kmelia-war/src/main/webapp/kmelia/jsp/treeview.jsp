@@ -39,7 +39,7 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<c:set var='greatestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
+<c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 
 <%
 String		rootId				= "0";
@@ -1059,8 +1059,8 @@ $(document).on("dnd_stop.vakata", function(event, data) {
 
 <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
-<kmelia:paste greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" />
-<kmelia:dragAndDrop greatestUserRole="${greatestUserRole}" componentInstanceId="<%=componentId%>" contentLanguage="<%=translation%>" />
+<kmelia:paste highestUserRole="${highestUserRole}" componentInstanceId="<%=componentId%>" />
+<kmelia:dragAndDrop highestUserRole="${highestUserRole}" componentInstanceId="<%=componentId%>" contentLanguage="<%=translation%>" />
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */
 var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);

@@ -44,7 +44,7 @@
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="greatestUserRole" value='<%=SilverpeasRole.from((String)request.getAttribute("Profile"))%>'/>
+<c:set var="highestUserRole" value='<%=SilverpeasRole.from((String)request.getAttribute("Profile"))%>'/>
 
 <%@ include file="check.jsp" %>
 <%
@@ -78,7 +78,7 @@ if ("user".equals(profile) && !allowedNav)
 
 <c:set var="folderIsWritable" value="<%=folderIsWritable%>"/>
 <c:set var="readWriteActivated" value="<%=readWriteActivated%>"/>
-<c:set var="dragAndDropEnable" value="${greatestUserRole.isGreaterThanOrEquals(publisherRole) and folderIsWritable and readWriteActivated}"/>
+<c:set var="dragAndDropEnable" value="${highestUserRole.isGreaterThanOrEquals(publisherRole) and folderIsWritable and readWriteActivated}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -712,7 +712,7 @@ out.println(window.printAfter());
 </form>
 <view:progressMessage/>
 <c:if test="${dragAndDropEnable}">
-  <c:set var="ignoreFolders" value="${not greatestUserRole.isGreaterThanOrEquals(adminRole)}"/>
+  <c:set var="ignoreFolders" value="${not highestUserRole.isGreaterThanOrEquals(adminRole)}"/>
   <c:url var="uploadCompletedUrl" value="/SilverCrawlerDragAndDrop">
     <c:param name="ComponentId" value="${componentId}"/>
     <c:if test="${ignoreFolders}">
@@ -722,7 +722,7 @@ out.println(window.printAfter());
   <viewTags:commonDragAndDrop domSelector=".dragAndDropUpload"
                               domHelpHighlightSelector=".tableBoard"
                               componentInstanceId="${componentId}"
-                              greatestUserRole="${greatestUserRole}"
+                              highestUserRole="${highestUserRole}"
                               uploadCompletedUrl="${uploadCompletedUrl}"
                               uploadCompletedUrlSuccess="processDnD"
                               ignoreFolders="${ignoreFolders}"/>

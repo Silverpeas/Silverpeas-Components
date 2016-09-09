@@ -408,7 +408,7 @@ public class SuggestionBoxWebServiceProvider {
    */
   private static SilverpeasRole getHighestUserRoleFrom(User user,
       SuggestionBox suggestionBox) {
-    return SilverpeasRole.getGreatestFrom(SilverpeasRole.from(OrganizationController.get()
+    return SilverpeasRole.getHighestFrom(SilverpeasRole.from(OrganizationController.get()
             .getUserProfiles(user.getId(), suggestionBox.getComponentInstanceId())));
   }
 
