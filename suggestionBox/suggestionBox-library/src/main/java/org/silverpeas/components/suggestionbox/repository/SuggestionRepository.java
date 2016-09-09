@@ -159,6 +159,11 @@ public class SuggestionRepository implements
   }
 
   @Override
+  public void flush() {
+    suggestionManager.flush();
+  }
+
+  @Override
   public boolean contains(final Suggestion entity) {
     return suggestionManager.contains(entity);
   }
