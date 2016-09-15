@@ -70,6 +70,7 @@ public class ViewClassifiedHandler extends FunctionHandler {
             false, classified.getInstanceId(), null);
         xmlContext.setBorderPrinted(false);
         xmlContext.setIgnoreDefaultValues(true);
+        xmlContext.setObjectId(classifiedId);
         request.setAttribute("Form", formView);
         request.setAttribute("Data", data);
         request.setAttribute("Context", xmlContext);
