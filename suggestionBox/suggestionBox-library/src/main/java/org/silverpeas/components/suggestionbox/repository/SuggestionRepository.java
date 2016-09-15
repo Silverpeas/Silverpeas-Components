@@ -33,8 +33,8 @@ import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -51,8 +51,7 @@ import java.util.Map;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class SuggestionRepository implements
-    SilverpeasEntityRepository<Suggestion, UuidIdentifier> {
+public class SuggestionRepository implements EntityRepository<Suggestion> {
 
   public static SuggestionRepository get() {
     return ServiceProvider.getService(SuggestionRepository.class);
@@ -62,7 +61,7 @@ public class SuggestionRepository implements
   private CommentService commentService;
 
   @Inject
-  SuggestionJPAManager suggestionManager;
+  SuggestionJPARepository suggestionManager;
 
   /**
    * Finds suggestions according to the given suggestion criteria.
@@ -99,6 +98,12 @@ public class SuggestionRepository implements
   @Override
   public List<Suggestion> getById(final Collection<String> ids) {
     return decorate(suggestionManager.getById(ids),
+        SuggestionCriteria.from(null).withWysiwygContent());
+  }
+
+  @Override
+  public List<Suggestion> findByCriteria(final QueryCriteria criteria) {
+    return decorate(suggestionManager.findByCriteria(criteria),
         SuggestionCriteria.from(null).withWysiwygContent());
   }
 

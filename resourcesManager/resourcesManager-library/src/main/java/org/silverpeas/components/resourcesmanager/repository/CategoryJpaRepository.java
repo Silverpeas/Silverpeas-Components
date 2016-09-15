@@ -24,32 +24,20 @@
 
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
-import org.silverpeas.components.resourcesmanager.model.ResourceValidatorPk;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.components.resourcesmanager.model.Category;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
+
+import java.util.List;
 
 /**
  * @author ebonnet
  */
-public class ResourceValidatorJpaManager
-    extends JpaBasicEntityManager<ResourceValidator, ResourceValidatorPk>
-    implements ResourceValidatorRepository {
+public class CategoryJpaRepository extends BasicJpaEntityRepository<Category>
+    implements CategoryRepository {
 
   @Override
-  public ResourceValidator getResourceValidator(final Long currentResourceId,
-      final Long currentUserId) {
-    return getFromNamedQuery("resourceValidator.getResourceValidator", newNamedParameters()
-        .add("resourceId", currentResourceId).add("currentUserId", currentUserId));
-  }
-
-  /**
-   * Deletes all entities belonging to the specified component instance.
-   * @param instanceId the unique instance identifier.
-   * @return the number of deleted entities.
-   */
-  @Override
-  public long deleteByComponentInstanceId(final String instanceId) {
-    return deleteFromNamedQuery("resourceValidator.deleteAllResourceValidatorsForComponentInstance",
+  public List<Category> findCategoriesByInstanceId(final String instanceId) {
+    return listFromNamedQuery("category.findByInstanceId",
         newNamedParameters().add("instanceId", instanceId));
   }
 }

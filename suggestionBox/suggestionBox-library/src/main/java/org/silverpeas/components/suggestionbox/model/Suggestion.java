@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
@@ -59,7 +59,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "sc_suggestion")
-public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
+public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
     implements ValidableContribution, Rateable {
 
   private static final long serialVersionUID = -8559980140411995766L;
@@ -256,7 +256,10 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
         .isGreaterThanOrEquals(SilverpeasRole.writer)));
   }
 
-  @Override
+  /**
+   * Gets the identifier of the component instance which the suggestion is attached.
+   * @return the identifier of the component instance which the suggestion is attached.
+   */
   public String getComponentInstanceId() {
     return getSuggestionBox().getComponentInstanceId();
   }

@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -50,7 +50,7 @@ import java.util.Set;
 @NamedQuery(name = "suggestionBoxFromComponentInstance",
     query = "from SuggestionBox s where s.componentInstanceId = :componentInstanceId")
 @Table(name = "sc_suggestion_box")
-public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifier> {
+public class SuggestionBox extends SilverpeasJpaEntity<SuggestionBox, UuidIdentifier> {
 
   private static final long serialVersionUID = -3216638631298619076L;
 
@@ -93,7 +93,6 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    * Gets the component instance identifier which is the identifier of a suggestion box.
    * @return the suggestion box component identifier.
    */
-  @Override
   public String getComponentInstanceId() {
     return componentInstanceId;
   }

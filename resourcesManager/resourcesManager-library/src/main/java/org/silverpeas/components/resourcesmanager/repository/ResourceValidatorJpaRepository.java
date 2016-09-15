@@ -22,26 +22,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.quickinfo.repository;
+package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
+import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
-import java.util.List;
+/**
+ * @author ebonnet
+ */
+public class ResourceValidatorJpaRepository extends BasicJpaEntityRepository<ResourceValidator>
+    implements ResourceValidatorRepository {
 
-public class NewsRepository extends SilverpeasJpaEntityRepository<News> {
-
-  public List<News> getByComponentId(String componentId) {
-    NamedParameters parameters = newNamedParameters();
-    parameters.add("componentInstanceId", componentId);
-    return findByNamedQuery("newsFromComponentInstance", parameters);
+  @Override
+  public ResourceValidator getResourceValidator(final Long currentResourceId,
+      final Long currentUserId) {
+    return getFromNamedQuery("resourceValidator.getResourceValidator", newNamedParameters()
+        .add("resourceId", currentResourceId).add("currentUserId", currentUserId));
   }
 
-  public News getByForeignId(String foreignId) {
-    NamedParameters parameters = newNamedParameters();
-    parameters.add("foreignId", foreignId);
-    return findByNamedQuery("newsByForeignId", parameters).get(0);
+  /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param instanceId the unique instance identifier.
+   * @return the number of deleted entities.
+   */
+  @Override
+  public long deleteByComponentInstanceId(final String instanceId) {
+    return deleteFromNamedQuery("resourceValidator.deleteAllResourceValidatorsForComponentInstance",
+        newNamedParameters().add("instanceId", instanceId));
   }
-
 }

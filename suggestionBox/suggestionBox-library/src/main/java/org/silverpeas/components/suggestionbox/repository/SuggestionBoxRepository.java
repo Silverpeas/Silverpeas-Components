@@ -24,9 +24,8 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -38,8 +37,7 @@ import javax.inject.Singleton;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class SuggestionBoxRepository
-    extends SilverpeasJpaEntityManager<SuggestionBox, UuidIdentifier> {
+public class SuggestionBoxRepository extends SilverpeasJpaEntityRepository<SuggestionBox> {
 
   public static SuggestionBoxRepository get() {
     return ServiceProvider.getService(SuggestionBoxRepository.class);
@@ -56,7 +54,7 @@ public class SuggestionBoxRepository
    */
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
     NamedParameters parameters = newNamedParameters();
-    return findOneByNamedQuery("suggestionBoxFromComponentInstance",
+    return getFromNamedQuery("suggestionBoxFromComponentInstance",
         parameters.add("componentInstanceId", componentInstanceId));
   }
 }

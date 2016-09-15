@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
-import org.silverpeas.components.resourcesmanager.model.ReservedResourcePk;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
 import java.util.List;
 
@@ -33,16 +33,16 @@ import java.util.List;
  * @author ehugonnet
  */
 public interface ReservedResourceRepository
-    extends BasicEntityRepository<ReservedResource, ReservedResourcePk> {
+    extends EntityRepository<ReservedResource>, WithSaveAndFlush<ReservedResource> {
 
-  public List<ReservedResource> findAllReservedResourcesWithProblem(Long currentReservationId,
+  List<ReservedResource> findAllReservedResourcesWithProblem(Long currentReservationId,
       List<Long> futureReservedResourceIds, String startPeriod, String endPeriod);
 
-  public List<ReservedResource> findAllReservedResourcesForReservation(Long currentReservationId);
+  List<ReservedResource> findAllReservedResourcesForReservation(Long currentReservationId);
 
-  public void deleteAllReservedResourcesForReservation(Long currentReservationId);
+  void deleteAllReservedResourcesForReservation(Long currentReservationId);
 
-  public void deleteAllReservedResourcesForResource(Long currentResourceId);
+  void deleteAllReservedResourcesForResource(Long currentResourceId);
 
-  public List<ReservedResource> findAllReservedResourcesOfReservation(Long currentReservationId);
+  List<ReservedResource> findAllReservedResourcesOfReservation(Long currentReservationId);
 }

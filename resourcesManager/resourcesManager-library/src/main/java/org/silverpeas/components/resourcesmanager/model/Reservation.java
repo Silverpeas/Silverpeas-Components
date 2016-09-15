@@ -24,7 +24,7 @@
 package org.silverpeas.components.resourcesmanager.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.StringUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -83,7 +83,7 @@ import java.util.Date;
     @NamedQuery(name = "reservation.findAllReservations",
         query = "SELECT DISTINCT reservation FROM Reservation reservation WHERE reservation.instanceId = :instanceId")
 })
-public class Reservation extends AbstractJpaCustomEntity<Reservation, UniqueLongIdentifier>
+public class Reservation extends BasicJpaEntity<Reservation, UniqueLongIdentifier>
     implements ResourceStatus {
   private static final long serialVersionUID = 4901854718854856161L;
 

@@ -44,7 +44,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -70,7 +70,7 @@ import java.util.List;
     query = "SELECT n FROM News n WHERE n.componentInstanceId = :componentInstanceId " +
         "ORDER BY n.publishDate DESC"), @NamedQuery(name = "newsByForeignId",
     query = "SELECT n FROM News n WHERE n.publicationId = :foreignId")})
-public class News extends AbstractJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
+public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
 
   public static final String CONTRIBUTION_TYPE = "News";
 
@@ -221,7 +221,10 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return commentService.getCommentsCountOnPublication(CONTRIBUTION_TYPE, getPK());
   }
 
-  @Override
+  /**
+   * Gets the identifier of the component instance which the news is attached.
+   * @return the identifier of the component instance which the news is attached.
+   */
   public String getComponentInstanceId() {
     return componentInstanceId;
   }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.model;
 
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -47,7 +47,7 @@ import java.io.Serializable;
             "WHERE resourceValidator.resource IN (SELECT resource FROM Resource resource " +
             "WHERE resource.instanceId = :instanceId)")})
 public class ResourceValidator
-    extends AbstractJpaCustomEntity<ResourceValidator, ResourceValidatorPk>
+    extends BasicJpaEntity<ResourceValidator, ResourceValidatorPk>
     implements Serializable {
 
   private static final long serialVersionUID = -7310087626487651284L;

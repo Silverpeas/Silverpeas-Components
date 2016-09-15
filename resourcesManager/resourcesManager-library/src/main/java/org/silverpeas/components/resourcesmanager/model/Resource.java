@@ -26,7 +26,7 @@ package org.silverpeas.components.resourcesmanager.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.*;
@@ -44,7 +44,7 @@ import java.util.List;
     @NamedQuery(name = "resource.deleteResourcesFromCategory",
         query = "DELETE Resource resource WHERE resource.category.id = :categoryId")
 })
-public class Resource extends AbstractJpaCustomEntity<Resource, UniqueLongIdentifier> {
+public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
   private static final long serialVersionUID = 3438059589840347315L;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)

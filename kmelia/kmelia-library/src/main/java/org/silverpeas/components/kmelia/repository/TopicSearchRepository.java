@@ -25,8 +25,8 @@
 package org.silverpeas.components.kmelia.repository;
 
 import org.silverpeas.components.kmelia.model.TopicSearch;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
  * Repository that handles TopicSearch beans.
  */
 public interface TopicSearchRepository
-    extends BasicEntityRepository<TopicSearch, UniqueLongIdentifier> {
+    extends EntityRepository<TopicSearch>, WithSaveAndFlush<TopicSearch> {
 
   /**
    * Returns all TopicSearch from Repository with the given instanceId. This method will be

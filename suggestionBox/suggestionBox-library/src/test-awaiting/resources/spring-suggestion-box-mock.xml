@@ -68,7 +68,7 @@
         factory-method="getInstance"/>
 
   <bean id="suggestionJPAManager"
-        class="org.silverpeas.components.suggestionbox.repository.SuggestionJPAManager"/>
+        class="org.silverpeas.components.suggestionbox.repository.SuggestionJPARepository"/>
 
   <bean id="suggestionBoxServiceFactory"
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceProvider"

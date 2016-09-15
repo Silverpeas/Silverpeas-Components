@@ -23,18 +23,16 @@
  */
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.components.resourcesmanager.model.ReservedResourcePk;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import java.util.List;
 
 /**
  * @author ebonnet
  */
-public class ReservedResourceJpaManager
-    extends JpaBasicEntityManager<ReservedResource, ReservedResourcePk>
+public class ReservedResourceJpaRepository extends BasicJpaEntityRepository<ReservedResource>
     implements ReservedResourceRepository {
   @Override
   public List<ReservedResource> findAllReservedResourcesWithProblem(final Long currentReservationId,

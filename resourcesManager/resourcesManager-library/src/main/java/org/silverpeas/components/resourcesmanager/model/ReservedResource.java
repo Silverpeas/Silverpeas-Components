@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.model;
 
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -74,7 +74,7 @@ import java.io.Serializable;
     @NamedQuery(name = "reservedResource.findAllReservedResourcesOfReservation",
         query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
             "WHERE reservedResource.id.reservationId = :currentReservationId")})
-public class ReservedResource extends AbstractJpaCustomEntity<ReservedResource, ReservedResourcePk>
+public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedResourcePk>
     implements Serializable {
 
   private static final long serialVersionUID = -4233541745596218664L;
