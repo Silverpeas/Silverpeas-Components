@@ -28,6 +28,7 @@
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@page import="org.silverpeas.components.classifieds.model.ClassifiedDetail" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -76,10 +77,14 @@
 	String instanceId = (String) pageContext.getAttribute("instanceId");
 	Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
 	DataRecord data = (DataRecord) pageContext.getAttribute("data");
+  ClassifiedDetail classify = (ClassifiedDetail) pageContext.getAttribute("classified");
 
 	PagesContext context = new PagesContext("classifiedForm", "11", language, false, instanceId, null, null);
 	context.setIgnoreDefaultValues(true);
 	context.setBorderPrinted(false);
+  if (classify != null) {
+    context.setObjectId(classify.getId());
+  }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
