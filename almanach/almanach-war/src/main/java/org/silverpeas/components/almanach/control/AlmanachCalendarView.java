@@ -24,7 +24,7 @@
 package org.silverpeas.components.almanach.control;
 
 import org.silverpeas.core.web.calendar.CalendarDay;
-import org.silverpeas.core.web.calendar.CalendarViewContext;
+import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
 import org.silverpeas.core.web.calendar.CalendarViewType;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class AlmanachCalendarView {
 
-  private CalendarViewContext viewContext;
+  private CalendarTimeWindowViewContext viewContext;
   private AlmanachDTO almanach;
   private List<DisplayableEventOccurrence> events = new ArrayList<>();
   private String label = "";
@@ -56,7 +56,7 @@ public class AlmanachCalendarView {
   public AlmanachCalendarView(final AlmanachDTO almanach, final Date currentDay,
       final CalendarViewType viewType, final String locale) {
     this.almanach = almanach;
-    viewContext = new CalendarViewContext(null, locale);
+    viewContext = new CalendarTimeWindowViewContext(null, locale);
     viewContext.setReferenceDay(currentDay);
     viewContext.setViewType(viewType);
     if (!CalendarViewType.NEXT_EVENTS.equals(viewContext.getViewType())) {

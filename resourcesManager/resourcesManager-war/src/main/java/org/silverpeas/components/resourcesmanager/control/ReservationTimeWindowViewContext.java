@@ -25,14 +25,14 @@ package org.silverpeas.components.resourcesmanager.control;
 
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.web.calendar.CalendarViewContext;
+import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
 import org.silverpeas.components.resourcesmanager.web.ResourceManagerResourceURIs;
 
 /**
  * User: Yohann Chastagnier
  * Date: 17/04/13
  */
-public class ReservationViewContext extends CalendarViewContext {
+public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewContext {
 
   private ResourceManagerDataViewType dataViewType = ResourceManagerDataViewType.reservations;
   private UserDetail currentUser = null;
@@ -46,7 +46,7 @@ public class ReservationViewContext extends CalendarViewContext {
    * @param componentInstanceId
    * @param language
    */
-  public ReservationViewContext(final String componentInstanceId, final UserDetail currentUser,
+  public ReservationTimeWindowViewContext(final String componentInstanceId, final UserDetail currentUser,
       final String language) {
     super(componentInstanceId, language);
     this.currentUser = currentUser;
@@ -56,7 +56,7 @@ public class ReservationViewContext extends CalendarViewContext {
    * Reset to null all filters.
    */
   @Override
-  public ReservationViewContext resetFilters() {
+  public ReservationTimeWindowViewContext resetFilters() {
     super.resetFilters();
     dataViewType = ResourceManagerDataViewType.reservations;
     selectedUserId = null;

@@ -62,7 +62,7 @@ import java.util.List;
 
 public class ResourcesManagerSessionController extends AbstractComponentSessionController {
 
-  private ReservationViewContext viewContext = null;
+  private ReservationTimeWindowViewContext viewContext = null;
 
   private Reservation reservationCourante;
   private Date beginDateReservation;
@@ -76,10 +76,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   private NotificationSender notifSender;
   private MultiSilverpeasBundle resources;
 
-  public ReservationViewContext getViewContext() {
+  public ReservationTimeWindowViewContext getViewContext() {
     if (viewContext == null) {
       // Initialization
-      viewContext = new ReservationViewContext(getComponentId(), getUserDetail(), getLanguage());
+      viewContext = new ReservationTimeWindowViewContext(getComponentId(), getUserDetail(), getLanguage());
     }
     return viewContext;
   }
