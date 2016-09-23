@@ -57,7 +57,7 @@ Vector infos(JspWriter out, Collection<Question> Questions, String questionId)  
 		  Question quizzQuestion = (Question) i.next();
 		  if (Integer.parseInt(quizzQuestion.getPK().getId()) == Integer.parseInt(questionId))
 		  {
-			clue = EncodeHelper.javaStringToHtmlParagraphe(quizzQuestion.getClue());
+			clue = WebEncodeHelper.javaStringToHtmlParagraphe(quizzQuestion.getClue());
 			label = quizzQuestion.getLabel();
 			infos.add(label);
 			infos.add(clue);

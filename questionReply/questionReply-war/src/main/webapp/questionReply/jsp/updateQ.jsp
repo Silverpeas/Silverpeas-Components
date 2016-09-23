@@ -45,12 +45,12 @@
 
 	String categoryId = question.getCategoryId();
 
-	String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
-	String content = EncodeHelper.javaStringToHtmlString(question.getContent());
+	String title = WebEncodeHelper.javaStringToHtmlString(question.getTitle());
+	String content = WebEncodeHelper.javaStringToHtmlString(question.getContent());
 	String date = resource.getOutputDate(question.getCreationDate());
 	String id = question.getPK().getId();
 	int status = question.getStatus();
-	String creator = EncodeHelper.javaStringToHtmlString(question.readCreatorName());
+	String creator = WebEncodeHelper.javaStringToHtmlString(question.readCreatorName());
 %>
 <c:set var="question" value="${requestScope['question']}"/>
 

@@ -116,7 +116,7 @@ function notifyPopup(context,compoId,users,groups)
     ArrayLine arrayLine = arrayPane.addArrayLine();
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmaresAdmin.jsp?quizz_id="+quizzHeader.getPK().getId());
     arrayLine.addArrayCellLink(quizzHeader.getTitle(),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz");
-    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
 	ArrayCellText arrayCellText5 = arrayLine.addArrayCellText(resources.getOutputDate(creationDate));

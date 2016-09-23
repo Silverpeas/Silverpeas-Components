@@ -32,7 +32,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail"%>
-<%@ page import="org.silverpeas.components.yellowpages.model.GroupDetail"%>
+<%@ page import="org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
@@ -46,13 +46,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp" %>
 
 <% 
-GroupDetail group 		= (GroupDetail) request.getAttribute("Group");
+YellowPagesGroupDetail group 		= (YellowPagesGroupDetail) request.getAttribute("Group");
 List groupPath 	= (List) request.getAttribute("GroupPath");
 
 String name = "";
@@ -114,10 +114,10 @@ function topicGoTo(id)
     path = currentTopic.getPath();
     linkedPathString = displayPath(yellowpagesScc, path, true, 3);
     
-    GroupDetail groupInPath = null;
+    YellowPagesGroupDetail groupInPath = null;
     for (int g=0; g<groupPath.size(); g++)
     {
-    	groupInPath = (GroupDetail) groupPath.get(g);
+    	groupInPath = (YellowPagesGroupDetail) groupPath.get(g);
     	
     	linkedPathString += " > ";
     	linkedPathString += "<a href=\"GoToGroup?Id="+groupInPath.getId()+"\">"+groupInPath.getName()+"</a>";
@@ -153,7 +153,7 @@ function topicGoTo(id)
         arrayPane.addArrayColumn(resources.getString("Nb"));
         arrayPane.addArrayColumn(resources.getString("GML.description"));
 
-        GroupDetail subGroup = null;
+        YellowPagesGroupDetail subGroup = null;
         String childId;
         String childName;
         String childDescription;
@@ -161,7 +161,7 @@ function topicGoTo(id)
         List subGroups = group.getSubGroups();
         Iterator iteratorN = subGroups.iterator();
         while (iteratorN.hasNext()) {
-        	subGroup = (GroupDetail) iteratorN.next();
+        	subGroup = (YellowPagesGroupDetail) iteratorN.next();
         	
             nbContact = subGroup.getTotalUsers();
             childId = subGroup.getId();
@@ -174,10 +174,10 @@ function topicGoTo(id)
             
             ArrayLine arrayLine = arrayPane.addArrayLine();
 			arrayLine.addArrayCellIconPane(folderPane);
-            arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(childName), "GoToGroup?Id="+childId);
+            arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(childName), "GoToGroup?Id="+childId);
             ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(nbContact);
             arrayCellText1.setCompareOn(new Integer(nbContact));
-        	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(childDescription));
+        	arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(childDescription));
             
         } //fin du while
         out.println(arrayPane.print());
@@ -216,8 +216,8 @@ function topicGoTo(id)
 	        carte.setProperties(resources.getIcon("yellowpages.user"), "", link);
         	ligne1.addArrayCellIconPane(iconPane);
 	    }
-        ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+EncodeHelper.javaStringToHtmlString(user.getLastName())+"</A>");
-        ArrayCellText arrayCellText2 = ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
+        ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName())+"</A>");
+        ArrayCellText arrayCellText2 = ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(user.getFirstName()));
         ArrayCellText arrayCellText4 = null;
         if (user.geteMail()==null || "".equals(user.geteMail()))
         {
@@ -225,12 +225,12 @@ function topicGoTo(id)
         }
         else
         {
-            arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.geteMail()+">"+EncodeHelper.javaStringToHtmlString(user.geteMail())+"</A>");
+            arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.geteMail()+">"+WebEncodeHelper.javaStringToHtmlString(user.geteMail())+"</A>");
         }
         arrayCellText1.setCompareOn((String) ((user.getLastName() == null)?"":user.getLastName().toLowerCase()));
         arrayCellText2.setCompareOn((String) ((user.getFirstName() == null)?"":user.getFirstName().toLowerCase()));
         arrayCellText4.setCompareOn((String) ((user.geteMail()==null)?"":
-            EncodeHelper.javaStringToHtmlString(user.geteMail().toLowerCase())));
+            WebEncodeHelper.javaStringToHtmlString(user.geteMail().toLowerCase())));
     }   
     if (arrayPane.getColumnToSort() == 0)
     {

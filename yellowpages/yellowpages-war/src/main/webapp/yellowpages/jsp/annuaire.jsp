@@ -23,10 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController" %>
-<%@ page import="org.silverpeas.components.yellowpages.model.GroupDetail" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
@@ -40,6 +40,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.admin.component.model.CompoSpace" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
@@ -92,7 +93,7 @@ private String afficheArbo(String idNodeSelected,
   Collection<ContactFatherDetail> contacts = (Collection) request.getAttribute("Contacts");
 			TopicDetail currentTopic = (TopicDetail) request
 					.getAttribute("CurrentTopic");
-			GroupDetail group = (GroupDetail) request.getAttribute("Group");
+			YellowPagesGroupDetail group = (YellowPagesGroupDetail) request.getAttribute("Group");
 			Boolean bPortletMode = (Boolean) request
 					.getAttribute("PortletMode");
 			boolean portletMode = (bPortletMode != null && bPortletMode
@@ -232,8 +233,8 @@ function exportCSV(){
 						<td nowrap="nowrap" valign="middle"><span class="textePetitBold">
 						<img src="<%=resources.getIcon("yellowpages.aide")%>"
 							align="absbottom" border="0"
-							onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(resources
-					.getString("ExplikRecherche"))%>', CAPTION, '<%=EncodeHelper.javaStringToJsString(resources
+							onmouseover="return overlib('<%=WebEncodeHelper.javaStringToJsString(resources
+					.getString("ExplikRecherche"))%>', CAPTION, '<%=WebEncodeHelper.javaStringToJsString(resources
 					.getString("GML.search"))%>', WIDTH, 500);"
 							onmouseout="return nd();"/> &nbsp; </span> <span class=selectNS>
 						<select name="selectTypeRech">
@@ -340,8 +341,8 @@ function exportCSV(){
 			} else {
 				if (!"0".equals(id)) {
 					NodeDetail nodeDetail = currentTopic.getNodeDetail();
-					nodeName = EncodeHelper.javaStringToHtmlString(nodeDetail.getName().toUpperCase());
-					nodeDesc = EncodeHelper.javaStringToHtmlString(nodeDetail.getDescription());
+					nodeName = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getName().toUpperCase());
+					nodeDesc = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getDescription());
 				}
 			}
 			if (nodeDesc != null && !nodeDesc.equals("")) {

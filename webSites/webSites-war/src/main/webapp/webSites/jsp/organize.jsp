@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -427,7 +427,7 @@ function pubUp(pubId) {
 				PublicationDetail site = (PublicationDetail) j.next();
 				String pubId = site.getPK().getId();
 				String siteName = site.getName();
-				String siteDescription = EncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
+				String siteDescription = WebEncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
 				if (siteDescription == null)
 					siteDescription = "";
 

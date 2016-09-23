@@ -28,8 +28,9 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.url.ActionUrl;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspWriter;
@@ -49,7 +50,7 @@ public class ForumListHelper {
 
     if (forumId != 0) {
       result = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">" +
-          EncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId)) + "</a>";
+          WebEncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId)) + "</a>";
       loop = true;
     }
 
@@ -61,7 +62,7 @@ public class ForumListHelper {
       } else {
         String parentName = fsc.getForumName(forumParent);
         String line = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumParent) + "\">" +
-            EncodeHelper.javaStringToHtmlString(parentName) + "</a> &gt; ";
+            WebEncodeHelper.javaStringToHtmlString(parentName) + "</a> &gt; ";
         result = line + result;
         currentId = forumParent;
       }
@@ -114,24 +115,24 @@ public class ForumListHelper {
       out.print("<td class=\"ArrayCell\" width=\"100%\" >");
       out.print("<a href=\"" + ActionUrl.getUrl("viewForum", call, forumId) + "\">");
       out.print("<span class=\"titreForum\">");
-      out.print(EncodeHelper.javaStringToHtmlString(forumName));
+      out.print(WebEncodeHelper.javaStringToHtmlString(forumName));
       out.print("</span>");
       out.print("<br>");
       // description du forum
       out.print("<span class=\"descriptionForum\">");
-      out.print(EncodeHelper.javaStringToHtmlString(forumDescription));
+      out.print(WebEncodeHelper.javaStringToHtmlString(forumDescription));
       out.print("</span>");
       out.print("</a>");
       out.println("</td>");
 
       // 3ème colonne : nombre de sujets
       out.print("<td class=\"ArrayCell\" ><span class=\"txtnote\">");
-      out.print(EncodeHelper.javaStringToHtmlString(nbSubjects));
+      out.print(WebEncodeHelper.javaStringToHtmlString(nbSubjects));
       out.println("</span></td>");
 
       // 4ème colonne : nombre de sujets
       out.print("<td class=\"ArrayCell\" ><span class=\"txtnote\">");
-      out.print(EncodeHelper.javaStringToHtmlString(nbMessages));
+      out.print(WebEncodeHelper.javaStringToHtmlString(nbMessages));
       out.println("</span></td>");
 
       // 5ème colonne : dernier message
@@ -139,9 +140,9 @@ public class ForumListHelper {
       if (lastMessageDate != null) {
         out.print("<a href=\"" +
             ActionUrl.getUrl("viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
-        out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
+        out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageDate));
         out.print("<br/>");
-        out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
+        out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageUser));
         out.print("</a>");
       }
       out.println("</span></td>");

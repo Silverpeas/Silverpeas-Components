@@ -184,7 +184,7 @@ if (action.equals("CreateSurvey")) {
 			<div class="field" id="nameArea">
 				<label class="txtlibform" for="title"><%=resources.getString("GML.name")%></label>
 				<div class="champs">
-					<input type="text" name="title" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+					<input type="text" name="title" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(title)%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
 				</div>
 			</div>
 			<div class="field" id="commentArea">

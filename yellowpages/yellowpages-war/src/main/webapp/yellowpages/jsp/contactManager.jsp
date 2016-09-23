@@ -42,7 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.contact.model.ContactDetail" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp" %>
@@ -180,28 +180,28 @@ out.println(window.printBefore());
   <div class="oneFieldPerLine">
     <div class="field" id="lastName">
       <label class="txtlibform"><%=resources.getString("GML.name")%></label>
-      <div class="champs"><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" <%=readOnly%>/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></div>
+      <div class="champs"><input type="text" name="LastName" value="<%=WebEncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" <%=readOnly%>/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></div>
     </div>
     <div class="field" id="firstName">
       <label class="txtlibform"><%=resources.getString("GML.surname")%></label>
-      <div class="champs"><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" <%=readOnly%>/></div>
+      <div class="champs"><input type="text" name="FirstName" value="<%=WebEncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" <%=readOnly%>/></div>
     </div>
     <div class="field" id="email">
       <label class="txtlibform"><%=resources.getString("GML.eMail")%></label>
-      <div class="champs"><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="60" <%=readOnly%>/></div>
+      <div class="champs"><input type="text" name="Email" value="<%=WebEncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="60" <%=readOnly%>/></div>
     </div>
     <div class="field" id="phone">
       <label class="txtlibform"><%=resources.getString("GML.phoneNumber")%></label>
-      <div class="champs"><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></div>
+      <div class="champs"><input type="text" name="Phone" value="<%=WebEncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></div>
     </div>
     <div class="field" id="fax">
       <label class="txtlibform"><%=resources.getString("GML.faxNumber")%></label>
-      <div class="champs"><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"/></div>
+      <div class="champs"><input type="text" name="Fax" value="<%=WebEncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"/></div>
     </div>
   </div>
 
   <input type="hidden" name="ContactId" value="<%=id%>"/>
-  <input type="hidden" name="UserId" value="<%=EncodeHelper.javaStringToHtmlString(userId)%>"/>
+  <input type="hidden" name="UserId" value="<%=WebEncodeHelper.javaStringToHtmlString(userId)%>"/>
 
    </fieldset>
 

@@ -27,7 +27,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.components.gallery.model.Media" %>
 <%@ page import="org.silverpeas.components.gallery.model.Photo" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
@@ -116,9 +116,9 @@ if (mediaList != null) {
 
           nbAffiche = nbAffiche + 1;
 
-          String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+          String altTitle = WebEncodeHelper.javaStringToHtmlString(photo.getTitle());
           if (StringUtil.isDefined(photo.getDescription())) {
-            altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+            altTitle += " : " + WebEncodeHelper.javaStringToHtmlString(photo.getDescription());
           }
 
 %>

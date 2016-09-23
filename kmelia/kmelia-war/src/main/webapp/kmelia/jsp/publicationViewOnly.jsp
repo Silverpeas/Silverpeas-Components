@@ -27,6 +27,7 @@
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ page import="org.silverpeas.components.kmelia.model.TopicDetail" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -102,9 +103,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 	<table border="0" width="98%" align=center>
 		<tr>
-			<td align="left"><span class=txtnav><b><%=EncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></b></span><BR>
+			<td align="left"><span class=txtnav><b><%=WebEncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></b></span><BR>
 
-          <b><%=EncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%><b>
+          <b><%=WebEncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%><b>
 				<br />
 				<br /> 
 <%

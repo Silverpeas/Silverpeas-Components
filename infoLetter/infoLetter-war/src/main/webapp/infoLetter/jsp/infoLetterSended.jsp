@@ -63,10 +63,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <br clear="all"/>
 <% if (emailErrors.length > 0) { %>
 	<div class="inlineMessage-nok">
-		<%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%> : <br/>
+		<%=WebEncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%> : <br/>
 		<ul>
 		<% for (int i = 0; i < emailErrors.length; i++) { %>
-			<li><%=EncodeHelper.javaStringToHtmlString(emailErrors[i])%></li>
+			<li><%=WebEncodeHelper.javaStringToHtmlString(emailErrors[i])%></li>
 		<% } %>
 		</ul>
 	</div>

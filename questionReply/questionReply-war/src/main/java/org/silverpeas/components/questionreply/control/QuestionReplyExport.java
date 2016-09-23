@@ -26,7 +26,7 @@ package org.silverpeas.components.questionreply.control;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -69,7 +69,7 @@ public class QuestionReplyExport {
     sb.append("<td></td>\n");
     sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
     sb.append("<div id=").append(qId).append(" class=\"question\">");
-    sb.append(EncodeHelper.javaStringToHtmlParagraphe(question.getTitle()));
+    sb.append(WebEncodeHelper.javaStringToHtmlParagraphe(question.getTitle()));
     sb.append("</div>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");
@@ -104,7 +104,7 @@ public class QuestionReplyExport {
       sb.append("<table>\n");
       sb.append("<tr>\n");
       sb.append("<td>");
-      sb.append(EncodeHelper.javaStringToHtmlParagraphe(question.getContent()));
+      sb.append(WebEncodeHelper.javaStringToHtmlParagraphe(question.getContent()));
       sb.append("</td>\n");
       sb.append("</tr>\n");
       sb.append("</table>\n");
@@ -139,7 +139,7 @@ public class QuestionReplyExport {
     sb.append("<tr>\n");
     sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
     sb.append(" <span class=\"titreQuestionReponse\">")
-        .append(EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append("</span>\n");
+        .append(WebEncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append("</span>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");
     sb.append("</table>\n");

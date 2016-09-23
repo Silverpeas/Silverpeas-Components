@@ -138,7 +138,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
     	<!-- cadre d'aide -->
 		<div class="inlineMessage">
 			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-      <%=EncodeHelper.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))%>
+      <%=WebEncodeHelper.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))%>
     </div>
 		<br clear="all"/>
     <%
@@ -164,7 +164,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
           nodeDetail = (NodeDetail) headersIt.next();
 		  //Do not get hidden nodes (Basket and unclassified)
 		  if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus()))
-			  out.println("<td align=\"center\"><b>" + EncodeHelper.javaStringToHtmlString(nodeDetail.getName(currentLang)) + "</b></td>");
+			  out.println("<td align=\"center\"><b>" + WebEncodeHelper.javaStringToHtmlString(nodeDetail.getName(currentLang)) + "</b></td>");
       }
      out.println("<td align=\"center\"><b>"+kmeliaScc.getString("Del")+"</b></td></tr>");
 	   out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
@@ -192,7 +192,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 	              if (pointLevel == 2) {
                   out.println("<td align=\"center\">" + kmeliaScc.getString("All") + "</td>");
                 } else {
-                  out.println("<td align=\"center\">" + EncodeHelper.javaStringToHtmlString(pointName)+"</td>");
+                  out.println("<td align=\"center\">" + WebEncodeHelper.javaStringToHtmlString(pointName)+"</td>");
                 }
 	          	} else {
 	          		out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");

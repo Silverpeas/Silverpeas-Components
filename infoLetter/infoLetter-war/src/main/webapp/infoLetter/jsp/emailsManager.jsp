@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -116,7 +116,7 @@
     arrayLine.addArrayCellIconPane(iconPane1);
 
 
-    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(email));
+    arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(email));
 
     arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"mails\" value=\"" + email + "\">");
   }

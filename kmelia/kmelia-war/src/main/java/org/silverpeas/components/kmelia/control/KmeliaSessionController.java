@@ -2001,7 +2001,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    */
   public NotificationManager getNotificationManager() {
     if (notificationManager == null) {
-      notificationManager = new NotificationManager(null);
+      notificationManager = NotificationManager.get();
     }
     return notificationManager;
   }

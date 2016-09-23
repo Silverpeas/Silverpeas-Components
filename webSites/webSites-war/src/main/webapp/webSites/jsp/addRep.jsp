@@ -1,6 +1,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %><%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -90,7 +91,7 @@ function ifCorrectFormExecute(callback) {
      }
 
      if (! isCorrect(title)) {
-       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char2"))%>\n";
+       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char2"))%>\n";
        errorNb++;
      }
 
@@ -175,7 +176,7 @@ function verifServer(id, path, name) {
 </script>
 </head>
 
-<body onload="verifServer('<%=fatherId%>', '<%=EncodeHelper.javaStringToJsString(path)%>', '<%=EncodeHelper.javaStringToJsString(name)%>')">
+<body onload="verifServer('<%=fatherId%>', '<%=WebEncodeHelper.javaStringToJsString(path)%>', '<%=WebEncodeHelper.javaStringToJsString(name)%>')">
 </body>
 </html>
 <%

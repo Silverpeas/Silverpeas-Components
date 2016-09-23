@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -393,7 +394,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   <div class="fields">
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="question" cols="49" rows="3" readonly="readonly"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+      <div class="champs"><textarea name="question" cols="49" rows="3" readonly="readonly"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
     </div>
     <div class="field" id="questionStyleArea">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -424,7 +425,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clue" cols="49" rows="3" readonly="readonly"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clue" cols="49" rows="3" readonly="readonly"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 
@@ -519,7 +520,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   <div class="fields">
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="question" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+      <div class="champs"><textarea name="question" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
     </div>
     <div class="field" id="questionStyleArea">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -556,7 +557,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clue" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clue" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 

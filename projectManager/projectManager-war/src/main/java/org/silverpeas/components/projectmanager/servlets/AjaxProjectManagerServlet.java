@@ -27,7 +27,7 @@ import org.silverpeas.components.projectmanager.control.ProjectManagerSessionCon
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.JSONCodec;
 
@@ -140,7 +140,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         }
 
         Date endDate = projectManagerSC.processEndDate(taskId, charge, beginDate);
-        output = EncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
+        output = WebEncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
       } else if ("ProcessEndDateInit".equals(action)) {
         String charge = req.getParameter("Charge");
         String sBeginDate = req.getParameter("BeginDate");
@@ -154,7 +154,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
           beginDate = new Date();
         }
         Date endDate = projectManagerSC.processEndDate(charge, beginDate, componentId);
-        output = EncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
+        output = WebEncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
       } else if (ACTION_LOAD_TASK.equals(action)) {
         String taskId = req.getParameter("TaskId");
         List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);

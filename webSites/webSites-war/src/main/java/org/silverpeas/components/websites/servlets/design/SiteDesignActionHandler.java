@@ -27,7 +27,7 @@ import org.silverpeas.components.websites.control.WebSiteSessionController;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
 
@@ -190,7 +190,7 @@ public class SiteDesignActionHandler {
     // = code de la page a parser
     String code = request.getParameter("Code");
 
-    code = EncodeHelper.htmlStringToJavaString(code);
+    code = WebEncodeHelper.htmlStringToJavaString(code);
   /*
    * enleve les http :// localhost :8000/ WAwebSiteUploads / WA0webSite17 /18/ et on garde
    * seulement rep /icon .gif

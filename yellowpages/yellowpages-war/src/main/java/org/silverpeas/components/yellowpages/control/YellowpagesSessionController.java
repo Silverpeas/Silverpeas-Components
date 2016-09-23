@@ -58,7 +58,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.components.yellowpages.ImportReport;
 import org.silverpeas.components.yellowpages.YellowpagesException;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
-import org.silverpeas.components.yellowpages.model.GroupDetail;
+import org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
@@ -100,7 +100,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   private String owner = "false";
   // admin || publisher || user
   private String profile;
-  private List<GroupDetail> groupPath = new ArrayList<>();
+  private List<YellowPagesGroupDetail> groupPath = new ArrayList<>();
   private boolean portletMode = false;
   private Collection<ContactFatherDetail> currentContacts = null;
   private Collection<UserFull> currentFullUsers = null;
@@ -214,17 +214,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return new ContactPK(id, getComponentId());
   }
 
-  public GroupDetail getGroup(String groupId) {
+  public YellowPagesGroupDetail getGroup(String groupId) {
     Group group = getOrganisationController().getGroup(groupId);
-    GroupDetail groupDetail = new GroupDetail(group);
+    YellowPagesGroupDetail groupDetail = new YellowPagesGroupDetail(group);
 
     // add sub groups
     Group[] subGroups = getOrganisationController().getAllSubGroups(groupId);
     Group subGroup;
-    GroupDetail subGroupDetail;
+    YellowPagesGroupDetail subGroupDetail;
     for (Group subGroup1 : subGroups) {
       subGroup = subGroup1;
-      subGroupDetail = new GroupDetail(subGroup);
+      subGroupDetail = new YellowPagesGroupDetail(subGroup);
       groupDetail.addSubGroup(subGroupDetail);
     }
 
@@ -245,7 +245,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return groupDetail;
   }
 
-  private void processGroupPath(GroupDetail group) {
+  private void processGroupPath(YellowPagesGroupDetail group) {
     if (groupPath.isEmpty()) {
       groupPath.add(group);
     } else {
@@ -259,7 +259,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     }
   }
 
-  public List<GroupDetail> getGroupPath() {
+  public List<YellowPagesGroupDetail> getGroupPath() {
     return groupPath;
   }
 
@@ -592,7 +592,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    */
   public List<ContactFatherDetail> getAllUsersOfGroup(String groupId) {
     List<ContactFatherDetail> users = new ArrayList<>();
-    GroupDetail groupDetail = getGroup(groupId);
+    YellowPagesGroupDetail groupDetail = getGroup(groupId);
     UserDetail[] userDetails = getOrganisationController().getFiltredDirectUsers(groupId, "");
 
     for (UserDetail userDetail : userDetails) {
@@ -602,14 +602,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       }
     }
 
-    List<GroupDetail> subGroups = groupDetail.getSubGroups();
-    for (GroupDetail subGroup : subGroups) {
+    List<YellowPagesGroupDetail> subGroups = groupDetail.getSubGroups();
+    for (YellowPagesGroupDetail subGroup : subGroups) {
       users.addAll(getAllUsersOfGroup(subGroup.getId()));
     }
     return users;
   }
 
-  private ContactFatherDetail getContactFatherDetail(String userId, GroupDetail group) {
+  private ContactFatherDetail getContactFatherDetail(String userId, YellowPagesGroupDetail group) {
     ContactFatherDetail contactFather = null;
     UserDetail user = getOrganisationController().getUserDetail(userId);
     if (user != null) {

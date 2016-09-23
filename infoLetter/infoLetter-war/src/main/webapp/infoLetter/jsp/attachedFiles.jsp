@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.core.util.URLEncoder" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.exception.SilverpeasRuntimeException" %>
 <%@ page import="org.silverpeas.components.infoletter.InfoLetterException" %>
 
@@ -70,7 +70,7 @@ String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 String url = (String) request.getAttribute("url");
 
-	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
+	browseBar.setPath(WebEncodeHelper.javaStringToHtmlString(parutionTitle));
 
 	out.println(window.printBefore());
 

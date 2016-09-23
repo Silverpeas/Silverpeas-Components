@@ -72,7 +72,7 @@ if (suggestions != null) {
     while (it.hasNext()) {
         QuestionResult suggestion = (QuestionResult) it.next();
         if (suggestion.getOpenedAnswer() != null && ! suggestion.getOpenedAnswer().isEmpty()) {
-            out.println("<tr valign=top><td width=\"10%\">&nbsp;</td><td valign=top width=\"90%\">&#149; "+EncodeHelper.javaStringToHtmlString(suggestion.getOpenedAnswer())+"</td></tr>");        
+            out.println("<tr valign=top><td width=\"10%\">&nbsp;</td><td valign=top width=\"90%\">&#149; "+WebEncodeHelper.javaStringToHtmlString(suggestion.getOpenedAnswer())+"</td></tr>");
         }
     }
     out.println("</table>");

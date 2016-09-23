@@ -105,7 +105,7 @@ function ifCorrectFormExecute(title, callback) {
      }
 
     if (! isCorrect(title)) {
-       errorMsg+="  - ${theFieldTxt} '${nameTxt}' ${mustNotContainSpecialCharTxt}\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
+       errorMsg+="  - ${theFieldTxt} '${nameTxt}' ${mustNotContainSpecialCharTxt}\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
        errorNb++;
      }
 
@@ -189,9 +189,9 @@ function sendData() {
       </HEAD>
 
       <BODY onLoad="verifServer('${fatherId}',
-                    '<%=EncodeHelper.javaStringToJsString((String) pageContext.getAttribute("path"))%>',
-                    '<%=EncodeHelper.javaStringToJsString((String) pageContext.getAttribute("name"))%>',
-                    '<%=EncodeHelper.javaStringToJsString((String) pageContext.getAttribute("newName"))%>')">
+                    '<%=WebEncodeHelper.javaStringToJsString((String) pageContext.getAttribute("path"))%>',
+                    '<%=WebEncodeHelper.javaStringToJsString((String) pageContext.getAttribute("name"))%>',
+                    '<%=WebEncodeHelper.javaStringToJsString((String) pageContext.getAttribute("newName"))%>')">
       </BODY>
       </HTML>
 

@@ -42,6 +42,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ include file="checkAlmanach.jsp" %>
 
 <%
@@ -75,7 +76,7 @@
 			description = wysiwyg;
 		}
 		else if (StringUtil.isDefined(event.getDescription())) {
-			description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
+			description = WebEncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 		}
 	} catch(AlmanachPrivateException ace){
 		request.setAttribute("error", ace);
@@ -105,7 +106,7 @@ function goToNotify(url)
 }
 
 function eventDeleteConfirm() {
-  var label = "<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?";
+  var label = "<%=WebEncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?";
   jQuery.popup.confirm(label, function() {
     <% if (event.isPeriodic()) { %>
       $("#modalDialogOnDelete").dialog("open");
@@ -329,7 +330,7 @@ $(document).ready(function(){
 
 <div  class="principalContent">
 	<h2 class="eventName">
-			<%=EncodeHelper.javaStringToHtmlString(event.getTitle())%>
+			<%=WebEncodeHelper.javaStringToHtmlString(event.getTitle())%>
 			 <%if (event.getPriority() != 0){ %>
        			 <span class="eventPriorityHight"><img src='<%= m_context %>/util/icons/important.gif' alt='<%=almanach.getString("prioriteImportante")%>'/></span>
 			<% } %>
@@ -339,7 +340,7 @@ $(document).ready(function(){
 		<% if (StringUtil.isDefined(event.getPlace())) { %>
 			<div class="eventPlace">
 				<div class="bloc">
-					 <span><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></span>
+					 <span><%=WebEncodeHelper.javaStringToHtmlString(event.getPlace())%></span>
 			 	</div>
 			</div>
 		<%}%>
@@ -350,7 +351,7 @@ $(document).ready(function(){
 					<%=resources.getOutputDate(startDate)%>
 					<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
 						<%=almanach.getString("ToHour")%>
-						<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
+						<%=WebEncodeHelper.javaStringToHtmlString(event.getStartHour())%>
 					<%}%>
 					</span>
 
@@ -360,7 +361,7 @@ $(document).ready(function(){
 						out.println(resources.getOutputDate(endDate));
 						if (event.getEndHour() != null && event.getEndHour().length() != 0) {
 							out.println(almanach.getString("ToHour"));
-							out.println(EncodeHelper.javaStringToHtmlString(event.getEndHour()));
+							out.println(WebEncodeHelper.javaStringToHtmlString(event.getEndHour()));
 						}%>
 					</span>
 				</div>
@@ -376,7 +377,7 @@ $(document).ready(function(){
 	    		<div class="eventURL">
 	    			<div class="bloc">
 			    		<span>
-			    			<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
+			    			<a href="<%=WebEncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
 						</span>
 					</div>
 				</div>

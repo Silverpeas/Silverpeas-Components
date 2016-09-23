@@ -93,7 +93,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                 out.print("value=\"");
                 out.print(sonForum.getId());
                 out.print("\">");
-                out.print(indent + EncodeHelper.javaStringToHtmlString(sonForum.getName()));
+                out.print(indent + WebEncodeHelper.javaStringToHtmlString(sonForum.getName()));
                 out.println("</option>");
                 listFolders(out, sonId, forumId, parentId, indent + "-", fsc);
             }
@@ -288,7 +288,7 @@ $(document).ready(function() {
     <div class="field" id="nameArea">
       <label class="txtlibform" for="forumName"><fmt:message key="forumName" /> :&nbsp;</label>
       <div class="champs">
-        <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%if (update) {%>value="<%=EncodeHelper.javaStringToHtmlString(forum.getName())%>"<%}%> />&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+        <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%if (update) {%>value="<%=WebEncodeHelper.javaStringToHtmlString(forum.getName())%>"<%}%> />&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
     <% if (CollectionUtil.isNotEmpty(allCategories)) { %>

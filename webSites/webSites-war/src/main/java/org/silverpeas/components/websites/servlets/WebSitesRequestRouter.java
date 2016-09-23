@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -884,7 +884,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       nomPage = "http://" + getMachine(request) + "/" + settings.getString("Context") + "/" +
           scc.getWebSitePathById(siteId) + "/" + nomPage;
     }
-    return "/webSites/jsp/ouvertureSite.jsp?URL=" + EncodeHelper.javaStringToJsString(nomPage) +
+    return "/webSites/jsp/ouvertureSite.jsp?URL=" + WebEncodeHelper.javaStringToJsString(nomPage) +
         "&Popup=" + sitedetail.getPopup();
 
   }

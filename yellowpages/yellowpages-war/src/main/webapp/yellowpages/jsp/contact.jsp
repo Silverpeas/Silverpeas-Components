@@ -28,7 +28,7 @@
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contact.model.CompleteContact" %>
 <%@ page import="org.silverpeas.core.contact.model.ContactDetail" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -76,7 +76,7 @@ boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("Exter
 <view:frame>
 
   <fieldset id="identity-base" class="skinFieldset">
-    <legend class="without-img"><%=EncodeHelper.javaStringToHtmlString(contact.getFirstName()) %> <%= EncodeHelper.javaStringToHtmlString(
+    <legend class="without-img"><%=WebEncodeHelper.javaStringToHtmlString(contact.getFirstName()) %> <%= WebEncodeHelper.javaStringToHtmlString(
         contact.getLastName()) %>
     </legend>
 
@@ -84,20 +84,20 @@ boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("Exter
       <% if (StringUtil.isDefined(contact.getEmail())) { %>
       <div class="field" id="email">
         <label class="txtlibform"><%=resources.getString("GML.eMail")%></label>
-        <div class="champs"><a href=mailto:"<%=EncodeHelper.javaStringToHtmlString(contact.getEmail()) %>"><%=EncodeHelper.javaStringToHtmlString(
-            EncodeHelper.javaStringToHtmlString(contact.getEmail())) %></a></div>
+        <div class="champs"><a href=mailto:"<%=WebEncodeHelper.javaStringToHtmlString(contact.getEmail()) %>"><%=WebEncodeHelper.javaStringToHtmlString(
+            WebEncodeHelper.javaStringToHtmlString(contact.getEmail())) %></a></div>
       </div>
       <% } %>
       <% if (StringUtil.isDefined(contact.getPhone())) { %>
       <div class="field" id="phone">
         <label class="txtlibform"><%=resources.getString("GML.phoneNumber")%></label>
-        <div class="champs"><%=EncodeHelper.javaStringToHtmlString(contact.getPhone()) %></div>
+        <div class="champs"><%=WebEncodeHelper.javaStringToHtmlString(contact.getPhone()) %></div>
       </div>
       <% } %>
       <% if (StringUtil.isDefined(contact.getFax())) { %>
       <div class="field" id="fax">
         <label class="txtlibform"><%=resources.getString("GML.faxNumber")%></label>
-        <div class="champs"><%=EncodeHelper.javaStringToHtmlString(contact.getFax()) %></div>
+        <div class="champs"><%=WebEncodeHelper.javaStringToHtmlString(contact.getFax()) %></div>
       </div>
       <% } %>
     </div>

@@ -50,12 +50,12 @@
 
 	String description = "";
 	String id = event.getPK().getId();
-	String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
+	String title = WebEncodeHelper.javaStringToHtmlString(event.getTitle());
   String wysiwyg = event.getWysiwyg(false);
 	if (StringUtil.isDefined(wysiwyg)) {
 		description = wysiwyg;
 	} else if (StringUtil.isDefined(event.getDescription())) {
-		description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
+		description = WebEncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 	}
 
 	String day = "";
@@ -104,7 +104,7 @@ function reallyUpdate() {
 }
 
 function eventDeleteConfirm() {
-  var label = "<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?";
+  var label = "<%=WebEncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?";
   jQuery.popup.confirm(label, function() {
     <% if (event.getPeriodicity() != null ) { %>
       displayBoxOnDelete();
@@ -191,14 +191,14 @@ function sendEventData() {
     		var unity = document.eventForm.Unity.value;
     		if (unity != '0')
     		{
-	    		var oldTitle = '<%=EncodeHelper.javaStringToJsString(event.getTitle())%>';
+	    		var oldTitle = '<%=WebEncodeHelper.javaStringToJsString(event.getTitle())%>';
 	    		var title = stripInitialWhitespace(document.eventForm.Title.value);
 	    		if (oldTitle != title)
 	    		{
 	    			isChanged = 1;
 	    		}
 
-	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';
+	    		var oldDesc = '<%=WebEncodeHelper.javaStringToJsString(description)%>';
 				var desc = getCKEditor().getData();
 	    		if (oldDesc != desc) {
 	    			isChanged = 1;
@@ -232,14 +232,14 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 
-	    		var oldPlace = '<%=EncodeHelper.javaStringToJsString(event.getPlace())%>';
+	    		var oldPlace = '<%=WebEncodeHelper.javaStringToJsString(event.getPlace())%>';
 	    		var place = stripInitialWhitespace(document.eventForm.Place.value);
 	    		if (oldPlace != place)
 	    		{
 	    			isChanged = 1;
 	    		}
 
-	    		var oldEventURL = '<%=EncodeHelper.javaStringToJsString(event.getEventUrl())%>';
+	    		var oldEventURL = '<%=WebEncodeHelper.javaStringToJsString(event.getEventUrl())%>';
 	    		var eventURL = stripInitialWhitespace(document.eventForm.EventUrl.value);
 	    		if (oldEventURL != eventURL)
 	    		{

@@ -92,14 +92,14 @@ function viewEvent(componentId, id) {
 		}
 		calendar.setTime(occurrence.getStartDate().asDate());
 
-		String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
+		String title = WebEncodeHelper.javaStringToHtmlString(event.getTitle());
 		String description = null;
 
 		if (StringUtil.isDefined(event.getWysiwyg())) {
 			description = event.getWysiwyg();
 		}
 	    else if (StringUtil.isDefined(event.getDescription())) {
-     			 description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
+     			 description = WebEncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 		}
 
 		if (almanach.isAgregationUsed())

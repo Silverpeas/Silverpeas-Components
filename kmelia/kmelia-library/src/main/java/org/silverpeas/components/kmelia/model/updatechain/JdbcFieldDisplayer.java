@@ -27,7 +27,7 @@ package org.silverpeas.components.kmelia.model.updatechain;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.PrintWriter;
@@ -119,7 +119,7 @@ public class JdbcFieldDisplayer {
       html.append("<script type=\"text/javascript\">\n");
       html.append("listArray" + fieldName + " = [\n");
       for (String val : listRes) {
-        html.append("\"" + EncodeHelper.javaStringToJsString(val) + "\",\n");
+        html.append("\"" + WebEncodeHelper.javaStringToJsString(val) + "\",\n");
       }
       // remove last useless comma
       html.deleteCharAt(html.length() - 1);
@@ -230,7 +230,7 @@ public class JdbcFieldDisplayer {
       // Values :  1 = list constraint, 2 = free input, default value is 1
       if ("1".equals(valueFieldType)) {
         html.append("<SELECT name=\"")
-            .append(EncodeHelper.javaStringToHtmlString(fieldName))
+            .append(WebEncodeHelper.javaStringToHtmlString(fieldName))
             .append("\"");
         html.append(" >\n");
         html.append("</SELECT>\n");
@@ -238,7 +238,7 @@ public class JdbcFieldDisplayer {
         html.append("<input type=\"text\" size=\"")
             .append(size)
             .append("\" name=\"")
-            .append(EncodeHelper.javaStringToHtmlString(fieldName))
+            .append(WebEncodeHelper.javaStringToHtmlString(fieldName))
             .append("\"");
         html.append(" >\n");
       }

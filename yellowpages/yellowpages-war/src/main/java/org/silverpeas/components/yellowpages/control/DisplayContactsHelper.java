@@ -29,9 +29,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
@@ -89,17 +90,17 @@ public class DisplayContactsHelper {
             "javascript:onClick=contactGoTo('" + contact.getPK().getId() + "')");
         ligne1.addArrayCellIconPane(iconPane1);
       }
-      ligne1.addArrayCellLink(EncodeHelper.javaStringToHtmlString(contact.getLastName()),
+      ligne1.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(contact.getLastName()),
           "javascript:onClick=contactGoTo('" + contact.getPK().getId() + "')");
-      ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getFirstName()));
-      ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getEmail()));
+      ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(contact.getFirstName()));
+      ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(contact.getEmail()));
       if (resources.getSetting("columns").contains("phone")) {
         ArrayCellText phoneCell =
-            ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getPhone()));
+            ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(contact.getPhone()));
         phoneCell.setNoWrap(true);
       }
       if (resources.getSetting("columns").contains("fax")) {
-        ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(contact.getFax()));
+        ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(contact.getFax()));
       }
 
       UserDetail ownerDetail = userContact.getOwner();
@@ -208,7 +209,7 @@ public class DisplayContactsHelper {
         if (nameColumn.equals("icon")) {
           ligne.addArrayCellIconPane(iconPane);
         } else if ("topic".equals(nameColumn)) {
-          ligne.addArrayCellText(EncodeHelper.javaStringToHtmlString(nodeName));
+          ligne.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(nodeName));
         } else {
           Function<ContactDetail, String> contactDetailStringFunction =
               contactTextFunctions.get(nameColumn);

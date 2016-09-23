@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -76,7 +76,7 @@
 	    <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
 	      <TR>
 	         <TD></TD>
-	         <TD valign="top"><%=EncodeHelper.javaStringToHtmlString(resourceName)%></TD>
+	         <TD valign="top"><%=WebEncodeHelper.javaStringToHtmlString(resourceName)%></TD>
 	      <TR>
 	         <TD class="txtlibform" valign=top><%=resource.getString("resourcesManager.RefusalMotive")%> :</TD>
 	         <TD>

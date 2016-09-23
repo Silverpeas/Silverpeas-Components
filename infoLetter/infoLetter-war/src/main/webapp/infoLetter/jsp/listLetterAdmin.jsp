@@ -116,7 +116,7 @@ out.println(window.printBefore());
 		</tr>
 		<tr>
 			<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("GML.description")%> :</td>
-			<td align="left"><%= EncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
+			<td align="left"><%= WebEncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
 		</tr>
 		<tr>
 			<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("infoLetter.frequence")%> :</td>
@@ -125,7 +125,7 @@ out.println(window.printBefore());
 		<% if (isTemplateExist) { %>
 			<tr>
 				<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.model")%> :</td>
-				<td align=left><a href="javaScript:openTemplate();"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.modelLink"))%></a></td>
+				<td align=left><a href="javaScript:openTemplate();"><%=WebEncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.modelLink"))%></a></td>
 			</tr>
 		<% } %>
 	</table>
@@ -167,7 +167,7 @@ if (publications.size()>0) {
 						arrayLine.addArrayCellIconPane(iconPane1);
 
 						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
+						else arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
 
 						if (pub._isValid())
 						{

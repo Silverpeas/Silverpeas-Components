@@ -32,7 +32,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -316,8 +316,8 @@ String codeJSForTranslation(NodeDetail nodeDetail)
 	while (codes.hasNext())
 	{
 		lang = (String) codes.next();
-		result += "var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(nodeDetail.getName(lang))+"\";\n";
-		result += "var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(nodeDetail.getDescription(lang))+"\";\n";
+		result += "var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(nodeDetail.getName(lang))+"\";\n";
+		result += "var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(nodeDetail.getDescription(lang))+"\";\n";
 	}
 	result += "\n</script>";
 	return result;

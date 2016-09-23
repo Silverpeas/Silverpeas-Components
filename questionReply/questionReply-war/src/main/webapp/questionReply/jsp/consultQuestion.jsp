@@ -22,10 +22,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.Iterator" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuestionReply.jsp" %>
@@ -35,12 +36,12 @@
 	Question 	question 	= (Question) request.getAttribute("question");
 	String		userId		= (String) request.getAttribute("UserId");
 
-	String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
-	String content = EncodeHelper.javaStringToHtmlString(question.getContent());
+	String title = WebEncodeHelper.javaStringToHtmlString(question.getTitle());
+	String content = WebEncodeHelper.javaStringToHtmlString(question.getContent());
 	String date = resource.getOutputDate(question.getCreationDate());
 	String id = question.getPK().getId();
 	int status = question.getStatus();
-	String creator = EncodeHelper.javaStringToHtmlString(question.readCreatorName());
+	String creator = WebEncodeHelper.javaStringToHtmlString(question.readCreatorName());
 	Collection replies = question.readReplies();
 	Iterator it = replies.iterator();
 %>
@@ -106,14 +107,14 @@ function deleteConfirm(replyId) {
 			<img src="<%=resource.getIcon("questionReply.miniconeQuestion")%>"/>
 		</td>
 		<td width="100%" class="titreQuestionReponse">
-			<%=EncodeHelper.javaStringToHtmlParagraphe(title)%>
+			<%=WebEncodeHelper.javaStringToHtmlParagraphe(title)%>
 		</td>
 		<td nowrap>
 		<a href="#"><img border=0 src="<%=resource.getIcon("questionReply.update")%>"/></a>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="3"><%=EncodeHelper.javaStringToHtmlParagraphe(content)%></td>
+		<td colspan="3"><%=WebEncodeHelper.javaStringToHtmlParagraphe(content)%></td>
 	</tr>
 	<tr>
 		<td colspan="3">
@@ -129,9 +130,9 @@ function deleteConfirm(replyId) {
 // affichage des reponses
 	while(it.hasNext()) {
 		Reply reply = (Reply) it.next();
-		String titleR = EncodeHelper.javaStringToHtmlString(reply.getTitle());
-		String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
-		String creatorR = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
+		String titleR = WebEncodeHelper.javaStringToHtmlString(reply.getTitle());
+		String contentR = WebEncodeHelper.javaStringToHtmlString(reply.getContent());
+		String creatorR = WebEncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 		String dateR = resource.getOutputDate(reply.getCreationDate());
 		String idR = reply.getPK().getId();
 		int statusR = reply.getPublicReply();
@@ -149,7 +150,7 @@ function deleteConfirm(replyId) {
 					%>
 				</td>
 				<td width="100%" class="titreQuestionReponse">
-					<%=EncodeHelper.javaStringToHtmlParagraphe(titleR)%>
+					<%=WebEncodeHelper.javaStringToHtmlParagraphe(titleR)%>
 				</td>
 				<td nowrap>
 					<%
@@ -165,7 +166,7 @@ function deleteConfirm(replyId) {
 				</td>
 			</tr>
 			<tr>
-				<td colspan="3"><%=EncodeHelper.javaStringToHtmlParagraphe(contentR)%></td>
+				<td colspan="3"><%=WebEncodeHelper.javaStringToHtmlParagraphe(contentR)%></td>
 			</tr>
 			<tr>
 				<td colspan="3">

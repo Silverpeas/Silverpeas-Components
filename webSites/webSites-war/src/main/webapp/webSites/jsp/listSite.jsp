@@ -252,7 +252,7 @@ function openSPWindow(fonction, windowName){
 				PublicationDetail site = (PublicationDetail) j.next();
 				String siteId = site.getVersion();
 				String siteName = site.getName();
-				String siteDescription = EncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
+				String siteDescription = WebEncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
 				if (siteDescription == null) {
 					siteDescription = "";
 				}
@@ -282,7 +282,7 @@ function openSPWindow(fonction, windowName){
 					liste+="<td valign=\"top\">&nbsp;</td>\n";
 
 				SiteDetail siteDetail = scc.getWebSite(siteId);
-			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+EncodeHelper.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
+			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+WebEncodeHelper.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
 
 				liste += listeIcones;
 				liste += "</td></tr><tr><td class=intfdcolor51>&nbsp;</td><td colspan=2 width=\"100%\" class=intfdcolor51><span class=\"txtnote\">"+siteDescription+"</span></td></tr><tr><td colspan=3><img src=\""+pxmag+"\" height=3 width=200></td>\n";

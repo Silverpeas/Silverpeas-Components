@@ -121,7 +121,7 @@ function sendLetterToManager (){
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper
+	browseBar.setPath("<a href=\"Accueil\"></a> " + WebEncodeHelper
       .javaStringToHtmlString((String) request.getAttribute("browseBarPath")) );
 
 

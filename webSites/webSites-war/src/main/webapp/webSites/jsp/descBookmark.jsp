@@ -156,7 +156,7 @@ function ifCorrectFormExecute(callback) {
   }
 
   if (! isCorrect(nomPage)) {
-   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=EncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char1"))%>\n";
+   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=WebEncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char1"))%>\n";
    errorNb++;
   }
 

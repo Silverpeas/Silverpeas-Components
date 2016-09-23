@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -44,7 +44,7 @@
 	String objectView = request.getParameter("objectView");
 
 	String name=maResource.getName();
-	String description= EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
+	String description= WebEncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
 	boolean bookable=maResource.isBookable();
 	Long resourceId=maResource.getIdAsLong();
 	Button cancelButton = null;
@@ -55,8 +55,8 @@
 	if("resources".equals(provenance)){
 		// on vient de resources
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeResource"), "ViewResources?id="+idcategory+"&objectView="+objectView,false);
-		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
-		String chemin2 ="<a href=\"ViewResources?id="+ idcategory + "\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
+		String chemin = "<a href=\"ViewCategories\">" + WebEncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
+		String chemin2 ="<a href=\"ViewResources?id="+ idcategory + "\">" + WebEncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
 		chemin = chemin + " > " + chemin2;
 		browseBar.setPath(chemin);
 	}
@@ -68,7 +68,7 @@
 	else if ("reservation".equals(provenance)){
 		// on vient du recapitulatif de la reservation
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourReservation"), "ViewReservation?objectView="+objectView,false);
-		String chemin ="<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
+		String chemin ="<a href=\"ViewReservation\">" + WebEncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
 		browseBar.setPath(chemin);
 	}
 	browseBar.setExtraInformation(resource.getString("resourcesManager.informationResource") + " " + name);

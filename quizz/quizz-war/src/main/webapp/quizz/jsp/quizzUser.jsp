@@ -134,7 +134,7 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
       arrayCellText2 = arrayLine.addArrayCellText("<A HREF=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</A>" + link);
     }
     arrayCellText2.setCompareOn(quizzHeader.getTitle().toLowerCase());
-    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
     arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());

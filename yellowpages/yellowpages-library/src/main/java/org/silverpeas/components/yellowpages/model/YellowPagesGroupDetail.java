@@ -24,38 +24,39 @@
 package org.silverpeas.components.yellowpages.model;
 
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupDetail extends Group implements java.io.Serializable {
+public class YellowPagesGroupDetail extends GroupDetail implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
 
   private List<UserDetail> users = new ArrayList<>();
-  private List<GroupDetail> subGroups = new ArrayList<>();
+  private List<YellowPagesGroupDetail> subGroups = new ArrayList<>();
 
-  public GroupDetail(Group group) {
-    super(group);
+  public YellowPagesGroupDetail(Group group) {
+    super((GroupDetail) group);
   }
 
   public void addUser(UserDetail user) {
     users.add(user);
   }
 
-  public void addSubGroup(GroupDetail group) {
+  public void addSubGroup(YellowPagesGroupDetail group) {
     subGroups.add(group);
   }
 
-  public void addSubGroups(Group[] groups) {
-    for (final Group group : groups) {
-      addSubGroup(new GroupDetail(group));
+  public void addSubGroups(GroupDetail[] groups) {
+    for (final GroupDetail group : groups) {
+      addSubGroup(new YellowPagesGroupDetail(group));
     }
   }
 
   @Override
-  public List<GroupDetail> getSubGroups() {
+  public List<YellowPagesGroupDetail> getSubGroups() {
     return subGroups;
   }
 
@@ -65,8 +66,8 @@ public class GroupDetail extends Group implements java.io.Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof GroupDetail) {
-      GroupDetail anotherGroup = (GroupDetail) o;
+    if (o instanceof YellowPagesGroupDetail) {
+      YellowPagesGroupDetail anotherGroup = (YellowPagesGroupDetail) o;
       if (this.getId() != null) {
         return this.getId().equals(anotherGroup.getId());
       }

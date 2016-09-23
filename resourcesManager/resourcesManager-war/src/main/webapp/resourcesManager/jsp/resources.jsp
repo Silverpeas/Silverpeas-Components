@@ -40,7 +40,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ include file="check.jsp" %>
 <%
   //Recuperation des details de l'utilsateur
@@ -82,7 +82,7 @@ function deleteResource(resourceId, name,categoryId) {
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
 
-		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper
+		String chemin = "<a href=\"ViewCategories\">" + WebEncodeHelper
         .javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
 		browseBar.setExtraInformation(resource.getString("resourcesManager.gererresource") + " " + categoryName);
 		browseBar.setPath(chemin);

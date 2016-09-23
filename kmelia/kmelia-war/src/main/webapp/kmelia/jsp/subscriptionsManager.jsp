@@ -71,7 +71,7 @@ void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIc
 		  link = "<A class=\""+cssClass+"\" HREF=\"javascript:onClick=goToSubscription('" + 
                  header.getNodePK().getId() + 
                  "')\">" +
-                 EncodeHelper.javaStringToHtmlString(nodeName) + "</A>";
+                 WebEncodeHelper.javaStringToHtmlString(nodeName) + "</A>";
 		  if (links.length() == 0) {
 			  links = link;
 		  } else {

@@ -28,6 +28,7 @@
 <%@ include file="check.jsp" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.components.infoletter.model.InfoLetterPublication" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -126,7 +127,7 @@ if (publications.size()>0) {
 			debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
 			arrayLine.addArrayCellIconPane(iconPane1);
 
-			arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
+			arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
 
 			java.util.Date date = DateUtil.parse(pub.getParutionDate());
 			ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));

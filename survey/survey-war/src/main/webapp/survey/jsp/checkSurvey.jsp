@@ -42,7 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParseException"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.ForeignPK"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 

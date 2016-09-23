@@ -35,6 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ include file="util.jsp" %>
 <%@ include file="checkScc.jsp" %>
 
@@ -304,7 +305,7 @@ function ifCorrectFormExecute(type, callback) {
 
   if (type != 1) { //upload et design
     if (! isCorrectName(nomSite)) {
-        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char4"))%>\n";
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char4"))%>\n";
         errorNb++;
     }
   }
@@ -326,12 +327,12 @@ function ifCorrectFormExecute(type, callback) {
 
   if (type == 1) {
     if (! isCorrectURL(nomPage)) {
-      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=EncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char1"))%>";
+      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=WebEncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char1"))%>";
       errorNb++;
     }
   } else {
     if (! isCorrect(nomPage)) {
-      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=EncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
+      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=WebEncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
       errorNb++;
     }
   }
@@ -439,7 +440,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
     <div class="field" id="nomSiteArea">
       <label class="txtlibform" for="nomSite"><fmt:message key="GML.name" /> </label>
       <div class="champs">
-        <input type="text" name="nomSite" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(nom)%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <input type="text" name="nomSite" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=WebEncodeHelper.javaStringToHtmlString(nom)%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
       </div>
     </div>
     <div class="field" id="descriptionArea">
@@ -451,7 +452,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
     <div class="field" id="nomPageArea">
       <label class="txtlibform" for="nomPage"><fmt:message key="NomPagePrincipale" /> </label>
       <div class="champs">
-        <input type="text" name="nomPage" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(lapage)%>" />&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <input type="text" name="nomPage" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=WebEncodeHelper.javaStringToHtmlString(lapage)%>" />&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
       </div>
     </div>
     <div class="field" id="publisherArea">

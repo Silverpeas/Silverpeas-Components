@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.model.updatechain;
 
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.Util;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -56,16 +56,16 @@ public class TextFieldDisplayer {
         }
 
         out.println("<option value=\""
-            + EncodeHelper.javaStringToHtmlString(currentValue) + "\" "
+            + WebEncodeHelper.javaStringToHtmlString(currentValue) + "\" "
             + selected + ">"
-            + EncodeHelper.javaStringToHtmlString(currentValue) + "</option>");
+            + WebEncodeHelper.javaStringToHtmlString(currentValue) + "</option>");
 
       }
       out.println("</select>");
     } else {
       out.println("<input type=\"text\" size=\"" + field.getSize()
           + "\" name=\"" + field.getName() + "\" value=\""
-          + EncodeHelper.javaStringToHtmlString(value)
+          + WebEncodeHelper.javaStringToHtmlString(value)
           + "\" size=\"60\" maxlength=\"60\">");
     }
 

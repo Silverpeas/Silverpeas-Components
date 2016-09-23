@@ -179,7 +179,7 @@ try
               %>
               <table border="0" width="100%">
                 <tr>
-                  <td colspan="2" align="left"><b>&#149; <u><span id="questionTitle<%=j%>"><%=EncodeHelper.javaStringToHtmlString(question.getLabel())%></span></u></b>
+                  <td colspan="2" align="left"><b>&#149; <u><span id="questionTitle<%=j%>"><%=WebEncodeHelper.javaStringToHtmlString(question.getLabel())%></span></u></b>
                     <div id="surveyOperationId"><%=operations%></div><br/>
                   </td>
                 </tr>
@@ -207,9 +207,9 @@ try
                         {
                             Answer answer = (Answer) itA.next();
                       	    if (answer.isOpened()) {
-                                out.println("<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>");
+                                out.println("<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>");
                       	    } else {
-                      	      out.println("<option name=\"answer_"+i+"\" value=\"\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>");
+                      	      out.println("<option name=\"answer_"+i+"\" value=\"\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>");
                       	    }
                         }
                         out.println("<input type=\"text\" id=\"openanswer"+i+"\" name=\"answer_"+i+"\" value=\"\" style=\"display:none\"/>");
@@ -229,12 +229,12 @@ try
                         	if (answer.isOpened())
                         	{
                             	isOpened = 1;
-                            	out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>");
+                            	out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>");
                         	}
                         	else
                         	{
                             	if (answer.getImage() == null) {
-                                  	out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>");
+                                  	out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>");
                             	} else {
                                   	String url = "";
         	                      	if (answer.getImage().startsWith("/"))
@@ -245,7 +245,7 @@ try
         	                      	{
                                         url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                                     }
-                                    out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<br>");
+                                    out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<br>");
                                     out.println("<img src=\""+url+"\" border=\"0\"></td><td>");
                               	}
                         	}

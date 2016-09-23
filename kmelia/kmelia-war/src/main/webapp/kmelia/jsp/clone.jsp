@@ -160,7 +160,7 @@ var suspendMotiveWindow = window;
 var attachmentWindow = window;
 
 function deleteCloneConfirm() {
-  var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
+  var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
   jQuery.popup.confirm(label, function() {
     document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
     document.toRouterForm.submit();
@@ -368,7 +368,7 @@ $(function() {
 
 	        out.println("</h2>");
 
-	        String description = EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription());
+	        String description = WebEncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription());
 	        if (StringUtil.isDefined(description)) {
 	        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 	        }

@@ -41,7 +41,7 @@ function goFiles (){
 </head>
 <body>
 <%
-	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
+	browseBar.setPath(WebEncodeHelper.javaStringToHtmlString(parutionTitle));
 	out.println(window.printBefore());
 %>
 <view:frame>

@@ -187,8 +187,8 @@
         }
       }
 
-      name = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
-      description = EncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getDescription(language), ""));
+      name = WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
+      description = WebEncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getDescription(language), ""));
       creationDate = resources.getOutputDate(pubDetail.getCreationDate());
       if (pubDetail.getBeginDate() != null) {
         beginDate = resources.getInputDate(pubDetail.getBeginDate());
@@ -307,7 +307,7 @@
       }
 
       function deleteCloneConfirm() {
-        var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
+        var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
         jQuery.popup.confirm(label, function() {
           document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
           document.toRouterForm.submit();
@@ -331,7 +331,7 @@
       <%
          if (!"Valid".equals(pubDetail.getStatus())) {
       %>
-          var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
             goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
           }
@@ -445,9 +445,9 @@
       <%
         if (pubDetail != null) {
           for(final String lang : pubDetail.getTranslations().keySet()){
-            out.println("var name_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getName(lang)) + "\";\n");
-            out.println("var desc_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getDescription(lang)) + "\";\n");
-            out.println("var keys_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getKeywords(lang)) + "\";\n");
+            out.println("var name_" + lang + " = \"" + WebEncodeHelper.javaStringToJsString(pubDetail.getName(lang)) + "\";\n");
+            out.println("var desc_" + lang + " = \"" + WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(lang)) + "\";\n");
+            out.println("var keys_" + lang + " = \"" + WebEncodeHelper.javaStringToJsString(pubDetail.getKeywords(lang)) + "\";\n");
           }
         }
       %>
@@ -524,12 +524,12 @@
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
           }
           String urlPublication = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
-	      pathString = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
+	      pathString = WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
 	      String namePath = spaceLabel + " > " + componentLabel;
 	      if (!pathString.equals("")) {
 	      	namePath = namePath + " > " + pathString;
 	      }
-		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToJsString(namePath)+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
+		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+WebEncodeHelper.javaStringToJsString(namePath)+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {
@@ -661,7 +661,7 @@
 				<div class="field" id="versionArea">
 					<label for="version" class="txtlibform"><%=resources.getString("PubVersion")%></label>
 					<div class="champs">
-						<input type="text" id="version" name="Version" value="<%=EncodeHelper.javaStringToHtmlString(version)%>" size="5" maxlength="30" />
+						<input type="text" id="version" name="Version" value="<%=WebEncodeHelper.javaStringToHtmlString(version)%>" size="5" maxlength="30" />
 					</div>
 				</div>
 				<% } %>

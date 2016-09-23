@@ -282,7 +282,7 @@ function reallyUpdateQuestions(surveyId) {
           surveyTabPanelLabel = resources.getString("SurveyQuestion");
         }
         tabbedPane.addTab(surveyTabPanelLabel, "javascript:updateQuestions('"+surveyId+"', '" +
-            EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(surveyHeader.getTitle())) + "', '" + 
+            WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(surveyHeader.getTitle())) + "', '" +
         	surveyHeader.getNbVoters() + "')", action.equals("UpdateQuestions"), true);
         out.println(tabbedPane.print());
         %>

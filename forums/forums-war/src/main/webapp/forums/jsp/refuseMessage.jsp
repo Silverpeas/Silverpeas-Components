@@ -75,7 +75,7 @@
         <table cellpadding="5" cellspacing="0" border="0" width="100%">
           <tr>
             <td></td>
-            <td valign="top"><%=EncodeHelper.javaStringToHtmlString(message.getTitle())%>
+            <td valign="top"><%=WebEncodeHelper.javaStringToHtmlString(message.getTitle())%>
             </td>
           </tr>
           <tr>

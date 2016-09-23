@@ -35,6 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="topicReport.jsp" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -209,14 +210,14 @@ function init() {
 						<div class="field" id="pubNameArea">
 						<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
 						<div class="champs">
-							<input type="text" name="Name" id="pubName" value="<%=EncodeHelper.javaStringToHtmlString(pubName)%>" size="68" maxlength="150" />&nbsp;<img src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5" border="0"/>
+							<input type="text" name="Name" id="pubName" value="<%=WebEncodeHelper.javaStringToHtmlString(pubName)%>" size="68" maxlength="150" />&nbsp;<img src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5" border="0"/>
 						</div>
 						</div>
 					
 						<div class="field" id="descriptionArea">
 						<label for="pubDesc" class="txtlibform"><%=resources.getString("PubDescription")%></label>
 						<div class="champs">
-							<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>
+							<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=WebEncodeHelper.javaStringToHtmlString(description)%></textarea>
 						</div>
 						
 						<% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {

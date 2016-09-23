@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -124,7 +124,7 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
       arrayCellText2 = arrayLine.addArrayCellText("<a href=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</a>");
     }
     arrayCellText2.setCompareOn((String) (quizzHeader.getTitle()).toLowerCase());
-    ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
+    ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     ArrayCellText arrayCellText4 = arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());

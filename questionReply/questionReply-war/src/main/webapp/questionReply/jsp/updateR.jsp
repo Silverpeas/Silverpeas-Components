@@ -38,11 +38,11 @@
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Reply reply = (Reply) request.getAttribute("reply");
-	String title = EncodeHelper.javaStringToHtmlString(reply.getTitle());
-	String content = EncodeHelper.javaStringToHtmlString(reply.loadWysiwygContent());
+	String title = WebEncodeHelper.javaStringToHtmlString(reply.getTitle());
+	String content = WebEncodeHelper.javaStringToHtmlString(reply.loadWysiwygContent());
 	String date = resource.getOutputDate(reply.getCreationDate());
 	String id = reply.getPK().getId();
-	String creator = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
+	String creator = WebEncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 	int status = reply.getPublicReply();
 %>
 <c:set var="reply" value="${requestScope['reply']}"/>

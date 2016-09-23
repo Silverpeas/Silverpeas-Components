@@ -72,7 +72,7 @@
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

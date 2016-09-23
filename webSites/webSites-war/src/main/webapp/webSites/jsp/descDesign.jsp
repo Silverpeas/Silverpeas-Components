@@ -199,7 +199,7 @@ function ifCorrectFormExecute(callback) {
   }
 
   if (! isCorrectNameSite(nomSite)) {
-    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char4"))%>\n";
+    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char4"))%>\n";
     errorNb++;
   }
 
@@ -214,7 +214,7 @@ function ifCorrectFormExecute(callback) {
   }
 
   if (! isCorrect(nomPage)) {
-    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
+    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=WebEncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
     errorNb++;
   }
 

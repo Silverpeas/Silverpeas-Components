@@ -25,7 +25,7 @@
 --%>
 <%@page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="java.util.List"%>
@@ -62,7 +62,7 @@
 			fatherId = album.getFatherPK().getId();
 			if ("-1".equals(fatherId))
 				fatherId = "0";
-			out.println("elements_treeview.addElement(\""+EncodeHelper.javaStringToHtmlString(album.getName())+"\", "+albumId+", "+fatherId+", \"dossier\", \"folder\", \"Language="+language+"&ComponentId="+album.getNodePK().getInstanceId()+"\");");
+			out.println("elements_treeview.addElement(\""+WebEncodeHelper.javaStringToHtmlString(album.getName())+"\", "+albumId+", "+fatherId+", \"dossier\", \"folder\", \"Language="+language+"&ComponentId="+album.getNodePK().getInstanceId()+"\");");
 		}
 	%>
 	

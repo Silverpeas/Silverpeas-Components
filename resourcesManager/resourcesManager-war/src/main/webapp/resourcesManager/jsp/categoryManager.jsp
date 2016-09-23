@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ include file="check.jsp" %>
 <%
 // Recuperation des details de l'utilsateur
@@ -64,7 +64,7 @@ function validerNom(){
 function verification(){
 	if(document.getElementById("name").value == 0 )
 		{
-      jQuery.popup.error('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>'
+      jQuery.popup.error('<%=WebEncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>'
     )
       ;
     }
@@ -80,7 +80,7 @@ function verification(){
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel,"Main");
-String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
+String chemin = "<a href=\"ViewCategories\">" + WebEncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
 browseBar.setPath(chemin);
 browseBar.setExtraInformation(resource.getString("resourcesManager.creercategorie"));
 
