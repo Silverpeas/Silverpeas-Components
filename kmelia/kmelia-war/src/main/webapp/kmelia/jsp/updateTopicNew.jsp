@@ -26,7 +26,7 @@
 <%@page import="org.silverpeas.core.i18n.I18NHelper"%>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.core.node.model.NodeDetail"%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -124,8 +124,8 @@
           <c:set var="lang" value="${translation.key}" scope="page"/>
           <%
           String lang = (String) pageContext.getAttribute("lang");
-          out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(node.getName(lang))+"\";\n");
-          out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(node.getDescription(lang))+"\";\n");
+          out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(node.getName(lang))+"\";\n");
+          out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(node.getDescription(lang))+"\";\n");
           %>
         </c:forEach>
 
@@ -176,7 +176,7 @@
                 <%=I18NHelper.getFormLine(resources, node, translation)%>
                 <tr>
                   <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-                  <td><input type="text" name="Name" id="nodeNameValue" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" size="60" maxlength="50">&nbsp;<img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+                  <td><input type="text" name="Name" id="nodeNameValue" value="<%=WebEncodeHelper.javaStringToHtmlString(name)%>" size="60" maxlength="50">&nbsp;<img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
                 </tr>
                 <c:choose>
                   <c:when test="${true eq requestScope.IsLink}">
@@ -188,7 +188,7 @@
                   <c:otherwise>
                     <tr>
                       <td class="txtlibform"><fmt:message key="TopicDescription"/> :</td>
-                      <td><input type="text" name="Description" id="nodeDesc" value="<%=EncodeHelper.javaStringToHtmlString(description)%>" size="60" maxlength="200"></td>
+                      <td><input type="text" name="Description" id="nodeDesc" value="<%=WebEncodeHelper.javaStringToHtmlString(description)%>" size="60" maxlength="200"></td>
                     </tr>
                   </c:otherwise>
                 </c:choose>

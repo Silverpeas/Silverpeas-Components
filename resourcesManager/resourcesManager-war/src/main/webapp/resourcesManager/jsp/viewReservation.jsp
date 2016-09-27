@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
@@ -47,7 +47,7 @@ Reservation maReservation = (Reservation)request.getAttribute("reservation");
 String objectView = (String) request.getAttribute("objectView");
 String event = maReservation.getEvent();
 String place = maReservation.getPlace();
-String reason = EncodeHelper.javaStringToHtmlParagraphe(maReservation.getReason());
+String reason = WebEncodeHelper.javaStringToHtmlParagraphe(maReservation.getReason());
 String dateEnd = resource.getOutputDateAndHour(maReservation.getEndDate());
 String dateBegin = resource.getOutputDateAndHour(maReservation.getBeginDate());
 String flag = (String)request.getAttribute("Profile");

@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.blog.model;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
@@ -153,7 +154,7 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   @Override
-  public UserDetail getCreator() {
+  public User getCreator() {
     return publication.getCreator();
   }
 
@@ -186,7 +187,7 @@ public final class PostDetail implements SilverpeasContent {
    * @return true if the user can access this post, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController =
         AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

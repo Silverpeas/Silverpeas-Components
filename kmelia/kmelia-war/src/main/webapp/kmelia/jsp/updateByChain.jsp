@@ -30,6 +30,7 @@
 <%@ page import="org.silverpeas.components.kmelia.model.updatechain.FieldsContext" %>
 <%@ page import="java.util.StringTokenizer" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -44,7 +45,7 @@ String creationDate		= "";
 String name				= "";
 
 KmeliaPublication kmeliaPublication = null;
-UserDetail ownerDetail = null;
+User ownerDetail = null;
 
 CompletePublication pubComplete = null;
 PublicationDetail pubDetail = null;

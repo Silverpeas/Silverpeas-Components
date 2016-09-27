@@ -23,23 +23,23 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionStatus;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -141,7 +141,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * behind the service call.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, UserDetail)
+   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
   @GET
@@ -162,7 +162,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * behind the service call.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, UserDetail)
+   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
   @GET
@@ -225,7 +225,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public List<SuggestionEntity> execute() {
         PaginationPage pagination = fromPage(page);
-        UserDetail author = (StringUtil.isDefined(authorId) ? UserDetail.getById(authorId):null);
+        User author = (StringUtil.isDefined(authorId) ? User.getById(authorId):null);
         if (pagination != null || StringUtil.isDefined(property)) {
           JOIN_DATA_APPLY commentJoinData = null;
           QUERY_ORDER_BY orderBy = QUERY_ORDER_BY.fromPropertyName(property);

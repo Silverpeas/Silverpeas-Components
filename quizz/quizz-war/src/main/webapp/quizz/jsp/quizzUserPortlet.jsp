@@ -136,7 +136,7 @@ function goto_jsp(jsp) {
 	  /*arrayLine.addArrayCellLink(quizzHeader.getTitle(),"javascript:goto_jsp('../../Rquizz/jsp/quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz','"+"&Space="+spaceId+"&Component="+componentId+"')");*/
 
     arrayCellText2.setCompareOn(quizzHeader.getTitle().toLowerCase());
-    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
     arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());

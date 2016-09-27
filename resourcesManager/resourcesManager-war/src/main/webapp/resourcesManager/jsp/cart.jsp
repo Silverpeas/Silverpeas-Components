@@ -29,7 +29,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ include file="check.jsp" %>
 
 <fmt:setLocale value="${requestScope.resources.language}" />
@@ -39,7 +39,7 @@ Reservation reservation = (Reservation) request.getAttribute("reservation");
 Long modifiedReservationId = (Long) request.getAttribute("idReservation");
 
 String evenement = reservation.getEvent();
-String raison = EncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
+String raison = WebEncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
 String lieu = reservation.getPlace();
 
 // boutons de validation du formulaire

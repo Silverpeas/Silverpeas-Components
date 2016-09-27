@@ -57,7 +57,7 @@
 String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 
-	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
+	browseBar.setPath(WebEncodeHelper.javaStringToHtmlString(parutionTitle));
 
 	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");
 

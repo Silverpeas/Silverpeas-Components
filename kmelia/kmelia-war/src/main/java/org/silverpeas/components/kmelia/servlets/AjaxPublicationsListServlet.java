@@ -38,7 +38,7 @@ import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -50,12 +50,13 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.viewer.service.ViewerProvider;
@@ -325,7 +326,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (pub.haveGotClone() && !pub.isClone()) {
           pubOrClone = kmeliaScc.getPublicationDetail(pub.getCloneId());
         }
-        UserDetail currentUser = aPub.getCreator();
+        User currentUser = aPub.getCreator();
 
         String pubColor = "";
         String pubState = null;
@@ -565,7 +566,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     template.setAttribute("publication", pub);
     template.setAttribute("link", "javascript:onClick=publicationGoTo('" + pub.getId() + "')");
     template.setAttribute("name", Encode.forHtml(name));
-    template.setAttribute("description", EncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.
+    template.setAttribute("description", WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.
         forHtml(description)));
     template.setAttribute("showDescription",
         StringUtil.isDefined(description) && !description.equals(name));
@@ -732,7 +733,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (StringUtil.isDefined(description) && !description.equals(name)) {
       out.write("<div class=\"line3\">");
       out.write("<span class=\"description\">");
-      out.write(EncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(description)));
+      out.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(description)));
       out.write("</span>");
       out.write("</div>");
     }
@@ -880,10 +881,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String getUserName(KmeliaPublication userPub, KmeliaSessionController kmeliaScc) {
-    UserDetail currentUser = userPub.getCreator(); // contains creator
+    User currentUser = userPub.getCreator(); // contains creator
     PublicationDetail pub = userPub.getDetail();
     String updaterId = pub.getUpdaterId();
-    UserDetail updater = null;
+    User updater = null;
     if (updaterId != null && updaterId.length() > 0) {
       updater = kmeliaScc.getUserDetail(updaterId);
     }
@@ -1055,7 +1056,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       // Add info
       if (StringUtil.isDefined(info) && resources.getSetting("showInfo", true)) {
-        result.append("<br/>").append(EncodeHelper.convertWhiteSpacesForHTMLDisplay(info));
+        result.append("<br/>").append(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(info));
       }
       result.append("</td></tr>");
 
@@ -1106,7 +1107,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         result.append("</i>");
         // Add info
         if (StringUtil.isDefined(info)) {
-          result.append("<br/>").append(EncodeHelper.javaStringToHtmlParagraphe(info));
+          result.append("<br/>").append(WebEncodeHelper.javaStringToHtmlParagraphe(info));
         }
       }
 
@@ -1184,7 +1185,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 resources.getString("kmelia.CopyPublicationLink") + "\"></a>");
           }
           writer.write("<br/>");
-          writer.write(EncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
+          writer.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
               getDescription(language))));
           writer.write("</p>");
           writer.write("</td>");

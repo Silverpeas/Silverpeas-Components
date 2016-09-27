@@ -24,13 +24,13 @@
 package org.silverpeas.components.delegatednews.dao;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
 import java.util.List;
 
 public interface DelegatedNewsRepository
-    extends BasicEntityRepository<DelegatedNews, ExternalIntegerIdentifier> {
+    extends EntityRepository<DelegatedNews>, WithSaveAndFlush<DelegatedNews> {
 
   List<DelegatedNews> findByStatus(String status);
 

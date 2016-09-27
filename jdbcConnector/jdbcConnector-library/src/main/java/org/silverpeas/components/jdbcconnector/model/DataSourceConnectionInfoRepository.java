@@ -22,7 +22,7 @@
 package org.silverpeas.components.jdbcconnector.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  * @author mmoquillon
  */
 public class DataSourceConnectionInfoRepository
-    extends JpaBasicEntityManager<DataSourceConnectionInfo, UniqueIntegerIdentifier> {
+    extends BasicJpaEntityRepository<DataSourceConnectionInfo> {
 
   /**
    * Finds all the connection information registered in the specified component instance.

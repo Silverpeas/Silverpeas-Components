@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
@@ -62,11 +63,11 @@ window.onload = function()
 	var http = getHTTPObject(); 
 	if (http) 
 	{
-		http.open("get", "<%=EncodeHelper.javaStringToJsString(url)%>", false, "<%=domain%>\\<%=login%>", "<%=EncodeHelper.javaStringToJsString(password)%>");
+		http.open("get", "<%=WebEncodeHelper.javaStringToJsString(url)%>", false, "<%=domain%>\\<%=login%>", "<%=WebEncodeHelper.javaStringToJsString(password)%>");
 		http.send(""); 
 		if (http.status == 200) 
 		{
-			document.location = "<%=EncodeHelper.javaStringToJsString(url)%>"; 
+			document.location = "<%=WebEncodeHelper.javaStringToJsString(url)%>";
 		} 
 		else 
 		{

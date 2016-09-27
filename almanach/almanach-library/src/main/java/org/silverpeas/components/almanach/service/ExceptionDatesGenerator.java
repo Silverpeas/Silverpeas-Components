@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -63,15 +63,15 @@ public class ExceptionDatesGenerator {
       java.util.Calendar exceptionsStartDate = java.util.Calendar.getInstance();
       java.util.Calendar exceptionsEndDate = java.util.Calendar.getInstance();
       for (PeriodicityException periodicityException : exceptions) {
-        Datable<?> datable = toDatable(periodicityException.getBeginDateException(), event.
+        Temporal<?> temporal = toTemporal(periodicityException.getBeginDateException(), event.
                 getStartHour());
-        exceptionsStartDate.setTime(datable.asDate());
+        exceptionsStartDate.setTime(temporal.asDate());
         if (!isDefined(event.getEndHour()) && isDefined(event.getStartHour())) {
-          datable = toDatable(periodicityException.getEndDateException(), event.getStartHour());
+          temporal = toTemporal(periodicityException.getEndDateException(), event.getStartHour());
         } else {
-          datable = toDatable(periodicityException.getEndDateException(), event.getEndHour());
+          temporal = toTemporal(periodicityException.getEndDateException(), event.getEndHour());
         }
-        exceptionsEndDate.setTime(datable.asDate());
+        exceptionsEndDate.setTime(temporal.asDate());
         while (exceptionsStartDate.before(exceptionsEndDate)
                 || exceptionsStartDate.equals(exceptionsEndDate)) {
           exceptionDates.add(exceptionsStartDate.getTime());
@@ -82,8 +82,8 @@ public class ExceptionDatesGenerator {
     return exceptionDates;
   }
 
-  private Datable<?> toDatable(final java.util.Date date, String time) {
-    Datable<?> datable;
+  private Temporal<?> toTemporal(final java.util.Date date, String time) {
+    Temporal<?> temporal;
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     SettingBundle almanachSettings =
             ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
@@ -95,11 +95,11 @@ public class ExceptionDatesGenerator {
       calendarDate.set(java.util.Calendar.MINUTE, extractMinutes(time));
       calendarDate.set(java.util.Calendar.SECOND, 0);
       calendarDate.set(java.util.Calendar.MILLISECOND, 0);
-      datable = new DateTime(calendarDate.getTime()).inTimeZone(timeZone);
+      temporal = new DateTime(calendarDate.getTime()).inTimeZone(timeZone);
     } else {
-      datable = new org.silverpeas.core.date.Date(date).inTimeZone(timeZone);
+      temporal = new org.silverpeas.core.date.Date(date).inTimeZone(timeZone);
     }
-    return datable;
+    return temporal;
   }
 
   private Collection<PeriodicityException> getPeriodicityExceptions(final Periodicity periodicity) {

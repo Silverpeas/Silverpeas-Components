@@ -113,7 +113,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(
+	return "<%=WebEncodeHelper.javaStringToJsString(WebEncodeHelper.javaStringToHtmlString(
       componentLabel))%>";
 }
 
@@ -831,7 +831,7 @@ $(document).ready(function() {
             } else {
               if (node.text) {
                 // this is the root
-                node.text = "<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>";
+                node.text = "<%=WebEncodeHelper.javaStringToHtmlString(componentLabel)%>";
                 decorateNodeName(node);
                 <% if (kmeliaScc.isOrientedWebContent()) { %>
                 node.li_attr = {class: node.attr['status']};
@@ -1015,7 +1015,7 @@ $(document).on("dnd_stop.vakata", function(event, data) {
 </div>
 <div id="rightClick-message" title="<%=resources.getString("kmelia.help.rightclick.title") %>" style="display: none;">
 	<p>
-    <%=resources.getStringWithParams("kmelia.help.rightclick.content", EncodeHelper.javaStringToHtmlString(componentLabel)) %>
+    <%=resources.getStringWithParams("kmelia.help.rightclick.content", WebEncodeHelper.javaStringToHtmlString(componentLabel)) %>
 	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">

@@ -20,11 +20,12 @@
  */
 package org.silverpeas.components.scheduleevent.service.model.beans;
 
-import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventBean;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,19 +33,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
 
 @Entity
 @Table(name = "sc_scheduleevent_list")
@@ -168,8 +156,8 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(Integer.toString(getAuthor()));
+  public User getCreator() {
+    return User.getById(Integer.toString(getAuthor()));
   }
 
   @Override
@@ -187,7 +175,7 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
    * otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     boolean isContributor = user.getId().equals(String.valueOf(getAuthor()));
     for (Iterator<Contributor> it = getContributors().iterator(); it.hasNext() && !isContributor;) {
       isContributor = user.getId().equals(String.valueOf(it.next().getUserId()));

@@ -1,8 +1,8 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
 
@@ -14,5 +14,10 @@ import javax.inject.Singleton;
  * @author mmoquillon
  */
 @Singleton
-public class SuggestionJPAManager extends SilverpeasJpaEntityManager<Suggestion, UuidIdentifier> {
+public class SuggestionJPARepository extends SilverpeasJpaEntityRepository<Suggestion> {
+
+  @Override
+  protected NamedParameters newNamedParameters() {
+    return super.newNamedParameters();
+  }
 }

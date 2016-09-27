@@ -30,7 +30,7 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>

@@ -21,6 +21,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -74,9 +75,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return isInLists(userId, getSendersAsUsers(pk), getSendersAsGroups(pk));
   }
 
-  private List<UserDetail> getSendersAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<User> getSendersAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
     List<String> userIds = getDAO().getSendersAsUsers(pk);
-    UserDetail[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
+    User[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
     return CollectionUtil.asList(details);
   }
 
@@ -86,9 +87,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return CollectionUtil.asList(groups);
   }
 
-  private List<UserDetail> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<User> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
     List<String> userIds = getDAO().getReceiversAsUsers(pk);
-    UserDetail[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
+    User[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
     return CollectionUtil.asList(details);
   }
 
@@ -102,7 +103,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return isInLists(userId, getReceiversAsUsers(pk), getReceiversAsGroups(pk));
   }
 
-  private boolean isInLists(String userId, List<? extends UserDetail> users, List<Group> groups) {
+  private boolean isInLists(String userId, List<? extends User> users, List<Group> groups) {
     boolean inList = isInList(userId, users);
     if (!inList) {
       for (Group group : groups) {
@@ -115,8 +116,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return inList;
   }
 
-  private boolean isInList(String userId, List<? extends UserDetail> users) {
-    for (UserDetail user : users) {
+  private boolean isInList(String userId, List<? extends User> users) {
+    for (User user : users) {
       if (user.getId().equals(userId)) {
         return true;
       }

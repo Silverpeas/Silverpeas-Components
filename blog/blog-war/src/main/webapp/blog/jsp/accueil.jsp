@@ -28,7 +28,7 @@
 <%@page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.components.blog.model.Archive" %>
@@ -270,7 +270,7 @@ function hideStyleSheetFile() {
           if (visible) {
           %>
       <div id="post<%=postId%>" class="post <%=blocClass%>">
-        <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=EncodeHelper
+        <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=WebEncodeHelper
             .javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
           <%  if ( link != null && !link.equals("")) {  %>
           <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>

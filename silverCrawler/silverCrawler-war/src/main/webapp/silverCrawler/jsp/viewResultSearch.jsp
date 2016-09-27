@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
@@ -168,7 +168,7 @@ out.println("<br>");
 	            fileName = fileDetail.getName();
 	            filePath = fileDetail.getPath();
 
-		    arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), "SubDirectoryFromResult?DirectoryPath="+URLEncoder.encode(fileDetail.getPath(), "UTF-8"));
+		    arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(fileDetail.getName()), "SubDirectoryFromResult?DirectoryPath="+URLEncoder.encode(fileDetail.getPath(), "UTF-8"));
 
 		    arrayLine.addArrayCellText("");
 
@@ -196,7 +196,7 @@ out.println("<br>");
 			    fileName = fileDetail.getName();
 			    filePath = fileDetail.getPath();
 
-			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
+			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
               componentId));
 			    cellLink.setTarget("_blank");
 

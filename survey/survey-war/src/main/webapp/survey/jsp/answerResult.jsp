@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" %>
 <%--
 
@@ -72,7 +72,7 @@ function viewResultByUser(userId, userName) {
 			 UserDetail user = surveyScc.getUserDetail(userId);
 			 ArrayLine ligne = arrayPane.addArrayLine();
 			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+
-           EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
+           WebEncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
 			 cell = ligne.addArrayCellText(url);
 			 cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
       	}

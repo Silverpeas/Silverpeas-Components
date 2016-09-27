@@ -26,6 +26,8 @@
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ page import="org.silverpeas.components.kmelia.model.TopicDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -66,7 +68,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   kmeliaScc.setSessionPublication(kmeliaPublication);
   pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
-  UserDetail ownerDetail = kmeliaPublication.getCreator();
+  User ownerDetail = kmeliaPublication.getCreator();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -101,9 +103,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 	<table border="0" width="98%" align=center>
 		<tr>
-			<td align="left"><span class=txtnav><b><%=EncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></b></span><BR>
+			<td align="left"><span class=txtnav><b><%=WebEncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></b></span><BR>
 
-          <b><%=EncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%><b>
+          <b><%=WebEncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%><b>
 				<br />
 				<br /> 
 <%
@@ -113,7 +115,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   }
 
   if (userId != null && userId.length() > 0) {
-    UserDetail user = kmeliaScc.getUserDetail(userId);
+    User user = kmeliaScc.getUserDetail(userId);
 	if (user != null) {
 %>
 			</td>

@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.user.client.NotificationManagerException
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.calendar.service.CalendarRuntimeException;
+import org.silverpeas.core.personalorganizer.service.CalendarRuntimeException;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.core.util.ResourceLocator;

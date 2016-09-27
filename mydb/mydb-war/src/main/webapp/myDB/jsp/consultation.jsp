@@ -169,7 +169,7 @@
       {
         dbValue = dbLine.getData(columnsNames[j]);
         ArrayCellText text = arrayLine.addArrayCellText(dbValue.length() > dbValueMaxLengthDisplayed
-          ? dbValue.substring(0, dbValueMaxLengthDisplayed) + "...&nbsp;<img src=\""+resource.getIcon("myDB.info")+"\" id=\"fieldValue\" title=\""+EncodeHelper.javaStringToHtmlString(dbValue)+"\">" : dbValue);
+          ? dbValue.substring(0, dbValueMaxLengthDisplayed) + "...&nbsp;<img src=\""+resource.getIcon("myDB.info")+"\" id=\"fieldValue\" title=\""+WebEncodeHelper.javaStringToHtmlString(dbValue)+"\">" : dbValue);
         switch (columnsTypes[j])
         {
           case Types.INTEGER :

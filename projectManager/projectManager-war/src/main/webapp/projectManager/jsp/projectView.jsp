@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
@@ -84,7 +84,7 @@ out.println(board.printBefore());
 </tr>
 <tr>
 	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
-  <td><%=EncodeHelper.javaStringToHtmlParagraphe(description)%></td>
+  <td><%=WebEncodeHelper.javaStringToHtmlParagraphe(description)%></td>
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</td>

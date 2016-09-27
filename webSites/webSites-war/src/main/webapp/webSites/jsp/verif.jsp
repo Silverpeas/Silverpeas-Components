@@ -151,7 +151,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     }
 
     if (code != null)
-      code = EncodeHelper.javaStringToHtmlString(code);
+      code = WebEncodeHelper.javaStringToHtmlString(code);
 
 
     resultat = scc.verif(action, currentPath, name, fullNewName, nomPage);

@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-calendar</artifactId>
+      <artifactId>silverpeas-core-personalorganizer</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>

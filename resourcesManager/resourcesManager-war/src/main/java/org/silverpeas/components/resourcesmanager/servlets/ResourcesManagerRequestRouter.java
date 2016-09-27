@@ -50,7 +50,7 @@ import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessio
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -536,16 +536,16 @@ public class ResourcesManagerRequestRouter
         String chemin = "";
         if ("resources".equals(provenance)) {
           // on vient de resources
-          chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resources.
+          chemin = "<a href=\"ViewCategories\">" + WebEncodeHelper.javaStringToHtmlString(resources.
               getString("resourcesManager.listCategorie")) + "</a>";
           String chemin2 = "<a href=\"ViewResources?id=" + myResource.getCategoryId() + "\">" +
-              EncodeHelper
+              WebEncodeHelper
                   .javaStringToHtmlString(resources.getString("resourcesManager.categorie")) +
               "</a>";
           chemin = chemin + " > " + chemin2;
         } else if ("reservation".equals(provenance)) {
           // on vient du récapitulatif de la réservation
-          chemin = "<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resources.
+          chemin = "<a href=\"ViewReservation\">" + WebEncodeHelper.javaStringToHtmlString(resources.
               getString("resourcesManager.recapitulatifReservation")) + "</a>";
         }
         request.setAttribute("Path", chemin);

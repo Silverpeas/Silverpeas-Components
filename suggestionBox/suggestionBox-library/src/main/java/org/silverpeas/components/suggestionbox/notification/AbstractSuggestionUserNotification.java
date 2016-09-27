@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
+import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import java.util.MissingResourceException;
 
@@ -83,7 +83,7 @@ public abstract class AbstractSuggestionUserNotification
   }
 
   @Override
-  protected UserDetail getSenderDetail() {
+  protected User getSenderDetail() {
     if (NotifAction.REPORT.equals(action)) {
       return null;
     }
@@ -92,7 +92,7 @@ public abstract class AbstractSuggestionUserNotification
 
   @Override
   protected final String getSender() {
-    UserDetail sender = getSenderDetail();
+    User sender = getSenderDetail();
     if (sender != null) {
       return sender.getId();
     }

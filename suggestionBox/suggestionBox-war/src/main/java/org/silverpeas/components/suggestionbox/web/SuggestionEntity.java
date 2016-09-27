@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.webapi.validation.ContributionValidationEntity;
 import org.springframework.util.ReflectionUtils;
@@ -124,7 +124,7 @@ public class SuggestionEntity implements WebEntity {
   }
 
   @XmlTransient
-  public boolean isPublishableBy(UserDetail user) {
+  public boolean isPublishableBy(User user) {
     return suggestion.isPublishableBy(user);
   }
 
@@ -145,7 +145,7 @@ public class SuggestionEntity implements WebEntity {
   }
 
   @XmlTransient
-  public UserDetail getAuthor() {
+  public User getAuthor() {
     return suggestion.getCreator();
   }
 

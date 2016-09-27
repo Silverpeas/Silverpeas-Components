@@ -1,6 +1,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -109,7 +110,7 @@
           ArrayCellText arrayCellText0 =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+              survey.getPK().getId() + "\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -129,26 +130,26 @@
           if (view == SurveySessionController.OPENED_SURVEYS_VIEW) {
             Icon closeIcon = iconPane.addIcon();
             closeIcon.setProperties(lockSrc, resources.getString("GML.lock") + " '" +
-                EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
+                WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "javascript: closeSurvey('" + survey.getPK().getId() + "');");
           } else {
             Icon openIcon = iconPane.addIcon();
             openIcon.setProperties(unlockSrc, resources.getString("GML.unlock") + " '" +
-                EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
+                WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "javascript: openSurvey('" + survey.getPK().getId() + "');");
           }
           // mise à jour
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
-              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
+              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
               survey.getPK().getId() + "','" +
-              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "','" + survey.getNbVoters() + "')");
+              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "','" + survey.getNbVoters() + "')");
           // suppression
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
-              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
+              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
               survey.getPK().getId() + "','" +
-              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
+              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         } else {
@@ -165,7 +166,7 @@
           ArrayCellText arrayCellText =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+              survey.getPK().getId() + "\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
           if (survey.getBeginDate() == null) {
@@ -189,13 +190,13 @@
           IconPane iconPane = gef.getIconPane();
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
-              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
+              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
               "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + survey.getPK().getId());
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
-              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
+              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
               survey.getPK().getId() + "','" +
-              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
+              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         }
@@ -252,7 +253,7 @@
           ArrayCellText arrayCellText0 =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+              survey.getPK().getId() + "\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -268,7 +269,7 @@
               arrayLine.addArrayCellText(new Integer(survey.getNbVoters()).toString());
           arrayCellText2.setCompareOn(new Integer(survey.getNbVoters()));
         } else {
-          arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(survey.getTitle()), "#");
+          arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(survey.getTitle()), "#");
 
           if (survey.getBeginDate() == null)
             arrayLine.addArrayCellText("&nbsp;");

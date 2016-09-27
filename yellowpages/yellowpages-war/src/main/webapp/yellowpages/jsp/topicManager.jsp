@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
@@ -176,9 +176,9 @@ function consult() {
 }
 
 function toAddOrUpdateFolder(action, id) {
-  var dialogTitle = '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>';
+  var dialogTitle = '<%=WebEncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>';
   if (action === 'ToUpdateFolder') {
-    dialogTitle = '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>';
+    dialogTitle = '<%=WebEncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>';
   }
 
   new Promise(function(resolve, reject) {

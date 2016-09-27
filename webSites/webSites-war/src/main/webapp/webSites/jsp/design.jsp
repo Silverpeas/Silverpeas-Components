@@ -36,6 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.File" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ include file="util.jsp" %>
 <%@ include file="checkScc.jsp" %>
 
@@ -397,7 +398,7 @@ function deletePage(id, path, name) {
 
 			//nom
 			if (type.startsWith("htm") || type.startsWith("HTM")) {
-				arrayLine.addArrayCellLink(folderName, "javascript:onClick=pageRedesign('"+ EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
+				arrayLine.addArrayCellLink(folderName, "javascript:onClick=pageRedesign('"+ WebEncodeHelper.javaStringToJsString(currentPath)+"', '"+WebEncodeHelper.javaStringToJsString(folderName)+"', '"+WebEncodeHelper.javaStringToJsString(nomSite)+"')");
 			} else if (folderName.equals(nomPage)) {
 				arrayLine.addArrayCellText(folderName);
 			} else {
@@ -408,10 +409,11 @@ function deletePage(id, path, name) {
 			if (! folderName.equals(nomPage)) {
 				IconPane iconPane = gef.getIconPane();
 				Icon updateIcon = iconPane.addIcon();
-				updateIcon.setProperties(update, resources.getString("Rename")+" '"+folderName+"'" , "javascript:onClick=renamePage('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"')");
+				updateIcon.setProperties(update, resources.getString("Rename")+" '"+folderName+"'" , "javascript:onClick=renamePage('"+id+"', '"+WebEncodeHelper.javaStringToJsString(currentPath)+"', '"+WebEncodeHelper.javaStringToJsString(folderName)+"')");
 
 				Icon deleteIcon = iconPane.addIcon();
-				deleteIcon.setProperties(delete, resources.getString("GML.delete")+" '"+folderName+"'" , "javascript:onClick=deletePage('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"')");
+				deleteIcon.setProperties(delete, resources.getString("GML.delete")+" '"+folderName+"'" , "javascript:onClick=deletePage('"+id+"', '"+WebEncodeHelper.javaStringToJsString(currentPath)+"', '"+
+            WebEncodeHelper.javaStringToJsString(folderName)+"')");
 
 				iconPane.setSpacing("30px");
 				arrayLine.addArrayCellIconPane(iconPane);
@@ -432,11 +434,11 @@ function deletePage(id, path, name) {
 
   //Les operations
   OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"')");
+  operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+WebEncodeHelper.javaStringToJsString(currentPath)+"')");
   operationPane.addLine();
-  operationPane.addOperation(addPage,resources.getString("PageAdd"), "javascript:onClick=pageAdd('"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
+  operationPane.addOperation(addPage,resources.getString("PageAdd"), "javascript:onClick=pageAdd('"+WebEncodeHelper.javaStringToJsString(currentPath)+"', '"+WebEncodeHelper.javaStringToJsString(nomSite)+"')");
   operationPane.addLine();
-  operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+EncodeHelper.javaStringToJsString(currentPath)+"')");
+  operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+WebEncodeHelper.javaStringToJsString(currentPath)+"')");
   operationPane.addLine();
   operationPane.addOperation(addLib,resources.getString("ClasserSite"), "classifySite.jsp?Id="+id+"&Path="+currentPath);
 

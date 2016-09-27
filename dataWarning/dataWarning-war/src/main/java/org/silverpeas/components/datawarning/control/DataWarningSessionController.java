@@ -37,7 +37,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.datawarning.service.DataWarningEngine;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
@@ -188,7 +188,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
         selected = "";
       }
       valret.append("<option value=\"\" ").append(selected).append(">").
-          append(EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
+          append(WebEncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
@@ -214,7 +214,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
         }
         valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").
             append(selected).append(">").
-            append(EncodeHelper.
+            append(WebEncodeHelper.
                 javaStringToHtmlString(elmt.getProperty("name"))).append("</option>\n");
       }
     }

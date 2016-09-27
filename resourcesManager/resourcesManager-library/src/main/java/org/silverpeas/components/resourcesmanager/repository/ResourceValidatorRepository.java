@@ -24,17 +24,15 @@
 
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
-import org.silverpeas.components.resourcesmanager.model.ResourceValidatorPk;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 
 /**
  * @author ebonnet
  */
-public interface ResourceValidatorRepository
-    extends BasicEntityRepository<ResourceValidator, ResourceValidatorPk> {
+public interface ResourceValidatorRepository extends EntityRepository<ResourceValidator> {
 
-  public ResourceValidator getResourceValidator(final Long currentResourceId,
+  ResourceValidator getResourceValidator(final Long currentResourceId,
       final Long currentUserId);
 
 }

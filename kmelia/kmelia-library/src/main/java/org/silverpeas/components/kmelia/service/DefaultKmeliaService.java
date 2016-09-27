@@ -40,10 +40,7 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.calendar.model.Attendee;
-import org.silverpeas.core.calendar.model.TodoDetail;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -97,6 +94,9 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.personalorganizer.model.TodoDetail;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
@@ -2759,7 +2759,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if ((!StringUtil.isDefined(excludedUserId) || !excludedUserId.equals(readerId)) &&
           (userIds == null || userIds.contains(readerId)) && !readerIds.contains(readerId)) {
         readerIds.add(readerId);
-        if (!UserDetail.getById(readerId).isAnonymous()) {
+        if (!User.getById(readerId).isAnonymous()) {
           lastAccess.add(access);
         }
       }
@@ -4425,7 +4425,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isUserCanDeletePublication(PublicationPK pubPK, String profile, String userId) {
-    UserDetail owner = getPublication(pubPK).getCreator();
+    User owner = getPublication(pubPK).getCreator();
     return KmeliaPublicationHelper.isRemovable(pubPK.getInstanceId(), userId, profile, owner);
   }
 

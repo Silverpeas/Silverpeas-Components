@@ -24,13 +24,13 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.Category;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
 import java.util.List;
 
-public interface CategoryRepository extends BasicEntityRepository<Category, UniqueLongIdentifier> {
+public interface CategoryRepository extends EntityRepository<Category>, WithSaveAndFlush<Category> {
 
   List<Category> findCategoriesByInstanceId(String instanceId);
 }

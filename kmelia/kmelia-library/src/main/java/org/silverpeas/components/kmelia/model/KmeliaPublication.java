@@ -23,29 +23,29 @@
  */
 package org.silverpeas.components.kmelia.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.URLUtil;
 
 import java.util.Collections;
 import java.util.Date;
@@ -190,7 +190,7 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return the detail about the creator of this publication.
    */
   @Override
-  public UserDetail getCreator() {
+  public User getCreator() {
     String creatorId = getDetail().getCreatorId();
     return getOrganizationController().getUserDetail(creatorId);
   }
@@ -202,8 +202,8 @@ public class KmeliaPublication implements SilverpeasContent {
    *
    * @return the detail about the last modifier of this publication.
    */
-  public UserDetail getLastModifier() {
-    UserDetail lastModifier;
+  public User getLastModifier() {
+    User lastModifier;
     String modifierId = getDetail().getUpdaterId();
     if (modifierId == null) {
       lastModifier = getCreator();
@@ -354,7 +354,7 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return true if the user can access this publication, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     return getDetail().canBeAccessedBy(user);
   }
 

@@ -33,6 +33,7 @@
 
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkForums.jsp"%>
 <%
@@ -121,11 +122,11 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     if (reply)
     {
         Message parentMessage = fsc.getMessage(parentId);
-        parentTitle = EncodeHelper.javaStringToHtmlString(parentMessage.getTitle());
+        parentTitle = WebEncodeHelper.javaStringToHtmlString(parentMessage.getTitle());
         folderId = parentMessage.getForumId();
     }
 
-    String folderName = EncodeHelper.javaStringToHtmlString(
+    String folderName = WebEncodeHelper.javaStringToHtmlString(
         fsc.getForumName(folderId > 0 ? folderId : forumId));
 %>
 

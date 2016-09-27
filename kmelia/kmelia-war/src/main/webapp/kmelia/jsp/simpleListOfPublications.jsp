@@ -30,10 +30,11 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 <%@ include file="checkKmelia.jsp" %>
 
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <c:set var='greatestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 
@@ -215,7 +216,8 @@ $(document).ready(function() {
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
     		operationPane.addOperation("useless", resources.getString("kmelia.folderSubscription"), "javascript:onClick=addSubscription()");
-      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
+      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
+              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
 
     	if (userCanCreatePublications) {

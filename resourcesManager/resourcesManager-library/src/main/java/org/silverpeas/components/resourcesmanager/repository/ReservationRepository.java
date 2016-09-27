@@ -24,8 +24,8 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.components.resourcesmanager.model.Reservation;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import java.util.List;
  * @author ehugonnet
  */
 public interface ReservationRepository
-    extends BasicEntityRepository<Reservation, UniqueLongIdentifier> {
+    extends EntityRepository<Reservation>, WithSaveAndFlush<Reservation> {
 
   List<Reservation> findAllReservationsInRange(String instanceId, String startPeriod,
       String endPeriod);

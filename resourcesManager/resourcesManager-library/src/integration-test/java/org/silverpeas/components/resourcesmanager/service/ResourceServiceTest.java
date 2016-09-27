@@ -94,7 +94,6 @@ public class ResourceServiceTest {
       assertThat(resource.getIdAsLong(), is(id));
       assertThat(resource.getCreationDate(), notNullValue());
       assertThat(resource.getUpdateDate(), is(resource.getCreationDate()));
-      resource.setId(Long.toString(id));
       Resource savedResource = service.getResource(id);
       assertThat(savedResource, is(resource));
       return null;

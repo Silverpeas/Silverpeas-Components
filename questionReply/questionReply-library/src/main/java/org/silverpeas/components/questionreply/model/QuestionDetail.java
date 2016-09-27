@@ -24,15 +24,15 @@
 
 package org.silverpeas.components.questionreply.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 
 import java.text.ParseException;
@@ -97,8 +97,8 @@ public class QuestionDetail implements SilverpeasContent {
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(question.getCreatorId());
+  public User getCreator() {
+    return User.getById(question.getCreatorId());
   }
 
   @Override
@@ -137,7 +137,7 @@ public class QuestionDetail implements SilverpeasContent {
    * @return true if the user can access this question, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

@@ -34,7 +34,7 @@ import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.components.yellowpages.control.YellowpagesSessionController;
-import org.silverpeas.components.yellowpages.model.GroupDetail;
+import org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -146,7 +146,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         } else {
           id = id.substring(id.indexOf("_") + 1, id.length());
           // remove "group_"
-          GroupDetail group = scc.getGroup(id);
+          YellowPagesGroupDetail group = scc.getGroup(id);
 
           request.setAttribute("Group", group);
 
@@ -172,7 +172,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String id = request.getParameter("Id");
         id = id.substring(id.indexOf("_") + 1, id.length());
         // remove "group_"
-        GroupDetail group = scc.getGroup(id);
+        YellowPagesGroupDetail group = scc.getGroup(id);
         request.setAttribute("Group", group);
         request.setAttribute("GroupPath", scc.getGroupPath());
         destination = "/yellowpages/jsp/groupManager.jsp";

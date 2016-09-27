@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -42,7 +42,7 @@ import java.util.Date;
 @Table(name = "sc_kmelia_search")
 @NamedQueries({@NamedQuery(name = "topicSearch.findByInstanceId",
     query = "SELECT ts FROM TopicSearch ts WHERE ts.instanceId = :instanceId")})
-public class TopicSearch extends AbstractJpaCustomEntity<TopicSearch, UniqueLongIdentifier>
+public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = 2162863596852109037L;

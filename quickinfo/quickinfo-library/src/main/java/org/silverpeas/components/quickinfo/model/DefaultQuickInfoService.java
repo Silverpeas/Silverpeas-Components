@@ -80,7 +80,6 @@ import java.util.List;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.fromUser;
 
 @Singleton
 public class DefaultQuickInfoService implements QuickInfoService {
@@ -191,7 +190,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
     News savedNews = performInOne(() -> {
       news.setId(null);
       news.setPublicationId(pubPK.getId());
-      return newsRepository.save(fromUser(publication.getCreatorId()), news);
+      news.createdBy(publication.getCreatorId());
+      return newsRepository.save(news);
     });
 
     // Attaching all documents linked to volatile news to the persisted news
@@ -219,8 +219,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private void publish(final News news) {
     news.setPublished();
     news.setPublishDate(new Date());
-
-    performInOne(() -> newsRepository.save(fromUser(news.getPublishedBy()), news));
+    news.setLastUpdatedBy(news.getPublishedBy());
+    performInOne(() -> newsRepository.save(news));
 
     PublicationDetail publication = news.getPublication();
     getPublicationService().setDetail(publication, false);
@@ -277,7 +277,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
         news.setPublishDate(new Date());
         news.setPublishedBy(news.getLastUpdatedBy());
       }
-      return newsRepository.save(fromUser(news.getLastUpdatedBy()), news);
+      return newsRepository.save(news);
     });
 
     // Updating visibility onto taxonomy

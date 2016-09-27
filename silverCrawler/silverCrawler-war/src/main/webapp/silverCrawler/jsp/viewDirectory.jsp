@@ -24,10 +24,11 @@
 
 --%>
 <%@page import="java.net.URLEncoder"%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -512,9 +513,10 @@ if (nav || (!nav && !isRootPath))
 
 	        String nameCell = "";
 	        if (nav) {
-			nameCell = "<a href=\"javascript:onclick=goToDirectory('"+fileName + "')\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
+			nameCell = "<a href=\"javascript:onclick=goToDirectory('"+fileName + "')\">" + WebEncodeHelper
+          .javaStringToHtmlString(fileName)+"</a>";
 	        } else {
-			nameCell = EncodeHelper.javaStringToHtmlString(fileName);
+			nameCell = WebEncodeHelper.javaStringToHtmlString(fileName);
 	        }
 	        //  permalien
 	        String filePath = file.getPath();
@@ -533,19 +535,20 @@ if (nav || (!nav && !isRootPath))
 				{
 				//icône de l'historique
 				Icon historyIcon = iconPane.addIcon();
-				historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+				historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 				iconPane.setSpacing("20px");
 
 					// icône "réindexer"
 					Icon indexIcon = iconPane.addIcon();
-					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFolder('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 				}
 				if (download)
 				{
 					// icône "télécharger le répertoire"
 					Icon downloadIcon = iconPane.addIcon();
-					downloadIcon.setProperties(resource.getIcon("silverCrawler.download"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					downloadIcon.setProperties(resource.getIcon("silverCrawler.download"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('"+
+              WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 				}
 
@@ -561,12 +564,12 @@ if (nav || (!nav && !isRootPath))
 				{
 					// icône "Suppression"
 					Icon deleteIcon = iconPane.addIcon();
-					deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFolder"), resource.getString("silverCrawler.removeFolder"), "javaScript:removeFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFolder"), resource.getString("silverCrawler.removeFolder"), "javaScript:removeFolder('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 
 					// icône "Renommage"
 					Icon renameIcon = iconPane.addIcon();
-					renameIcon.setProperties(resource.getIcon("silverCrawler.renameFolder"), resource.getString("silverCrawler.renameFolder"), "javaScript:renameFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					renameIcon.setProperties(resource.getIcon("silverCrawler.renameFolder"), resource.getString("silverCrawler.renameFolder"), "javaScript:renameFolder('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 				}
 
@@ -574,7 +577,7 @@ if (nav || (!nav && !isRootPath))
 				if ("admin".equals(profile))
 				{
 					// case à cocher pour traitement par lot
-					arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDir\" value=\""+EncodeHelper.javaStringToHtmlString(fileName)+"\">");
+					arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDir\" value=\""+WebEncodeHelper.javaStringToHtmlString(fileName)+"\">");
 				}
 	        }
 	     }
@@ -626,7 +629,7 @@ if (nav || (!nav && !isRootPath))
 
 		    boolean indexed = fileDetail.isIsIndexed();
 
-		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
+		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
             componentId));
 		    cellLink.setTarget("_blank");
 
@@ -640,12 +643,13 @@ if (nav || (!nav && !isRootPath))
 			if ("admin".equals(profile)) {
 				//icône de l'historique
 				Icon historyIcon = iconPane.addIcon();
-				historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+				historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 				iconPane.setSpacing("20px");
 
 				//icône "réindexer"
 					Icon indexIcon = iconPane.addIcon();
-					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFile('"+
+              WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 
 					if (indexed)
@@ -661,12 +665,12 @@ if (nav || (!nav && !isRootPath))
 				{
 					// icône "Suppression"
 					Icon deleteIcon = iconPane.addIcon();
-					deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFile"), resource.getString("silverCrawler.removeFile"), "javaScript:removeFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFile"), resource.getString("silverCrawler.removeFile"), "javaScript:removeFile('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 
 					// icône "Renommage"
 					Icon renameIcon = iconPane.addIcon();
-					renameIcon.setProperties(resource.getIcon("silverCrawler.renameFile"), resource.getString("silverCrawler.renameFile"), "javaScript:renameFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
+					renameIcon.setProperties(resource.getIcon("silverCrawler.renameFile"), resource.getString("silverCrawler.renameFile"), "javaScript:renameFile('"+WebEncodeHelper.javaStringToJsString(fileName)+"')");
 					iconPane.setSpacing("20px");
 
 					if (userAllowedToLANAccess) {
@@ -682,7 +686,7 @@ if (nav || (!nav && !isRootPath))
 				if ("admin".equals(profile) || "publisher".equals(profile))
 				{
 					// case à cocher pour traitement par lot
-					arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedFile\" value=\""+EncodeHelper.javaStringToHtmlString(fileName)+"\">");
+					arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedFile\" value=\""+WebEncodeHelper.javaStringToHtmlString(fileName)+"\">");
 				}
 			}
 		 }

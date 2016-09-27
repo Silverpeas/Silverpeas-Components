@@ -30,7 +30,8 @@
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Alias" %>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%
 MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
@@ -49,7 +50,7 @@ while(otherTopics.hasNext())
 
 	if (topic.getId() != 1 && topic.getId() != 2)
 	{
-			String name = EncodeHelper.convertHTMLEntities(topic.getName(currentLang));
+			String name = WebEncodeHelper.convertHTMLEntities(topic.getName(currentLang));
 
 			String ind = "";
 			if(topic.getLevel() > 2)
@@ -77,7 +78,7 @@ while(otherTopics.hasNext())
 				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId()))
 				{
 					checked = " checked";
-					aliasDecoration = "<i>"+EncodeHelper.convertHTMLEntities(alias.getUserName())+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
+					aliasDecoration = "<i>"+WebEncodeHelper.convertHTMLEntities(alias.getUserName())+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
 				}
 			}
 			boolean displayCheckbox = false;

@@ -24,7 +24,7 @@
 
 package com.silverpeas.mydb.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * MyDB runtime exception.

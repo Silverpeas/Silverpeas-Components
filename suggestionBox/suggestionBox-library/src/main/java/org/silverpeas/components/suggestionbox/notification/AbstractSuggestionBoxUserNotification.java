@@ -23,10 +23,11 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.Collection;
@@ -74,7 +75,7 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
    * @return
    */
   protected String getSenderName() {
-    UserDetail sender = getSenderDetail();
+    User sender = getSenderDetail();
     if (sender != null) {
       return sender.getDisplayedName();
     }
@@ -85,7 +86,7 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
    * Gets the {@link UserDetail} instance of the sender.
    * @return
    */
-  protected abstract UserDetail getSenderDetail();
+  protected abstract User getSenderDetail();
 
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {

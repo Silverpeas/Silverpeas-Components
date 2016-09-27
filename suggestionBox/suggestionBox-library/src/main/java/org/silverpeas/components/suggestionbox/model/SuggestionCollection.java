@@ -1,8 +1,5 @@
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionBoxSubscriptionUserNotification;
@@ -10,13 +7,15 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.ForeignPK;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.Collection;
@@ -101,12 +100,11 @@ public class SuggestionCollection implements Collection<Suggestion> {
       @Override
       public Void execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        final UserDetail author = suggestion.getLastUpdater();
         SuggestionBox actual =
             SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
         suggestion.setSuggestionBox(actual);
         actual.persistedSuggestions().add(suggestion);
-        suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+        suggestionRepository.save(suggestion);
 
         // Attach uploaded files
         if (CollectionUtil.isNotEmpty(uploadedFiles)) {
@@ -159,12 +157,11 @@ public class SuggestionCollection implements Collection<Suggestion> {
       public Void execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
         for (Suggestion suggestion : suggestions) {
-          final UserDetail author = suggestion.getLastUpdater();
           SuggestionBox actual =
               SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
           suggestion.setSuggestionBox(actual);
           actual.persistedSuggestions().add(suggestion);
-          suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+          suggestionRepository.save(suggestion);
         }
         return null;
       }
@@ -231,7 +228,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @param user the creator of the returned suggestions.
    * @return the list of suggestions as described above and ordered by ascending last update date.
    */
-  public List<Suggestion> findInDraftFor(final UserDetail user) {
+  public List<Suggestion> findInDraftFor(final User user) {
     SuggestionCriteria criteria = SuggestionCriteria.from(suggestionBox).createdBy(user).
         statusIsOneOf(DRAFT).orderedBy(LAST_UPDATE_DATE_ASC);
     return getSuggestionRepository().findByCriteria(criteria);
@@ -242,7 +239,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @param user the creator of the returned suggestions.
    * @return the list of suggestions as described above and ordered by ascending last update date.
    */
-  public List<Suggestion> findOutOfDraftFor(final UserDetail user) {
+  public List<Suggestion> findOutOfDraftFor(final User user) {
     SuggestionCriteria criteria = SuggestionCriteria.from(suggestionBox).createdBy(user).
         statusIsOneOf(REFUSED, PENDING_VALIDATION, VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
     return getSuggestionRepository().findByCriteria(criteria);
@@ -253,7 +250,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @param @param user the creator of the returned suggestions.
    * @return the list of suggestions as described above and ordered by ascending last update date.
    */
-  public List<Suggestion> findPublishedFor(final UserDetail user) {
+  public List<Suggestion> findPublishedFor(final User user) {
     SuggestionCriteria criteria = SuggestionCriteria.from(suggestionBox).createdBy(user).
         statusIsOneOf(VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
     return getSuggestionRepository().findByCriteria(criteria);
@@ -299,7 +296,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
                 boolean triggerNotif = false;
                 Suggestion actual = get(suggestion.getId());
                 if (actual.getValidation().isInDraft() || actual.getValidation().isRefused()) {
-                  UserDetail updater = suggestion.getLastUpdater();
+                  User updater = suggestion.getLastUpdater();
                   SilverpeasRole greaterUserRole = suggestionBox.getGreaterUserRole(updater);
                   if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
                     ContributionValidation validation = actual.getValidation();
@@ -310,7 +307,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
                     } else {
                       validation.setStatus(ContributionStatus.PENDING_VALIDATION);
                     }
-                    suggestionRepository.save(OperationContext.fromUser(updater), actual);
+                    suggestionRepository.save(actual);
                     triggerNotif = true;
                   }
                 }
@@ -360,7 +357,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
                 boolean triggerNotif = false;
                 Suggestion actual = get(suggestion.getId());
                 if (actual.getValidation().isPendingValidation()) {
-                  UserDetail updater = suggestion.getLastUpdater();
+                  User updater = suggestion.getLastUpdater();
                   SilverpeasRole greaterUserRole = suggestionBox.getGreaterUserRole(updater);
                   if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
                     ContributionValidation actualValidation = actual.getValidation();
@@ -369,7 +366,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
                     actualValidation.setDate(new Date());
                     actualValidation.setValidator(updater);
                   }
-                  suggestionRepository.save(OperationContext.fromUser(updater), actual);
+                  suggestionRepository.save(actual);
                   triggerNotif = true;
                 }
                 return Pair.of(actual, triggerNotif);
@@ -414,7 +411,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @return a list of suggestions ordered by status and by modification date. The list is empty
    * if the user has not proposed any suggestions.
    */
-  public List<Suggestion> findAllProposedBy(final UserDetail author) {
+  public List<Suggestion> findAllProposedBy(final User author) {
     SuggestionCriteria criteria = SuggestionCriteria.from(suggestionBox).
         createdBy(author).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
     return getSuggestionRepository().findByCriteria(criteria);

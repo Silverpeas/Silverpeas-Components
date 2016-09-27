@@ -26,7 +26,7 @@ package org.silverpeas.components.resourcesmanager.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
@@ -43,7 +43,7 @@ import java.util.List;
 @Table(name = "sc_resources_category")
 @NamedQueries({@NamedQuery(name = "category.findByInstanceId",
     query = "SELECT category FROM Category category WHERE category.instanceId = :instanceId ORDER BY category.name")})
-public class Category extends AbstractJpaCustomEntity<Category, UniqueLongIdentifier> {
+public class Category extends BasicJpaEntity<Category, UniqueLongIdentifier> {
   private static final long serialVersionUID = 4947144625712662946L;
 
   @Column

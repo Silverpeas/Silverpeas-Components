@@ -32,7 +32,7 @@
 
 <%@ page import="java.util.Collection"%>
 <%@ page import="org.silverpeas.core.importexport.report.ExportReport"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.components.questionreply.model.Question" %>
 <%@ page import="org.silverpeas.components.questionreply.model.Reply" %>
 <%@ page import="org.silverpeas.components.questionreply.model.Category" %>

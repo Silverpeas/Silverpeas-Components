@@ -133,7 +133,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
+	return "<%=WebEncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {

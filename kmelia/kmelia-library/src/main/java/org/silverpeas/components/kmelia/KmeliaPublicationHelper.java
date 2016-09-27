@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.StringUtil;
 
 public class KmeliaPublicationHelper {
 
   public static boolean isUserConsideredAsOwner(String instanceId, String currentUserId,
-      String profile, UserDetail ownerDetail) {
+      String profile, User ownerDetail) {
     if ("admin".equals(profile) || "publisher".equals(profile) || "supervisor".equals(profile)
         || (ownerDetail != null && currentUserId.equals(ownerDetail.getId()) && "writer".equals(
         profile))) {
@@ -46,7 +46,7 @@ public class KmeliaPublicationHelper {
   }
 
   public static boolean isRemovable(String instanceId, String currentUserId, String profile,
-      UserDetail ownerDetail) {
+      User ownerDetail) {
     if ("admin".equals(profile) || "publisher".equals(profile) || "supervisor".equals(profile)
         || (ownerDetail != null && currentUserId.equals(ownerDetail.getId()) && "writer".equals(
         profile))) {
@@ -61,7 +61,7 @@ public class KmeliaPublicationHelper {
   }
 
   public static boolean isCanBeCut(String instanceId, String currentUserId, String profile,
-      UserDetail ownerDetail) {
+      User ownerDetail) {
     return !KmeliaHelper.isKmax(instanceId) && isUserConsideredAsOwner(instanceId, currentUserId,
         profile, ownerDetail);
   }

@@ -63,7 +63,7 @@ out.println(window.printBefore());
 		</tr>
 		<tr>
 			<td class="txtlibform" valign="top" nowrap="nowrap"><%=resource.getString("GML.description")%> :</td>
-			<td align="left"><%= EncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
+			<td align="left"><%= WebEncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
 		</tr>
 		<tr>
 			<td class="txtlibform" valign="baseline" nowrap="nowrap"><%=resource.getString("infoLetter.frequence")%> :</td>
@@ -101,7 +101,7 @@ if (publications.size()>0) {
 							debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
 							arrayLine.addArrayCellIconPane(iconPane1);
 
-							arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openViewParution('" + pub.getPK().getId() + "');");
+							arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openViewParution('" + pub.getPK().getId() + "');");
 
 							java.util.Date date = DateUtil.parse(pub.getParutionDate());
 							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));

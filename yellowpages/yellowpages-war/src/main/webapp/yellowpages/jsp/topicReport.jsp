@@ -1,4 +1,4 @@
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
@@ -11,6 +11,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%!
 String displayPath(YellowpagesSessionController Scc, Collection path, boolean linked, int beforeAfter) {
       String linkedPathString = new String();
@@ -24,7 +25,7 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
       while (iterator.hasNext()) {
             NodeDetail nodeInPath = (NodeDetail) iterator.next();
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
-				nodeName = EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
+				nodeName = WebEncodeHelper.javaStringToHtmlString(nodeInPath.getName());
         try {
           bundleName = Scc.getString(nodeName);
         } catch (Exception ignore) {
@@ -34,9 +35,9 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
 					nodeName = bundleName;
 				}
 			if (nodeInPath.getNodePK().getId().equals("0"))
-				nodeName = EncodeHelper.javaStringToHtmlString(Scc.getComponentLabel());
+				nodeName = WebEncodeHelper.javaStringToHtmlString(Scc.getComponentLabel());
 				linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+nodeName+"</a>";
-                pathString += EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
+                pathString += WebEncodeHelper.javaStringToHtmlString(nodeInPath.getName());
                 if (iterator.hasNext()) {
                       linkedPathString += " > ";
                       pathString += " > ";
@@ -115,7 +116,7 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 	                	folder.setProperties(resources.getIcon("yellowpages.group"), "", link);
 	                	
 	                	Icon expleIcon2 = actionPane.addIcon();
-						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"), yellowpagesScc.getString("SupprimerSousTheme")+" '"+EncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=groupDeleteConfirm('"+childId+"', '"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(childName))+"')");
+						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"), yellowpagesScc.getString("SupprimerSousTheme")+" '"+WebEncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=groupDeleteConfirm('"+childId+"', '"+WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(childName))+"')");
 	                }
 	                else
 	                {
@@ -123,18 +124,19 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 		                folder.setProperties(resources.getIcon("yellowpages.folder"), "", link);
 	                	
 	                	Icon expleIcon1 = actionPane.addIcon();
-						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+EncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=toAddOrUpdateFolder('ToUpdateFolder', '"+childId+"')");
+						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+
+                WebEncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=toAddOrUpdateFolder('ToUpdateFolder', '"+childId+"')");
 						Icon expleIcon2 = actionPane.addIcon();
-						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"),  yellowpagesScc.getString("SupprimerSousTheme")+" '"+EncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicDeleteConfirm('"+childId+"', '"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(childName))+"')");
+						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"),  yellowpagesScc.getString("SupprimerSousTheme")+" '"+WebEncodeHelper.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicDeleteConfirm('"+childId+"', '"+WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(childName))+"')");
 	                }
 	                
 	                
 	                ArrayLine arrayLine = arrayPane.addArrayLine();
 					arrayLine.addArrayCellIconPane(folderPane);
-	                arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(childName), link);
+	                arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(childName), link);
 	                ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(nbContact);
 	                arrayCellText1.setCompareOn(new Integer(nbContact));
-	                arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(childDescription));
+	                arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(childDescription));
 	                
 	                if (displayOperations)
 						arrayLine.addArrayCellIconPane(actionPane);

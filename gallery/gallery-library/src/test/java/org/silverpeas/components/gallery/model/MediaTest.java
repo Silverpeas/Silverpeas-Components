@@ -23,21 +23,22 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.DateUtil;
 
@@ -329,7 +330,7 @@ public class MediaTest {
     }
 
     @Override
-    protected SilverpeasRole getGreatestUserRole(final UserDetail user) {
+    protected SilverpeasRole getGreatestUserRole(final User user) {
       return SilverpeasRole.reader;
     }
 

@@ -25,7 +25,7 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author ebonnet
  */
-public class ReservationJpaManager extends JpaBasicEntityManager<Reservation, UniqueLongIdentifier>
+public class ReservationJpaManager extends BasicJpaEntityRepository<Reservation>
     implements ReservationRepository {
 
   @Override

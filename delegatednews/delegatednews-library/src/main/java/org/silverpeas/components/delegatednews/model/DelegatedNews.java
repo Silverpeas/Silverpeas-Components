@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
@@ -59,7 +59,7 @@ import java.util.Date;
     @NamedQuery(name = "delegatednews.findAllOrderedNews", query =
         "SELECT dn FROM DelegatedNews dn " +
             "ORDER BY dn.newsOrder ASC, dn.beginDate ASC, dn.id.id ASC")})
-public class DelegatedNews extends AbstractJpaCustomEntity<DelegatedNews, ExternalIntegerIdentifier>
+public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalIntegerIdentifier>
     implements Serializable {
   //TODO replace UniqueIntegerIdentifier with ExternalIntegerIdentifier (to create)
   // demander demain ce qu'il en est de l'identifiant de la table sc_delegatednews_news.

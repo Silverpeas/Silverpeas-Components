@@ -25,16 +25,14 @@
 package org.silverpeas.components.delegatednews.dao;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import java.util.List;
 
 /**
  * @author ebonnet
  */
-public class DelegatedNewsJpaManager
-    extends JpaBasicEntityManager<DelegatedNews, ExternalIntegerIdentifier>
+public class DelegatedNewsJpaRepository extends BasicJpaEntityRepository<DelegatedNews>
     implements DelegatedNewsRepository {
 
   @Override

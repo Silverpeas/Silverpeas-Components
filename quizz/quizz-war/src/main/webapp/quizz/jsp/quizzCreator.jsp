@@ -28,8 +28,9 @@
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail" />
 
 <%@ include file="checkQuizz.jsp" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
@@ -240,7 +241,7 @@ if (action.equals("CreateQuizz")) {
     <div class="field" id="titleArea">
       <label class="txtlibform" for="title"><fmt:message key="GML.name" /> </label>
       <div class="champs">
-        <input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(title)%>" />&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=WebEncodeHelper.javaStringToHtmlString(title)%>" />&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
       </div>
     </div>
     <div class="field" id="nbQuestionsArea">
@@ -267,14 +268,14 @@ if (action.equals("CreateQuizz")) {
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
       <div class="champs">
-        <textarea name="description" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <textarea name="description" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(description)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
       </div>
     </div>
 
     <div class="field" id="noticeArea">
       <label class="txtlibform" for="notice"><fmt:message key="QuizzCreationNotice" /> </label>
       <div class="champs">
-        <textarea name="notice" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(notice)%></textarea>
+        <textarea name="notice" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(notice)%></textarea>
       </div>
     </div>
     

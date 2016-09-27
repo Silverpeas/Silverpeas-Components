@@ -105,7 +105,7 @@ String linkedPathString = kmeliaScc.getSessionPath();
 
 KmeliaPublication kmeliaPublication = kmeliaScc.getSessionPublication();
 CompletePublication 	pubComplete 	= kmeliaPublication.getCompleteDetail();
-UserDetail 				ownerDetail 	= kmeliaPublication.getCreator();
+User 				ownerDetail 	= kmeliaPublication.getCreator();
 String					id				= pubComplete.getPublicationDetail().getPK().getId();
 String 					pubName 		= pubComplete.getPublicationDetail().getName(currentLang);
 String					instanceId		= pubComplete.getPublicationDetail().getPK().getInstanceId();

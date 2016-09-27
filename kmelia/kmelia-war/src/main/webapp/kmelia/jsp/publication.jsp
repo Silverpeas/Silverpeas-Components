@@ -50,6 +50,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -96,7 +97,7 @@
 
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
   PublicationDetail pubDetail = kmeliaPublication.getDetail();
-  UserDetail ownerDetail = kmeliaPublication.getCreator();
+  User ownerDetail = kmeliaPublication.getCreator();
   String pubName = pubDetail.getName(language);
   String resourceType = pubDetail.getContributionType();
   String id = pubDetail.getPK().getId();
@@ -370,7 +371,7 @@
       function alertUsers()
       {
       <% if (!pubDetail.isValid()) {%>
-        var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+        var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
         jQuery.popup.confirm(label, function() {
           goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
         });
@@ -382,7 +383,7 @@
         function alertUsersAttachment(attachmentId)
         {
       <% if (!pubDetail.isValid()) {%>
-          var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
             goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
           });
@@ -394,7 +395,7 @@
         function alertUsersDocument(documentId)
         {
       <% if (!pubDetail.isValid()) {%>
-          var label = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
             goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
           });
@@ -405,7 +406,7 @@
 
         function openSingleAttachment() {
       <% if (StringUtil.isDefined(singleFileURL)) {
-          out.print("url = \"" + EncodeHelper.javaStringToJsString(singleFileURL) + "\";");
+          out.print("url = \"" + WebEncodeHelper.javaStringToJsString(singleFileURL) + "\";");
       %>
           windowName = "attachmentWindow";
           windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
@@ -427,7 +428,7 @@
 
         function addFavorite() {
           var name = $("#breadCrumb").text() + " > " + $(".publiName").text();
-          var description = "<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
+          var description = "<%=WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
           var url = "<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId())%>";
           postNewLink(name, url, description);
         }
@@ -772,11 +773,11 @@
 				        /*********************************************************************************************************************/
 				        out.print("<h2 class=\"publiName\">");
 
-						    out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
+						    out.print(WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
 
 				        out.println("</h2>");
 
-				        String description = EncodeHelper.convertWhiteSpacesForHTMLDisplay(EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
+				        String description = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }

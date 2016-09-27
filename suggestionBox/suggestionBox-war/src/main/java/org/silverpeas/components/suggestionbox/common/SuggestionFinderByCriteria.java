@@ -23,20 +23,20 @@
  */
 package org.silverpeas.components.suggestionbox.common;
 
-import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import java.util.Arrays;
@@ -85,7 +85,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
   }
 
   @Override
-  public SuggestionCriteriaProcessor processCreator(UserDetail creator) {
+  public SuggestionCriteriaProcessor processCreator(User creator) {
     criteria.createdBy(creator);
     return this;
   }

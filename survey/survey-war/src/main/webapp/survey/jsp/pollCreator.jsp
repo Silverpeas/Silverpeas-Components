@@ -32,6 +32,7 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkSurvey.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -456,13 +457,13 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
 				<div class="field" id="nameArea">
 					<label class="txtlibform"><%=resources.getString("GML.name")%></label>
 					<div class="champs">
-						<input type="text" name="title" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+						<input type="text" name="title" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
 					</div>
 				</div>
 				<div class="field" id="questionArea">
 					<label class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%></label>
 					<div class="champs">
-						<input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+						<input type="text" name="question" value="<%=WebEncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
 					</div>
 				</div>
 				<div class="field" id="typeArea">

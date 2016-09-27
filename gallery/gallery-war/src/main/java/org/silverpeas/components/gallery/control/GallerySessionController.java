@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.gallery.control;
 
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportExportDescriptor;
@@ -31,7 +32,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.URLUtil;
@@ -1083,7 +1084,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     if (!"T".equals(download)) {
       // le média n'a pas déjà été téléchargé par defaut média sans watermark
-      String title = EncodeHelper.javaStringToHtmlString(media.getFileName());
+      String title = WebEncodeHelper.javaStringToHtmlString(media.getFileName());
       String nomRep = media.getWorkspaceSubFolderName();
       if ("DW".equals(download)) {
         // demande avec Watermark
@@ -1094,7 +1095,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         String watermarkFile = pathFile + title;
         File file = new File(watermarkFile);
         if (!file.exists()) {
-          title = EncodeHelper.javaStringToHtmlString(media.getFileName());
+          title = WebEncodeHelper.javaStringToHtmlString(media.getFileName());
         }
       }
       return FileServerUtils.getUrl(getComponentId(), getUrlEncodedParameter(title),
@@ -1407,9 +1408,10 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           fileName.substring(fileName.indexOf("/") + 1, fileName.indexOf("."));
       String registerId = getComponentId() + ":" + xmlFormShortName;
       final String sessionCacheKey = this.getClass().getName() + registerId;
-      if (getSessionCacheService().get(sessionCacheKey) == null) {
+      SimpleCache sessionCache = getSessionCacheService().getCache();
+      if (sessionCache.get(sessionCacheKey) == null) {
         getPublicationTemplateManager().addDynamicPublicationTemplate(registerId, fileName);
-        getSessionCacheService().put(sessionCacheKey, registerId);
+        sessionCache.put(sessionCacheKey, registerId);
       }
       pub = getPublicationTemplateManager().getPublicationTemplate(registerId);
     }

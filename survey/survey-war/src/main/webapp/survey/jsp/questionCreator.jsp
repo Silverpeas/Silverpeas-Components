@@ -44,7 +44,7 @@
   void displaySurveyHeader(QuestionContainerDetail surveyDetail, MultiSilverpeasBundle resources, SurveySessionController surveyScc, JspWriter out, GraphicElementFactory gef) throws SurveyException {
     try{
           QuestionContainerHeader surveyHeader = surveyDetail.getHeader();
-          String title = EncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
+          String title = WebEncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
           String creationDate = resources.getOutputDate(new Date());
           String beginDate = "&nbsp;";
           if (surveyHeader.getBeginDate() != null)
@@ -460,7 +460,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       <table border="0" cellPadding="3" cellSpacing="0" width="100%" class="intfdcolor4">
         <tr>
           <td class="txtlibform" width="30%"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td>
-          <td width="70%"><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+          <td width="70%"><input type="text" name="question" value="<%=WebEncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
         </tr>
         <% if (action.equals("SendQuestionForm")) {
                 if (!style.equals("open"))

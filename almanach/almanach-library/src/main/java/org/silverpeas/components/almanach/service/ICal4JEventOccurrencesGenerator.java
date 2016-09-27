@@ -24,7 +24,7 @@
 package org.silverpeas.components.almanach.service;
 
 import net.fortuna.ical4j.model.Period;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import net.fortuna.ical4j.model.DateTime;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
@@ -96,8 +96,8 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       PeriodList periodList = iCalEvent.calculateRecurrenceSet(inPeriod);
       for (Object recurrencePeriodObject : periodList) {
         Period recurrencePeriod = (Period) recurrencePeriodObject;
-        Datable<?> startDate = toDatable(recurrencePeriod.getStart(), event.getStartHour());
-        Datable<?> endDate = toDatable(recurrencePeriod.getEnd(), event.getEndHour());
+        Temporal<?> startDate = toTemporal(recurrencePeriod.getStart(), event.getStartHour());
+        Temporal<?> endDate = toTemporal(recurrencePeriod.getEnd(), event.getEndHour());
         EventOccurrence occurrence = EventOccurrence.anOccurrenceOf(event, EventOccurrence.startingAt(startDate), EventOccurrence
             .endingAt(endDate)).
                 withPriority(event.isPriority());
@@ -145,8 +145,8 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     return new ExDate(exDateList);
   }
 
-  private Datable<?> toDatable(final java.util.Date date, String time) {
-    Datable<?> datable;
+  private Temporal<?> toTemporal(final java.util.Date date, String time) {
+    Temporal<?> temporal;
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     SettingBundle almanachSettings =
             ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
@@ -158,11 +158,11 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       calendarDate.set(java.util.Calendar.MINUTE, extractMinutes(time));
       calendarDate.set(java.util.Calendar.SECOND, 0);
       calendarDate.set(java.util.Calendar.MILLISECOND, 0);
-      datable = new org.silverpeas.core.date.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
+      temporal = new org.silverpeas.core.date.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
     } else {
-      datable = new Date(date).inTimeZone(timeZone);
+      temporal = new Date(date).inTimeZone(timeZone);
     }
-    return datable;
+    return temporal;
   }
 
   private static Period occurringIn(final Period period) {

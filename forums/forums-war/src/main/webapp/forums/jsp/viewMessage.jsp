@@ -176,7 +176,7 @@
 
         forumActive = fsc.isForumActive(folderId);
 
-        String folderName = EncodeHelper.javaStringToHtmlString(fsc.getForumName(folderId > 0 ? folderId : params));
+        String folderName = WebEncodeHelper.javaStringToHtmlString(fsc.getForumName(folderId > 0 ? folderId : params));
 
         // Messages
         currentMessageId = messageId;

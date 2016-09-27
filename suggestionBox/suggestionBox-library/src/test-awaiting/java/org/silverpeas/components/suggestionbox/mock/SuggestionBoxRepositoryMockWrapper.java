@@ -26,7 +26,6 @@ package org.silverpeas.components.suggestionbox.mock;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
 import javax.inject.Named;
 import java.util.Collection;
@@ -69,17 +68,17 @@ public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository 
   }
 
   @Override
-  public SuggestionBox save(OperationContext context, SuggestionBox entity) {
-    return mock.save(context, entity);
+  public SuggestionBox save(SuggestionBox entity) {
+    return mock.save(entity);
   }
 
   @Override
-  public List<SuggestionBox> save(OperationContext context, SuggestionBox... entities) {
-    return mock.save(context, entities);
+  public List<SuggestionBox> save(SuggestionBox... entities) {
+    return mock.save(entities);
   }
 
   @Override
-  public List<SuggestionBox> save(OperationContext context, List<SuggestionBox> entities) {
+  public List<SuggestionBox> save(List<SuggestionBox> entities) {
     return mock.save(context, entities);
   }
 

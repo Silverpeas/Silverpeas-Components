@@ -89,11 +89,11 @@ public class DisplayableEventOccurrence extends EventOccurrence {
   }
 
   public boolean isStartTimeDefined() {
-    return getStartDate() instanceof DateTime;
+    return getStartDate().isTimeSupported();
   }
 
   public boolean isEndTimeDefined() {
-    return getEndDate() instanceof DateTime;
+    return getEndDate().isTimeSupported();
   }
 
   /**

@@ -34,6 +34,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -495,12 +496,12 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 
 <% if (action.equals("SendQuestionForm")) {
 %>
-  <input type="hidden" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question) %>" />
+  <input type="hidden" name="question" value="<%=WebEncodeHelper.javaStringToHtmlString(question) %>" />
   <input type="hidden" name="questionStyle" value="<%=style %>" />
   <input type="hidden" name="nbAnswers" value="<%=nbAnswers%>"/>
   <input type="hidden" name="nbPointsMin" value="<%=nbPointsMin%>"/>
   <input type="hidden" name="nbPointsMax" value="<%=nbPointsMax%>"/>
-  <input type="hidden" name="clue" value="<%=EncodeHelper.javaStringToHtmlString(clue)%>"/>
+  <input type="hidden" name="clue" value="<%=WebEncodeHelper.javaStringToHtmlString(clue)%>"/>
   <input type="hidden" name="penalty" value="<%=penalty%>"/>
 
 
@@ -509,7 +510,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   <div class="fields">
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="questionBis" cols="49" rows="3" disabled="disabled"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+      <div class="champs"><textarea name="questionBis" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper
+          .javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
     </div>
     <div class="field" id="questionStyleArea">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -540,7 +542,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clueBis" cols="49" rows="3" disabled="disabled"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clueBis" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 
@@ -630,7 +632,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   <div class="fields">
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="question" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+      <div class="champs"><textarea name="question" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
     </div>
     <div class="field" id="questionStyleArea">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -667,7 +669,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clue" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clue" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 

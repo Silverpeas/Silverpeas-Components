@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,9 +49,9 @@ public class FormDetail {
 
   private transient boolean sendable = true;
 
-  List<UserDetail> sendersAsUsers;
+  List<User> sendersAsUsers;
   List<Group> sendersAsGroups;
-  List<UserDetail> receiversAsUsers;
+  List<User> receiversAsUsers;
   List<Group> receiversAsGroups;
 
   /**
@@ -267,8 +267,8 @@ public class FormDetail {
     return new FormPK(Integer.toString(getId()), getInstanceId());
   }
 
-  private boolean isInList(String userId, List<UserDetail> users) {
-    for (UserDetail user : users) {
+  private boolean isInList(String userId, List<User> users) {
+    for (User user : users) {
       if (user.getId().equals(userId)) {
         return true;
       }
@@ -276,36 +276,36 @@ public class FormDetail {
     return false;
   }
 
-  private List<UserDetail> getAllSenders() {
-    List<UserDetail> senders = getSendersAsUsers();
+  private List<User> getAllSenders() {
+    List<User> senders = getSendersAsUsers();
     senders.addAll(getUsers(getSendersAsGroups()));
     return senders;
   }
 
-  private List<UserDetail> getAllReceivers() {
-    List<UserDetail> users = getReceiversAsUsers();
+  private List<User> getAllReceivers() {
+    List<User> users = getReceiversAsUsers();
     users.addAll(getUsers(getReceiversAsGroups()));
     return users;
   }
 
-  private List<UserDetail> getUsers(List<Group> groups) {
-    List<UserDetail> users = new ArrayList<UserDetail>();
+  private List<User> getUsers(List<Group> groups) {
+    List<User> users = new ArrayList<>();
     for (Group group : groups) {
-      for (UserDetail user : group.getAllUsers()) {
+      for (User user : group.getAllUsers()) {
         users.add(user);
       }
     }
     return users;
   }
 
-  public List<UserDetail> getSendersAsUsers() {
+  public List<User> getSendersAsUsers() {
     if (sendersAsUsers == null) {
-      return new ArrayList<UserDetail>();
+      return new ArrayList<>();
     }
     return sendersAsUsers;
   }
 
-  public void setSendersAsUsers(final List<UserDetail> sendersAsUsers) {
+  public void setSendersAsUsers(final List<User> sendersAsUsers) {
     this.sendersAsUsers = sendersAsUsers;
   }
 
@@ -320,14 +320,14 @@ public class FormDetail {
     this.sendersAsGroups = sendersAsGroups;
   }
 
-  public List<UserDetail> getReceiversAsUsers() {
+  public List<User> getReceiversAsUsers() {
     if (receiversAsUsers == null) {
-      return new ArrayList<UserDetail>();
+      return new ArrayList<>();
     }
     return receiversAsUsers;
   }
 
-  public void setReceiversAsUsers(final List<UserDetail> receiversAsUsers) {
+  public void setReceiversAsUsers(final List<User> receiversAsUsers) {
     this.receiversAsUsers = receiversAsUsers;
   }
 

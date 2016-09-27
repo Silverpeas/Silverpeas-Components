@@ -164,10 +164,10 @@ if ((publications != null) && (publications.size()>0)) {
 						arrayLine.addArrayCellIconPane(iconPane1);
 
 						//if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						//else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
+						//else arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
 
 						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('ParutionHeaders','parution=" + pub.getPK().getId() + "');");
+						else arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('ParutionHeaders','parution=" + pub.getPK().getId() + "');");
 
 						if (pub._isValid())
 						{

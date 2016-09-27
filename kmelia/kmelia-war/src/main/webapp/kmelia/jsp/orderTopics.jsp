@@ -92,7 +92,7 @@ while(items.hasNext())
 %>
 	<li id="item_<%=node.getNodePK().getId()%>"><b><%=node.getName(currentLang)%></b><br/>
 		<% if (StringUtil.isDefined(node.getDescription(currentLang))) { %>
-			<%=EncodeHelper.javaStringToHtmlParagraphe(node.getDescription(currentLang))%><br/>
+			<%=WebEncodeHelper.javaStringToHtmlParagraphe(node.getDescription(currentLang))%><br/>
 		<% } %>
 		<br/>
 	</li>

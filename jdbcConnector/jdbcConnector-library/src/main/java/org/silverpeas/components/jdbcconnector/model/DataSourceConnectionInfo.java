@@ -24,7 +24,7 @@ package org.silverpeas.components.jdbcconnector.model;
 import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
 import org.silverpeas.components.jdbcconnector.service.DataSourceConnectionInfoService;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.naming.InitialContext;
@@ -50,7 +50,7 @@ import java.util.List;
         "delete DataSourceConnectionInfo where instanceId = :instanceId")})
 @Table(name = "sc_connecteurjdbc_connectinfo")
 public class DataSourceConnectionInfo
-    extends AbstractJpaCustomEntity<DataSourceConnectionInfo, UniqueIntegerIdentifier> {
+    extends BasicJpaEntity<DataSourceConnectionInfo, UniqueIntegerIdentifier> {
 
   @Column(length = 250)
   private String dataSource;

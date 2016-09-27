@@ -23,16 +23,6 @@
  */
 package org.silverpeas.components.almanach.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.components.almanach.AlmanachContentManager;
-import org.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -41,16 +31,26 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.components.almanach.AlmanachContentManager;
+import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
+import org.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.i18n.AbstractBean;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.AbstractBean;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -416,8 +416,8 @@ public class EventDetail extends AbstractBean
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(getCreatorId());
+  public User getCreator() {
+    return User.getById(getCreatorId());
   }
 
   @Override
@@ -439,7 +439,7 @@ public class EventDetail extends AbstractBean
    * @return true if the user can access this event, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

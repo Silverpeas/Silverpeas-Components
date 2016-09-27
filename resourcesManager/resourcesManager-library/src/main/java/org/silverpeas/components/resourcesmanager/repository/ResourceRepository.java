@@ -23,22 +23,22 @@
  */
 package org.silverpeas.components.resourcesmanager.repository;
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 import org.silverpeas.components.resourcesmanager.model.Resource;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 
 import java.util.List;
 
-public interface ResourceRepository extends BasicEntityRepository<Resource, UniqueLongIdentifier> {
+public interface ResourceRepository extends EntityRepository<Resource>, WithSaveAndFlush<Resource> {
 
-  public List<Resource> findAllResourcesByCategory(Long categoryId);
+  List<Resource> findAllResourcesByCategory(Long categoryId);
 
-  public List<Resource> findAllBookableResources(String instanceId);
+  List<Resource> findAllBookableResources(String instanceId);
 
-  public List<Resource> findAllResourcesForReservation(Long reservationId);
+  List<Resource> findAllResourcesForReservation(Long reservationId);
 
-  public List<Resource> findAllReservedResources(Long reservationIdToSkip,
-      List<Long> aimedResourceIds, String startPeriod, String endPeriod);
+  List<Resource> findAllReservedResources(Long reservationIdToSkip, List<Long> aimedResourceIds,
+      String startPeriod, String endPeriod);
 
-  public void deleteResourcesFromCategory(Long categoryId);
+  void deleteResourcesFromCategory(Long categoryId);
 }

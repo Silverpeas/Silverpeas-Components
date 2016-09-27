@@ -88,7 +88,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.components.gallery.GalleryComponentSettings" %>
 
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>

@@ -33,7 +33,7 @@
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>

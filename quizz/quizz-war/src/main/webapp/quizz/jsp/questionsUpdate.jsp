@@ -77,7 +77,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
           //operations += "<a href=\"questionsUpdate.jsp?Action=UpdateQuestion&QId="+j+"\"><img src=\""+questionUpdateSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionUpdate")+"\"></a>";
 
           r += "<table border=\"0\" width=\"100%\">";
-          r += "<tr><td colspan=\"2\" align=\"left\"><B>&#149; <U>"+EncodeHelper.javaStringToHtmlString(question.getLabel())+"</U></B>"+operations+"<BR><BR></td></tr>";
+          r += "<tr><td colspan=\"2\" align=\"left\"><B>&#149; <U>"+WebEncodeHelper.javaStringToHtmlString(question.getLabel())+"</U></B>"+operations+"<BR><BR></td></tr>";
           if (question.isOpen()) {
             Iterator<Answer> itA = answers.iterator();
             int isOpened = 0;
@@ -97,7 +97,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                     while (itA.hasNext())
                     {
                       Answer answer = (Answer) itA.next();
-                          r += "<option value=\"\" "+selectedStr+">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
+                          r += "<option value=\"\" "+selectedStr+">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
                     }
                     r += "</td></tr>";
                 }

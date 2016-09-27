@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -202,7 +203,8 @@ function sortNode(updatedNodeJSON)
 		Icon updateIcon = iconPane.addIcon();
    		updateIcon.setProperties(resource.getIcon("blog.updateCategory"), resource.getString("blog.updateCategory"), "javaScript:editCategory('"+id+"')");
 		Icon deleteIcon = iconPane.addIcon();
-		deleteIcon.setProperties(resource.getIcon("blog.deleteCategory"), resource.getString("blog.deleteCategory"), "javaScript:deleteConfirm('"+id+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom))+"')");
+		deleteIcon.setProperties(resource.getIcon("blog.deleteCategory"), resource.getString("blog.deleteCategory"), "javaScript:deleteConfirm('"+id+"','"+WebEncodeHelper.javaStringToHtmlString(
+        WebEncodeHelper.javaStringToJsString(nom))+"')");
 		iconPane.setSpacing("30");
 		ligne.addArrayCellIconPane(iconPane);
 	}	

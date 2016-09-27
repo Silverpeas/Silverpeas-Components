@@ -57,7 +57,7 @@ public class KmeliaServiceContextTest {
 
   @After
   public void tearDown() {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertClearedContext();
   }
 

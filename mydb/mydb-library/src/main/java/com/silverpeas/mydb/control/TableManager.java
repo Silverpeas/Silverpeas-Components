@@ -39,7 +39,7 @@ import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.data.key.UnicityKeys;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 /**
  * Manager used to create or modify a database table, not its content but its description. For the

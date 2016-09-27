@@ -26,7 +26,6 @@ package org.silverpeas.components.suggestionbox.model;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -46,15 +45,14 @@ public class PersistenceService {
   @Inject
   private SuggestionRepository suggestionRepository;
 
-  public void saveSuggestionBox(final OperationContext ctx, final SuggestionBox box) {
-    suggestionBoxRepository.save(ctx, box);
+  public void saveSuggestionBox(final SuggestionBox box) {
+    suggestionBoxRepository.save(box);
   }
 
-  public void saveSuggestion(final OperationContext ctx, final SuggestionBox box,
-      final Suggestion suggestion) {
+  public void saveSuggestion(final SuggestionBox box, final Suggestion suggestion) {
     SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
     actualBox.persistedSuggestions().add(suggestion);
-    suggestionRepository.save(ctx, suggestion);
+    suggestionRepository.save(suggestion);
   }
 
   public void deleteSuggestionBox(final SuggestionBox box) {

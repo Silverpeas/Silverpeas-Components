@@ -31,7 +31,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -183,7 +183,7 @@ public class ForumHelper {
         }
         out.print("\">");
         out.print("<span class=\"message_" + message.getStatus() + "\"><b>");
-        out.print(EncodeHelper.javaStringToHtmlString(messageTitle));
+        out.print(WebEncodeHelper.javaStringToHtmlString(messageTitle));
         // Auteur du message
         out.print("</b>");
         out.print(simpleMode ? "&nbsp;" : "<br>");
@@ -220,9 +220,9 @@ public class ForumHelper {
             out.print("<a href=\"" +
                 ActionUrl.getUrl("viewMessage", call, 1, lastMessageId, forumId, true, false) +
                 "\">");
-            out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
+            out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageDate));
             out.print("<br/>");
-            out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
+            out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageUser));
             out.print("</a>");
           }
           out.println("</span></td>");
