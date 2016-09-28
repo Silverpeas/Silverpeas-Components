@@ -334,6 +334,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 }
               }
             } else {
+              String propKeySuffix = "kmelia.publication.forbidden.";
+              if (!pub2Check.isVisible()) {
+                if (pub2Check.isNoMoreVisible()) {
+                  request.setAttribute("Cause", kmelia.getString(propKeySuffix+"noMoreVisible"));
+                } else {
+                  request.setAttribute("Cause", kmelia.getString(propKeySuffix+"notYetVisible"));
+                }
+              } else if (pub2Check.isDraft()) {
+                request.setAttribute("Cause", kmelia.getString(propKeySuffix+"draft"));
+              } else if (!pub2Check.isValid()) {
+                request.setAttribute("Cause", kmelia.getString(propKeySuffix+"notValid"));
+              }
               destination = "/admin/jsp/accessForbidden.jsp";
             }
           } catch (Exception e) {
