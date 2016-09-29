@@ -234,7 +234,7 @@ function isCorrectForm() {
 <input type="hidden" name="OrderId" value="${order.orderId}">
 
 
-<view:arrayPane var="order" routingAddress="OrderViewPagin">
+<view:arrayPane var="order" routingAddress="OrderViewPagin" numberLinesPerPage="1000">
 
 
   <fmt:message key="gallery.media" var="mediaCol"/>

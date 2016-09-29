@@ -211,9 +211,8 @@ $(document).ready(function() {
 <c:if test="${empty medias}">
   <fmt:message key="gallery.emptyBasket" />
 </c:if>
-
 <c:if test="${not empty medias}">
-  <view:arrayPane var="basketList" routingAddress="BasketView">
+  <view:arrayPane var="basketList" routingAddress="BasketView" numberLinesPerPage="1000">
     <fmt:message key="gallery.media" var="mediaCol" />
     <view:arrayColumn title="${mediaCol}" />
     <fmt:message key="gallery.operation" var="operationCol" />
