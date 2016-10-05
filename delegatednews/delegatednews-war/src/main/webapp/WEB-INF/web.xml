@@ -25,7 +25,7 @@
 
 -->
 
-<web-app version="2.4">
+<web-app>
   <display-name>delegatednews War</display-name>
   <servlet>
     <display-name>DelegatedNewsRequestRouter</display-name>

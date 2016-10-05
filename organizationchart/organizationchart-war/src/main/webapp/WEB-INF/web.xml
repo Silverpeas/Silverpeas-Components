@@ -25,7 +25,7 @@
 
 -->
 
-<web-app version="2.4">
+<web-app>
   <display-name>organizationchart War</display-name>
   <servlet>
     <display-name>OrganizationChartRequestRouter</display-name>
