@@ -432,14 +432,13 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public Collection<PostDetail> getResultSearch(String word, String userId, String spaceId,
-      String instanceId) {
+  public Collection<PostDetail> getResultSearch(String word, String userId, String instanceId) {
     Collection<PostDetail> posts = new ArrayList<>();
     List<String> postIds = new ArrayList<>();
 
     QueryDescription query = new QueryDescription(word);
     query.setSearchingUser(userId);
-    query.addSpaceComponentPair(spaceId, instanceId);
+    query.addComponent(instanceId);
 
     try (Connection con = openConnection()) {
       List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).

@@ -51,7 +51,7 @@ public interface MixedSearchService {
    * @return a collection of global silver content
    * @throws Exception
    */
-  public Collection<GlobalSilverContent> search(String spaceId, String componentId, String userId,
+  public Collection<GlobalSilverContent> search(String componentId, String userId,
       String queryString, SearchContext pdcContext, Map<String, String> xmlFields,
       String xmlTemplate, List<FieldDescription> fieldsQuery, String language) throws Exception;
 }

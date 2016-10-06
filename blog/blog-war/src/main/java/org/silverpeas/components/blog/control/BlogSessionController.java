@@ -331,7 +331,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public Collection<PostDetail> getResultSearch(String word) {
 
-    return getBlogService().getResultSearch(word, getUserId(), getSpaceId(), getComponentId());
+    return getBlogService().getResultSearch(word, getUserId(), getComponentId());
   }
 
   public synchronized void addUserSubscription() {

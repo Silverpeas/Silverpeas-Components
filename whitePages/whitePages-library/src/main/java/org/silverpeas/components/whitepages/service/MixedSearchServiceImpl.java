@@ -51,7 +51,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
   private PdcManager pdcManager = null;
 
   @Override
-  public Collection<GlobalSilverContent> search(String spaceId, String componentId, String userId,
+  public Collection<GlobalSilverContent> search(String componentId, String userId,
       String queryString, SearchContext pdcContext, Map<String, String> xmlFields,
       String xmlTemplate, List<FieldDescription> fieldsQuery, String language) throws Exception {
     //build the search
@@ -61,7 +61,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     query.setSearchingUser(userId);
 
     //Set the list of all components which are available for the user
-    query.addSpaceComponentPair(spaceId, componentId);
+    query.addComponent(componentId);
 
     List<String> alSilverContentIds = new ArrayList<>();
     ArrayList<GlobalSilverContent> silverContents = new ArrayList<>();

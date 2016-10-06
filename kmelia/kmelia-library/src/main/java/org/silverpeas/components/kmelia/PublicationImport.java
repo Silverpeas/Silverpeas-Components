@@ -326,7 +326,7 @@ public class PublicationImport {
   public String getPublicationId(String xmlFormName, String fieldName, String fieldValue) {
     QueryDescription query = new QueryDescription("*");
     query.setSearchingUser(userId);
-    query.addSpaceComponentPair(spaceId, componentId);
+    query.addComponent(componentId);
 
     Map<String, String> newXmlQuery = new HashMap<String, String>();
     newXmlQuery.put(xmlFormName + "$$" + fieldName, fieldValue);

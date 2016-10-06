@@ -211,7 +211,7 @@ function closeWindows() {
             
             QueryDescription query = new QueryDescription(queryStr);
             query.setSearchingUser(kmeliaScc.getUserDetail().getId());
-            query.addSpaceComponentPair(kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
+            query.addComponent(kmeliaScc.getComponentId());
             
             List<MatchingIndexEntry> results = SearchEngineProvider.getSearchEngine().search(query).getEntries();
             

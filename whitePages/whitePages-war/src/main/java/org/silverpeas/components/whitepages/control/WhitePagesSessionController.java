@@ -935,7 +935,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       PublicationTemplate template = getTemplate(getComponentId());
       String xmlTemplate = template.getName();
       contents = WhitePageServiceProvider.getMixedSearchService()
-          .search(getSpaceId(), getComponentId(), getUserId(), query, pdcContext, xmlFields,
+          .search(getComponentId(), getUserId(), query, pdcContext, xmlFields,
               xmlTemplate, fieldsQuery, getLanguage());
     } catch (Exception e) {
 
