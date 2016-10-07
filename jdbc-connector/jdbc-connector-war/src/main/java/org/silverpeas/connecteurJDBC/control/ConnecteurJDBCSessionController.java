@@ -68,7 +68,6 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   private String validreq = "";
   private String fullreq = "";
   private String sort_Type = "";
-  private boolean connectionOpened = false;
   private ConnecteurJDBCConnectionInfoDetail connecteurJDBCDetail = null;
   private String[] driversNames;
   private String[] driversDisplayNames;
@@ -84,7 +83,8 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   private DatabaseMetaData dbMetaData;
   private int rowNumber; // Current row number
   private Vector<String> selectedColumn = new Vector<String>(); // columns selected in the sql query
-
+  private Connection connection;
+  
   /**
    * Constructeur
    *
@@ -131,16 +131,17 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public void closeConnection() {
-    if (connectionOpened) {
+    if (isConnectionOpened()) {
       try {
         if (rs != null) {
           rs.close();
         }
-        connectionOpened = false;
+        connection.close();
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.closeConnection()",
+        SilverTrace.error("connecteurJDBC", "ConnecteurJDBCSessionControl.closeConnection()",
             "connecteurJDBC.MSG_CONNECTION_NOT_CLOSED", null, e);
-
+      } finally {
+        connection = null;
       }
     }
 
@@ -148,25 +149,24 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   public void startConnection() {
     String temp = getSQLreq();
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.startConnection()",
-        "root.MSG_GEN_ENTER_METHOD", "temp : " + temp);
     rowNumber = 0;
-
-    if (!connectionOpened && (connecteurJDBCDetail != null)) {
+    
+    if (!isConnectionOpened() && (connecteurJDBCDetail != null)) {
       try {
         Properties info = new Properties();
         info.setProperty("user", getLogin());
         info.setProperty("password", getPassword());
-        Connection con = getDriver().connect(getJDBCurl(), info);
-        dbMetaData = con.getMetaData();
-        Statement stmt = con.createStatement();
+        connection = getDriver().connect(getJDBCurl(), info);
+        
+        dbMetaData = connection.getMetaData();
+        Statement stmt = connection.createStatement();
         if (!StringUtil.isDefined(temp)) {
           rs = null;
         } else {
           rs = stmt.executeQuery(temp);
         }
-        connectionOpened = true;
       } catch (SQLException e) {
+        closeConnection();
         SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.startConnection()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + getSQLreq(), e);
       }
@@ -175,25 +175,22 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public void startConnection(String temp) {
-    SilverTrace.info("connecteurJDBC", "ConnecteurJDBCSessionController.startConnection()",
-        "root.MSG_GEN_ENTER_METHOD", "temp : " + temp);
     rowNumber = 0;
-
-    if (!connectionOpened && (connecteurJDBCDetail != null)) {
+    if (!isConnectionOpened() && (connecteurJDBCDetail != null)) {
       try {
         Properties info = new Properties();
         info.setProperty("user", getLogin());
         info.setProperty("password", getPassword());
-        Connection con = getDriver().connect(getJDBCurl(), info);
-        dbMetaData = con.getMetaData();
-        Statement stmt = con.createStatement();
+        connection = getDriver().connect(getJDBCurl(), info);
+        dbMetaData = connection.getMetaData();
+        Statement stmt = connection.createStatement();
         if (!StringUtil.isDefined(temp)) {
           rs = null;
         } else {
           rs = stmt.executeQuery(temp);
         }
-        connectionOpened = true;
       } catch (Exception e) {
+        closeConnection();
         SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.startConnection()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + getSQLreq(), e);
       }
@@ -514,6 +511,10 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   public boolean isConnectionConfigured() {
     return (connecteurJDBCDetail != null);
+  }
+
+  public boolean isConnectionOpened() {
+    return connection != null;
   }
 
   // setters (à utiliser via les jsp)
