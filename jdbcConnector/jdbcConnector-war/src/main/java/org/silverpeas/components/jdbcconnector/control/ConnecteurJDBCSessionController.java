@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.jdbcconnector.control;
 
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
 import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
@@ -62,8 +62,6 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   private String validreq = "";
   private String fullreq = "";
   private String sortType = "";
-  private boolean connectionOpened = false;
-
   private DataSourceConnectionInfo currentConnectionInfo = null;
   private List<DataSourceDefinition> allDataSources = null;
 
@@ -77,6 +75,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   private int rowNumber;
   // columns selected in the sql query
   private Vector<String> selectedColumn = new Vector<>();
+  private Connection connection;
 
   /**
    * Constructeur
@@ -125,16 +124,16 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   public void closeConnection() {
-    if (connectionOpened) {
+    if (isConnectionOpened()) {
       try {
         if (rs != null) {
           rs.close();
         }
-        connectionOpened = false;
+        connection.close();
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.closeConnection()",
-            "connecteurJDBC.MSG_CONNECTION_NOT_CLOSED", null, e);
-
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      } finally {
+        connection = null;
       }
     }
 
@@ -149,7 +148,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
     rowNumber = 0;
 
-    if (!connectionOpened && (currentConnectionInfo != null)) {
+    if (!isConnectionOpened() && (currentConnectionInfo != null)) {
       try {
         Connection connection = currentConnectionInfo.openConnection();
         dbMetaData = connection.getMetaData();
@@ -159,10 +158,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         } else {
           rs = stmt.executeQuery(request);
         }
-        connectionOpened = true;
       } catch (Exception e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.startConnection()",
-            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + request, e);
+        closeConnection();
+        SilverLogger.getLogger(this).error("Failure in executing SQL request: " + request, e);
       }
     }
   }
@@ -382,8 +380,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           ret = md.getColumnCount();
         }
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.getColumnCount()",
-            "connecteurJDBC.MSG_CANT_GET_Column_Count", null, e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     return ret;
@@ -403,8 +400,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           ret = md.getColumnName(i);
         }
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.getColumnName()",
-            "connecteurJDBC.MSG_CANT_GET_COLUMN_NAME", "column number : " + i, e);
+        SilverLogger.getLogger(this).error("Error to get name of column " + i, e);
       }
     }
     return ret;
@@ -424,8 +420,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           ret = md.getColumnTypeName(i);
         }
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.getColumnType()",
-            "connecteurJDBC.MSG_CANT_GET_COLUMN_TYPE", "column number : " + i, e);
+        SilverLogger.getLogger(this).error("Error to get data type of column " + i, e);
       }
     }
     return ret;
@@ -442,8 +437,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         try {
           ret = rs.next();
         } catch (SQLException e) {
-          SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.getNext()",
-              "connecteurJDBC.MSG_CANT_GET_NEXT_ROW", null, e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
     }
@@ -456,8 +450,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
       try {
         ret = rs.getString(i);
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.getString()",
-            "connecteurJDBC.MSG_CANT_GET_COLUMN_VALUE", null, e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     return ret;
@@ -465,6 +458,10 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   public boolean isConnectionConfigured() {
     return (currentConnectionInfo != null);
+  }
+
+  public boolean isConnectionOpened() {
+    return connection != null;
   }
 
   public String checkRequest(String request) {
@@ -494,12 +491,10 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         }
       }
     } catch (ConnecteurJDBCException | SQLException e) {
-      SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.checkConnection()",
-          "connecteurJDBC.MSG_CHECK_REQUEST_FAIL", "request : " + request, e);
+      SilverLogger.getLogger(this).error("Error while checking SQL request " + request, e);
       return e.getMessage();
     } catch (MissingResourceException e) {
-      SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.checkConnection()",
-          "connecteurJDBC.MSG_MISSING_MESSAGE_ERROR", "request : " + request, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "can't find error Message";
     }
     return null;
@@ -539,13 +534,12 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     Connection connection = null;
     try {
       connection = connectionInfo.openConnection();
-    } catch (Exception ex) {
-      SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.checkConnection()",
-          "connecteurJDBC.MSG_CHECK_CONNECTION_FAIL",
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Error while checking connection for: {" +
           "data source: " + currentConnectionInfo.getDataSourceName() + ", login: " +
-              currentConnectionInfo.getLogin() + ", password : " +
-              currentConnectionInfo.getPassword());
-      throw ex;
+          currentConnectionInfo.getLogin() + ", password : " +
+          currentConnectionInfo.getPassword() + "}", e);
+      throw e;
     } finally {
       DBUtil.close(connection);
     }
