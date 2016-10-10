@@ -29,7 +29,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>suggestion-box</artifactId>
-    <version>5.15.4-SNAPSHOT</version>
+    <version>5.15.4</version>
   </parent>
 
   <groupId>com.silverpeas.components.suggestion-box</groupId>
