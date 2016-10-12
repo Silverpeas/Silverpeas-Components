@@ -389,6 +389,7 @@ function displayTopicContent(id) {
 		displayPath(id);
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
+		$("#searchZone").css({'display':'block'});
 	}
 
   displayPublicationPromise.then(function() {
