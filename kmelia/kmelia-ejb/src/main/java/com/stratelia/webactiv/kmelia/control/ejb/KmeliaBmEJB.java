@@ -1196,6 +1196,9 @@ public class KmeliaBmEJB implements KmeliaBm {
    */
   private boolean changePublicationStatusOnUpdate(PublicationDetail pubDetail) {
     String oldStatus = pubDetail.getStatus();
+    if (!StringUtil.isDefined(oldStatus)) {
+      oldStatus = getPublicationDetail(pubDetail.getPK()).getStatus();
+    }
     String newStatus = oldStatus;
 
     List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubDetail.getPK());
