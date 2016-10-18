@@ -49,15 +49,15 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.index.search.SearchEngineProvider;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 
 import javax.inject.Inject;
@@ -592,14 +592,13 @@ public class DefaultGalleryService implements GalleryService {
   public Collection<Media> search(final QueryDescription query) {
     final Collection<Media> mediaList = new ArrayList<>();
     try {
-      final List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
-          getEntries();
+      final List<SearchResult> results = SearchService.get().search(query);
       // création des médias à partir des résultats
       // Ne retourne que les médias
-      result.stream()
-          .filter(matchIndex -> MediaType.from(matchIndex.getObjectType()) != MediaType.Unknown)
-          .forEach(matchIndex -> {
-            final MediaPK mediaPK = new MediaPK(matchIndex.getObjectId());
+      results.stream()
+          .filter(result -> MediaType.from(result.getType()) != MediaType.Unknown)
+          .forEach(result -> {
+            final MediaPK mediaPK = new MediaPK(result.getId());
             final Media media = getMedia(mediaPK);
             if (media != null) {
               mediaList.add(media);

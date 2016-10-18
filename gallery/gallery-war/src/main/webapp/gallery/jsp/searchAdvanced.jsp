@@ -36,7 +36,6 @@
 <c:set var="_language" value="${requestScope.resources.language}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
-
 <fmt:setLocale value="${_language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
@@ -58,10 +57,16 @@
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="datepicker"/>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/silverpeas-pdc-widgets.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/silverpeas-pdc.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript">
     function sendData() {
       if (checkLuceneQuery()) {
+        var values = $('#used_pdc').pdc('selectedValues');
+        if (values.length > 0) {
+          document.searchForm.AxisValueCouples.value = values.flatten();
+        }
         setTimeout("document.searchForm.submit();", 500);
       }
     }
@@ -84,6 +89,16 @@
       return true;
     }
 
+    $(document).ready(function(){
+      <c:if test="${isPdcActivated}">
+        $('#used_pdc').pdc('used', {
+          workspace: 'useless',
+          component: '${componentId}',
+          withSecondaryAxis: true
+        });
+      </c:if>
+    });
+
   </script>
 </head>
 <body id="${instanceId}" class="gallery gallery-search yui-skin-sam">
@@ -95,7 +110,7 @@
 <view:window>
   <view:frame>
 
-    <form id="searchFormId" name="searchForm" action="Search" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
+    <form id="advancedSearchForm" name="searchForm" action="Search" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 
       <fieldset id="generalFieldset" class="skinFieldset">
         <div class="fields">
@@ -151,10 +166,8 @@
       </c:if>
 
       <% if (form != null && data != null) { %>
-      <view:board>
-        <table>
-          <tr>
-            <td>
+      <fieldset id="formInfo" class="skinFieldset">
+        <legend><fmt:message key="GML.bloc.further.information"/></legend>
               <%
                 PagesContext xmlContext =
                     new PagesContext("myForm", "0", resource.getLanguage(), false, componentId,
@@ -164,30 +177,14 @@
                 xmlContext.setUseBlankFields(true);
                 form.display(out, xmlContext, data);
               %>
-            </td>
-          </tr>
-        </table>
-      </view:board>
+      </fieldset>
       <% } %>
 
       <c:if test="${isPdcActivated}">
         <fieldset id="pdcFieldset" class="skinFieldset">
           <legend><fmt:message key="GML.PDC"/></legend>
-          <c:import url="/pdcPeas/jsp/pdcInComponent.jsp?ComponentId=${componentId}"/>
-            <%--
-            <!-- TODO replace servlet request dispatcher with pdc javascript plugin displayer -->
-            <div class="fields">
-              <div class="field" id="numAffaireArea">
-                <label class="txtlibform" for="numAffaire">   <img src="/silverpeas/pdcPeas/jsp/icons/primary.gif" alt="primary"/>G&eacute;ographique&nbsp;
-                 </label>
-                <div class="champs">
-                  <select name="Axis1" size="1">
-                        <option value=""></option>
-                  </select>
-                </div>
-              </div>
-            </div>
-             --%>
+          <div id="used_pdc"></div>
+          <input type="hidden" name="AxisValueCouples"/>
         </fieldset>
       </c:if>
 
@@ -201,7 +198,7 @@
 
     <script type="text/javascript">
       $(document).ready(function() {
-        $('#searchFormId').on("submit", function() {
+        $('#advancedSearchForm').on("submit", function() {
           sendData();
           return false;
         });

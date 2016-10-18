@@ -418,8 +418,11 @@ public class CardManager {
       PublicationTemplate pub =
           PublicationTemplateManager.getInstance().getPublicationTemplate(card.getInstanceId());
 
+      final String xmlFormShortName = pub.getFileName()
+          .substring(pub.getFileName().indexOf("/") + 1, pub.getFileName().indexOf("."));
+
       RecordSet set = pub.getRecordSet();
-      set.indexRecord(pk.getId(), "", indexEntry);
+      set.indexRecord(pk.getId(), xmlFormShortName, indexEntry);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("User card indexation failure", e);
     }

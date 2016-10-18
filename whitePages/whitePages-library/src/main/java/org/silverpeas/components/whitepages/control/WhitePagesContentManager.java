@@ -71,8 +71,9 @@ public class WhitePagesContentManager implements ContentInterface {
     try {
       ArrayList<Card> cards = (ArrayList<Card>) CardManager.getInstance().getCardsByIds(ids);
       for (Card card : cards) {
-        headers.add(new CardHeader(Long.parseLong(card.getPK().getId()), card, instanceId,
-            card.getCreationDate(), Integer.toString(card.getCreatorId())));
+        CardHeader header = new CardHeader(Long.parseLong(card.getPK().getId()), card, instanceId,
+            card.getCreationDate(), Integer.toString(card.getCreatorId()));
+        headers.add(header);
       }
     } catch (WhitePagesException e) {
       // skip unknown and ill formed id.

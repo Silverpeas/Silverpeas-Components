@@ -22,6 +22,7 @@
 .zoneNavAndSearch{
 	background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
 	padding:14px;
+  margin:10px;
 	width: 96%;
 }
 
@@ -297,9 +298,10 @@
 
 #whitePages #search .txtexform span { font-style:italic;}
 
-#whitePages #search div {
+#whitePages #search div.arbre {
 	clear:both;
-	}
+}
+
 #whitePages #search div div {
 	height:20px;}
 
@@ -315,6 +317,11 @@
     width: 180px;
 	line-height:20px;
 	}
+
+#whitePages #search #used_pdc label {
+  padding-right: 22px;
+}
+
 #whitePages #search label.labelRadio ,
 #whitePages #search label.labelCheckbox{
     display:inline;

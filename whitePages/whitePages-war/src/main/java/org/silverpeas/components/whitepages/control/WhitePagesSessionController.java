@@ -28,13 +28,13 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -64,8 +64,6 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.model.SearchAxis;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
@@ -792,12 +790,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     sender.notifyUser(notifMetaData);
   }
 
-  public boolean isCardClassifiedOnPdc()
-      throws WhitePagesException, ContentManagerException, PdcException {
-    Card card = getUserCard(getUserId());
-    return getCardManager().isPublicationClassifiedOnPDC(card);
-  }
-
   public Boolean isEmailHidden() {
     // pour cacher ou non l'email pour les lecteurs
     return "yes".equalsIgnoreCase(getComponentParameterValue("isEmailHidden"));
@@ -839,18 +831,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           "whitePages.CANT_GET_XML_FIELDS", e);
     }
     return new ArrayList<>();
-  }
-
-  public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType)
-      throws PdcException {
-    List<SearchAxis> searchAxis =
-        getPdcManager().getPertinentAxisByInstanceId(searchContext, axisType, getComponentId());
-    if (searchAxis != null && !searchAxis.isEmpty()) {
-      for (SearchAxis axis : searchAxis) {
-        axis.setValues(getPdcManager().getDaughters(Integer.toString(axis.getAxisId()), "0"));
-      }
-    }
-    return searchAxis;
   }
 
   public List<SearchField> getLdapAttributesList() throws Exception {
@@ -926,22 +906,22 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return ids;
   }
 
-  public List<Card> getSearchResult(String query, SearchContext pdcContext,
+  public List<Card> getSearchResult(String query, String taxonomyPosition,
       Map<String, String> xmlFields, List<FieldDescription> fieldsQuery) {
     List<Card> cards = new ArrayList<>();
-    Collection<GlobalSilverContent> contents = null;
+    List<SearchResult> results = null;
 
     try {
       PublicationTemplate template = getTemplate(getComponentId());
-      String xmlTemplate = template.getName();
-      contents = WhitePageServiceProvider.getMixedSearchService()
-          .search(getComponentId(), getUserId(), query, pdcContext, xmlFields,
+      String xmlTemplate = "whitePages";
+      results = WhitePageServiceProvider.getMixedSearchService()
+          .search(getComponentId(), getUserId(), query, taxonomyPosition, xmlFields,
               xmlTemplate, fieldsQuery, getLanguage());
     } catch (Exception e) {
 
     }
 
-    if (contents != null) {
+    if (results != null) {
       try {
         Collection<Card> allCars = getCards();
         HashMap<String, Card> map = new HashMap<>();
@@ -949,9 +929,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           map.put(card.getPK().getId(), card);
         }
 
-        for (GlobalSilverContent content : contents) {
-          if (map.containsKey(content.getId())) {
-            cards.add(map.get(content.getId()));
+        for (SearchResult result : results) {
+          if (map.containsKey(result.getId())) {
+            cards.add(map.get(result.getId()));
           }
         }
       } catch (Exception e) {

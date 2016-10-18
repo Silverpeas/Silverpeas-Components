@@ -46,6 +46,7 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
     Media media = (Media) sci;
     gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
+    gsc.setType(media.getType().getName());
     return gsc;
   }
 

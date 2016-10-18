@@ -25,7 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.components.whitepages.html.WhitePagesHtmlTools"%>
 <%@ page import="org.silverpeas.components.whitepages.model.Card"%>
 <%@ page import="org.silverpeas.components.whitepages.model.SearchField"%>
 <%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
@@ -48,6 +47,8 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="messageme"/>
+<view:script src="/util/javaScript/silverpeas-pdc-widgets.js" />
+<view:script src="/util/javaScript/silverpeas-pdc.js" />
 <script type="text/javascript">
 <%
 boolean main = false;
@@ -129,22 +130,30 @@ function defineSearchFields(){
 }
 
 function dynamicSearchLaunch(){
+  var values = $('#used_pdc').pdc('selectedValues');
+  if (values.length > 0) {
+    document.searchform.AxisValueCouples.value = values.flatten();
+  }
 	$.progressMessage();
 	document.searchform.submit();
 }
 </script>
 <script type="text/javascript">
 
-      $(document).ready(function(){
+  $(document).ready(function(){
 
-			$(".linkMore").click(function() {
-
-				var divAAfficher = this.id.substring(5);
-				$('#'+this.id).hide();
-				$('#'+divAAfficher).show('slow');
-				});
-
+		$(".linkMore").click(function() {
+			var divAAfficher = this.id.substring(5);
+			$('#'+this.id).hide();
+			$('#'+divAAfficher).show('slow');
       });
+
+    $('#used_pdc').pdc('used', {
+      workspace: 'useless',
+      component: '<%=scc.getComponentId()%>',
+      withSecondaryAxis: true
+    });
+  });
     </script>
 </head>
 <body id="whitePages">
@@ -174,15 +183,13 @@ out.println(window.printBefore());
 out.println(frame.printBefore());
 
 SortedSet<SearchField> searchFields = (SortedSet<SearchField>) request.getAttribute("searchFields");
-List primaryPdcFields = (List)request.getAttribute("primaryPdcFields");
-List secondaryPdcFields = (List)request.getAttribute("secondaryPdcFields");
 boolean searchDone = StringUtil.getBooleanValue((String)request.getAttribute("searchDone"));
 
 String queryValue = request.getAttribute("query") != null ?  (String)request.getAttribute("query") : "";
 if(!main){
   // no form search in Main
 %>
-<br/><fmt:message key="whitePages.op.searchCard"/><br/>
+
 <div class="zoneNavAndSearch">
           <div id="search">
 <form id="searchform" name="searchform" method="post" action="<%=routerUrl + "getSearchResult"%>" >
@@ -191,27 +198,11 @@ if(!main){
         <input type="text" id="query" value="<%=queryValue%>" size="60" name="query" class="ac_input champTexte"/>
         <p class="txtexform"><fmt:message key="whitePages.keywordssample"/></p>
     </div>
-<% if (primaryPdcFields != null && !primaryPdcFields.isEmpty()) { %>
-<div id="primaryAxe" class="arbre">
-    <img title="Axe primaire" alt="primaire" src="<%=m_context%>/pdcPeas/jsp/icons/primary.gif"/>
-<%
-	out.println(WhitePagesHtmlTools.generateHtmlForPdc(primaryPdcFields, language, request));
-%>
-    </div>
-<% } %>
-<% if (secondaryPdcFields != null && !secondaryPdcFields.isEmpty()) { %>
-<a href="#" id="link_secondaryAxe" title="<fmt:message key="whitePages.secondary"/>" class="linkMore">
-    <fmt:message key="whitePages.secondary"/>
-</a>
 
-<div id="secondaryAxe" class="arbre">
-<img title="<fmt:message key="whitePages.secondary" />" alt="<fmt:message key="whitePages.secondary" />" src="<%=m_context%>/pdcPeas/jsp/icons/secondary.gif"/>
+  <div id="used_pdc"></div>
+  <input type="hidden" name="AxisValueCouples"/>
+
 <%
-	out.println(WhitePagesHtmlTools.generateHtmlForPdc(secondaryPdcFields, language, request));
-%>
-    </div>
-<%
-}
 if (searchFields != null && !searchFields.isEmpty()) {
 %>
 <a href="#" id="link_additionalElements"

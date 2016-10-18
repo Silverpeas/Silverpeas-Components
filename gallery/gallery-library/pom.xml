@@ -32,6 +32,12 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-search</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
