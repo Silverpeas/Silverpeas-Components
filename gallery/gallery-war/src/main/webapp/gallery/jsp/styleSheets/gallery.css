@@ -583,8 +583,7 @@ table.listing-media {
 
 /*********************** Specific advanced search CSS *********************/
 
-#searchFormId .milieuBoutonV5 a,
-#searchFormId a.milieuBoutonV5,
+#searchFormId .sp_button,
 #searchFormId button {
   font-size: 90% !important;
   height: 18px;
@@ -598,7 +597,7 @@ table.listing-media {
   min-height: 20px;
 }
 
-#generalArea .milieuBoutonV5 {
+#generalArea .sp_button {
   display: inline-block;
   height: 17px;
 }

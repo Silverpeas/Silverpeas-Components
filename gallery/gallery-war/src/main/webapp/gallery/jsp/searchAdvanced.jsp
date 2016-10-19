@@ -106,7 +106,7 @@
               <fmt:message key="gallery.search.field.keyword.help" var="searchTitle"/>
               <input type="submit" class="hide"/>
               <input id="searchQuery" type="text" name="SearchKeyWord" value="${keyword}" size="36" title="${searchTitle}"/>
-              <a class="milieuBoutonV5" href="javascript:onClick=sendData();"><span><fmt:message key="GML.search"/></span></a>
+              <a class="sp_button" href="javascript:onClick=sendData();"><fmt:message key="GML.search"/></a>
             </div>
           </div>
         </div>

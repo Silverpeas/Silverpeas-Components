@@ -237,14 +237,8 @@ if (searchFields != null && !searchFields.isEmpty()) {
 %>
 </div>
 <% } %>
-<div id="btnValidSearch">
-  <table cellspacing="0" cellpadding="0" border="0">
-      <tbody><tr>
-          <td align="left" class="gaucheBoutonV5"><img src="<%=m_context%>/util/viewGenerator/icons/px.gif" alt="" /></td>
-          <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:dynamicSearchLaunch()"><fmt:message key="whitePages.button.search"/></a></td>
-          <td align="right" class="droiteBoutonV5"><img src="<%=m_context%>/util/viewGenerator/icons/px.gif" alt="" /></td>
-       </tr></tbody>
-  </table>
+<div  class="sp_buttonPane" id="btnValidSearch">
+  <a  class="sp_button" href="javascript:dynamicSearchLaunch()"><fmt:message key="whitePages.button.search"/></a>
 </div>
 </form>
 </div>
