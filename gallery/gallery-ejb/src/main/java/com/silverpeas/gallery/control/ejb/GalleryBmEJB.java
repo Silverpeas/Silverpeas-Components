@@ -327,16 +327,13 @@ public class GalleryBmEJB implements GalleryBm {
 
   @SuppressWarnings("EjbProhibitedPackageUsageInspection")
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void importFromRepository(final UserDetail user, final String componentInstanceId,
       final File repository, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final MediaDataCreateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
-      processManagement.addImportFromRepositoryProcesses(repository, delegate.getAlbumId(),
-          watermark, watermarkHD, watermarkOther, delegate);
-      processManagement.execute();
+      GalleryProcessManagement.importFromRepositoryProcesses(user, componentInstanceId, repository,
+          delegate.getAlbumId(), watermark, watermarkHD, watermarkOther, delegate);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBm.importFromRepository()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTOS_NOT_IMPORTED", e);

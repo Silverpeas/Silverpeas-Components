@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
@@ -163,7 +164,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     int read;
     BufferedInputStream input = null;
 
-    String fileName = image.getId() + "_preview.jpg";
+    String fileName = image.getFile(MediaResolution.PREVIEW).getName();
     if (useOriginal) {
       fileName = image.getFileName();
     }

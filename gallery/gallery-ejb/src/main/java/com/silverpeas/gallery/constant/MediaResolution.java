@@ -81,7 +81,7 @@ public enum MediaResolution {
     this.width = width;
     this.height = height;
     this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
-    this.thumbnailSuffix = "original".equals(label) ? "" : "_" + label + ".jpg";
+    this.thumbnailSuffix = "original".equals(label) ? "" : ("_" + label);
   }
 
   /**

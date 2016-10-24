@@ -175,4 +175,27 @@ public enum MediaMimeType {
   public boolean isIPTCCompliant() {
     return this == GIF || this == JPG || this == TIFF;
   }
+
+  /**
+   * Gets the supported mime types according to the given media type.
+   * @param mediaType the aimed media type.
+   * @return a set of media mime types.
+   */
+  public static Set<MediaMimeType> getSupportedMimeTypes(MediaType mediaType) {
+    final Set<MediaMimeType> supportedMimeTypes;
+    switch (mediaType) {
+      case Photo:
+        supportedMimeTypes = MediaMimeType.PHOTOS;
+        break;
+      case Video:
+        supportedMimeTypes = MediaMimeType.VIDEOS;
+        break;
+      case Sound:
+        supportedMimeTypes = MediaMimeType.SOUNDS;
+        break;
+      default:
+        supportedMimeTypes =  EnumSet.noneOf(MediaMimeType.class);
+    }
+    return supportedMimeTypes;
+  }
 }

@@ -44,7 +44,7 @@ public class PhotoTest extends AbstractMediaTest {
     assertThat(photo.getMetaDataProperties(), hasSize(0));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.TINY.getThumbnailSuffix()));
+            MediaResolution.TINY.getThumbnailSuffix() + ".jpg"));
   }
 
   @Test
@@ -61,7 +61,7 @@ public class PhotoTest extends AbstractMediaTest {
     assertThat(photo.isPreviewable(), is(false));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.MEDIUM),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.MEDIUM.getThumbnailSuffix()));
+            MediaResolution.MEDIUM.getThumbnailSuffix() + ".jpg"));
 
     photo.setFileName("image.jpg");
 

@@ -184,7 +184,7 @@ public class PhotoDetailTest extends AbstractMediaTest {
         is("ok"));
     assertThat(wrappedPhoto.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.TINY.getThumbnailSuffix()));
+            MediaResolution.TINY.getThumbnailSuffix() + ".jpg"));
 
     // Previewable
     photoDetail.setImageName("image.jpg");

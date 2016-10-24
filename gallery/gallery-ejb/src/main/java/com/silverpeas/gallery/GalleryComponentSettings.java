@@ -136,6 +136,14 @@ public final class GalleryComponentSettings {
     return (StringUtil.isInteger(tmpValue)) ? Integer.valueOf(tmpValue) : null;
   }
 
+  public static Integer getWatermarkPercentSize() {
+    int percentSizeWatermark = getSettings().getInteger("percentSizeWatermark", 1);
+    if (percentSizeWatermark <= 0) {
+      percentSizeWatermark = 1;
+    }
+    return percentSizeWatermark;
+  }
+
   public static int getMaxNumberOfPreviewThumbnail() {
     return ThumbnailPeriod.ALL_VALIDS.size();
   }

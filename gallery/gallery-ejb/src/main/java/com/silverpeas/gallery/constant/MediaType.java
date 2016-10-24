@@ -32,7 +32,8 @@ import org.codehaus.jackson.annotate.JsonValue;
  * @author: Yohann Chastagnier
  */
 public enum MediaType {
-  Unknown(null), Photo(com.silverpeas.gallery.model.Photo.class),
+  Unknown(null),
+  Photo(com.silverpeas.gallery.model.Photo.class),
   Video(com.silverpeas.gallery.model.Video.class),
   Sound(com.silverpeas.gallery.model.Sound.class),
   Streaming(com.silverpeas.gallery.model.Streaming.class);
