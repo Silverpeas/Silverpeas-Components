@@ -23,21 +23,21 @@
  */
 package com.silverpeas.gallery.model;
 
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.util.DateUtil;
 import org.springframework.context.ApplicationContext;
 
 import java.sql.Timestamp;
@@ -183,7 +183,7 @@ public class PhotoDetailTest extends AbstractMediaTest {
         is("ok"));
     assertThat(wrappedPhoto.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.TINY.getThumbnailSuffix()));
+            MediaResolution.TINY.getThumbnailSuffix() + ".jpg"));
 
     // Previewable
     photoDetail.setImageName("image.jpg");

@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.gallery.servlets;
 
+import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.MediaPK;
@@ -54,7 +55,8 @@ import java.io.OutputStream;
 import java.util.Collection;
 
 /**
- * @author
+ * This servlet is used in order to list image media for other components which handle WYSIWYG
+ * editing.
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
 
@@ -160,7 +162,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     int read;
     BufferedInputStream input = null;
 
-    String fileName = image.getId() + "_preview.jpg";
+    String fileName = image.getFile(MediaResolution.PREVIEW).getName();
     if (useOriginal) {
       fileName = image.getFileName();
     }

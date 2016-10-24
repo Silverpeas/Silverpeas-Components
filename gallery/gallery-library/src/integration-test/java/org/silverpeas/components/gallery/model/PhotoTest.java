@@ -23,10 +23,6 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.GalleryWarBuilder;
-import org.silverpeas.components.gallery.constant.MediaMimeType;
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -34,6 +30,10 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.gallery.GalleryWarBuilder;
+import org.silverpeas.components.gallery.constant.MediaMimeType;
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.io.media.Definition;
 
 import static org.hamcrest.Matchers.*;
@@ -56,7 +56,7 @@ public class PhotoTest extends AbstractMediaTest {
     assertThat(photo.getMetaDataProperties(), hasSize(0));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.TINY.getThumbnailSuffix()));
+            MediaResolution.TINY.getThumbnailSuffix() + ".jpg"));
   }
 
   @Test
@@ -73,7 +73,7 @@ public class PhotoTest extends AbstractMediaTest {
     assertThat(photo.isPreviewable(), is(false));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.MEDIUM),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.MEDIUM.getThumbnailSuffix()));
+            MediaResolution.MEDIUM.getThumbnailSuffix() + ".jpg"));
 
     photo.setFileName("image.jpg");
 
