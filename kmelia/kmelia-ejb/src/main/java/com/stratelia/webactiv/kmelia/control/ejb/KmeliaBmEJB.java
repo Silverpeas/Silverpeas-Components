@@ -2652,8 +2652,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (cloneWysiwyg) {
         try {
           // delete wysiwyg contents of public version
-          WysiwygController.deleteWysiwygAttachmentsOnly("useless", pubPK.getInstanceId(), pubPK
-              .getId());
+          WysiwygController.deleteWysiwygAttachmentsOnly(pubPK.getInstanceId(), pubPK.getId());
         } catch (WysiwygException e) {
           Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
         }
