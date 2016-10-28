@@ -2431,8 +2431,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (cloneWysiwyg) {
         try {
           // delete wysiwyg contents of public version
-          WysiwygController
-              .deleteWysiwygAttachmentsOnly("useless", pubPK.getInstanceId(), pubPK.getId());
+          WysiwygController.deleteWysiwygAttachmentsOnly(pubPK.getInstanceId(), pubPK.getId());
         } catch (WysiwygException e) {
           SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
