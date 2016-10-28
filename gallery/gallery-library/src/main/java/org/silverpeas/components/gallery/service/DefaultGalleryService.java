@@ -41,7 +41,6 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -59,8 +58,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.process.ProcessProvider;
-import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 
 import javax.inject.Inject;
@@ -302,11 +299,10 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   @Transactional(Transactional.TxType.SUPPORTS)
   public void importFromRepository(final UserDetail user, final String componentInstanceId,
-      final File repository, final boolean watermark, final String watermarkHD,
-      final String watermarkOther, final MediaDataCreateDelegate delegate) {
+      final File repository, final MediaDataCreateDelegate delegate) {
     try {
       GalleryProcessManagement.importFromRepositoryProcesses(user, componentInstanceId, repository,
-          delegate.getAlbumId(), watermark, watermarkHD, watermarkOther, delegate);
+          delegate.getAlbumId(), delegate);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryService.importFromRepository()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTOS_NOT_IMPORTED", e);
@@ -573,14 +569,8 @@ public class DefaultGalleryService implements GalleryService {
 
       if (silverObjectId == -1) {
         Media media = getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-        silverObjectId = Transaction.performInOne(() -> {
-          final Connection con = openConnection();
-          try {
-            return createSilverContent(con, media, media.getCreatorId());
-          } finally {
-            DBUtil.close(con);
-          }
-        });
+        silverObjectId =
+            Transaction.performInOne(() -> createSilverContent(media, media.getCreatorId()));
       }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.getSilverObjectId()",
@@ -589,10 +579,9 @@ public class DefaultGalleryService implements GalleryService {
     return silverObjectId;
   }
 
-  private int createSilverContent(final Connection con, final Media media, final String creatorId) {
-
+  private int createSilverContent(final Media media, final String creatorId) {
     try {
-      return getGalleryContentManager().createSilverContent(con, media, creatorId);
+      return getGalleryContentManager().createSilverContent(media, creatorId);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -759,23 +748,6 @@ public class DefaultGalleryService implements GalleryService {
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("sortAlbums()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_NOT_ORDER", e);
-    }
-  }
-
-  /**
-   * Executes a process list
-   * @param processList the list of processes to execute.
-   */
-  @Override
-  @Transactional(Transactional.TxType.REQUIRED)
-  public void executeProcessList(final ProcessList<GalleryProcessExecutionContext> processList,
-      final GalleryProcessExecutionContext processExecutionContext) {
-    try (final Connection connection = openConnection()) {
-      processExecutionContext.setConnection(connection);
-      ProcessProvider.getProcessManagement().execute(processList, processExecutionContext);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("executeProcessList()", SilverpeasRuntimeException.ERROR,
-          "gallery.TRANSACTION_ERROR", e);
     }
   }
 }

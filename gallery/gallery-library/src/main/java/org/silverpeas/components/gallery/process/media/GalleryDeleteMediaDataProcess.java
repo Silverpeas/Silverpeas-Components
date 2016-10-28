@@ -23,18 +23,18 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -69,7 +69,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
    * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context,
+  protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
     MediaDAO.deleteMedia(getMedia());
 
@@ -81,8 +81,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
         .deleteAllCommentsOnPublication(getMedia().getContributionType(), getMedia().getMediaPK());
 
     // Supprime le silverObject correspond
-    getGalleryContentManager()
-        .deleteSilverContent(context.getConnection(), getMedia().getMediaPK());
+    getGalleryContentManager().deleteSilverContent(getMedia().getMediaPK());
   }
 
   /**
@@ -91,7 +90,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
    * @param context
    */
   private void removeXMLContentOfMedia(final String mediaId,
-      final GalleryProcessExecutionContext context) {
+      final ProcessExecutionContext context) {
     try {
       final String xmlFormName = getXMLFormName(context);
       if (isDefined(xmlFormName)) {

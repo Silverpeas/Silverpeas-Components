@@ -26,7 +26,6 @@ package org.silverpeas.components.gallery;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.media.DrewMediaMetadataExtractor;
@@ -40,12 +39,9 @@ import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.components.gallery.processing.ImageResizer;
-import org.silverpeas.components.gallery.processing.Watermarker;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.io.media.image.ImageLoader;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
@@ -58,12 +54,8 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -72,6 +64,8 @@ import java.util.Set;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.*;
 import static org.silverpeas.components.gallery.constant.MediaResolution.*;
+import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
+import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
 import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHRINK;
 import static org.silverpeas.core.io.media.image.ImageToolDirective.PREVIEW_WORK;
 import static org.silverpeas.core.io.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_EXTENSION;
@@ -80,6 +74,66 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class MediaUtil {
+
+  private MediaUtil() {
+  }
+
+  private static void pasteFile(final HandledFile fromFile, final HandledFile toFile,
+      final boolean cut) {
+    if (fromFile.exists()) {
+      try {
+        if (cut) {
+          fromFile.moveFile(toFile);
+        } else {
+          fromFile.copyFile(toFile);
+        }
+      } catch (final Exception e) {
+        SilverLogger.getLogger(MediaUtil.class).error(
+            "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
+                toFile.getFile().getPath(), e);
+      }
+    }
+  }
+
+  /**
+   * Gets a handled file.
+   * @param fileHandler the current session file handler
+   * @param media the original media file to get.
+   * @return the handled file
+   */
+  private static HandledFile getHandledFile(FileHandler fileHandler, InternalMedia media) {
+    if (StringUtil.isNotDefined(media.getFileName())) {
+      throw new IllegalArgumentException("media.getFilename() must return a defined name");
+    }
+    return fileHandler.getHandledFile(Media.BASE_PATH, media.getComponentInstanceId(),
+        media.getWorkspaceSubFolderName(), media.getFileName());
+  }
+
+  private static void setMetaData(final FileHandler fileHandler, final Photo photo,
+      final String lang) throws MediaMetadataException, IOException {
+    if (MediaMimeType.JPG == photo.getFileMimeType()) {
+      final HandledFile handledFile = fileHandler
+          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
+              photo.getFileName());
+      if (handledFile.exists()) {
+        try {
+          final MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.
+              getInstanceId());
+          extractor.extractImageExifMetaData(handledFile.getFile(), lang)
+              .forEach(photo::addMetaData);
+          extractor.extractImageIptcMetaData(handledFile.getFile(), lang)
+              .forEach(photo::addMetaData);
+        } catch (UnsupportedEncodingException e) {
+          SilverLogger.getLogger(MediaUtil.class)
+              .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
+        }
+      }
+    }
+  }
+
+  private static ImageTool getImageTool() {
+    return ImageTool.get();
+  }
 
   /**
    * Saves uploaded sound file on file system
@@ -279,37 +333,6 @@ public class MediaUtil {
     }
   }
 
-  private static void pasteFile(final HandledFile fromFile, final HandledFile toFile,
-      final boolean cut) {
-    if (fromFile.exists()) {
-      try {
-        if (cut) {
-          fromFile.moveFile(toFile);
-        } else {
-          fromFile.copyFile(toFile);
-        }
-      } catch (final Exception e) {
-        SilverLogger.getLogger(MediaUtil.class).error(
-            "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
-                toFile.getFile().getPath(), e);
-      }
-    }
-  }
-
-  /**
-   * Gets a handled file.
-   * @param fileHandler the current session file handler
-   * @param media the original media file to get.
-   * @return the handled file
-   */
-  private static HandledFile getHandledFile(FileHandler fileHandler, InternalMedia media) {
-    if (StringUtil.isNotDefined(media.getFileName())) {
-      throw new IllegalArgumentException("media.getFilename() must return a defined name");
-    }
-    return fileHandler.getHandledFile(Media.BASE_PATH, media.getComponentInstanceId(),
-        media.getWorkspaceSubFolderName(), media.getFileName());
-  }
-
   /**
    * Sets metadata to given instance which represents a photo in memory.
    * @param fileHandler the file handler (quota space management).
@@ -320,35 +343,6 @@ public class MediaUtil {
   public static void setMetaData(final FileHandler fileHandler, final Photo photo)
       throws IOException, MediaMetadataException {
     setMetaData(fileHandler, photo, MessageManager.getLanguage());
-  }
-
-  private static void setMetaData(final FileHandler fileHandler, final Photo photo,
-      final String lang) throws MediaMetadataException, IOException {
-    if (MediaMimeType.JPG == photo.getFileMimeType()) {
-      final HandledFile handledFile = fileHandler
-          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
-              photo.getFileName());
-      if (handledFile.exists()) {
-        try {
-          final MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.
-              getInstanceId());
-          extractor.extractImageExifMetaData(handledFile.getFile(), lang)
-              .forEach(photo::addMetaData);
-          extractor.extractImageIptcMetaData(handledFile.getFile(), lang)
-              .forEach(photo::addMetaData);
-        } catch (UnsupportedEncodingException e) {
-          SilverLogger.getLogger(MediaUtil.class)
-              .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
-        }
-      }
-    }
-  }
-
-  private static ImageTool getImageTool() {
-    return ImageTool.get();
-  }
-
-  private MediaUtil() {
   }
 
   /**
@@ -375,19 +369,15 @@ public class MediaUtil {
      * @throws Exception
      */
     public void process() throws Exception {
-      try {
-        setInternalMetadata();
-        generateFiles();
-      } finally {
-        close();
-      }
+      setInternalMetadata();
+      generateFiles();
     }
 
     /**
      * Generates specific media files.
      * @throws Exception
      */
-    protected abstract void generateFiles() throws Exception;
+    protected abstract void generateFiles();
 
     /**
      * Sets the internal metadata. If metadata
@@ -475,12 +465,6 @@ public class MediaUtil {
     public M getMedia() {
       return media;
     }
-
-    /**
-     * Closes all streams if any
-     */
-    protected void close() {
-    }
   }
 
   private static class SoundProcess extends MediaProcess<Sound> {
@@ -489,7 +473,7 @@ public class MediaUtil {
     }
 
     @Override
-    protected void generateFiles() throws Exception {
+    protected void generateFiles() {
       // No generation.
     }
   }
@@ -500,7 +484,7 @@ public class MediaUtil {
     }
 
     @Override
-    protected void generateFiles() throws Exception {
+    protected void generateFiles() {
       VideoThumbnailExtractor vte = VideoThumbnailExtractor.get();
       if (vte.isActivated()) {
         vte.generateThumbnailsFrom(getPhysicalFileMetaData(), getHandledFile().getFile());
@@ -513,8 +497,7 @@ public class MediaUtil {
     private final String watermarkHD;
     private final String watermarkOther;
 
-    private BufferedImage bufferedImage = null;
-    private List<MetaData> iptcMetadata = null;
+    private List<MetaData> cachedIptcMetadata = null;
 
     private PhotoProcess(final HandledFile handledFile, final Photo photo, final boolean watermark,
         final String watermarkHD, final String watermarkOther) {
@@ -525,7 +508,7 @@ public class MediaUtil {
     }
 
     @Override
-    protected void generateFiles() throws Exception {
+    protected void generateFiles() {
 
       final Photo photo = getMedia();
       if (photo.isPreviewable()) {
@@ -547,31 +530,28 @@ public class MediaUtil {
     }
 
     /**
-     * Gets lazily the buffered image instance of photo.
-     * @return the buffered instance.
-     * @throws Exception
-     */
-    private BufferedImage getBufferedImage() throws Exception {
-      if (bufferedImage == null) {
-        bufferedImage = ImageLoader.loadImage(getHandledFile().getFile());
-      }
-      return bufferedImage;
-    }
-
-    /**
      * Registers the resolution of a photo.
      */
-    private void registerResolutionData() throws Exception {
+    private void registerResolutionData() {
       if (getMedia().getDefinition().getWidth() != 0 &&
           getMedia().getDefinition().getHeight() != 0) {
         // definition already set.
         return;
       }
-      final BufferedImage image = getBufferedImage();
-      if (image == null) {
+      String[] widthAndHeight = null;
+      try {
+        widthAndHeight = getImageTool()
+            .getImageInfo(getHandledFile().getFile(), WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .error("impossible to read the width and height of file ''{0}''",
+                new Object[]{getHandledFile().getFile().getName()}, e);
+      }
+      if (widthAndHeight == null || widthAndHeight.length != 2) {
         getMedia().setDefinition(Definition.fromZero());
       } else {
-        getMedia().setDefinition(Definition.of(image.getWidth(), image.getHeight()));
+        getMedia().setDefinition(
+            Definition.of(Integer.valueOf(widthAndHeight[0]), Integer.valueOf(widthAndHeight[1])));
       }
     }
 
@@ -629,93 +609,21 @@ public class MediaUtil {
         sourceFile.copyFile(outputFile);
         return;
       }
-      if (getImageTool().isActivated()) {
 
-        // Optimized media processing
-        Set<AbstractImageToolOption> options = new HashSet<>();
-        if (resizeToPerform) {
-          options.add(DimensionOption
-              .widthAndHeight(mediaResolution.getWidth(), mediaResolution.getHeight()));
-        }
-        if (watermarkToApply) {
-          options.add(WatermarkTextOption.text(watermarkAuthorName).withFont("Arial"));
-        }
-        getImageTool().convert(sourceFile.getFile(), outputFile.getFile(), options, PREVIEW_WORK,
-            GEOMETRY_SHRINK);
-        // No other treatments is needed
-        return;
+      // Optimized media processing
+      Set<AbstractImageToolOption> options = new HashSet<>();
+      if (resizeToPerform) {
+        options.add(DimensionOption
+            .widthAndHeight(mediaResolution.getWidth(), mediaResolution.getHeight()));
       }
-
-      OutputStream os = null;
-      BufferedImage image = null;
-      try {
-        image = ImageLoader.loadImage(sourceFile.getFile());
-        os = outputFile.openOutputStream();
-        final int originalMaxSize = Math.max(definition.getWidth(), definition.getHeight());
-        final int resizeWidth = Math.min(originalMaxSize, mediaResolution.getWidth());
-        final ImageResizer resizer = new ImageResizer(image, resizeWidth);
-        if (watermarkToApply) {
-          final int watermarkSize =
-              mediaResolution.getWatermarkSize() != null ? mediaResolution.getWatermarkSize() : 0;
-          resizer.resizeImageWithWatermark(os, watermarkAuthorName, watermarkSize);
-        } else {
-          resizer.resizeImage(os);
-        }
-      } finally {
-        if (os != null) {
-          IOUtils.closeQuietly(os);
-        }
-        if (image != null) {
-          image.flush();
-        }
+      if (watermarkToApply) {
+        options.add(WatermarkTextOption.text(watermarkAuthorName).withFont("Arial"));
       }
+      getImageTool().convert(sourceFile.getFile(), outputFile.getFile(), options, PREVIEW_WORK,
+          GEOMETRY_SHRINK);
     }
 
-    private void createWatermark(final OutputStream watermarkedTargetStream,
-        final String watermarkLabel) throws Exception {
-
-      final BufferedImage image = getBufferedImage();
-      final int imageWidth = image.getWidth();
-      final int imageHeight = image.getHeight();
-
-      // création du buffer a la même taille
-      final BufferedImage outputBuf =
-          new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-
-      try {
-        // recherche de la taille du watermark en fonction de la taille de la photo
-        int size = getWatermarkSizeSize(Math.max(imageWidth, imageHeight));
-        final Watermarker watermarker = new Watermarker(imageWidth, imageHeight);
-        watermarker
-            .addWatermark(image, outputBuf, new Font("Arial", Font.BOLD, size), watermarkLabel,
-                size);
-        ImageIO.write(outputBuf, "JPEG", watermarkedTargetStream);
-      } finally {
-        outputBuf.flush();
-      }
-    }
-
-    private int getWatermarkSizeSize(final int max) {
-      int size = 8;
-      if (max < 600) {
-        size = 8;
-      } else if (max >= 3000) {
-        int percentSizeWatermark = GalleryComponentSettings.getWatermarkPercentSize();
-        size = (int) Math.rint(max * percentSizeWatermark / 100);
-      } else {
-        final int offset = 250;
-        int inf = 500;
-        int sup = inf + 250;
-        do {
-          size += 2;
-          inf = sup;
-          sup += offset;
-        } while (inf <= max && max < sup);
-      }
-      return size;
-    }
-
-    private String computeWatermarkText() throws Exception {
+    private String computeWatermarkText() {
       String nameAuthor = "";
       String nameForWatermark = "";
       Photo photo = getMedia();
@@ -727,18 +635,8 @@ public class MediaUtil {
             if (!nameAuthor.isEmpty()) {
               final HandledFile watermarkFile = getHandledFile().getParentHandledFile()
                   .getHandledFile(photo.getId() + "_watermark.jpg");
-              if (getImageTool().isActivated()) {
-                AbstractImageToolOption option = WatermarkTextOption.text(nameAuthor);
-                getImageTool().convert(getHandledFile().getFile(), watermarkFile.getFile(), option);
-              } else {
-                OutputStream watermarkStream = null;
-                try {
-                  watermarkStream = watermarkFile.openOutputStream();
-                  createWatermark(watermarkStream, nameAuthor);
-                } finally {
-                  IOUtils.closeQuietly(watermarkStream);
-                }
-              }
+              AbstractImageToolOption option = WatermarkTextOption.text(nameAuthor);
+              getImageTool().convert(getHandledFile().getFile(), watermarkFile.getFile(), option);
             }
           }
           if (isDefined(watermarkOther)) {
@@ -751,7 +649,7 @@ public class MediaUtil {
           SilverLogger.getLogger(MediaUtil.class).error(
               "Bad image file format " + getHandledFile().getFile().getPath() + ": " +
                   e.getMessage());
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) {
           SilverLogger.getLogger(MediaUtil.class).error(
               "Bad metadata encoding in image " + getHandledFile().getFile().getPath() + ": " +
                   e.getMessage());
@@ -767,15 +665,16 @@ public class MediaUtil {
      * @throws IOException
      */
     private List<MetaData> getIptcMetaData() throws MediaMetadataException, IOException {
-      if (iptcMetadata == null) {
+      if (cachedIptcMetadata == null) {
         final MediaMetadataExtractor extractor =
             new DrewMediaMetadataExtractor(getMedia().getInstanceId());
-        iptcMetadata = extractor.extractImageIptcMetaData(getHandledFile().getFile());
+        cachedIptcMetadata = extractor.extractImageIptcMetaData(getHandledFile().getFile());
       }
-      return iptcMetadata;
+      return cachedIptcMetadata;
     }
 
-    private String getWatermarkValue(final String property) throws Exception {
+    private String getWatermarkValue(final String property)
+        throws MediaMetadataException, IOException {
       String value = null;
       final List<MetaData> iptcMetadata = getIptcMetaData();
       for (final MetaData metadata : iptcMetadata) {
@@ -784,14 +683,6 @@ public class MediaUtil {
         }
       }
       return value;
-    }
-
-    @Override
-    protected void close() {
-      super.close();
-      if (bufferedImage != null) {
-        bufferedImage.flush();
-      }
     }
   }
 }

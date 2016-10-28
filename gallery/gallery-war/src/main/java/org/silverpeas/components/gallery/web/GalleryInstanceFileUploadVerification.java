@@ -31,6 +31,7 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.webapi.upload.ComponentInstanceFileUploadVerification;
 import org.silverpeas.core.webapi.upload.FileUploadVerifyData;
 
@@ -59,7 +60,7 @@ public class GalleryInstanceFileUploadVerification
 
   private void checkMimeType(File file) {
     MediaMimeType mediaMimeType = MediaMimeType.fromFile(file);
-    if (!mediaMimeType.isSupportedMediaType()) {
+    if (!mediaMimeType.isSupportedMediaType() && !FileUtil.isArchive(file.getPath())) {
       LocalizationBundle galleryBundle = ResourceLocator
           .getLocalizationBundle("org.silverpeas.gallery.multilang.galleryBundle",
               MessageManager.getLanguage());

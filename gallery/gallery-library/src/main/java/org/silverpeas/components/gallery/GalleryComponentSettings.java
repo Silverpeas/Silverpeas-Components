@@ -132,18 +132,28 @@ public final class GalleryComponentSettings {
         .getComponentParameterValue(componentInstanceId, "watermark"));
   }
 
+  public static String getWatermarkIdForOriginalResolution(String componentInstanceId) {
+    String watermarkHD = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "WatermarkHD");
+    if (!StringUtil.isInteger(watermarkHD)) {
+      watermarkHD = "";
+    }
+    return watermarkHD;
+  }
+
+  public static String getWatermarkIdForThumbnailResolution(String componentInstanceId) {
+    String watermarkOther = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "WatermarkOther");
+    if (!StringUtil.isInteger(watermarkOther)) {
+      watermarkOther = "";
+    }
+    return watermarkOther;
+  }
+
   public static Integer getWatermarkSize(String bundlePartOfWaterwarkSizeLabel) {
     String tmpValue =
         getSettings().getString("sizeWatermark" + bundlePartOfWaterwarkSizeLabel, null);
     return (StringUtil.isInteger(tmpValue)) ? Integer.valueOf(tmpValue) : null;
-  }
-
-  public static Integer getWatermarkPercentSize() {
-    int percentSizeWatermark = getSettings().getInteger("percentSizeWatermark", 1);
-    if (percentSizeWatermark <= 0) {
-      percentSizeWatermark = 1;
-    }
-    return percentSizeWatermark;
   }
 
   public static int getMaxNumberOfPreviewThumbnail() {

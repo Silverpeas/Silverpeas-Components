@@ -162,28 +162,25 @@ public abstract class InternalMedia extends Media {
     if (StringUtil.isNotDefined(getFileName())) {
       return SilverpeasFile.NO_FILE;
     }
-    List<String> fileNames = new ArrayList<String>(2);
-    fileNames.add(getFileName());
+    List<String> potentialFileNames = new ArrayList<String>(2);
+    potentialFileNames.add(getFileName());
     if (getType().isPhoto()) {
       String thumbnailSuffix = mediaResolution.getThumbnailSuffix();
       if (StringUtil.isDefined(thumbnailSuffix)) {
         final String originalFileExt = "." + FilenameUtils.getExtension(getFileName());
-        fileNames.set(0, getId() + thumbnailSuffix + originalFileExt);
-        fileNames.add(getId() + thumbnailSuffix + ".jpg");
+        potentialFileNames.set(0, getId() + thumbnailSuffix + originalFileExt);
+        potentialFileNames.add(getId() + thumbnailSuffix + ".jpg");
       }
     }
     SilverpeasFile file = SilverpeasFile.NO_FILE;
-    for (String fileName : fileNames) {
+    for (String potentialFileName : potentialFileNames) {
       final File physicalFile = FileUtils
           .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(), getWorkspaceSubFolderName(),
-              fileName);
-      if (physicalFile == null) {
+              potentialFileName);
+      if (potentialFileNames.size() > 1 && !physicalFile.exists()) {
         continue;
       }
       file = SilverpeasFileProvider.getFile(physicalFile.getPath());
-      if (fileNames.size() == 1 || file.exists()) {
-        break;
-      }
     }
     return file;
   }

@@ -23,40 +23,6 @@
  */
 package org.silverpeas.components.gallery.control;
 
-import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.importexport.ExportDescriptor;
-import org.silverpeas.core.importexport.ExportException;
-import org.silverpeas.core.importexport.ImportExportDescriptor;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -77,19 +43,53 @@ import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.web.ExportOptionValue;
 import org.silverpeas.components.gallery.web.MediaSort;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.ImportExportDescriptor;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeSelection;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -542,19 +542,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public String getWatermarkHD() {
-    String watermarkHD = getComponentParameterValue("WatermarkHD");
-    if (StringUtil.isInteger(watermarkHD)) {
-      return watermarkHD;
-    }
-    return StringUtil.EMPTY;
+    return GalleryComponentSettings.getWatermarkIdForOriginalResolution(getComponentId());
   }
 
   public String getWatermarkOther() {
-    String watermarkOther = getComponentParameterValue("WatermarkOther");
-    if (StringUtil.isInteger(watermarkOther)) {
-      return watermarkOther;
-    }
-    return StringUtil.EMPTY;
+    return GalleryComponentSettings.getWatermarkIdForThumbnailResolution(getComponentId());
   }
 
   public Boolean isViewList() {

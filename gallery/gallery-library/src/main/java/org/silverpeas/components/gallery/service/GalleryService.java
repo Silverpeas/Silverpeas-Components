@@ -23,10 +23,6 @@
  */
 package org.silverpeas.components.gallery.service;
 
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.components.gallery.delegate.GalleryPasteDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
@@ -37,10 +33,12 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.process.util.ProcessList;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 
 import java.io.File;
 import java.util.Collection;
@@ -48,92 +46,91 @@ import java.util.List;
 
 public interface GalleryService {
 
-  public AlbumDetail getAlbum(NodePK nodePK);
+  AlbumDetail getAlbum(NodePK nodePK);
 
-  public AlbumDetail getAlbum(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+  AlbumDetail getAlbum(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  public NodePK createAlbum(AlbumDetail album, NodePK nodePK);
+  NodePK createAlbum(AlbumDetail album, NodePK nodePK);
 
-  public void updateAlbum(AlbumDetail album);
+  void updateAlbum(AlbumDetail album);
 
-  public void deleteAlbum(UserDetail user, String componentInstanceId, NodePK nodePK);
+  void deleteAlbum(UserDetail user, String componentInstanceId, NodePK nodePK);
 
-  public Collection<AlbumDetail> getAllAlbums(String instanceId);
+  Collection<AlbumDetail> getAllAlbums(String instanceId);
 
-  public void removeMediaFromAllAlbums(Media media);
+  void removeMediaFromAllAlbums(Media media);
 
-  public void addMediaToAlbums(Media media, String... albums);
+  void addMediaToAlbums(Media media, String... albums);
 
-  public Photo getPhoto(MediaPK mediaPK);
+  Photo getPhoto(MediaPK mediaPK);
 
-  public Media getMedia(MediaPK mediaPK);
+  Media getMedia(MediaPK mediaPK);
 
-  public Media getMedia(MediaPK mediaPK, MediaCriteria.VISIBILITY visibility);
+  Media getMedia(MediaPK mediaPK, MediaCriteria.VISIBILITY visibility);
 
-  public Collection<Photo> getAllPhotos(NodePK nodePK);
+  Collection<Photo> getAllPhotos(NodePK nodePK);
 
-  public Collection<Photo> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+  Collection<Photo> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  public long countAllMedia(NodePK nodePK);
+  long countAllMedia(NodePK nodePK);
 
-  public long countAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+  long countAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  public Collection<Media> getAllMedia(NodePK nodePK);
+  Collection<Media> getAllMedia(NodePK nodePK);
 
-  public Collection<Media> getAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+  Collection<Media> getAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  public Collection<Media> getAllMedia(String instanceId);
+  Collection<Media> getAllMedia(String instanceId);
 
-  public Collection<Media> getAllMedia(String instanceId, MediaCriteria.VISIBILITY visibility);
+  Collection<Media> getAllMedia(String instanceId, MediaCriteria.VISIBILITY visibility);
 
-  public void paste(UserDetail user, String componentInstanceId, GalleryPasteDelegate delegate);
+  void paste(UserDetail user, String componentInstanceId, GalleryPasteDelegate delegate);
 
-  public void importFromRepository(UserDetail user, String componentInstanceId, File repository,
-      boolean watermark, String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
+  void importFromRepository(UserDetail user, String componentInstanceId, File repository,
+      MediaDataCreateDelegate delegate);
 
-  public Media createMedia(UserDetail user, String componentInstanceId, boolean watermark,
+  Media createMedia(UserDetail user, String componentInstanceId, boolean watermark,
       String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
 
-  public void updateMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds,
+  void updateMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds,
       String albumId, MediaDataUpdateDelegate delegate);
 
-  public void updateMedia(UserDetail user, String componentInstanceId, Media media,
-      boolean watermark, String watermarkHD, String watermarkOther,
-      MediaDataUpdateDelegate delegate);
+  void updateMedia(UserDetail user, String componentInstanceId, Media media, boolean watermark,
+      String watermarkHD, String watermarkOther, MediaDataUpdateDelegate delegate);
 
-  public void deleteMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds);
+  void deleteMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds);
 
-  public List<Media> getLastRegisteredMedia(String instanceId);
+  List<Media> getLastRegisteredMedia(String instanceId);
 
-  public Collection<Media> getAllMediaThatWillBeNotVisible(int nbDays);
+  Collection<Media> getAllMediaThatWillBeNotVisible(int nbDays);
 
-  public Collection<Media> getNotVisible(String instanceId);
+  Collection<Media> getNotVisible(String instanceId);
 
-  public Collection<NodeDetail> getPath(NodePK nodePK);
+  Collection<NodeDetail> getPath(NodePK nodePK);
 
-  public Collection<String> getAlbumIdsOf(Media media);
+  Collection<String> getAlbumIdsOf(Media media);
 
-  public String getHTMLNodePath(NodePK nodePK);
+  String getHTMLNodePath(NodePK nodePK);
 
-  public void indexGallery(final UserDetail user, String instanceId);
+  void indexGallery(final UserDetail user, String instanceId);
 
-  public int getSilverObjectId(MediaPK mediaPK);
+  int getSilverObjectId(MediaPK mediaPK);
 
-  public Collection<Media> search(QueryDescription query);
+  Collection<Media> search(QueryDescription query);
 
-  public String createOrder(Collection<String> basket, String userId, String instanceId);
+  String createOrder(Collection<String> basket, String userId, String instanceId);
 
-  public Order getOrder(String orderId, String instanceId);
+  Order getOrder(String orderId, String instanceId);
 
-  public List<Order> getAllOrders(String userId, String instanceId);
+  List<Order> getAllOrders(String userId, String instanceId);
 
-  public void updateOrderRow(OrderRow row);
+  void updateOrderRow(OrderRow row);
 
-  public void updateOrder(Order order);
+  void updateOrder(Order order);
 
-  public List<Order> getAllOrderToDelete(int nbDays);
+  List<Order> getAllOrderToDelete(int nbDays);
 
-  public void deleteOrders(List<Order> orders);
+  void deleteOrders(List<Order> orders);
 
   /**
    * get my list of SocialInformationGallery according to options and number of Item and the first
@@ -144,7 +141,7 @@ public interface GalleryService {
    * @param period
    * @return
    */
-  public List<SocialInformation> getAllMediaByUserId(String userId, Period period);
+  List<SocialInformation> getAllMediaByUserId(String userId, Period period);
 
   /**
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
@@ -155,18 +152,8 @@ public interface GalleryService {
    * @param period
    * @return List<SocialInformation>
    */
-  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfUserId,
+  List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfUserId,
       List<String> availableComponent, Period period);
 
-  public void sortAlbums(List<NodePK> albumIds);
-
-  /**
-   * Executes a process list
-   *
-   * @param processList
-   * @param processExecutionContext
-   * @throws Exception
-   */
-  public void executeProcessList(ProcessList<GalleryProcessExecutionContext> processList,
-      GalleryProcessExecutionContext processExecutionContext);
+  void sortAlbums(List<NodePK> albumIds);
 }

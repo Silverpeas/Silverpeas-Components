@@ -25,11 +25,10 @@ package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.process.session.ProcessSession;
-
-import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
+import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
@@ -84,7 +83,7 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
    * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context,
+  protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
 
     // Sets functional data media

@@ -32,7 +32,6 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -109,20 +108,8 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   private void importRepository(final File repository, final String userId,
       final String componentId, final String albumId) throws Exception {
-    boolean watermark = "yes".equalsIgnoreCase(
-        organizationController.getComponentParameterValue(componentId, "watermark"));
     boolean download = !"no".equalsIgnoreCase(
         organizationController.getComponentParameterValue(componentId, "download"));
-    String watermarkHD =
-        organizationController.getComponentParameterValue(componentId, "WatermarkHD");
-    if (!StringUtil.isInteger(watermarkHD)) {
-      watermarkHD = "";
-    }
-    String watermarkOther =
-        organizationController.getComponentParameterValue(componentId, "WatermarkOther");
-    if (!StringUtil.isInteger(watermarkOther)) {
-      watermarkOther = "";
-    }
 
     try {
 
@@ -131,8 +118,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
           new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(), albumId);
       delegate.getHeaderData().setDownloadAuthorized(download);
       getGalleryService()
-          .importFromRepository(user, componentId, repository, watermark, watermarkHD,
-              watermarkOther, delegate);
+          .importFromRepository(user, componentId, repository, delegate);
 
     } catch (Exception e) {
       SilverTrace
