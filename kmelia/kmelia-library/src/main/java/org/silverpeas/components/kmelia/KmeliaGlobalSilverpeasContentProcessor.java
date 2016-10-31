@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.contentcontainer.content
     .DefaultGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
@@ -43,9 +42,8 @@ public class KmeliaGlobalSilverpeasContentProcessor extends DefaultGlobalSilverC
     implements IGlobalSilverContentProcessor {
 
   @Override
-  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
-      UserDetail creatorDetail, String location) {
-    GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
+  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
+    GlobalSilverContent gsc = super.getGlobalSilverContent(sci);
     PublicationDetail pub = (PublicationDetail) sci;
     gsc.setType("Publication");
     if (StringUtil.isDefined(pub.getImage())) {

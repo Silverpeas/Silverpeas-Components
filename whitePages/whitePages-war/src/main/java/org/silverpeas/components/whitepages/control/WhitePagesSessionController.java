@@ -912,7 +912,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     List<SearchResult> results = null;
 
     try {
-      PublicationTemplate template = getTemplate(getComponentId());
       String xmlTemplate = "whitePages";
       results = WhitePageServiceProvider.getMixedSearchService()
           .search(getComponentId(), getUserId(), query, taxonomyPosition, xmlFields,

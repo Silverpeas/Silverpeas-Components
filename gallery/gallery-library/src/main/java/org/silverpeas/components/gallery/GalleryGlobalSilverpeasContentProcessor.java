@@ -27,7 +27,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.DefaultGlobalSi
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.Media;
 
@@ -41,9 +40,8 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
     implements IGlobalSilverContentProcessor {
 
   @Override
-  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
-      UserDetail creatorDetail, String location) {
-    GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
+  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
+    GlobalSilverContent gsc = super.getGlobalSilverContent(sci);
     Media media = (Media) sci;
     gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
     gsc.setType(media.getType().getName());
