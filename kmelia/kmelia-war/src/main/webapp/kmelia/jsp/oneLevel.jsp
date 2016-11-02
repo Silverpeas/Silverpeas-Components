@@ -100,7 +100,7 @@ String userId = kmeliaScc.getUserId();
   $(document).ready(function() {
     menuRenderedPromise.then(function(){
 
-      $.i18n.properties({
+      window.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/org/silverpeas/kmelia/multilang/',
         language: '<%=language%>',
@@ -366,7 +366,7 @@ function getSubFolder(folder) {
 }
 
 function getString(key) {
-	return $.i18n.prop(key);
+	return window.i18n.prop(key);
 }
 </script>
 </div>
