@@ -141,9 +141,9 @@ public class WysiwygManagerMockWrapper extends WysiwygManager {
   }
 
   @Override
-  public void deleteWysiwygAttachmentsOnly(final String spaceId, final String componentId,
-      final String objectId) throws WysiwygException {
-    mock.deleteWysiwygAttachmentsOnly(spaceId, componentId, objectId);
+  public void deleteWysiwygAttachmentsOnly(final String componentId, final String objectId)
+      throws WysiwygException {
+    mock.deleteWysiwygAttachmentsOnly(componentId, objectId);
   }
 
   @Override
