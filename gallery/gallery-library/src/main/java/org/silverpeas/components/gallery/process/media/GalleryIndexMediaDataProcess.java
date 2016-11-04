@@ -24,17 +24,17 @@
 
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
@@ -68,7 +68,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
    * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context,
+  protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
     // Nothing to do
   }

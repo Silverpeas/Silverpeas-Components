@@ -23,14 +23,6 @@
  */
 package org.silverpeas.components.gallery.service;
 
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.dao.NodeDAO;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.GalleryContentManager;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -49,19 +41,24 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.node.dao.NodeDAO;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.process.ProcessProvider;
-import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -300,16 +297,12 @@ public class DefaultGalleryService implements GalleryService {
 
   @SuppressWarnings("EjbProhibitedPackageUsageInspection")
   @Override
-  @Transactional(Transactional.TxType.REQUIRED)
+  @Transactional(Transactional.TxType.SUPPORTS)
   public void importFromRepository(final UserDetail user, final String componentInstanceId,
-      final File repository, final boolean watermark, final String watermarkHD,
-      final String watermarkOther, final MediaDataCreateDelegate delegate) {
+      final File repository, final MediaDataCreateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
-      processManagement.addImportFromRepositoryProcesses(repository, delegate.getAlbumId(),
-          watermark, watermarkHD, watermarkOther, delegate);
-      processManagement.execute();
+      GalleryProcessManagement.importFromRepositoryProcesses(user, componentInstanceId, repository,
+          delegate.getAlbumId(), delegate);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryService.importFromRepository()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTOS_NOT_IMPORTED", e);
@@ -576,14 +569,8 @@ public class DefaultGalleryService implements GalleryService {
 
       if (silverObjectId == -1) {
         Media media = getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-        silverObjectId = Transaction.performInOne(() -> {
-          final Connection con = openConnection();
-          try {
-            return createSilverContent(con, media, media.getCreatorId());
-          } finally {
-            DBUtil.close(con);
-          }
-        });
+        silverObjectId =
+            Transaction.performInOne(() -> createSilverContent(media, media.getCreatorId()));
       }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.getSilverObjectId()",
@@ -592,10 +579,9 @@ public class DefaultGalleryService implements GalleryService {
     return silverObjectId;
   }
 
-  private int createSilverContent(final Connection con, final Media media, final String creatorId) {
-
+  private int createSilverContent(final Media media, final String creatorId) {
     try {
-      return getGalleryContentManager().createSilverContent(con, media, creatorId);
+      return getGalleryContentManager().createSilverContent(media, creatorId);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -762,23 +748,6 @@ public class DefaultGalleryService implements GalleryService {
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("sortAlbums()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_NOT_ORDER", e);
-    }
-  }
-
-  /**
-   * Executes a process list
-   * @param processList the list of processes to execute.
-   */
-  @Override
-  @Transactional(Transactional.TxType.REQUIRED)
-  public void executeProcessList(final ProcessList<GalleryProcessExecutionContext> processList,
-      final GalleryProcessExecutionContext processExecutionContext) {
-    try (final Connection connection = openConnection()) {
-      processExecutionContext.setConnection(connection);
-      ProcessProvider.getProcessManagement().execute(processList, processExecutionContext);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("executeProcessList()", SilverpeasRuntimeException.ERROR,
-          "gallery.TRANSACTION_ERROR", e);
     }
   }
 }

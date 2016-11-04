@@ -391,10 +391,6 @@
       // Fullscreen handling
       $base.on('_toFullScreen', function(e) {
         $base.dialog("option", "closeOnEscape", false);
-        // Hack for IE and fullscreen ...
-        if ($.browser.msie) {
-          $(document.body).append($sliderContainer);
-        }
         // Entering fullscreen if not yet done
         if (!context.$slider.isFullscreen()) {
           context.$slider.enterFullscreen();
@@ -404,11 +400,6 @@
         // Exiting fullscreen if not yet done
         if (context.$slider.isFullscreen()) {
           context.$slider.exitFullscreen();
-        }
-        // Hack for IE and fullscreen ...
-        if ($.browser.msie) {
-          $fullscreenSwitcher.append($sliderContainer);
-          $base.dialog('open');
         }
         $base.dialog("option", "closeOnEscape", true);
       });

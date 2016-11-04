@@ -25,11 +25,11 @@ package org.silverpeas.components.gallery;
 
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 
 /**
  * It gathers all the settings and i18n relative to the Gallery component.
@@ -130,6 +130,24 @@ public final class GalleryComponentSettings {
   public static boolean isMakeWatermarkEnabled(String componentInstanceId) {
     return StringUtil.getBooleanValue(OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "watermark"));
+  }
+
+  public static String getWatermarkIdForOriginalResolution(String componentInstanceId) {
+    String watermarkHD = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "WatermarkHD");
+    if (!StringUtil.isInteger(watermarkHD)) {
+      watermarkHD = "";
+    }
+    return watermarkHD;
+  }
+
+  public static String getWatermarkIdForThumbnailResolution(String componentInstanceId) {
+    String watermarkOther = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "WatermarkOther");
+    if (!StringUtil.isInteger(watermarkOther)) {
+      watermarkOther = "";
+    }
+    return watermarkOther;
   }
 
   public static Integer getWatermarkSize(String bundlePartOfWaterwarkSizeLabel) {

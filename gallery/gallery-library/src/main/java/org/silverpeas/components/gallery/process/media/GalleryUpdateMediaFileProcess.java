@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.MediaUtil;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -84,7 +84,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
    * FileHandler)
    */
   @Override
-  public void processFiles(final GalleryProcessExecutionContext context,
+  public void processFiles(final ProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
     boolean hasBeenProcessed = false;

@@ -23,18 +23,18 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.List;
 
@@ -83,7 +83,7 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
    * .process.GalleryProcessExecutionContext, ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context,
+  protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
 
     // Media
@@ -106,8 +106,8 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
 
     if (GalleryComponentSettings.isPdcEnabled(getMedia().getComponentInstanceId())) {
       // Insert content manager of the media
-      int silverContentId = getGalleryContentManager()
-          .createSilverContent(context.getConnection(), getMedia(), context.getUser().getId());
+      int silverContentId =
+          getGalleryContentManager().createSilverContent(getMedia(), context.getUser().getId());
       getMedia().setSilverpeasContentId(Integer.toString(silverContentId));
 
       // Persists pdc classification

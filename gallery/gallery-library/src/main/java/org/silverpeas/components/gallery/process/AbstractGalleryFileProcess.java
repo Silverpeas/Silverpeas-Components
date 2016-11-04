@@ -27,12 +27,13 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.process.management.AbstractFileProcess;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractGalleryFileProcess
-    extends AbstractFileProcess<GalleryProcessExecutionContext> {
+    extends AbstractFileProcess<ProcessExecutionContext> {
 
   private final Media media;
   private OrganizationController organizationController;

@@ -88,7 +88,7 @@
   function sendData() {
     <c:choose>
       <c:when test="${formUpdate != null}">
-        ifCorrectHeaderFormExecute(function() {
+        ifCorrectFormExecute(function() {
           ifCorrectLocalForm(function() {
             reallySendData();
           });

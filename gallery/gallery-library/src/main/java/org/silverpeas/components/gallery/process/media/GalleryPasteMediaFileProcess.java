@@ -28,8 +28,8 @@ import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 
 /**
@@ -73,7 +73,7 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
    * FileHandler)
    */
   @Override
-  public void processFiles(final GalleryProcessExecutionContext context,
+  public void processFiles(final ProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
     InternalMedia internalMedia = getMedia().getInternalMedia();
     if (internalMedia != null) {

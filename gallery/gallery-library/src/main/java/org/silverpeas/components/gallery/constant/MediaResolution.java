@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.gallery.constant;
 
-import org.silverpeas.components.gallery.GalleryComponentSettings;
-import org.silverpeas.core.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.silverpeas.components.gallery.GalleryComponentSettings;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -81,7 +81,7 @@ public enum MediaResolution {
     this.width = width;
     this.height = height;
     this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
-    this.thumbnailSuffix = "original".equals(label) ? "" : "_" + label + ".jpg";
+    this.thumbnailSuffix = "original".equals(label) ? "" : ("_" + label);
   }
 
   /**

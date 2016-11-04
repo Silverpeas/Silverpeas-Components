@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.gallery.constant;
 
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -164,6 +164,7 @@ public enum MediaMimeType {
    * @return true if it is a photo media type that is readable by ImageIo
    * @see http://docs.oracle.com/javase/6/docs/api/javax/imageio/package-summary.html
    */
+  @SuppressWarnings("JavadocReference")
   public boolean isReadablePhoto() {
     return this == GIF || this == JPG || this == PNG || this == BMP;
   }
@@ -182,5 +183,28 @@ public enum MediaMimeType {
    */
   public boolean isIPTCCompliant() {
     return this == GIF || this == JPG || this == TIFF;
+  }
+
+  /**
+   * Gets the supported mime types according to the given media type.
+   * @param mediaType the aimed media type.
+   * @return a set of media mime types.
+   */
+  public static Set<MediaMimeType> getSupportedMimeTypes(MediaType mediaType) {
+    final Set<MediaMimeType> supportedMimeTypes;
+    switch (mediaType) {
+      case Photo:
+        supportedMimeTypes = MediaMimeType.PHOTOS;
+        break;
+      case Video:
+        supportedMimeTypes = MediaMimeType.VIDEOS;
+        break;
+      case Sound:
+        supportedMimeTypes = MediaMimeType.SOUNDS;
+        break;
+      default:
+        supportedMimeTypes =  EnumSet.noneOf(MediaMimeType.class);
+    }
+    return supportedMimeTypes;
   }
 }

@@ -23,28 +23,29 @@
  */
 package org.silverpeas.components.gallery.process;
 
-import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.components.gallery.GalleryContentManager;
-import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.components.gallery.service.MediaServiceProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.process.management.AbstractDataProcess;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractGalleryDataProcess extends
-    AbstractDataProcess<GalleryProcessExecutionContext> {
+    AbstractDataProcess<ProcessExecutionContext> {
   private final Media media;
   private GalleryContentManager galleryContentManager;
   private OrganizationController organizationController;
@@ -63,7 +64,7 @@ public abstract class AbstractGalleryDataProcess extends
    * ProcessExecutionContext, ProcessSession)
    */
   @Override
-  public final void process(final GalleryProcessExecutionContext processExecutionContext,
+  public final void process(final ProcessExecutionContext processExecutionContext,
       final ProcessSession session) throws Exception {
     processData(processExecutionContext, session);
   }
@@ -73,7 +74,7 @@ public abstract class AbstractGalleryDataProcess extends
    * @param session
    * @throws Exception
    */
-  abstract protected void processData(final GalleryProcessExecutionContext context,
+  abstract protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception;
 
   /**
@@ -123,7 +124,7 @@ public abstract class AbstractGalleryDataProcess extends
    * @param context
    * @return
    */
-  protected String getXMLFormName(final GalleryProcessExecutionContext context) {
+  protected String getXMLFormName(final ProcessExecutionContext context) {
     String formName =
         getOrganisationController().getComponentParameterValue(context.getComponentInstanceId(),
             "XMLFormName");
@@ -147,7 +148,7 @@ public abstract class AbstractGalleryDataProcess extends
    * @param context
    * @throws Exception
    */
-  protected void createMedia(final String albumId, final GalleryProcessExecutionContext context)
+  protected void createMedia(final String albumId, final ProcessExecutionContext context)
       throws Exception {
 
     // Sets technical data
@@ -170,7 +171,7 @@ public abstract class AbstractGalleryDataProcess extends
    * @throws Exception
    */
   protected void updateMedia(final boolean updateTechnicalDataRequired,
-      final GalleryProcessExecutionContext context) throws Exception {
+      final ProcessExecutionContext context) throws Exception {
     if (getMedia() instanceof InternalMedia) {
       if (!StringUtil.isDefined(getMedia().getTitle())) {
         getMedia().setTitle(((InternalMedia) getMedia()).getFileName());

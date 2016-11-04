@@ -23,21 +23,21 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
-import org.silverpeas.components.gallery.process.GalleryProcessExecutionContext;
-import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -92,10 +92,10 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, ProcessSession)
+   * .process.ProcessExecutionContext, ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context,
+  protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
 
     // Initializing variables
@@ -147,7 +147,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * @throws Exception
    */
   private void moveMediaPath(final String fromComponentInstanceId, final String albumId,
-      final GalleryProcessExecutionContext context) throws Exception {
+      final ProcessExecutionContext context) throws Exception {
     getMedia().setComponentInstanceId(fromComponentInstanceId);
     MediaDAO.deleteAllMediaPath(getMedia());
     getMedia().setComponentInstanceId(context.getComponentInstanceId());
@@ -158,7 +158,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * Centralized method
    * @throws Exception
    */
-  private void processPasteCommons(final GalleryProcessExecutionContext context) throws Exception {
+  private void processPasteCommons(final ProcessExecutionContext context) throws Exception {
     if (!isCutted || !isSameComponentInstanceDestination) {
       // Paste positions on Pdc
       final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromMediaPk);
@@ -182,7 +182,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * @param context
    * @throws Exception
    */
-  private void pasteXmlForm(final GalleryProcessExecutionContext context) throws Exception {
+  private void pasteXmlForm(final ProcessExecutionContext context) throws Exception {
     if (!isCutted || !isSameComponentInstanceDestination) {
       try {
         final String xmlFormName = getXMLFormName(context);

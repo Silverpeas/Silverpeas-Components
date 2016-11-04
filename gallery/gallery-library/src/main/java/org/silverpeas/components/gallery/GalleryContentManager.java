@@ -32,12 +32,15 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentInterfac
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,30 +82,37 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
 
   /**
    * add a new content. It is registered to contentManager service
-   * @param con a Connection
    * @param media the content to register
    * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    * @throws ContentManagerException
    */
-  public int createSilverContent(Connection con, Media media, String userId)
+  public int createSilverContent(Media media, String userId)
       throws ContentManagerException {
-    return getContentManager()
-        .addSilverContent(con, media.getMediaPK().getId(), media.getMediaPK().getComponentName(),
-            userId);
+    try (Connection con = DBUtil.openConnection()) {
+      return getContentManager()
+          .addSilverContent(con, media.getMediaPK().getId(), media.getMediaPK().getComponentName(),
+              userId);
+    } catch (SQLException e) {
+      throw new ContentManagerException("GalleryContentManager", SilverpeasException.ERROR, "", "",
+          e);
+    }
   }
 
   /**
    * delete a content. It is registered to contentManager service
-   * @param con a Connection
    * @param mediaPK the identifiant of the content to unregister
    * @throws ContentManagerException
    */
-  public void deleteSilverContent(Connection con, MediaPK mediaPK) throws ContentManagerException {
-    int contentId =
-        getContentManager().getSilverContentId(mediaPK.getId(), mediaPK.getComponentName());
-    if (contentId != -1) {
-      getContentManager().removeSilverContent(con, contentId, mediaPK.getComponentName());
+  public void deleteSilverContent(MediaPK mediaPK) throws ContentManagerException {
+    try (Connection con = DBUtil.openConnection()) {
+      int contentId = getContentManager().getSilverContentId(mediaPK.getId(), mediaPK.getComponentName());
+      if (contentId != -1) {
+        getContentManager().removeSilverContent(con, contentId, mediaPK.getComponentName());
+      }
+    } catch (SQLException e) {
+      throw new ContentManagerException("GalleryContentManager", SilverpeasException.ERROR, "", "",
+          e);
     }
   }
 

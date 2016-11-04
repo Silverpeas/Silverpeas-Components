@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.gallery.process;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
-import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
 import org.silverpeas.components.gallery.model.AlbumDetail;
@@ -35,21 +35,26 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Video;
+import org.silverpeas.components.gallery.process.media.*;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.gallery.process.media.*;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.process.ProcessProvider;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Date;
+
+import static org.silverpeas.components.gallery.GalleryComponentSettings.*;
 
 /**
  * @author Yohann Chastagnier
@@ -58,7 +63,7 @@ public class GalleryProcessManagement {
 
   private final UserDetail user;
   private final String componentInstanceId;
-  private final ProcessList<GalleryProcessExecutionContext> processList;
+  private final ProcessList<ProcessExecutionContext> processList;
 
   /**
    * Default constructor
@@ -78,8 +83,16 @@ public class GalleryProcessManagement {
    * @throws Exception
    */
   public void execute() throws Exception {
-    getGalleryBm().executeProcessList(processList,
-        new GalleryProcessExecutionContext(user, componentInstanceId));
+    Transaction.performInOne(() -> {
+      try {
+        ProcessProvider.getProcessManagement()
+            .execute(processList, new ProcessExecutionContext(user, componentInstanceId));
+        return null;
+      } catch (final Exception e) {
+        throw new GalleryRuntimeException("executeProcessList()", SilverpeasRuntimeException.ERROR,
+            "gallery.TRANSACTION_ERROR", e);
+      }
+    });
   }
 
   /*
@@ -168,18 +181,20 @@ public class GalleryProcessManagement {
    */
 
   /**
-   * Recursive method to add processes to create albums from a file repository
-   * @param repository
-   * @param albumId
-   * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
-   * @param delegate
+   * Recursive method to add processes to create albums from a file repository.
+   * This method performs a transaction between each file to save.<br/>
+   * It could happen, in the very particular case of space memory quota exception, that an album
+   * is created with no media inside...
    * @throws Exception
    */
-  public void addImportFromRepositoryProcesses(final File repository, final String albumId,
-      final boolean watermark, final String watermarkHD, final String watermarkOther,
+  public static void importFromRepositoryProcesses(final UserDetail user,
+      final String componentInstanceId, final File repository, final String albumId,
       final MediaDataCreateDelegate delegate) throws Exception {
+
+    final boolean watermark = isMakeWatermarkEnabled(componentInstanceId);
+    final String watermarkHD = getWatermarkIdForOriginalResolution(componentInstanceId);
+    final String watermarkOther = getWatermarkIdForThumbnailResolution(componentInstanceId);
+
     final File[] fileList = repository.listFiles();
     if (fileList != null) {
       for (final File file : fileList) {
@@ -195,13 +210,19 @@ public class GalleryProcessManagement {
           }
           if (newMedia != null) {
             // Creation of the media
-            addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD, watermarkOther,
-                delegate);
+            // In a transaction.
+            final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+                componentInstanceId);
+            processManagement
+                .addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD,
+                    watermarkOther, delegate);
+            processManagement.execute();
           }
         } else if (file.isDirectory()) {
-          addImportFromRepositoryProcesses(file,
-              createAlbum(file.getName(), albumId).getNodePK().getId(), watermark, watermarkHD,
-              watermarkOther, delegate);
+          final AlbumDetail newAlbum = GalleryProcessManagement
+              .createAlbum(user, componentInstanceId, file.getName(), albumId);
+          importFromRepositoryProcesses(user, componentInstanceId, file,
+              newAlbum.getNodePK().getId(), delegate);
         }
       }
     }
@@ -210,11 +231,13 @@ public class GalleryProcessManagement {
   /**
    * Centralized method to create an album
    * @param name the album name
+   * @param componentInstanceId the identifier of component instance
    * @param albumId an album identifier
    * @return an AlbumDetail
    * @throws Exception
    */
-  private AlbumDetail createAlbum(final String name, final String albumId) throws Exception {
+  private static AlbumDetail createAlbum(final UserDetail user, final String componentInstanceId,
+      final String name, final String albumId) throws Exception {
     final AlbumDetail newAlbum =
         new AlbumDetail(new NodeDetail("unknown", name, null, null, null, null, "0", "unknown"));
     newAlbum.setCreationDate(DateUtil.date2SQLDate(new Date()));
