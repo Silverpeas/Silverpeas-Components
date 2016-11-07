@@ -38,10 +38,6 @@ import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.model.SearchField;
 import org.silverpeas.components.whitepages.model.SearchFieldsType;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.SearchAxis;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
@@ -386,16 +382,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
           // get form fields values
           SortedSet<SearchField> fields = scc.getSearchFields();
           request.setAttribute("searchFields", fields);
-
-          SearchContext searchContext = new SearchContext(scc.getUserId());
-
-          // primary axis for form
-          List<SearchAxis> primaryPdcFields = scc.getUsedAxisList(searchContext, "P");
-          request.setAttribute("primaryPdcFields", primaryPdcFields);
-
-          // secondary axis for form
-          List<SearchAxis> secondaryPdcFields = scc.getUsedAxisList(searchContext, "S");
-          request.setAttribute("secondaryPdcFields", secondaryPdcFields);
         }
 
         destination = "/whitePages/jsp/dynamicSearch.jsp";
@@ -425,12 +411,12 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
           request.setAttribute("query", query);
         }
 
-        SearchContext pdcContext = getPdcContext(scc, request);
+        String taxonomyPosition = request.getParameter("AxisValueCouples");
 
         Hashtable<String, String> xmlFields = getXmlFieldsQuery(scc, request);
         List<FieldDescription> fieldsQuery = getOthersFieldsQuery(scc, request);
 
-        List<Card> cards = scc.getSearchResult(query, pdcContext, xmlFields, fieldsQuery);
+        List<Card> cards = scc.getSearchResult(query, taxonomyPosition, xmlFields, fieldsQuery);
         request.setAttribute("cards", cards);
         request.setAttribute("searchDone", "true"); // for no result case
 
@@ -447,46 +433,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         .info("whitePages", "WhitePagesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
             "destination " + destination);
     return destination;
-  }
-
-  private SearchContext getPdcContext(WhitePagesSessionController scc, HttpServletRequest request)
-      throws PdcException {
-
-    SearchContext pdcContext = null;
-
-    // Axes primaires
-    SearchContext searchContext = new SearchContext(scc.getUserId());
-    List<SearchAxis> primaryPdcFields = scc.getUsedAxisList(searchContext, "P");
-    if (primaryPdcFields != null && primaryPdcFields.size() > 0) {
-      for (final SearchAxis current : primaryPdcFields) {
-        String value = request.getParameter("Axis" + String.valueOf(current.getAxisId()));
-        if (value != null && value.length() > 0) {
-          request.setAttribute("Axis" + String.valueOf(current.getAxisId()), value);
-          if (pdcContext == null) {
-            pdcContext = new SearchContext(scc.getUserId());
-          }
-          SearchCriteria criteria = new SearchCriteria(current.getAxisId(), value);
-          pdcContext.addCriteria(criteria);
-        }
-      }
-    }
-
-    // Axes secondaires
-    List<SearchAxis> secondaryPdcFields = scc.getUsedAxisList(searchContext, "S");
-    if (secondaryPdcFields != null && secondaryPdcFields.size() > 0) {
-      for (final SearchAxis current : secondaryPdcFields) {
-        String value = request.getParameter("Axis" + String.valueOf(current.getAxisId()));
-        if (value != null && value.length() > 0) {
-          request.setAttribute("Axis" + String.valueOf(current.getAxisId()), value);
-          if (pdcContext == null) {
-            pdcContext = new SearchContext(scc.getUserId());
-          }
-          SearchCriteria criteria = new SearchCriteria(current.getAxisId(), value);
-          pdcContext.addCriteria(criteria);
-        }
-      }
-    }
-    return pdcContext;
   }
 
   private Hashtable<String, String> getXmlFieldsQuery(WhitePagesSessionController scc,

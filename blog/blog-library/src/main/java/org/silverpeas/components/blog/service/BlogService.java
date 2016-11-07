@@ -67,8 +67,7 @@ public interface BlogService extends ApplicationService<PostDetail> {
 
   public Collection<PostDetail> getPostsByDate(String date, String instanceId);
 
-  public Collection<PostDetail> getResultSearch(String word, String userId, String spaceId,
-          String instanceId);
+  public Collection<PostDetail> getResultSearch(String word, String userId, String instanceId);
 
   public String createCategory(final Category category);
 

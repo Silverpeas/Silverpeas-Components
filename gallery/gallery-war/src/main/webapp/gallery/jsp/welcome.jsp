@@ -221,107 +221,102 @@ function checkLuceneQuery(query) {
   <view:window>
     <view:frame>
       <c:if test="${isPrivateSearch}">
-        <view:board>
-          <center>
-            <form id="searchFormId" name="searchForm" action="SearchKeyWord" method="post">
-              <table border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td valign="middle" align="left" class="txtlibform" width="30%">
-                    <span style="line-height: 27px;"><fmt:message key="GML.search"/></span>
-                  </td>
-                  <td align="left" valign="middle">
-                    <table border="0" cellspacing="0" cellpadding="0">
-                      <tr valign="middle">
-                        <td valign="middle"><input type="text" name="SearchKeyWord" size="36" id="searchQuery"/></td>
-                        <td valign="middle">&nbsp;</td>
-                        <td valign="middle" align="left" width="100%">
-                          <fmt:message key="GML.ok" var="tmpLabel"/>
-                          <input type="submit" class="hide"/>
-                          <view:button label="${tmpLabel}" action="javascript:onClick=sendData();"/>
-                        </td>
-                        <td valign="middle">&nbsp;</td>
-                        <td valign="middle"><a href="SearchAdvanced">
-                          <fmt:message key="gallery.searchAdvanced"/>
-                        </a></td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </form>
-            <script type="text/javascript">
-              $(document).ready(function() {
-                $('#searchFormId').on("submit", function() {
-                  if ($.trim($('#searchQuery').val())) {
-                    sendData();
-                  }
-                  return false;
-                });
+          <form id="searchFormId" name="searchForm" action="SearchKeyWord" method="post">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td valign="middle" align="left" class="txtlibform" width="30%">
+                  <span style="line-height: 27px;"><fmt:message key="GML.search"/></span>
+                </td>
+                <td align="left" valign="middle">
+                  <table border="0" cellspacing="0" cellpadding="0">
+                    <tr valign="middle">
+                      <td valign="middle"><input type="text" name="SearchKeyWord" size="36" id="searchQuery"/></td>
+                      <td valign="middle">&nbsp;</td>
+                      <td valign="middle" align="left" width="100%">
+                        <fmt:message key="GML.ok" var="tmpLabel"/>
+                        <input type="submit" class="hide"/>
+                        <view:button label="${tmpLabel}" action="javascript:onClick=sendData();"/>
+                      </td>
+                      <td valign="middle">&nbsp;</td>
+                      <td valign="middle"><a href="SearchAdvanced">
+                        <fmt:message key="gallery.searchAdvanced"/>
+                      </a></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </form>
+          <script type="text/javascript">
+            $(document).ready(function() {
+              $('#searchFormId').on("submit", function() {
+                if ($.trim($('#searchQuery').val())) {
+                  sendData();
+                }
+                return false;
               });
-            </script>
-          </center>
-        </view:board>
+            });
+          </script>
       </c:if>
 
       <view:areaOfOperationOfCreation/>
       <gallery:listSubAlbums subAlbumList="${albumList}"/>
-      <view:board>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-          <tr>
-            <td colspan="5" align="center" class="ArrayNavigation">
-              <fmt:message key="gallery.last.media"/>
-            </td>
-          </tr>
-          <c:choose>
-            <c:when test="${not empty mediaList}">
-              <c:forEach var="media" items="${mediaList}" varStatus="loop">
-                <c:set var="isNewLine" value="${loop.index % nbPerLine == 0}"/>
-                <c:set var="isEndLine" value="${loop.last or loop.index % nbPerLine == (nbPerLine-1)}"/>
-                <c:if test="${isNewLine}">
+
+      <table id="lastMedias" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr>
+          <td colspan="5" align="center" class="ArrayNavigation">
+            <fmt:message key="gallery.last.media"/>
+          </td>
+        </tr>
+        <c:choose>
+          <c:when test="${not empty mediaList}">
+            <c:forEach var="media" items="${mediaList}" varStatus="loop">
+              <c:set var="isNewLine" value="${loop.index % nbPerLine == 0}"/>
+              <c:set var="isEndLine" value="${loop.last or loop.index % nbPerLine == (nbPerLine-1)}"/>
+              <c:if test="${isNewLine}">
+                <tr>
+                  <td colspan="${nbPerLine}">&#160;</td>
+                </tr>
+                <tr>
+              </c:if>
+
+              <td valign="middle" align="center">
+                <table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto">
                   <tr>
-                    <td colspan="${nbPerLine}">&#160;</td>
+                    <td align="center">
+                      <table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
+                        <tr>
+                          <td>
+                            <a href="MediaView?MediaId=${media.id}">
+                              <gallery:displayMediaInAlbumContent media="${media}" mediaResolution="${SMALL_RESOLUTION}"/>
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
                   </tr>
-                  <tr>
-                </c:if>
+                </table>
+              </td>
 
-                <td valign="middle" align="center">
-                  <table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto">
-                    <tr>
-                      <td align="center">
-                        <table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
-                          <tr>
-                            <td>
-                              <a href="MediaView?MediaId=${media.id}">
-                                <gallery:displayMediaInAlbumContent media="${media}" mediaResolution="${SMALL_RESOLUTION}"/>
-                              </a>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
+              <c:if test="${isEndLine}">
+                </tr>
+              </c:if>
+            </c:forEach>
+          </c:when>
+          <c:otherwise>
+            <tr>
+              <td colspan="5" valign="middle" align="center" width="100%">
+                <br/>
+                <fmt:message key="gallery.empty.data"/>
+                <br/>
+              </td>
+            </tr>
+          </c:otherwise>
+        </c:choose>
+      </table>
 
-                <c:if test="${isEndLine}">
-                  </tr>
-                </c:if>
-              </c:forEach>
-            </c:when>
-            <c:otherwise>
-              <tr>
-                <td colspan="5" valign="middle" align="center" width="100%">
-                  <br/>
-                  <fmt:message key="gallery.empty.data"/>
-                  <br/>
-                </td>
-              </tr>
-            </c:otherwise>
-          </c:choose>
-        </table>
+      <%@include file="albumManager.jsp" %>
 
-        <%@include file="albumManager.jsp" %>
-
-      </view:board>
     </view:frame>
   </view:window>
   <form name="albumForm" action="" method="post">

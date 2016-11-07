@@ -37,8 +37,6 @@ import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -60,10 +58,6 @@ import org.silverpeas.components.gallery.web.MediaSort;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -77,8 +71,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
 
@@ -913,53 +905,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         // Ajout élément PDC
-        SearchContext pdcContext = new SearchContext(gallerySC.getUserId());
-
-        List<Integer> silverObjectIds = null;
-
-        // Récupération des couples (axe, valeur)
-        for (final FileItem item : items) {
-          if (item.isFormField() && item.getFieldName().startsWith("Axis")) {
-            String axisParam = item.getString();
-            if (StringUtil.isDefined(axisParam)) {
-              String axisId = axisParam.substring(0, axisParam.indexOf("_"));
-              String value = axisParam.substring(axisParam.indexOf("_") + 1);
-              SearchCriteria criteria = new SearchCriteria(Integer.parseInt(axisId), value);
-              pdcContext.addCriteria(criteria);
-            }
-          }
-        }
-
-        if (!pdcContext.isEmpty()) {
-          // store pdcContext in session
-          gallerySC.setPDCSearchContext(pdcContext);
-
-          List<String> componentIds = new ArrayList<String>();
-          componentIds.add(gallerySC.getComponentId());
-
-          PdcManager pdc = new GlobalPdcManager();
-          silverObjectIds = pdc.findSilverContentIdByPosition(pdcContext, componentIds);
-        }
+        String axisValues = request.getParameter("AxisValueCouples");
+        query.setTaxonomyPosition(axisValues);
 
         // Lancement de la recherche
-        Collection<Media> mediaList = gallerySC.search(query);
-        gallerySC.setSearchResultListMedia(mediaList);
-
-        if (silverObjectIds != null && silverObjectIds.size() > 0) {
-          Collection<Media> result;
-          if (!query.isEmpty()) {
-            // Intersection des résultats Lucene et PDC
-            result = mixedSearch(gallerySC, mediaList, silverObjectIds);
-          } else {
-            result = getMediaBySilverObjectIds(new TreeSet<Integer>(silverObjectIds),
-                new ContentManager(), gallerySC);
-          }
-          // mise à jour de la liste des médias résultat de la recherche
-          gallerySC.setSearchResultListMedia(result);
-        }
-
-        // mise à jour du compteur de paginiation
-        gallerySC.setIndexOfCurrentPage("0");
+        gallerySC.search(query);
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
       } else if ("ViewNotVisible".equals(function)) {
@@ -1232,64 +1182,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-
     return destination;
-  }
-
-  private Collection<Media> mixedSearch(GallerySessionController gallerySC,
-      Collection<Media> mediaList, List<Integer> alSilverContentIds) throws Exception {
-    ContentManager contentManager = new ContentManager();
-    // On créait une liste triée d'indexEntry
-    SortedSet<Integer> basicSearchList = new TreeSet<Integer>();
-    String instanceId;
-    String objectId;
-    List<String> docFeature = new ArrayList<String>();
-
-    for (final Media media : mediaList) {
-      instanceId = media.getInstanceId();
-      objectId = media.getId();
-      docFeature.add(objectId);
-      docFeature.add(instanceId);
-    }
-    try {
-      // on récupère le silverContentId à partir de la recherche classique
-      basicSearchList = contentManager.getSilverContentId(docFeature);
-    } catch (Exception e) {
-
-    }
-
-    // ne garde que les objets communs aux 2 listes basicSearchList - alSilverContentIds
-    // en effet, la liste resultante du PDC n'est pas la meme que celle
-    // élaborée à partir de la recherche classique
-    if (alSilverContentIds != null) {
-      basicSearchList.retainAll(alSilverContentIds);
-    }
-
-    // la liste basicSearchList ne contient maintenant que les silverContentIds des documents
-    // trouvés
-    // mais ces documents sont également dans le tableau résultat de la recherche classique
-    // il faut donc créer une liste de médias pour afficher le resultat
-    return getMediaBySilverObjectIds(basicSearchList, contentManager, gallerySC);
-  }
-
-  private List<Media> getMediaBySilverObjectIds(SortedSet<Integer> silverObjectIds,
-      ContentManager contentManager, GallerySessionController gallerySC) {
-    List<Media> result = new ArrayList<Media>();
-
-    if (silverObjectIds != null) {
-      // for each silverContentId, we get the corresponding mediaId
-      for (Integer cId : silverObjectIds) {
-        try {
-          String mediaId = contentManager.getInternalContentId(cId);
-          Media media = gallerySC.getMedia(mediaId);
-          result.add(media);
-        } catch (Exception ignored) {
-          // ignore unknown item
-        }
-      }
-    }
-
-    return result;
   }
 
   private Integer getNbOrdersProcess(Collection<Order> orders) {
@@ -1590,7 +1483,4 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     return "/admin/jsp/documentNotFound.jsp";
   }
 
-  private PublicationTemplateManager getPublicationTemplateManager() {
-    return PublicationTemplateManager.getInstance();
-  }
 }

@@ -107,7 +107,7 @@ public class FileFolder implements java.io.Serializable {
         if (isAdmin) {
           // ouverture de l'index
           Directory indexPath =
-              FSDirectory.open(new File(IndexFileManager.getAbsoluteIndexPath("", componentId)));
+              FSDirectory.open(new File(IndexFileManager.getAbsoluteIndexPath(componentId)));
           if (IndexReader.indexExists(indexPath)) {
             reader = IndexReader.open(indexPath);
           }

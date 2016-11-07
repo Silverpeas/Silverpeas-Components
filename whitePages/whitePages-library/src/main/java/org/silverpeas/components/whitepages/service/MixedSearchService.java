@@ -23,12 +23,10 @@
  */
 package org.silverpeas.components.whitepages.service;
 
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -39,19 +37,18 @@ public interface MixedSearchService {
   }
 
   /**
-   * @param spaceId the space identifier
    * @param componentId the component instance identifier
    * @param userId the user identifier
    * @param queryString standard search
-   * @param pdcContext PDC filter
+   * @param taxonomyPosition PDC filter
    * @param xmlFields xml fields filter
    * @param xmlTemplate xml template filter
    * @param fieldsQuery ldap and silverpeas fields filter
    * @param language
-   * @return a collection of global silver content
+   * @return a List of SearchResult
    * @throws Exception
    */
-  public Collection<GlobalSilverContent> search(String spaceId, String componentId, String userId,
-      String queryString, SearchContext pdcContext, Map<String, String> xmlFields,
+  public List<SearchResult> search(String componentId, String userId,
+      String queryString, String taxonomyPosition, Map<String, String> xmlFields,
       String xmlTemplate, List<FieldDescription> fieldsQuery, String language) throws Exception;
 }

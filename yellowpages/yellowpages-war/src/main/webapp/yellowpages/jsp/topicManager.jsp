@@ -201,7 +201,7 @@ function toAddOrUpdateFolder(action, id) {
         ifCorrectFormExecute(function() {
           window.document.AddAndUpdateFolderForm.submit();
         });
-        return true;
+        return false;
       }
     });
   });

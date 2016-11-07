@@ -29,6 +29,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.components.whitepages.model.Card" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 
@@ -39,10 +40,10 @@
 	DataRecord		data		= (DataRecord) request.getAttribute("data");
 %>
 
-
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <%
    updateForm.displayScripts(out, context);
@@ -62,19 +63,18 @@
 	}
 //-->
 </script>
-</HEAD>
-
-<BODY class="yui-skin-sam">
+</head>
+<body class="yui-skin-sam">
 <view:browseBar path='<%=resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.editCard")%>'/>
 <view:window popup="true">
 <view:frame>
 
-<FORM NAME="myForm" METHOD="POST" ENCTYPE="multipart/form-data">
+<form name="myForm" method="post" enctype="multipart/form-data">
 
 <%
 	updateForm.display(out, context, data);
 %>
-</FORM>
+</form>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK('"+card.getPK().getId()+"');", false));
@@ -83,5 +83,5 @@
 %>
 </view:frame>
 </view:window>
-</BODY>
-</HTML>
+</body>
+</html>

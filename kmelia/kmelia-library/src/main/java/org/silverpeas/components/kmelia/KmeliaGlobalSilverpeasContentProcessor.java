@@ -21,30 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.gallery;
+package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.contribution.contentcontainer.content.DefaultGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content
+    .DefaultGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 import javax.inject.Named;
 
-import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor
-    .PROCESSOR_NAME_SUFFIX;
+import static org.silverpeas.core.contribution.contentcontainer.content
+    .IGlobalSilverContentProcessor.PROCESSOR_NAME_SUFFIX;
 
-@Named("gallery" + PROCESSOR_NAME_SUFFIX)
-public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
+@Named("kmelia" + PROCESSOR_NAME_SUFFIX)
+public class KmeliaGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
     implements IGlobalSilverContentProcessor {
 
   @Override
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci);
-    Media media = (Media) sci;
-    gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
-    gsc.setType(media.getType().getName());
+    PublicationDetail pub = (PublicationDetail) sci;
+    gsc.setType("Publication");
+    if (StringUtil.isDefined(pub.getImage())) {
+      String imageURL = FileServerUtils.getUrl(pub.getPK().
+          getComponentName(), "vignette", pub.getImage(), pub.getImageMimeType(), "images");
+      gsc.setThumbnailURL(imageURL);
+    }
     return gsc;
   }
 

@@ -343,7 +343,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       if (word != null && !"*".equals(word.trim()) && !word.trim().isEmpty()) {
         QueryDescription query = new QueryDescription(word);
         query.setSearchingUser(getUserId());
-        query.addSpaceComponentPair(getSpaceId(), getComponentId());
+        query.addComponent(getComponentId());
 
         List<MatchingIndexEntry> result =
             SearchEngineProvider.getSearchEngine().search(query).getEntries();

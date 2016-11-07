@@ -660,3 +660,11 @@ table.listing-media {
   top:-14px;
   left:-14px;
 }
+
+#searchFormId {
+  text-align: center;
+}
+
+#searchFormId table {
+  margin: 0 auto;
+}

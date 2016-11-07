@@ -59,7 +59,7 @@ function showDialog(title) {
 	$("#categoryManager").popup({
 	      title: title,
 	      callback: function() {
-	        sendData();
+	        return sendData();
 	      }
 	    });
 }
@@ -100,6 +100,7 @@ function sendData() {
            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
             jQuery.popup.error(errorMsg);
      }
+     return false;
 }
 	
 function deleteConfirm(id,nom) {

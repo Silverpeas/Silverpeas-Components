@@ -622,6 +622,10 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
     // sauvegarde de la recherche
     setQuery(query);
+    setSearchResultListMedia(result);
+
+    // mise à jour du compteur de paginiation
+    setIndexOfCurrentPage("0");
     return result;
   }
 

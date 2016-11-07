@@ -167,7 +167,6 @@
 
 <c:if test="${not empty mediaList}">
   <div class="dragAndDropUpload">
-    <view:board>
       <form name="${_formName}" action="${_formAction}">
         <c:if test="${currentAlbum != null}">
           <input type="hidden" name="AlbumId" value="${currentAlbum.id}"/>
@@ -180,17 +179,18 @@
         <input type="hidden" name="NotSelectedIds"/>
 
         <c:set var="textColumnCount" value="${typeAff eq 'medium_list' ? 2 : 0}"/>
-        <table width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
-          <tr>
-            <td colspan="${nbMediaPerLine + textColumnCount}" align="center">
-              <gallery:albumListHeader currentMediaResolution="${mediaResolution}"
-                                       nbMediaPerPage="${nbMediaPerPage}"
-                                       currentPageIndex="${currentPageIndex}"
-                                       mediaList="${mediaList}"/>
-            </td>
-          </tr>
-        </table>
-        <table class="listing-media">
+        <table class="listing-media" width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
+          <thead>
+            <tr>
+              <td colspan="${nbMediaPerLine + textColumnCount}" align="center">
+                <gallery:albumListHeader currentMediaResolution="${mediaResolution}"
+                                         nbMediaPerPage="${nbMediaPerPage}"
+                                         currentPageIndex="${currentPageIndex}"
+                                         mediaList="${mediaList}"/>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
           <c:set var="cellWidth" value="${100 / nbMediaPerLine}"/>
           <c:forEach var="media" items="${mediaList}" begin="${firstMediaIndex}" end="${lastMediaIndex}" varStatus="loop">
             <c:set var="internalMedia" value="${media.internalMedia}"/>
@@ -313,8 +313,8 @@
               </td>
             </tr>
           </c:if>
+          </tbody>
         </table>
       </form>
-    </view:board>
   </div>
 </c:if>
