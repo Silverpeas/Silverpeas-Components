@@ -42,7 +42,7 @@ function addChannel() {
 	  $("#modal-newchannel").popup({
 	    title: "<fmt:message key="rss.addChannel" />",
 	    callback: function() {
-	      validateChannelForm();
+	      return validateChannelForm();
 	    }
 	  });
 	}
@@ -72,6 +72,7 @@ function addChannel() {
 				errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
         jQuery.popup.error(errorMsg);
 		}
+		return false;
 	}
 </script>
 

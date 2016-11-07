@@ -337,6 +337,7 @@
                   resolve();
                   return true;
                 }
+                return false;
               },
               callbackOnClose : function() {
                 reject();

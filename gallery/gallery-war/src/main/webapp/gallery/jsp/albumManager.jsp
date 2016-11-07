@@ -59,6 +59,7 @@
         ifValidGalleryFormExecute(function() {
           document.galleryForm.submit();
         });
+        return false;
       }
     });
   }

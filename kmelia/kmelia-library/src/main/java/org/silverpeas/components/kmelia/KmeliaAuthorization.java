@@ -313,10 +313,10 @@ public class KmeliaAuthorization implements ComponentAuthorization {
   private boolean isNodeAvailable(NodePK nodePK, String userId) {
     Boolean fromCache = readFromCache(nodePK.getId(), NODE_TYPE, nodePK.getInstanceId());
     if (fromCache != null) {
-      // Availabily already processed
+      // Availability already processed
       return fromCache;
     }
-    boolean objectAvailable = false;
+    boolean objectAvailable;
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
       NodeDetail node = getNodeService().getHeader(nodePK, false);
       if (node != null) {

@@ -130,6 +130,7 @@
               sendPasteAction(folderId, extraParams);
               return true;
             }
+            return false;
           },
           callbackOnClose : function() {
             jQuery('#ValideurId', this).val("");
