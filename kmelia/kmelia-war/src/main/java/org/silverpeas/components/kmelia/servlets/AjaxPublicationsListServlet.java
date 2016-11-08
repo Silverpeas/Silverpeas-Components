@@ -1035,15 +1035,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         result.append(" <img onclick=\"javascript:previewFile(this, '").append(id)
             .append("');\" class=\"preview-file\" src=\"")
             .append(resources.getIcon("kmelia.file.preview")).append("\" alt=\"")
-            .append(resources.getString("GML.preview")).append("\" title=\"")
-            .append(resources.getString("GML.preview")).append("\"/>");
+            .append(resources.getString("GML.preview.file")).append("\" title=\"")
+            .append(resources.getString("GML.preview.file")).append("\"/>");
       }
       if (viewable) {
         result.append(" <img onclick=\"javascript:viewFile(this, '").append(id)
             .append("');\" class=\"view-file\" src=\"")
             .append(resources.getIcon("kmelia.file.view")).append("\" alt=\"")
-            .append(resources.getString("GML.view")).append("\" title=\"")
-            .append(resources.getString("GML.view")).append("\"/>");
+            .append(resources.getString("GML.view.file")).append("\" title=\"")
+            .append(resources.getString("GML.view.file")).append("\"/>");
       }
       if (!isDownloadAllowedForReaders) {
         String forbiddenDownloadHelp =
