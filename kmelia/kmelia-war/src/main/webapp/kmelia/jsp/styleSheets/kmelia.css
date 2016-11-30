@@ -33,9 +33,7 @@
 	width: 250px; 
 	left: 0px; 
 	top: 0px;
-	border-color:grey; 
-	border-width:1; 
-	border-style:solid
+	border:1px solid grey; 
 }
 
 .treeDivDisplay {
@@ -58,11 +56,8 @@
 	white-space: nowrap;
 }
 
-#searchZone #searchLabel {
-	float: left;
-}
-
-#searchZone #searchButton {
+#searchZone #searchLabel,
+#searchZone #searchButton  {
 	float: left;
 }
 
@@ -72,11 +67,11 @@
 
 #preview .publiName,
 #preview-clone .publiName {
-	color: #333333;
-    font-size: 130%;
-    font-weight: bold;
-    margin: 0 0 5px;
-    padding: 0;
+  color: #333333;
+  font-size: 130%;
+  font-weight: bold;
+  margin: 0 0 5px;
+  padding: 0;
 }
 
 #preview #status,
@@ -117,13 +112,15 @@
 }
 
 #preview #pagination {
-	display: block;
-    float: right;
-    margin: 9px 0 1px;
+  display: block;
+  float: right;
+  margin: 9px 0 1px;
 }
+
 #preview .currentPage {
 	opacity:0.6;
 }
+
 #preview #pagination img {
 	border:0;
 	vertical-align:top;
@@ -134,13 +131,12 @@
 	width: 310px;
 	float: right;
 }
+
 #preview #backToSearch a.button {
 	background-color:#F4F4F4;
-	background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+	background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
 		-moz-background-size: 100%;
 	border-radius: 5px;
-		 -moz-border-radius: 5px;
-		 -webkit-border-radius: 5px;
 	border: 1px solid #CCCCCC;
 	color: #4C4C4C;
 	font-size: 100%;
@@ -149,8 +145,9 @@
 	right: 101px;
 	width: 187px;
 }
+
 #preview #backToSearch a.button span{
-	background:transparent url(/silverpeas/util/icons/back.png) 0 0 no-repeat;
+	background:transparent url(../../../util/icons/back.png) 0 0 no-repeat;
 	line-height: 16px;
 	padding: 0px 0px 0px 24px;
 	font-weight:bold;
@@ -227,9 +224,9 @@
 }
 
 #pubList .firstColumn {
-	float: left;
-	padding-left: 30px;
-    position: relative;
+  float: left;
+  padding-left: 30px;
+  position: relative;
 }
 
 #pubList .thumbnail {
@@ -241,9 +238,9 @@
 }*/
 
 #pubList .selection {
-	left: 3px;
-    position: absolute;
-    top: 0px;
+  left: 3px;
+  position: absolute;
+  top: 0px;
 }
 
 #pubList .selection input {
@@ -256,11 +253,11 @@
 }
 
 #pubList .publication .actualite {
-	font-size: 11px;
+	font-size: 1em;
 }
 
 #pubList .publication .date {
-	font-size: 10px;
+	font-size: 0.9em;
 }
 
 #pubList .publication .line1 {
@@ -291,7 +288,7 @@
 #pubList .important3 .line1 > font > a,
 #pubList .important4 .line1 > font > a,
 #pubList .important5 .line1 > font > a {
-  background: url(/silverpeas/util/icons/flag-important.png) 0 0 no-repeat;
+  background: url(../../../util/icons/flag-important.png) 0 0 no-repeat;
   padding-left: 18px;
 }
 
@@ -304,7 +301,7 @@
 #pubList #pagination {
 	float: left;
 	width: 100%;
-	background-image:url("/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
+	background-image:url("../../../util/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
 	background-repeat:repeat-x;
 }
 
@@ -360,9 +357,9 @@
 }
 
 #rightClick-message p {
-	background: transparent url("../../../util/icons/rightClick.gif") 7px 0px no-repeat;
-    padding-left: 50px;
-    text-align: justify;
+  background: transparent url("../../../util/icons/rightClick.gif") 7px 0px no-repeat;
+  padding-left: 50px;
+  text-align: justify;
 }
 
 #DropZone {
@@ -394,69 +391,46 @@
 	margin:2px 0 0 0;
 	height: 63px;
 	position:relative;
-	background-color:#EAEAEAEA;
 }
-
-/*** presentation sur 2 colonnes 
-#subTopics ul li  {
-    display: inline;
-    float: left;
-    height: 63px;
-    margin-right: 0.5em;
-    width: 48%;
-	position:relative;
-	}***/
-/*** presentation sur 3 colonnes
-#subTopics ul li  {
-	display: inline;
-    float: left;
-    height: 63px;
-    margin-right: 0.5em;
-    width:32%;
-	position:relative;
-	} ***/
 	
 /*** presentation sur 4 colonnes***/
 #subTopics ul li  {
-	display: inline;
-    float: left;
-    height: 63px;
-    margin-right: 0.5em;
-    width:24%;
-	position:relative;
+  display: inline;
+  float: left;
+  height: 63px;
+  margin-right: 0.5em;
+  width:24%;
+  position:relative;
 	} 
 
 #subTopics ul li a { 
-    background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px 5px no-repeat;
-    display: block;
-	overflow:hidden;
-	height: 32px;
-	padding:8px 3px 16px 50px;
-    line-height: 100%;
-	border:1px solid #EAEAEA ;
-	border-radius:10px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	background-color:#EAEAEA;
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px 5px no-repeat;
+  display: block;
+  overflow:hidden;
+  height: 32px;
+  padding:8px 3px 16px 50px;
+  line-height: 100%;
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
+  background-color:#EAEAEA;
 	}
 #subTopics ul li a.trash { 
-    background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -395px no-repeat;
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -395px no-repeat;
 	border:1px solid #EAEAEA ;
 	border-radius:10px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	background-color:#EAEAEA;}
 #subTopics ul li a.trash:hover { 
-    background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -495px no-repeat;
+ background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -495px no-repeat;
 	border:1px solid #FFFBBB ;
 	background-color:#FFFFDC;}
 
 #subTopics ul li a.toValidate { 
-    background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -195px no-repeat;
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -195px no-repeat;
 	border:1px solid #EAEAEA ;
 	border-radius:10px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	background-color:#EAEAEA;}
 #subTopics ul li a.toValidate:hover { 
-    background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -295px no-repeat;
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -295px no-repeat;
 	border:1px solid #FFFBBB ;
 	background-color:#FFFFDC;}
 	
@@ -466,91 +440,78 @@
 	}
 	
 #subTopics ul li a strong span {
-	background: url("../../../kmelia/jsp/icons/mini_publi.gif")  top right no-repeat;
-	display:block;
-    height: 20px;
-	width: 25px;
-    position: absolute;
-    right: 10px;
-    top: 8px;
-    padding: 1px 17px 0 0;
-	color: #000000;
-	text-align: right;
+  background: url("../../../kmelia/jsp/icons/mini_publi.gif")  top right no-repeat;
+  display:block;
+  height: 20px;
+  width: 25px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  padding: 1px 17px 0 0;
+  color: #000000;
+  text-align: right;
 	}	
 #subTopics ul li a:hover { 
-    background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -95px no-repeat;
-	border:1px solid #FFFBBB ;
-	background-color:#FFFFDC;
-	color:#000;
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -95px no-repeat;
+  border:1px solid #FFFBBB ;
+  background-color:#FFFFDC;
+  color:#000;
 	}
 #subTopics ul li a span{
 	color: #666666;
-    display: block;
-    font-size: 11px;
-    height: 33px;
-    line-height: 11px;
-    overflow: hidden;
-
+  display: block;
+  font-size: 1em;
+  height: 33px;
+  line-height:1em;
+  overflow: hidden;
 	}
-/*** pour masquer les descriptions des topics
-#subTopics ul li a span {
-	display:none;}
-	  **/ 
 
 #topicDescription {
 	color:#666;
-	margin: 1em; 
-}
-
-/*** A basculer dans la css global pour utilisation générique */
-.principalContent{
-	margin-right:325px;
-    margin-top: 6px;
+	padding: 1em; 
 }
 
 .principalContent .inlineMessage,
 .principalContent .inlineMessage-ok,
 .principalContent .inlineMessage-nok {
-    float: none;
-    font-size: 120%;
-    font-weight: bold;
+  float: none;
+  font-size: 120%;
+  font-weight: bold;
 }
 
 .inlineMessage a.button {
-	background-color:#F4F4F4;
-    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-  	-moz-background-size: 100%;
-    border-radius: 5px;
-  	-moz-border-radius: 5px;
-  	-webkit-border-radius: 5px;
-    border: 1px solid #CCCCCC;
-    color: #4C4C4C;
-    font-size: 100%;
-    line-height: 52px;
-    margin: 0px 30px;
-    padding: 7px 20px;
+  background-color:#F4F4F4;
+  background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  -moz-background-size: 100%;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  color: #4C4C4C;
+  font-size: 100%;
+  line-height: 52px;
+  margin: 0px 30px;
+  padding: 7px 20px;
 }
 
 a.button.validate span {
-     background: url("/silverpeas/util/icons/ok.gif") no-repeat scroll left center transparent;
-     line-height: 16px;
-     padding: 2px 0px 2px 24px;
+  background: url("../../../util/icons/ok.gif") no-repeat scroll left center transparent;
+  line-height: 16px;
+  padding: 2px 0px 2px 24px;
 }
 
 a.button.refuse span {
-     background: url("/silverpeas/util/icons/wrong.gif") no-repeat scroll left center transparent;
-     line-height: 16px;
-     padding: 2px 0px 2px 24px;
+  background: url("../../../util/icons/wrong.gif") no-repeat scroll left center transparent;
+  line-height: 16px;
+  padding: 2px 0px 2px 24px;
 }
 
 .yui-skin-sam .dimensionTable #pubList ul li {
-   	position:relative;
+  position:relative;
 }
  
 .yui-skin-sam .dimensionTable #pubList ul li .firstColumn .selection input{
-  	position:absolute;
-   	top:0;
-   	left:0;
+  position:absolute;
+  top:0;
+  left:0;
 }
  
 .yui-skin-sam .dimensionTable #pubList .publication .line1 {
@@ -581,13 +542,13 @@ a.button.refuse span {
 }
 
 .oneAxis {
-    background-color: #FFFFFF;
-    border-left: 1px solid #CECECE;
-    display: inline;
-    float: left;
-    margin: 5px 25px 5px 4px;
-    padding: 0 5px 4px 4px;
-    position:relative;
+  background-color: #FFFFFF;
+  border-left: 1px solid #CECECE;
+  display: inline;
+  float: left;
+  margin: 5px 25px 5px 4px;
+  padding: 0 5px 4px 4px;
+  position:relative;
 }
 
 .kmax .sousNavBulle, .kmaxManager .sousNavBull{
@@ -607,10 +568,9 @@ a.button.refuse span {
 }
 
 .oneAxis select {
-	border: 1px solid #CECECE;
-    color: #666666;
+  border: 1px solid #CECECE;
+  color: #666666;
 }
-
 
 .axisManagment .oneAxis label{
 	padding-right:8px;
@@ -633,16 +593,16 @@ a.button.refuse span {
 }
 
 .axisManagment .oneAxis{
-	position:relative;
-	background-color: #EAEAEA;
-    border-left: 1px solid #CECECE;
-    display: inline;
-    float: left;
-    margin: 5px 25px 5px 4px;
-    padding: 6px 15px 14px 14px;
-    position:relative;
-	border:1px solid #EAEAEA ;
-	border-radius:10px;
+  position:relative;
+  background-color: #EAEAEA;
+  border-left: 1px solid #CECECE;
+  display: inline;
+  float: left;
+  margin: 5px 25px 5px 4px;
+  padding: 6px 15px 14px 14px;
+  position:relative;
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
 }
 
 /**mise en page  publicationManager **/
@@ -662,9 +622,6 @@ a.button.refuse span {
 	width:30px;
 	height:30px;
 	text-align:center;
-}
-* html #creationArea .profilPhoto, * html #updateArea .profilPhoto { 
-	left:-40px; 
 }
 
 #creationArea .profilPhoto img, #updateArea .profilPhoto img {
@@ -689,14 +646,6 @@ a.button.refuse span {
 
 #stateArea img, #languageArea img {
 	vertical-align: middle;
-}
-
-* html #thumb { 
-	width:auto;
-}
-
-* html #endArea, * html #beginArea{	
-	float:none;
 }
 
 #descriptionArea textarea, #pubNameArea input, #keywordsArea input, #authorArea input{
@@ -743,9 +692,9 @@ a.button.refuse span {
 
 .topic-statistics  .filterLibGroup a, 
 .topic-statistics  .filterLibGroup a:hover{    
-	background-color:transparent;
-    border: 0px solid #CECECE;
-    padding:0;
+  background-color:transparent;
+  border: 0px solid #CECECE;
+  padding:0;
  }
  .topic-statistics  img {
 	vertical-align:text-bottom;
@@ -791,7 +740,7 @@ a.button.refuse span {
  }
 
 #pubList {
-    padding:6px 14px;
+  padding:6px 14px;
 }
 
 /*** rightPane ****/
@@ -816,6 +765,11 @@ a.button.refuse span {
   width:70%;
 }
 
+.wrap #rightSide.resizable > div {
+	margin-left:2em;
+	margin-right:1em;
+}
+
 .wrap .ui-resizable-e{
   background:#f2f2f2 url("../../../util/icons/splitter/layout_sprite_vertical.png") 1px center no-repeat ;
   width: 7px;
@@ -838,13 +792,6 @@ a.button.refuse span {
 	color: #000000;
 }
 
-
-.basDroiteFrame img, 
-.basMilieuFrame img,
-.basGaucheFrame img {
-	display:none;
-}
-
 #latestPublications p {
 	margin: 0px 0px 10px 0px;
 }
@@ -856,8 +803,8 @@ a.button.refuse span {
 
 /* Last access */
 #preview #lastReader h4 {
-    background:transparent url("/silverpeas/util/icons/groupe.gif") right top no-repeat  ;
-    height: 16px;
+  background:transparent url("../../../util/icons/groupe.gif") right top no-repeat  ;
+  height: 16px;
 }
 #preview #lastReaderList {
 	list-style-type:none;
@@ -871,15 +818,17 @@ a.button.refuse span {
 	position:relative;
 	padding:0;
 	margin:0 0 8px;
-	height:40px;
 	overflow: hidden;
+}
+#preview #lastReaderList li:nth-child(2n+1) {
+  clear:left;
 }
 
 #preview .bgDegradeGris #lastReaderList .profilPhoto {
-	left:0;
-    right:auto;
-    top:0px;
-	background-color:#FFF;
+  left:0;
+  right:auto;
+  top:0px;
+  background-color:#FFF;
 }
 
 #preview #lastReaderList li span.consultationDate,
@@ -903,18 +852,18 @@ a.button.refuse span {
 }
 
 #commentInfo a {
-  background:transparent url(/silverpeas/util/icons/talk2user.gif) 0 0 no-repeat;
+  background:transparent url(../../../util/icons/talk2user.gif) 0 0 no-repeat;
   padding-left:20px;
 }
 /******** on style la scroll bar pour alléger l'ensemble ********/
 /******************** WEBKIT **************/
 #treeDiv1::-webkit-scrollbar {
-    width: 7px;
-	height:7px;
+  width: 7px;
+  height:7px;
 }
 #treeDiv1::-webkit-scrollbar-track {
-    -webkit-box-shadow:0;
-	background-color:#f1f1f1;
+  -webkit-box-shadow:0;
+  background-color:#f1f1f1;
 }
 #treeDiv1::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
@@ -925,13 +874,13 @@ a.button.refuse span {
 
 /******************** IE **************/
 #treeDiv1{
-	  scrollbar-base-color: #d6d6d6;
-	  scrollbar-3dlight-color: #f1f1f1;
-	  scrollbar-highlight-color: #f1f1f1;
-	  scrollbar-track-color: #f1f1f1;
-	  scrollbar-arrow-color: #a3a3a3;
-	  scrollbar-dark-shadow-color: #FFF;
-	   scrollbar-shadow-color: #d6d6d6;
-	  scrollbar-dark-shadow-color: #f1f1f1;
-	  scrollbar-darkshadow-color: #f1f1f1;
+  scrollbar-base-color: #d6d6d6;
+  scrollbar-3dlight-color: #f1f1f1;
+  scrollbar-highlight-color: #f1f1f1;
+  scrollbar-track-color: #f1f1f1;
+  scrollbar-arrow-color: #a3a3a3;
+  scrollbar-dark-shadow-color: #FFF;
+  scrollbar-shadow-color: #d6d6d6;
+  scrollbar-dark-shadow-color: #f1f1f1;
+  scrollbar-darkshadow-color: #f1f1f1;
 	}
