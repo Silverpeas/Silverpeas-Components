@@ -24,4 +24,16 @@ public class NewsRepository extends SilverpeasJpaEntityManager<News, UuidIdentif
     return findByNamedQuery("newsByForeignId", parameters).get(0);
   }
 
+  public List<News> getBlockingNews() {
+    NamedParameters parameters = newNamedParameters();
+    parameters.add("mandatory", true);
+    return findByNamedQuery("newsMandatories", parameters);
+  }
+
+  public List<News> getTickerNews() {
+    NamedParameters parameters = newNamedParameters();
+    parameters.add("ticker", true);
+    return findByNamedQuery("newsForTicker", parameters);
+  }
+
 }

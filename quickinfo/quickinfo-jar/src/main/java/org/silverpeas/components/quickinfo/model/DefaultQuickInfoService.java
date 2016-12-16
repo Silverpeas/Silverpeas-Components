@@ -41,6 +41,7 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoDateComparatorDesc;
 import com.stratelia.webactiv.util.DBUtil;
@@ -122,11 +123,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     List<News> allNews = newsRepository.getByComponentId(componentId);
     boolean delegateNewsEnabled = isDelegatedNewsActivated(componentId);
     for (News aNews : allNews) {
-      PublicationDetail publication = getPublication(aNews);
-      aNews.setPublication(publication);
-      if (delegateNewsEnabled) {
-        setDelegatedNews(aNews, publication);
-      }
+      decorateNewsWithPublication(aNews, delegateNewsEnabled);
     }
     return allNews;
   }
@@ -136,12 +133,18 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     return new NewsByStatus(getAllNews(componentId), userId);
   }
 
+  private void decorateNewsWithPublication(News news, boolean delegated) {
+    PublicationDetail publication = getPublicationBm().getDetail(news.getForeignPK());
+    news.setPublication(publication);
+    if (delegated) {
+      setDelegatedNews(news, publication);
+    }
+  }
+
   @Override
   public News getNews(String id) {
     News news = newsRepository.getById(id);
-    PublicationDetail publication = getPublication(news);
-    news.setPublication(publication);
-    setDelegatedNews(news, publication);
+    decorateNewsWithPublication(news, true);
     return news;
   }
 
@@ -153,8 +156,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @Override
   public News getNewsByForeignId(String foreignId) {
     News news = newsRepository.getByForeignId(foreignId);
-    PublicationDetail publication = getPublication(news);
-    news.setPublication(publication);
+    decorateNewsWithPublication(news, false);
     return news;
   }
 
@@ -164,10 +166,6 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     if (news != null) {
       getStatisticService().addStat(userId, news);
     }
-  }
-
-  private PublicationDetail getPublication(News news) {
-    return getPublicationBm().getDetail(news.getForeignPK());
   }
 
   @Override
@@ -261,7 +259,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     final PublicationDetail publication = news.getPublication();
 
     // saving WYSIWYG content
-    WysiwygController.save(news.getContent(), news.getComponentInstanceId(),
+    WysiwygController.save(news.getContentToStore(), news.getComponentInstanceId(),
         news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
 
     // Attach uploaded files
@@ -390,26 +388,37 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
 
   @Override
   public List<News> getNewsForTicker(String userId) {
-    List<News> allNews = getPlatformNews(userId);
+    List<News> tickerNews = newsRepository.getTickerNews();
+    if (tickerNews.isEmpty()) {
+      return tickerNews;
+    }
+
     List<News> forTicker = new ArrayList<News>();
-    for (News news : allNews) {
-      if (news.isTicker()) {
+    for (News news : tickerNews) {
+      decorateNewsWithPublication(news, false);
+      if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(UserDetail.getById(userId))) {
         forTicker.add(news);
       }
     }
-    return forTicker;
+    return sortByDateDesc(forTicker);
   }
 
   @Override
   public List<News> getUnreadBlockingNews(String userId) {
-    List<News> allNews = getPlatformNews(userId);
+    List<News> blockingNews = newsRepository.getBlockingNews();
+    if (blockingNews.isEmpty()) {
+      return blockingNews;
+    }
+
     List<News> result = new ArrayList<News>();
-    for (News news : allNews) {
-      if (news.isMandatory() && !getStatisticService().isRead(news, userId)) {
+    for (News news : blockingNews) {
+      decorateNewsWithPublication(news, false);
+      if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(UserDetail.getById(userId)) &&
+          !getStatisticService().isRead(news, userId)) {
         result.add(news);
       }
     }
-    return result;
+    return sortByDateDesc(result);
   }
 
   public void submitNewsOnHomepage(String id, String userId) {
