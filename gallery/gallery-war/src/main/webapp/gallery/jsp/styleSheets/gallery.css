@@ -39,25 +39,6 @@
   background-color: #EAEAEAEA;
 }
 
-/*** presentation sur 2 colonnes
-#subTopics ul li  {
-    display: inline;
-    float: left;
-    height: 63px;
-    margin-right: 0.5em;
-    width: 48%;
-  position:relative;
-  }***/
-/*** presentation sur 3 colonnes
-#subTopics ul li  {
-  display: inline;
-    float: left;
-    height: 63px;
-    margin-right: 0.5em;
-    width:32%;
-  position:relative;
-  } ***/
-
 /*** presentation sur 4 colonnes***/
 #subTopics ul li {
   display: inline;
@@ -89,9 +70,6 @@
   line-height: 100%;
   border: 1px solid #EAEAEA;
   border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  behavior: url("../../../util/styleSheets/PIE.htc");
   background-color: #EAEAEA;
 }
 
@@ -199,7 +177,6 @@ ul#albumList li.ui-state-highlight {
 .gallery-fiche-media .rightContent .fileCharacteristic {
   background-color: #efefef;
   background-image: url();
-  -pie-background: linear-gradient(#efefef, #efefef);
   margin-bottom: 1em;
 }
 
@@ -356,7 +333,7 @@ br.clear {
 
 .gallery-fiche-media #backToSearch a.button {
   background-color: #f4f4f4;
-  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
   border: 1px solid #cccccc;
   border-radius: 5px;
   color: #4c4c4c;
@@ -379,10 +356,6 @@ br.clear {
 
 .principalContent #pagination img, .principalContent .contentMedia img {
   border: 0;
-}
-
-.principalContent .fondPhoto {
-
 }
 
 .principalContent .cadrePhoto {
@@ -652,6 +625,10 @@ table.listing-media {
   margin-bottom: 1em;
   max-height: 400px;
   overflow: auto;
+}
+
+.cadrePhoto {
+position: relative;
 }
 
 .type-media {

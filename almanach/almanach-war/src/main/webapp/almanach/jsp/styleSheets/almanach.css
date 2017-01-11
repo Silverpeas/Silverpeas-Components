@@ -93,7 +93,7 @@
 #today a{
   background-color: #FAD163;
   color: #000000;
-  font-size: 11px;
+  font-size: 1em;
   font-weight: 100;
   padding: 3px 11px;
 }
@@ -144,7 +144,7 @@ ul.months {
   background-color: #EAEAEA;
   border: 1px solid #CCCCCC;
   border-bottom: 0px solid #CCCCCC;
-  font-size: 11px;
+  font-size: 1em;
   font-weight: bold;
   padding: 4px 0;
   text-align: center;
@@ -222,7 +222,6 @@ div.description p {padding:0; margin:0;}
   padding:15px 0;
   display:table;
   width:98%;
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .eventInfo div {
@@ -287,12 +286,11 @@ span.priority {
   border:1px solid #FDBABA;
   border-radius:5px;
   color:#F02929;
-  font-size:8px;
+  font-size:0.7em;
   line-height:9px;
   letter-spacing:0.11em;
   display:inline;
   padding:1px 4px;
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .eventDesc {
@@ -363,17 +361,17 @@ div.eventBeginDate {
 .eventBeginDate .day {
   top:68px;
   color:#496093;
-  font-size:10px;
+  font-size:0.9em;
 }
 .eventBeginDate .number {
-  font-size: 36px;
+  font-size: 2.5em;
   font-weight: bold;
   top: 26px;
   color:#333;
 }
 .eventBeginDate .month {
   color: #FFFFFF;
-  font-size: 11px;
+  font-size: 1em;
   text-transform: uppercase;
   top: 5px;
 }
@@ -467,7 +465,7 @@ div.eventBeginDate {
   width:47px;
   color:#33529b;
   line-height:54px;
-  font-size:14px;
+  font-size:1.2em;
   text-align:center;
   font-weight:bold;
 }
@@ -483,7 +481,7 @@ div.eventBeginDate {
 }
 
 .portlet  div.eventName  {
-  font-size:11px;
+  font-size:1em;
   font-weight: 100;
   margin-bottom:2px;
 }
@@ -493,7 +491,7 @@ div.eventBeginDate {
 }
 
 .portlet  div.eventShortDate .number {
-  font-size:16px;
+  font-size:1.3em;
   color:#333;
 }
 
