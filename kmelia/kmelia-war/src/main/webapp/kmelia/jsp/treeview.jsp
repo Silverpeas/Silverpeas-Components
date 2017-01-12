@@ -782,7 +782,7 @@ function publicationsRemovedSuccessfully(nb) {
 }
 
 function getString(key) {
-	return $.i18n.prop(key)
+	return window.i18n.prop(key)
 }
 
 function resizePart(idPart) {
@@ -945,7 +945,7 @@ $(document).ready(function() {
     }, 75);
   });
 
-	$.i18n.properties({
+	window.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/org/silverpeas/kmelia/multilang/',
         language: '<%=language%>',
