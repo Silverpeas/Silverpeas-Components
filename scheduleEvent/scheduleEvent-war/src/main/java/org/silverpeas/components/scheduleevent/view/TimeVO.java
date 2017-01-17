@@ -7,8 +7,6 @@ import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 
 public interface TimeVO {
-
-  boolean equals(TimeVO time);
   DateVO getDate();
   String getId();
   String getMultilangLabel();

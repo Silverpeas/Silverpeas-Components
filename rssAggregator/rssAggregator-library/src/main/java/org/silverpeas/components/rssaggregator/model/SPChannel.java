@@ -149,14 +149,6 @@ public class SPChannel extends SilverpeasBean implements Serializable {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
-  public int compareTo(Object obj) {
-    if (!(obj instanceof SPChannel)) {
-      return 0;
-    }
-    return (String.valueOf(getPK().getId()))
-        .compareTo(String.valueOf(((SPChannel) obj).getPK().getId()));
-  }
-
   public String _getTableName() {
     return "SC_Rss_Channels";
   }

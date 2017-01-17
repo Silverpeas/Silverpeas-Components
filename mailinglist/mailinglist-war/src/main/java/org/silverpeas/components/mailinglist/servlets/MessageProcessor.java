@@ -86,20 +86,11 @@ public class MessageProcessor implements MailingListRoutage {
           }
         }
         rest.getElements().put(DESTINATION_ELEMENT, DESTINATION_MODERATION);
+        setMessage(id, request);
+        request.setAttribute(PREVIOUS_PATH_ATT, rest.getElements().get(DESTINATION_ELEMENT));
+        return JSP_BASE + DESTINATION_DISPLAY_MESSAGE;
       case RestRequest.FIND:
-        Message message = findMessage(id);
-        request.setAttribute(MESSAGE_ATT, message);
-        if (message != null && message.getAttachments() != null &&
-            !message.getAttachments().isEmpty()) {
-          List<DisplayableAttachment> attachments =
-              new ArrayList<>(message.getAttachments().size());
-          for (Attachment currentAttachment : message.getAttachments()) {
-            DisplayableAttachment attachment =
-                new DisplayableAttachment(message.getId(), currentAttachment);
-            attachments.add(attachment);
-          }
-          request.setAttribute(MESSAGE_ATTACHMENTS_ATT, attachments);
-        }
+        setMessage(id, request);
         request.setAttribute(PREVIOUS_PATH_ATT, rest.getElements().get(DESTINATION_ELEMENT));
         return JSP_BASE + DESTINATION_DISPLAY_MESSAGE;
       default:
@@ -131,6 +122,22 @@ public class MessageProcessor implements MailingListRoutage {
     } catch (Exception e) {
       SilverTrace
           .error("mailinglist", "MailSender.sendMail", "mailinglist.external.notification.send", e);
+    }
+  }
+
+  private static void setMessage(String id, HttpServletRequest request) {
+    Message message = findMessage(id);
+    request.setAttribute(MESSAGE_ATT, message);
+    if (message != null && message.getAttachments() != null &&
+        !message.getAttachments().isEmpty()) {
+      List<DisplayableAttachment> attachments =
+          new ArrayList<>(message.getAttachments().size());
+      for (Attachment currentAttachment : message.getAttachments()) {
+        DisplayableAttachment attachment =
+            new DisplayableAttachment(message.getId(), currentAttachment);
+        attachments.add(attachment);
+      }
+      request.setAttribute(MESSAGE_ATTACHMENTS_ATT, attachments);
     }
   }
 }

@@ -42,4 +42,27 @@ public class AvailabilityVisitorPresenceCounter extends AbstractAvailabilityVisi
     return count() * presenceCounter.answers() - presenceCounter.count() * answers();
     }
   }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof AvailabilityVisitorPresenceCounter)) {
+      return false;
+    }
+
+    final AvailabilityVisitorPresenceCounter that = (AvailabilityVisitorPresenceCounter) o;
+    if (that.answers() == 0 && answers() == 0) {
+      return true;
+    }
+    return count() * that.answers() == that.count() * answers();
+  }
+
+  @Override
+  public int hashCode() {
+    int result = present;
+    result = 31 * result + answers;
+    return result;
+  }
 }

@@ -45,6 +45,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +63,7 @@ public class PublicationImport {
   private String spaceId;
   private String userId;
   private boolean ignoreMissingFormFields = false;
+  private SilverLogger logger = SilverLogger.getLogger(this);
 
   public PublicationImport(KmeliaService kmeliaService, String componentId,
       String topicId, String spaceId, String userId) {
@@ -341,7 +343,7 @@ public class PublicationImport {
         }
       }
     } catch (ParseException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
     }
     return null;
   }

@@ -93,11 +93,8 @@ public class DateOption implements Comparable<DateOption>, Serializable {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    return equals((DateOption) obj);
-  }
-
-  public boolean equals(DateOption obj) {
-    if (day.equals(obj.getDay()) && hour == obj.getHour()) {
+    DateOption option = (DateOption)obj;
+    if (day.equals(option.getDay()) && hour == option.getHour()) {
       return true;
     } else {
       return false;

@@ -86,11 +86,7 @@ public class SearchField implements Serializable {
       return false;
     }
     final SearchField other = (SearchField) obj;
-    return equals(other);
-  }
-
-  public boolean equals(SearchField obj) {
-    return instanceId.equals(obj.getInstanceId()) && fieldId.equals(obj.getFieldId());
+    return instanceId.equals(other.getInstanceId()) && fieldId.equals(other.getFieldId());
   }
 
   public void setLabel(String label) {

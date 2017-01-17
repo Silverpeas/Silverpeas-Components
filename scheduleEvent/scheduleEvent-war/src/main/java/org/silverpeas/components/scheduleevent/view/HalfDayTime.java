@@ -1,15 +1,13 @@
 package org.silverpeas.components.scheduleevent.view;
 
+import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
+import org.silverpeas.components.scheduleevent.service.model.beans.Response;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 
 public class HalfDayTime implements TimeVO {
   private final static String HMTL_CLASS_ATTRIBUTE = "titreCouleur";
@@ -29,8 +27,19 @@ public class HalfDayTime implements TimeVO {
   }
 
   @Override
-  public boolean equals(TimeVO time) {
-    return getId().equals(time.getId());
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if (!(object instanceof TimeVO)) {
+      return false;
+    }
+    return getId().equals(((TimeVO) object).getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getId().hashCode();
   }
 
   @Override

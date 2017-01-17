@@ -86,11 +86,8 @@ public class Response implements Serializable {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    return equals((Response) obj);
-  }
-
-  public boolean equals(Response obj) {
-    if (userId == obj.getUserId() && optionId.equals(obj.getOptionId())) {
+    Response response = (Response)obj;
+    if (userId == response.getUserId() && optionId.equals(response.getOptionId())) {
       return true;
     } else {
       return false;

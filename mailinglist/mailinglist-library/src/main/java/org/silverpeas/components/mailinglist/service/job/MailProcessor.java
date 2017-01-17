@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -53,6 +54,9 @@ public class MailProcessor {
   public static final int SUMMARY_SIZE = 200;
   public static final String MAIL_HEADER_IN_REPLY_TO = "In-Reply-To";
   public static final String MAIL_HEADER_REFERENCES = "References";
+
+  private SilverLogger logger = SilverLogger.getLogger(this);
+
   @Inject
   private HtmlCleaner cleaner;
 
@@ -252,7 +256,7 @@ public class MailProcessor {
         ContentType type = new ContentType(part.getContentType());
         fileName = type.getParameter("name");
       } catch (ParseException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage(), e);
       }
     }
     return fileName;
@@ -271,14 +275,14 @@ public class MailProcessor {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType());
       } catch (ParseException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage(), e);
       }
     } else if (Part.INLINE.equals(disposition)) {
       try {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType()) && getFileName(part) == null;
       } catch (ParseException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage(), e);
       }
     }
     return false;

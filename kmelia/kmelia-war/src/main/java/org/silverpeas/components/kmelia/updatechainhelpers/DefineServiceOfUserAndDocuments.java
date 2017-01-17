@@ -34,6 +34,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -88,7 +89,8 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
             .addPosition(silverObjectId, position, kmeliaScc.getComponentId(), false);
       }
     } catch (PdcException pde) {
-      pde.printStackTrace();
+      SilverLogger logger = SilverLogger.getLogger(this);
+      logger.error(pde.getMessage(), pde);
     }
   }
 

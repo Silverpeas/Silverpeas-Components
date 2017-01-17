@@ -51,6 +51,7 @@
 <%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -359,7 +360,7 @@
                 authorLabel = resource.getString("inconnu");
             }
             UserDetail author = fsc.getAuthor(authorId);
-            String avatar = "/directory/jsp/icons/avatar.png";
+            String avatar = User.DEFAULT_AVATAR_PATH;
             if(author != null) {
                avatar = author.getAvatar();
             }

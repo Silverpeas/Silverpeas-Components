@@ -26,8 +26,19 @@ public class DisableTime implements TimeVO {
   }
 
   @Override
-  public boolean equals(TimeVO time) {
-    return getId().equals(time.getId());
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if (!(object instanceof TimeVO)) {
+      return false;
+    }
+    return getId().equals(((TimeVO) object).getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return getId().hashCode();
   }
 
   @Override
