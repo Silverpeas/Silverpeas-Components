@@ -554,12 +554,20 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       if (item != null) {
         try {
           Field field = currentProcessInstance.getField(item.getName());
+          String role = relatedUser.getRole();
           if (field instanceof UserField) {
-            users.add(field.getStringValue());
+            if (StringUtil.isDefined(role) && currentRole.equals(role)) {
+              users.add(field.getStringValue());
+            } else if (StringUtil.isNotDefined(role)) {
+              users.add(field.getStringValue());
+            }
           } else if (field instanceof MultipleUserField) {
             MultipleUserField multipleUserField = (MultipleUserField) field;
-            String[] userIds = multipleUserField.getUserIds();
-            users.addAll(Arrays.asList(userIds));
+            if (StringUtil.isDefined(role) && currentRole.equals(role)) {
+              users.addAll(Arrays.asList(multipleUserField.getUserIds()));
+            } else if (StringUtil.isNotDefined(role)) {
+              users.addAll(Arrays.asList(multipleUserField.getUserIds()));
+            }
           }
         } catch (WorkflowException we) {
           // ignore it.
