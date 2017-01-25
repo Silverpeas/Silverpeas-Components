@@ -23,11 +23,17 @@ package com.silverpeas.kmelia.workflowextensions;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.form.*;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.SilverpeasRole;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
@@ -42,12 +48,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.ExplorerField;
 import com.silverpeas.form.fieldType.FileField;
@@ -191,8 +191,8 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     KmeliaBm kmelia = getKmeliaBm();
-    String pubId = kmelia.createPublicationIntoTopic(pubDetail, new NodePK(getTopicId(),
-        getTargetId()));
+    NodePK nodePK = new NodePK(getTopicId(), getTargetId());
+    String pubId = kmelia.createPublicationIntoTopic(pubDetail, nodePK);
     pubPK.setId(pubId);
 
     // 2 - Attach history as pdf file
@@ -211,9 +211,9 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     // force the update
-    PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
+    /*PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
     newPubli.setStatusMustBeChecked(false);
-    getKmeliaBm().updatePublication(newPubli);
+    getKmeliaBm().updatePublication(newPubli);*/
 
     // process form content
     if (formIsUsed) {
@@ -223,6 +223,12 @@ public class SendInKmelia extends ExternalActionImpl {
       // target app do not use form : copy files of worflow folder
       copyFiles(fromPK, toPK, DocumentType.form, DocumentType.attachment);
     }
+
+    Parameter draftOutParameter = getTriggerParameter("forceDraftOut");
+    if (draftOutParameter != null && StringUtil.getBooleanValue(draftOutParameter.getValue())) {
+      getKmeliaBm().draftOutPublication(pubPK, nodePK, SilverpeasRole.admin.toString());
+    }
+
     orga = null;
   }
 
@@ -245,11 +251,16 @@ public class SendInKmelia extends ExternalActionImpl {
         Object fieldValue = null;
         try {
           Field fieldOfFolder = currentProcessInstance.getField(fieldName);
+          FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(fieldName);
           fieldValue = fieldOfFolder.getObjectValue();
           // Check file attachment in order to put them inside form
           if (fieldOfFolder instanceof FileField) {
             SilverTrace.info("workflowEngine", "SendInKmelia.populateFields", "Process file copy");
             fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
+          } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
+            WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
+            fieldValue = displayer.duplicateContent(fieldOfFolder, fieldTemplate, fromPK, toPK,
+                I18NHelper.defaultLanguage);
           }
         } catch (WorkflowException e) {
           SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" +
@@ -409,9 +420,10 @@ public class SendInKmelia extends ExternalActionImpl {
             getRole(), getLanguage());
       }
 
-      XmlForm xmlForm = (XmlForm) form;
-      if (xmlForm != null && step.getActionRecord() != null) {
+      if (form != null && step.getActionRecord() != null) {
         DataRecord data = step.getActionRecord();
+        PagesContext pageContext = new PagesContext();
+        pageContext.setLanguage(getLanguage());
 
         // Force simpletext displayers because itext cannot display HTML Form fields (select,
         // radio...)
@@ -421,7 +433,7 @@ public class SendInKmelia extends ExternalActionImpl {
         String fieldValue = "";
         Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
         Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
-        List<FieldTemplate> fieldTemplates = xmlForm.getFieldTemplates();
+        List<FieldTemplate> fieldTemplates = form.getFieldTemplates();
         for (FieldTemplate fieldTemplate1 : fieldTemplates) {
           try {
             GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
@@ -448,24 +460,32 @@ public class SendInKmelia extends ExternalActionImpl {
               if (doc != null) {
                 fieldValue = doc.getFilename();
               }
-            } // Field date type
-            else if ("date".equals(fieldTemplate.getTypeName())) {
-              fieldValue = DateUtil.getOutputDate(field.getValue(), "fr");
-            } // Others fields type
-            else {
-              fieldTemplate.setDisplayerName("simpletext");
-              fieldValue = field.getValue(getLanguage());
+            } else {
+              // Other field types
+              FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate
+                  .getTypeName(), "simpletext");
+              StringWriter sw = new StringWriter();
+              PrintWriter out = new PrintWriter(sw);
+              fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+              fieldValue = sw.toString();
             }
 
-            PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
-            cell.setBorderWidth(0);
-            cell.setPaddingBottom(5);
-            tableContent.addCell(cell);
+            boolean displayField = true;
+            if (!Util.isEmptyFieldsDisplayed() && !StringUtil.isDefined(fieldValue)) {
+              displayField = false;
+            }
 
-            cell = new PdfPCell(new Phrase(fieldValue, fontValue));
-            cell.setBorderWidth(0);
-            cell.setPaddingBottom(5);
-            tableContent.addCell(cell);
+            if (displayField) {
+              PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
+              cell.setBorderWidth(0);
+              cell.setPaddingBottom(5);
+              tableContent.addCell(cell);
+
+              cell = new PdfPCell(new Phrase(fieldValue, fontValue));
+              cell.setBorderWidth(0);
+              cell.setPaddingBottom(5);
+              tableContent.addCell(cell);
+            }
           } catch (Exception e) {
             SilverTrace.warn("workflowEngine", "SendInKmelia.generatePDFStep()",
                 "CANT_DISPLAY_DATA_OF_STEP", e);
