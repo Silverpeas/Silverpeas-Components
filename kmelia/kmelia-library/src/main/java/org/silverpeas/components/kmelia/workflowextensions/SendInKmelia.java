@@ -29,20 +29,39 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
+import net.htmlparser.jericho.Source;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
-import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
@@ -51,33 +70,12 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import net.htmlparser.jericho.Source;
-import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -186,8 +184,8 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     KmeliaService kmelia = getKmeliaBm();
-    String pubId =
-        kmelia.createPublicationIntoTopic(pubDetail, new NodePK(getTopicId(), getTargetId()));
+    NodePK nodePK = new NodePK(getTopicId(), getTargetId());
+    String pubId = kmelia.createPublicationIntoTopic(pubDetail, nodePK);
     pubPK.setId(pubId);
 
     // 2 - Attach history as pdf file
@@ -206,9 +204,9 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     // force the update
-    PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
+    /*PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
     newPubli.setStatusMustBeChecked(false);
-    getKmeliaBm().updatePublication(newPubli);
+    getKmeliaBm().updatePublication(newPubli);*/
 
     // process form content
     if (formIsUsed) {
@@ -217,6 +215,11 @@ public class SendInKmelia extends ExternalActionImpl {
     } else {
       // target app do not use form : copy files of worflow folder
       copyFiles(fromPK, toPK, DocumentType.form, DocumentType.attachment);
+    }
+
+    Parameter draftOutParameter = getTriggerParameter("forceDraftOut");
+    if (draftOutParameter != null && StringUtil.getBooleanValue(draftOutParameter.getValue())) {
+      getKmeliaBm().draftOutPublication(pubPK, nodePK, SilverpeasRole.admin.toString());
     }
   }
 
@@ -238,11 +241,16 @@ public class SendInKmelia extends ExternalActionImpl {
         Object fieldValue = null;
         try {
           Field fieldOfFolder = currentProcessInstance.getField(fieldName);
+          FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(fieldName);
           fieldValue = fieldOfFolder.getObjectValue();
           // Check file attachment in order to put them inside form
           if (fieldOfFolder instanceof FileField) {
 
             fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
+          } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
+            WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
+            fieldValue = displayer.duplicateContent(fieldOfFolder, fieldTemplate, fromPK, toPK,
+                I18NHelper.defaultLanguage);
           }
         } catch (WorkflowException e) {
         }
@@ -391,9 +399,10 @@ public class SendInKmelia extends ExternalActionImpl {
             .getPresentationForm(step.getAction(), getRole(), getLanguage());
       }
 
-      XmlForm xmlForm = (XmlForm) form;
-      if (xmlForm != null && step.getActionRecord() != null) {
+      if (form != null && step.getActionRecord() != null) {
         DataRecord data = step.getActionRecord();
+        PagesContext pageContext = new PagesContext();
+        pageContext.setLanguage(getLanguage());
 
         // Force simpletext displayers because itext cannot display HTML Form fields (select,
         // radio...)
@@ -403,7 +412,7 @@ public class SendInKmelia extends ExternalActionImpl {
         String fieldValue = "";
         Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
         Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
-        List<FieldTemplate> fieldTemplates = xmlForm.getFieldTemplates();
+        List<FieldTemplate> fieldTemplates = form.getFieldTemplates();
         for (FieldTemplate fieldTemplate1 : fieldTemplates) {
           try {
             GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
@@ -429,24 +438,32 @@ public class SendInKmelia extends ExternalActionImpl {
               if (doc != null) {
                 fieldValue = doc.getFilename();
               }
-            } // Field date type
-            else if ("date".equals(fieldTemplate.getTypeName())) {
-              fieldValue = DateUtil.getOutputDate(field.getValue(), "fr");
-            } // Others fields type
-            else {
-              fieldTemplate.setDisplayerName("simpletext");
-              fieldValue = field.getValue(getLanguage());
+            } else {
+              // Other field types
+              FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate
+                  .getTypeName(), "simpletext");
+              StringWriter sw = new StringWriter();
+              PrintWriter out = new PrintWriter(sw);
+              fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+              fieldValue = sw.toString();
             }
 
-            PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
-            cell.setBorderWidth(0);
-            cell.setPaddingBottom(5);
-            tableContent.addCell(cell);
+            boolean displayField = true;
+            if (!Util.isEmptyFieldsDisplayed() && !StringUtil.isDefined(fieldValue)) {
+              displayField = false;
+            }
 
-            cell = new PdfPCell(new Phrase(fieldValue, fontValue));
-            cell.setBorderWidth(0);
-            cell.setPaddingBottom(5);
-            tableContent.addCell(cell);
+            if (displayField) {
+              PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
+              cell.setBorderWidth(0);
+              cell.setPaddingBottom(5);
+              tableContent.addCell(cell);
+
+              cell = new PdfPCell(new Phrase(fieldValue, fontValue));
+              cell.setBorderWidth(0);
+              cell.setPaddingBottom(5);
+              tableContent.addCell(cell);
+            }
           } catch (Exception e) {
             SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
