@@ -20,35 +20,35 @@
  */
 package org.silverpeas.components.quickinfo.control;
 
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -76,13 +76,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         QuickInfoComponentSettings.ICONS_PATH, QuickInfoComponentSettings.SETTINGS_PATH);
   }
 
-  private PublicationService getPublicationService() {
-    if (publicationService == null) {
-      publicationService = ServiceProvider.getService(PublicationService.class);
-    }
-    return publicationService;
-  }
-
   public QuickInfoComponentSettings getInstanceSettings() {
     if (instanceSettings == null) {
       ComponentInstLight app = getOrganisationController().getComponentInstLight(getComponentId());
@@ -101,14 +94,15 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public NewsByStatus getQuickInfos() {
-    NewsByStatus newsByStatus = getService().getAllNewsByStatus(getComponentId(), getUserId());
+    NewsByStatus newsByStatus =
+        getQuickInfoService().getAllNewsByStatus(getComponentId(), getUserId());
     // TODO - REMOVE THIS PART OF BELOW CODE IN WILDFLY VERSION
     // removing drafts which have never been saved by the contributor
     Iterator<News> drafts = newsByStatus.getDrafts().iterator();
     while (drafts.hasNext()) {
       News draft = drafts.next();
       if (!draft.hasBeenModified()) {
-        getService().removeNews(draft.getId());
+        getQuickInfoService().removeNews(draft.getId());
         drafts.remove();
       }
     }
@@ -116,11 +110,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public List<News> getVisibleQuickInfos() {
-    return getService().getVisibleNews(getComponentId());
+    return getQuickInfoService().getVisibleNews(getComponentId());
   }
 
   public News getNews(String id, boolean statVisit) {
-    News news = getService().getNews(id);
+    News news = getQuickInfoService().getNews(id);
     if (statVisit) {
       addVisit(news);
     }
@@ -128,15 +122,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public News getNewsByForeignId(String foreignId) {
-    News news = getService().getNewsByForeignId(foreignId);
+    News news = getQuickInfoService().getNewsByForeignId(foreignId);
     addVisit(news);
     return news;
-  }
-
-  private void addVisit(News news) {
-    if (!news.isDraft()) {
-      getStatisticService().addStat(getUserId(), news);
-    }
   }
 
   /**
@@ -144,7 +132,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param id the identifier of the news that must be published.
    */
   public void publish(String id) {
-    getService().publish(id, getUserId());
+    getQuickInfoService().publish(id, getUserId());
   }
 
   /**
@@ -166,10 +154,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return news;
   }
 
-  private QuickInfoService getService() {
-    return QuickInfoServiceProvider.getQuickInfoService();
-  }
-
   /**
    * Indicates if the given news identifier is one that indicates the news is in memory only.
    * @param newsId the news identifier to verify.
@@ -188,7 +172,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setDraft();
     news.setComponentInstanceId(getComponentId());
     news.setCreatorId(getUserId());
-    getService().create(news);
+    getQuickInfoService().create(news);
   }
 
   /**
@@ -204,7 +188,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
-    news.setContent(updatedNews.getContent());
+    news.setContentToStore(updatedNews.getContentToStore());
     news.setVisibilityPeriod(updatedNews.getVisibilityPeriod());
     news.setUpdaterId(getUserId());
     news.setImportant(updatedNews.isImportant());
@@ -215,7 +199,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       news.setPublished();
     }
 
-    getService().update(news, getPositionsFromJSON(pdcPositions), uploadedFiles, forcePublish);
+    getQuickInfoService().update(news, getPositionsFromJSON(pdcPositions), uploadedFiles,
+        forcePublish);
   }
 
   /**
@@ -226,7 +211,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public void remove(String id) {
     if (!isNewsIdentifierFromMemory(id)) {
       // Case of a news that exists
-      getService().removeNews(id);
+      getQuickInfoService().removeNews(id);
     }
   }
 
@@ -282,7 +267,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public void submitNewsOnHomepage(String id) {
-    getService().submitNewsOnHomepage(id, getUserId());
+    getQuickInfoService().submitNewsOnHomepage(id, getUserId());
   }
 
   /**
@@ -304,6 +289,16 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
     }
     return pdcPositions;
+  }
+
+  private void addVisit(News news) {
+    if (!news.isDraft()) {
+      getStatisticService().addStat(getUserId(), news);
+    }
+  }
+
+  private QuickInfoService getQuickInfoService() {
+    return QuickInfoServiceProvider.getQuickInfoService();
   }
 
   private StatisticService getStatisticService() {

@@ -20,29 +20,29 @@
  */
 package org.silverpeas.components.quickinfo.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.quickinfo.NewsByStatus;
-import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.io.upload.UploadedFile;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -265,7 +265,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     News news =
         new News(name, description, getPeriod(beginDate, endDate), important, ticker, mandatory);
     news.setId(id);
-    news.setContent(content);
+    news.setContentToStore(content);
     if (StringUtil.isDefined(pubId)) {
       news.setPublicationId(pubId);
     }
