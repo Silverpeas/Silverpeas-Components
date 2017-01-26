@@ -66,10 +66,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
-@NamedQueries({@NamedQuery(name = "newsFromComponentInstance",
-    query = "SELECT n FROM News n WHERE n.componentInstanceId = :componentInstanceId " +
-        "ORDER BY n.publishDate DESC"), @NamedQuery(name = "newsByForeignId",
-    query = "SELECT n FROM News n WHERE n.publicationId = :foreignId")})
+@NamedQueries({
+    @NamedQuery(name = "newsFromComponentInstance", query = "select n from News n where n" +
+        ".componentInstanceId = :componentInstanceId order by n.publishDate DESC"),
+    @NamedQuery(name = "newsByForeignId", query = "select n from News n where n.publicationId = " +
+        ":foreignId"),
+    @NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = " +
+        ":mandatory"),
+    @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
 public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
 
   public static final String CONTRIBUTION_TYPE = "News";
@@ -110,7 +114,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   private String publishedBy;
 
   protected News() {
-
+    // default constructor for the persistence engine
   }
 
   public News(String name, String description, Period visibilityPeriod, boolean important,
@@ -195,12 +199,16 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     return getPublication().getVisibilityPeriod();
   }
 
-  public void setContent(String content) {
+  public void setContentToStore(String content) {
     this.content = content;
   }
 
-  public String getContent() {
+  public String getContentToStore() {
     return content;
+  }
+
+  public String getContent() {
+    return getPublication().getWysiwyg();
   }
 
   public List<Integer> getBroadcastModes() {
@@ -296,15 +304,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     return publicationId;
   }
 
-  protected void setPublication(PublicationDetail publication) {
-    this.publication = publication;
-    this.content = getPublication().getWysiwyg();
-  }
-
-  protected PublicationPK getForeignPK() {
-    return new PublicationPK(getPublicationId(), getComponentInstanceId());
-  }
-
   public int getNbAccess() {
     return getStatisticService().getCount(this);
   }
@@ -321,10 +320,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     getPublication().setStatus(PublicationDetail.VALID);
   }
 
-  private StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
-  }
-
   public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {
     String silverObjectId = getPublication().getSilverObjectId();
     if (StringUtil.isDefined(silverObjectId)) {
@@ -332,10 +327,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
           .getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
     }
     return Collections.emptyList();
-  }
-
-  private PdcManager getTaxonomyService() {
-    return new GlobalPdcManager();
   }
 
   public String getPermalink() {
@@ -389,5 +380,21 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
         listDocumentsByForeignKeyAndType(getForeignPK(), DocumentType.attachment,
             I18NHelper.defaultLanguage);
     return attachments.size();
+  }
+
+  protected void setPublication(PublicationDetail publication) {
+    this.publication = publication;
+  }
+
+  protected PublicationPK getForeignPK() {
+    return new PublicationPK(getPublicationId(), getComponentInstanceId());
+  }
+
+  private StatisticService getStatisticService() {
+    return ServiceProvider.getService(StatisticService.class);
+  }
+
+  private PdcManager getTaxonomyService() {
+    return new GlobalPdcManager();
   }
 }

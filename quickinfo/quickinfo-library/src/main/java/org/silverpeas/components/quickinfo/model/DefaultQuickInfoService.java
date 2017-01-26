@@ -24,22 +24,6 @@
 
 package org.silverpeas.components.quickinfo.model;
 
-import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import org.silverpeas.components.quickinfo.NewsByStatus;
@@ -48,24 +32,40 @@ import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUse
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.components.quickinfo.service.QuickInfoContentManager;
 import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -113,11 +113,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     List<News> allNews = newsRepository.getByComponentId(componentId);
     boolean delegateNewsEnabled = isDelegatedNewsActivated(componentId);
     for (News aNews : allNews) {
-      PublicationDetail publication = getPublication(aNews);
-      aNews.setPublication(publication);
-      if (delegateNewsEnabled) {
-        setDelegatedNews(aNews, publication);
-      }
+      decorateNewsWithPublication(aNews, delegateNewsEnabled);
     }
     return allNews;
   }
@@ -130,22 +126,14 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   public News getNews(String id) {
     News news = newsRepository.getById(id);
-    PublicationDetail publication = getPublication(news);
-    news.setPublication(publication);
-    setDelegatedNews(news, publication);
+    decorateNewsWithPublication(news, true);
     return news;
-  }
-
-  private void setDelegatedNews(News news, PublicationDetail publication) {
-    news.setDelegatedNews(
-        getDelegatedNewsService().getDelegatedNews(Integer.parseInt(publication.getId())));
   }
 
   @Override
   public News getNewsByForeignId(String foreignId) {
     News news = newsRepository.getByForeignId(foreignId);
-    PublicationDetail publication = getPublication(news);
-    news.setPublication(publication);
+    decorateNewsWithPublication(news, false);
     return news;
   }
 
@@ -155,10 +143,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
     if (news != null) {
       getStatisticService().addStat(userId, news);
     }
-  }
-
-  private PublicationDetail getPublication(News news) {
-    return getPublicationService().getDetail(news.getForeignPK());
   }
 
   @Override
@@ -216,30 +200,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
     return savedNews;
   }
 
-  private void publish(final News news) {
-    news.setPublished();
-    news.setPublishDate(new Date());
-    news.setLastUpdatedBy(news.getPublishedBy());
-    performInOne(() -> newsRepository.save(news));
-
-    PublicationDetail publication = news.getPublication();
-    getPublicationService().setDetail(publication, false);
-
-    try {
-      new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
-    } catch (ContentManagerException e) {
-      SilverLogger.getLogger(this).error(
-          "can not update the silver-content of the publication " + publication.getId() +
-              " associated to the news " + news.getId(), e);
-    }
-
-    if (news.isVisible()) {
-      // Sending notifications to subscribers
-      UserNotificationHelper
-          .buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
-    }
-  }
-
   @Override
   public void publish(String id, String userId) {
     News news = getNews(id);
@@ -253,8 +213,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
     final PublicationDetail publication = news.getPublication();
 
     // saving WYSIWYG content
-    WysiwygController
-        .save(news.getContent(), news.getComponentInstanceId(), news.getPublicationId(),
+    WysiwygController.save(news.getContentToStore(), news.getComponentInstanceId(),
+        news.getPublicationId(),
             publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
 
     // Attach uploaded files
@@ -373,26 +333,36 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public List<News> getNewsForTicker(String userId) {
-    List<News> allNews = getPlatformNews(userId);
+    List<News> tickerNews = newsRepository.getTickerNews();
+    if (tickerNews.isEmpty()) {
+      return tickerNews;
+    }
+
     List<News> forTicker = new ArrayList<>();
-    for (News news : allNews) {
-      if (news.isTicker()) {
+    for (News news : tickerNews) {
+      decorateNewsWithPublication(news, false);
+      if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(User.getById(userId))) {
         forTicker.add(news);
       }
     }
-    return forTicker;
+    return sortByDateDesc(forTicker);
   }
 
   @Override
   public List<News> getUnreadBlockingNews(String userId) {
-    List<News> allNews = getPlatformNews(userId);
+    List<News> blockingNews = newsRepository.getBlockingNews();
+    if (blockingNews.isEmpty()) {
+      return blockingNews;
+    }
     List<News> result = new ArrayList<>();
-    for (News news : allNews) {
-      if (news.isMandatory() && !getStatisticService().isRead(news, userId)) {
+    for (News news : blockingNews) {
+      decorateNewsWithPublication(news, false);
+      if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(User.getById(userId)) &&
+          !getStatisticService().isRead(news, userId)) {
         result.add(news);
       }
     }
-    return result;
+    return sortByDateDesc(result);
   }
 
   public void submitNewsOnHomepage(String id, String userId) {
@@ -402,15 +372,39 @@ public class DefaultQuickInfoService implements QuickInfoService {
             userId);
   }
 
+  private void publish(final News news) {
+    news.setPublished();
+    news.setPublishDate(new Date());
+    news.setLastUpdatedBy(news.getPublishedBy());
+    performInOne(() -> newsRepository.save(news));
+
+    PublicationDetail publication = news.getPublication();
+    getPublicationService().setDetail(publication, false);
+
+    try {
+      new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
+    } catch (ContentManagerException e) {
+      SilverLogger.getLogger(this)
+          .error("can not update the silver-content of the publication " + publication.getId() +
+              " associated to the news " + news.getId(), e);
+    }
+
+    if (news.isVisible()) {
+      // Sending notifications to subscribers
+      UserNotificationHelper.buildAndSend(
+          new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+    }
+  }
+
   private List<News> sortByDateDesc(List<News> listOfNews) {
     Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
     Collections.sort(listOfNews, comparator);
     return listOfNews;
   }
 
-
-  private PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+  private void setDelegatedNews(News news, PublicationDetail publication) {
+    news.setDelegatedNews(
+        getDelegatedNewsService().getDelegatedNews(Integer.parseInt(publication.getId())));
   }
 
   /**
@@ -431,18 +425,30 @@ public class DefaultQuickInfoService implements QuickInfoService {
     }
   }
 
+  private boolean isDelegatedNewsActivated(String componentId) {
+    String paramValue = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentId, QuickInfoComponentSettings.PARAM_DELEGATED);
+    return StringUtil.getBooleanValue(paramValue);
+  }
+
+  private void decorateNewsWithPublication(News news, boolean delegated) {
+    PublicationDetail publication = getPublicationService().getDetail(news.getForeignPK());
+    news.setPublication(publication);
+    if (delegated) {
+      setDelegatedNews(news, publication);
+    }
+  }
+
+  private PublicationService getPublicationService() {
+    return ServiceProvider.getService(PublicationService.class);
+  }
+
   private StatisticService getStatisticService() {
     return ServiceProvider.getService(StatisticService.class);
   }
 
   private DelegatedNewsService getDelegatedNewsService() {
     return DelegatedNewsServiceProvider.getDelegatedNewsService();
-  }
-
-  private boolean isDelegatedNewsActivated(String componentId) {
-    String paramValue = OrganizationControllerProvider.getOrganisationController()
-        .getComponentParameterValue(componentId, QuickInfoComponentSettings.PARAM_DELEGATED);
-    return StringUtil.getBooleanValue(paramValue);
   }
 
 }
