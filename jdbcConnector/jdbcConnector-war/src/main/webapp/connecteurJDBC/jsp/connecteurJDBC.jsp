@@ -81,7 +81,6 @@
     cpp = Integer.parseInt(col);
   }
 
-  String SQLreq = connecteurJDBC.getCurrentConnectionInfo().getSqlRequest();
   String lastValidSqlReq = connecteurJDBC.getFullRequest();
 
   if (action != null) {
@@ -221,7 +220,6 @@
               <input name="Action" type="hidden"/>
               <input name="colNumber" type="hidden"/>
               <input name="Sort" type="hidden" value="<%=connecteurJDBC.getSortType()%>"/>
-              <input name="SQLreq" type="hidden" value="<%=connecteurJDBC.getCurrentConnectionInfo().getSqlRequest()%>"/>
               <table cellpadding=2 cellspacing=1 border=0 width="100%" >
                 <tr>
                   <td class="intfdcolor" align="center" nowrap="nowrap" height="24">
