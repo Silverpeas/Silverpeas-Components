@@ -325,7 +325,7 @@
       <form name="tabForm" method="post">
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
-    arrayPane.setVisibleLineNumber(20);
+    arrayPane.setVisibleLineNumber(1000);
     arrayPane.setSortableLines(true);
     arrayPane.setTitle(resources.getString("delegatednews.listNews"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.title"));

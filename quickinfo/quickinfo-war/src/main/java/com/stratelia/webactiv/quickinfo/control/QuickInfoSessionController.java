@@ -217,7 +217,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
-    news.setContent(updatedNews.getContent());
+    news.setContentToStore(updatedNews.getContentToStore());
     news.setVisibilityPeriod(updatedNews.getVisibilityPeriod());
     news.setUpdaterId(getUserId());
     news.setImportant(updatedNews.isImportant());

@@ -46,9 +46,12 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
-/*@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId")*/
-@NamedQueries({@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId order by n.publishDate DESC"),
-  @NamedQuery(name = "newsByForeignId", query = "from News n where n.publicationId = :foreignId")})
+@NamedQueries({
+    @NamedQuery(name = "newsFromComponentInstance", query = "select n from News n where n.componentInstanceId = :componentInstanceId order by n.publishDate DESC"),
+    @NamedQuery(name = "newsByForeignId", query = "select n from News n where n.publicationId = :foreignId"),
+    @NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = :mandatory"),
+    @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")
+})
 public class News extends AbstractJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
   
   public static final String CONTRIBUTION_TYPE = "News";
@@ -174,12 +177,16 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return getPublication().getVisibilityPeriod();
   }
 
-  public void setContent(String content) {
+  public void setContentToStore(String content) {
     this.content = content;
   }
 
-  public String getContent() {
+  public String getContentToStore() {
     return content;
+  }
+
+  public String getContent() {
+    return getPublication().getWysiwyg();
   }
   
   public List<Integer> getBroadcastModes() {
@@ -274,7 +281,6 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   protected void setPublication(PublicationDetail publication) {
     this.publication = publication;
-    this.content = getPublication().getWysiwyg();
   }
   
   protected PublicationPK getForeignPK() {

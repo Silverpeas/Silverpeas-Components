@@ -34,7 +34,6 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.date.Period;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.WysiwygException;
 
@@ -275,7 +274,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     News news =
         new News(name, description, getPeriod(beginDate, endDate), important, ticker, mandatory);
     news.setId(id);
-    news.setContent(content);
+    news.setContentToStore(content);
     if (StringUtil.isDefined(pubId)) {
       news.setPublicationId(pubId);
     }
