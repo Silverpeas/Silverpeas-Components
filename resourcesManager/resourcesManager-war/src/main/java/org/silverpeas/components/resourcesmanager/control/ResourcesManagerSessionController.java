@@ -24,20 +24,6 @@
 package org.silverpeas.components.resourcesmanager.control;
 
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.resourcesmanager.ResourcesManagerProvider;
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
@@ -47,13 +33,27 @@ import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.components.resourcesmanager.service.ResourcesManagerRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,7 +79,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public ReservationTimeWindowViewContext getViewContext() {
     if (viewContext == null) {
       // Initialization
-      viewContext = new ReservationTimeWindowViewContext(getComponentId(), getUserDetail(), getLanguage());
+      viewContext =
+          new ReservationTimeWindowViewContext(getComponentId(), getUserDetail(), getLanguage(),
+              getPersonalization().getZoneId());
     }
     return viewContext;
   }

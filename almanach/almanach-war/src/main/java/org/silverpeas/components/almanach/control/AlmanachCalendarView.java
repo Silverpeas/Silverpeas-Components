@@ -27,6 +27,7 @@ import org.silverpeas.core.web.calendar.CalendarDay;
 import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
 import org.silverpeas.core.web.calendar.CalendarViewType;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -47,16 +48,16 @@ public class AlmanachCalendarView {
   /**
    * Constructs a new calendar view of the specified almanach. By default, the week-end days are
    * displayed.
-   *
-   * @param almanach the DTO carrying information about the almanach instance this view is about.
+   *  @param almanach the DTO carrying information about the almanach instance this view is about.
    * @param currentDay the current day in this calendar view.
    * @param viewType the type of view the calendar should be rendered.
    * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
+   * @param zoneId the zoneId to take into account (ZoneId.of("Europe/Paris") for example).
    */
   public AlmanachCalendarView(final AlmanachDTO almanach, final Date currentDay,
-      final CalendarViewType viewType, final String locale) {
+      final CalendarViewType viewType, final String locale, final ZoneId zoneId) {
     this.almanach = almanach;
-    viewContext = new CalendarTimeWindowViewContext(null, locale);
+    viewContext = new CalendarTimeWindowViewContext(null, locale, zoneId);
     viewContext.setReferenceDay(currentDay);
     viewContext.setViewType(viewType);
     if (!CalendarViewType.NEXT_EVENTS.equals(viewContext.getViewType())) {

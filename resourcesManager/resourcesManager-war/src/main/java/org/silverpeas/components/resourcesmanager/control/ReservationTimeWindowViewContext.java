@@ -23,10 +23,12 @@
  */
 package org.silverpeas.components.resourcesmanager.control;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
 import org.silverpeas.components.resourcesmanager.web.ResourceManagerResourceURIs;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
+
+import java.time.ZoneId;
 
 /**
  * User: Yohann Chastagnier
@@ -43,12 +45,13 @@ public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewCont
 
   /**
    * Default constructor.
-   * @param componentInstanceId
-   * @param language
+   * @param componentInstanceId the component instance identifier
+   * @param language the language to take into account (fr for the french locale (fr_FR) for example).
+   * @param zoneId the zoneId to take into account (ZoneId.of("Europe/Paris") for example).
    */
   public ReservationTimeWindowViewContext(final String componentInstanceId, final UserDetail currentUser,
-      final String language) {
-    super(componentInstanceId, language);
+      final String language, final ZoneId zoneId) {
+    super(componentInstanceId, language, zoneId);
     this.currentUser = currentUser;
   }
 
