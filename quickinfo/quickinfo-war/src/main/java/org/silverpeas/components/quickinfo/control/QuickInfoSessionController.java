@@ -62,8 +62,8 @@ import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
-  private PublicationService publicationService = null;
-  private QuickInfoComponentSettings instanceSettings = null;
+  private PublicationService publicationService;
+  private QuickInfoComponentSettings instanceSettings;
 
   /**
    * Creates new QuickInfoSessionController
