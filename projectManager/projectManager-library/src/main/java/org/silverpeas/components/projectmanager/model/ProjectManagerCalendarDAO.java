@@ -48,6 +48,12 @@ public class ProjectManagerCalendarDAO {
 
   private final static String PROJECTMANAGER_CALENDAR_TABLENAME = "SC_ProjectManager_Calendar";
 
+  /**
+   * Hidden constructor.
+   */
+  private ProjectManagerCalendarDAO() {
+  }
+
   public static void addHolidayDate(Connection con, HolidayDetail holiday)
       throws SQLException, UtilException {
     if (!isHolidayDate(con, holiday)) {
@@ -102,7 +108,7 @@ public class ProjectManagerCalendarDAO {
    */
   public static void removeAllHolidayDates(Connection con, String instanceId) throws SQLException {
     final String sql = "delete from " + PROJECTMANAGER_CALENDAR_TABLENAME + " where instanceId = ?";
-    try (PreparedStatement deletion = con.prepareCall(sql)) {
+    try (PreparedStatement deletion = con.prepareStatement(sql)) {
       deletion.setString(1, instanceId);
       deletion.execute();
     }

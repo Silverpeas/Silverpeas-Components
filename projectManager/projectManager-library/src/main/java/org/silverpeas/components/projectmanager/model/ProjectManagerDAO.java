@@ -28,9 +28,9 @@
  */
 package org.silverpeas.components.projectmanager.model;
 
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,6 +44,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 /**
  * @author neysseri
  */
@@ -51,6 +53,12 @@ public class ProjectManagerDAO {
 
   private static final String PROJECTMANAGER_TASKS_TABLENAME = "sc_projectmanager_tasks";
   private static final String PROJECTMANAGER_RESOURCES_TABLENAME = "sc_projectmanager_resources";
+
+  /**
+   * Hidden constructor.
+   */
+  private ProjectManagerDAO() {
+  }
 
   private static int getChrono(Connection con, String instanceId)
       throws SQLException {
@@ -282,11 +290,11 @@ public class ProjectManagerDAO {
     final String tasks = "delete from " + PROJECTMANAGER_TASKS_TABLENAME + " where instanceId = ?";
     final String resources =
         "delete from " + PROJECTMANAGER_RESOURCES_TABLENAME + " where instanceId = ?";
-    try(PreparedStatement deletion = con.prepareCall(resources)) {
+    try(PreparedStatement deletion = con.prepareStatement(resources)) {
       deletion.setString(1, instanceId);
       deletion.execute();
     }
-    try (PreparedStatement deletion = con.prepareCall(tasks)) {
+    try (PreparedStatement deletion = con.prepareStatement(tasks)) {
       deletion.setString(1, instanceId);
       deletion.execute();
     }
@@ -437,8 +445,7 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static TaskDetail getMostDistantTask(Connection con,
-      String instanceId, int taskId) throws SQLException {
+  public static TaskDetail getMostDistantTask(Connection con, int taskId) throws SQLException {
     StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
@@ -549,7 +556,7 @@ public class ProjectManagerDAO {
     // il faut enlever de la liste les taches dont le statut est "Abandonné"
     // car elles n'apparaissent pas dans le diagramme de Gantt
     if (filtre == null || filtre.getStatut() == null
-        || filtre.getStatut().equals("-1")) {
+        || "-1".equals(filtre.getStatut())) {
       query.append(" and statut != ").append(TaskDetail.CANCELLED);
     }
 
@@ -690,92 +697,69 @@ public class ProjectManagerDAO {
     int charge = rs.getInt("charge");
     String instanceId = rs.getString("instanceId");
 
-    TaskResourceDetail resourceDetail = new TaskResourceDetail(id, taskId,
-        userId, charge, instanceId);
-
-    return resourceDetail;
+    return new TaskResourceDetail(id, taskId, userId, charge, instanceId);
   }
 
   private static String getSQL(Filtre filtre) {
     StringBuilder sql = new StringBuilder();
 
-    if (filtre.getActionFrom() != null && filtre.getActionFrom().length() > 0) {
+    if (isNotEmpty(filtre.getActionFrom())) {
       sql.append(" chrono >= ").append(filtre.getActionFrom());
     }
 
-    if (filtre.getActionTo() != null && filtre.getActionTo().length() > 0) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (isNotEmpty(filtre.getActionTo())) {
+      andClause(sql);
       sql.append(" chrono <= ").append(filtre.getActionTo());
     }
 
-    if (filtre.getCodeProjet() != null && filtre.getCodeProjet().length() > 0) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (isNotEmpty(filtre.getCodeProjet())) {
+      andClause(sql);
       sql.append(" codeProjet = ").append(filtre.getCodeProjet());
     }
 
-    if (filtre.getDescProjet() != null && filtre.getDescProjet().length() > 0) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (isNotEmpty(filtre.getDescProjet())) {
+      andClause(sql);
       sql.append(" descriptionProjet like '%").append(filtre.getDescProjet()).append("%' ");
     }
 
-    if (filtre.getActionNom() != null && filtre.getActionNom().length() > 0) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (isNotEmpty(filtre.getActionNom())) {
+      andClause(sql);
       sql.append(" nom like '%").append(filtre.getActionNom()).append("%' ");
     }
 
-    if (filtre.getStatut() != null && !filtre.getStatut().equals("-1")) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (isNotEmpty(filtre.getStatut())) {
+      andClause(sql);
       sql.append(" statut = ").append(filtre.getStatut());
     }
 
     if (filtre.getDateDebutFrom() != null) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+      andClause(sql);
       sql.append(" dateDebut >= '").append(
           DateUtil.date2SQLDate(filtre.getDateDebutFrom())).append("' ");
     }
 
     if (filtre.getDateDebutTo() != null) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+      andClause(sql);
       sql.append(" dateDebut <= '").append(
           DateUtil.date2SQLDate(filtre.getDateDebutTo())).append("' ");
     }
 
     if (filtre.getDateFinFrom() != null) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+      andClause(sql);
       sql.append(" dateFin >= '").append(
           DateUtil.date2SQLDate(filtre.getDateFinFrom())).append("' ");
     }
 
     if (filtre.getDateFinTo() != null) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+      andClause(sql);
       sql.append(" dateFin <= '").append(
           DateUtil.date2SQLDate(filtre.getDateFinTo())).append("' ");
     }
 
-    if (filtre.getRetard() != null && !filtre.getRetard().equals("-1")) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (filtre.getRetard() != null && !"-1".equals(filtre.getRetard())) {
+      andClause(sql);
       Date today = new Date();
-      if (filtre.getRetard().equals("1")) {
+      if ("1".equals(filtre.getRetard())) {
         // les tasks en retard
         sql.append("( dateFin < '").append(DateUtil.date2SQLDate(today)).append(
             "' AND avancement = 100 ) ");
@@ -786,11 +770,9 @@ public class ProjectManagerDAO {
       }
     }
 
-    if (filtre.getAvancement() != null && !filtre.getAvancement().equals("-1")) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
-      if (filtre.getAvancement().equals("1")) {
+    if (filtre.getAvancement() != null && !"-1".equals(filtre.getAvancement())) {
+      andClause(sql);
+      if ("1".equals(filtre.getAvancement())) {
         // les tasks terminées
         sql.append(" avancement = 100 ");
       } else {
@@ -799,15 +781,22 @@ public class ProjectManagerDAO {
       }
     }
 
-    if (filtre.getResponsableId() != null
-        && filtre.getResponsableId().length() > 0) {
-      if (sql.length() > 0) {
-        sql.append(" AND ");
-      }
+    if (isNotEmpty(filtre.getResponsableId())) {
+      andClause(sql);
       sql.append(" responsableId = ").append(filtre.getResponsableId());
     }
 
     return sql.toString();
+  }
+
+  /**
+   * Adds an AND clause (SQL) the given sql is not empty.
+   * @param sql the sql builder.
+   */
+  private static void andClause(final StringBuilder sql) {
+    if (sql.length() > 0) {
+      sql.append(" AND ");
+    }
   }
 
   public static Date dbDate2Date(String dbDate, String fieldName)

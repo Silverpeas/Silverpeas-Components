@@ -392,7 +392,7 @@ public class DefaultForumService implements ForumService {
    * @param forumPK
    * @return
    */
-  private ArrayList<Message> getMessagesList(ForumPK forumPK) {
+  private List<Message> getMessagesList(ForumPK forumPK) {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessagesList(con, forumPK);
     } catch (SQLException e) {
@@ -403,7 +403,7 @@ public class DefaultForumService implements ForumService {
 
   @Override
   public Collection<Message> getMessages(ForumPK forumPK) {
-    ArrayList<Message> messages = getMessagesList(forumPK);
+    List<Message> messages = getMessagesList(forumPK);
     String componentId = forumPK.getInstanceId();
     for (Message message : messages) {
       message.setText(getWysiwygContent(componentId, String.valueOf(message.getId())));
@@ -482,6 +482,7 @@ public class DefaultForumService implements ForumService {
 
   @Override
   public Collection getLastMessageRSS(String instanceId, int nbReturned) {
+    int countdown = nbReturned;
     // retourne les nbReturned messages des forums de l'instance instanceId
     Collection messages = new ArrayList();
     try (Connection con = openConnection()) {
@@ -489,11 +490,11 @@ public class DefaultForumService implements ForumService {
       Collection<String> allMessagesIds = ForumsDAO.getLastMessageRSS(con, instanceId);
       Iterator<String> it = allMessagesIds.iterator();
       // prendre que les nbReturned derniers
-      while (it.hasNext() && nbReturned != 0) {
+      while (it.hasNext() && countdown != 0) {
         String messageId = it.next();
         MessagePK messagePK = new MessagePK(instanceId, messageId);
         messages.add(getMessageInfos(messagePK));
-        nbReturned--;
+        countdown--;
       }
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessageRSS()",
@@ -1158,9 +1159,9 @@ public class DefaultForumService implements ForumService {
   private Collection<Message> getLastThreads(ForumPK forumPK, int count, boolean notAnswered) {
     try (Connection con = openConnection()) {
       ForumPK[] forumPKs;
-      if (forumPK.getId().equals("0")) {
+      if ("0".equals(forumPK.getId())) {
         // Derniers threads des forums du composant.
-        ArrayList<String> forumsIds = ForumsDAO.getForumsIds(con, forumPK);
+        List<String> forumsIds = ForumsDAO.getForumsIds(con, forumPK);
         int forumsCount = forumsIds.size();
         forumPKs = new ForumPK[forumsCount];
         String componentId = forumPK.getComponentName();
