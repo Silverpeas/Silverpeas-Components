@@ -153,13 +153,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @return true if the event is occurring all the day.
    */
   public boolean isAllDay() {
-    boolean allDay = !startDate.isTimeSupported() || !endDate.isTimeSupported();
-    if (!allDay) {
-      Date startDay = new Date(startDate.asDate());
-      Date endDay = new Date(endDate.asDate());
-      allDay = startDay.isBefore(endDay);
-    }
-    return allDay;
+    return !startDate.isTimeSupported() || !endDate.isTimeSupported();
   }
 
   /**

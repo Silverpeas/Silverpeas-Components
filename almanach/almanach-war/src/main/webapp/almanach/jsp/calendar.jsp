@@ -187,7 +187,15 @@
             firstDayOfWeek: ${calendarView.firstDayOfWeek},
             currentDate: moment({'year': ${currentDay.year}, 'month': ${currentDay.month},
               'date': ${currentDay.dayOfMonth}}),
-            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>,
+            events: function( start, end, timezone, callback ) {
+              var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
+              events.forEach(function(event) {
+                if (event.allDay) {
+                  event.end = moment(event.end).add(1, 'days').format('YYYY-MM-DD');
+                }
+              });
+              callback(events);
+            },
             onday: clickDay,
             onevent: function(event) {
               var eventDate = event.start.format("YYYY/MM/DD");
