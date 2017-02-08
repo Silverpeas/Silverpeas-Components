@@ -112,9 +112,6 @@
 
   String linkedPathString = kmeliaScc.getSessionPath();
 
-  boolean debut = rang.intValue() == 0;
-  boolean fin = rang.intValue() == nbPublis.intValue() - 1;
-
   boolean suppressionAllowed = false;
 
   //Icons
@@ -538,28 +535,9 @@
         }
         out.println(frame.printBefore());
 
-        /*********************************************************************************************************************/
-        /** Affichage des boutons de navigation (next / previous)															**/
-        /*********************************************************************************************************************/
-        if (nbPublis.intValue() > 1) {
-      %>
+        %>
       <!-- AFFICHAGE des boutons de navigation -->
-      <div id="pagination">
-		<% if (!debut) {%>
-        	<a href="PreviousPublication" title="<%=resources.getString("kmelia.previous")%>"><img src="<%=resources.getIcon("kmelia.previous")%>" alt="<%=resources.getString("kmelia.previous")%>" /></a>
-        <% } else {%>
-        	<img src="<%=resources.getIcon("kmelia.previousOff")%>" alt="" />
-        <% } %>
-
-        <span class="txtnav"><span class="currentPage"><%=rang.intValue() + 1%></span> / <%=nbPublis.intValue()%></span>
-
-        <% if (!fin) {%>
-        	<a href="NextPublication" title="<%=resources.getString("kmelia.next")%>"><img src="<%=resources.getIcon("kmelia.next")%>"  alt="<%=resources.getString("kmelia.next")%>" /></a>
-        <% } else {%>
-        	<img src="<%=resources.getIcon("kmelia.nextOff")%>" alt="" />
-        <% }%>
-      </div>
-      <% } %>
+      <viewTags:displayIndex nbItems="<%=nbPublis%>" index="<%=rang%>" linkSuffix="Publication"/>
 
 	  <%
 	    	String backURL = "GoToCurrentTopic";
