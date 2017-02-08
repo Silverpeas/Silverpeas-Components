@@ -118,6 +118,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           }
           request.setAttribute("News", quickInfo.getNews(id, true));
         }
+        request.setAttribute("Index", quickInfo.getIndex());
         String anchor = request.getParameter("Anchor");
         destination = "/quickinfo/jsp/news.jsp";
         if (StringUtil.isDefined(anchor)) {
@@ -128,6 +129,12 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         News news = quickInfo.getNewsByForeignId(id);
         request.setAttribute("News", news);
         request.setAttribute("ViewOnly", true);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("Previous".equals(function)) {
+        request.setAttribute("News", quickInfo.getPrevious());
+        destination = getDestination("View", quickInfo, request);
+      } else if ("Next".equals(function)) {
+        request.setAttribute("News", quickInfo.getNext());
         destination = getDestination("View", quickInfo, request);
       } else if ("Add".equals(function)) {
         if (!isContributor(flag)) {
