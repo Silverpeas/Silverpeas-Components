@@ -535,11 +535,15 @@ public class MyDBSessionController extends AbstractComponentSessionController {
               
               //In jdbc Oracle, override mapping between DATE and java.sql.Date instead of DATE and java.sql.Timestamp
               int dataType = rs.getInt(DbColumn.DATA_TYPE);
-              if (DateField.TYPE.equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
+              int dataSize = rs.getInt(DbColumn.COLUMN_SIZE);
+              String typeName = rs.getString("TYPE_NAME");
+              if (DateField.TYPE.equalsIgnoreCase(typeName)) {
                 dataType = java.sql.Types.DATE;
+              } else if ("bool".equalsIgnoreCase(typeName)) {
+                dataType = Types.BOOLEAN;
+                dataSize = 10;
               }
 
-              int dataSize = rs.getInt(DbColumn.COLUMN_SIZE);
               int nullable = rs.getInt(DbColumn.NULLABLE);
               boolean isNull = (nullable == 1);
               String defaultValue = rs.getString(DbColumn.COLUMN_DEF);
@@ -664,6 +668,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
                           "myDB.MSG_CANNOT_GET_TABLE_LINE", "TableName="
                           + tableName, e);
                     }
+                  } else if (dbTable.getColumn(i).getDataType() == Types.BOOLEAN) {
+                    value = value.equals("f") ? "false" : "true";
                   }
                   dbLine.addData(columnsNames[i], value);
                   i++;
@@ -842,7 +848,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       int psIndex = 1;
       for (int i = 0, n = columnsNames.length; i < n; i++) {
         columnName = columnsNames[i];
-        value = formParameters[i][1];
+        value = getValueFromForm(columnName);
         dbColumn = dbTable.getColumn(columnName);
         dataType = dbColumn.getDataType();
         setValueByType(value, dataType, psIndex);
@@ -858,6 +864,15 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       closeConnection();
     }
     return null;
+  }
+
+  private String getValueFromForm(String columnName) {
+    for (int i=0; i<formParameters.length; i++) {
+      if (columnName.equalsIgnoreCase(formParameters[i][0])) {
+        return formParameters[i][1];
+      }
+    }
+    return "";
   }
 
   /**
@@ -895,7 +910,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       int psIndex = 1;
       for (int i = 0, n = columnsNames.length; i < n; i++) {
         columnName = columnsNames[i];
-        value = formParameters[i][1];
+        value = getValueFromForm(columnName);
         dbColumn = dbTable.getColumn(columnName);
         dataType = dbColumn.getDataType();
         setValueByType(value, dataType, psIndex);
@@ -1315,7 +1330,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           break;
 
         case Types.BOOLEAN:
-          prepStmt.setBoolean(index, Boolean.getBoolean(value));
+          prepStmt.setBoolean(index, StringUtil.getBooleanValue(value));
           break;
 
         case Types.TIME:
