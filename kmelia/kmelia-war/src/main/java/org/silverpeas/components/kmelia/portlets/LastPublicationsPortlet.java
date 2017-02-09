@@ -63,8 +63,12 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
 
     PortletPreferences pref = request.getPreferences();
     int nbPublis = 5;
-    if (StringUtil.isInteger(pref.getValue("nbPublis", "5"))) {
-      nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
+    String nb = pref.getValue("nbPublis", "5");
+    if (StringUtil.isInteger(nb)) {
+      nbPublis = Integer.parseInt(nb);
+      if (nbPublis <= 0) {
+        nbPublis = 5;
+      }
     }
     int maxAge = 0;
     if (StringUtil.isInteger(pref.getValue("maxAge", "0"))) {
@@ -150,7 +154,7 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
     try {
       int nb = Integer.parseInt(nbPublis);
       Integer.parseInt(maxAge);
-      if (nb < 0 || nb > 30) {
+      if (nb <= 0 || nb > 30) {
         throw new NumberFormatException();
       }
       // store preference
