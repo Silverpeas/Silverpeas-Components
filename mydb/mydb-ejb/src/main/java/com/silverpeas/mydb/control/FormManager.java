@@ -129,6 +129,10 @@ public class FormManager {
             }
           }
 
+          if (newRecord && column.isAutoIncrement()) {
+            continue;
+          }
+
           GenericFieldTemplate ft = new GenericFieldTemplate(FIELD_PREFIX
               + columnName, fieldType);
 
