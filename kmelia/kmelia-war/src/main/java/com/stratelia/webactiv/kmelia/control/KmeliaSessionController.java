@@ -3079,15 +3079,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    *
    * @return URL of single attached file for the current publication. Null if publication
    * contains more than one file.
-   * @throws RemoteException
    */
-  public String getSingleAttachmentURLOfCurrentPublication() throws RemoteException {
+  public String getSingleAttachmentURLOfCurrentPublication(boolean alias) {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(pubPK, getLanguage());
     if (attachments.size() == 1) {
       SimpleDocument document = attachments.get(0);
-      return getDocumentVersionURL(document);
+      return getDocumentVersionURL(document, alias);
     }
     return null;
   }
@@ -3097,12 +3096,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    *
    * @param fileId the id of the file (attachment or document id).
    * @return the url to the file.
-   * @throws RemoteException
    */
-  public String getAttachmentURL(String fileId) throws RemoteException {
+  public String getAttachmentURL(String fileId, boolean alias) {
     SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
-    return getDocumentVersionURL(attachment);
+    return getDocumentVersionURL(attachment, alias);
   }
 
   /**
@@ -3111,14 +3109,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * if user is not a reader, returns last version (public or working one)
    * @param document
    * @return the URL of right version or null
-   * @throws RemoteException
    */
-  private String getDocumentVersionURL(SimpleDocument document) throws RemoteException {
+  private String getDocumentVersionURL(SimpleDocument document, boolean alias) {
     SimpleDocument version = document.getLastPublicVersion();
     if (document.getVersionMaster().canBeAccessedBy(getUserDetail())) {
       version = document.getVersionMaster();
     }
     if (version != null) {
+      if (alias) {
+        return version.getAliasURL();
+      }
       return URLManager.getApplicationURL() + version.getAttachmentURL();
     }
     return null;
