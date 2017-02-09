@@ -2898,13 +2898,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return URL of single attached file for the current publication. Null if publication
    * contains more than one file.
    */
-  public String getSingleAttachmentURLOfCurrentPublication() {
+  public String getSingleAttachmentURLOfCurrentPublication(boolean alias) {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(pubPK, getLanguage());
     if (attachments.size() == 1) {
       SimpleDocument document = attachments.get(0);
-      return getDocumentVersionURL(document);
+      return getDocumentVersionURL(document, alias);
     }
     return null;
   }
@@ -2914,10 +2914,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @param fileId the id of the file (attachment or document id).
    * @return the url to the file.
    */
-  public String getAttachmentURL(String fileId) {
+  public String getAttachmentURL(String fileId, boolean alias) {
     SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
-    return getDocumentVersionURL(attachment);
+    return getDocumentVersionURL(attachment, alias);
   }
 
   /**
@@ -2927,12 +2927,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @param document
    * @return the URL of right version or null
    */
-  private String getDocumentVersionURL(SimpleDocument document) {
+  private String getDocumentVersionURL(SimpleDocument document, boolean alias) {
     SimpleDocument version = document.getLastPublicVersion();
     if (document.getVersionMaster().canBeAccessedBy(getUserDetail())) {
       version = document.getVersionMaster();
     }
     if (version != null) {
+      if (alias) {
+        return version.getAliasURL();
+      }
       return URLUtil.getApplicationURL() + version.getAttachmentURL();
     }
     return null;
