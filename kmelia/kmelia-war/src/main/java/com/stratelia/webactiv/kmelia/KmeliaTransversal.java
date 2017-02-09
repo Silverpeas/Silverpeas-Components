@@ -211,7 +211,7 @@ public class KmeliaTransversal implements PublicationHelper {
         filteredPublicationPKs.add(pk);
       }
 
-      if (nbPublis != -1 && filteredPublicationPKs.size() == nbPublis) {
+      if (nbPublis != -1 && filteredPublicationPKs.size() >= nbPublis) {
         return filteredPublicationPKs;
       }
     }
