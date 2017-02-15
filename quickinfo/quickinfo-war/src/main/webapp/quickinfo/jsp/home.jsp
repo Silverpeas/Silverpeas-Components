@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -38,6 +37,9 @@
 
 <fmt:message key="GML.subscribe" var="actionLabelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="actionLabelUnsubscribe"/>
+<fmt:message key="quickinfo.news.broadcast.mode.major" var="labelModeMajor"/>
+<fmt:message key="GML.attachments" var="labelFiles"/>
+<fmt:message key="GML.comments" var="labelComments"/>
 
 <c:set var="listOfNews" value="${requestScope['ListOfNews']}"/>
 <c:set var="allOtherNews" value="${requestScope['NotVisibleNews']}"/>
@@ -79,6 +81,10 @@ function successUnsubscribe() {
 function unsubscribe() {
   $.post('<c:url value="/services/unsubscribe/${componentId}" />', successUnsubscribe(), 'json');
 }
+
+function onDelete(id) {
+  $("#news-"+id).remove();
+}
 </script>
 </head>
 <body class="quickInfo" id="${componentId}">
@@ -110,73 +116,68 @@ function unsubscribe() {
 		<h2 class="quickInfo-title"><%=componentLabel %></h2>
 		<p class="quickInfo-description">${silfn:escapeHtmlWhitespaces(appSettings.description)}</p>
 	</c:if>
-	<c:if test="${contributor}">
+	<c:if test="${contributor || !appSettings.mosaicViewForUsers}">
 		<!-- Dedicated part for contributors -->
-		<div id="my-quickInfo">
-	      <div id="menubar-creation-actions"></div>
-	      <div class="secteur-container my-quickInfo-draft">
-	        <div class="header">
-	          <h3 class="my-quickInfo-draft-title"><fmt:message key="quickinfo.home.drafts"/></h3>
-	        </div>
-	        <ul>
-	          <c:if test="${empty allOtherNews.drafts}">
-	          	<li><span class="txt-no-content"><fmt:message key="quickinfo.home.drafts.none"/></span></li>
-	          </c:if>
-	          <c:forEach items="${allOtherNews.drafts}" var="news">
-				<li><a href="View?Id=${news.id}">${news.title}</a></li>
-			  </c:forEach>
-	        </ul>
-	      </div>
-	      <c:if test="${not empty allOtherNews.notYetVisibles}">
-	      <div class="secteur-container my-quickInfo-futur">
-	        <div class="header">
-	          <h3 class="my-quickInfo-futur-title"><fmt:message key="quickinfo.home.notYetVisibles"/></h3>
-	        </div>
-	        <ul>
-	          <c:forEach items="${allOtherNews.notYetVisibles}" var="news">
-				<li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.beginDate, _language)}</span>${news.title}</a></li>
-			  </c:forEach>
-	        </ul>
-	      </div>
-	      </c:if>
-	      <c:if test="${not empty allOtherNews.noMoreVisibles}">
-	      <div class="secteur-container my-quickInfo-outOfDate">
-	        <div class="header">
-	          <h3 class="my-quickInfo-outOfDate-title"><fmt:message key="quickinfo.home.noMoreVisibles"/></h3>
-	        </div>
-	        <ul>
-	          <c:forEach items="${allOtherNews.noMoreVisibles}" var="news">
-				<li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.endDate, _language)}</span>${news.title}</a></li>
-			  </c:forEach>
-	        </ul>
-	      </div>
-	      </c:if>
-	    </div>
-	</c:if>
-	
-	<c:if test="${empty listOfNews}">
 		<c:if test="${contributor}">
-			<div class="inlineMessage forContributor">
-				<fmt:message key="quickinfo.news.none"/><br/>	
-				<fmt:message key="quickinfo.news.none.contributor"/>
-			</div>
-		</c:if>
-		<c:if test="${not contributor}">
-			<div class="inlineMessage">
-				<fmt:message key="quickinfo.news.none"/><br/>
-	    		<fmt:message key="quickinfo.news.none.reader"/>
-	    	</div>
-	    </c:if>
-	</c:if>
-	
-	<c:if test="${contributor}">
-    	<ul id="list-news">
+    <div id="my-quickInfo">
+      <div id="menubar-creation-actions"></div>
+      <div class="secteur-container my-quickInfo-draft">
+        <div class="header">
+          <h3 class="my-quickInfo-draft-title"><fmt:message key="quickinfo.home.drafts"/></h3>
+        </div>
+        <ul>
+          <c:if test="${empty allOtherNews.drafts}">
+            <li><span class="txt-no-content"><fmt:message key="quickinfo.home.drafts.none"/></span></li>
+          </c:if>
+          <c:forEach items="${allOtherNews.drafts}" var="news">
+            <li><a href="View?Id=${news.id}">${news.title}</a></li>
+          </c:forEach>
+        </ul>
+      </div>
+      <c:if test="${not empty allOtherNews.notYetVisibles}">
+      <div class="secteur-container my-quickInfo-futur">
+        <div class="header">
+          <h3 class="my-quickInfo-futur-title"><fmt:message key="quickinfo.home.notYetVisibles"/></h3>
+        </div>
+        <ul>
+          <c:forEach items="${allOtherNews.notYetVisibles}" var="news">
+            <li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.beginDate, _language)}</span>${news.title}</a></li>
+          </c:forEach>
+        </ul>
+      </div>
+      </c:if>
+      <c:if test="${not empty allOtherNews.noMoreVisibles}">
+      <div class="secteur-container my-quickInfo-outOfDate">
+        <div class="header">
+          <h3 class="my-quickInfo-outOfDate-title"><fmt:message key="quickinfo.home.noMoreVisibles"/></h3>
+        </div>
+        <ul>
+          <c:forEach items="${allOtherNews.noMoreVisibles}" var="news">
+            <li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.endDate, _language)}</span>${news.title}</a></li>
+          </c:forEach>
+        </ul>
+      </div>
+      </c:if>
+    </div>
+    </c:if>
+
+    <c:if test="${empty listOfNews}">
+      <div class="inlineMessage forContributor">
+        <fmt:message key="quickinfo.news.none"/>
+        <c:if test="${contributor}">
+          <br/><fmt:message key="quickinfo.news.none.contributor"/>
+        </c:if>
+      </div>
+    </c:if>
+
+    <c:if test="${contributor}">
+      <ul id="list-news">
     </c:if>
     <c:if test="${not contributor}">
-    	<ul id="list-news" class="reader">
+      <ul id="list-news" class="reader">
     </c:if>
-    	<c:forEach items="${listOfNews}" var="news">
-		<li>
+      <c:forEach items="${listOfNews}" var="news">
+		  <li class="showActionsOnMouseOver" id="news-${news.id}">
 			<c:if test="${not empty news.thumbnail}">
 			  <view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="200x"/>
 			</c:if>
@@ -184,14 +185,15 @@ function unsubscribe() {
 			<p class="news-teasing"><view:encodeHtmlParagraph string="${news.description}"/></p>
 			<div class="news-info-fonctionality">
         <c:set var="_isSeparator" value="${false}" />
-				<c:if test="${appSettings.commentsEnabled}">
+        <c:set var="nbComments" value="${news.numberOfComments}"/>
+				<c:if test="${appSettings.commentsEnabled && nbComments > 0}">
           <c:set var="_isSeparator" value="${true}" />
-					<a href="View?Id=${news.id}#commentaires" class="news-nb-comments"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a>
+					<a href="View?Id=${news.id}#commentaires" class="news-nb-comments"><img src="../../util/icons/talk2user.gif" alt="${labelComments}" /> ${nbComments}</a>
 				</c:if>
         <c:if test="${news.numberOfAttachments > 0}">
           <c:set var="_isSeparator" value="${true}" />
           <span class="news-nb-attached-files">
-            <img src="/silverpeas/util/icons/attachedFiles.gif" alt="fichiers"> ${news.numberOfAttachments}
+            <img src="../../util/icons/attachedFiles.gif" alt="${labelFiles}"> ${news.numberOfAttachments}
           </span>
         </c:if>
 
@@ -202,7 +204,7 @@ function unsubscribe() {
 				</c:if>
 				<span class="news-broadcast">
 					<c:if test="${news.important}">
-						<span class="news-broadcast-important" title="<fmt:message key="quickinfo.news.broadcast.mode.major"/>"><fmt:message key="quickinfo.news.broadcast.mode.major"/></span> 
+						<span class="news-broadcast-important" title="${labelModeMajor}">${labelModeMajor}</span>
 					</c:if>
 					<c:if test="${contributor}">
 						<c:if test="${appSettings.broadcastingByBlockingNews && news.mandatory}">
@@ -224,17 +226,59 @@ function unsubscribe() {
 						</c:if>
 					</c:if>
 				</span>
-				<c:if test="${contributor}">
-					<div class="operation">
-						<a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
-						<a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${deleteConfirmMsg}')"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
-					</div>
-				</c:if>
-			</div>
-		</li>
+        <c:if test="${contributor}">
+          <div class="operation actionShownOnMouseOver">
+            <a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
+            <a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', 'onDelete')"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
+          </div>
+        </c:if>
+      </div>
+      </li>
 		</c:forEach>
 	</ul>
-    <!-- /INTEGRATION HOME quickInfo -->
+</c:if>
+<!-- end for contributors -->
+
+<!-- list for users -->
+<c:if test="${not contributor && appSettings.mosaicViewForUsers}">
+  <c:if test="${empty listOfNews}">
+    <div class="inlineMessage">
+      <fmt:message key="quickinfo.news.none"/><br/>
+      <fmt:message key="quickinfo.news.none.reader"/>
+    </div>
+  </c:if>
+
+  <ul id="list-news-lecteur-view">
+    <c:forEach items="${listOfNews}" var="news">
+      <li onclick="location.href='View?Id=${news.id}'">
+        <c:if test="${empty news.thumbnail}">
+          <div class="visuel-container"><view:image css="news-illustration default-illustration" alt="" src="/quickinfo/jsp/icons/defaultThumbnail.jpg" size="400x"/></div>
+        </c:if>
+        <c:if test="${not empty news.thumbnail}">
+          <div class="visuel-container"><view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="400x"/></div>
+        </c:if>
+        <h3 class="news-title"><a href="View?Id=${news.id}">${news.title}</a></h3>
+        <p class="news-teasing"><view:encodeHtmlParagraph string="${news.description}"/></p>
+        <div class="creationInfo">${silfn:formatDate(news.onlineDate, _language)}</div>
+        <c:if test="${news.important}">
+          <div class="news-broadcast"> <span class="news-broadcast-important" title="${labelModeMajor}">${labelModeMajor}</span> </div>
+        </c:if>
+        <div class="news-nb-attached-files-and-comments">
+          <c:set var="nbFiles" value="${news.numberOfAttachments}"/>
+          <c:if test="${nbFiles > 0}">
+            <div class="news-nb-attached-files"> <img src="../../util/icons/attachedFiles.gif" alt="${labelFiles}"> ${nbFiles} </div>
+          </c:if>
+          <c:set var="nbComments" value="${news.numberOfComments}"/>
+          <c:if test="${appSettings.commentsEnabled && nbComments > 0}">
+            <div class="news-nb-comments"> <img src="../../util/icons/talk2user.gif" alt="${labelComments}"> ${nbComments} </div>
+          </c:if>
+        </div>
+      </li>
+    </c:forEach>
+  </ul>
+</c:if>
+
+  <!-- /INTEGRATION HOME quickInfo -->
 </view:window>
 <form name="newsForm" action="" method="post">
   <input type="hidden" name="Id"/>

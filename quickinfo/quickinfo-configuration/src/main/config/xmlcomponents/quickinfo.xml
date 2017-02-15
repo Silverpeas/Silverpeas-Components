@@ -265,5 +265,41 @@
         <message lang="de">Diese Funktion zeigt die Nachrichten außerhalb der traditionellen Homepages. Methoden werden dabei auf jeder Nachricht, aber nicht zwingend zur Verfügung. A "Blättern" Nachrichten in der Scroll-Banner (Ticker) angezeigt. Ein "Sperrung" Nachrichten wird angezeigt, wenn sich Benutzer anmelden und erfordert Maßnahmen der Suche fortzufahren.</message>
       </help>
     </parameter>
+    <parameter>
+      <name>userview</name>
+      <label>
+        <message lang="fr">Vue des lecteurs</message>
+        <message lang="en">Users view</message>
+        <message lang="de">Benutzer sehen</message>
+      </label>
+      <order>8</order>
+      <mandatory>true</mandatory>
+      <value>mosaic</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Mosaïque</message>
+            <message lang="en">Mosaic</message>
+            <message lang="de">Mosaik</message>
+          </name>
+          <value>mosaic</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Liste</message>
+            <message lang="en">Listing</message>
+            <message lang="de">Auflistung</message>
+          </name>
+          <value>listing</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">La vue 'Mosaïque' fait la part belle aux illustrations. La vue 'Liste' est similaire à celle des contributeurs.</message>
+        <message lang="en">The 'Mosaic' view gives pride of place to the illustrations. The 'Listing' view is similar to the contributors view.</message>
+        <message lang="de">View 'Mosaik' ist stark dargestellt. Die Ansicht 'Auflistung' ist ähnlich wie die der Beiträger.</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
