@@ -120,7 +120,15 @@ $(document).ready(function() {
 					<div class="content-actuality-illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x" css="actuality-illustration"/></div>
 				</c:when>
 				<c:otherwise>
-					<li onclick="javascript:location.href='${news.permalink}'" class="actuality-without-illustration">
+					<c:choose>
+            <c:when test="${slideshow}">
+              <li onclick="javascript:location.href='${news.permalink}'">
+              <div class="content-actuality-illustration"><view:image src="/quickinfo/jsp/icons/defaultThumbnail.jpg" alt="" size="350x" css="actuality-illustration default-illustration"/></div>
+            </c:when>
+            <c:otherwise>
+              <li onclick="javascript:location.href='${news.permalink}'" class="actuality-without-illustration">
+            </c:otherwise>
+          </c:choose>
 				</c:otherwise>
 			</c:choose>
 			<h3 class="actuality-title"><a href="${news.permalink}">${news.title}</a></h3>
@@ -132,7 +140,7 @@ $(document).ready(function() {
 					</c:if>
 				</span>
         <view:componentParam var="isCommentEnabled" componentId="${news.componentInstanceId}" parameter="comments"/>
-        <c:if test="${silfn:booleanValue(isCommentEnabled)}">
+        <c:if test="${silfn:booleanValue(isCommentEnabled) && news.numberOfComments > 0}">
           <a href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire"/> ${news.numberOfComments}</a>
         </c:if>
 			</div>

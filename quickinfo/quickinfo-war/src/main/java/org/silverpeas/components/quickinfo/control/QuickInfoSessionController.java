@@ -52,7 +52,6 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
@@ -98,22 +97,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         .setBroadcastModes(getComponentParameterValue(QuickInfoComponentSettings.PARAM_BROADCAST));
     instanceSettings.setDelegatedNewsEnabled(StringUtil
         .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_DELEGATED)));
+
+    String userView = getComponentParameterValue(QuickInfoComponentSettings.PARAM_USERVIEW);
+    if (QuickInfoComponentSettings.VALUE_USERVIEW_LISTING.equals(userView)) {
+      instanceSettings.setMosaicViewForUsers(false);
+    }
+
     return instanceSettings;
   }
 
   public NewsByStatus getQuickInfos() {
     NewsByStatus newsByStatus =
         getQuickInfoService().getAllNewsByStatus(getComponentId(), getUserId());
-    // TODO - REMOVE THIS PART OF BELOW CODE IN WILDFLY VERSION
-    // removing drafts which have never been saved by the contributor
-    Iterator<News> drafts = newsByStatus.getDrafts().iterator();
-    while (drafts.hasNext()) {
-      News draft = drafts.next();
-      if (!draft.hasBeenModified()) {
-        getQuickInfoService().removeNews(draft.getId());
-        drafts.remove();
-      }
-    }
     setQuickInfos(newsByStatus);
     return newsByStatus;
   }
@@ -223,26 +218,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         forcePublish);
 
     loadNewsLists(true);
-  }
-
-  /**
-   * Removes from persistence the news which the identifier is the one given.
-   * If the given identifier corresponds to a volatile one, nothing is done.
-   * @param id the identifier of the news to remove from the persistence.
-   */
-  public void remove(String id) {
-    if (!isNewsIdentifierFromMemory(id)) {
-      // Case of a news that exists
-      getQuickInfoService().removeNews(id);
-    }
-  }
-
-  public boolean isPdcUsed() {
-    String value = getComponentParameterValue("usePdc");
-    if (value != null) {
-      return "yes".equals(value.toLowerCase());
-    }
-    return false;
   }
 
   @Override

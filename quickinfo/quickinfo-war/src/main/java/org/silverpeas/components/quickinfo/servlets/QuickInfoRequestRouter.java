@@ -152,13 +152,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         News news = quickInfo.getNews(id, false);
         setCommonAttributesToAddOrUpdate(quickInfo, news, request);
         destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-      } else if ("Remove".equals(function)) {
-        if (!isContributor(flag)) {
-          throwHttpForbiddenError();
-        }
-        String id = request.getParameter("Id");
-        quickInfo.remove(id);
-        destination = getDestination("Main", quickInfo, request);
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
         News news;
