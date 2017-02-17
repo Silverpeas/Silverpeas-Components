@@ -59,6 +59,9 @@
 
 	Periodicity periodicity = event.getPeriodicity();
 	String id = event.getPK().getId();
+	boolean onASingleDay = DateUtil.datesAreEqual(startDate, endDate);
+	boolean endHourDefined = event.getEndHour() != null && event.getEndHour().length() != 0;
+	boolean jalon = onASingleDay && (!endHourDefined || (endHourDefined && event.getEndHour().equals(event.getStartHour())));
 
   //initialisation de l'objet event
 	String title = null;
@@ -346,24 +349,42 @@ $(document).ready(function(){
 		<%}%>
 		<div class="eventDate">
 			<div class="bloc">
-				<span class="eventBeginDate">
-					<%=resources.getString("GML.fromDate")%>
-					<%=resources.getOutputDate(startDate)%>
-					<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
-						<%=almanach.getString("ToHour")%>
-						<%=WebEncodeHelper.javaStringToHtmlString(event.getStartHour())%>
-					<%}%>
+        <% if (onASingleDay) { %>
+          <span class="eventBeginDate">
+            <%=resources.getOutputDate(startDate)%>
+            <% if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
+              <% if (jalon) {
+                out.println(almanach.getString("ToHour"));
+              } else {
+                out.println(" - ");
+              }%>
+              <%=WebEncodeHelper.javaStringToHtmlString(event.getStartHour())%>
+            <% } %>
+            <% if (endHourDefined && !event.getEndHour().equals(event.getStartHour())) {
+                out.println(almanach.getString("ToHour"));
+                out.println(WebEncodeHelper.javaStringToHtmlString(event.getEndHour()));
+            } %>
 					</span>
-
-					<span class="eventEndDate">
-					<%
-						out.println(resources.getString("GML.toDate"));
-						out.println(resources.getOutputDate(endDate));
-						if (event.getEndHour() != null && event.getEndHour().length() != 0) {
-							out.println(almanach.getString("ToHour"));
-							out.println(WebEncodeHelper.javaStringToHtmlString(event.getEndHour()));
-						}%>
+        <% } else { %>
+          <span class="eventBeginDate">
+            <%=resources.getString("GML.fromDate")%>
+            <%=resources.getOutputDate(startDate)%>
+            <%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
+              <%=almanach.getString("ToHour")%>
+              <%=WebEncodeHelper.javaStringToHtmlString(event.getStartHour())%>
+            <%}%>
+          </span>
+          <span class="eventEndDate">
+            <%
+              out.println(resources.getString("GML.toDate"));
+              out.println(resources.getOutputDate(endDate));
+              if (endHourDefined) {
+                out.println(almanach.getString("ToHour"));
+                out.println(WebEncodeHelper.javaStringToHtmlString(event.getEndHour()));
+              }
+            %>
 					</span>
+        <% } %>
 				</div>
 		</div>
 
