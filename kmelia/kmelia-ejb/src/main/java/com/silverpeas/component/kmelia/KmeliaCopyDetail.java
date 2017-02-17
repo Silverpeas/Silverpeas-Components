@@ -29,6 +29,11 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
         pasteDetail.getOptions() != null ? new HashMap<String, String>(pasteDetail.getOptions()) :
             null);
     setUserId(pasteDetail.getUserId());
+    if (pasteDetail instanceof KmeliaCopyDetail) {
+      KmeliaCopyDetail copyDetail = (KmeliaCopyDetail) pasteDetail;
+      setPublicationStatus(copyDetail.getPublicationStatus());
+      setPublicationTargetValidatorIds(copyDetail.getPublicationValidatorIds());
+    }
   }
 
   public static KmeliaCopyDetail fromPasteDetail(KmeliaPasteDetail pasteDetail) {
