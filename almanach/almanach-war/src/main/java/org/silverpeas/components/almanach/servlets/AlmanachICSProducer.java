@@ -25,7 +25,7 @@ package org.silverpeas.components.almanach.servlets;
 
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.ExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
