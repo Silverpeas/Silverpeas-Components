@@ -33,10 +33,9 @@
 <head>
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
-  <link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/consultation.css"></link>
+  <link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/consultation.css"/>
   <script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/consultation.js"></script>
   <script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/util.js"></script>
-  <script type="text/javascript">
 </head>
 
 <body>
