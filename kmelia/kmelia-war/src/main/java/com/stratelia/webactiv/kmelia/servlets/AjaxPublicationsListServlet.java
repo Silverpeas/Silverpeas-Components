@@ -384,14 +384,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubState = resources.getString("PubStateDraft");
             }
           } else if (pub.getStatus() != null && pub.isRefused()) {
-            if (admin.isInRole(profile) || publisher.isInRole(profile)
-                || currentUserId.equals(currentUser.getId())) {
+            if (admin.isInRole(profile) || publisher.isInRole(profile) ||
+                (writer.isInRole(profile) &&
+                    (pub.isPublicationEditor(currentUserId) || kmeliaScc.isCoWritingEnable()))) {
               pubColor = "red";
               pubState = resources.getString("PublicationRefused");
             }
           } else {
             if (admin.isInRole(profile) || publisher.isInRole(profile)
-                || currentUserId.equals(pub.getUpdaterId())
+                || pub.isPublicationEditor(currentUserId)
                 || (!user.isInRole(profile) && kmeliaScc.isCoWritingEnable())) {
               // si on est en co-rédaction, on affiche toutes les publications
               // à valider (sauf pour les lecteurs)
