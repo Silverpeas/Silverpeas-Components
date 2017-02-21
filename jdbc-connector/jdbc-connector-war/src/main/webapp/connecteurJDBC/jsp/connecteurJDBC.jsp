@@ -32,6 +32,9 @@
 <%@ include file="init.jsp.inc" %>
 
 <%
+  String[] browseContext = (String[]) request.getAttribute("browseContext");
+  String componentId = browseContext[3];
+
   String column = "";
   String compare = "";
 
@@ -137,7 +140,7 @@
       out.println(frame.printBefore());
 
       //Tableau
-      ArrayPane arrayPane = gef.getArrayPane("ResultSet", "Main", request, session);
+      ArrayPane arrayPane = gef.getArrayPane("ResultSet"+componentId, "Main", request, session);
       arrayPane.setSortable(true);
       arrayPane.setExportData(true);
       arrayPane.setVisibleLineNumber(15);
