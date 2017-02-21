@@ -1089,6 +1089,9 @@ public class DefaultKmeliaService implements KmeliaService {
         String profile = getProfile(pubDetail.getUpdaterId(), nodePK);
         if (SilverpeasRole.writer.isInRole(profile)) {
           newStatus = PublicationDetail.TO_VALIDATE;
+        } else if (pubDetail.isRefused() && (SilverpeasRole.admin.isInRole(profile) ||
+            SilverpeasRole.publisher.isInRole(profile))) {
+          newStatus = PublicationDetail.VALID;
         }
         pubDetail.setStatus(newStatus);
       }
