@@ -24,6 +24,7 @@
 package org.silverpeas.components.suggestionbox.mock;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import org.mockito.Mockito;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -495,5 +496,9 @@ public class OrganisationControllerMockWrapper implements OrganizationController
     return mock.getSearchableComponentsByCriteria(criteria);
   }
 
-
+  @Override
+  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
+      throws AdminException {
+    return mock.getSpaceProfile(spaceId, role);
+  }
 }
