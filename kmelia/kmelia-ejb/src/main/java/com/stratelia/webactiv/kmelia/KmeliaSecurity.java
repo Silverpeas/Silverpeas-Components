@@ -155,14 +155,14 @@ public class KmeliaSecurity implements ComponentSecurity {
             return false;
           }
           if (writer.isInRole(profile)) {
-            return publication.isPublicationEditor(userId);
+            return publication.isPublicationEditor(userId) || isCoWritingEnable(componentId);
           }
           return true;
         }
         if (publication.isRefused()) {
           if (!user.isInRole(profile)) {
-            return publication.isPublicationEditor(userId) || admin.isInRole(profile)
-                || publisher.isInRole(profile);
+            return publication.isPublicationEditor(userId) || isCoWritingEnable(componentId)
+                || admin.isInRole(profile) || publisher.isInRole(profile);
           }
           return false;
         }
