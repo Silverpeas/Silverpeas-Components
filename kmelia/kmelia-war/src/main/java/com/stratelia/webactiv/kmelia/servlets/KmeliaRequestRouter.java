@@ -680,9 +680,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
 
           // check is requested publication is an alias
-          checkAlias(kmelia, kmeliaPublication);
+          boolean alias = checkAlias(kmelia, kmeliaPublication);
 
-          if (kmeliaPublication.isAlias()) {
+          if (alias) {
             request.setAttribute("Profile", "user");
             request.setAttribute("TaxonomyOK", false);
             request.setAttribute("ValidatorsOK", false);
@@ -708,11 +708,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           if (!alreadyOpened && kmelia.openSingleAttachmentAutomatically()
               && !kmelia.isCurrentPublicationHaveContent()) {
             request.setAttribute("SingleAttachmentURL", kmelia.
-                getSingleAttachmentURLOfCurrentPublication());
+                getSingleAttachmentURLOfCurrentPublication(alias));
           } else if (!alreadyOpened && attachmentId != null) {
-            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(attachmentId));
+            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(attachmentId, alias));
           } else if (!alreadyOpened && documentId != null) {
-            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(documentId));
+            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(documentId, alias));
           }
 
           // Attachments area must be displayed or not ?
@@ -2334,12 +2334,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return pubDetail.getLanguageToDisplay(kmelia.getCurrentLanguage());
   }
 
-  private void checkAlias(KmeliaSessionController kmelia,
+  private boolean checkAlias(KmeliaSessionController kmelia,
       KmeliaPublication publication) {
     if (!kmelia.getComponentId().equals(
         publication.getDetail().getPK().getInstanceId())) {
       publication.asAlias();
+      return true;
     }
+    return false;
   }
 
   private void updatePubliDuringUpdateChain(String id, HttpServletRequest request,
@@ -2459,7 +2461,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Aliases", aliases);
 
         // url du fichier joint
-        request.setAttribute("FileUrl", kmelia.getSingleAttachmentURLOfCurrentPublication());
+        request.setAttribute("FileUrl", kmelia.getSingleAttachmentURLOfCurrentPublication(false));
         return rootDestination + "updateByChain.jsp";
       }
     } else if ("UpdateChainNextUpdate".equals(function)) {
