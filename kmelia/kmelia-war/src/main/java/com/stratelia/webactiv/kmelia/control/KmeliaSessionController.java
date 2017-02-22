@@ -1593,6 +1593,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws RemoteException {
     getKmeliaBm().unvalidatePublication(getPublicationPK(publicationId), getUserId(), refusalMotive,
         getValidationType());
+    refreshSessionPubliAndClone();
   }
 
   public synchronized void suspendPublication(String publicationId, String defermentMotive)
@@ -3869,6 +3870,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public void setPublicationValidator(String userIds) {
     getKmeliaBm().setValidators(getSessionPubliOrClone().getDetail().getPK(), userIds);
+    try {
+      refreshSessionPubliAndClone();
+    } catch (RemoteException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
