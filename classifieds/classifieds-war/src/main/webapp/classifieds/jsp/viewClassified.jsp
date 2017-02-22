@@ -58,7 +58,7 @@
 <c:set var="creationDate" value="${requestScope.CreationDate}" />
 <c:set var="updateDate" value="${requestScope.UpdateDate}" />
 <c:set var="validationDate" value="${requestScope.ValidateDate}" />
-<c:set var="userId" value="${requestScope.UserId}" />
+<c:set var="user" value="${requestScope.User}" />
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="instanceId" value="${classified.instanceId}" />
 <c:set var="creatorId" value="${classified.creatorId}" />
@@ -183,7 +183,7 @@
 	<view:browseBar>
 		<view:browseBarElt label="${classifiedPath}" link="" />
 	</view:browseBar>
-	<c:if test="${userId == creatorId or profile.name == 'admin'}">
+	<c:if test="${user.id == creatorId or profile.name == 'admin'}">
 		<c:if test="${'Unpublished' == classified.status}">
 			<fmt:message var="updateOp" key="classifieds.republishClassified" />
 		</c:if>
@@ -204,7 +204,7 @@
 				action="javascript:deleteConfirm('${classified.classifiedId}');"
 				altText="${deleteOp}" icon="${deleteIcon}" />
 
-			<c:if test="${userId == creatorId and isDraftEnabled}">
+			<c:if test="${user.id == creatorId and isDraftEnabled}">
 				<view:operationSeparator />
 				<c:choose>
 					<c:when test="${'Draft' == classified.status}">
@@ -267,9 +267,12 @@
 									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
 									 </c:if>
 									</div>
-									<div id="classified_contact_link" class="bgDegradeGris">
-									 <a rel="${classified.creatorId},${classified.creatorName}" class="link notification" href="#"><fmt:message key="classifieds.contactAdvertiser"/></a>
-									</div>
+
+                  <c:if test="${not user.anonymous && user.id != creatorId}">
+                    <div id="classified_contact_link" class="bgDegradeGris">
+                     <a rel="${classified.creatorId},${classified.creatorName}" class="link notification" href="#"><fmt:message key="classifieds.contactAdvertiser"/></a>
+                    </div>
+                  </c:if>
                   <p></p>
                 </div>
               </div>
@@ -330,7 +333,7 @@
 					<td>
 						<!--Afficher les commentaires-->
 						<c:if test="${isCommentsEnabled}">
-							<view:comments 	userId="${userId}" componentId="${instanceId}"
+							<view:comments 	userId="${user.id}" componentId="${instanceId}"
 											resourceType="${classified.contributionType}" resourceId="${classified.classifiedId}" />
 						</c:if>
 					</td>
