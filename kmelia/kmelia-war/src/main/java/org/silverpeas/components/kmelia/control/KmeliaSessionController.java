@@ -1478,6 +1478,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public synchronized void unvalidatePublication(String publicationId, String refusalMotive) {
     getKmeliaBm().unvalidatePublication(getPublicationPK(publicationId), getUserId(), refusalMotive,
         getValidationType());
+    refreshSessionPubliAndClone();
   }
 
   public synchronized void suspendPublication(String publicationId, String defermentMotive) {
@@ -3639,6 +3640,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void setPublicationValidator(String userIds) {
     getKmeliaBm().setValidators(getSessionPubliOrClone().getDetail().getPK(), userIds);
+    refreshSessionPubliAndClone();
   }
 
   /**
