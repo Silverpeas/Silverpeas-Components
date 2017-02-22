@@ -83,7 +83,6 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
 
     // Store them in request as attributes
     request.setAttribute("Profile", highestRole);
-    request.setAttribute("UserId", userId);
     request.setAttribute("InstanceId", classifiedsSC.getComponentId());
     request.setAttribute("Language", classifiedsSC.getLanguage());
     request.setAttribute("isWysiwygHeaderEnabled", classifiedsSC.isWysiwygHeaderEnabled());
