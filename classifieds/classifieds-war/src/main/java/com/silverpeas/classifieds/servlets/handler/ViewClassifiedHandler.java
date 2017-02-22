@@ -83,6 +83,7 @@ public class ViewClassifiedHandler extends FunctionHandler {
     request.setAttribute("CreationDate", creationDate);
     request.setAttribute("UpdateDate", updateDate);
     request.setAttribute("ValidateDate", validateDate);
+    request.setAttribute("User", classifiedsSC.getUserDetail());
 
     // Returns jsp to redirect to
     return "viewClassified.jsp";
