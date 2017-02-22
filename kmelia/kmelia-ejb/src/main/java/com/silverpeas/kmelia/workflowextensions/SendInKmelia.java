@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.form.form.HtmlForm;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
@@ -409,8 +410,11 @@ public class SendInKmelia extends ExternalActionImpl {
             getRole(), getLanguage());
       }
 
-      XmlForm xmlForm = (XmlForm) form;
-      if (xmlForm != null && step.getActionRecord() != null) {
+      if (form != null && step.getActionRecord() != null) {
+        XmlForm xmlForm = null;
+        HtmlForm htmlForm = null;
+        if (form instanceof XmlForm) xmlForm = (XmlForm) form;
+        if (form instanceof HtmlForm) htmlForm = (HtmlForm) form;
         DataRecord data = step.getActionRecord();
 
         // Force simpletext displayers because itext cannot display HTML Form fields (select,
@@ -421,7 +425,9 @@ public class SendInKmelia extends ExternalActionImpl {
         String fieldValue = "";
         Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
         Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
-        List<FieldTemplate> fieldTemplates = xmlForm.getFieldTemplates();
+        List<FieldTemplate> fieldTemplates = null;
+        if (xmlForm != null) fieldTemplates = xmlForm.getFieldTemplates();
+        if (htmlForm != null) fieldTemplates = htmlForm.getFieldTemplates();
         for (FieldTemplate fieldTemplate1 : fieldTemplates) {
           try {
             GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
