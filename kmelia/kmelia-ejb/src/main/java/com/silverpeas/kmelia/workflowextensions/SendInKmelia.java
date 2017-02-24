@@ -210,11 +210,6 @@ public class SendInKmelia extends ExternalActionImpl {
       addPdfHistory(pubPK, userId);
     }
 
-    // force the update
-    /*PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
-    newPubli.setStatusMustBeChecked(false);
-    getKmeliaBm().updatePublication(newPubli);*/
-
     // process form content
     if (formIsUsed) {
       // target app use form : populate form fields
