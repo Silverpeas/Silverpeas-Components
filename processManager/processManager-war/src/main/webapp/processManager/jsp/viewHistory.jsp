@@ -78,6 +78,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="preview"/>
 </head>
 <body class="yui-skin-sam">
 <%
