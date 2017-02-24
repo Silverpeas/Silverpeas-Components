@@ -71,17 +71,22 @@
       border: 2px solid #B3BFD1;
     }
 
+    #latestMedia {
+      margin-top: 10px;
+      display: block;
+    }
+
   </style>
 </head>
-<body>
-<view:navigationList title="${root.name}">
+<body class="portlet">
+<view:navigationList>
   <c:forEach var="album" items="${root.childrenDetails}">
     <view:navigationListItem label="${album.name}" action="javascript:onClick=goToAlbum('${album.id}')"
                              description="${album.description}"/>
   </c:forEach>
 </view:navigationList>
-<view:board>
-  <table border="0" cellspacing="0" cellpadding="0" align=center width="100%">
+<div id="latestMedia">
+  <table border="0" cellspacing="0" cellpadding="0" align="center" width="100%">
     <tr>
       <td align="center" class=ArrayNavigation>
         <fmt:message key="gallery.last.media"/>
@@ -113,7 +118,7 @@
       </c:otherwise>
     </c:choose>
   </table>
-</view:board>
+</div>
 <form name="albumForm" action="ViewAlbum" Method="POST" target="MyMain">
   <input type="hidden" name="Id">
 </form>

@@ -186,7 +186,6 @@ function goto_jsp(jsp, param)
 
 		// Cr�ation de la liste de navigation
 		NavigationList navList = gef.getNavigationList();
-		navList.setTitle("");
 		Iterator i = subThemes.iterator();
 		Iterator iteratorNbTool = nbToolByFolder.iterator();
 		String themeName = "";

@@ -47,7 +47,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
