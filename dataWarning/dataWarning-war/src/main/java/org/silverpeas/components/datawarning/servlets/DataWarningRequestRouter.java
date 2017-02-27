@@ -82,7 +82,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
     String destination = "";
 
 
-    String flag = dataWarningSC.getUserRoleLevel();
+    String flag = dataWarningSC.getHighestSilverpeasUserRole().getName();
     try {
       DataWarningEngine dwe = dataWarningSC.getDataWarningEngine();
 

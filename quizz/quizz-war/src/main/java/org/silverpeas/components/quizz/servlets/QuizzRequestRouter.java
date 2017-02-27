@@ -81,7 +81,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
     String destination = "";
     String rootDest = "/quizz/jsp/";
 
-    String flag = quizzSC.getUserRoleLevel();
+    String flag = quizzSC.getHighestSilverpeasUserRole().getName();
     request.setAttribute("Profile", flag);
 
     try {

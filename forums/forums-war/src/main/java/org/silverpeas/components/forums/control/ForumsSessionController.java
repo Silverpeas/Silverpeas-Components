@@ -302,7 +302,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       throws ForumsException {
     for (Message message : messages) {
       int forumId = message.getForumId();
-      if (isVisible(message.getStatus(), forumId) || "admin".equals(getUserRoleLevel()) ||
+      if (isVisible(message.getStatus(), forumId) || "admin".equals(getHighestSilverpeasUserRole().getName()) ||
           message.getAuthor().equals(getUserId())) {
         if (message.getParentId() == messageId) {
           messageList.add(message);
@@ -400,7 +400,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     int messageId = 0;
 
     try {
-      if (!isValidationActive() || admin.isInRole(getUserRoleLevel()) ||
+      if (!isValidationActive() || admin.isInRole(getHighestSilverpeasUserRole().getName()) ||
           isModerator(getUserId(), forumId)) {
         status = Message.STATUS_VALIDATE;
       }
@@ -447,7 +447,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       if (currentStatus == null) {
         currentStatus = Message.STATUS_FOR_VALIDATION;
-        if (!isValidationActive() || admin.isInRole(getUserRoleLevel()) ||
+        if (!isValidationActive() || admin.isInRole(getHighestSilverpeasUserRole().getName()) ||
             isModerator(getUserId(), message.getForumId())) {
           currentStatus = Message.STATUS_VALIDATE;
         }

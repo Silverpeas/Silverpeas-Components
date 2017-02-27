@@ -181,7 +181,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + "validateImportedFilesClassification.jsp";
       } else if (function.startsWith("portlet")) {
         kmelia.setSessionPublication(null);
-        String flag = kmelia.getUserRoleLevel();
+        String flag = kmelia.getHighestSilverpeasUserRole().getName();
         if (kmaxMode) {
           destination = rootDestination + "kmax_portlet.jsp?Profile=" + flag;
         } else {

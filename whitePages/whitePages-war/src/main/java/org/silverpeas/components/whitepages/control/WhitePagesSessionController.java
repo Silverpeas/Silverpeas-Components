@@ -104,7 +104,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private static DomainDriverManager mDDManager = new DomainDriverManager();
 
   public boolean isAdmin() {
-    return "admin".equals(getUserRoleLevel());
+    return "admin".equals(getHighestSilverpeasUserRole().getName());
   }
 
   /**

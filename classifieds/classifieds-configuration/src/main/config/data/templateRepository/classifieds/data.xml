@@ -23,11 +23,13 @@
         <parameter>
             <name>keys</name>
             <value lang="fr">1##2##3##4</value>
+            <value lang="en">1##2##3##4</value>
             <value lang="de">1##2##3##4</value>
         </parameter>
         <parameter>
             <name>values</name>
             <value lang="fr">Immobilier##Voiture##Services##Divers</value>
+            <value lang="en">Real Property##Car##Services##Others</value>
             <value lang="de">Immobilien##Autos##Dienstleistungen##Diverse</value>
         </parameter>
     </fieldTemplate>
@@ -54,11 +56,13 @@
         <parameter>
             <name>keys</name>
             <value lang="fr">1##2##3</value>
+            <value lang="en">1##2##3</value>
             <value lang="de">1##2##3</value>
         </parameter>
         <parameter>
             <name>values</name>
             <value lang="fr">achat##vente##location</value>
+            <value lang="en">purchase##sale##rental</value>
             <value lang="de">Kauf##Verkauf##Vermietung</value>
         </parameter>
     </fieldTemplate>

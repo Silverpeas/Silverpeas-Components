@@ -47,13 +47,6 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     return "classifieds";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   * @see
-   */
   @Override
   public ClassifiedsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -65,21 +58,19 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
    * @param classifiedsSC The component Session Control, build and initialised.
-   * @param request
+   * @param request the HTTP request
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach
    * .jsp?flag=user")
    */
   @Override
   public String getDestination(String function, ClassifiedsSessionController classifiedsSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     String rootDest = "/classifieds/jsp/";
-
 
     // Common parameters
     ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS :
-        ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
-    String userId = classifiedsSC.getUserId();
+        ClassifiedsRole.getRole(classifiedsSC.getHighestSilverpeasUserRole().getName());
 
     // Store them in request as attributes
     request.setAttribute("Profile", highestRole);
@@ -106,10 +97,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
-    if (lookHelper != null) {
-      return lookHelper.isAnonymousAccess();
-    }
-    return false;
+    return lookHelper != null && lookHelper.isAnonymousAccess();
   }
 
 }

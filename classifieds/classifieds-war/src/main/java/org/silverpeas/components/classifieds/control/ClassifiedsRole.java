@@ -36,7 +36,7 @@ public enum ClassifiedsRole implements Comparable<ClassifiedsRole> {
     return name;
   }
 
-  private ClassifiedsRole(String name) {
+  ClassifiedsRole(String name) {
     this.name = name;
   }
 

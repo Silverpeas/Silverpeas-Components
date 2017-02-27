@@ -456,7 +456,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public final void setUserProfil() {
-    this.userProfil = SilverpeasRole.valueOf(getUserRoleLevel());
+    this.userProfil = getHighestSilverpeasUserRole();
   }
 
   public void setUserProfil(String profil) {
@@ -471,35 +471,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return this.userProfil;
   }
 
-  /**
-   * Redefinition method de abstractComponentSessionController car 4 rôles Return the highest
-   * user's
-   * role (admin, publisher, writer or user)
-   */
   @Override
-  public String getUserRoleLevel() {
-    String[] profiles = getUserRoles();
-    SilverpeasRole flag = SilverpeasRole.user;
-
-    for (String profile : profiles) {
-      // if admin, return it, we won't find a better profile
-      SilverpeasRole role = SilverpeasRole.valueOf(profile);
-      switch (role) {
-        case admin:
-          return profile;
-        case publisher:
-          flag = SilverpeasRole.publisher;
-          break;
-        case writer:
-          if (flag != SilverpeasRole.publisher) {
-            flag = SilverpeasRole.writer;
-          }
-          break;
-        default:
-          break;
-      }
+  public SilverpeasRole getHighestSilverpeasUserRole() {
+    SilverpeasRole highestUserRole = SilverpeasRole.getGreatestFrom(getSilverpeasUserRoles());
+    if (highestUserRole == null || SilverpeasRole.user.isGreaterThanOrEquals(highestUserRole)) {
+      highestUserRole = SilverpeasRole.user;
     }
-    return flag.name();
+    return highestUserRole;
   }
 
   /*

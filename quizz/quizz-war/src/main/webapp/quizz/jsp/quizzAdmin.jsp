@@ -65,7 +65,7 @@
 
 			boolean isAdmin = false;
 
-			if ("admin".equals(quizzScc.getUserRoleLevel())) {
+			if ("admin".equals(quizzScc.getHighestSilverpeasUserRole().getName())) {
 				isAdmin = true;
 			}
 %>

@@ -81,7 +81,7 @@ public class ConnecteurJDBCRequestRouter
     String destination = null;
     String rootDest = "/connecteurJDBC/jsp/";
 
-    String flag = connecteurJDBC.getUserRoleLevel();
+    String flag = connecteurJDBC.getHighestSilverpeasUserRole().getName();
     request.setAttribute("flag", flag);
 
     if ((function.startsWith("Main")) || (function.startsWith("connecteurJDBC"))) {

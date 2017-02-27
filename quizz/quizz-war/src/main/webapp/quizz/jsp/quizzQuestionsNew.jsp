@@ -946,7 +946,7 @@ if (action.equals("ViewQuizz")) {
   //operation pane
   OperationPane operationPane = window.getOperationPane();
   operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
-  if (quizzScc.getNbVoters(quizz.getHeader().getPK().getId())==0||"admin".equals(quizzScc.getUserRoleLevel()))
+  if (quizzScc.getNbVoters(quizz.getHeader().getPK().getId())==0||"admin".equals(quizzScc.getHighestSilverpeasUserRole().getName()))
   {
   	operationPane.addLine();
 	  operationPane.addOperation(m_context + "/util/icons/quizz_to_edit.gif",resources.getString("QuestionUpdate"),"quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizz.getHeader().getPK().getId());
