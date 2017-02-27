@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.io.IOUtils;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -102,7 +103,12 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     File fileStat;
     if ("link".equals(typeUpload)) {
       type = Statistic.FILE;
-      fileStat = fileToSend = FileUtils.getFile(rootPath, sourceFile);
+      if (sourceFile.startsWith(FilenameUtils.separatorsToUnix(rootPath.getPath()))) {
+        //Path into index is stored absolute and with Unix separators
+        fileStat = fileToSend = FileUtils.getFile(sourceFile);
+      } else {
+        fileStat = fileToSend = FileUtils.getFile(rootPath, sourceFile);
+      }
       SilverTrace.debug("silverCrawler", "FileServer", "root.MSG_GEN_PARAM_VALUE",
           "file, type = " + type + " file = " + fileStat);
     } else {
