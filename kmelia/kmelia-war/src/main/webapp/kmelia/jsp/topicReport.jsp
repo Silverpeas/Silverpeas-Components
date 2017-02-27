@@ -81,8 +81,6 @@ void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail
 		translation = kmeliaScc.getLanguage();
       // Liste de navigation dans les th�mes
       NavigationList navList = gef.getNavigationList();
-      navList.setTitle(nodeDetail.getName(translation));
-      
       if (nodeDetail.getChildrenNumber() > 0 && !(nodeDetail.getChildrenNumber() < 3 && nodeDetail.getNodePK().getId().equals("0"))) {
         NodeDetail node = null;
         String childId;

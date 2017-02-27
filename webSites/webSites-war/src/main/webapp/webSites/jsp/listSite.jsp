@@ -205,7 +205,6 @@ function openSPWindow(fonction, windowName){
 
 		// Creation de la liste de navigation
 		NavigationList navList = gef.getNavigationList();
-    navList.setTitle("");
     Iterator i = subThemes.iterator();
     Iterator iteratorNbTool = nbToolByFolder.iterator();
     String themeName = "";
