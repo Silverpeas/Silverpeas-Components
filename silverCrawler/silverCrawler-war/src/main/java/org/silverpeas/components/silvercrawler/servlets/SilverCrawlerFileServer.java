@@ -23,19 +23,20 @@
  */
 package org.silverpeas.components.silvercrawler.servlets;
 
-import org.silverpeas.components.silvercrawler.statistic.Statistic;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.components.silvercrawler.statistic.Statistic;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -107,7 +108,12 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     File fileStat;
     if ("link".equals(typeUpload)) {
       type = Statistic.FILE;
-      fileStat = fileToSend = FileUtils.getFile(rootPath, sourceFile);
+      if (sourceFile.startsWith(FilenameUtils.separatorsToUnix(rootPath.getPath()))) {
+        //Path into index is stored absolute and with Unix separators
+        fileStat = fileToSend = FileUtils.getFile(sourceFile);
+      } else {
+        fileStat = fileToSend = FileUtils.getFile(rootPath, sourceFile);
+      }
     } else {
       type = Statistic.DIRECTORY;
       fileToSend =
