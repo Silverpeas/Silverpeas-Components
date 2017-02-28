@@ -62,6 +62,8 @@ import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -283,39 +285,27 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void unindexPath(String folderName) {
-
-
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
-    String pathRepository = getFullPath(folderName);
-    Date date = new Date();
-    repositoryIndexer.pathIndexer(pathRepository, date.toString(), getUserId(), "remove");
+    Path pathRepository = Paths.get(getFullPath(folderName));
+    repositoryIndexer.removePath(pathRepository, getUserId());
   }
 
   public void unindexFile(String fileName) {
-
-
-    File path = FileUtils.getFile(currentPath, fileName);
-
+    Path path = Paths.get(currentPath.getPath(), fileName);
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
-    repositoryIndexer.indexFile("remove", new Date().toString(), getUserId(), path);
+    repositoryIndexer.removePath(path, getUserId());
   }
 
   public void indexPath(String folderName) {
-
-
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
-    String pathRepository = getFullPath(folderName);
-    Date date = new Date();
-    repositoryIndexer.pathIndexer(pathRepository, date.toString(), getUserId(), "add");
+    Path pathRepository = Paths.get(getFullPath(folderName));
+    repositoryIndexer.addPath(pathRepository, getUserId());
   }
 
   public void indexFile(String fileName) {
-
-
-    File path = FileUtils.getFile(currentPath, fileName);
-
+    Path path = Paths.get(currentPath.getPath(), fileName);
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
-    repositoryIndexer.indexFile("add", new Date().toString(), getUserId(), path);
+    repositoryIndexer.addPath(path, getUserId());
   }
 
   public void indexPathSelected(Collection<String> dirToIndex) {

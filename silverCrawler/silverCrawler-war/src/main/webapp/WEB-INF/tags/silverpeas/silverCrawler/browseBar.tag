@@ -40,7 +40,8 @@
       'method' : 'GET', 'action' : 'GoToDirectory'
     }).append(jQuery('<input>', {
       "type" : "text", "name" : "DirectoryPath", "value" : path
-    })).submit();
+    })).appendTo(document.body)
+       .submit();
   }
 </script>
 <view:browseBar>

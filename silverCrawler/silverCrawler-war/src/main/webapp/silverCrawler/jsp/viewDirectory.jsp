@@ -201,6 +201,7 @@ function showDialog(params) {
   var url = "<c:url value="/RsilverCrawler/${componentId}/" />" + options.submitAction +
       "Form?oldName=" + encodeURIComponent(options.oldName);
   $("#modalDialog").load(url, function() {
+    applyTokenSecurity(this);
     $('form', this).submit(function(){
       $.progressMessage();
       if (options.isFileUpload) {

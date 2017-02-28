@@ -24,24 +24,25 @@
 
 package org.silverpeas.components.silvercrawler;
 
+import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeException;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeException;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ScheduledIndexFiles implements SchedulerEventListener {
@@ -64,8 +65,6 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
   }
 
   public void doScheduledIndex() {
-
-
     try {
       // indexation des fichiers du composant
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
@@ -85,21 +84,14 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
             adminId = adminIds[0];
           }
 
-          String pathRepository = instance.getParameterValue("directory");
-
-          if (!pathRepository.endsWith(File.separator)) {
-            pathRepository += File.separator;
-          }
-          Date dateIndex = new Date();
-          repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(), adminId, "add");
+          Path pathRepository = Paths.get(instance.getParameterValue("directory"));
+          repositoryIndexer.addPath(pathRepository, adminId);
         }
       }
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException("ScheduledIndexFiles.doScheduledIndex()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-
-
   }
 
   @Override
