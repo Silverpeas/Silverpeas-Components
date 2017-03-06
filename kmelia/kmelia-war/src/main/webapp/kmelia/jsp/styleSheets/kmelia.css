@@ -778,6 +778,7 @@ a.button.refuse span {
   right: -9px;
   top: 0;
   bottom: 0;
+  z-index: inherit !important;
 }
 
 #footer {
