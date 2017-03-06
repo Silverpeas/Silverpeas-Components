@@ -261,6 +261,16 @@ fieldset#news-thumbnail legend {
   font-size: 90%;
 }
 
+.rightContent #pagination {
+  padding: 0.83em 0;
+  line-height: 1.2em;
+  float: right;
+}
+
+.rightContent #pagination img {
+  vertical-align: bottom;
+}
+
 /*************** ALERTE *******************/
 .alert-quickInfo {
   background-color:#fbf7aa;
