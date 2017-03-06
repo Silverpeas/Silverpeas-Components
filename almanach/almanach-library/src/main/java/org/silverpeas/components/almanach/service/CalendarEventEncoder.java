@@ -158,7 +158,7 @@ public class CalendarEventEncoder {
           .toInstant()
           .atZone(TimeZone.getDefault().toZoneId())
           .toOffsetDateTime();
-      recurrence.upTo(endDateTime);
+      recurrence.until(endDateTime);
     }
 
     return recurrence;
