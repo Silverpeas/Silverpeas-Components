@@ -50,15 +50,17 @@
 <jsp:useBean id="viewOnly" type="java.lang.Boolean"/>
 
 <c:set var="extraPath" value=""/>
-<c:if test="${news.draft}">
-  <fmt:message key="quickinfo.home.drafts.breadcrumb" var="extraPath"/>
-</c:if>
-<c:if test="${news.notYetVisible}">
-  <fmt:message key="quickinfo.home.notYetVisibles.breadcrumb" var="extraPath"/>
-</c:if>
-<c:if test="${news.noMoreVisible}">
-  <fmt:message key="quickinfo.home.noMoreVisibles.breadcrumb" var="extraPath"/>
-</c:if>
+<c:choose>
+  <c:when test="${news.draft}">
+    <fmt:message key="quickinfo.home.drafts.breadcrumb" var="extraPath"/>
+  </c:when>
+  <c:when test="${news.notYetVisible}">
+    <fmt:message key="quickinfo.home.notYetVisibles.breadcrumb" var="extraPath"/>
+  </c:when>
+  <c:when test="${news.noMoreVisible}">
+    <fmt:message key="quickinfo.home.noMoreVisibles.breadcrumb" var="extraPath"/>
+  </c:when>
+</c:choose>
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%

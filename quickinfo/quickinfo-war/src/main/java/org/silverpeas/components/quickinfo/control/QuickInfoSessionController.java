@@ -152,6 +152,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    */
   public void publish(String id) {
     getQuickInfoService().publish(id, getUserId());
+    loadNewsLists(true);
   }
 
   /**
@@ -220,6 +221,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
     getQuickInfoService().update(news, getPositionsFromJSON(pdcPositions), uploadedFiles,
         forcePublish);
+
+    loadNewsLists(true);
   }
 
   /**
@@ -337,13 +340,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   private void processIndex(News news) {
-    if (mainList == null) {
-      if (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-        getQuickInfos();
-      } else {
-        getVisibleQuickInfos();
-      }
-    }
+    loadNewsLists(false);
 
     if (!news.isDraft() && news.isVisible()) {
       currentList = mainList;
@@ -356,5 +353,20 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
     currentIndex.setCurrentIndex(currentList.indexOf(news));
     currentIndex.setNbItems(currentList.size());
+  }
+
+  /**
+   * Loads the handled lists.
+   * @param reload if true forces to load again the lists, if false loading the lists if it has not
+   * been yet done.
+   */
+  private void loadNewsLists(boolean reload) {
+    if (mainList == null || reload) {
+      if (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        getQuickInfos();
+      } else {
+        getVisibleQuickInfos();
+      }
+    }
   }
 }

@@ -199,7 +199,7 @@ $(document).ready(function() {
 </c:if>
 
 <view:window>
-<form name="newsForm" id="newsForm" action="Save" method="post" enctype="multipart/form-data">
+<form name="newsForm" id="newsForm" action="Save" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   <input type="hidden" name="Positions" />
   <c:if test="${not empty curQuickInfo}">
     <input type="hidden" name="Id" value="${curQuickInfo.id}"/>
