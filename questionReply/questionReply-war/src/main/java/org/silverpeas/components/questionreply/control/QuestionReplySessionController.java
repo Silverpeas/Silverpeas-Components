@@ -462,7 +462,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   @Override
   public SilverpeasRole getHighestSilverpeasUserRole() {
-    SilverpeasRole highestUserRole = SilverpeasRole.getGreatestFrom(getSilverpeasUserRoles());
+    SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(getSilverpeasUserRoles());
     if (highestUserRole == null || SilverpeasRole.user.isGreaterThanOrEquals(highestUserRole)) {
       highestUserRole = SilverpeasRole.user;
     }
