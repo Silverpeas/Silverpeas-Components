@@ -38,6 +38,7 @@
 
 <c:set var="news" value="${requestScope['News']}"/>
 <jsp:useBean id="news" type="org.silverpeas.components.quickinfo.model.News"/>
+<c:set var="index" value="${requestScope['Index']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <jsp:useBean id="role" type="java.lang.String"/>
 <c:set var="greatestUserRole" value="<%=SilverpeasRole.from(role)%>"/>
@@ -47,6 +48,19 @@
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="viewOnly" value="${not empty requestScope['ViewOnly'] ? requestScope['ViewOnly'] : false}"/>
 <jsp:useBean id="viewOnly" type="java.lang.Boolean"/>
+
+<c:set var="extraPath" value=""/>
+<c:choose>
+  <c:when test="${news.draft}">
+    <fmt:message key="quickinfo.home.drafts.breadcrumb" var="extraPath"/>
+  </c:when>
+  <c:when test="${news.notYetVisible}">
+    <fmt:message key="quickinfo.home.notYetVisibles.breadcrumb" var="extraPath"/>
+  </c:when>
+  <c:when test="${news.noMoreVisible}">
+    <fmt:message key="quickinfo.home.noMoreVisibles.breadcrumb" var="extraPath"/>
+  </c:when>
+</c:choose>
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%
@@ -86,6 +100,7 @@ function submitOnHomepage() {
 </script>
 </head>
 <body class="quickInfo actuality" id="${news.componentInstanceId}">
+<view:browseBar extraInformations="${extraPath}"/>
 <c:if test="${viewOnly}">
 <view:browseBar clickable="false"/>
 </c:if>
@@ -117,6 +132,11 @@ function submitOnHomepage() {
 
 <!--INTEGRATION  UNE ACTU -->
 <div class="rightContent">
+
+  <c:if test="${not empty index}">
+    <viewTags:displayIndex nbItems="${index.nbItems}" index="${index.currentIndex}" />
+  </c:if>
+
 	<c:if test="${not empty news.thumbnail}">
 		<div id="illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x"/></div>
 	</c:if>

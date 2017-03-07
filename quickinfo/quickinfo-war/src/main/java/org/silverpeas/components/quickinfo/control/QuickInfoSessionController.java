@@ -27,6 +27,7 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.DecodingException;
@@ -64,6 +65,13 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   private PublicationService publicationService;
   private QuickInfoComponentSettings instanceSettings;
+
+  private List<News> mainList;
+  private List<News> draftList;
+  private List<News> notYetVisibleList;
+  private List<News> noMoreVisibleList;
+  private List<News> currentList;
+  private ListIndex currentIndex = new ListIndex(0);
 
   /**
    * Creates new QuickInfoSessionController
@@ -106,11 +114,20 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         drafts.remove();
       }
     }
+    setQuickInfos(newsByStatus);
     return newsByStatus;
   }
 
   public List<News> getVisibleQuickInfos() {
-    return getQuickInfoService().getVisibleNews(getComponentId());
+    mainList = getQuickInfoService().getVisibleNews(getComponentId());
+    return mainList;
+  }
+
+  private void setQuickInfos(NewsByStatus newsByStatus) {
+    mainList = newsByStatus.getVisibles();
+    draftList = newsByStatus.getDrafts();
+    notYetVisibleList = newsByStatus.getNotYetVisibles();
+    noMoreVisibleList = newsByStatus.getNoMoreVisibles();
   }
 
   public News getNews(String id, boolean statVisit) {
@@ -118,12 +135,14 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     if (statVisit) {
       addVisit(news);
     }
+    processIndex(news);
     return news;
   }
 
   public News getNewsByForeignId(String foreignId) {
     News news = getQuickInfoService().getNewsByForeignId(foreignId);
     addVisit(news);
+    processIndex(news);
     return news;
   }
 
@@ -133,6 +152,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    */
   public void publish(String id) {
     getQuickInfoService().publish(id, getUserId());
+    loadNewsLists(true);
   }
 
   /**
@@ -201,6 +221,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
     getQuickInfoService().update(news, getPositionsFromJSON(pdcPositions), uploadedFiles,
         forcePublish);
+
+    loadNewsLists(true);
   }
 
   /**
@@ -305,4 +327,46 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return ServiceProvider.getService(StatisticService.class);
   }
 
+  public News getPrevious() {
+    return currentList.get(currentIndex.getPreviousIndex());
+  }
+
+  public News getNext() {
+    return currentList.get(currentIndex.getNextIndex());
+  }
+
+  public ListIndex getIndex() {
+    return currentIndex;
+  }
+
+  private void processIndex(News news) {
+    loadNewsLists(false);
+
+    if (!news.isDraft() && news.isVisible()) {
+      currentList = mainList;
+    } else if (news.isDraft()) {
+      currentList = draftList;
+    } else if (news.isNotYetVisible()) {
+      currentList = notYetVisibleList;
+    } else if (news.isNoMoreVisible()) {
+      currentList = noMoreVisibleList;
+    }
+    currentIndex.setCurrentIndex(currentList.indexOf(news));
+    currentIndex.setNbItems(currentList.size());
+  }
+
+  /**
+   * Loads the handled lists.
+   * @param reload if true forces to load again the lists, if false loading the lists if it has not
+   * been yet done.
+   */
+  private void loadNewsLists(boolean reload) {
+    if (mainList == null || reload) {
+      if (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        getQuickInfos();
+      } else {
+        getVisibleQuickInfos();
+      }
+    }
+  }
 }
