@@ -49,7 +49,6 @@ package org.silverpeas.components.classifieds.servlets.handler;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**
@@ -59,19 +58,14 @@ import org.silverpeas.core.web.http.HttpRequest;
 public class PaginationHandler extends FunctionHandler {
 
   @Override
-  public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpRequest request) throws Exception {
-
-    String index = request.getParameter("Index");
-    if (!StringUtil.isInteger(index)) {
-      index = (String) request.getAttribute("Index");
-    }
+  public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
+      throws Exception {
 
     // Stores objects in request
     request.setAttribute("SearchContext", classifiedsSC.getSearchContext());
     request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
-    request.setAttribute("Classifieds", classifiedsSC.getPage(Integer.valueOf(index)));
-    request.setAttribute("Pagination", classifiedsSC.getPagination());
+    request.setAttribute("Classifieds", classifiedsSC.getPage());
+    request.setAttribute("NbResults", classifiedsSC.getSessionClassifieds().size());
 
     return "classifiedsResult.jsp";
   }

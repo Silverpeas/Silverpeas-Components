@@ -167,6 +167,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * All the formats that are available for the export of publications.
    */
   private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
+  private static final int DEFAULT_NBPUBLIS_PER_PAGE = 10;
 
   /* Services used by sessionController */
   private CommentService commentService = null;
@@ -208,13 +209,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public static final String MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS = "2";
   // Versioning options
   public static final String VER_USE_WRITERS_AND_READERS = "0";
-  public static final String VER_USE_WRITERS = "1";
-  public static final String VER_USE_READERS = "2";
-  public static final String VER_USE_NONE = "3";
   // utilisation de userPanel/ userpanelPeas
   String[] idSelectedUser = null;
   // pagination de la liste des publications
   private int indexOfFirstPubToDisplay = 0;
+  private int nbPublicationsPerPage = DEFAULT_NBPUBLIS_PER_PAGE;
   // Assistant de publication
   private String wizard = "none";
   private String wizardRow = "0";
@@ -284,6 +283,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     customPublicationTemplateUsed =
         template.isCustomTemplateExists("kmelia", customPublicationTemplateName);
     sessionPublicationsList = Collections.emptyList();
+
+    nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
+    String parameterValue = getComponentParameterValue("nbPubliPerPage");
+    if (StringUtil.isInteger(parameterValue)) {
+      nbPublicationsPerPage = Integer.parseInt(parameterValue);
+    }
   }
 
   /**
@@ -353,12 +358,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public int getNbPublicationsPerPage() {
-    int nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-    String parameterValue = getComponentParameterValue("nbPubliPerPage");
-    if (StringUtil.isInteger(parameterValue)) {
-      nbPublicationsPerPage = Integer.parseInt(parameterValue);
-    }
     return nbPublicationsPerPage;
+  }
+
+  public void setNbPublicationsPerPage(int nb) {
+    nbPublicationsPerPage = nb;
   }
 
   public boolean isDraftVisibleWithCoWriting() {

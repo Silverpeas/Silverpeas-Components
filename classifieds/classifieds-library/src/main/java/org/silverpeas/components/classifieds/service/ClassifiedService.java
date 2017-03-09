@@ -232,13 +232,13 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param mapFields2 : HashMap des champs de recherche 1
    * @param searchField1 : champ de recherche 1
    * @param searchField2 : champ de recherche 2
-   * @param currentPage : numéro de page actuelle
+   * @param firstItemIndex : index of first item to display
    * @param elementsPerPage : nombre d'éléments à afficher par page
    * @return a collection of ClassifiedDetail
    */
   public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId,
       Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1,
-      String searchField2, int currentPage, int elementsPerPage);
+      String searchField2, int firstItemIndex, int elementsPerPage);
 
   public void setClassification(ClassifiedDetail classified, String searchField1,
       String searchField2, String xmlFormName);

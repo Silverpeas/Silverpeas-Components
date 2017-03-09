@@ -69,7 +69,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     String rootDest = "/classifieds/jsp/";
 
     // Common parameters
-    ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS :
+    ClassifiedsRole highestRole = isAnonymousAccess(request) ? ClassifiedsRole.ANONYMOUS :
         ClassifiedsRole.getRole(classifiedsSC.getHighestSilverpeasUserRole().getName());
 
     // Store them in request as attributes
@@ -77,6 +77,18 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     request.setAttribute("InstanceId", classifiedsSC.getComponentId());
     request.setAttribute("Language", classifiedsSC.getLanguage());
     request.setAttribute("isWysiwygHeaderEnabled", classifiedsSC.isWysiwygHeaderEnabled());
+
+    // manage pagination
+    if ("SearchClassifieds".equals(function)) {
+      classifiedsSC.setCurrentFirstItemIndex("0");
+    } else {
+      classifiedsSC.setCurrentFirstItemIndex(request.getParameter("ItemIndex"));
+    }
+
+    classifiedsSC.setNbItemsPerPage(request.getParameter("ItemsPerPage"));
+    request.setAttribute("NbPerPage", classifiedsSC.getNbPerPage());
+    request.setAttribute("CurrentFirstItemIndex", classifiedsSC.getCurrentFirstItemIndex());
+
     try {
       // Delegate to specific Handler
       FunctionHandler handler = HandlerProvider.getHandler(function);

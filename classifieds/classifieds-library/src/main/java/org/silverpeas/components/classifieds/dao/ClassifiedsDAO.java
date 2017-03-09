@@ -255,7 +255,7 @@ public class ClassifiedsDAO {
    * @throws SQLException
    */
   public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con, String instanceId,
-      String status, int currentPage, int elementsPerPage) throws SQLException {
+      String status, int firstItemIndex, int elementsPerPage) throws SQLException {
     List<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? " +
         " order by CASE WHEN validatedate IS NULL THEN " +
@@ -265,8 +265,7 @@ public class ClassifiedsDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    int firstIndexResult = currentPage * elementsPerPage;
-    int lastIndexResult = firstIndexResult + elementsPerPage - 1;
+    int lastIndexResult = firstItemIndex + elementsPerPage - 1;
     boolean displayAllElements = false;
     if (elementsPerPage == -1) {
       displayAllElements = true;
@@ -279,7 +278,7 @@ public class ClassifiedsDAO {
       rs = prepStmt.executeQuery();
       int index = 0;
       while (rs.next()) {
-        if (displayAllElements || (index >= firstIndexResult && index <= lastIndexResult)) {
+        if (displayAllElements || (index >= firstItemIndex && index <= lastIndexResult)) {
           ClassifiedDetail classified = recupClassified(rs);
           listClassifieds.add(classified);
         }

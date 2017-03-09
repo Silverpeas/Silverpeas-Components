@@ -120,9 +120,9 @@ function setCurrentNodeId(id){
 	currentNodeId = id;
 }
 
-function doPagination(index){
+function doPagination(index, nbItemsPerPage){
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {PubId:<%=pubId%>,PubComponentName:'<%=pubComponentId%>',Index:index,ComponentId:currentComponent,ToLink:1,IEFix:ieFix}, 
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {PubId:<%=pubId%>,PubComponentName:'<%=pubComponentId%>',Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,ToLink:1,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
 			},"html");

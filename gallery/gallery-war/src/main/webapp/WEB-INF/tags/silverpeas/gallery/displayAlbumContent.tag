@@ -97,7 +97,7 @@
               type="java.lang.Boolean"
               description="Images are selectable" %>
 
-<c:set var="firstMediaIndex" value="${nbMediaPerPage * currentPageIndex}"/>
+<c:set var="firstMediaIndex" value="${currentPageIndex}"/>
 <c:set var="lastMediaIndex" value="${firstMediaIndex + nbMediaPerPage - 1}"/>
 
 <c:set var="typeAff" value="default"/>
@@ -125,10 +125,11 @@
   /**
    * Method that handle the navigation with selection management.
    */
-  function doPagination(index) {
+  function doPagination(index, nbItemsPerPage) {
     document.${_formName}.SelectedIds.value = getMediaIds(true);
     document.${_formName}.NotSelectedIds.value = getMediaIds(false);
     document.${_formName}.Index.value = index;
+    document.${_formName}.NbItemsPerPage.value = nbItemsPerPage;
     document.${_formName}.action = "Pagination";
     document.${_formName}.submit();
   }
@@ -175,6 +176,7 @@
           <input type="hidden" name="SearchKeyWord" value="${searchKeyword}">
         </c:if>
         <input type="hidden" name="Index"/>
+        <input type="hidden" name="NbItemsPerPage"/>
         <input type="hidden" name="SelectedIds"/>
         <input type="hidden" name="NotSelectedIds"/>
 
@@ -301,18 +303,16 @@
               </tr>
             </c:if>
           </c:forEach>
-          <c:if test="${fn:length(mediaList) > nbMediaPerPage}">
-            <tr>
-              <td colspan="${nbMediaPerLine + textColumnCount}">&nbsp;</td>
-            </tr>
-            <tr class="intfdcolor4 pagination">
-              <td colspan="${nbMediaPerLine + textColumnCount}">
-                <view:pagination action="doPagination" actionIsJsFunction="${true}"
-                                 currentPage="${currentPageIndex}"
-                                 nbItemsPerPage="${nbMediaPerPage}" totalNumberOfItems="${fn:length(mediaList)}"/>
-              </td>
-            </tr>
-          </c:if>
+          <tr>
+            <td colspan="${nbMediaPerLine + textColumnCount}">&nbsp;</td>
+          </tr>
+          <tr class="intfdcolor4 pagination">
+            <td colspan="${nbMediaPerLine + textColumnCount}">
+              <view:pagination action="doPagination" actionIsJsFunction="${true}"
+                               currentPage="${currentPageIndex}"
+                               nbItemsPerPage="${nbMediaPerPage}" totalNumberOfItems="${fn:length(mediaList)}"/>
+            </td>
+          </tr>
           </tbody>
         </table>
       </form>

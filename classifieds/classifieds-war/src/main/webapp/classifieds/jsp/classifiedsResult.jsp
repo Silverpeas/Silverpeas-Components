@@ -24,7 +24,6 @@
 
 --%>
 <%@page import="org.silverpeas.components.classifieds.control.SearchContext"%>
-<%@page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
 <%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -53,10 +52,9 @@
 <c:set var="searchContext" value="${requestScope.SearchContext}" />
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
-
-<%
-Pagination pagination = (Pagination) request.getAttribute("Pagination");
-%>
+<c:set var="currentFirstItemIndex" value="${requestScope.CurrentFirstItemIndex}" />
+<c:set var="nbPerPage" value="${requestScope.NbPerPage}" />
+<c:set var="nbResults" value="${requestScope.NbResults}" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -171,8 +169,8 @@ function viewClassifieds(fieldNumber, fieldValue) {
 					</c:if>
 			
 			</view:board>
-			
-			<% out.println(pagination.printIndex()); %>
+
+      <view:pagination currentPage="${currentFirstItemIndex}" totalNumberOfItems="${nbResults}" nbItemsPerPage="${nbPerPage}" action="Pagination?ItemIndex=" />
 			
 		</view:frame>
 	</view:window>

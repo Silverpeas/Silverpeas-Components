@@ -34,7 +34,7 @@ public class HandlerProvider {
   /**
    * Map the function name to the function handler
    */
-  static private Map<String, FunctionHandler> handlerMap = null;
+  private static Map<String, FunctionHandler> handlerMap = null;
 
   /**
    * Inits the function handler
@@ -70,7 +70,10 @@ public class HandlerProvider {
 
     handlerMap.put("ToWysiwygHeader", new ToWysiwygHeaderHandler());
     handlerMap.put("FromTopicWysiwyg", new DefaultHandler());
+  }
 
+  private HandlerProvider() {
+    throw new IllegalAccessError("Utility class must not be instanciated");
   }
 
   /**
