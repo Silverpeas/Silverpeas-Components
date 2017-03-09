@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.questionreply.control;
 
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -515,9 +516,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return "";
   }
 
-  /*
-   * @deprecated (This method is no more used at the moment - Silverpeas 6.0. If necessary,
+  /**
+   * (This method is no more used at the moment - Silverpeas 6.0. If necessary,
    * implementation must be completed to get recipients)
+   * @deprecated
    */
   @Deprecated
   public void relaunchRecipients() throws QuestionReplyException {
@@ -544,10 +546,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {
-      ContentManager contentManager = new ContentManager();
+      ContentManager contentManager = ContentManagerProvider.getContentManager();
       // recupere la liste de toutes les instances d'annuaire
       String[] instances = orga.getCompoId("whitePages");
-      List<String> listeInstanceId = new ArrayList<String>();
+      List<String> listeInstanceId = new ArrayList<>();
       for(String id : instances) {
         listeInstanceId.add("whitePages" + id);
       }
@@ -652,7 +654,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
     if (currentQuestion != null) {
       try {
-        ContentManager contentManager = new ContentManager();
+        ContentManager contentManager = ContentManagerProvider.getContentManager();
         contentId = "" + contentManager
             .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {

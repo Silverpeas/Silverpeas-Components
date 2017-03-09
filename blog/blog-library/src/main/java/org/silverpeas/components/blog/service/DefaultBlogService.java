@@ -186,12 +186,11 @@ public class DefaultBlogService implements BlogService {
       NodeDetail node = getNodeBm().getHeader(fatherPK);
       final List<String> newSubscribers = new ArrayList<>(subscriberIds.size());
       for (String userId : subscriberIds) {
-        if (organizationController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
-          if (!node.haveRights() || organizationController
-              .isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                  fatherPK.getInstanceId(), userId)) {
-            newSubscribers.add(userId);
-          }
+        if (organizationController.isComponentAvailable(fatherPK.getInstanceId(), userId) &&
+            (!node.haveRights() ||
+                organizationController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+                    fatherPK.getInstanceId(), userId))) {
+          newSubscribers.add(userId);
         }
       }
 
@@ -347,6 +346,7 @@ public class DefaultBlogService implements BlogService {
     PublicationPK pubPK = new PublicationPK("useless", instanceId);
 
     Collection<PostDetail> posts = new ArrayList<>();
+    int count = nbReturned;
     try (Connection con = openConnection()) {
       // rechercher les publications classées par date d'évènement
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
@@ -355,8 +355,8 @@ public class DefaultBlogService implements BlogService {
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
           if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID.
-              equals(publication.getStatus()) && nbReturned > 0) {
-            nbReturned--;
+              equals(publication.getStatus()) && count > 0) {
+            count--;
             posts.add(getPost(publication));
           }
         }
@@ -452,12 +452,11 @@ public class DefaultBlogService implements BlogService {
         for (MatchingIndexEntry matchIndex : result) {
           String objectType = matchIndex.getObjectType();
           String objectId = matchIndex.getObjectId();
-          if ("Publication".equals(objectType) || objectType.startsWith("Attachment")) {
-            if (pubId.equals(objectId) && !postIds.contains(objectId)) {
-              PostDetail post = getContentById(objectId);
-              postIds.add(objectId);
-              posts.add(post);
-            }
+          if ("Publication".equals(objectType) || objectType.startsWith("Attachment") &&
+              (pubId.equals(objectId) && !postIds.contains(objectId))) {
+            PostDetail post = getContentById(objectId);
+            postIds.add(objectId);
+            posts.add(post);
           }
         }
       }

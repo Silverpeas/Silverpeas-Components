@@ -53,28 +53,27 @@ public class BlogInstancePostConstruction implements ComponentInstancePostConstr
   }
 
   private NodeDetail getCategoryRootNodeFor(String componentInstanceId) {
-    NodeDetail rootCategory = new NodeDetail();
-    rootCategory.setNodePK(new NodePK("0", componentInstanceId));
-    rootCategory.setFatherPK(null);
-    rootCategory.setUseId(true);
+    NodeDetail rootCategory = createNode("0", componentInstanceId);
     rootCategory.setName("Accueil Catégories");
     rootCategory.setDescription("Racine Catégories");
-    rootCategory.setCreatorId(UserDetail.getCurrentRequester().getId());
-    rootCategory.setLevel(1);
-    rootCategory.setStatus("Visible");
     return rootCategory;
   }
 
   private NodeDetail getArchiveRootNodeFor(String componentInstanceId) {
-    NodeDetail rootArchive = new NodeDetail();
-    rootArchive.setNodePK(new NodePK("1", componentInstanceId));
-    rootArchive.setFatherPK(null);
-    rootArchive.setUseId(true);
+    NodeDetail rootArchive = createNode("1", componentInstanceId);
     rootArchive.setName("Accueil Archives");
     rootArchive.setDescription("Racine Archives");
-    rootArchive.setCreatorId(UserDetail.getCurrentRequester().getId());
-    rootArchive.setLevel(1);
-    rootArchive.setStatus("Visible");
     return rootArchive;
+  }
+
+  private NodeDetail createNode(String id, String componentInstanceId) {
+    NodeDetail rootNode = new NodeDetail();
+    rootNode.setNodePK(new NodePK(id, componentInstanceId));
+    rootNode.setFatherPK(null);
+    rootNode.setUseId(true);
+    rootNode.setCreatorId(UserDetail.getCurrentRequester().getId());
+    rootNode.setLevel(1);
+    rootNode.setStatus("Visible");
+    return rootNode;
   }
 }

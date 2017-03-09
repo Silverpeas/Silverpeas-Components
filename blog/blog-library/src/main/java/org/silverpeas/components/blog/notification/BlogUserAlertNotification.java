@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The centralization of the construction of the blog notifications
@@ -60,9 +61,10 @@ public class BlogUserAlertNotification extends AbstractBlogUserNotification {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
+    return Collections.EMPTY_LIST;
   }
 
 }

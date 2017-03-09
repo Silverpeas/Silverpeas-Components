@@ -27,6 +27,7 @@ import org.silverpeas.components.websites.control.WebSiteSessionController;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -60,10 +61,7 @@ public class SiteDesignActionHandler {
     // never null expected in creation
     String id = request.getParameter("Id");
     // Retrieve currentPath parameter: null when creating a webSite
-    String currentPath = request.getParameter(WebSitesRequestRouter.PATH_PARAM);
-    if (currentPath != null) {
-      currentPath = doubleAntiSlash(currentPath);
-    }
+    String currentPath = getCurrentPath(request);
 
     switch (action) {
       case "newSite":
@@ -103,6 +101,14 @@ public class SiteDesignActionHandler {
     }
 
     return "/webSites/jsp/design.jsp?Action=design&Path=" + currentPath + "&Id=" + id;
+  }
+
+  private String getCurrentPath(final HttpRequest request) {
+    String currentPath = request.getParameter(WebSitesRequestRouter.PATH_PARAM);
+    if (currentPath != null) {
+      currentPath = StringUtil.doubleAntiSlash(currentPath);
+    }
+    return  currentPath;
   }
 
   private String backToDesignedSite(final WebSiteSessionController controller,
@@ -498,21 +504,26 @@ public class SiteDesignActionHandler {
       /* id/rep1 */
       String cheminContexte = finNode(scc, currentPath);
       List<String> tabContexte = buildTab(cheminContexte + "/");
-      List<String> tabCommun = sortCommun(tabContexte, tab);
-      String reste = sortReste(tab, tabCommun);
-      int nbPas = tabContexte.size() - tabCommun.size();
-      StringBuilder relatif = new StringBuilder();
-      for (int i = 0; i < nbPas; i++) {
-        relatif.append("../");
-      }
-
-      if (!reste.isEmpty()) {
-        relatif.append(reste).append("/");
-      }
-      relatif.append(fichier);
-      apres = relatif.toString() + apres;
+      apres = computeApres(apres, tabContexte, tab, fichier);
       return avant + parseCodeSupprImage(scc, apres, request, settings, currentPath);
     }
+  }
+
+  private String computeApres(String apres, List<String> tabContexte, List<String> tab,
+      String fichier) {
+    List<String> tabCommun = sortCommun(tabContexte, tab);
+    String reste = sortReste(tab, tabCommun);
+    int nbPas = tabContexte.size() - tabCommun.size();
+    StringBuilder relatif = new StringBuilder();
+    for (int i = 0; i < nbPas; i++) {
+      relatif.append("../");
+    }
+
+    if (!reste.isEmpty()) {
+      relatif.append(reste).append("/");
+    }
+    relatif.append(fichier);
+    return relatif.toString() + apres;
   }
 
   private String parseCodeSupprHref(WebSiteSessionController scc, String code, String currentPath) {
@@ -579,45 +590,10 @@ public class SiteDesignActionHandler {
         /* ajoute l'id dans le premier tableau */
         tab.add(0, tabContexte.get(0));
 
-        /* tabCommun = [id | rep] */
-        List<String> tabCommun = sortCommun(tabContexte, tab);
-
-        /* reste = vide */
-        String reste = sortReste(tab, tabCommun);
-
-        /* nbPas = 0 */
-        int nbPas = tabContexte.size() - tabCommun.size();
-        StringBuilder relatif = new StringBuilder();
-        for (int i = 0; i < nbPas; i++) {
-          relatif.append("../");
-        }
-
-        if (!reste.isEmpty()) {
-          relatif.append(reste).append("/");
-        }
-        relatif.append(fichier);
-
-        /* relatif = vide */
-        apres = relatif.toString() + apres;
+        apres = computeApres(apres, tabContexte, tab, fichier);
         theReturn = avant + parseCodeSupprHref(scc, apres, currentPath);
       }
     }
     return theReturn;
-  }
-
-  private String doubleAntiSlash(String path) {
-    StringBuilder res = new StringBuilder(path);
-    int k = 0;
-    for (int i = 0, j = 1; i < path.length(); i++, j++) {
-      if (path.charAt(i) == '\\') {
-        boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
-        boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
-        if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
-          res.insert(k+i, '\\');
-          k++;
-        }
-      }
-    }
-    return res.toString();
   }
 }

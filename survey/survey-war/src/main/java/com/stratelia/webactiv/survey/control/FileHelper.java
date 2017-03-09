@@ -36,6 +36,10 @@ import org.apache.commons.fileupload.FileItem;
  */
 public class FileHelper {
 
+  private FileHelper() {
+
+  }
+
   public static boolean isCorrectFile(FileItem filePart) {
     String fileName = FileUploadUtil.getFileName(filePart);
     boolean correctFile = false;

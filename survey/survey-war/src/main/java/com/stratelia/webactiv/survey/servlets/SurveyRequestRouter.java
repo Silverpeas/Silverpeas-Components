@@ -24,24 +24,24 @@
 
 package com.stratelia.webactiv.survey.servlets;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -65,10 +65,9 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     for (String profile : profiles) {
       if (SilverpeasRole.publisher.isInRole(profile)) {
         flag = profile;
-      } else if (profile.equals("userMultiple")) {
-        if (!flag.equals(SilverpeasRole.publisher.toString())) {
+      } else if ("userMultiple".equals(profile) &&
+          !flag.equals(SilverpeasRole.publisher.toString())) {
           flag = profile;
-        }
       }
       // if admin, return it, we won't find a better profile
       if (SilverpeasRole.admin.isInRole(profile)) {
@@ -102,26 +101,12 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   @Override
   public String getDestination(String function, SurveySessionController surveySC,
       HttpRequest request) {
-    SilverTrace
-        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination", "Survey.MSG_ENTRY_METHOD");
-
     String flag = getFlag(surveySC.getUserRoles());
     String rootDest = "/survey/jsp/";
     if (flag.equals("userMultiple")) {
       surveySC.setParticipationMultipleAllowedForUser(true);
     }
 
-    SilverTrace
-        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "surveyId=" + surveySC.getSessionSurveyId());
-    SilverTrace
-        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "surveyId=" + request.getParameter("SurveyId"));
-
-    surveySC.setPollingStationMode(false);
-    SilverTrace
-        .info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "getComponentRootName() = " + surveySC.getComponentRootName());
     if ("pollingStation".equals(surveySC.getComponentRootName())) {
       surveySC.setPollingStationMode(true);
     }

@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.almanach;
 
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
@@ -40,7 +41,6 @@ import java.util.List;
 
 public class AlmanachContentManager implements ContentInterface {
 
-  private ContentManager contentManager;
   @Inject
   private AlmanachService currentAlmanachService;
 
@@ -169,14 +169,6 @@ public class AlmanachContentManager implements ContentInterface {
   }
 
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace.fatal("almanach", "AlmanachContentManager.getContentManager()",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 }

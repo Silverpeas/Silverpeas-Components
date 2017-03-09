@@ -26,55 +26,32 @@ package org.silverpeas.components.quizz;
 
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The quizz implementation of ContentInterface.
  */
 public class QuizzContentManager implements ContentInterface {
 
-  private ContentManager contentManager = null;
+  @Inject
+  private ContentManager contentManager;
   @Inject
   private QuestionContainerService questionContainerService;
 
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String instanceId,
       String userId) {
-    if (getContentManager() == null) {
-      return new ArrayList<>();
-    }
-
-    return getHeaders(makePKArray(ids, peasId));
-  }
-
-  /**
-   * return a list of publicationPK according to a list of silverContentId
-   * @param idList a list of silverContentId
-   * @param peasId the id of the instance
-   * @return a list of publicationPK
-   */
-  private List<QuestionContainerPK> makePKArray(List<Integer> idList, String peasId) {
-    List<QuestionContainerPK> pks = new ArrayList<>();
-    // for each silverContentId, we get the corresponding publicationId
-    for (Integer contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        QuestionContainerPK qcPK = new QuestionContainerPK(id, "useless", peasId);
-        pks.add(qcPK);
-      } catch (ClassCastException | ContentManagerException ignored) {
-        // ignore unknown item
-      }
-    }
-    return pks;
+    return getHeaders(ContentManagerProvider.getContentManager().getResourcesMatchingContents(ids),
+        instanceId);
   }
 
   /**
@@ -82,9 +59,12 @@ public class QuizzContentManager implements ContentInterface {
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
-  private List<SilverContentInterface> getHeaders(List<QuestionContainerPK> ids) {
+  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
+    List<QuestionContainerPK> pks = ids.stream()
+        .map(id -> new QuestionContainerPK(id, "useles", instanceId))
+        .collect(Collectors.toList());
     ArrayList<QuestionContainerHeader> questionHeaders =
-        new ArrayList<>(getQuestionBm().getQuestionContainerHeaders(ids));
+        new ArrayList<>(getQuestionContainerService().getQuestionContainerHeaders(pks));
     List headers = new ArrayList(questionHeaders.size());
     for (QuestionContainerHeader questionContainerHeader : questionHeaders) {
       questionContainerHeader.setIconUrl("quizzSmall.gif");
@@ -93,18 +73,7 @@ public class QuizzContentManager implements ContentInterface {
     return headers;
   }
 
-  private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-    }
-    return contentManager;
-  }
-
-  private QuestionContainerService getQuestionBm() {
+  private QuestionContainerService getQuestionContainerService() {
     return questionContainerService;
   }
 }

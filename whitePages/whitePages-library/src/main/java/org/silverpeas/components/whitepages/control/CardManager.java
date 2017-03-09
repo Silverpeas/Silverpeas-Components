@@ -26,6 +26,7 @@ package org.silverpeas.components.whitepages.control;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
@@ -362,7 +363,7 @@ public class CardManager {
 
   public boolean isPublicationClassifiedOnPDC(Card card)
       throws ContentManagerException, PdcException {
-    ContentManager aContentManager = new ContentManager();
+    ContentManager aContentManager = ContentManagerProvider.getContentManager();
     int contentId = aContentManager.getSilverContentId(card.getPK().getId(), card.getInstanceId());
     PdcManager pdcManager = new GlobalPdcManager();
 

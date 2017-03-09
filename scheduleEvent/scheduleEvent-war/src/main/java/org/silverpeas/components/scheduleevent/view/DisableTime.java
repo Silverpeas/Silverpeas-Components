@@ -1,54 +1,27 @@
 package org.silverpeas.components.scheduleevent.view;
 
+import org.silverpeas.components.scheduleevent.service.model.beans.Response;
+import org.silverpeas.components.scheduleevent.view.AvailabilityFactoryVO.Availability;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
-import org.silverpeas.components.scheduleevent.view.AvailabilityFactoryVO.Availability;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
-
-public class DisableTime implements TimeVO {
+public class DisableTime extends AbstractTimeVO {
   private final static String COMPONENT_ID_SUFFIX = "disabled";
   private final static String HMTL_CLASS_ATTRIBUTE = "titreCouleur inactif";
   private DateVO parent;
-  private PartOfDay partOfDay;
   private Map<ContributorVO, AvailableVO> availabilities = new HashMap<ContributorVO, AvailableVO>();
 
   public DisableTime(DateVO date) {
     parent = date;
   }
 
-  public void setPartOfDay(PartOfDay part) {
-    partOfDay = part;
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
-    }
-    if (!(object instanceof TimeVO)) {
-      return false;
-    }
-    return getId().equals(((TimeVO) object).getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return getId().hashCode();
-  }
-
   @Override
   public String getId() {
-    return partOfDay.getPrefixId() + COMPONENT_ID_SUFFIX;
-  }
-
-  @Override
-  public String getMultilangLabel() {
-    return partOfDay.getMultilangLabel();
+    return getPartOfDay().getPrefixId() + COMPONENT_ID_SUFFIX;
   }
 
   @Override

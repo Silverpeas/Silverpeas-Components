@@ -23,22 +23,22 @@
  */
 package org.silverpeas.components.infoletter;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
+import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
-import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The infoletter implementation of ContentInterface.
@@ -165,15 +165,7 @@ public class InfoLetterContentManager implements ContentInterface {
   }
 
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace
-            .fatal("infoletter", "InfoLetterContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 
   private InfoLetterService getDataInterface() {
@@ -183,6 +175,5 @@ public class InfoLetterContentManager implements ContentInterface {
     return dataInterface;
   }
 
-  private ContentManager contentManager = null;
   private InfoLetterService dataInterface = null;
 }

@@ -195,7 +195,7 @@ public class GalleryResource extends AbstractGalleryResource {
     if (StringUtil.isDefined(sizeDirective)) {
       sizeDirective = sizeDirective.replaceAll("[^0-9x]*", "");
     }
-    return getMediaThumbnail(Video, videoId, thumbnailId, sizeDirective);
+    return getMediaThumbnail(videoId, thumbnailId, sizeDirective);
   }
 
   /**

@@ -63,16 +63,16 @@ public class AlbumDetail extends NodeDetail {
   public List<Media> getMedia() {
     if (media == null) {
       // Loading lazily the media data
-      final Collection<Media> media = getMediaService().getAllMedia(getNodePK(), mediaVisibility);
+      Collection<Media> allMedia = getMediaService().getAllMedia(getNodePK(), mediaVisibility);
       // Setting the media into the instance.
-      setMedia(media);
+      setMedia(allMedia);
     }
     return media;
   }
 
   public void setMedia(Collection<Media> media) {
     this.media = new ArrayList<>(media);
-    if (nbMedia == 0 && media.size() > 0) {
+    if (nbMedia == 0 && !media.isEmpty()) {
       setNbMedia(nbMedia);
     }
   }

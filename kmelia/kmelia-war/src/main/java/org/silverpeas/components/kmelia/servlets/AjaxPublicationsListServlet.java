@@ -50,7 +50,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -371,6 +370,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             }
           }
         } else {
+          boolean hasModificationAccess = admin.isInRole(profile) || publisher.isInRole(profile) ||
+              pub.isPublicationEditor(currentUserId) ||
+              (!user.isInRole(profile) && kmeliaScc.isCoWritingEnable());
           if (pub.getStatus() != null && pub.isDraft()) {
             // en mode brouillon, si on est en co-rédaction et si on autorise
             // le mode brouillon visible par tous,
@@ -389,21 +391,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubColor = "red";
               pubState = resources.getString("PublicationRefused");
             }
-          } else {
-            if (admin.isInRole(profile) || publisher.isInRole(profile)
-                || pub.isPublicationEditor(currentUserId)
-                || (!user.isInRole(profile) && kmeliaScc.isCoWritingEnable())) {
-              // si on est en co-rédaction, on affiche toutes les publications
-              // à valider (sauf pour les lecteurs)
-              pubColor = "red";
-              if (pub.isRefused()) {
-                pubState = resources.getString("kmelia.PubStateUnvalidate");
-              } else {
-                pubState = resources.getString("kmelia.PubStateToValidate");
-                if (targetValidationEnabled) {
-                  pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
-                      pubOrClone.getTargetValidatorNames());
-                }
+          } else if (hasModificationAccess) {
+            // si on est en co-rédaction, on affiche toutes les publications
+            // à valider (sauf pour les lecteurs)
+            pubColor = "red";
+            if (pub.isRefused()) {
+              pubState = resources.getString("kmelia.PubStateUnvalidate");
+            } else {
+              pubState = resources.getString("kmelia.PubStateToValidate");
+              if (targetValidationEnabled) {
+                pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
+                    pubOrClone.getTargetValidatorNames());
               }
             }
           }

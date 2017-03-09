@@ -912,7 +912,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Get assign data (for the re-affectations)
    */
   public void reAssign(DataRecord data) throws ProcessManagerException {
-    Actor[] oldUsers = null;
+    Actor[] oldUsers;
     List<Actor> oldActors = new ArrayList<>();
     List<Actor> newActors = new ArrayList<>();
     Map<String, String> changes = new HashMap<String, String>();
@@ -921,21 +921,17 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
       String[] activeStates = currentProcessInstance.getActiveStates();
 
-      for (int i = 0; activeStates != null && i < activeStates.length; i++) {
+      for (String activeState : activeStates) {
         // unassign old working users
-        oldUsers = currentProcessInstance.getWorkingUsers(activeStates[i]);
-
-        for (final Actor oldUser : oldUsers) {
-          oldActors.add(oldUser);
-        }
-
+        oldUsers = currentProcessInstance.getWorkingUsers(activeState);
+        oldActors.addAll(Arrays.asList(oldUsers));
         RelatedUser[] relatedUsers =
-            processModel.getState(activeStates[i]).getWorkingUsers().getRelatedUsers();
+            processModel.getState(activeState).getWorkingUsers().getRelatedUsers();
 
         // assign new working users
-        for (int j = 0; oldUsers != null && j < oldUsers.length; j++) {
+        for (int j = 0; j < oldUsers.length; j++) {
           String roleName = oldUsers[j].getUserRoleName();
-          Field field = data.getField(activeStates[i] + "_" + roleName + "_" + j);
+          Field field = data.getField(activeState + "_" + roleName + "_" + j);
           String userId = field.getStringValue();
           User user = Workflow.getUserManager().getUser(userId);
           Actor newActor = Workflow.getProcessInstanceManager().createActor(
@@ -945,16 +941,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           // detect folderItem where old userIds are stored
           for (RelatedUser relatedUser : relatedUsers) {
             Item item = relatedUser.getFolderItem();
-            if (item != null && relatedUser.getRole() != null &&
-                relatedUser.getRole().equals(roleName)) {
-              try {
-                Field folderField = currentProcessInstance.getField(item.getName());
-                if (folderField instanceof UserField) {
-                  changes.put(item.getName(), userId);
-                }
-              } catch (WorkflowException we) {
-                // ignore it.
-              }
+            if (item != null && roleName.equals(relatedUser.getRole())) {
+              addAnyChanges(userId, item, changes);
             }
           }
         }
@@ -965,21 +953,22 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           newActors.toArray(new Actor[newActors.size()]), currentUser);
 
       // update folder
-      if (!changes.isEmpty()) {
-        GenericRecordTemplate rt = new GenericRecordTemplate();
-        for (String fieldName : changes.keySet()) {
-          GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(fieldName, "user");
-          rt.addFieldTemplate(fieldTemplate);
-        }
-        DataRecord folder = rt.getEmptyRecord();
-        for (String fieldName : changes.keySet()) {
-          folder.getField(fieldName).setStringValue(changes.get(fieldName));
-        }
-        currentProcessInstance.updateFolder(folder);
-      }
+      updateFolder(changes);
     } catch (WorkflowException | FormException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.RE_ASSIGN_FAILED", we);
+    }
+  }
+
+  private void addAnyChanges(final String userId, final Item item,
+      final Map<String, String> changes) {
+    try {
+      Field folderField = currentProcessInstance.getField(item.getName());
+      if (folderField instanceof UserField) {
+        changes.put(item.getName(), userId);
+      }
+    } catch (WorkflowException we) {
+      // ignore it.
     }
   }
 
@@ -1998,6 +1987,22 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
+    }
+  }
+
+  private void updateFolder(final Map<String, String> changes)
+      throws FormException, WorkflowException {
+    if (!changes.isEmpty()) {
+      GenericRecordTemplate rt = new GenericRecordTemplate();
+      for (String fieldName : changes.keySet()) {
+        GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(fieldName, "user");
+        rt.addFieldTemplate(fieldTemplate);
+      }
+      DataRecord folder = rt.getEmptyRecord();
+      for (String fieldName : changes.keySet()) {
+        folder.getField(fieldName).setStringValue(changes.get(fieldName));
+      }
+      currentProcessInstance.updateFolder(folder);
     }
   }
 

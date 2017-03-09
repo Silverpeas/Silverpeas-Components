@@ -2356,6 +2356,9 @@ public class DefaultKmeliaService implements KmeliaService {
     if (refPub.getVersion() != null) {
       clone.setVersion(refPub.getVersion());
     }
+    if (refPub.getLanguage() != null) {
+      clone.setLanguage(refPub.getLanguage());
+    }
 
     return clone;
   }
@@ -2380,57 +2383,35 @@ public class DefaultKmeliaService implements KmeliaService {
     // merge du clone sur la publi de référence
     String cloneId = currentPubDetail.getCloneId();
     if (!"-1".equals(cloneId)) {
-      PublicationPK tempPK = new PublicationPK(cloneId, pubPK);
-      CompletePublication tempPubli = publicationService.getCompletePublication(tempPK);
-      PublicationDetail tempPubliDetail = tempPubli.getPublicationDetail();
-      // le clone devient la publi de référence
-      currentPubDetail = getClone(tempPubliDetail);
-
-      currentPubDetail.setPk(pubPK);
-      if (validatorUserId != null) {
-        currentPubDetail.setValidatorId(validatorUserId);
-        currentPubDetail.setValidateDate(validationDate != null ? validationDate : new Date());
-      }
-      currentPubDetail.setStatus(PublicationDetail.VALID);
-      currentPubDetail.setCloneId("-1");
-      currentPubDetail.setCloneStatus(null);
+      currentPubDetail = clonePublication(cloneId, pubPK, validatorUserId, validationDate);
       // merge des fichiers joints
       ForeignPK pkFrom = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
-      ForeignPK pkTo = new ForeignPK(cloneId, tempPK.getInstanceId());
+      ForeignPK pkTo = new ForeignPK(cloneId, pubPK.getInstanceId());
       Map<String, String> attachmentIds = AttachmentServiceProvider.getAttachmentService().
           mergeDocuments(pkFrom, pkTo, DocumentType.attachment);
       // merge du contenu XMLModel
-      String infoId = tempPubli.getPublicationDetail().getInfoId();
+      String infoId = currentPubDetail.getInfoId();
       if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
-        // register xmlForm to publication
-        String xmlFormShortName = infoId;
-
-        // get xmlContent to paste
-        PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
-            getInstance();
-        PublicationTemplate pubTemplate = publicationTemplateManager.
-            getPublicationTemplate(tempPK.getInstanceId() + ":" + xmlFormShortName);
-
-        RecordSet set = pubTemplate.getRecordSet();
-        // DataRecord data = set.getRecord(fromId);
-
+        RecordSet set = getXMLFormFrom(infoId, pubPK);
         if (memInfoId != null && !"0".equals(memInfoId)) {
           // il existait déjà un contenu
           set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
               attachmentIds);
         } else {
           // il n'y avait pas encore de contenu
+          PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
+              getInstance();
           publicationTemplateManager
-              .addDynamicPublicationTemplate(tempPK.getInstanceId() + ":" + xmlFormShortName,
-                  xmlFormShortName + ".xml");
+              .addDynamicPublicationTemplate(pubPK.getInstanceId() + ":" + infoId,
+                  infoId + ".xml");
 
           set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
               attachmentIds);
         }
       }
       // merge du contenu Wysiwyg
-      boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(tempPK.getInstanceId(), cloneId,
-          tempPubli.getPublicationDetail().getLanguage());
+      boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(pubPK.getInstanceId(), cloneId,
+          currentPubDetail.getLanguage());
       if (cloneWysiwyg) {
         try {
           // delete wysiwyg contents of public version
@@ -2440,12 +2421,12 @@ public class DefaultKmeliaService implements KmeliaService {
         }
         // wysiwyg contents of work version become public version ones
         WysiwygController
-            .copy(tempPK.getInstanceId(), cloneId, pubPK.getInstanceId(), pubPK.getId(),
-                tempPubli.getPublicationDetail().getUpdaterId());
+            .copy(pubPK.getInstanceId(), cloneId, pubPK.getInstanceId(), pubPK.getId(),
+                currentPubDetail.getUpdaterId());
       }
 
       // suppression du clone
-      deletePublication(tempPK);
+      deletePublication(new PublicationPK(cloneId, pubPK));
     }
     return currentPubDetail;
   }
@@ -4757,6 +4738,18 @@ public class DefaultKmeliaService implements KmeliaService {
     return isPublicationVisible(detail, profile, userId, coWriting);
   }
 
+  @Override
+  public void userHaveBeenDeleted(String userId) {
+    List<PublicationDetail> publications =
+        publicationService.removeUserFromTargetValidators(userId);
+    SilverLogger.getLogger(this)
+        .info("User ''{0}'' have been removed from {1} publications as target validator", userId,
+            publications.size());
+
+    // Validation process is performed, maybe some must be validated.
+    KmeliaValidation.by(userId).validatorHasNoMoreRight().validate(publications);
+  }
+
   private boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
       String userId, boolean coWriting) {
     if (detail.getStatus() != null) {
@@ -4801,15 +4794,36 @@ public class DefaultKmeliaService implements KmeliaService {
     return dateReminderService;
   }
 
-  @Override
-  public void userHaveBeenDeleted(String userId) {
-    List<PublicationDetail> publications =
-        publicationService.removeUserFromTargetValidators(userId);
-    SilverLogger.getLogger(this)
-        .info("User ''{0}'' have been removed from {1} publications as target validator", userId,
-            publications.size());
+  private PublicationDetail clonePublication(String cloneId, PublicationPK pubPK,
+      String validatorUserId, Date validationDate) {
+    PublicationPK tempPK = new PublicationPK(cloneId, pubPK);
+    CompletePublication publication = publicationService.getCompletePublication(tempPK);
+    PublicationDetail clone = getClone(publication.getPublicationDetail());
+    clone.setPk(pubPK);
+    if (validatorUserId != null) {
+      clone.setValidatorId(validatorUserId);
+      clone.setValidateDate(validationDate != null ? validationDate : new Date());
+    }
+    clone.setStatus(PublicationDetail.VALID);
+    clone.setCloneId("-1");
+    clone.setCloneStatus(null);
+    return clone;
+  }
 
-    // Validation process is performed, maybe some must be validated.
-    KmeliaValidation.by(userId).validatorHasNoMoreRight().validate(publications);
+  private RecordSet getXMLFormFrom(String infoId, PublicationPK pubPK)
+      throws PublicationTemplateException {
+    // register xmlForm to publication
+    String xmlFormShortName = infoId;
+
+    // get xmlContent to paste
+    PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
+        getInstance();
+    PublicationTemplate pubTemplate = publicationTemplateManager.
+        getPublicationTemplate(pubPK.getInstanceId() + ":" + xmlFormShortName);
+
+    RecordSet set = pubTemplate.getRecordSet();
+    // DataRecord data = set.getRecord(fromId);
+
+    return set;
   }
 }

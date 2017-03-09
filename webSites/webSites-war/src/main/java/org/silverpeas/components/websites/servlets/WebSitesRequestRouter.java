@@ -33,11 +33,11 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -196,39 +196,34 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
       descriptionSite.setPositions(positions);
       int result = scc.createWebSiteFromZipFile(descriptionSite, fileItem);
-      switch (result) {
-        case 0:
-          createSite(scc, descriptionSite, listeIcones, listeTopics);
-          Collection<SiteDetail> listeSites = scc.getAllWebSite();
-          request.setAttribute("ListSites", listeSites);
-          request.setAttribute("BookmarkMode", scc.isBookmarkMode());
-          destination = "/webSites/jsp/manage.jsp";
-          break;
-        case -1:
-          // le nom de la page principale n'est pas bonne, on supprime ce qu'on a dezipe
-          scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
-          request.setAttribute("Site", descriptionSite);
-          request.setAttribute("AllIcons", scc.getAllIcons());
-          request.setAttribute(ICON_LIST_PARAM, listeIcones);
-          request.setAttribute("UploadOk", Boolean.TRUE);
-          request.setAttribute("SearchOk", Boolean.FALSE);
-          destination = "/webSites/jsp/descUpload.jsp";
-          break;
-        case -2:
-          request.setAttribute("Site", descriptionSite);
-          request.setAttribute("AllIcons", scc.getAllIcons());
-          request.setAttribute(ICON_LIST_PARAM, listeIcones);
-          request.setAttribute("UploadOk", Boolean.FALSE);
-          destination = "/webSites/jsp/descUpload.jsp";
-          break;
-        case -3: // the zip content isn't correct
-          scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
-          request.setAttribute("Site", descriptionSite);
-          request.setAttribute("AllIcons", scc.getAllIcons());
-          request.setAttribute(ICON_LIST_PARAM, listeIcones);
-          request.setAttribute("UploadOk", Boolean.FALSE);
-          destination = "/webSites/jsp/descUpload.jsp";
-          break;
+      if (result == 0) {
+        createSite(scc, descriptionSite, listeIcones, listeTopics);
+        Collection<SiteDetail> listeSites = scc.getAllWebSite();
+        request.setAttribute("ListSites", listeSites);
+        request.setAttribute("BookmarkMode", scc.isBookmarkMode());
+        destination = "/webSites/jsp/manage.jsp";
+      } else if (result == -1) {
+        // le nom de la page principale n'est pas bonne, on supprime ce qu'on a dezipe
+        scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
+        request.setAttribute("Site", descriptionSite);
+        request.setAttribute("AllIcons", scc.getAllIcons());
+        request.setAttribute(ICON_LIST_PARAM, listeIcones);
+        request.setAttribute("UploadOk", Boolean.TRUE);
+        request.setAttribute("SearchOk", Boolean.FALSE);
+        destination = "/webSites/jsp/descUpload.jsp";
+      } else if (result == -2) {
+        request.setAttribute("Site", descriptionSite);
+        request.setAttribute("AllIcons", scc.getAllIcons());
+        request.setAttribute(ICON_LIST_PARAM, listeIcones);
+        request.setAttribute("UploadOk", Boolean.FALSE);
+        destination = "/webSites/jsp/descUpload.jsp";
+      } else if (result == -3) { // the zip content isn't correct
+        scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
+        request.setAttribute("Site", descriptionSite);
+        request.setAttribute("AllIcons", scc.getAllIcons());
+        request.setAttribute(ICON_LIST_PARAM, listeIcones);
+        request.setAttribute("UploadOk", Boolean.FALSE);
+        destination = "/webSites/jsp/descUpload.jsp";
       }
     }
     return destination;

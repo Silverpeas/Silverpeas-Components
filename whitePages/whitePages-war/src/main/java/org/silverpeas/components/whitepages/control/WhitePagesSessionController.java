@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -740,7 +741,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     if (currentCard != null) {
       try {
-        ContentManager contentManager = new ContentManager();
+        ContentManager contentManager = ContentManagerProvider.getContentManager();
         contentId = "" + contentManager
             .getSilverContentId(currentCard.getPK().getId(), currentCard.getInstanceId());
       } catch (ContentManagerException ignored) {

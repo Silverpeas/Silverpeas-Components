@@ -31,13 +31,13 @@ import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -148,7 +148,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
     // en fonction de la liste "ids" des media (format MediaPK)
     if (ids != null) {
       for (MediaPK mediaPK : ids) {
-        Media media = getGalleryBm().getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
+        Media media = getGalleryService().getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
         media.setIconUrl("gallerySmall.gif");
         headers.add(media);
       }
@@ -157,29 +157,11 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   }
 
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 
-  private GalleryService getGalleryBm() {
-    if (currentGalleryService == null) {
-      try {
-        currentGalleryService = ServiceProvider.getService(GalleryService.class);
-      } catch (Exception e) {
-        throw new GalleryRuntimeException("GalleryContentManager.getGalleryBm()",
-            SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_FABRIQUER_GALLERYBM_HOME",
-            e);
-      }
-    }
-    return currentGalleryService;
+  private GalleryService getGalleryService() {
+    return ServiceProvider.getService(GalleryService.class);
   }
 
-  private ContentManager contentManager = null;
-  private GalleryService currentGalleryService = null;
 }

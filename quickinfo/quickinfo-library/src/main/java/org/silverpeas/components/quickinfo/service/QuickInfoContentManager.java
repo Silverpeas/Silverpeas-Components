@@ -24,25 +24,24 @@
 
 package org.silverpeas.components.quickinfo.service;
 
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuickInfoContentManager implements ContentInterface {
 
-  private ContentManager contentManager;
   private PublicationService publicationService;
   public final static String CONTENT_ICON = "quickinfoSmall.gif";
 
@@ -56,19 +55,7 @@ public class QuickInfoContentManager implements ContentInterface {
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String componentId,
       String sUserId) {
-    if (getContentManager() == null) {
-      return new ArrayList<>();
-    }
-    return getHeaders(makePKArray(ids, componentId));
-  }
-
-  public int getSilverObjectId(String pubId, String peasId) {
-
-    try {
-      return getContentManager().getSilverContentId(pubId, peasId);
-    } catch (Exception e) {
-      return 0;
-    }
+    return getHeaders(getContentManager().getResourcesMatchingContents(ids), componentId);
   }
 
   /**
@@ -125,34 +112,17 @@ public class QuickInfoContentManager implements ContentInterface {
   }
 
   /**
-   * return a list of publicationPK according to a list of silverContentId
-   * @param idList a list of silverContentId
-   * @param componentId the id of the instance
-   * @return a list of publicationPK
-   */
-  private List<PublicationPK> makePKArray(List<Integer> idList, String componentId) {
-    List<PublicationPK> pks = new ArrayList<>();
-    // for each silverContentId, we get the corresponding publicationId
-    for (Integer contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        PublicationPK pubPK = new PublicationPK(id, "useless", componentId);
-        pks.add(pubPK);
-      } catch (ClassCastException | ContentManagerException ignored) {
-        // ignore unknown item
-      }
-    }
-    return pks;
-  }
-
-  /**
    * return a list of silverContent according to a list of publicationPK
-   * @param pubPKs a list of publicationPK
+   * @param ids a list of identifiers of publication.
+   * @param instanceId the unique identifier of the component instance.
    * @return a list of publicationDetail
    */
-  private List getHeaders(List<PublicationPK> pubPKs) {
+  private List getHeaders(List<String> ids, String instanceId) {
+    List<PublicationPK> pks = ids.stream()
+        .map(id -> new PublicationPK(id, "useles", instanceId))
+        .collect(Collectors.toList());
     List<PublicationDetail> publicationDetails =
-        new ArrayList<>(getPublicationService().getPublications(pubPKs));
+        new ArrayList<>(getPublicationService().getPublications(pks));
     List<PublicationDetail> headers = new ArrayList<>(publicationDetails.size());
     for (PublicationDetail pubDetail : publicationDetails) {
       pubDetail.setIconUrl(CONTENT_ICON);
@@ -163,20 +133,12 @@ public class QuickInfoContentManager implements ContentInterface {
 
   private PublicationService getPublicationService() {
     if (publicationService == null) {
-      publicationService = ServiceProvider.getService(PublicationService.class);
+      publicationService = PublicationService.get();
     }
     return publicationService;
   }
 
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace.fatal("quickinfo", "QuickInfoContentManager.getContentManager()",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 }

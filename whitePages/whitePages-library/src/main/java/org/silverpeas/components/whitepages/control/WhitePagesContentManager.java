@@ -25,15 +25,14 @@ package org.silverpeas.components.whitepages.control;
 
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -50,20 +49,7 @@ public class WhitePagesContentManager implements ContentInterface {
    */
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
       String userId) {
-    return getHeaders(makeIdArray(ids), peasId);
-  }
-
-  private List<String> makeIdArray(List<Integer> idList) {
-    List<String> ids = new ArrayList<>();
-    for (Integer contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        ids.add(id);
-      } catch (ClassCastException | ContentManagerException ignored) {
-        // ignore unknown item
-      }
-    }
-    return ids;
+    return getHeaders(getContentManager().getResourcesMatchingContents(ids), peasId);
   }
 
   private List getHeaders(List<String> ids, String instanceId) {
@@ -80,16 +66,6 @@ public class WhitePagesContentManager implements ContentInterface {
     }
     Collections.sort(headers);
     return headers;
-  }
-
-  public int getSilverObjectId(String id, String peasId) throws WhitePagesException {
-
-    try {
-      return getContentManager().getSilverContentId(id, peasId);
-    } catch (Exception e) {
-      throw new WhitePagesException("WhitePagesContentManager.getSilverObjectId()",
-          SilverpeasException.ERROR, "whitePages.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
-    }
   }
 
   /**
@@ -137,16 +113,7 @@ public class WhitePagesContentManager implements ContentInterface {
   }
 
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace
-            .fatal("whitePages", "WhitePagesContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 
-  private ContentManager contentManager = null;
 }

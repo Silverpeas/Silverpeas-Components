@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.websites;
 
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.components.websites.service.WebSiteService;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
 import org.silverpeas.components.websites.siteManage.model.WebSitesRuntimeException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import java.util.List;
 public class WebSitesContentManager implements java.io.Serializable, ContentInterface {
 
   private static final long serialVersionUID = -8992766242253326927L;
-  private ContentManager contentManager = null;
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -56,7 +55,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    */
   @Override
   public List getSilverContentById(List<Integer> ids, String sComponentId, String userId) {
-    return getHeaders(getSiteIds(ids), sComponentId);
+    return getHeaders(getContentManager().getResourcesMatchingContents(ids), sComponentId);
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
@@ -175,14 +174,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
   }
 
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error("can not get the content manager", e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 
   private WebSiteService getWebSiteService() {

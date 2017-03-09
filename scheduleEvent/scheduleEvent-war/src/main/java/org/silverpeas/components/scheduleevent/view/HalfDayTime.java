@@ -9,12 +9,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class HalfDayTime implements TimeVO {
+public class HalfDayTime extends AbstractTimeVO {
   private final static String HMTL_CLASS_ATTRIBUTE = "titreCouleur";
 
   private DateVO parent;
   private DateOption date;
-  private PartOfDay partOfDay;
   private Map<ContributorVO, AvailableVO> availabilities = new HashMap<ContributorVO, AvailableVO>();
 
   public HalfDayTime(DateVO parent, DateOption date) {
@@ -22,34 +21,9 @@ public class HalfDayTime implements TimeVO {
     this.date = date;
   }
 
-  public void setPartOfDay(PartOfDay part) {
-    partOfDay = part;
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
-    }
-    if (!(object instanceof TimeVO)) {
-      return false;
-    }
-    return getId().equals(((TimeVO) object).getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return getId().hashCode();
-  }
-
   @Override
   public String getId() {
     return date.getId();
-  }
-
-  @Override
-  public String getMultilangLabel() {
-    return partOfDay.getMultilangLabel();
   }
 
   @Override

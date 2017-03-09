@@ -117,30 +117,26 @@ class KmeliaValidation {
       return;
     }
 
-    final PublicationPK publicationPkToValidate;
+    PublicationPK publicationPkToValidate = null;
     if (publication.isClone()) {
-      publicationPkToValidate = publication.getClonePK();
       PublicationDetail clone = getKmeliaService().getPublicationDetail(publication.getPK());
-      if (clone == null || (!force && !clone.isValidationRequired())) {
-        // The clone is not into a state of requested validation, so nothing is validated.
-        return;
+      if (clone != null && (force || clone.isValidationRequired())) {
+        publicationPkToValidate = publication.getClonePK();
       }
     } else {
       publicationPkToValidate = publication.getPK();
     }
 
-    if (pubPkOfPerformedValidations.contains(publicationPkToValidate)) {
-      // Publication has already been validated into the same process. So nothing is done.
-      return;
+    if (publicationPkToValidate != null &&
+        !pubPkOfPerformedValidations.contains(publicationPkToValidate)) {
+      // The publication is not a clone and its state indicates a validation request.
+      getKmeliaService()
+          .validatePublication(publicationPkToValidate, validatorId, force, validatorHasNoMoreRight);
+
+      // Register into an internal cache the identifier of the publication for which the validation
+      // has been performed.
+      pubPkOfPerformedValidations.add(publicationPkToValidate);
     }
-
-    // The publication is not a clone and its state indicates a validation request.
-    getKmeliaService()
-        .validatePublication(publicationPkToValidate, validatorId, force, validatorHasNoMoreRight);
-
-    // Register into an internal cache the identifier of the publication for which the validation
-    // has been performed.
-    pubPkOfPerformedValidations.add(publicationPkToValidate);
   }
 
   private KmeliaService getKmeliaService() {

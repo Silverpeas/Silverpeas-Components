@@ -150,9 +150,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
     if (!isConnectionOpened() && (currentConnectionInfo != null)) {
       try {
-        Connection connection = currentConnectionInfo.openConnection();
-        dbMetaData = connection.getMetaData();
-        Statement stmt = connection.createStatement();
+        Connection conn = currentConnectionInfo.openConnection();
+        dbMetaData = conn.getMetaData();
+        Statement stmt = conn.createStatement();
         if (!StringUtil.isDefined(request)) {
           rs = null;
         } else {
@@ -476,18 +476,18 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
       } else if (!temp.trim().toLowerCase().startsWith("select")) {
         return getString("erreurModifTable");
       } else {
-        Connection connection = null;
+        Connection conn = null;
         try {
-          connection = currentConnectionInfo.openConnection();
-          if (connection == null) {
+          conn = currentConnectionInfo.openConnection();
+          if (conn == null) {
             return getString("erreurParametresConnectionIncorrects");
           } else {
-            try (Statement stmt = connection.createStatement()) {
+            try (Statement stmt = conn.createStatement()) {
               rs = stmt.executeQuery(request);
             }
           }
         } finally {
-          DBUtil.close(connection);
+          DBUtil.close(conn);
         }
       }
     } catch (ConnecteurJDBCException | SQLException e) {
@@ -531,9 +531,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   private void checkConnection(DataSourceConnectionInfo connectionInfo)
       throws ConnecteurJDBCException {
-    Connection connection = null;
+    Connection conn = null;
     try {
-      connection = connectionInfo.openConnection();
+      conn = connectionInfo.openConnection();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Error while checking connection for: {" +
           "data source: " + currentConnectionInfo.getDataSourceName() + ", login: " +
@@ -541,7 +541,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           currentConnectionInfo.getPassword() + "}", e);
       throw e;
     } finally {
-      DBUtil.close(connection);
+      DBUtil.close(conn);
     }
   }
 }

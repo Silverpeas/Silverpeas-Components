@@ -25,72 +25,50 @@ package com.stratelia.webactiv.survey;
 
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The survey implementation of ContentInterface
  */
 public class SurveyContentManager implements ContentInterface {
 
-  private ContentManager contentManager = null;
+  @Inject
+  private ContentManager contentManager;
   @Inject
   private QuestionContainerService questionContainerService;
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
+   * @param instanceId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List<Integer> ids, String peasId, String userId) {
-    if (getContentManager() == null) {
-      return new ArrayList<SilverContentInterface>();
-    }
-
-    return getHeaders(makePKArray(ids, peasId));
-  }
-
-  /**
-   * return a list of silverContentId according to a list of publicationPK
-   * @param idList a list of silverContentId
-   * @param instanceId the id of the instance
-   * @return a list of publicationPK
-   */
-  private List<QuestionContainerPK> makePKArray(List<Integer> idList, String instanceId) {
-    List<QuestionContainerPK> pks = new ArrayList<>();
-    // for each silverContentId, we get the corresponding questionContainerId
-    for (Integer contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        QuestionContainerPK pk = new QuestionContainerPK(id, "useless", instanceId);
-        pks.add(pk);
-      } catch (ClassCastException | ContentManagerException ignored) {
-        // ignore unknown item
-      }
-    }
-    return pks;
+  public List getSilverContentById(List<Integer> ids, String instanceId, String userId) {
+    return getHeaders(contentManager.getResourcesMatchingContents(ids), instanceId);
   }
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * @param pks a list of publicationPK
-   * @return a list of publicationDetail
+   * @param instanceId the id of the instance
+   * @param ids a list of question container identifiers.
+   * @return a list of {@link QuestionContainerHeader} instance.
    */
-  private List<QuestionContainerHeader> getHeaders(List<QuestionContainerPK> pks) {
+  private List<QuestionContainerHeader> getHeaders(List<String> ids, String instanceId) {
+    List<QuestionContainerPK> pks = ids.stream()
+        .map(id -> new QuestionContainerPK(id, "useles", instanceId))
+        .collect(Collectors.toList());
     Collection<QuestionContainerHeader> questionContainerHeaders =
-        getQuestionContainerBm().getQuestionContainerHeaders(pks);
+        getQuestionContainerService().getQuestionContainerHeaders(pks);
     List<QuestionContainerHeader> headers = new ArrayList<>(questionContainerHeaders.size());
     for (QuestionContainerHeader qC : questionContainerHeaders) {
       qC.setIconUrl("surveySmall.gif");
@@ -102,23 +80,7 @@ public class SurveyContentManager implements ContentInterface {
     return headers;
   }
 
-  private ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace.fatal("survey", "SurveyContentManager.getContentManager()",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
-    }
-    return contentManager;
-  }
-
-  private QuestionContainerService getQuestionContainerBm() {
-    if (questionContainerService == null) {
-      SilverTrace.fatal("survey", "SurveyContentManager.getQuestionContainerBm()",
-          "cannot inject question container BM");
-    }
+  private QuestionContainerService getQuestionContainerService() {
     return questionContainerService;
   }
 }

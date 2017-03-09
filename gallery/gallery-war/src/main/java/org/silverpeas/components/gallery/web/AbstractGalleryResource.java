@@ -52,13 +52,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Collection;
@@ -233,77 +234,33 @@ abstract class AbstractGalleryResource extends RESTWebService {
         mediaMimeType = ((InternalMedia) media).getFileMimeType().getMimeType();
       }
 
-      int length = (int) Files.size(mediaPath);
-      int start = 0;
-      int end = length - 1;
-
       String range = defaultStringIfNotDefined(getHttpServletRequest().getHeader("Range"), "");
       Matcher matcher = RANGE_PATTERN.matcher(range);
       boolean isPartialRequest = matcher.matches();
 
+      int contentLength = (int) Files.size(mediaPath);
+      final Response.ResponseBuilder responseBuilder;
       if (isPartialRequest) {
+        // Handling here a partial response (pseudo streaming)
         String startGroup = matcher.group("start");
-        start = startGroup.isEmpty() ? start : Integer.valueOf(startGroup);
+        int start = startGroup.isEmpty() ? 0 : Integer.valueOf(startGroup);
         start = start < 0 ? 0 : start;
 
         String endGroup = matcher.group("end");
-        end = endGroup.isEmpty() ? end : Integer.valueOf(endGroup);
-        end = end > length - 1 ? length - 1 : end;
-      }
+        int end = endGroup.isEmpty() ? contentLength - 1 : Integer.valueOf(endGroup);
+        end = end > contentLength - 1 ? contentLength - 1 : end;
 
-      final int finalStart = start;
-      final int finalContentLength = end - finalStart + 1;
-
-      final Response.ResponseBuilder responseBuilder;
-      if (isPartialRequest) {
-
-        // Handling here a partial response (pseudo streaming)
-
-        final HttpServletResponse response = getHttpServletResponse();
-        response.setBufferSize(BUFFER_LENGTH);
-
+        final int finalStart = start;
+        final int finalContentLength = contentLength = end - finalStart + 1;
         responseBuilder =
-            Response.status(Status.PARTIAL_CONTENT).entity((StreamingOutput) output -> {
-
-              int bytesRead;
-              int bytesLeft = finalContentLength;
-              ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
-
-              try (SeekableByteChannel input = Files.newByteChannel(mediaPath, READ)) {
-                input.position(finalStart);
-                while ((bytesRead = input.read(buffer)) != -1 && bytesLeft > 0) {
-                  buffer.clear();
-                  output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
-                  bytesLeft -= bytesRead;
-                }
-              } catch (IOException ioe) {
-                SilverLogger.getLogger(AbstractGalleryResource.class).warn(
-                    "client stopping the streaming HTTP Request of media content represented by " +
-                        "''{0}'' identifier (original message ''{1}'')", media.getId(),
-                    ioe.getMessage());
-              }
-            }).header("Accept-Ranges", "bytes")
-              .header("ETag", media.getId())
-              .lastModified(Date.from(Files.getLastModifiedTime(mediaPath).toInstant()))
-              .expires(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + EXPIRE_TIME)))
-              .header("Content-Range", String.format("bytes %s-%s/%s", start, end, length));
+            streamFileContent(media.getId(), mediaPath, finalContentLength, start, end);
 
       } else {
-
         // Handling here a full response
-
-        responseBuilder = Response.ok((StreamingOutput) output -> {
-          try (final InputStream mediaStream = FileUtils.openInputStream(file)) {
-            IOUtils.copy(mediaStream, output);
-          } catch (IOException e) {
-            throw new WebApplicationException(Status.NOT_FOUND);
-          }
-        });
+        responseBuilder = loadFileContent(file);
       }
 
-      return responseBuilder
-          .type(mediaMimeType)
-          .header("Content-Length", finalContentLength)
+      return responseBuilder.type(mediaMimeType).header("Content-Length", contentLength)
           .header("Content-Disposition", String.format("inline;filename=\"%s\"", file.getName()))
           .build();
     } catch (final WebApplicationException ex) {
@@ -366,13 +323,12 @@ abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting video media thumbnail.
-   * @param expectedMediaType the expected media type
    * @param mediaId the media identifier
    * @param thumbnailId the thumbnail identifier
    * @param sizeDirective the size directive with pattern (optional)
    * @return the response.
    */
-  Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
+  Response getMediaThumbnail(final String mediaId,
       final String thumbnailId, final String sizeDirective) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -391,22 +347,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
 
-      return Response.ok(new StreamingOutput() {
-        @Override
-        public void write(final OutputStream output) throws IOException, WebApplicationException {
-          final InputStream mediaStream;
-          try {
-            mediaStream = FileUtils.openInputStream(thumbFile);
-          } catch (IOException e) {
-            throw new WebApplicationException(Status.NOT_FOUND);
-          }
-          try {
-            IOUtils.copy(mediaStream, output);
-          } finally {
-            IOUtils.closeQuietly(mediaStream);
-          }
-        }
-      }).header("Content-Type", thumbFile.getMimeType())
+      return loadFileContent(thumbFile)
+          .header("Content-Type", thumbFile.getMimeType())
           .header("Content-Length", thumbFile.length())
           .header("Content-Disposition", "inline; filename=\"" + thumbFile.getName() + "\"")
           .build();
@@ -424,8 +366,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   private boolean isUserPrivileged() {
     Collection<SilverpeasRole> userRoles = getUserRoles();
     return EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
-        SilverpeasRole.privilegedUser).stream().filter(role -> userRoles.contains(role)).findFirst()
-        .isPresent();
+        SilverpeasRole.privilegedUser).stream().anyMatch(userRoles::contains);
   }
 
   /**
@@ -470,20 +411,13 @@ abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Verifying that the authenticated user is authorized to view the given media.
-   * @param media
+   * @param media a media for which the access has to be verified.
    * @throws javax.ws.rs.WebApplicationException if user is not authorized to view the media
    */
   void verifyUserMediaAccess(Media media) {
     if (!hasUserMediaAccess(media)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
-  }
-
-  /**
-   * @return if the authenticated user is authorized to view all photos.
-   */
-  protected boolean isViewAllPhotoAuthorized() {
-    return getUserRoles().contains(SilverpeasRole.admin);
   }
 
   /**
@@ -494,6 +428,50 @@ abstract class AbstractGalleryResource extends RESTWebService {
     if (!album.getMedia().contains(media)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
+  }
+
+  private Response.ResponseBuilder streamFileContent(String mediaId, Path mediaPath,
+      int finalContentLength, int start, int end) throws IOException {
+    final HttpServletResponse response = getHttpServletResponse();
+    response.setBufferSize(BUFFER_LENGTH);
+
+    int length = (int) Files.size(mediaPath);
+
+    return Response.status(Status.PARTIAL_CONTENT)
+        .entity((StreamingOutput) output -> {
+          try (SeekableByteChannel input = Files.newByteChannel(mediaPath, READ)) {
+            input.position(start);
+            int bytesRead;
+            int bytesLeft = finalContentLength;
+            ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
+            while ((bytesRead = input.read(buffer)) != -1 && bytesLeft > 0) {
+              buffer.clear();
+              output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
+              bytesLeft -= bytesRead;
+            }
+          } catch (IOException ioe) {
+            SilverLogger.getLogger(AbstractGalleryResource.class)
+                .error(
+                    "client stopping the streaming HTTP Request of media content represented by " +
+                        "''{0}'' identifier (original message ''{1}'')", new Object[]{mediaId},
+                    ioe);
+          }
+        })
+        .header("Accept-Ranges", "bytes")
+        .header("ETag", mediaId)
+        .lastModified(Date.from(Files.getLastModifiedTime(mediaPath).toInstant()))
+        .expires(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + EXPIRE_TIME)))
+        .header("Content-Range", String.format("bytes %s-%s/%s", start, end, length));
+  }
+
+  private Response.ResponseBuilder loadFileContent(final File file) {
+    return Response.ok((StreamingOutput) output -> {
+      try (final InputStream mediaStream = FileUtils.openInputStream(file)) {
+        IOUtils.copy(mediaStream, output);
+      } catch (IOException e) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+    });
   }
 
   /**

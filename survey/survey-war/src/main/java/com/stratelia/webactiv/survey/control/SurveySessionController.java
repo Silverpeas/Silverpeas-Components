@@ -23,78 +23,70 @@
  */
 package com.stratelia.webactiv.survey.control;
 
+import com.stratelia.webactiv.survey.SurveyException;
+import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.questioncontainer.answer.model.Answer;
+import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerSelection;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.questioncontainer.question.model.Question;
+import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
+import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
+import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.answer.model.Answer;
-import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.questioncontainer.question.model.Question;
-import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerSelection;
-import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
-import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
-import com.stratelia.webactiv.survey.SurveyException;
-import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
-import org.apache.commons.fileupload.FileItem;
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
+import java.util.*;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -194,7 +186,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public boolean isAnonymousModeEnabled() {
     String value = getComponentParameterValue("useAnonymousMode");
-    return value != null && "yes".equals(value.toLowerCase());
+    return value != null && "yes".equalsIgnoreCase(value);
   }
 
   /**
@@ -220,11 +212,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
     boolean userIsAnonymous = false;
 
     UserDetail user = getUserDetail();
-    if (user.isAnonymous()) {
-      if (getComponentId() != null &&
-          getOrganisationController().isComponentAvailable(getComponentId(), user.getId())) {
-        userIsAnonymous = true;
-      }
+    if (user.isAnonymous() && (getComponentId() != null &&
+        getOrganisationController().isComponentAvailable(getComponentId(), user.getId()))) {
+      userIsAnonymous = true;
     }
     return userIsAnonymous;
   }
@@ -252,7 +242,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     if (getViewType() == INWAIT_SURVEYS_VIEW) {
       return getInWaitSurveys();
     }
-    return null;
+    return Collections.EMPTY_LIST;
   }
 
   public Collection<QuestionContainerHeader> getOpenedSurveys() throws SurveyException {
@@ -350,7 +340,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
       throws SurveyException {
 
     QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
-    //encodeForHtml(surveyDetail.getHeader());
     try {
       qcPK = questionContainerService.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
@@ -791,13 +780,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public void paste() throws Exception {
     Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
     for (ClipboardSelection clipObject : clipObjects) {
-      if (clipObject != null) {
-        if (clipObject
-            .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-          QuestionContainerDetail survey = (QuestionContainerDetail) clipObject
-              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
-          pasteSurvey(survey);
-        }
+      if (clipObject != null && clipObject.isDataFlavorSupported(
+          QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+        QuestionContainerDetail survey = (QuestionContainerDetail) clipObject.getTransferData(
+            QuestionContainerSelection.QuestionContainerDetailFlavor);
+        pasteSurvey(survey);
       }
     }
     clipboardPasteDone();
@@ -808,7 +795,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @param survey the QuestionContanerDetail to paste
    * @throws Exception
    */
-  private void pasteSurvey(QuestionContainerDetail survey) throws Exception {
+  private void pasteSurvey(QuestionContainerDetail survey)
+      throws IOException, SurveyException, PdcException {
     String componentId;
     QuestionContainerPK surveyPk = survey.getHeader().getPK();
 
@@ -972,143 +960,40 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return the view to display
    */
   public String manageQuestionBusiness(String function, HttpServletRequest request) {
-    String view;
-
     String surveyImageDirectory = FileServerUtils
         .getUrl(this.getComponentId(), "REPLACE_FILE_NAME", "REPLACE_FILE_NAME", "image/gif",
             getSettings().getString("imagesSubDirectory"));
+    // Retrieve all the parameter from request
+    Parameters parameters = fetchAllParameters(request);
+
+    if ("SendUpdateQuestion".equals(parameters.getAction()) ||
+        "SendNewQuestion".equals(parameters.getAction())) {
+      processQuestionModification(parameters);
+    } else if ("End".equals(parameters.getAction())) {
+      processEndSurvey();
+    }
 
     request.setAttribute("ImageDirectory", surveyImageDirectory);
-    // Parameter variable declaration
-    String action = "";
-    String question = "";
-    String nbAnswers = "";
-    String answerInput;
-    String suggestion = "";
-    String style = "";
-    String questionId = null;
-    File dir;
-    String logicalName;
-    String type;
-    String physicalName;
-    boolean file = false;
-    long size;
-    int attachmentSuffix = 0;
-    List<Answer> answers = new ArrayList<>();
-    Answer answer = null;
-
-    // Retrieve all the parameter from request
-    try {
-      List<FileItem> items = HttpRequest.decorate(request).getFileItems();
-      for (FileItem item : items) {
-        if (item.isFormField()) {
-          String mpName = item.getFieldName();
-          if ("Action".equals(mpName)) {
-            action = item.getString();
-          } else if ("question".equals(mpName)) {
-            question = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-          } else if ("nbAnswers".equals(mpName)) {
-            nbAnswers = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-          } else if ("SuggestionAllowed".equals(mpName)) {
-            suggestion = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-          } else if ("questionStyle".equals(mpName)) {
-            style = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-          } else if (mpName.startsWith("answer")) {
-            answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-            answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
-            answers.add(answer);
-          } else if ("suggestionLabel".equals(mpName)) {
-            answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-            answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
-            answers.add(answer);
-          } else if (mpName.startsWith("valueImageGallery")) {
-            if (StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING))) {
-              // traiter les images venant de la gallery si pas d'image externe
-              if (!file) {
-                answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-              }
-            }
-          } else if ("QuestionId".equals(mpName)) {
-            questionId = item.getString(FileUploadUtil.DEFAULT_ENCODING);
-          }
-          // String value = paramPart.getStringValue();
-        } else {
-          // it's a file part
-          if (FileHelper.isCorrectFile(item)) {
-            // the part actually contained a file
-            logicalName = item.getName();
-            type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
-            physicalName = Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
-            attachmentSuffix = attachmentSuffix + 1;
-            dir = new File(FileRepositoryManager.getAbsolutePath(this.getComponentId()) +
-                getSettings().getString("imagesSubDirectory") + File.separator + physicalName);
-            FileUploadUtil.saveToFile(dir, item);
-            size = item.getSize();
-            if (size > 0) {
-              answer.setImage(physicalName);
-              file = true;
-            }
-          } else {
-            // the field did not contain a file
-            file = false;
-          }
-        }
+    if (("SendQuestionForm".equals(parameters.getAction())) ||
+        "UpdateQuestion".equals(parameters.getAction())) {
+      if ("SendQuestionForm".equals(parameters.getAction())) {
+        request.setAttribute("NbAnswers", parameters.getAnswerCount());
+      } else if ("UpdateQuestion".equals(parameters.getAction())) {
+        request.setAttribute("QuestionId", parameters.getQuestionId());
       }
-    } catch (UtilException | IOException e) {
-      SilverTrace
-          .error("survey", "SurveySessionController.manageQuestionBusiness", "root.EX_IGNORED", e);
     }
 
-    if ("SendUpdateQuestion".equals(action) || "SendNewQuestion".equals(action)) {
-      // Remove answer for open question
-      if ("open".equals(style)) {
-        answers.clear();
-        answers.add(new Answer(null, null, "", 0, 0, false, "", 0, false, null));
-      }
-      // Remove the suggestion answer from the list
-      if ("0".equals(suggestion)) {
-        for (Answer curAnswer : answers) {
-          if (curAnswer.isOpened()) {
-            answers.remove(curAnswer);
-            break;
-          }
-        }
-      }
-      if ("SendNewQuestion".equals(action)) {
-        Question questionObject = new Question(null, null, question, "", "", null, style, 0);
-        questionObject.setAnswers(answers);
-        List<Question> questionsV = this.getSessionQuestions();
-        questionsV.add(questionObject);
-        this.setSessionQuestions(questionsV);
-      } else if (action.equals("SendUpdateQuestion")) {
-        Question questionObject = new Question(null, null, question, "", "", null, style, 0);
-        questionObject.setAnswers(answers);
-        List<Question> questionsV = this.getSessionQuestions();
-        questionsV.set(Integer.parseInt(questionId), questionObject);
-        this.setSessionQuestions(questionsV);
-      }
-    } else if (action.equals("End")) {
-      QuestionContainerDetail surveyDetail = this.getSessionSurveyUnderConstruction();
-      // Vector 2 Collection
-      List<Question> questionsV = this.getSessionQuestions();
-      surveyDetail.setQuestions(questionsV);
-    }
-    if ((action.equals("SendQuestionForm")) || "UpdateQuestion".equals(action)) {
-      if (action.equals("SendQuestionForm")) {
-        request.setAttribute("NbAnswers", nbAnswers);
-      } else if ("UpdateQuestion".equals(action)) {
-        request.setAttribute("QuestionId", questionId);
-      }
-    }
     // Prepare destination request attribute
-    if ("SendNewQuestion".equals(action) || "SendUpdateQuestion".equals(action)) {
+    String view;
+    if ("SendNewQuestion".equals(parameters.getAction()) ||
+        "SendUpdateQuestion".equals(parameters.getAction())) {
       request.setAttribute("Action", "UpdateQuestions");
       request.setAttribute("SurveyName", this.getSessionSurveyName());
       view = "questionsUpdate.jsp";
     } else {
-      request.setAttribute("Suggestion", suggestion);
-      request.setAttribute("Style", style);
-      request.setAttribute("Action", action);
+      request.setAttribute("Suggestion", parameters.getSuggestion());
+      request.setAttribute("Style", parameters.getStyle());
+      request.setAttribute("Action", parameters.getAction());
       view = function;
     }
     return view;
@@ -1267,21 +1152,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
         .listDocumentsByForeignKey(surveyForeignKey, I18NHelper.defaultLanguage);
   }
 
-  private void encodeForHtml(QuestionContainerHeader header) {
-    String text = header.getComment();
-    if (StringUtil.isDefined(text)) {
-      header.setComment(Encode.forHtml(text));
-    }
-    text = header.getDescription();
-    if (StringUtil.isDefined(text)) {
-      header.setDescription(Encode.forHtml(text));
-    }
-    text = header.getTitle();
-    if (StringUtil.isDefined(text)) {
-      header.setTitle(Encode.forHtml(text));
-    }
-  }
-
   public QuestionResult getSuggestion(String userId, String questionId, String answerId)
       throws SurveyException {
     try {
@@ -1292,6 +1162,205 @@ public class SurveySessionController extends AbstractComponentSessionController 
       throw new SurveyException("SurveySessionController.getSuggestion", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION",
           "userId=" + userId + ", questionId=" + questionId + ", answerId=" + answerId, e);
+    }
+  }
+
+  private Parameters fetchAllParameters(final HttpServletRequest request) {
+    Parameters parameters = new Parameters();
+    try {
+      List<FileItem> items = HttpRequest.decorate(request).getFileItems();
+      Answer answer = null;
+      boolean file = false;
+      File dir;
+      String logicalName;
+      String type;
+      String physicalName;
+      long size;
+      int attachmentSuffix = 0;
+      for (FileItem item : items) {
+        if (item.isFormField()) {
+          String mpName = item.getFieldName();
+          if ("Action".equals(mpName)) {
+            parameters.setAction(item.getString());
+          } else if ("question".equals(mpName)) {
+            parameters.setQuestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+          } else if ("nbAnswers".equals(mpName)) {
+            parameters.setAnswerCount(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+          } else if ("SuggestionAllowed".equals(mpName)) {
+            parameters.setSuggestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+          } else if ("questionStyle".equals(mpName)) {
+            parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+          } else if (mpName.startsWith("answer")) {
+            parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+            answer = new Answer(null, null, parameters.getAnswerInput(), 0, 0, false, "", 0, false,
+                null);
+            parameters.addAnswer(answer);
+          } else if ("suggestionLabel".equals(mpName)) {
+            parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+            answer =
+                new Answer(null, null, parameters.getAnswerInput(), 0, 0, false, "", 0, true, null);
+            parameters.addAnswer(answer);
+          } else if (mpName.startsWith("valueImageGallery")) {
+            if (StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING))) {
+              // traiter les images venant de la gallery si pas d'image externe
+              if (!file) {
+                answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+              }
+            }
+          } else if ("QuestionId".equals(mpName)) {
+            parameters.setQuestionId(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+          }
+          // String value = paramPart.getStringValue();
+        } else {
+          // it's a file part
+          if (FileHelper.isCorrectFile(item)) {
+            // the part actually contained a file
+            logicalName = item.getName();
+            type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+            physicalName = Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
+            attachmentSuffix = attachmentSuffix + 1;
+            dir = new File(FileRepositoryManager.getAbsolutePath(this.getComponentId()) +
+                getSettings().getString("imagesSubDirectory") + File.separator + physicalName);
+            FileUploadUtil.saveToFile(dir, item);
+            size = item.getSize();
+            if (size > 0) {
+              answer.setImage(physicalName);
+              file = true;
+            }
+          } else {
+            // the field did not contain a file
+            file = false;
+          }
+        }
+      }
+    } catch (UtilException | IOException e) {
+      SilverTrace.error("survey", "SurveySessionController.manageQuestionBusiness",
+          "root.EX_IGNORED", e);
+    }
+    return parameters;
+  }
+
+  private void processEndSurvey() {
+    QuestionContainerDetail surveyDetail = this.getSessionSurveyUnderConstruction();
+    // Vector 2 Collection
+    List<Question> questionsV = this.getSessionQuestions();
+    surveyDetail.setQuestions(questionsV);
+  }
+
+  private void processQuestionModification(final Parameters parameters) {
+    // Remove answer for open question
+    if ("open".equals(parameters.getStyle())) {
+      parameters.removeAllAnswers();
+      parameters.addAnswer(new Answer(null, null, "", 0, 0, false, "", 0, false, null));
+    }
+    // Remove the suggestion answer from the list
+    if ("0".equals(parameters.getSuggestion())) {
+      parameters.getAnswers()
+          .stream()
+          .filter(Answer::isOpened)
+          .findFirst()
+          .ifPresent(parameters::removeAnswer);
+    }
+    if ("SendNewQuestion".equals(parameters.getAction())) {
+      Question questionObject =
+          new Question(null, null, parameters.getQuestion(), "", "", null, parameters.getStyle(),
+              0);
+      questionObject.setAnswers(parameters.getAnswers());
+      List<Question> questionsV = this.getSessionQuestions();
+      questionsV.add(questionObject);
+      this.setSessionQuestions(questionsV);
+    } else if (parameters.getAction().equals("SendUpdateQuestion")) {
+      Question questionObject =
+          new Question(null, null, parameters.getQuestion(), "", "", null, parameters.getStyle(),
+              0);
+      questionObject.setAnswers(parameters.getAnswers());
+      List<Question> questionsV = this.getSessionQuestions();
+      questionsV.set(Integer.parseInt(parameters.getQuestionId()), questionObject);
+      this.setSessionQuestions(questionsV);
+    }
+  }
+
+  private static class Parameters {
+
+    private String action;
+    private String question;
+    private String answerCount;
+    private String suggestion;
+    private String style;
+    private String answerInput;
+    private List<Answer> answers = new ArrayList<>();
+    private String questionId;
+
+    public void setAction(final String action) {
+      this.action = action;
+    }
+
+    public void setQuestion(final String question) {
+      this.question = question;
+    }
+
+    public void setAnswerCount(final String answerCount) {
+      this.answerCount = answerCount;
+    }
+
+    public void setSuggestion(final String suggestion) {
+      this.suggestion = suggestion;
+    }
+
+    public void setStyle(final String style) {
+      this.style = style;
+    }
+
+    public void setQuestionId(final String questionId) {
+      this.questionId = questionId;
+    }
+
+    public void setAnswerInput(final String answerInput) {
+      this.answerInput = answerInput;
+    }
+
+    public void addAnswer(final Answer answer) {
+      this.answers.add(answer);
+    }
+
+    public void removeAnswer(final Answer answer) {
+      this.answers.remove(answer);
+    }
+
+    public void removeAllAnswers() {
+      this.answers.clear();
+    }
+
+    public List<Answer> getAnswers() {
+      return this.answers;
+    }
+
+    public String getAction() {
+      return action;
+    }
+
+    public String getQuestion() {
+      return question;
+    }
+
+    public String getAnswerCount() {
+      return answerCount;
+    }
+
+    public String getSuggestion() {
+      return suggestion;
+    }
+
+    public String getStyle() {
+      return style;
+    }
+
+    public String getAnswerInput() {
+      return answerInput;
+    }
+
+    public String getQuestionId() {
+      return questionId;
     }
   }
 }

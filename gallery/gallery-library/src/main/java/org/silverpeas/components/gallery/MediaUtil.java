@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.media.DrewMediaMetadataExtractor;
 import org.silverpeas.components.gallery.media.MediaMetadataException;
 import org.silverpeas.components.gallery.media.MediaMetadataExtractor;
@@ -391,24 +392,19 @@ public class MediaUtil {
         getMedia().setFileName(fileForData.getName());
         getMedia().setFileMimeType(mediaMimeType);
         getMedia().setFileSize(fileForData.length());
-        switch (getMedia().getType()) {
-          case Photo:
-            getMedia().getPhoto().setDefinition(getPhysicalFileMetaData().getDefinition());
-            break;
-          case Video:
-            getMedia().getVideo().setDefinition(getPhysicalFileMetaData().getDefinition());
-            break;
+        final MediaType mediaType = getMedia().getType();
+        if (mediaType.isPhoto()) {
+          getMedia().getPhoto().setDefinition(getPhysicalFileMetaData().getDefinition());
+        } else if (mediaType.isVideo()) {
+          getMedia().getVideo().setDefinition(getPhysicalFileMetaData().getDefinition());
         }
         if (getPhysicalFileMetaData().getDuration() != null) {
-          switch (getMedia().getType()) {
-            case Video:
-              getMedia().getVideo()
-                  .setDuration(getPhysicalFileMetaData().getDuration().getTimeAsLong());
-              break;
-            case Sound:
-              getMedia().getSound()
-                  .setDuration(getPhysicalFileMetaData().getDuration().getTimeAsLong());
-              break;
+          if (mediaType.isPhoto()) {
+            getMedia().getVideo()
+                .setDuration(getPhysicalFileMetaData().getDuration().getTimeAsLong());
+          } else if (mediaType.isSound()) {
+            getMedia().getSound()
+                .setDuration(getPhysicalFileMetaData().getDuration().getTimeAsLong());
           }
         }
         if (StringUtil.isNotDefined(getMedia().getTitle()) &&
