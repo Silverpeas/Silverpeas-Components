@@ -854,14 +854,14 @@ function fileUpload() {
   document.fupload.submit();
 }
 
-function doPagination(index) {
+function doPagination(index, nbItemsPerPage) {
   var topicQuery = getSearchQuery();
   var ieFix = new Date().getTime();
   var componentId = getComponentId();
   var selectedPublicationIds = getSelectedPublicationIds();
   var notSelectedPublicationIds = getNotSelectedPublicationIds();
   var url = getWebContext() + '/RAjaxPublicationsListServlet';
-  $.get(url, {Index: index, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
+  $.get(url, {Index: index, NbItemsPerPage: nbItemsPerPage, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
   function(data) {
     //$('#pubList').html(data);
 	updateHtmlContainingAngularDirectives($('#pubList'), data);

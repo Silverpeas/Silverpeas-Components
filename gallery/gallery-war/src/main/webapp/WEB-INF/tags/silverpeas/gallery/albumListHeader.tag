@@ -53,7 +53,7 @@
 <table border="0" width="100%">
   <tr>
     <td align="center" width="100%" class=ArrayNavigation>
-      <c:out value="${silfn:formatPaginationFromCurrentPageIndex(nbMediaPerPage, fn:length(mediaList), currentPageIndex)}"/>
+      <c:out value="${silfn:formatPaginationFromFirstIndexOfItem(nbMediaPerPage, fn:length(mediaList), currentPageIndex)}"/>
       <fmt:message key="gallery.media" var="oneMediaLabel"/>
       <fmt:message key="gallery.media.several" var="severalMediaLabel"/>
       ${fn:length(mediaList) <= 1 ? oneMediaLabel : severalMediaLabel}

@@ -62,9 +62,6 @@ public class SearchHandler extends FunctionHandler {
     // Performs search
     classifiedsSC.search(query);
 
-    // Display first page
-    request.setAttribute("Index", "0");
-
     return HandlerProvider.getHandler("Pagination").computeDestination(classifiedsSC, request);
   }
 
@@ -100,7 +97,8 @@ public class SearchHandler extends FunctionHandler {
           Field field = data.getField(fieldName);
           String fieldValue = field.getStringValue();
           if (fieldValue != null && fieldValue.trim().length() > 0) {
-            String fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // multiple checkbox
+            // multiple checkbox
+            String fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
             query.addFieldQuery(
                 new FieldDescription(templateName + "$$" + fieldName, fieldQuery, null));
           }

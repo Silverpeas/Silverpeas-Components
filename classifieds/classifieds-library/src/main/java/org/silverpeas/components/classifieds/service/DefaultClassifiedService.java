@@ -613,11 +613,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId,
       Map<String, String> mapFields1, Map<String, String> mapFields2,
       String searchField1, String searchField2,
-      int currentPage, int elementsPerPage) {
+      int firstItemIndex, int elementsPerPage) {
     Connection con = openConnection();
     try {
       List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
-          instanceId, ClassifiedDetail.VALID, currentPage, elementsPerPage);
+          instanceId, ClassifiedDetail.VALID, firstItemIndex, elementsPerPage);
 
       for (ClassifiedDetail classified : listClassified) {
         String classifiedId = Integer.toString(classified.getClassifiedId());

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -36,9 +35,6 @@ import org.silverpeas.core.util.StringUtil;
  * @author mmoquillon
  */
 public final class GalleryComponentSettings {
-
-  private GalleryComponentSettings() {
-  }
 
   /**
    * The name of the Gallery component in Silverpeas.
@@ -60,6 +56,10 @@ public final class GalleryComponentSettings {
    * the Gallery component.
    */
   public static final String ICONS_PATH = "org.silverpeas.gallery.settings.galleryIcons";
+  private static final int DEFAULT_NBMEDIAS_PER_PAGE = 15;
+
+  private GalleryComponentSettings() {
+  }
 
   /**
    * Gets all the messages for the Gallery component and translated in the specified language.
@@ -91,25 +91,7 @@ public final class GalleryComponentSettings {
    * @return
    */
   public static int getNbMediaDisplayedPerPage() {
-    return getNbMediaDisplayedPerPageByResolution(null);
-  }
-
-  /**
-   * Gets the max number of media displayed on homepage.
-   * @return
-   */
-  public static int getNbMediaDisplayedPerPageByResolution(MediaResolution resolution) {
-    int nbPhotosPerPage = 15;
-    if (resolution != null) {
-      if (resolution.isTiny()) {
-        nbPhotosPerPage = 35;
-      } else if (resolution.isSmall()) {
-        nbPhotosPerPage = 15;
-      } else if (resolution.isMedium()) {
-        nbPhotosPerPage = 6;
-      }
-    }
-    return nbPhotosPerPage;
+    return DEFAULT_NBMEDIAS_PER_PAGE;
   }
 
   public static boolean isDragAndDropEnabled(String componentInstanceId) {
@@ -153,7 +135,7 @@ public final class GalleryComponentSettings {
   public static Integer getWatermarkSize(String bundlePartOfWaterwarkSizeLabel) {
     String tmpValue =
         getSettings().getString("sizeWatermark" + bundlePartOfWaterwarkSizeLabel, null);
-    return (StringUtil.isInteger(tmpValue)) ? Integer.valueOf(tmpValue) : null;
+    return StringUtil.isInteger(tmpValue) ? Integer.valueOf(tmpValue) : null;
   }
 
   public static int getMaxNumberOfPreviewThumbnail() {

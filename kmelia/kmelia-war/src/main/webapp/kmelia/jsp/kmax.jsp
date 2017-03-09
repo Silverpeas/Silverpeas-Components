@@ -137,11 +137,11 @@ function viewToValidate() {
 	document.managerForm.submit();
 }
 
-function doPagination(index) {
+function doPagination(index, nbItemsPerPage) {
 	var selectedPublicationIds = getSelectedPublicationIds();
 	var notSelectedPublicationIds = getNotSelectedPublicationIds();
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix}, 
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:'<%=componentId%>',SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
 			},"html");

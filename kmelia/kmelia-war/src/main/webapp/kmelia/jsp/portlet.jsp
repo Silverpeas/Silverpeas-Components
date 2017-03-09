@@ -82,10 +82,10 @@ function sortGoTo(selectedIndex) {
 	}
 }
 
-function doPagination(index)
+function doPagination(index, nbItemsPerPage)
 {
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',IEFix:ieFix},
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:'<%=componentId%>',IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 							},"html");
