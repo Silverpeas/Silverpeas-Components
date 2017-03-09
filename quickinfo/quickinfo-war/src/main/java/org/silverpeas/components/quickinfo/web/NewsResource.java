@@ -35,7 +35,7 @@ public class NewsResource extends AbstractNewsResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<NewsEntity> getAllNews() {
-    List<News> allNews = null;
+    final List<News> allNews;
     if (isContributor()) {
       allNews = getService().getAllNews(componentId);
     } else {

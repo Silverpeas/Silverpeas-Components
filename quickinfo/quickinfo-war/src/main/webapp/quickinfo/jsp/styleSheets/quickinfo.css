@@ -396,6 +396,7 @@ fieldset#news-thumbnail legend {
 	padding: 2em 2em 0 2em;
 	height:auto;
 	position:relative;
+  cursor: pointer;
 }
 
 #list-news-lecteur-view li .visuel-container  {

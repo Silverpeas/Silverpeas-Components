@@ -119,7 +119,7 @@ function onDelete(id) {
 		<view:operation altText="${updateMsg}" action="javascript:onclick=update()"></view:operation>
 		<fmt:message var="deleteMsg" key="GML.delete"/>
 		<fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', 'onDelete')"/>
+		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', onDelete)"/>
 		<view:operationSeparator/>
 		<c:if test="${appSettings.delegatedNewsEnabled && (not news.draft) && (empty news.delegatedNews || news.delegatedNews.denied)}">
 			<fmt:message var="submitOnHomepage" key="quickinfo.news.delegated.operation"/>

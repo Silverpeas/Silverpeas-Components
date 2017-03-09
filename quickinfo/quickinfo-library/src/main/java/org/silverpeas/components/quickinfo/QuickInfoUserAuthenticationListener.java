@@ -24,13 +24,12 @@
 
 package org.silverpeas.components.quickinfo;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authentication.UserAuthenticationListener;
-import org.silverpeas.core.security.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.security.authentication.UserAuthenticationListener;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -46,17 +45,7 @@ public class QuickInfoUserAuthenticationListener
     implements UserAuthenticationListener, Initialization {
 
   @Override
-  public void init() throws Exception {
-    UserAuthenticationListenerRegistration.register(this);
-  }
-
-  @Override
-  public void release() throws Exception {
-    UserAuthenticationListenerRegistration.unregister(this);
-  }
-
-  @Override
-  public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, UserDetail user,
+  public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,
       String finalURL) {
     String redirectURL = null;
     if (user != null && !user.isAnonymous()) {
@@ -76,5 +65,4 @@ public class QuickInfoUserAuthenticationListener
   private QuickInfoService getService() {
     return QuickInfoServiceProvider.getQuickInfoService();
   }
-
 }

@@ -198,7 +198,7 @@ $(document).ready(function() {
 	<view:operationPane>
 	  <fmt:message var="deleteMsg" key="GML.delete"/>
 	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete('${curQuickInfo.id}', '${curQuickInfo.componentInstanceId}', '${deleteConfirmMsg}', 'onDelete')"/>
+	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete('${curQuickInfo.id}', '${curQuickInfo.componentInstanceId}', '${deleteConfirmMsg}', onDelete)"/>
 	</view:operationPane>
 </c:if>
 

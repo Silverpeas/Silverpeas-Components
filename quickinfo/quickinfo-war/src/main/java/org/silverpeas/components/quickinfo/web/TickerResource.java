@@ -35,5 +35,4 @@ public class TickerResource extends AbstractNewsResource {
     List<News> newsForTicker = getService().getNewsForTicker(getUserDetail().getId());
     return asWebEntities(newsForTicker);
   }
-
 }

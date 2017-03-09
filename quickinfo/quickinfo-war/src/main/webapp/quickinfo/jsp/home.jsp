@@ -162,20 +162,16 @@ function onDelete(id) {
     </c:if>
 
     <c:if test="${empty listOfNews}">
-      <div class="inlineMessage forContributor">
-        <fmt:message key="quickinfo.news.none"/>
-        <c:if test="${contributor}">
-          <br/><fmt:message key="quickinfo.news.none.contributor"/>
-        </c:if>
+      <div class="inlineMessage${contributor ? ' forContributor' : ''}">
+        <fmt:message key="quickinfo.news.none"/><br/>
+        <c:choose>
+          <c:when test="${contributor}"><fmt:message key="quickinfo.news.none.contributor"/></c:when>
+          <c:otherwise><fmt:message key="quickinfo.news.none.reader"/></c:otherwise>
+        </c:choose>
       </div>
     </c:if>
 
-    <c:if test="${contributor}">
-      <ul id="list-news">
-    </c:if>
-    <c:if test="${not contributor}">
-      <ul id="list-news" class="reader">
-    </c:if>
+    <ul id="list-news" class="${contributor ? '' : 'reader'}">
       <c:forEach items="${listOfNews}" var="news">
 		  <li class="showActionsOnMouseOver" id="news-${news.id}">
 			<c:if test="${not empty news.thumbnail}">
@@ -229,7 +225,7 @@ function onDelete(id) {
         <c:if test="${contributor}">
           <div class="operation actionShownOnMouseOver">
             <a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
-            <a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', 'onDelete')"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
+            <a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', onDelete)"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
           </div>
         </c:if>
       </div>
