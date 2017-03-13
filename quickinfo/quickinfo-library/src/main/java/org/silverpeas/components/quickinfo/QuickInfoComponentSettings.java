@@ -37,6 +37,7 @@ public class QuickInfoComponentSettings {
   private boolean broadcastTicker = false;
   private boolean broadcastBlocking = false;
   private boolean delegatedNewsEnabled = false;
+  private boolean mosaicViewForUsers = true;
 
   public static final String PARAM_COMMENTS = "comments";
   public static final String PARAM_TAXONOMY = "usePdc";
@@ -46,6 +47,10 @@ public class QuickInfoComponentSettings {
   public static final String VALUE_BROADCAST_TICKER = "ticker";
   public static final String VALUE_BROADCAST_BLOCKING = "blocking";
   public static final String VALUE_BROADCAST_BOTH = "both";
+
+  public static final String PARAM_USERVIEW = "userview";
+  public static final String VALUE_USERVIEW_MOSAIC = "mosaic";
+  public static final String VALUE_USERVIEW_LISTING = "listing";
 
   /**
    * The name of the Quickinfo component in Silverpeas.
@@ -152,4 +157,11 @@ public class QuickInfoComponentSettings {
     return delegatedNewsEnabled;
   }
 
+  public boolean isMosaicViewForUsers() {
+    return mosaicViewForUsers;
+  }
+
+  public void setMosaicViewForUsers(final boolean mosaicView) {
+    this.mosaicViewForUsers = mosaicView;
+  }
 }

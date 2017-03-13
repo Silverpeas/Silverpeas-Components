@@ -178,6 +178,10 @@ function abortNews() {
   $("#newsForm").submit();
 }
 
+function onDelete(id) {
+  location.href="Main";
+}
+
 $(document).ready(function() {
 	<view:wysiwyg replace="editorContent" language="<%=language%>" width="98%" height="300" toolbar="quickInfo" displayFileBrowser="${true}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" />
 });
@@ -194,7 +198,7 @@ $(document).ready(function() {
 	<view:operationPane>
 	  <fmt:message var="deleteMsg" key="GML.delete"/>
 	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete('${curQuickInfo.id}', '${deleteConfirmMsg}')"/>
+	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete('${curQuickInfo.id}', '${curQuickInfo.componentInstanceId}', '${deleteConfirmMsg}', 'onDelete')"/>
 	</view:operationPane>
 </c:if>
 
