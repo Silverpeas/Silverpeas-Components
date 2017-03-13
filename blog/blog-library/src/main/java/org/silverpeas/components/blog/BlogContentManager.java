@@ -147,8 +147,7 @@ public class BlogContentManager implements ContentInterface, Serializable {
       createSilverContent(null, pubDetail, pubDetail.getUpdaterId());
     } else {
       getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, pubDetail.getPK().getComponentName(),
-              silverContentId);
+          .updateSilverContentVisibilityAttributes(scv, silverContentId);
     }
     ClassifyEngine.clearCache();
   }

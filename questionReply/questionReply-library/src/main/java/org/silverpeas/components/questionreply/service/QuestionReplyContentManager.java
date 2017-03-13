@@ -126,8 +126,7 @@ public class QuestionReplyContentManager implements ContentInterface {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
 
     this.contentManager
-        .updateSilverContentVisibilityAttributes(scv, question.getPK().getComponentName(),
-            silverContentId);
+        .updateSilverContentVisibilityAttributes(scv, silverContentId);
     ClassifyEngine.clearCache();
   }
 

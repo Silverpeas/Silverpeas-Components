@@ -89,8 +89,7 @@ public class QuickInfoContentManager implements ContentInterface {
           new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
 
       getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, pubDetail.getPK().getComponentName(),
-              silverContentId);
+          .updateSilverContentVisibilityAttributes(scv, silverContentId);
       ClassifyEngine.clearCache();
     } else {
       createSilverContent(null, pubDetail, pubDetail.getCreatorId(), isVisible);

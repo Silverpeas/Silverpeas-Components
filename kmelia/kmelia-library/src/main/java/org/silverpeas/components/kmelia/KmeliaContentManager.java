@@ -107,8 +107,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     if (silverContentId == -1) {
       createSilverContent(null, pubDetail, pubDetail.getUpdaterId());
     } else {
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          pubDetail.getPK().getComponentName(), silverContentId);
+      getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
     }
     ClassifyEngine.clearCache();
   }

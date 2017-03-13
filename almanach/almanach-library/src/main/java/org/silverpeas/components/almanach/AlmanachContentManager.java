@@ -110,8 +110,7 @@ public class AlmanachContentManager implements ContentInterface {
       createSilverContent(null, eventDetail, eventDetail.getDelegatorId());
     } else {
       getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, eventDetail.getPK().getComponentName(),
-              silverContentId);
+          .updateSilverContentVisibilityAttributes(scv, silverContentId);
     }
 
     ClassifyEngine.clearCache();

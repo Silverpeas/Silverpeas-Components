@@ -100,7 +100,7 @@ public class InfoLetterContentManager implements ContentInterface {
       createSilverContent(null, ilPub, ilPub.getCreatorId());
     } else {
       getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, ilPub.getInstanceId(), silverContentId);
+          .updateSilverContentVisibilityAttributes(scv, silverContentId);
       ClassifyEngine.clearCache();
     }
 

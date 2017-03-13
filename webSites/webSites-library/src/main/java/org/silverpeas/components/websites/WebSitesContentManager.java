@@ -101,7 +101,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
           componentId);
     } else {
       getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, componentId, silverContentId);
+          .updateSilverContentVisibilityAttributes(scv, silverContentId);
     }
     ClassifyEngine.clearCache();
   }

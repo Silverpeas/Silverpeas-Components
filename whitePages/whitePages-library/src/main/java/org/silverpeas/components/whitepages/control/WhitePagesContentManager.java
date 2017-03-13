@@ -92,8 +92,7 @@ public class WhitePagesContentManager implements ContentInterface {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
 
     getContentManager()
-        .updateSilverContentVisibilityAttributes(scv, card.getPK().getComponentName(),
-            silverContentId);
+        .updateSilverContentVisibilityAttributes(scv, silverContentId);
     ClassifyEngine.clearCache();
   }
 

@@ -107,8 +107,7 @@ public class ForumsContentManager implements ContentInterface {
     } else {
       SilverContentVisibility scv = new SilverContentVisibility(isVisible(forumPK));
 
-      getContentManager().updateSilverContentVisibilityAttributes(scv, forumPK.getComponentName(),
-          silverContentId);
+      getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
       ClassifyEngine.clearCache();
     }
   }
