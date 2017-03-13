@@ -51,10 +51,6 @@
 
 <fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
 <c:url var="permalinkIconUrl" value="${permalinkIcon}"/>
-<fmt:message var="previousIcon" key='gallery.previous' bundle='${icons}'/>
-<c:url var="previousIconUrl" value="${previousIcon}"/>
-<fmt:message var="nextIcon" key='gallery.next' bundle='${icons}'/>
-<c:url var="nextIconUrl" value="${nextIcon}"/>
 <fmt:message var="downloadIcon" key='gallery.image.download' bundle='${icons}'/>
 <c:url var="downloadIconUrl" value="${downloadIcon}"/>
 <fmt:message var="downloadWatermarkIcon" key='gallery.image.dowloadWatermark' bundle='${icons}'/>
@@ -152,28 +148,6 @@
           '<c:url value="${silfn:componentURL(componentId)}"/>cut?Object=Image&Id=${mediaId}';
     }
     </c:if>
-
-    $(document).keydown(function(e) {
-      var keyCode = eval(e.which);
-      if (37 == keyCode || keyCode == 39) {
-        if (typeof e.preventDefault === 'function') {
-          e.preventDefault();
-        }
-        var button;
-        if (37 == keyCode) {
-          // Previous
-          button = $('#previousButton').get(0);
-        } else if (39 == keyCode) {
-          // Next
-          button = $('#nextButton').get(0);
-        }
-        if (button) {
-          button.click();
-        }
-        return true;
-      }
-    });
-
   </script>
   <c:if test="${requestScope.NbMedia gt 1}">
   <gallery:diaporama/>
@@ -240,17 +214,7 @@
   <view:frame>
     <form name="mediaForm" method="post" accept-charset="UTF-8" action="#">
       <div id="pagination">
-        <c:if test="${requestScope.Rang ne 0}">
-          <fmt:message var="previousMedia" key="gallery.previous"/>
-          <a id="previousButton" href="PreviousMedia">
-            <img alt="${previousMedia}" title="${previousMedia}" src="${previousIconUrl}"/>
-          </a>
-        </c:if>
-        <span class="txtnav"><span class="currentPage">${requestScope.Rang + 1}</span> / ${requestScope.NbMedia}</span>
-        <c:if test="${requestScope.Rang ne (requestScope.NbMedia - 1)}">
-          <fmt:message var="nextMedia" key="gallery.next"/>
-          <a id="nextButton" href="NextMedia"><img alt="${nextMedia}" title="${nextMedia}" src="${nextIconUrl}"/></a>
-        </c:if>
+        <viewTags:displayIndex nbItems="${requestScope.NbMedia}" index="${requestScope.Rang}" linkSuffix="Media"/>
       </div>
 
       <!-- button to go back to search results or current folder -->
