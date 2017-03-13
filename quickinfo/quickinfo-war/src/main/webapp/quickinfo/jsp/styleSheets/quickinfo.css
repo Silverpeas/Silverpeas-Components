@@ -271,6 +271,10 @@ fieldset#news-thumbnail legend {
   vertical-align: bottom;
 }
 
+.rightContent #actualityInfoPublication {
+  clear:right;
+}
+
 /*************** ALERTE *******************/
 .alert-quickInfo {
   background-color:#fbf7aa;
@@ -367,4 +371,97 @@ fieldset#news-thumbnail legend {
   max-width:310px;
   max-height:282px;
   width: auto;
+}
+
+
+/* PRESENTATION DES ACTU EN MODE LECTEUR */
+#list-news-lecteur-view {
+	display: flex;
+	flex-direction: row ;
+	flex-wrap:wrap;
+	justify-content: center;
+	align-items: initial;
+	align-content: flex-start;
+	list-style-type:none;
+	padding:0;
+	margin:0;
+}
+#list-news-lecteur-view li{
+	float:left;
+	flex-grow:1;
+	flex-basis:320px;
+	max-width:400px;
+	background:#efefef;
+	margin:0 2em 2em 0;
+	padding: 2em 2em 0 2em;
+	height:auto;
+	position:relative;
+  cursor: pointer;
+}
+
+#list-news-lecteur-view li .visuel-container  {
+	width:100%;
+	max-height:60%;
+	overflow:hidden;
+	border:1px solid #FFF;
+}
+
+#list-news-lecteur-view li .visuel-container img {
+	width:100%;
+}
+
+#list-news-lecteur-view li h3{
+	color:#444444;
+	text-align:center;
+	padding:0;
+	margin:1em 0 0.5em 0;
+}
+
+#list-news-lecteur-view li .news-teasing{
+	color:#777;
+	text-align:justify;
+	padding:0 0 1em 0;
+	margin:0.5em 0;
+}
+
+#list-news-lecteur-view li .creationInfo{
+	position:absolute;
+	left:1.3em;
+	top:3em;
+	background:transparent url(../icons/bg_date.png) 0 0 no-repeat;
+	height:29px;
+	width:76px;
+	line-height:20px;
+	padding-left:12px;
+	color:#FFF;
+}
+
+#list-news-lecteur-view li .news-broadcast{
+	position:absolute;
+	right:1.4em;
+	top:1.5em;
+	background-color:#ec9c01;
+	border-radius:10px;
+	width: 20px;
+	height: 20px;
+}
+
+#list-news-lecteur-view li .news-broadcast span{
+	text-indent:-4000em;
+	display:block;
+	width: 20px;
+	height: 20px;
+	background: transparent url(../icons/important.png) center 4px  no-repeat;
+}
+
+#list-news-lecteur-view li .news-nb-attached-files-and-comments{
+	position:absolute;
+	right:1em;
+	bottom:1em;
+}
+#list-news-lecteur-view li .news-nb-attached-files-and-comments > div {
+	float:left;	
+}
+#list-news-lecteur-view li .news-nb-attached-files-and-comments > div:nth-child(2) {
+	margin-left:1em;	
 }

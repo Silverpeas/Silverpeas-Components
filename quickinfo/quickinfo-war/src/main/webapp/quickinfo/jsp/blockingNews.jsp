@@ -45,15 +45,15 @@
   <script type="text/javascript">
     var allNews = [];
     <c:forEach items="${listOfNews}" var="news">
-    allNews[allNews.length] = '${news.id}';
+    allNews.push({id : '${news.id}', instanceId : '${news.componentInstanceId}'});
     </c:forEach>
 
     var index = 0;
     var currentNews;
 
     function displayNews(index) {
-      var id = allNews[index];
-      $.ajax(webContext + "/services/news/" + id, {
+      var newsPK = allNews[index];
+      $.ajax(webContext + "/services/news/" + newsPK.instanceId + "/" + newsPK.id, {
         type : "GET",
         async : false,
         cache : false,
@@ -113,7 +113,7 @@
       acknowledge before going to next news or homepage. */
       var deferred = new $.Deferred();
       // save news reading by user
-      $.ajax(webContext + "/services/news/" + currentNews.id + "/acknowledge", {
+      $.ajax(webContext + "/services/news/" + currentNews.componentId + "/" + currentNews.id + "/acknowledge", {
         type : "POST",
         cache : false,
         success : function(data, status, jqXHR) {
