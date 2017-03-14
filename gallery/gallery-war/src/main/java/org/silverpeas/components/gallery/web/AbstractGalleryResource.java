@@ -250,10 +250,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
         int end = endGroup.isEmpty() ? contentLength - 1 : Integer.valueOf(endGroup);
         end = end > contentLength - 1 ? contentLength - 1 : end;
 
-        final int finalStart = start;
-        final int finalContentLength = contentLength = end - finalStart + 1;
-        responseBuilder =
-            streamFileContent(media.getId(), mediaPath, finalContentLength, start, end);
+        contentLength = end - start + 1;
+        responseBuilder = streamFileContent(media.getId(), mediaPath, contentLength, start, end);
 
       } else {
         // Handling here a full response
@@ -294,13 +292,11 @@ abstract class AbstractGalleryResource extends RESTWebService {
       }
 
       final Definition definition;
-      switch (media.getType()) {
-        case Video:
-          definition = media.getVideo().getDefinition();
-          break;
-        default:
-          definition = Definition.of(mediaResolution.getWidth(), mediaResolution.getHeight());
-          break;
+      MediaType mediaType = media.getType();
+      if (mediaType == MediaType.Video) {
+        definition = media.getVideo().getDefinition();
+      } else {
+        definition = Definition.of(mediaResolution.getWidth(), mediaResolution.getHeight());
       }
 
       // Set request attribute
@@ -378,8 +374,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
     if (object == null) {
       isNotFound = true;
     } else if (object instanceof Media) {
-      isNotFound = true;
-      Media media = ((Media) object);
+      Media media = (Media) object;
       switch (media.getType()) {
         case Photo:
           isNotFound = media.getPhoto() == null;
@@ -393,6 +388,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
         case Streaming:
           isNotFound = media.getStreaming() == null;
           break;
+        default:
+          isNotFound = true;
       }
     }
     if (isNotFound) {
@@ -469,7 +466,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
       try (final InputStream mediaStream = FileUtils.openInputStream(file)) {
         IOUtils.copy(mediaStream, output);
       } catch (IOException e) {
-        throw new WebApplicationException(Status.NOT_FOUND);
+        throw new WebApplicationException(e, Status.NOT_FOUND);
       }
     });
   }

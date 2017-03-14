@@ -64,7 +64,7 @@ public class BlogUserAlertNotification extends AbstractBlogUserNotification {
   @SuppressWarnings("unchecked")
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
 }

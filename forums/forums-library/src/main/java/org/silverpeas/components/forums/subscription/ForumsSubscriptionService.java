@@ -38,6 +38,7 @@ import java.util.HashSet;
 
 import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
+import static org.silverpeas.core.subscription.constant.SubscriptionResourceType.*;
 
 /**
  * As the class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
@@ -57,36 +58,31 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
   public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
       final String componentInstanceId, final SubscriptionResourceType resourceType,
       final String resourceId) {
+    SubscriptionResourceType nextTypeToHandle = resourceType;
 
     Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
     ForumPK forumPK = new ForumPK(componentInstanceId, resourceId);
 
-    switch (resourceType) {
+    if (nextTypeToHandle == FORUM_MESSAGE) {
+      // In that case, subscribers of messages, parent messages, of linked forum and their
+      // parents and of component must be verified.
+      MessagePK messagePK = new MessagePK(componentInstanceId, resourceId);
+      Message message = verifyMessage(messagePK, subscribers);
+      // Creating the parent forum identifier
+      forumPK = new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
+      nextTypeToHandle = FORUM;
+    }
 
-      case FORUM_MESSAGE:
-        /*
-         * In that case, subscribers of messages, parent messages, of linked forum and their
-         * parents and of component must be verified.
-         */
-        MessagePK messagePK = new MessagePK(componentInstanceId, resourceId);
-        Message message = verifyMessage(messagePK, subscribers);
-        // Creating the parent forum identifier
-        forumPK = new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
+    if (nextTypeToHandle == FORUM) {
+      // In that case, subscribers of forum and their parents and of component must be verified.
+      verifyForum(forumPK, subscribers);
+      nextTypeToHandle = COMPONENT;
+    }
 
-      case FORUM:
-        /*
-         * In that case, subscribers of forum and their parents and of component must be verified.
-         */
-        verifyForum(forumPK, subscribers);
-      case COMPONENT:
-        /*
-         * In that case, subscribers of component must be verified.
-         */
-        subscribers.addAll(super.getSubscribersOfComponentAndTypedResource(componentInstanceId,
-            SubscriptionResourceType.COMPONENT, resourceId));
-
-      default:
-        break;
+    if (nextTypeToHandle == COMPONENT) {
+      // In that case, subscribers of component must be verified.
+      subscribers.addAll(super.getSubscribersOfComponentAndTypedResource(componentInstanceId,
+          SubscriptionResourceType.COMPONENT, resourceId));
     }
 
     return new SubscriptionSubscriberList(subscribers);
