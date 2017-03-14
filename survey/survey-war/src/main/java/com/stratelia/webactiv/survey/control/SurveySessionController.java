@@ -242,7 +242,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     if (getViewType() == INWAIT_SURVEYS_VIEW) {
       return getInWaitSurveys();
     }
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
   public Collection<QuestionContainerHeader> getOpenedSurveys() throws SurveyException {
