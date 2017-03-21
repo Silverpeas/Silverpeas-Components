@@ -680,7 +680,7 @@ public class ForumsDAO {
     Collection<Integer> forumIds = getAllForumsByInstanceId(con, instanceId);
     if (!forumIds.isEmpty()) {
       String listOfIds =
-          forumIds.stream().map((i) -> "'" + i + "'").collect(Collectors.joining(",", "(", ")"));
+          forumIds.stream().map(i -> "'" + i + "'").collect(Collectors.joining(",", "(", ")"));
       try (PreparedStatement statement = con.prepareStatement(FORUM_RIGHTS_DELETION + listOfIds)) {
         statement.execute();
       }

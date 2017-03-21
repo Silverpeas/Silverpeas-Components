@@ -53,10 +53,7 @@
     $('#videoContainer').embedPlayer({
       url : '${silfn:escapeJs(video.getApplicationEmbedUrl(_mediaResolution))}',
       width : ${_mediaResolution.width},
-      height : ${_mediaResolution.height},
-      playerParameters : {
-        backgroundColor : '#E1E1E1'
-      }
+      height : ${_mediaResolution.height}
     });
   });
 </script>
