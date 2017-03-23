@@ -47,6 +47,17 @@ public class QuickInfoUserAuthenticationListener
   @Override
   public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,
       String finalURL) {
+    return handle(request, user, finalURL);
+  }
+
+  @Override
+  public String homepageAccessFromLoginWhenUserSessionAlreadyOpened(
+      final HttpServletRequest request, final User user, final String finalURL) {
+    return handle(request, user, finalURL);
+  }
+
+  private String handle(HttpServletRequest request, User user,
+      String finalURL) {
     String redirectURL = null;
     if (user != null && !user.isAnonymous()) {
       HttpSession session = request.getSession();
