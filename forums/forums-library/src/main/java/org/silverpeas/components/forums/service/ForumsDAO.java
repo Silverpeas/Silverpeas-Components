@@ -34,6 +34,7 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +49,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class managing database accesses for forums.
@@ -271,7 +273,7 @@ public class ForumsDAO {
    * @return The list of ids of forums corresponding to the primary key.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList<String> getForumsIds(Connection con, ForumPK forumPK)
+  public static List<String> getForumsIds(Connection con, ForumPK forumPK)
       throws SQLException {
 
 
@@ -675,14 +677,11 @@ public class ForumsDAO {
 
 
   public static void deleteAllForums(Connection con, String instanceId) throws SQLException {
-    List<Integer> forumIds = new ArrayList<>(getAllForumsByInstanceId(con, instanceId));
-    StringBuilder listOfIds = new StringBuilder("(");
-    for (int i = 0; i < forumIds.size() - 1; i++) {
-      listOfIds.append("'").append(forumIds.get(i)).append("', ");
-    }
-    listOfIds.append("'").append(forumIds.get(forumIds.size() - 1)).append("')");
-    if (listOfIds.length() > 0) {
-      try (PreparedStatement statement = con.prepareStatement(FORUM_RIGHTS_DELETION + listOfIds.toString())) {
+    Collection<Integer> forumIds = getAllForumsByInstanceId(con, instanceId);
+    if (!forumIds.isEmpty()) {
+      String listOfIds =
+          forumIds.stream().map((i) -> "'" + i + "'").collect(Collectors.joining(",", "(", ")"));
+      try (PreparedStatement statement = con.prepareStatement(FORUM_RIGHTS_DELETION + listOfIds)) {
         statement.execute();
       }
     }
@@ -710,7 +709,7 @@ public class ForumsDAO {
    * @return The list of messages of the forum corresponding to the primary key (Message).
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList<Message> getMessagesList(Connection con, ForumPK forumPK)
+  public static List<Message> getMessagesList(Connection con, ForumPK forumPK)
       throws SQLException {
 
 
@@ -808,7 +807,7 @@ public class ForumsDAO {
    */
   public static int getNbMessages(Connection con, int forumId, String type, String status)
       throws SQLException {
-    String selectQuery = (type.equals("Subjects") ? QUERY_GET_NB_MESSAGES_SUBJECTS :
+    String selectQuery = ("Subjects".equals(type) ? QUERY_GET_NB_MESSAGES_SUBJECTS :
         QUERY_GET_NB_MESSAGES_NOT_SUBJECTS);
 
 
@@ -881,9 +880,10 @@ public class ForumsDAO {
       prepStmt.setString(3, status);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        nextMessageIds.add(Integer.valueOf(rs.getInt(MESSAGE_COLUMN_MESSAGE_ID)));
+        nextMessageIds.add(rs.getInt(MESSAGE_COLUMN_MESSAGE_ID));
       }
     } catch (SQLException sqle) {
+      SilverLogger.getLogger(ForumsDAO.class).error(sqle.getMessage(), sqle);
       return 0;
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -941,7 +941,7 @@ public class ForumsDAO {
    * @return The last 'count' threads from the forums corresponding to the primary keys.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList<Message> getLastThreads(Connection con, ForumPK[] forumPKs, int count)
+  public static List<Message> getLastThreads(Connection con, ForumPK[] forumPKs, int count)
       throws SQLException {
     ArrayList<Message> messages = new ArrayList<Message>();
     if (forumPKs.length > 0) {
@@ -1191,7 +1191,7 @@ public class ForumsDAO {
     }
 
     Message message = null;
-    if (!messageId.equals("")) {
+    if (!"".equals(messageId)) {
       MessagePK messagePK = new MessagePK(forumPK.getComponentName(), messageId);
       message = getMessage(con, messagePK);
     }
@@ -1362,8 +1362,9 @@ public class ForumsDAO {
    */
   public static int createMessage(Connection con, String messageTitle, String messageAuthor,
       Date messageDate, int forumId, int messageParent, String status) throws SQLException {
-    if (messageDate == null) {
-      messageDate = new Date();
+    Date finalMessageDate = messageDate;
+    if (finalMessageDate == null) {
+      finalMessageDate = new Date();
     }
 
     try (PreparedStatement insertStmt = con.prepareStatement(QUERY_CREATE_MESSAGE)) {
@@ -1373,7 +1374,7 @@ public class ForumsDAO {
       insertStmt.setString(3, messageAuthor);
       insertStmt.setInt(4, forumId);
       insertStmt.setInt(5, messageParent);
-      insertStmt.setTimestamp(6, new Timestamp(messageDate.getTime()));
+      insertStmt.setTimestamp(6, new Timestamp(finalMessageDate.getTime()));
       insertStmt.setString(7, status);
       insertStmt.executeUpdate();
 

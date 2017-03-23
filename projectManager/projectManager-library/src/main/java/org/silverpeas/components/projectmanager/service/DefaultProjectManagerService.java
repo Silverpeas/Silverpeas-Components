@@ -20,14 +20,6 @@
  */
 package org.silverpeas.components.projectmanager.service;
 
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
@@ -35,18 +27,26 @@ import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
 import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.model.TaskPK;
-import org.silverpeas.core.personalorganizer.model.TodoDetail;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.personalorganizer.model.TodoDetail;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -69,7 +69,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   private CommentService commentController;
 
   @Inject
-  private SilverpeasCalendar calendar;
+  private SilverpeasCalendar silverpeasCalendar;
 
   /**
    * Gets a comment service.
@@ -201,7 +201,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
     Connection con = getConnection();
     try {
-      return ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
+      return ProjectManagerDAO.getMostDistantTask(con, taskId);
     } catch (Exception re) {
       throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getMostDistantTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "taskId = "
@@ -475,7 +475,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
       // on traite maintenant la tâche mère de la tache liée
       motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
-      if (motherTask.getMereId() != -1) { // c'est une tache, pas le projet
+      if (motherTask.getMereId() != -1) {
+        // c'est une tache, pas le projet
         updateMother = false;
         endDateLinked = linkedTask.getDateFin();
 
@@ -833,25 +834,25 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   private TodoDetail getTodo(String todoId) {
-    return calendar.getTodoDetail(todoId);
+    return silverpeasCalendar.getTodoDetail(todoId);
   }
 
   private void addTodo(TaskDetail task) {
 
     TodoDetail todo = task.toTodoDetail();
-    calendar.addToDo(todo);
+    silverpeasCalendar.addToDo(todo);
   }
 
   private void removeTodo(int id, String instanceId) {
 
-    calendar.removeToDoFromExternal("useless", instanceId, Integer.toString(id));
+    silverpeasCalendar.removeToDoFromExternal("useless", instanceId, Integer.toString(id));
   }
 
   private void updateTodo(TaskDetail task) {
 
-    calendar.removeToDoFromExternal("useless", task.getInstanceId(), Integer.
+    silverpeasCalendar.removeToDoFromExternal("useless", task.getInstanceId(), Integer.
         toString(task.getId()));
-    calendar.addToDo(task.toTodoDetail());
+    silverpeasCalendar.addToDo(task.toTodoDetail());
   }
 
   private void createIndex(TaskDetail task) {
