@@ -43,10 +43,9 @@ import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -56,29 +55,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static java.nio.file.StandardOpenOption.READ;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Yohann Chastagnier
  */
 abstract class AbstractGalleryResource extends RESTWebService {
-
-  private static final int BUFFER_LENGTH = 1024 * 16;
-  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24;
-  private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
 
   @PathParam("componentInstanceId")
   private String componentInstanceId;
@@ -164,10 +147,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
       verifyMediaIsInAlbum(media, album);
       // Verifying the physical file exists and that the type of media is the one expected
       if (media.getInternalMedia() != null) {
-        final SilverpeasFile file = media.getFile(MediaResolution.PREVIEW);
-        if (!file.exists() || expectedMediaType != media.getType()) {
-          throw new WebApplicationException(Status.NOT_FOUND);
-        }
+        checkMediaExistsWithRequestedMimeType(expectedMediaType, media, MediaResolution.PREVIEW);
       }
       // Getting the web entity
       return asWebEntity(media, album);
@@ -192,14 +172,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Adjusting the resolution according to the user rights
-      MediaResolution mediaResolution = MediaResolution.ORIGINAL;
-      if (media.getType().isPhoto()) {
-        mediaResolution = requestedMediaResolution;
-        if (MediaResolution.ORIGINAL == requestedMediaResolution &&
-            !isUserPrivileged() && !media.isDownloadable()) {
-          mediaResolution = MediaResolution.PREVIEW;
-        }
-      }
+      MediaResolution mediaResolution = getUserMediaResolution(requestedMediaResolution, media);
       // Verifying the physical file exists and that the type of media is the one expected
       final SilverpeasFile file = media.getFile(mediaResolution);
       if (!file.exists() || expectedMediaType != media.getType()) {
@@ -211,6 +184,25 @@ abstract class AbstractGalleryResource extends RESTWebService {
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
+  }
+
+  /**
+   * Gets the user resolution according to its rights and the resolution requested.
+   * @param requestedMediaResolution the requested media resolution.
+   * @param media the media.
+   * @return a {@link MediaResolution} instance.
+   */
+  private MediaResolution getUserMediaResolution(final MediaResolution requestedMediaResolution,
+      final Media media) {
+    MediaResolution mediaResolution = MediaResolution.ORIGINAL;
+    if (media.getType().isPhoto()) {
+      mediaResolution = requestedMediaResolution;
+      if (MediaResolution.ORIGINAL == requestedMediaResolution && !isUserPrivileged() &&
+          !media.isDownloadable()) {
+        mediaResolution = MediaResolution.PREVIEW;
+      }
+    }
+    return mediaResolution;
   }
 
   /**
@@ -227,39 +219,10 @@ abstract class AbstractGalleryResource extends RESTWebService {
           getCheckedMedia(expectedMediaType, mediaId, requestedMediaResolution);
       final Media media = checkedMedia.getLeft();
       final SilverpeasFile file = checkedMedia.getRight();
-
-      java.nio.file.Path mediaPath = Paths.get(file.toURI());
-      String mediaMimeType = getHttpRequest().getParameter("forceMimeType");
-      if (StringUtil.isNotDefined(mediaMimeType)) {
-        mediaMimeType = ((InternalMedia) media).getFileMimeType().getMimeType();
-      }
-
-      String range = defaultStringIfNotDefined(getHttpServletRequest().getHeader("Range"), "");
-      Matcher matcher = RANGE_PATTERN.matcher(range);
-      boolean isPartialRequest = matcher.matches();
-
-      int contentLength = (int) Files.size(mediaPath);
-      final Response.ResponseBuilder responseBuilder;
-      if (isPartialRequest) {
-        // Handling here a partial response (pseudo streaming)
-        String startGroup = matcher.group("start");
-        int start = startGroup.isEmpty() ? 0 : Integer.valueOf(startGroup);
-        start = start < 0 ? 0 : start;
-
-        String endGroup = matcher.group("end");
-        int end = endGroup.isEmpty() ? contentLength - 1 : Integer.valueOf(endGroup);
-        end = end > contentLength - 1 ? contentLength - 1 : end;
-
-        contentLength = end - start + 1;
-        responseBuilder = streamFileContent(media.getId(), mediaPath, contentLength, start, end);
-
-      } else {
-        // Handling here a full response
-        responseBuilder = loadFileContent(file);
-      }
-
-      return responseBuilder.type(mediaMimeType).header("Content-Length", contentLength)
-          .header("Content-Disposition", String.format("inline;filename=\"%s\"", file.getName()))
+      return FileResponse.fromRest(getHttpServletRequest(), getHttpServletResponse())
+          .forceMimeType(((InternalMedia) media).getFileMimeType().getMimeType())
+          .forceFileId(mediaId)
+          .silverpeasFile(file)
           .build();
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -286,10 +249,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
         mediaResolution = requestedMediaResolution;
       }
       // Verifying the physical file exists and that the type of media is the one expected
-      final SilverpeasFile file = media.getFile(mediaResolution);
-      if (!file.exists() || expectedMediaType != media.getType()) {
-        throw new WebApplicationException(Status.NOT_FOUND);
-      }
+      checkMediaExistsWithRequestedMimeType(expectedMediaType, media, mediaResolution);
 
       final Definition definition;
       MediaType mediaType = media.getType();
@@ -299,21 +259,33 @@ abstract class AbstractGalleryResource extends RESTWebService {
         definition = Definition.of(mediaResolution.getWidth(), mediaResolution.getHeight());
       }
 
-      // Set request attribute
-      getHttpServletRequest().setAttribute("media", media);
+      getHttpServletRequest().setAttribute("mediaUrl", media.getApplicationOriginalUrl());
+      getHttpServletRequest().setAttribute("posterUrl", media.getApplicationThumbnailUrl(mediaResolution));
+      getHttpServletRequest().setAttribute("playerType", media.getType().getName());
+      getHttpServletRequest().setAttribute("mimeType", media.getInternalMedia().getFileMimeType().getMimeType());
       getHttpServletRequest().setAttribute("definition", definition);
-      getHttpServletRequest().setAttribute("posterResolution", mediaResolution);
+      getHttpServletRequest().setAttribute("backgroundColor", getHttpServletRequest().getParameter("backgroundColor"));
+      getHttpServletRequest().setAttribute("autoPlay", getHttpServletRequest().getParameter("autoPlay"));
 
-      // Handled parameters
-      getHttpServletRequest()
-          .setAttribute("backgroundColor", getHttpServletRequest().getParameter("backgroundColor"));
-      getHttpServletRequest()
-          .setAttribute("autoPlay", getHttpServletRequest().getParameter("autoPlay"));
-      return new View("/gallery/jsp/embed.jsp");
+      return new View("/media/jsp/embed.jsp");
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Verifies the physical file exists and that the type of media is the one expected.
+   * @param requestedMediaType the requested media type (from the request).
+   * @param media the media to verify.
+   * @param mediaResolution the media resolution to get (from the service).
+   */
+  private void checkMediaExistsWithRequestedMimeType(final MediaType requestedMediaType,
+      final Media media, final MediaResolution mediaResolution) {
+    final SilverpeasFile file = media.getFile(mediaResolution);
+    if (!file.exists() || requestedMediaType != media.getType()) {
+      throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
 
@@ -427,48 +399,15 @@ abstract class AbstractGalleryResource extends RESTWebService {
     }
   }
 
-  private Response.ResponseBuilder streamFileContent(String mediaId, Path mediaPath,
-      int finalContentLength, int start, int end) throws IOException {
-    final HttpServletResponse response = getHttpServletResponse();
-    response.setBufferSize(BUFFER_LENGTH);
-
-    int length = (int) Files.size(mediaPath);
-
-    return Response.status(Status.PARTIAL_CONTENT)
-        .entity((StreamingOutput) output -> {
-          try (SeekableByteChannel input = Files.newByteChannel(mediaPath, READ)) {
-            input.position(start);
-            int bytesRead;
-            int bytesLeft = finalContentLength;
-            ByteBuffer buffer = ByteBuffer.allocate(BUFFER_LENGTH);
-            while ((bytesRead = input.read(buffer)) != -1 && bytesLeft > 0) {
-              buffer.clear();
-              output.write(buffer.array(), 0, bytesLeft < bytesRead ? bytesLeft : bytesRead);
-              bytesLeft -= bytesRead;
-            }
-          } catch (IOException ioe) {
-            SilverLogger.getLogger(AbstractGalleryResource.class)
-                .error(
-                    "client stopping the streaming HTTP Request of media content represented by " +
-                        "''{0}'' identifier (original message ''{1}'')", new Object[]{mediaId},
-                    ioe);
-          }
-        })
-        .header("Accept-Ranges", "bytes")
-        .header("ETag", mediaId)
-        .lastModified(Date.from(Files.getLastModifiedTime(mediaPath).toInstant()))
-        .expires(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + EXPIRE_TIME)))
-        .header("Content-Range", String.format("bytes %s-%s/%s", start, end, length));
-  }
-
   private Response.ResponseBuilder loadFileContent(final File file) {
-    return Response.ok((StreamingOutput) output -> {
+    StreamingOutput streamingOutput = output -> {
       try (final InputStream mediaStream = FileUtils.openInputStream(file)) {
         IOUtils.copy(mediaStream, output);
       } catch (IOException e) {
         throw new WebApplicationException(e, Status.NOT_FOUND);
       }
-    });
+    };
+    return Response.ok(streamingOutput);
   }
 
   /**
