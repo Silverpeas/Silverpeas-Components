@@ -35,8 +35,8 @@ import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +46,8 @@ import java.util.Collection;
  * @author Ludovic Bertin
  */
 public class DefaultHandler extends FunctionHandler {
+
+  private static final int NB_ADDS_BY_CATEGORY = 5;
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
@@ -76,6 +78,7 @@ public class DefaultHandler extends FunctionHandler {
       request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
 
     } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       // form error
       request.setAttribute("ErrorType",
           classifiedsSC.getResources().getString("classifieds.labelErrorForm"));
@@ -104,19 +107,9 @@ public class DefaultHandler extends FunctionHandler {
 
       // Returns jsp to redirect to
       return "accueil.jsp";
-
-    } else { //Affichage page d'accueil annonces listées
-
-      String currentPage = request.getParameter("CurrentPage");
-      if (!StringUtil.isDefined(currentPage)) {
-        currentPage = "0";
-      }
-      int currentPageInt = Integer.parseInt(currentPage);
-      classifiedsSC.setCurrentPage(currentPageInt);
-
-      request.setAttribute("CurrentPage", currentPage);
-      request.setAttribute("NbPages", classifiedsSC.getNbPages(nbTotalClassifieds));
-      request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds(currentPageInt));
+    } else {
+      //Affichage page d'accueil annonces listées
+      request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds());
 
       // Returns jsp to redirect to
       return "accueilNotCategorized.jsp";
@@ -150,8 +143,9 @@ public class DefaultHandler extends FunctionHandler {
       query.addFieldQuery(new FieldDescription(templateName + "$$" + label, keys[i], null));
       Collection<ClassifiedDetail> classifieds;
       try {
-        classifieds = classifiedsSC.getClassifieds(query, 5);
+        classifieds = classifiedsSC.getClassifieds(query, NB_ADDS_BY_CATEGORY);
       } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
         classifieds = new ArrayList<>();
       }
       category.setClassifieds(classifieds);

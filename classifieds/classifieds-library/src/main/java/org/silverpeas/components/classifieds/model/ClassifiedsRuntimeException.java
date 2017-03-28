@@ -36,11 +36,6 @@ public class ClassifiedsRuntimeException extends SilverpeasRuntimeException {
   }
 
   public ClassifiedsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public ClassifiedsRuntimeException(String callingClass, int errorLevel, String message,
       Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }

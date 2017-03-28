@@ -46,12 +46,10 @@
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String language = (String) session.getAttribute("WYSIWYG_Language");
-String userId = (String) session.getAttribute("WYSIWYG_UserId");
 LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 String contextName = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
-<%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <html>
 <head>
@@ -122,9 +120,9 @@ function setCurrentNodeId(id){
 	currentNodeId = id;
 }
 
-function doPagination(index){
+function doPagination(index, nbItemsPerPage){
 	var ieFix = new Date().getTime();
-	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:currentComponent,attachmentLink:1,IEFix:ieFix},
+	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,attachmentLink:1,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
 			},"html");

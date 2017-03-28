@@ -168,6 +168,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (index != null && index.length() > 0) {
           gallerySC.setIndexOfCurrentPage(index);
         }
+        String nbItemsPerPage = request.getParameter("NbItemsPerPage");
+        if (StringUtil.isInteger(nbItemsPerPage)) {
+          gallerySC.setNbMediasPerPage(Integer.parseInt(nbItemsPerPage));
+        }
         destination = returnToAlbum(request, gallerySC);
 
       } else if ("GoToCurrentAlbum".equals(function)) {

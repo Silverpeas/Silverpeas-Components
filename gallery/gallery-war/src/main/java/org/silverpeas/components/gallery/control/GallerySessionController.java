@@ -128,6 +128,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private CommentService commentService = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfCurrentPage = 0;
+  private int nbMediasPerPage = GalleryComponentSettings.getNbMediaDisplayedPerPage();
   // manage basket case (contains list of media identifier)
   private List<String> basket = new ArrayList<String>();
   private static final SettingBundle DEFAULT_SETTINGS =
@@ -460,8 +461,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public int getNbMediaPerPage() {
-    return GalleryComponentSettings
-        .getNbMediaDisplayedPerPageByResolution(displayedMediaResolution);
+    return nbMediasPerPage;
+  }
+
+  public void setNbMediasPerPage(int nb) {
+    nbMediasPerPage = nb;
   }
 
   public MediaResolution getDisplayedMediaResolution() {

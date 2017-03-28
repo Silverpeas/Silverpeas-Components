@@ -41,7 +41,6 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
-<c:set var="componentLabel" value="${browseContext[1]}" />
 <c:set var="profile" value="${requestScope.Profile}" />
 <c:set var="classifieds" value="${requestScope.Classifieds}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
@@ -53,19 +52,14 @@
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
 <c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
 <c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
-<c:set var="nbPages" value="${requestScope.NbPages}" />
-<c:set var="currentPage" value="${requestScope.CurrentPage}" />
+<c:set var="currentFirstItemIndex" value="${requestScope.CurrentFirstItemIndex}" />
+<c:set var="nbPerPage" value="${requestScope.NbPerPage}" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript">
-function doPagination(index) {
-	document.classifiedForm.action = "Pagination";
-    document.classifiedForm.submit();
-}
-
 function sendData() {
 	document.searchForm.submit();
 }
@@ -163,7 +157,6 @@ function viewClassifieds(fieldNumber, fieldValue) {
 						</c:if>
 					</form>
 
-          <form name="classifiedForm" action="Pagination">
           <ul id="classifieds_rich_list">
             <c:if test="${not empty classifieds}">
               <c:forEach items="${classifieds}" var="classified" varStatus="loopStatus">
@@ -212,19 +205,13 @@ function viewClassifieds(fieldNumber, fieldValue) {
             </c:if>
           </ul>
 
-          <fmt:message var="altPreviousLabel" key="classifieds.pagination.previousPage" />
-          <fmt:message var="altNextLabel" key="classifieds.pagination.nextPage" />
-          <fmt:message var="altGoToLabel" key="classifieds.pagination.gotoPage" />
-          <view:pagination currentPage="${currentPage}" nbPages="${nbPages}" 
-                action="Main" pageParam="CurrentPage" altPreviousAction="${altPreviousLabel}" 
-                altNextAction="${altNextLabel}" altGoToAction="${altGoToLabel}"/>
+          <view:pagination currentPage="${currentFirstItemIndex}" totalNumberOfItems="${nbTotal}" nbItemsPerPage="${nbPerPage}" action="Main?ItemIndex=" />
             
 			<!-- legal notice -->
 			<div id="infos" class="inlineMessage">
 				<fmt:message key="classifieds.infos" />
 			</div>
-			
-        </form>      
+
 	</view:frame>
 </view:window>
 </div>

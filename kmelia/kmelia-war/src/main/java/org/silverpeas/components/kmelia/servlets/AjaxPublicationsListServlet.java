@@ -146,6 +146,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               kmeliaSC.getLanguage());
 
       String index = req.getParameter("Index");
+      String nbItemsPerPage = req.getParameter("NbItemsPerPage");
       String sort = req.getParameter("Sort");
       String sToPortlet = req.getParameter("ToPortlet");
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
@@ -161,10 +162,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(index)) {
         kmeliaSC.setIndexOfFirstPubToDisplay(index);
       }
+      if (StringUtil.isInteger(nbItemsPerPage)) {
+        kmeliaSC.setNbPublicationsPerPage(Integer.parseInt(nbItemsPerPage));
+      }
       if (StringUtil.isDefined(sort)) {
         kmeliaSC.setSortValue(sort);
       }
-
 
       boolean sortAllowed = true;
       boolean linksAllowed = true;
@@ -468,11 +471,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write("</div>");
       }
       out.write("</ul>");
-      if (nbPubs > nbPubsPerPage) {
-        out.write("<div id=\"pagination\">");
-        out.write(pagination.printIndex("doPagination"));
-        out.write("</div>");
-      }
+
+      out.write("<div id=\"pagination\">");
+      out.write(pagination.printIndex("doPagination", true));
+      out.write("</div>");
+
       displayFilePreviewJavascript(kmeliaScc.getComponentId(), language, out);
       displayFileViewJavascript(kmeliaScc.getComponentId(), language, out);
       out.write(board.printAfter());
