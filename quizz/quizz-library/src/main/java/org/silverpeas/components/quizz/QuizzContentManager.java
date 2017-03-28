@@ -33,6 +33,7 @@ import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,12 +41,19 @@ import java.util.stream.Collectors;
 /**
  * The quizz implementation of ContentInterface.
  */
+@Singleton
 public class QuizzContentManager implements ContentInterface {
 
   @Inject
   private ContentManager contentManager;
   @Inject
   private QuestionContainerService questionContainerService;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected QuizzContentManager() {
+  }
 
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String instanceId,
@@ -65,7 +73,7 @@ public class QuizzContentManager implements ContentInterface {
         .collect(Collectors.toList());
     ArrayList<QuestionContainerHeader> questionHeaders =
         new ArrayList<>(getQuestionContainerService().getQuestionContainerHeaders(pks));
-    List headers = new ArrayList(questionHeaders.size());
+    List<SilverContentInterface> headers = new ArrayList<>(questionHeaders.size());
     for (QuestionContainerHeader questionContainerHeader : questionHeaders) {
       questionContainerHeader.setIconUrl("quizzSmall.gif");
       headers.add(questionContainerHeader);

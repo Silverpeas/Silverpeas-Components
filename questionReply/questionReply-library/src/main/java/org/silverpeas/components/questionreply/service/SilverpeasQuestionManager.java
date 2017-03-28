@@ -24,28 +24,28 @@
 package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.QuestionReplyException;
-import org.silverpeas.components.questionreply.service.notification.SubscriptionNotifier;
 import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.components.questionreply.service.notification.SubscriptionNotifier;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -80,10 +80,6 @@ public class SilverpeasQuestionManager implements QuestionManager {
       SilverTrace
           .error("questionReply", "SilverpeasQuestionManager", "root.EX_RESOURCE_CLOSE_FAILED", ex);
     }
-  }
-
-  QuestionReplyContentManager getContentManager() {
-    return contentManager;
   }
 
   /**

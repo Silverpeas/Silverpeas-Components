@@ -43,11 +43,9 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
@@ -328,11 +326,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       PdcClassification classification =
           aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId())
               .withPositions(this.getNewSurveyPositions());
-      if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-        classification.ofContent(qcPK.getId());
-        service.classifyContent(surveyDetail, classification);
-      }
+      classification.classifyContent(surveyDetail);
     }
   }
 

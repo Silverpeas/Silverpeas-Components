@@ -28,10 +28,8 @@ import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.util.CollectionUtil;
@@ -122,12 +120,7 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
         PdcClassification curClassification =
             aPdcClassificationOfContent(getMedia().getSilverpeasContentId(),
                 getMedia().getInstanceId()).withPositions(pdcPositions);
-        if (!curClassification.isEmpty()) {
-          PdcClassificationService service =
-              PdcServiceProvider.getPdcClassificationService();
-          curClassification.ofContent(getMedia().getSilverpeasContentId());
-          service.classifyContent(getMedia(), curClassification);
-        }
+        curClassification.classifyContent(getMedia());
       }
     }
   }

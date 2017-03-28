@@ -23,25 +23,6 @@
  */
 package org.silverpeas.components.infoletter.control;
 
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.notification.user.client.GroupRecipient;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.infoletter.InfoLetterException;
@@ -51,32 +32,49 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilTrappedException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.notification.user.client.GroupRecipient;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
-import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilTrappedException;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -221,11 +219,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         String ilpId = ilp.getPK().getId();
         PdcClassification classification = aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).
             withPositions(pdcPositions);
-        if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-          classification.ofContent(ilpId);
-          service.classifyContent(ilp, classification);
-        }
+        classification.classifyContent(ilp);
       }
     }
   }

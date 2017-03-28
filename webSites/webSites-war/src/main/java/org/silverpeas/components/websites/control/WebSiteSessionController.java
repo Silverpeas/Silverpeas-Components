@@ -30,24 +30,6 @@ package org.silverpeas.components.websites.control;
  * @author Cécile BONIN
  */
 
-import org.silverpeas.core.pdc.PdcServiceProvider;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.components.websites.service.WebSiteService;
@@ -55,14 +37,30 @@ import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.siteManage.model.FolderDetail;
 import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.ZipUtil;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -443,11 +441,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
         String siteId = siteDetail.getId();
         PdcClassification classification =
             aPdcClassificationOfContent(siteId, getComponentId()).withPositions(pdcPositions);
-        if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-          classification.ofContent(siteId);
-          service.classifyContent(siteDetail, classification);
-        }
+        classification.classifyContent(siteDetail);
       }
     }
   }

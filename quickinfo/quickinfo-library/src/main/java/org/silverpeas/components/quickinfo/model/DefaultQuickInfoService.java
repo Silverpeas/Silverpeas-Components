@@ -54,10 +54,8 @@ import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.CollectionUtil;
@@ -89,6 +87,9 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Inject
   private CommentService commentService;
+
+  @Inject
+  private QuickInfoContentManager quickInfoContentManager;
 
   @Override
   public News getContentById(String contentId) {
@@ -189,7 +190,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
     // Referring new content into taxonomy
     try {
-      new QuickInfoContentManager()
+      quickInfoContentManager
           .createSilverContent(null, publication, publication.getCreatorId(), false);
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this).error(
@@ -242,7 +243,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
     // Updating visibility onto taxonomy
     try {
-      new QuickInfoContentManager().updateSilverContentVisibility(publication, !news.isDraft());
+      quickInfoContentManager.updateSilverContentVisibility(publication, !news.isDraft());
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this).error(
           "can not update the silver-content of the publication " + publication.getId() +
@@ -279,7 +280,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
     // De-reffering contribution in taxonomy
     try (Connection connection = DBUtil.openConnection()) {
-      new QuickInfoContentManager().deleteSilverContent(connection, foreignPK);
+      quickInfoContentManager.deleteSilverContent(connection, foreignPK);
     } catch (ContentManagerException | SQLException e) {
       SilverLogger.getLogger(this).error(
           "can not delete the silver-content of the publication " + foreignPK.getId() +
@@ -382,7 +383,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     getPublicationService().setDetail(publication, false);
 
     try {
-      new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
+      quickInfoContentManager.updateSilverContentVisibility(publication, true);
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this)
           .error("can not update the silver-content of the publication " + publication.getId() +
@@ -417,11 +418,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
       String qiId = publi.getPK().getId();
       PdcClassification classification =
           aPdcClassificationOfContent(qiId, publi.getInstanceId()).withPositions(pdcPositions);
-      if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-        classification.ofContent(qiId);
-        service.classifyContent(publi, classification);
-      }
+      classification.classifyContent(publi);
     }
   }
 

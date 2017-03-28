@@ -23,39 +23,40 @@
  */
 package org.silverpeas.components.whitepages.control;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.model.SilverCard;
 import org.silverpeas.components.whitepages.model.WhitePagesCard;
 import org.silverpeas.components.whitepages.record.UserRecord;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -64,23 +65,21 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+@Singleton
 public class CardManager {
 
-  private static CardManager instance = new CardManager();
+  @Inject
   private WhitePagesContentManager contentManager = null;
 
-  private CardManager() {
+  protected CardManager() {
   }
 
   private WhitePagesContentManager getWhitePagesContentManager() {
-    if (contentManager == null) {
-      contentManager = new WhitePagesContentManager();
-    }
     return contentManager;
   }
 
   public static CardManager getInstance() {
-    return instance;
+    return ServiceProvider.getService(CardManager.class);
   }
 
   public long create(Card card, String creatorId, PdcClassification classification)
@@ -107,10 +106,8 @@ public class CardManager {
 
       // classify the contribution on the PdC if its classification is defined
       if (classification != null && !classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
         SilverCard silverCard = new SilverCard(card, silverContentId);
-        classification.ofContent(Long.toString(id));
-        service.classifyContent(silverCard, classification);
+        classification.classifyContent(silverCard);
       }
 
     } catch (Exception e) {
@@ -396,16 +393,10 @@ public class CardManager {
     return card;
   }
 
-  /*
-   * public void indexVisibleCards(String instanceId) throws WhitePagesException { Iterator cards =
-   * getVisibleCards(instanceId).iterator(); Card card = null; while (cards.hasNext()) { card =
-   * (Card) cards.next(); indexCard(card); } }
-   */
   public void indexCard(Card card) {
     WAPrimaryKey pk = card.getPK();
     String userName = extractUserName(card);
     String userMail = extractUserMail(card);
-    // String userInfo = extractUserInfo(card);
 
     FullIndexEntry indexEntry = new FullIndexEntry(card.getInstanceId(), "card", pk.getId());
     indexEntry.setTitle(userName);
@@ -413,7 +404,6 @@ public class CardManager {
     indexEntry.setPreView(userMail);
     indexEntry.setCreationDate(card.getCreationDate());
     indexEntry.setCreationUser(Integer.toString(card.getCreatorId()));
-    // indexEntry.addTextContent(userInfo);
 
     try {
       PublicationTemplate pub =
@@ -446,13 +436,15 @@ public class CardManager {
         f = user.getField("FirstName");
         text.append(f.getStringValue());
         text.append(" ");
-      } catch (FormException ignored) {
+      } catch (FormException e) {
+        SilverLogger.getLogger(this).warn(e);
       }
 
       try {
         f = user.getField("LastName");
         text.append(f.getStringValue());
-      } catch (FormException ignored) {
+      } catch (FormException e) {
+        SilverLogger.getLogger(this).warn(e);
       }
     }
     return text.toString();
@@ -467,7 +459,8 @@ public class CardManager {
       try {
         f = user.getField("Mail");
         text.append(f.getStringValue());
-      } catch (FormException ignored) {
+      } catch (FormException e) {
+        SilverLogger.getLogger(this).warn(e);
       }
     }
 

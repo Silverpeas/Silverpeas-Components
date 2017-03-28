@@ -24,19 +24,19 @@
 
 package org.silverpeas.components.forums;
 
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.service.ForumsRuntimeException;
+import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.forums.service.ForumsRuntimeException;
-import org.silverpeas.components.forums.model.ForumDetail;
-import org.silverpeas.components.forums.model.ForumPK;
-import org.silverpeas.components.forums.service.ForumsServiceProvider;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
@@ -49,6 +49,12 @@ import java.util.List;
  */
 @Singleton
 public class ForumsContentManager implements ContentInterface {
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected ForumsContentManager() {
+  }
 
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
@@ -65,9 +71,6 @@ public class ForumsContentManager implements ContentInterface {
    * @return
    */
   public int getSilverObjectId(String pubId, String componentId) {
-    SilverTrace
-        .info("forums", "ForumsContentManager.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-            "pubId = " + pubId);
     try {
       return getContentManager().getSilverContentId(pubId, componentId);
     } catch (Exception e) {
@@ -86,9 +89,6 @@ public class ForumsContentManager implements ContentInterface {
   public int createSilverContent(Connection con, ForumPK forumPK, String userId)
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(true);
-    SilverTrace
-        .info("forums", "ForumsContentManager.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-            "SilverContentVisibility = " + scv.toString());
     return getContentManager()
         .addSilverContent(con, forumPK.getId(), forumPK.getComponentName(), userId, scv);
   }
@@ -105,7 +105,7 @@ public class ForumsContentManager implements ContentInterface {
     if (silverContentId == -1) {
       createSilverContent(null, forumPK, userId);
     } else {
-      SilverContentVisibility scv = new SilverContentVisibility(isVisible(forumPK));
+      SilverContentVisibility scv = new SilverContentVisibility(true);
 
       getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
       ClassifyEngine.clearCache();
@@ -121,18 +121,8 @@ public class ForumsContentManager implements ContentInterface {
     int contentId =
         getContentManager().getSilverContentId(forumPK.getId(), forumPK.getComponentName());
     if (contentId != -1) {
-      SilverTrace
-          .info("forums", "ForumsContentManager.deleteSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-              "pubId = " + forumPK.getId() + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId, forumPK.getComponentName());
     }
-  }
-
-  /**
-   * @return
-   */
-  private boolean isVisible(ForumPK forumPK) {
-    return true;
   }
 
   /**
@@ -149,8 +139,9 @@ public class ForumsContentManager implements ContentInterface {
         String id = getContentManager().getInternalContentId(contentId);
         ForumPK forumPK = new ForumPK(componentId, id);
         fks.add(forumPK);
-      } catch (ClassCastException | ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException e) {
         // ignore unknown item
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
       }
     }
     return fks;
@@ -161,9 +152,9 @@ public class ForumsContentManager implements ContentInterface {
    * @param ids a list of ForumPK
    * @return a list of ForumDetail
    */
-  private List getHeaders(List<ForumPK> ids) {
+  private List<SilverContentInterface> getHeaders(List<ForumPK> ids) {
     Collection<ForumDetail> forumDetails = ForumsServiceProvider.getForumsService().getForums(ids);
-    List<ForumDetail> headers = new ArrayList<>(forumDetails.size());
+    List<SilverContentInterface> headers = new ArrayList<>(forumDetails.size());
     for (ForumDetail forumDetail : forumDetails) {
       forumDetail.setIconUrl("forumsSmall.gif");
       headers.add(forumDetail);
@@ -172,15 +163,7 @@ public class ForumsContentManager implements ContentInterface {
     return headers;
   }
 
-  /**
-   * @return
-   */
   private ContentManager getContentManager() {
-    if (contentManager == null) {
-      contentManager = ServiceProvider.getService(ContentManager.class);
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
-
-  private ContentManager contentManager = null;
 }

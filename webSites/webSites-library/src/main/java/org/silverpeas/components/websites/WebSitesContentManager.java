@@ -31,10 +31,13 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentInterfac
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +45,15 @@ import java.util.List;
 /**
  * The webSites implementation of ContentInterface.
  */
+@Singleton
 public class WebSitesContentManager implements java.io.Serializable, ContentInterface {
-
   private static final long serialVersionUID = -8992766242253326927L;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected WebSitesContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -54,7 +63,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List<Integer> ids, String sComponentId, String userId) {
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String sComponentId, String userId) {
     return getHeaders(getContentManager().getResourcesMatchingContents(ids), sComponentId);
   }
 
@@ -128,32 +137,13 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
   }
 
   /**
-   * return a list of sitePK according to a list of silverContentId
-   * @param silverContentIds
-   * @return a list of sitePK
-   */
-  private List<String> getSiteIds(List<Integer> silverContentIds) {
-    List<String> ids = new ArrayList<>();
-    // for each silverContentId, we get the corresponding publicationId
-    for (Integer silverContentId : silverContentIds) {
-      try {
-        String id = getContentManager().getInternalContentId(silverContentId);
-        ids.add(id);
-      } catch (ClassCastException | ContentManagerException ignored) {
-        // ignore unknown item
-      }
-    }
-    return ids;
-  }
-
-  /**
    * return a list of silverContent according to a list of sitePK
    * @param siteIds list of site identifier
    * @param componentId the component instance identifier
    * @return a list of SiteDetail
    */
-  private List<SiteDetail> getHeaders(List<String> siteIds, String componentId) {
-    List<SiteDetail> headers = new ArrayList<>();
+  private List<SilverContentInterface> getHeaders(List<String> siteIds, String componentId) {
+    List<SilverContentInterface> headers = new ArrayList<>();
 
     try {
       List<SiteDetail> siteDetails = getWebSiteService().getWebSites(componentId, siteIds);
@@ -169,6 +159,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
       }
     } catch (Exception e) {
       // skip unknown and ill formed id.
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
     }
     return headers;
   }

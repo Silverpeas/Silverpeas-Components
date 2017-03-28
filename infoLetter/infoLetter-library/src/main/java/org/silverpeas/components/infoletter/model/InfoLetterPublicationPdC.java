@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -47,7 +48,6 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   private String iconUrl = "infoLetterSmall.gif";
   private static final String TYPE = "publication";
 
-  private static final InfoLetterContentManager contentMgr = new InfoLetterContentManager();
   private String silverObjectId;
   private String positions;
 
@@ -129,7 +129,9 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      int objectId = contentMgr.getSilverObjectId(getId(), getComponentInstanceId());
+      InfoLetterContentManager contentManager =
+          ServiceProvider.getService(InfoLetterContentManager.class);
+      int objectId = contentManager.getSilverObjectId(getId(), getComponentInstanceId());
       if (objectId >= 0) {
         this.silverObjectId = String.valueOf(objectId);
       }

@@ -30,6 +30,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -48,16 +49,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     /**
     * debutAffichage
     */
-   private void debutAffichage(JspWriter out, String rep, String action, String id,
-                                              String currentPath, String name, String newName,
-                                              String code, GraphicElementFactory gef, MultiSilverpeasBundle resources) throws IOException {
+   private void debutAffichage(final HttpServletRequest request, JspWriter out, String rep, String action, String id,
+       String currentPath, String name, String newName, String code, GraphicElementFactory gef, MultiSilverpeasBundle resources) throws IOException {
         out.println(
 
                  "<!-- verif -->"+
 
                   "<HTML>"+
                   "<TITLE>"+resources.getString("GML.popupTitle")+"</TITLE>"+
-           gef.getLookStyleSheet()+
+           gef.getLookStyleSheet(HttpRequest.decorate(request))+
 
                     "<HEAD>"+
 
@@ -161,30 +161,30 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nameSite);
 
     if (resultat.equals("ok")) {
-        debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
+        debutAffichage(request, out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
     }
 
     else if (resultat.equals("pbAjoutFolder")) {
-        debutAffichage(out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
+        debutAffichage(request, out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
         affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef, spaceLabel, componentLabel);
     }
 
     else  if (resultat.equals("pbRenommageFolder")) {
         if (name.equals(fullNewName)) {
-            debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
+            debutAffichage(request, out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
         }
         else {
-            debutAffichage(out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
+            debutAffichage(request, out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
             affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef, spaceLabel, componentLabel);
         }
     }
 
     else  if (resultat.equals("pbRenommageFile")) {
         if (name.equals(fullNewName)) {
-            debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
+            debutAffichage(request, out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
         }
         else {
-            debutAffichage(out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
+            debutAffichage(request, out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
 			affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageFichier"), gef, spaceLabel, componentLabel);
         }
     }

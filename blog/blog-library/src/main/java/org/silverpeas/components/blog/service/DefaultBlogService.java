@@ -104,6 +104,8 @@ public class DefaultBlogService implements BlogService {
   private PdcClassificationService pdcClassificationService;
   @Inject
   private PdcSubscriptionManager pdcSubscriptionManager;
+  @Inject
+  private BlogContentManager blogContentManager;
 
   @Override
   public PostDetail getContentById(String contentId) {
@@ -163,9 +165,8 @@ public class DefaultBlogService implements BlogService {
       createSilverContent(con, pub, pub.getCreatorId());
 
       // classify the publication on the PdC if its classification is defined
-      if (classification != null && !classification.isEmpty()) {
-        classification.ofContent(pk.getId());
-        pdcClassificationService.classifyContent(pub, classification);
+      if (classification != null) {
+        classification.classifyContent(pub);
       }
 
       return pk.getId();
@@ -266,7 +267,7 @@ public class DefaultBlogService implements BlogService {
       // Delete publication
       getPublicationService().removePublication(pubPK);
       // Delete silverContent
-      getBlogContentManager().deleteSilverContent(con, pubPK);
+      blogContentManager.deleteSilverContent(con, pubPK);
     } catch (Exception e) {
       throw new BlogRuntimeException("DefaultBlogService.deletePost()",
           SilverpeasRuntimeException.ERROR, "blog.EX_DELETE_POST", e);
@@ -653,13 +654,9 @@ public class DefaultBlogService implements BlogService {
     return calendar.getTime();
   }
 
-  private BlogContentManager getBlogContentManager() {
-    return new BlogContentManager();
-  }
-
   private int createSilverContent(Connection con, PublicationDetail pubDetail, String creatorId) {
     try {
-      return getBlogContentManager().createSilverContent(con, pubDetail, creatorId);
+      return blogContentManager.createSilverContent(con, pubDetail, creatorId);
     } catch (ContentManagerException e) {
       throw new BlogRuntimeException("DefaultBlogService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_CONTENT_PDC", e);
@@ -668,7 +665,7 @@ public class DefaultBlogService implements BlogService {
 
   private void updateSilverContentVisibility(PublicationDetail pubDetail) {
     try {
-      getBlogContentManager().updateSilverContentVisibility(pubDetail);
+      blogContentManager.updateSilverContentVisibility(pubDetail);
     } catch (Exception e) {
       throw new BlogRuntimeException("DefaultBlogService.updateSilverContentVisibility()",
           SilverpeasRuntimeException.ERROR, "blog.EX_UPDATE_CONTENT_PDC", e);
@@ -720,7 +717,7 @@ public class DefaultBlogService implements BlogService {
     Connection con = null;
     try {
       con = openConnection();
-      return getBlogContentManager().createSilverContent(con, pubDetail, creatorId);
+      return blogContentManager.createSilverContent(con, pubDetail, creatorId);
     } catch (Exception e) {
       throw new BlogRuntimeException("DefaultBlogService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_CONTENT_PDC", e);
@@ -736,7 +733,7 @@ public class DefaultBlogService implements BlogService {
     PublicationDetail pubDetail;
     try {
       silverObjectId =
-          getBlogContentManager().getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
+          blogContentManager.getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
       if (silverObjectId == -1) {
         pubDetail = getPublicationService().getDetail(pubPK);
         silverObjectId = createSilverContent(pubDetail, pubDetail.getCreatorId());

@@ -33,7 +33,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,8 +48,18 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class BlogContentManager implements ContentInterface, Serializable {
-
   private static final long serialVersionUID = 8619139224896358447L;
+
+  @Inject
+  private ContentManager contentManager;
+  @Inject
+  private PublicationService currentPublicationService;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected BlogContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -95,9 +104,6 @@ public class BlogContentManager implements ContentInterface, Serializable {
     SilverContentVisibility scv =
         new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(),
             isVisible(pubDetail));
-    SilverTrace
-        .info("blog", "BlogContentManager.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-            "SilverContentVisibility = " + scv.toString());
     return getContentManager()
         .addSilverContent(con, pubDetail.getPK().getId(), pubDetail.getPK().getComponentName(),
             userId, scv);
@@ -152,7 +158,6 @@ public class BlogContentManager implements ContentInterface, Serializable {
     ClassifyEngine.clearCache();
   }
 
-
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
@@ -186,9 +191,4 @@ public class BlogContentManager implements ContentInterface, Serializable {
   private PublicationService getPublicationService() {
     return currentPublicationService;
   }
-
-  @Inject
-  private ContentManager contentManager;
-  @Inject
-  private PublicationService currentPublicationService;
 }

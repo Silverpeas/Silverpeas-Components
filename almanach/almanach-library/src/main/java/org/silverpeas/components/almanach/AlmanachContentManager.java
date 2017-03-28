@@ -20,29 +20,32 @@
  */
 package org.silverpeas.components.almanach;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.components.almanach.model.EventDetail;
+import org.silverpeas.components.almanach.model.EventPK;
+import org.silverpeas.components.almanach.service.AlmanachException;
+import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.components.almanach.service.AlmanachException;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Singleton
 public class AlmanachContentManager implements ContentInterface {
 
-  @Inject
-  private AlmanachService currentAlmanachService;
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected AlmanachContentManager(){
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -60,9 +63,6 @@ public class AlmanachContentManager implements ContentInterface {
   }
 
   public int getSilverObjectId(String pubId, String peasId) throws ContentManagerException {
-    SilverTrace
-        .info("almanach", "AlmanachContentManager.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-            "pubId = " + pubId);
     return getContentManager().getSilverContentId(pubId, peasId);
   }
 
@@ -132,8 +132,9 @@ public class AlmanachContentManager implements ContentInterface {
         id = getContentManager().getInternalContentId(contentId);
         eventPK = new EventPK(id, "useless", peasId);
         pks.add(eventPK);
-      } catch (ClassCastException | ContentManagerException ignored) {
-        ;// ignore unknown item
+      } catch (ClassCastException | ContentManagerException e) {
+        // ignore unknown item
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
       }
     }
     return pks;
@@ -154,17 +155,14 @@ public class AlmanachContentManager implements ContentInterface {
         headers.add(eventDetail);
       }
     } catch (Exception e) {
-      ;// skip unknown and ill formed id.
+      // skip unknown and ill formed id.
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
     }
     return headers;
   }
 
   private AlmanachService getAlmanachBm() throws AlmanachException {
-    if (currentAlmanachService == null) {
-      throw new AlmanachException("AlmanachContentManager.getAlmanachBm()",
-          SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL");
-    }
-    return currentAlmanachService;
+    return AlmanachService.get();
   }
 
   private ContentManager getContentManager() {

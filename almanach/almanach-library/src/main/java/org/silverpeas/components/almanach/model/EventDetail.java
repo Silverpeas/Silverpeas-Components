@@ -398,13 +398,15 @@ public class EventDetail extends AbstractBean
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      AlmanachContentManager contentManager = new AlmanachContentManager();
       try {
+        AlmanachContentManager contentManager =
+            ServiceProvider.getService(AlmanachContentManager.class);
         int objectId = contentManager.getSilverObjectId(getId(), getInstanceId());
         if (objectId >= 0) {
           this.silverObjectId = String.valueOf(objectId);
         }
-      } catch (ContentManagerException ex) {
+      } catch (ContentManagerException e) {
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
         this.silverObjectId = null;
       }
     }
