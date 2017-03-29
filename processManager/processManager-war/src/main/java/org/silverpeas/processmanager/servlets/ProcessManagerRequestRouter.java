@@ -1126,7 +1126,7 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       // Get the print form
-      Form form = session.getPrintForm(request);
+      Form form = session.getPrintForm();
       request.setAttribute("form", form);
 
       // Set the form context

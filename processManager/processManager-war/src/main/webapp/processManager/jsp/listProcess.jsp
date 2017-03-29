@@ -1,4 +1,5 @@
-<%@ page import="org.silverpeas.core.contribution.content.form.Form" %><%--
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="java.util.Map" %><%--
 
     Copyright (C) 2000 - 2017 Silverpeas
 
@@ -257,7 +258,7 @@ Item getItem(Item[] items, String itemName)
 				String fieldName = headers[j].getFieldName();
 				Item item = getItem(items, fieldName);
 				if (item != null) {
-					Hashtable keyValuePairs = item.getKeyValuePairs();
+					Map<String, String> keyValuePairs = item.getKeyValuePairs();
 					if (keyValuePairs != null && keyValuePairs.size() > 0)
 					{
 						String newValue = "";
@@ -270,7 +271,7 @@ Item getItem(Item[] items, String itemName)
 							{
 								t = tokenizer.nextToken();
 
-								t = (String) keyValuePairs.get(t);
+								t = keyValuePairs.get(t);
 								newValue += t;
 
 								if (tokenizer.hasMoreTokens())
@@ -279,7 +280,7 @@ Item getItem(Item[] items, String itemName)
 						}
 						else if (fieldString != null && fieldString.length() > 0)
 						{
-							newValue = (String) keyValuePairs.get(fieldString);
+							newValue = keyValuePairs.get(fieldString);
 						}
 						fieldString = newValue;
 					}
