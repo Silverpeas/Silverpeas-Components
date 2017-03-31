@@ -30,14 +30,6 @@ package org.silverpeas.components.websites.service;
  * @author Cecile BONIN
  */
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.components.websites.WebSitesContentManager;
 import org.silverpeas.components.websites.siteManage.dao.SiteDAO;
 import org.silverpeas.components.websites.siteManage.model.FolderDetail;
@@ -45,10 +37,18 @@ import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
 import org.silverpeas.components.websites.siteManage.model.WebSitesRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -69,6 +69,7 @@ public class DefaultWebSiteService implements WebSiteService {
   /**
    * use for the PDC utilization
    */
+  @Inject
   private WebSitesContentManager webSitesContentManager = null;
 
   DefaultWebSiteService() {
@@ -765,9 +766,6 @@ public class DefaultWebSiteService implements WebSiteService {
    * @return a "singleton" instance of WebSitesContentManager
    */
   private WebSitesContentManager getWebSitesContentManager() {
-    if (webSitesContentManager == null) {
-      webSitesContentManager = new WebSitesContentManager();
-    }
     return webSitesContentManager;
   }
 

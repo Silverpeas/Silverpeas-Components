@@ -38,7 +38,9 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,9 +49,15 @@ import java.util.List;
 /**
  * The gallery implementation of ContentInterface.
  */
+@Singleton
 public class GalleryContentManager implements ContentInterface, java.io.Serializable {
-
   private static final long serialVersionUID = 1L;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected GalleryContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -130,8 +138,9 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
         String id = getContentManager().getInternalContentId(contentId);
         MediaPK mediaPK = new MediaPK(id, peasId);
         pks.add(mediaPK);
-      } catch (ClassCastException | ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException e) {
         // ignore unknown item
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
       }
     }
     return pks;
@@ -163,5 +172,4 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   private GalleryService getGalleryService() {
     return ServiceProvider.getService(GalleryService.class);
   }
-
 }

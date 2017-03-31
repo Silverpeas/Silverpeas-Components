@@ -20,13 +20,6 @@
  */
 package org.silverpeas.components.almanach.service;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
@@ -39,8 +32,6 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.components.almanach.AlmanachContentManager;
 import org.silverpeas.components.almanach.model.EventDAO;
 import org.silverpeas.components.almanach.model.EventDetail;
@@ -48,21 +39,28 @@ import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;
 import org.silverpeas.components.almanach.model.Periodicity;
 import org.silverpeas.components.almanach.model.PeriodicityException;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.pdc.PdcServiceProvider;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -89,6 +87,7 @@ public class DefaultAlmanachService implements AlmanachService {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
+  @Inject
   private AlmanachContentManager almanachContentManager = null;
   private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
   private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
@@ -196,11 +195,7 @@ public class DefaultAlmanachService implements AlmanachService {
         addPeriodicity(periodicity);
       }
       createSilverContent(connection, event, event.getCreatorId());
-      if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-        classification.ofContent(event.getId());
-        service.classifyContent(event, classification);
-      }
+      classification.classifyContent(event);
       WysiwygController.createUnindexedFileAndAttachment(event.getDescription(event.getLanguage()),
           event.getPK(), event.getDelegatorId(), event.getLanguage());
       // Attach uploaded files
@@ -612,7 +607,7 @@ public class DefaultAlmanachService implements AlmanachService {
     int silverObjectId;
     EventDetail detail;
     try {
-      silverObjectId = getAlmanachContentManager()
+      silverObjectId = almanachContentManager
           .getSilverObjectId(eventPK.getId(), eventPK.getComponentName());
       if (silverObjectId == -1) {
         detail = getEventDetail(eventPK);
@@ -634,7 +629,7 @@ public class DefaultAlmanachService implements AlmanachService {
   private int createSilverContent(Connection con, EventDetail eventDetail, String creatorId) {
 
     try {
-      return getAlmanachContentManager().createSilverContent(con, eventDetail, creatorId);
+      return almanachContentManager.createSilverContent(con, eventDetail, creatorId);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("DefaultAlmanachService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -648,7 +643,7 @@ public class DefaultAlmanachService implements AlmanachService {
   private void deleteSilverContent(Connection con, EventPK eventPK) {
 
     try {
-      getAlmanachContentManager().deleteSilverContent(con, eventPK);
+      almanachContentManager.deleteSilverContent(con, eventPK);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("DefaultAlmanachService.deleteSilverContent()",
           SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -660,21 +655,11 @@ public class DefaultAlmanachService implements AlmanachService {
    */
   private void updateSilverContentVisibility(EventDetail eventDetail) {
     try {
-      getAlmanachContentManager().updateSilverContentVisibility(eventDetail);
+      almanachContentManager.updateSilverContentVisibility(eventDetail);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("DefaultAlmanachService.deleteSilverContent()",
           SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
-  }
-
-  /**
-   * @return
-   */
-  private AlmanachContentManager getAlmanachContentManager() {
-    if (almanachContentManager == null) {
-      almanachContentManager = new AlmanachContentManager();
-    }
-    return almanachContentManager;
   }
 
   /*

@@ -23,54 +23,52 @@
  */
 package org.silverpeas.components.forums.control;
 
-import org.silverpeas.core.pdc.PdcServiceProvider;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.forums.bean.ForumModeratorBean;
-import org.silverpeas.components.forums.service.ForumsException;
-import org.silverpeas.components.forums.service.ForumService;
-import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumDetail;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.components.forums.notification.ForumsForumSubscriptionUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessagePendingValidationUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessageValidationUserNotification;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.components.forums.service.ForumsException;
+import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.ejb.EJBException;
 import java.util.ArrayList;
@@ -80,9 +78,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.admin.user.model.UserDetail.OnFirstNameAndLastName;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * This class manage user session when working with forums application
@@ -889,11 +887,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       PdcClassification classification =
           aPdcClassificationOfContent(forumId, forumDetail.getInstanceId())
               .withPositions(this.getPositions());
-      if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-        classification.ofContent(forumId);
-        service.classifyContent(forumDetail, classification);
-      }
+      classification.classifyContent(forumDetail);
     }
   }
 

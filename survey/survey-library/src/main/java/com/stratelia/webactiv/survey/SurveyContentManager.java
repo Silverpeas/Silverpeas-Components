@@ -25,11 +25,13 @@ package com.stratelia.webactiv.survey;
 
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,12 +40,19 @@ import java.util.stream.Collectors;
 /**
  * The survey implementation of ContentInterface
  */
+@Singleton
 public class SurveyContentManager implements ContentInterface {
 
   @Inject
   private ContentManager contentManager;
   @Inject
   private QuestionContainerService questionContainerService;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected SurveyContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -53,7 +62,7 @@ public class SurveyContentManager implements ContentInterface {
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List<Integer> ids, String instanceId, String userId) {
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String instanceId, String userId) {
     return getHeaders(contentManager.getResourcesMatchingContents(ids), instanceId);
   }
 
@@ -63,13 +72,13 @@ public class SurveyContentManager implements ContentInterface {
    * @param ids a list of question container identifiers.
    * @return a list of {@link QuestionContainerHeader} instance.
    */
-  private List<QuestionContainerHeader> getHeaders(List<String> ids, String instanceId) {
+  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
     List<QuestionContainerPK> pks = ids.stream()
         .map(id -> new QuestionContainerPK(id, "useles", instanceId))
         .collect(Collectors.toList());
     Collection<QuestionContainerHeader> questionContainerHeaders =
         getQuestionContainerService().getQuestionContainerHeaders(pks);
-    List<QuestionContainerHeader> headers = new ArrayList<>(questionContainerHeaders.size());
+    List<SilverContentInterface> headers = new ArrayList<>(questionContainerHeaders.size());
     for (QuestionContainerHeader qC : questionContainerHeaders) {
       qC.setIconUrl("surveySmall.gif");
       if (qC.getPK().getInstanceId().startsWith("pollingStation")) {

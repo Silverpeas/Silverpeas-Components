@@ -23,37 +23,35 @@
  */
 package org.silverpeas.components.quizz.control;
 
-import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.components.quizz.QuizzException;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.questioncontainer.question.model.Question;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerSelection;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
-import org.silverpeas.components.quizz.QuizzException;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -218,11 +216,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       PdcClassification classification =
           aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId())
               .withPositions(this.getPositions());
-      if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-        classification.ofContent(qcPK.getId());
-        service.classifyContent(quizDetail, classification);
-      }
+      classification.classifyContent(quizDetail);
     }
   }
 

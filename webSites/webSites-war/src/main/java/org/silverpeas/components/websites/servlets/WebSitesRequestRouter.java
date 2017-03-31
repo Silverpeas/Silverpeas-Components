@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.websites.servlets.WebSitesUtil.getMachine;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSessionController> {
 
@@ -769,9 +770,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
   private String listSitesMatchingSearch(final WebSiteSessionController scc,
       final HttpRequest request) {
-    String id = request.getParameter("Id"); /* id de la publication */
-
-    String typeRequest = request.getParameter("Type");
+    String id = request.getParameter("Id");
+    String typeRequest =
+        defaultStringIfNotDefined(request.getParameter("Type"), "Site");
     String destination = "";
     if ("Publication".equals(typeRequest)) {
       // recherche de l'url complete d'acces a la page
@@ -872,11 +873,12 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         // by default = "http"
         nomPage = "http://" + nomPage;
       }
-    } else { // upload, design
+    } else {
+      // upload, design
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 
-      nomPage = "http://" + getMachine(request) + "/" + settings.getString("Context") + "/" +
+      nomPage = getMachine(request) + "/" + settings.getString("Context") + "/" +
           scc.getWebSitePathById(siteId) + "/" + nomPage;
     }
     return "/webSites/jsp/ouvertureSite.jsp?URL=" + WebEncodeHelper.javaStringToJsString(nomPage) +

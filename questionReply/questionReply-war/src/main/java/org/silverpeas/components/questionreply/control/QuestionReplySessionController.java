@@ -23,56 +23,54 @@
  */
 package org.silverpeas.components.questionreply.control;
 
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.components.questionreply.QuestionReplyException;
+import org.silverpeas.components.questionreply.model.Category;
+import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.components.questionreply.model.QuestionDetail;
+import org.silverpeas.components.questionreply.model.Recipient;
+import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
+import org.silverpeas.components.questionreply.service.notification.NotificationData;
+import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
+import org.silverpeas.components.questionreply.service.notification.ReplyNotifier;
+import org.silverpeas.components.whitepages.control.CardManager;
+import org.silverpeas.components.whitepages.model.Card;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.report.ExportReport;
-import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.ZipUtil;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.components.questionreply.QuestionReplyException;
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
-import org.silverpeas.components.questionreply.service.notification.NotificationData;
-import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
-import org.silverpeas.components.questionreply.service.notification.ReplyNotifier;
-import org.silverpeas.components.questionreply.model.Category;
-import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.components.questionreply.model.QuestionDetail;
-import org.silverpeas.components.questionreply.model.Recipient;
-import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.components.whitepages.control.CardManager;
-import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -950,11 +948,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         PdcClassification classification =
             aPdcClassificationOfContent(questionIdStr, questionDetail.getComponentInstanceId())
                 .withPositions(pdcPositions);
-        if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
-          classification.ofContent(questionIdStr);
-          service.classifyContent(questionDetail, classification);
-        }
+        classification.classifyContent(questionDetail);
       }
     }
   }

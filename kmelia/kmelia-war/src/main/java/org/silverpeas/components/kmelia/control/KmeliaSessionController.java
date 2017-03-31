@@ -110,7 +110,6 @@ import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -3423,8 +3422,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * classification of the imported publications. False otherwise.
    */
   public boolean isDefaultClassificationModifiable(String topicId, String componentId) {
-    PdcClassificationService classificationService =
-        PdcServiceProvider.getPdcClassificationService();
+    PdcClassificationService classificationService = PdcClassificationService.get();
     PdcClassification defaultClassification =
         classificationService.findAPreDefinedClassification(topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();

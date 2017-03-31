@@ -1,7 +1,8 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.http.HttpRequest" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -45,14 +46,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     /**
     * debutAffichage
     */
-   private void debutAffichage(JspWriter out, String rep, String action,
-                                              String currentPath, String nomPage, String nameSite, GraphicElementFactory gef, String id, MultiSilverpeasBundle resources) throws IOException {
+   private void debutAffichage(final HttpServletRequest request, JspWriter out, String rep, String action,
+       String currentPath, String nomPage, String nameSite, GraphicElementFactory gef, String id,
+       MultiSilverpeasBundle resources) throws IOException {
         out.println(
               "<!-- verifAjoutPage -->"+
 
                   "<HTML>"+
                   "<TITLE>"+resources.getString("GML.popupTitle")+"</TITLE>"+
-           gef.getLookStyleSheet()+
+           gef.getLookStyleSheet(HttpRequest.decorate(request))+
 
                     "<HEAD>"+
                     "<Script language=\"JavaScript\">");
@@ -120,10 +122,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nameSite);
 
     if (resultat.equals("ok")) {
-        debutAffichage(out, "ok", action, currentPath, nomPage, nameSite, gef, id, resources);
+        debutAffichage(request, out, "ok", action, currentPath, nomPage, nameSite, gef, id, resources);
     }
     else if (resultat.equals("pbAjoutFile")) {
-        debutAffichage(out, "", action, currentPath, nomPage, nameSite, gef, id, resources);
+        debutAffichage(request, out, "", action, currentPath, nomPage, nameSite, gef, id, resources);
 		affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutFichier"), gef, spaceLabel, componentLabel);
     }
 %>

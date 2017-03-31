@@ -176,6 +176,8 @@ public class DefaultKmeliaService implements KmeliaService {
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private PersistentDateReminderService dateReminderService;
+  @Inject
+  private KmeliaContentManager kmeliaContentManager;
 
   public DefaultKmeliaService() {
   }
@@ -990,11 +992,8 @@ public class DefaultKmeliaService implements KmeliaService {
       // add this publication to the current topic
       addPublicationToTopicWithoutNotifications(pubPK, fatherPK, true);
       // classify the publication on the PdC if its classification is defined
-      if (!classification.isEmpty()) {
-        classification.ofContent(pubPK.getId());
-        // subscribers are notified later (only if publication is valid)
-        pdcClassificationService.classifyContent(pubDetail, classification, false);
-      }
+      // subscribers are notified later (only if publication is valid)
+      classification.classifyContent(pubDetail, false);
 
       createdIntoRequestContext(pubDetail);
 
@@ -2951,7 +2950,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationDetail pubDetail;
     try {
       silverObjectId =
-          getKmeliaContentManager().getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
+          kmeliaContentManager.getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
       if (silverObjectId == -1) {
         pubDetail = getPublicationDetail(pubPK);
         silverObjectId = createSilverContent(pubDetail, pubDetail.getCreatorId());
@@ -2967,7 +2966,7 @@ public class DefaultKmeliaService implements KmeliaService {
     Connection con = null;
     try {
       con = getConnection();
-      return getKmeliaContentManager().createSilverContent(con, pubDetail, creatorId);
+      return kmeliaContentManager.createSilverContent(con, pubDetail, creatorId);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.createSilverContent()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -2980,7 +2979,7 @@ public class DefaultKmeliaService implements KmeliaService {
   public void deleteSilverContent(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
-      getKmeliaContentManager().deleteSilverContent(con, pubPK);
+      kmeliaContentManager.deleteSilverContent(con, pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.deleteSilverContent()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -2991,7 +2990,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void updateSilverContentVisibility(PublicationDetail pubDetail) {
     try {
-      getKmeliaContentManager().updateSilverContentVisibility(pubDetail);
+      kmeliaContentManager.updateSilverContentVisibility(pubDetail);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.updateSilverContentVisibility()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -3001,15 +3000,11 @@ public class DefaultKmeliaService implements KmeliaService {
   private void updateSilverContentVisibility(PublicationPK pubPK, boolean isVisible) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     try {
-      getKmeliaContentManager().updateSilverContentVisibility(pubDetail, isVisible);
+      kmeliaContentManager.updateSilverContentVisibility(pubDetail, isVisible);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefaultKmeliaService.updateSilverContentVisibility()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
-  }
-
-  private KmeliaContentManager getKmeliaContentManager() {
-    return new KmeliaContentManager();
   }
 
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {

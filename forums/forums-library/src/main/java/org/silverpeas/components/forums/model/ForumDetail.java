@@ -33,6 +33,7 @@ import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -230,8 +231,8 @@ public class ForumDetail extends AbstractBean
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      ForumsContentManager forumsContentMgr = new ForumsContentManager();
-      int objectId = forumsContentMgr.getSilverObjectId(getId(), getComponentInstanceId());
+      ForumsContentManager contentManager = ServiceProvider.getService(ForumsContentManager.class);
+      int objectId = contentManager.getSilverObjectId(getId(), getComponentInstanceId());
       if (objectId >= 0) {
         this.silverObjectId = String.valueOf(objectId);
       }

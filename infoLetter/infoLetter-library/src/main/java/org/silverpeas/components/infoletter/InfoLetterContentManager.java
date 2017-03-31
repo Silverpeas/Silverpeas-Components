@@ -35,15 +35,29 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVi
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.silverpeas.components.infoletter.model.InfoLetterPublication.PUBLICATION_VALIDEE;
+
 /**
  * The infoletter implementation of ContentInterface.
  */
+@Singleton
 public class InfoLetterContentManager implements ContentInterface {
+
+  private InfoLetterService dataInterface = null;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected InfoLetterContentManager() {
+  }
+
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve
@@ -123,7 +137,7 @@ public class InfoLetterContentManager implements ContentInterface {
   }
 
   private boolean isVisible(InfoLetterPublicationPdC ilPub) {
-    return (ilPub.getPublicationState() == 2);
+    return ilPub.getPublicationState() == PUBLICATION_VALIDEE;
   }
 
   /**
@@ -138,8 +152,9 @@ public class InfoLetterContentManager implements ContentInterface {
       try {
         String id = getContentManager().getInternalContentId(contentId);
         pks.add(id);
-      } catch (ClassCastException | ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException e) {
         // ignore unknown item
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
       }
     }
     return pks;
@@ -151,8 +166,8 @@ public class InfoLetterContentManager implements ContentInterface {
    * @param componentId the id of the instance
    * @return a list of publicationDetail
    */
-  private List getHeaders(List<String> ids, String componentId) {
-    List<InfoLetterPublicationPdC> headers = new ArrayList<>();
+  private List<SilverContentInterface> getHeaders(List<String> ids, String componentId) {
+    List<SilverContentInterface> headers = new ArrayList<>();
     for (String pubId : ids) {
       IdPK pubPK = new IdPK();
       pubPK.setId(pubId);
@@ -174,6 +189,4 @@ public class InfoLetterContentManager implements ContentInterface {
     }
     return dataInterface;
   }
-
-  private InfoLetterService dataInterface = null;
 }

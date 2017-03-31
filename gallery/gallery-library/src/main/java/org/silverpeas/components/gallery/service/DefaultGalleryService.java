@@ -86,6 +86,8 @@ public class DefaultGalleryService implements GalleryService {
   private NodeService nodeService;
   @Inject
   private OrganizationController organizationController;
+  @Inject
+  private GalleryContentManager galleryContentManager;
 
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK) {
@@ -564,7 +566,7 @@ public class DefaultGalleryService implements GalleryService {
 
     int silverObjectId;
     try {
-      silverObjectId = getGalleryContentManager().getSilverObjectId(mediaPK.getId(), mediaPK
+      silverObjectId = galleryContentManager.getSilverObjectId(mediaPK.getId(), mediaPK
           .getInstanceId());
 
       if (silverObjectId == -1) {
@@ -581,7 +583,7 @@ public class DefaultGalleryService implements GalleryService {
 
   private int createSilverContent(final Media media, final String creatorId) {
     try {
-      return getGalleryContentManager().createSilverContent(media, creatorId);
+      return galleryContentManager.createSilverContent(media, creatorId);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("DefaultGalleryService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -700,10 +702,6 @@ public class DefaultGalleryService implements GalleryService {
       throw new GalleryRuntimeException("DefaultGalleryService.deleteOrders()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
     }
-  }
-
-  private GalleryContentManager getGalleryContentManager() {
-    return new GalleryContentManager();
   }
 
   /**

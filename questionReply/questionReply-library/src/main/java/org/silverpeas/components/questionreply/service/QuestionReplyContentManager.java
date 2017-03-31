@@ -25,16 +25,18 @@ package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,11 +45,16 @@ import java.util.List;
 /**
  * The questionReply implementation of ContentInterface.
  */
+@Singleton
 public class QuestionReplyContentManager implements ContentInterface {
 
-  ContentManager contentManager = ContentManagerProvider.getContentManager();
+  @Inject
+  private ContentManager contentManager;
 
-  public QuestionReplyContentManager() {
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected QuestionReplyContentManager() {
   }
 
   /**
@@ -68,8 +75,9 @@ public class QuestionReplyContentManager implements ContentInterface {
       try {
         String id = this.contentManager.getInternalContentId(contentId);
         ids.add(id);
-      } catch (ClassCastException | ContentManagerException ignored) {
+      } catch (ClassCastException | ContentManagerException e) {
         // ignore unknown item
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
       }
     }
     return ids;
@@ -86,6 +94,7 @@ public class QuestionReplyContentManager implements ContentInterface {
       }
     } catch (QuestionReplyException e) {
       // skip unknown and ill formed id.
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
     }
     return headers;
   }
@@ -143,6 +152,6 @@ public class QuestionReplyContentManager implements ContentInterface {
   }
 
   private boolean isVisible(Question question) {
-    return (question.getPublicReplyNumber() != 0);
+    return question.getPublicReplyNumber() != 0;
   }
 }

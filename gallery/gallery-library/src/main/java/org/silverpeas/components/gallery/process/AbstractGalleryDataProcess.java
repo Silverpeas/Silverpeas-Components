@@ -39,6 +39,7 @@ import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.process.management.AbstractDataProcess;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -98,7 +99,7 @@ public abstract class AbstractGalleryDataProcess extends
    */
   protected GalleryContentManager getGalleryContentManager() {
     if (galleryContentManager == null) {
-      galleryContentManager = new GalleryContentManager();
+      galleryContentManager = ServiceProvider.getService(GalleryContentManager.class);
     }
     return galleryContentManager;
   }

@@ -33,7 +33,9 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentIn
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +44,14 @@ import java.util.List;
 /**
  * The whitePages implementation of ContentInterface.
  */
+@Singleton
 public class WhitePagesContentManager implements ContentInterface {
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected WhitePagesContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given SilverContentId
@@ -52,7 +61,8 @@ public class WhitePagesContentManager implements ContentInterface {
     return getHeaders(getContentManager().getResourcesMatchingContents(ids), peasId);
   }
 
-  private List getHeaders(List<String> ids, String instanceId) {
+  @SuppressWarnings("unchecked")
+  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
     ArrayList<CardHeader> headers = new ArrayList<>();
     try {
       ArrayList<Card> cards = (ArrayList<Card>) CardManager.getInstance().getCardsByIds(ids);
@@ -63,9 +73,10 @@ public class WhitePagesContentManager implements ContentInterface {
       }
     } catch (WhitePagesException e) {
       // skip unknown and ill formed id.
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
     }
     Collections.sort(headers);
-    return headers;
+    return (List) headers;
   }
 
   /**
@@ -108,7 +119,7 @@ public class WhitePagesContentManager implements ContentInterface {
   }
 
   private boolean isVisible(Card card) {
-    return (card.getHideStatus() == 0);
+    return card.getHideStatus() == 0;
   }
 
   private ContentManager getContentManager() {

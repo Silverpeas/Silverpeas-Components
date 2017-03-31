@@ -35,15 +35,24 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Singleton
 public class QuickInfoContentManager implements ContentInterface {
 
+  private static final String CONTENT_ICON = "quickinfoSmall.gif";
+
   private PublicationService publicationService;
-  public final static String CONTENT_ICON = "quickinfoSmall.gif";
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected QuickInfoContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -116,13 +125,13 @@ public class QuickInfoContentManager implements ContentInterface {
    * @param instanceId the unique identifier of the component instance.
    * @return a list of publicationDetail
    */
-  private List getHeaders(List<String> ids, String instanceId) {
+  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
     List<PublicationPK> pks = ids.stream()
         .map(id -> new PublicationPK(id, "useles", instanceId))
         .collect(Collectors.toList());
     List<PublicationDetail> publicationDetails =
         new ArrayList<>(getPublicationService().getPublications(pks));
-    List<PublicationDetail> headers = new ArrayList<>(publicationDetails.size());
+    List<SilverContentInterface> headers = new ArrayList<>(publicationDetails.size());
     for (PublicationDetail pubDetail : publicationDetails) {
       pubDetail.setIconUrl(CONTENT_ICON);
       headers.add(pubDetail);

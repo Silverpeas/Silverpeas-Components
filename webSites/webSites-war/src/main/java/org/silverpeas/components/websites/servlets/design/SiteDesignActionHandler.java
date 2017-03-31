@@ -479,10 +479,10 @@ public class SiteDesignActionHandler {
     int index;
     String finChemin;
     String image =
-        "<IMG border=0 src=\"http://" + getMachine(request) + "/" + settings.getString("Context") +
+        "<IMG border=0 src=\"" + getMachine(request) + "/" + settings.getString("Context") +
             "/" + scc.getComponentId() + "/";
     int longueurImage = WEBSITE_BASE_URL_LENGTH +
-        ("http://" + getMachine(request) + "/" + settings.getString("Context") + "/" +
+        (getMachine(request) + "/" + settings.getString("Context") + "/" +
             scc.getComponentId() + "/").length();
     index = code.indexOf(image);
     if (index == -1) {

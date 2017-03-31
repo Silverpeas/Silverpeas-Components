@@ -25,14 +25,16 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentInterfac
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,9 +43,15 @@ import java.util.List;
 /**
  * The kmelia implementation of ContentInterface.
  */
+@Singleton
 public class KmeliaContentManager implements ContentInterface, java.io.Serializable {
-
   private static final long serialVersionUID = 3525407153404515235L;
+
+  /**
+   * Hidden constructor as this implementation must be GET by CDI mechanism.
+   */
+  protected KmeliaContentManager() {
+  }
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -54,9 +62,9 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List ids, String peasId, String userId) {
+  public List<SilverContentInterface> getSilverContentById(List<Integer>  ids, String peasId, String userId) {
     if (getContentManager() == null) {
-      return new ArrayList();
+      return new ArrayList<>();
     }
 
     return getHeaders(makePKArray(ids, peasId), peasId, userId);
@@ -155,18 +163,17 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param peasId the id of the instance
    * @return a list of publicationPK
    */
-  private ArrayList<PublicationPK> makePKArray(List<Integer> idList, String peasId) {
-    ArrayList<PublicationPK> pks = new ArrayList<PublicationPK>();
+  private List<PublicationPK> makePKArray(List<Integer> idList, String peasId) {
+    List<PublicationPK> pks = new ArrayList<PublicationPK>();
     // for each silverContentId, we get the corresponding publicationId
     for (int contentId : idList) {
       try {
         String id = getContentManager().getInternalContentId(contentId);
         PublicationPK pubPK = new PublicationPK(id, peasId);
         pks.add(pubPK);
-      } catch (ClassCastException ignored) {
+      } catch (ClassCastException | ContentManagerException e) {
         // ignore unknown item
-      } catch (ContentManagerException ignored) {
-        // ignore unknown item
+        SilverLogger.getLogger(this).debug(e.getMessage(), e);
       }
     }
     return pks;
@@ -178,9 +185,9 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
-  private List<PublicationDetail> getHeaders(List<PublicationPK> ids, String componentId,
+  private List<SilverContentInterface> getHeaders(List<PublicationPK> ids, String componentId,
       String userId) {
-    List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
+    List<SilverContentInterface> headers = new ArrayList<>();
     KmeliaAuthorization security = new KmeliaAuthorization();
     boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
 
@@ -199,11 +206,6 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   }
 
   private PublicationService getPublicationService() {
-    if (currentPublicationService == null) {
-        currentPublicationService = ServiceProvider.getService(PublicationService.class);
-    }
-    return currentPublicationService;
+    return PublicationService.get();
   }
-
-  private PublicationService currentPublicationService = null;
 }

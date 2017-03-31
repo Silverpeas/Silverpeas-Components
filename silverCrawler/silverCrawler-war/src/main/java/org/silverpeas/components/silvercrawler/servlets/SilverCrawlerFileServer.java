@@ -83,8 +83,9 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     String path = req.getParameter("Path");
 
     try {
-      FileUtil.checkPathNotRelative(sourceFile);
+      FileUtil.assertPathNotRelative(sourceFile);
     } catch (RelativeFileAccessException e) {
+      SilverLogger.getLogger(this).warn(e);
       throwHttpForbiddenError();
     }
 

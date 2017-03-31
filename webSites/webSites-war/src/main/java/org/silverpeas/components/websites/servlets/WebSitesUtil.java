@@ -66,7 +66,7 @@ public class WebSitesUtil {
     String context = (generalSettings.getString("ApplicationURL")).substring(1);
     if (machine.length() == 0) {
       List<String> a = buildTab(request.getRequestURL().toString());
-      for (int i = 0; i < a.size() || a.get(i).equals(context); i++) {
+      for (int i = 0; i < a.size() && !a.get(i).equals(context); i++) {
         if (machine.length() > 0) {
           machine.append("/");
         }
