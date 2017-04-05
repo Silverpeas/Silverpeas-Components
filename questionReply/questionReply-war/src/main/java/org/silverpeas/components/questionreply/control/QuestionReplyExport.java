@@ -215,8 +215,7 @@ public class QuestionReplyExport {
     sb.append("</a>\n");
     sb.append("</nobr>\n");
     sb.append("<br>\n");
-    sb.append(UnitUtil.formatMemSize(attachment.getSize())).append("  ");
-    sb.append(FileRepositoryManager.formatFileUploadTime(attachment.getSize()));
+    sb.append(UnitUtil.formatMemSize(attachment.getSize()));
     sb.append("</td>\n");
     sb.append("</tr>\n");
   }
