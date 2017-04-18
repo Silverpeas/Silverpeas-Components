@@ -602,8 +602,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       }
     }
 
-    List<YellowPagesGroupDetail> subGroups = groupDetail.getSubGroups();
-    for (YellowPagesGroupDetail subGroup : subGroups) {
+    List<Group> subGroups = groupDetail.getSubGroups();
+    for (Group subGroup : subGroups) {
       users.addAll(getAllUsersOfGroup(subGroup.getId()));
     }
     return users;

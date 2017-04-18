@@ -35,7 +35,7 @@ public class YellowPagesGroupDetail extends GroupDetail implements java.io.Seria
   private static final long serialVersionUID = 1L;
 
   private List<UserDetail> users = new ArrayList<>();
-  private List<YellowPagesGroupDetail> subGroups = new ArrayList<>();
+  private List<Group> subGroups = new ArrayList<>();
 
   public YellowPagesGroupDetail(Group group) {
     super((GroupDetail) group);
@@ -49,14 +49,8 @@ public class YellowPagesGroupDetail extends GroupDetail implements java.io.Seria
     subGroups.add(group);
   }
 
-  public void addSubGroups(GroupDetail[] groups) {
-    for (final GroupDetail group : groups) {
-      addSubGroup(new YellowPagesGroupDetail(group));
-    }
-  }
-
   @Override
-  public List<YellowPagesGroupDetail> getSubGroups() {
+  public List<Group> getSubGroups() {
     return subGroups;
   }
 

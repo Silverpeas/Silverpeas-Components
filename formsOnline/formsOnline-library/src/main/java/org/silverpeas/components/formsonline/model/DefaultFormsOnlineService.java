@@ -20,8 +20,14 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.core.ApplicationService;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -33,20 +39,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlinePendingValidationRequestUserNotification;
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlineProcessedRequestUserNotification;
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlineValidationRequestUserNotification;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
@@ -138,18 +133,19 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   public FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException {
+    FormDetail theForm = form;
     if (form.getId() == -1) {
-      form = getDAO().createForm(form);
+      theForm = getDAO().createForm(form);
     } else {
-      getDAO().updateForm(form);
+      getDAO().updateForm(theForm);
     }
-    getDAO().updateSenders(form.getPK(), senderUserIds, senderGroupIds);
-    getDAO().updateReceivers(form.getPK(), receiverUserIds, receiverGroupIds);
-    form.setSendersAsUsers(getSendersAsUsers(form.getPK()));
-    form.setSendersAsGroups(getSendersAsGroups(form.getPK()));
-    form.setReceiversAsUsers(getReceiversAsUsers(form.getPK()));
-    form.setReceiversAsGroups(getReceiversAsGroups(form.getPK()));
-    return form;
+    getDAO().updateSenders(theForm.getPK(), senderUserIds, senderGroupIds);
+    getDAO().updateReceivers(theForm.getPK(), receiverUserIds, receiverGroupIds);
+    theForm.setSendersAsUsers(getSendersAsUsers(theForm.getPK()));
+    theForm.setSendersAsGroups(getSendersAsGroups(theForm.getPK()));
+    theForm.setReceiversAsUsers(getReceiversAsUsers(theForm.getPK()));
+    theForm.setReceiversAsGroups(getReceiversAsGroups(theForm.getPK()));
+    return theForm;
   }
 
   public void deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
@@ -347,7 +343,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         pk.getInstanceId() + ":" + xmlFormShortName);
     RecordSet set = pubTemplate.getRecordSet();
     DataRecord data = set.getRecord(pk.getId());
-    set.delete(data);
+    set.delete(data.getId());
 
     // delete instance metadata
     getDAO().deleteRequest(pk);
@@ -371,8 +367,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     List<String> userIds = getDAO().getReceiversAsUsers(pk);
     List<String> groupIds = getDAO().getReceiversAsGroups(pk);
     for (String groupId : groupIds) {
-      List<UserDetail> users = (List<UserDetail>) Group.getById(groupId).getAllUsers();
-      for (UserDetail user : users) {
+      List<User> users = Group.getById(groupId).getAllUsers();
+      for (User user : users) {
         userIds.add(user.getId());
       }
     }
@@ -381,10 +377,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
-  }
-
-  private NotificationSender getNotificationSender(String appId) {
-    return new NotificationSender(appId);
   }
 
   private FormsOnlineDAO getDAO() {
