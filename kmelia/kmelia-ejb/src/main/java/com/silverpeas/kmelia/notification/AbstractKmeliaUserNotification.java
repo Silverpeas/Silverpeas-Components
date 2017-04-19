@@ -26,7 +26,7 @@ package com.silverpeas.kmelia.notification;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.OrganisationController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
@@ -117,12 +116,8 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
 
   private String getSpacesPath(final String componentId, final String language) {
     String spacesPath = "";
-    final List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(
-        componentId);
-    final Iterator<SpaceInst> iSpaces = spaces.iterator();
-    SpaceInst spaceInst = null;
-    while (iSpaces.hasNext()) {
-      spaceInst = iSpaces.next();
+    final List<SpaceInstLight> spaces = getOrganisationController().getPathToComponent(componentId);
+    for (SpaceInstLight spaceInst : spaces) {
       spacesPath += spaceInst.getName(language);
       spacesPath += " > ";
     }
