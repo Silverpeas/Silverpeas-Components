@@ -33,6 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/classifieds" prefix="classifiedsTags" %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
 
@@ -157,53 +158,7 @@ function viewClassifieds(fieldNumber, fieldValue) {
 						</c:if>
 					</form>
 
-          <ul id="classifieds_rich_list">
-            <c:if test="${not empty classifieds}">
-              <c:forEach items="${classifieds}" var="classified" varStatus="loopStatus">
-                <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
-                  <c:if test="${not empty classified.images}">
-		                <div class="classified_thumb">
-		                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
-		                  <a href="ViewClassified?ClassifiedId=${classified.classifiedId}"><view:image src="${image.attachmentURL}" size="250x"/></a>
-		                </c:forEach>
-		                </div>
-                  </c:if>
-                  
-                  <div class="classified_info">
-                   <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
-                   <div class="classified_type">
-                   	<c:if test="${silfn:isDefined(classified.searchValue1)}">
-                    	<a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a>
-                    </c:if> 
-                    <c:if test="${silfn:isDefined(classified.searchValue2)}">
-                    	<a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
-                    </c:if>
-                   </div>
-                  </div>
-                    
-                  <c:if test="${classified.price > 0}">
-                    <div class="classified_price">
-                      ${classified.price} &euro;
-                    </div>
-                  </c:if>
-                  
-                  <div class="classified_creationInfo">
-                    <c:if test="${not empty classified.validateDate}">
-                       <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
-                    </c:if>
-                    <c:if test="${empty classified.validateDate}">
-                      <c:if test="${not empty classified.updateDate}">
-                         <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
-                      </c:if>
-                      <c:if test="${empty classified.updateDate}">
-                         <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
-                      </c:if>
-                    </c:if>
-                  </div>
-                </li>
-              </c:forEach>
-            </c:if>
-          </ul>
+          <classifiedsTags:listOfClassifieds classifieds="${classifieds}" language="${language}"/>
 
           <view:pagination currentPage="${currentFirstItemIndex}" totalNumberOfItems="${nbTotal}" nbItemsPerPage="${nbPerPage}" action="Main?ItemIndex=" />
             

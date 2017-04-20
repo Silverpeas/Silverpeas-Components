@@ -100,7 +100,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId);
+  public List<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId);
 
   /**
    * get the number of classifieds for an instance corresponding to instanceId
@@ -116,7 +116,7 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @return a Collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId);
+  public List<ClassifiedDetail> getClassifiedsToValidate(String instanceId);
 
   /**
    * pass to status refused because the user corresponding to userId refused the classified
@@ -236,9 +236,11 @@ public interface ClassifiedService extends ApplicationService<ClassifiedDetail> 
    * @param elementsPerPage : nombre d'éléments à afficher par page
    * @return a collection of ClassifiedDetail
    */
-  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId,
+  public List<ClassifiedDetail> getAllValidClassifieds(String instanceId,
       Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1,
       String searchField2, int firstItemIndex, int elementsPerPage);
+
+  public List<ClassifiedDetail> getAllValidClassifieds(String instanceId);
 
   public void setClassification(ClassifiedDetail classified, String searchField1,
       String searchField2, String xmlFormName);

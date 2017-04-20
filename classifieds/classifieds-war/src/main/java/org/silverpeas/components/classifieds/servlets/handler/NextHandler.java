@@ -27,44 +27,17 @@ package org.silverpeas.components.classifieds.servlets.handler;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.web.http.HttpRequest;
 
-/**
- * Use Case : for all users, show all adds of given category
- * @author Ludovic Bertin
- */
-public class ClassifiedUpdateFormHandler extends FunctionHandler {
+public class NextHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
       HttpRequest request) throws Exception {
 
-    // Retrieves parameters
-    String classifiedId = request.getParameter("ClassifiedId");
-    ClassifiedDetail classified = classifiedsSC.getClassifiedWithImages(classifiedId);
-
-    // Get form template and data
-    Form formView = null;
-    DataRecord data = null;
-    PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
-    if (pubTemplate != null) {
-      formView = pubTemplate.getUpdateForm();
-      RecordSet recordSet = pubTemplate.getRecordSet();
-      data = recordSet.getRecord(classifiedId);
-      if (data != null) {
-        request.setAttribute("Form", formView);
-        request.setAttribute("Data", data);
-      }
-    }
-
-    // Stores objects in request
+    ClassifiedDetail classified = classifiedsSC.getNext();
     request.setAttribute("Classified", classified);
 
-    // Returns jsp to redirect to
-    return "classifiedManager.jsp";
+    return HandlerProvider.getHandler("ViewClassified").computeDestination(classifiedsSC, request);
   }
 }
