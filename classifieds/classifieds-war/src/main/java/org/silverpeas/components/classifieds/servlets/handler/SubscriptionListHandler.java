@@ -45,33 +45,26 @@ public class SubscriptionListHandler extends FunctionHandler {
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
       throws Exception {
 
-    try {
-      // Retrieves user subscriptions
-      Collection<Subscribe> subscribes = classifiedsSC.getSubscribesByUser();
+    // Retrieves user subscriptions
+    Collection<Subscribe> subscribes = classifiedsSC.getSubscribesByUser();
 
-      // Get form template and data
-      Form formUpdate = null;
-      DataRecord data = null;
-      PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
-      if (pubTemplate != null) {
-        formUpdate = pubTemplate.getSearchForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        data = recordSet.getEmptyRecord();
-      }
-
-      // Stores objects in request
-      request.setAttribute("Subscribes", subscribes);
-      request.setAttribute("Form", formUpdate);
-      request.setAttribute("Data", data);
-
-      // Returns jsp to redirect to
-      return "subscriptions.jsp";
-    } catch (Exception e) {
-      // form error for subscriptions
-      request.setAttribute("ErrorType",
-          classifiedsSC.getResources().getString("classifieds.labelErrorSubscriptions"));
-      return "error.jsp";
+    // Get form template and data
+    Form formUpdate = null;
+    DataRecord data = null;
+    PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
+    if (pubTemplate != null) {
+      formUpdate = pubTemplate.getSearchForm();
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      data = recordSet.getEmptyRecord();
     }
+
+    // Stores objects in request
+    request.setAttribute("Subscribes", subscribes);
+    request.setAttribute("Form", formUpdate);
+    request.setAttribute("Data", data);
+
+    // Returns jsp to redirect to
+    return "subscriptions.jsp";
   }
 
 }

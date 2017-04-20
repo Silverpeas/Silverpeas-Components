@@ -209,28 +209,34 @@ div.tableBoard {
 }
 
 #classifieds_rich_list {
-	clear:left;	
-	margin:1em 0;
-	padding:0;
-	list-style-type:none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: initial;
+  align-content: flex-start;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 #classifieds_rich_list li{
+  float: left;
+  flex-grow: 1;
+  flex-basis: 320px;
 	border:1px solid #eaeaea;
-	margin:0.5em;
-	width:48%;
-	float:left;
-	max-width:525px;
-	height:86px;
+  margin: 0 2em 2em 0;
+  padding:0.5em;
+  height: auto;
 	position:relative;
 	z-index:1;
 	cursor:pointer;
 	overflow:hidden;
+  max-width: 50%;
 }
 #classifieds_rich_list li:hover{
 	background-color:#EFEFEF;
 }
-
 
 #classifieds_rich_list li .classified_thumb{
 	width:92px;
@@ -239,6 +245,7 @@ div.tableBoard {
 	height:68px;
 	position:relative;
 	margin:0.5em;
+  float:left;
 }
 
 #classifieds_rich_list li .classified_thumb img{
@@ -250,13 +257,15 @@ div.tableBoard {
 }
 
 #classifieds_rich_list .classified_info{
-	position:absolute;
-	top:0.5em;
-	left:112px;
+  margin-left:100px;
+  margin-right:4em;
+}
+#classifieds_rich_list .add-without-image .classified_info{
+  margin-left:0;
 }
 
 #classifieds_rich_list h4{
-	margin:0 80px 0.5em 0;
+	margin:0 0 0.5em 0;
 	padding:0;
 	font-size:1.25em;
 	font-weight:100;
@@ -313,17 +322,36 @@ div.tableBoard {
 
 /*** fiche nouvelle presentation ***/
 .classified_fiche {
-	position:relative;
+	position:relative;    
 	}
-.principalContent .classified_title {
-	color: #333333;
-    font-size: 130%;
-    font-weight: bold;
-	padding:0;
-	margin:0 0 2em;
-	
+  
+.classified_fiche #classified_content_form {
 }
 
+
+.principalContent .classified_photos {
+	width:30%;
+  float:left;
+}
+
+.principalContent .classified_title {
+  color: #333;
+  font-size: 130%;
+  font-weight: bold;
+  padding:0;
+  margin:0 0 1em;
+}
+
+.principalContent .classified_description {
+	border-left:6px solid #e4e4e4;
+	padding-left:1%;
+	color:#666;	
+	font-size:1.15em;
+	line-height:1.5em;
+	text-align:justify;
+  float:left;
+  width:66%;
+}
 
 .principalContent .classified_price {
 	position:absolute;
@@ -337,11 +365,6 @@ div.tableBoard {
 	float:left;
 	border:1px solid #56a3d9;
 	border-radius:3px;
-}
-
-.principalContent .classified_photos {
-	float:left;
-	width:260px;
 }
 
 .principalContent .classified_thumbs{
@@ -365,7 +388,7 @@ div.tableBoard {
 }
 
 .principalContent .classified_selected_photo {
-	width:244px;
+	width:90%;
 	border:3px solid #e4e4e4;
 	margin-top:1em;
 	text-align:center;
@@ -373,7 +396,7 @@ div.tableBoard {
 	clear:left;
 }
 .principalContent .classified_selected_photo img{
-	width:244px;
+	width:100%;
 	height:auto;
 	border:0;
 }
@@ -384,15 +407,6 @@ div.tableBoard {
 	border:0;
 }
 
-.principalContent .classified_description {
-	border-left:6px solid #e4e4e4;
-	padding-left:11px;
-	margin-left:260px;
-	color:#666;	
-	font-size:1.15em;
-	line-height:1.5em;
-	text-align:justify;
-}
 
 .principalContent #classified_content_form td{
 	font-size:1.15em;
@@ -502,7 +516,7 @@ div.tableBoard {
 
 /**  formulaire de creation **/
 #classifiedInfo legend{
-    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone prÃ©sente dans kmelia */
+    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
 }
 
 #pubThumb legend {
@@ -564,4 +578,10 @@ div.tableBoard {
 
 .classifiedForm .table {
 	margin-bottom:15px
+}
+
+.rightContent #pagination {
+  padding: 0.83em 0;
+  line-height: 1.2em;
+  text-align: right;
 }

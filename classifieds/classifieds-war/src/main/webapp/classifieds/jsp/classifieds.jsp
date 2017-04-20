@@ -67,8 +67,8 @@
 	<view:window>
 		<view:frame>
 			<view:areaOfOperationOfCreation/>
-			<view:board>
-					<c:if test="${not empty classifieds}">
+      <c:if test="${not empty classifieds}">
+  			<view:board>
 					<ul class="list_result_classifieds">
 						<c:forEach items="${classifieds}" var="classified">
 						<c:set var="title" value="${classified.title}" />
@@ -113,15 +113,14 @@
 							</li>
 						</c:forEach>
 					</ul>
-					</c:if>
+			  </view:board>
+      </c:if>
 
-					<c:if test="${empty classifieds}">
-					<p class="message_noResult">
-						<fmt:message key="classifieds.CategoryEmpty" /> 
-					</p>
-					</c:if>
-				
-			</view:board>
+      <c:if test="${empty classifieds}">
+        <div class="inlineMessage">
+          <fmt:message key="classifieds.CategoryEmpty" />
+        </div>
+      </c:if>
 		</view:frame>
 	</view:window>
 </body>

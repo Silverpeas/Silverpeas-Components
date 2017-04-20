@@ -304,7 +304,7 @@
 </fieldset>
 
 <div class="table">      
-  <div class="cell">
+  <div class="cell" id="thumbnails">
     <fieldset id="pubThumb" class="skinFieldset">
     <legend><fmt:message key="classifieds.images"/></legend>
     <div class="fields">
