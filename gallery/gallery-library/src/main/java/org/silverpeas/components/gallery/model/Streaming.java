@@ -23,14 +23,16 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
+import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -113,11 +115,11 @@ public class Streaming extends Media {
    * @return a JSON structure as string that represents oembed data.
    */
   public static String getJsonOembedAsString(String homepageUrl) {
-    GetMethod httpGet = new GetMethod(StreamingProvider.getOembedUrl(homepageUrl));
+    final String oembedUrl = StreamingProvider.getOembedUrl(homepageUrl);
+    final GetMethod httpGet = new GetMethod(oembedUrl);
     httpGet.addRequestHeader("Accept", "application/json");
     try {
-      HttpClient client = new HttpClient();
-      int statusCode = client.executeMethod(httpGet);
+      int statusCode = initHttpClient().executeMethod(httpGet);
       if (statusCode != HttpStatus.SC_OK) {
         throw new WebApplicationException(statusCode);
       }
@@ -127,11 +129,24 @@ public class Streaming extends Media {
       }
       return jsonResponse;
     } catch (WebApplicationException wae) {
+      SilverLogger.getLogger(Streaming.class)
+          .error("{0} -> HTTP ERROR {1}", oembedUrl, wae.getMessage());
       throw wae;
     } catch (Exception e) {
+      SilverLogger.getLogger(Streaming.class).error("{0} -> {1}", oembedUrl, e.getMessage());
       throw new WebApplicationException(e);
     } finally {
       httpGet.releaseConnection();
     }
+  }
+
+  private static HttpClient initHttpClient() {
+    HttpClient client = new HttpClient();
+    final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
+    final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
+    if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
+      client.getHostConfiguration().setProxy(proxyHost, Integer.valueOf(proxyPort));
+    }
+    return client;
   }
 }
