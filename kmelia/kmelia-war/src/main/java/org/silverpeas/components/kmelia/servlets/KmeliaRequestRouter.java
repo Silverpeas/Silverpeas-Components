@@ -698,8 +698,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
           request.setAttribute("PublicationRatingsAllowed", kmelia.isPublicationRatingAllowed());
-          request.setAttribute("PublicationSharingAllowed",
-              kmelia.isPublicationSharingEnabled() && kmeliaPublication.getDetail().isValid());
 
           // Subscription management
           setupRequestForSubscriptionNotificationSending(request,

@@ -24,6 +24,7 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
@@ -92,6 +93,8 @@ public class JSONServlet extends HttpServlet {
         operations.put("cutPublications", binOperationsAllowed);
         operations.put("deletePublications", binOperationsAllowed);
       } else {
+        NodeDetail node = kmeliaSC.getNodeHeader(id);
+        UserDetail user = kmeliaSC.getUserDetail();
         // general operations
         operations.put("admin", kmeliaSC.isComponentManageable());
         operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
@@ -112,14 +115,13 @@ public class JSONServlet extends HttpServlet {
         operations.put("copyTopic", !isRoot && isAdmin);
         operations.put("cutTopic", !isRoot && isAdmin);
         if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
-          NodeDetail node = kmeliaSC.getNodeHeader(id);
           operations
               .put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
           operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
         }
         operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.
             isWysiwygOnTopicsEnabled()));
-        operations.put("shareTopic", isAdmin && kmeliaSC.isFolderSharingEnabled());
+        operations.put("shareTopic", node.canBeSharedBy(user));
 
         // publication operations
         boolean publicationsInTopic = !isRoot ||
@@ -142,16 +144,15 @@ public class JSONServlet extends HttpServlet {
 
         operations.put("deletePublications", operationsOnSelectionAllowed);
 
-        operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
+        operations.put("exportSelection", !user.isAnonymous());
         operations.put("manageSubscriptions", isAdmin);
-        operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
-        operations
-            .put("favorites", !isRoot && !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+        operations.put("subscriptions", !isBasket && !user.isAnonymous());
+        operations.put("favorites", !isRoot && !isBasket && !user.isAnonymous());
         if (statisticEnable && isRoot && canShowStats) {
           operations.put("statistics", true);
         }
-        operations.put("mylinks", !kmeliaSC.getUserDetail().isAnonymous());
-        operations.put("responsibles", !kmeliaSC.getUserDetail().isAnonymous());
+        operations.put("mylinks", !user.isAnonymous());
+        operations.put("responsibles", !user.isAnonymous());
       }
       return operations;
     });

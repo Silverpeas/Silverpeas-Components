@@ -77,7 +77,6 @@
   boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
   boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
-  boolean sharingAllowed = (Boolean) request.getAttribute("PublicationSharingAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean lastVisitorsEnabled = (Boolean) request.getAttribute("LastVisitorsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
@@ -129,6 +128,8 @@
   UserDetail currentUser = kmeliaScc.getUserDetail();
   List<String> exportFormats = kmeliaScc.getSupportedFormats();
   List<String> availableFormats = kmeliaScc.getAvailableFormats();
+
+  boolean sharingAllowed = kmeliaPublication.getDetail().isSharingAllowedForRolesFrom(currentUser);
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -475,6 +476,9 @@
         if (!toolboxMode && !exportFormats.isEmpty()) {
           operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()");
         }
+        if (sharingAllowed) {
+          operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
+        }
         if (!currentUser.isAnonymous()) {
           operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");
         }
@@ -494,9 +498,6 @@
               }
             }
 
-	        if (sharingAllowed) {
-	         	operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
-	        }
             if (suppressionAllowed) {
               operationPane.addLine();
               operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javascript:pubDeleteConfirm()");
