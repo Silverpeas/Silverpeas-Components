@@ -195,18 +195,16 @@
           </c:choose>
           <view:arrayCellText text="<img src='${statusIcon}' alt='${suggestionStatus}' title='${suggestionStatus}'/>"/>
           <%-- the last update date is the validation date for refused and accepted suggestions --%>
-          <view:arrayCellText text="<!-- ${suggestion.lastUpdateDate} -->${silfn:formatDate(suggestion.lastUpdateDate, currentUserLanguage)}"/>
-          <view:arrayCellText text="<!-- ${suggestion.title} --><a href=\"${componentUriBase}suggestions/${suggestion.id}\">${suggestion.title}</a>"/>
-          <view:arrayCellText text="${suggestion.authorName}"/>
+          <view:arrayCellText text="${silfn:formatDate(suggestion.lastUpdateDate, currentUserLanguage)}" compareOn="${suggestion.lastUpdateDate}"/>
+          <view:arrayCellText text="<a href=\"${componentUriBase}suggestions/${suggestion.id}\">${suggestion.title}</a>" compareOn="${fn:toLowerCase(suggestion.title)}"/>
+          <view:arrayCellText text="${suggestion.authorName}" compareOn="${fn:toLowerCase(suggestion.authorName)}"/>
           <c:if test="${viewContext != SuggestionsInValidationViewContext}">
             <c:choose>
               <c:when test="${suggestion.validation.validated}">
                 <c:set var="_currentRaterRating"><viewTags:displayContributionRating readOnly="${true}" showNbRaterRatings="${false}" raterRating="${suggestion.raterRating}"/></c:set>
-                <view:arrayCellText text="${_currentRaterRating}"/>
-                <fmt:formatNumber pattern='#0000000000.##' value='${suggestion.raterRating.numberOfRaterRatings}' var="tmpValue"/>
-                <view:arrayCellText text="<!-- ${tmpValue} -->${suggestion.raterRating.numberOfRaterRatings}"/>
-                <fmt:formatNumber pattern='#0000000000.##' value='${suggestion.commentCount}' var="tmpValue"/>
-                <view:arrayCellText text="<!-- ${tmpValue} -->${suggestion.commentCount}"/>
+                <view:arrayCellText text="${_currentRaterRating}" compareOn="${suggestion.raterRating.ratingAverage}"/>
+                <view:arrayCellText text="${suggestion.raterRating.numberOfRaterRatings}" compareOn="${suggestion.raterRating.numberOfRaterRatings}"/>
+                <view:arrayCellText text="${suggestion.commentCount}" compareOn="${suggestion.commentCount}"/>
               </c:when>
               <c:otherwise>
                 <view:arrayCellText text="-"/>
