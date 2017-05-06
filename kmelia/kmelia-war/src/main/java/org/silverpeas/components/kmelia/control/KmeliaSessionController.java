@@ -499,22 +499,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return StringUtil.getBooleanValue(getComponentParameterValue("suppressionOnlyForAdmin"));
   }
 
-  public boolean isFolderSharingEnabled() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("useFolderSharing"));
-  }
-
-  public boolean isPublicationSharingEnabled() {
-    boolean enabled =
-        StringUtil.getBooleanValue(getComponentParameterValue("usePublicationSharing"));
-    if (enabled) {
-      if (isKmaxMode) {
-        return isUserComponentAdmin();
-      }
-      return SilverpeasRole.admin.isInRole(getUserTopicProfile());
-    }
-    return false;
-  }
-
   public boolean isContentEnabled() {
     String parameterValue = getComponentParameterValue("tabContent");
     if (!StringUtil.isDefined(parameterValue)) {

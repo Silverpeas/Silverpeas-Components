@@ -1087,8 +1087,42 @@
             </label>
             <order>48</order>
             <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
+            <value>0</value>
+            <options>
+              <option>
+                <name>
+                  <message lang="fr">Désactivé</message>
+                  <message lang="en">Deactivated</message>
+                  <message lang="de">Untauglich</message>
+                </name>
+                <value>0</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour les gestionnaires</message>
+                  <message lang="en">For managers</message>
+                  <message lang="de">Für Manager</message>
+                </name>
+                <value>1</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour les contributeurs</message>
+                  <message lang="en">For contributors</message>
+                  <message lang="de">Für Beiträger</message>
+                </name>
+                <value>2</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour tous les utilisateurs</message>
+                  <message lang="en">For all users</message>
+                  <message lang="de">für alle Benutzer</message>
+                </name>
+                <value>3</value>
+              </option>
+            </options>
+            <type>select</type>
             <updatable>always</updatable>
             <help>
               <message lang="fr">Ce paramètre permet de partager des dossiers avec des tiers non utilisateurs de la plate-forme.</message>
@@ -1096,9 +1130,9 @@
               <message lang="de">This feature allows to share folders with some persons who have no access to the platform.</message>
             </help>
             <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+              <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
+              <message lang="en">Caution! By selecting this option, you will enable to freely share folders with users not identified in the platform.</message>
+              <message lang="de">Caution! By selecting this option, you will enable to freely share folders with users not identified in the platform.</message>
             </warning>
             <personalSpaceValue>no</personalSpaceValue>
           </parameter>
@@ -1111,8 +1145,42 @@
             </label>
             <order>48</order>
             <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
+            <value>0</value>
+            <options>
+              <option>
+                <name>
+                  <message lang="fr">Désactivé</message>
+                  <message lang="en">Deactivated</message>
+                  <message lang="de">Untauglich</message>
+                </name>
+                <value>0</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour les gestionnaires</message>
+                  <message lang="en">For managers</message>
+                  <message lang="de">Für Manager</message>
+                </name>
+                <value>1</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour les contributeurs</message>
+                  <message lang="en">For contributors</message>
+                  <message lang="de">Für Beiträger</message>
+                </name>
+                <value>2</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour tous les utilisateurs</message>
+                  <message lang="en">For all users</message>
+                  <message lang="de">für alle Benutzer</message>
+                </name>
+                <value>3</value>
+              </option>
+            </options>
+            <type>select</type>
             <updatable>always</updatable>
             <help>
               <message lang="fr">Ce paramètre permet de partager des publications avec des tiers non utilisateurs de la plate-forme.</message>
@@ -1120,9 +1188,9 @@
               <message lang="de">This feature allows to share publications with some persons who have no access to the platform.</message>
             </help>
             <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les publications avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
+              <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de partager librement les publications avec des utilisateurs non référencés dans la plate-forme.</message>
+              <message lang="en">Caution! By selecting this option, you will enable to freely share publications with users not identified in the platform.</message>
+              <message lang="de">Caution! By selecting this option, you will enable to freely share publications with users not identified in the platform.</message>
             </warning>
             <personalSpaceValue>no</personalSpaceValue>
           </parameter>
@@ -1135,8 +1203,42 @@
             </label>
             <order>37</order>
             <mandatory>true</mandatory>
-            <value>no</value>
-            <type>checkbox</type>
+            <value>0</value>
+            <options>
+              <option>
+                <name>
+                  <message lang="fr">Désactivé</message>
+                  <message lang="en">Deactivated</message>
+                  <message lang="de">Untauglich</message>
+                </name>
+                <value>0</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour les gestionnaires</message>
+                  <message lang="en">For managers</message>
+                  <message lang="de">Für Manager</message>
+                </name>
+                <value>1</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour les contributeurs</message>
+                  <message lang="en">For contributors</message>
+                  <message lang="de">Für Beiträger</message>
+                </name>
+                <value>2</value>
+              </option>
+              <option>
+                <name>
+                  <message lang="fr">Pour tous les utilisateurs</message>
+                  <message lang="en">For all users</message>
+                  <message lang="de">für alle Benutzer</message>
+                </name>
+                <value>3</value>
+              </option>
+            </options>
+            <type>select</type>
             <updatable>always</updatable>
             <help>
               <message lang="fr">Ce paramètre permet de partager des fichiers avec des tiers non utilisateurs de la plate-forme.</message>
@@ -1144,11 +1246,11 @@
               <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
             </help>
             <warning>
-              <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
-              <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
-              <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+              <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
+              <message lang="en">Caution! By selecting this option, you will enable to freely share files with users not identified in the platform.</message>
+              <message lang="de">Caution! By selecting this option, you will enable to freely share files with users not identified in the platform.</message>
             </warning>
-            <personalSpaceValue>yes</personalSpaceValue>
+            <personalSpaceValue>0</personalSpaceValue>
           </parameter>
       </parameters>
     </groupOfParameters>
