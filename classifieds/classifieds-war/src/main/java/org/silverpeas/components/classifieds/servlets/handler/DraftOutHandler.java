@@ -39,7 +39,7 @@ public class DraftOutHandler extends FunctionHandler {
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
       throws Exception {
 
-    ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS :
+    ClassifiedsRole highestRole = isAnonymousAccess(request) ? ClassifiedsRole.ANONYMOUS :
         ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
 
     // retrieves parameters

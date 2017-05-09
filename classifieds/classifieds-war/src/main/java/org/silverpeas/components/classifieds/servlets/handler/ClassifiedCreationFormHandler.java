@@ -57,8 +57,6 @@ public class ClassifiedCreationFormHandler extends FunctionHandler {
 
     // Stores objects in request
     request.setAttribute("Classified", null);
-    request.setAttribute("UserName", classifiedsSC.getUserDetail().getDisplayedName());
-    request.setAttribute("UserEmail", classifiedsSC.getUserDetail().geteMail());
     request.setAttribute("Form", formUpdate);
     request.setAttribute("Data", data);
     request.setAttribute("FieldKey", fieldKey);

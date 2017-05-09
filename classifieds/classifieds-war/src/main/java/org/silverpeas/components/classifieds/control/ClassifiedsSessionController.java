@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.classifieds.control;
 
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -45,8 +46,6 @@ import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -68,6 +67,10 @@ import java.util.Map;
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
   private static final int DEFAULT_NBITEMS_PERPAGE = 20;
+  private static final int SCOPE_ALL = 0;
+  private static final int SCOPE_MINE = 1;
+  private static final int SCOPE_TOVALIDATE = 2;
+  private static final int SCOPE_SEARCH = 3;
 
   private int currentFirstItemIndex = 0;
   private int nbItemsPerPage = DEFAULT_NBITEMS_PERPAGE;
@@ -80,6 +83,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private SearchContext searchContext = null;
   private List<ClassifiedDetail> sessionClassifieds = null;
   Pagination pagination = null;
+  private ListIndex currentIndex = new ListIndex(0);
+  private int currentScope = SCOPE_ALL;
 
   /**
    * Standard Session Controller Constructeur
@@ -146,16 +151,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return number : String
    */
   public String getNbTotalClassifieds() {
-    return getClassifiedService().getNbTotalClassifieds(getComponentId());
+    String nb = getClassifiedService().getNbTotalClassifieds(getComponentId());
+    currentIndex.setNbItems(Integer.parseInt(nb));
+    return nb;
   }
 
   /**
    * search all classifieds corresponding to the query
    * @param query : QueryDescription
-   * @return a collection of ClassifiedDetail
    */
   public void search(QueryDescription query) {
-    sessionClassifieds = getClassifieds(query);
+    setSessionClassifieds(getClassifieds(query));
+    currentIndex.setNbItems(getSessionClassifieds().size());
   }
 
   private List<ClassifiedDetail> getClassifieds(QueryDescription query) {
@@ -165,6 +172,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   public List<ClassifiedDetail> getClassifieds(QueryDescription query, int nb) {
+    setCurrentScope(SCOPE_ALL);
     List<ClassifiedDetail> classifieds = getClassifieds(query);
     List<ClassifiedDetail> result = new ArrayList<>();
     for (int i = 0; i < nb && i < classifieds.size(); i++) {
@@ -175,8 +183,15 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     return result;
   }
 
-  public Collection<ClassifiedDetail> getSessionClassifieds() {
+  public List<ClassifiedDetail> getSessionClassifieds() {
+    if (sessionClassifieds == null) {
+      sessionClassifieds = getAllValidClassifieds();
+    }
     return sessionClassifieds;
+  }
+
+  private void setSessionClassifieds(List<ClassifiedDetail> classifieds) {
+    sessionClassifieds = classifieds;
   }
 
   public Collection<ClassifiedDetail> getPage() {
@@ -193,16 +208,20 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   private void enrichClassified(ClassifiedDetail classified) {
-      setImagesToClassified(classified);
-      getClassifiedService().setClassification(classified, getSearchFields1(), getSearchFields2(), getXMLFormName());
+    setImagesToClassified(classified);
+    getClassifiedService()
+        .setClassification(classified, getSearchFields1(), getSearchFields2(), getXMLFormName());
   }
 
   /**
    * get all classifieds for the current user and this instance
    * @return a collection of ClassifiedDetail
    */
-  public Collection<ClassifiedDetail> getClassifiedsByUser() {
-    return getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId());
+  public List<ClassifiedDetail> getClassifiedsByUser() {
+    setCurrentScope(SCOPE_MINE);
+    setSessionClassifieds(
+        getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId()));
+    return sessionClassifieds;
   }
 
   /**
@@ -210,18 +229,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of ClassifiedDetail
    */
   public Collection<ClassifiedDetail> getClassifiedsToValidate() {
-    return getClassifiedService().getClassifiedsToValidate(getComponentId());
-  }
-
-  /**
-   * get all comments for the classified corresponding to classifiedId
-   * @param classifiedId : String
-   * @return
-   */
-  private Collection<Comment> getAllComments(String classifiedId) {
-    CommentPK foreignPK = new CommentPK(classifiedId, getComponentId());
-    return getCommentService().getAllCommentsOnPublication(ClassifiedDetail.getResourceType(),
-        foreignPK);
+    setCurrentScope(SCOPE_TOVALIDATE);
+    setSessionClassifieds(getClassifiedService().getClassifiedsToValidate(getComponentId()));
+    return sessionClassifieds;
   }
 
   /**
@@ -253,7 +263,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public synchronized void validateClassified(String classifiedId) {
     getClassifiedService().validateClassified(classifiedId, getUserId());
+
+    // remove classified from validation list
+    removeCurrentClassifiedFromSession();
+
+    // alert subscribers
     sendSubscriptionsNotification(classifiedId);
+  }
+
+  private void removeCurrentClassifiedFromSession() {
+    getSessionClassifieds().remove(currentIndex.getCurrentIndex());
+    currentIndex.setNbItems(getSessionClassifieds().size());
+    currentIndex.setCurrentIndex(currentIndex.getPreviousIndex());
   }
 
   /**
@@ -264,6 +285,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public synchronized void refusedClassified(String classifiedId, String motive) {
     getClassifiedService().refusedClassified(classifiedId, getUserId(), motive);
+
+    // remove classified from validation list
+    removeCurrentClassifiedFromSession();
   }
 
   /**
@@ -296,7 +320,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param profile : ClassifiedsRole
    * @return classifiedId : String
    */
-  public synchronized String createClassified(ClassifiedDetail classified, Collection<FileItem> listImage, ClassifiedsRole profile) {
+  public synchronized String createClassified(ClassifiedDetail classified,
+      Collection<FileItem> listImage, ClassifiedsRole profile) {
     UserDetail user = getUserDetail();
     classified.setCreatorId(getUserId());
     classified.setCreationDate(new Date());
@@ -327,10 +352,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
 
     //supprime les commentaires
-    Collection<Comment> comments = getAllComments(classifiedId);
-    for(Comment comment : comments) {
-      getCommentService().deleteComment(comment.getCommentPK());
-    }
+    WAPrimaryKey pk = new ForeignPK(classifiedId, getComponentId());
+    getCommentService().deleteAllCommentsOnPublication(ClassifiedDetail.getResourceType(), pk);
   }
 
   /**
@@ -346,20 +369,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     if (isUpdate) {
       classified.setUpdateDate(new Date());
 
-      if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
-          ClassifiedDetail.VALID)) {
+      if (!isAdmin && isValidationEnabled() && !ClassifiedDetail.TO_VALIDATE.equals(
+          classified.getStatus())) {
         classified.setStatus(ClassifiedDetail.TO_VALIDATE);
         notify = true;
-      }
-
-      // special case : status is UNPUBLISHED, user requested classified republication
-      if (classified.getStatus().equals(ClassifiedDetail.UNPUBLISHED)) {
-        if (!isAdmin && isValidationEnabled()) {
-          classified.setStatus(ClassifiedDetail.TO_VALIDATE);
-          notify = true;
-        } else {
-          classified.setStatus(ClassifiedDetail.VALID);
-        }
+      } else if (isAdmin || !isValidationEnabled()) {
+        classified.setStatus(ClassifiedDetail.VALID);
       }
     }
     getClassifiedService().updateClassified(classified, notify);
@@ -593,6 +608,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
     setImagesToClassified(classified);
+    processIndex(classified);
     return classified;
   }
 
@@ -679,7 +695,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * get all valid classifieds
    * @return a collection of ClassifiedDetail
    */
-  public Collection<ClassifiedDetail> getAllValidClassifieds() {
+  public List<ClassifiedDetail> getAllValidClassifieds() {
+    setCurrentScope(SCOPE_ALL);
+    setSessionClassifieds(getClassifiedService().getAllValidClassifieds(getComponentId()));
     if (fields1 == null) {
       fields1 = createListField(getSearchFields1());
     }
@@ -720,10 +738,43 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   public void setSearchContext(SearchContext context) {
+    setCurrentScope(SCOPE_SEARCH);
     this.searchContext = context;
   }
 
   public SearchContext getSearchContext() {
     return searchContext;
+  }
+
+  public ListIndex getIndex() {
+    return currentIndex;
+  }
+
+  private void processIndex(ClassifiedDetail classified) {
+    currentIndex.setCurrentIndex(getSessionClassifieds().indexOf(classified));
+    currentIndex.setNbItems(getSessionClassifieds().size());
+  }
+
+  public ClassifiedDetail getPrevious() {
+    return getSessionClassifieds().get(currentIndex.getPreviousIndex());
+  }
+
+  public ClassifiedDetail getNext() {
+    return getSessionClassifieds().get(currentIndex.getNextIndex());
+  }
+
+  public int getCurrentScope() {
+    return currentScope;
+  }
+
+  private void setCurrentScope(int scope) {
+    currentScope = scope;
+  }
+
+  public void checkScope(ClassifiedDetail classified) {
+    if (ClassifiedDetail.TO_VALIDATE.equals(classified.getStatus())) {
+      getClassifiedsToValidate();
+      processIndex(classified);
+    }
   }
 }

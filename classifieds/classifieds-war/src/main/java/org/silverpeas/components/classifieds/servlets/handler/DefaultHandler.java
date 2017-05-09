@@ -58,32 +58,22 @@ public class DefaultHandler extends FunctionHandler {
     String nbTotalClassifieds;
 
     PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
-    try {
-      if (pubTemplate != null) {
+    if (pubTemplate != null) {
+      // Update form
+      formUpdate = pubTemplate.getSearchForm();
 
-        // Update form
-        formUpdate = pubTemplate.getSearchForm();
-
-        // Empty data record
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        data = recordSet.getEmptyRecord();
-      }
-
-      // Stores objects in request
-      nbTotalClassifieds = classifiedsSC.getNbTotalClassifieds();
-      request.setAttribute("Form", formUpdate);
-      request.setAttribute("Data", data);
-      request.setAttribute("NbTotal", nbTotalClassifieds);
-      request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
-      request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
-
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      // form error
-      request.setAttribute("ErrorType",
-          classifiedsSC.getResources().getString("classifieds.labelErrorForm"));
-      return "error.jsp";
+      // Empty data record
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      data = recordSet.getEmptyRecord();
     }
+
+    // Stores objects in request
+    nbTotalClassifieds = classifiedsSC.getNbTotalClassifieds();
+    request.setAttribute("Form", formUpdate);
+    request.setAttribute("Data", data);
+    request.setAttribute("NbTotal", nbTotalClassifieds);
+    request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
+    request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
 
     //Affichage page d'accueil annonces par catégorie
     if (classifiedsSC.isHomePageDisplayCategorized()) {

@@ -34,6 +34,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -65,6 +66,8 @@
 <c:set var="xmlContext" value="${requestScope.Context}" />
 <c:set var="title" value="${classified.title}" />
 <c:set var="description" value="${classified.description}" />
+<c:set var="index" value="${requestScope.Index}"/>
+<c:set var="currentScope" value="${requestScope.CurrentScope}"/>
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 <c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
 
@@ -168,9 +171,21 @@
 </head>
 <body id="classifieds">
 <div id="${instanceId}">
-	<fmt:message var="classifiedPath" key="classifieds.classified" />
-	<view:browseBar>
-		<view:browseBarElt label="${classifiedPath}" link="" />
+  <view:browseBar>
+    <c:choose>
+      <c:when test="${currentScope == 1}">
+        <fmt:message var="classifiedPath" key="classifieds.myClassifieds" />
+        <view:browseBarElt label="${classifiedPath}" link="ViewMyClassifieds" />
+      </c:when>
+      <c:when test="${currentScope == 2}">
+        <fmt:message var="classifiedPath" key="classifieds.viewClassifiedToValidate" />
+        <view:browseBarElt label="${classifiedPath}" link="ViewClassifiedToValidate" />
+      </c:when>
+      <c:when test="${currentScope == 3}">
+        <fmt:message var="classifiedPath" key="classifieds.classifiedsResult" />
+        <view:browseBarElt label="${classifiedPath}" link="Pagination" />
+      </c:when>
+    </c:choose>
 	</view:browseBar>
 	<c:if test="${user.id == creatorId or profile.name == 'admin'}">
 		<c:if test="${'Unpublished' == classified.status}">
@@ -240,6 +255,9 @@
             <td valign="top"> 
               <div id="header_classifieds"> </div>
               <div class="rightContent">
+                <c:if test="${not empty index}">
+                  <viewTags:displayIndex nbItems="${index.nbItems}" index="${index.currentIndex}" />
+                </c:if>
                 <div class="bgDegradeGris" id="classified_info">
                   <div class="paragraphe" id="classified_info_creation">
                    <fmt:message key="classifieds.online" /><br/>
@@ -269,32 +287,32 @@
                 <div id="menubar-creation-actions"></div>
                 <div class="classified_fiche">
                   <h2 class="classified_title">${displayedTitle}</h2>
-                  <div class="classified_photos">
-                    <div class="classified_thumbs">
-                    <%
-                    int i = 0;
-                    %>
-		                <c:forEach var="image" items="${classified.images}">
-		                <%
-		                String select = "";
-		                if (i == 0) {
-		                  select = "class=\"selected\"";
-		                }
-		                %>
-		                  <a <%=select%> href="#"><view:image src="${image.attachmentURL}" size="250x"/></a>
-		                <%
-		                i++;
-		                %>
-		                </c:forEach>
+                  <c:if test="${not empty classified.images}">
+                    <div class="classified_photos">
+                      <div class="classified_thumbs">
+                      <%
+                      int i = 0;
+                      %>
+                      <c:forEach var="image" items="${classified.images}">
+                      <%
+                      String select = "";
+                      if (i == 0) {
+                        select = "class=\"selected\"";
+                      }
+                      %>
+                        <a <%=select%> href="#"><view:image src="${image.attachmentURL}" size="250x"/></a>
+                      <%
+                      i++;
+                      %>
+                      </c:forEach>
+                      </div>
+                      <div class="classified_selected_photo">
+                      <c:forEach var="image" items="${classified.images}" begin="0" end="0">
+                        <a href="javascript:onclick=openImage(webContext+'${image.attachmentURL}')"><view:image src="${image.attachmentURL}" size="250x"/></a>
+                      </c:forEach>
+                      </div>
                     </div>
-                    <c:if test="${not empty classified.images}">
-                    <div class="classified_selected_photo">
-                    <c:forEach var="image" items="${classified.images}" begin="0" end="0">
-                      <a href="javascript:onclick=openImage(webContext+'${image.attachmentURL}')"><view:image src="${image.attachmentURL}" size="250x"/></a>
-                    </c:forEach>
-                    </div>
-                    </c:if>
-                  </div>
+                  </c:if>
                   <c:if test="${classified.price > 0}">
                     <div class="classified_price">${classified.price} &euro;</div>
                   </c:if>  

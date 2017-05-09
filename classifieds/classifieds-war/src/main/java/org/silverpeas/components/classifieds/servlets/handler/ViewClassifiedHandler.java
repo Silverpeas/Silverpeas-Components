@@ -46,37 +46,37 @@ public class ViewClassifiedHandler extends FunctionHandler {
   public String getDestination(ClassifiedsSessionController classifiedsSC,
       HttpRequest request) throws Exception {
 
-    // Retrieves parameters either as parameter or as attribute
-    String classifiedId = request.getParameter("ClassifiedId");
-    if (!StringUtil.isDefined(classifiedId)) {
-      classifiedId = (String) request.getAttribute("ClassifiedId");
+    String classifiedId;
+    ClassifiedDetail classified = (ClassifiedDetail) request.getAttribute("Classified");
+    if (classified == null) {
+      // Retrieves parameters either as parameter or as attribute
+      classifiedId = request.getParameter("ClassifiedId");
+      if (!StringUtil.isDefined(classifiedId)) {
+        classifiedId = (String) request.getAttribute("ClassifiedId");
+      }
+    } else {
+      classifiedId = classified.getId();
     }
+    classified = classifiedsSC.getClassifiedWithImages(classifiedId);
+    request.setAttribute("Classified", classified);
 
     // Get creationDate
     MultiSilverpeasBundle resources = classifiedsSC.getResources();
-    ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
-    request.setAttribute("Classified", classifiedsSC.getClassifiedWithImages(classifiedId));
-    String creationDate;
+    String creationDate = "";
     if (classified.getCreationDate() != null) {
       creationDate = resources.getOutputDateAndHour(classified.getCreationDate());
-    } else {
-      creationDate = "";
     }
 
     // Get updateDate
-    String updateDate;
+    String updateDate = "";
     if (classified.getUpdateDate() != null) {
       updateDate = resources.getOutputDateAndHour(classified.getUpdateDate());
-    } else {
-      updateDate = "";
     }
 
     // Get validation date
-    String validateDate;
+    String validateDate = "";
     if (classified.getValidateDate() != null) {
       validateDate = resources.getOutputDateAndHour(classified.getValidateDate());
-    } else {
-      validateDate = "";
     }
 
     // Get form template and data
@@ -99,6 +99,9 @@ public class ViewClassifiedHandler extends FunctionHandler {
       }
     }
 
+    // verify status to set right scope
+    classifiedsSC.checkScope(classified);
+
     // Stores objects in request
     request.setAttribute("IsDraftEnabled", classifiedsSC.isDraftEnabled());
     request.setAttribute("IsCommentsEnabled", classifiedsSC.isCommentsEnabled());
@@ -106,6 +109,8 @@ public class ViewClassifiedHandler extends FunctionHandler {
     request.setAttribute("UpdateDate", updateDate);
     request.setAttribute("ValidateDate", validateDate);
     request.setAttribute("User", classifiedsSC.getUserDetail());
+    request.setAttribute("Index", classifiedsSC.getIndex());
+    request.setAttribute("CurrentScope", classifiedsSC.getCurrentScope());
 
     // Returns jsp to redirect to
     return "viewClassified.jsp";

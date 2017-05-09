@@ -24,8 +24,6 @@
 
 --%>
 <%@page import="org.silverpeas.components.classifieds.control.SearchContext"%>
-<%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
@@ -35,6 +33,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/classifieds" prefix="classifiedsTags" %>
 
 <%
   	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -112,63 +111,8 @@ function viewClassifieds(fieldNumber, fieldValue) {
 			</form>
 			<br />
 
-			<view:board>
-				
-					<c:if test="${not empty classifieds}">
-						<ul id="classifieds_rich_list">
-			              <c:forEach items="${classifieds}" var="classified"
-			                varStatus="loopStatus">
-			                <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
-			                  <c:if test="${not empty classified.images}">
-					                <div class="classified_thumb">
-					                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
-					                <%
-					                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-					                String url = URLUtil.getApplicationURL() +  simpleDocument.getAttachmentURL();
-					                %>
-					                  <a href="#"><img src="<%=url%>"/></a>
-					                </c:forEach>
-					                </div>
-			                  </c:if>
-			                  
-			                  <div class="classified_info">
-			                   <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
-			                   <div class="classified_type">
-			                    <a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a> 
-			                    <a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
-			                   </div>
-			                  </div>
-			                    
-			                  <c:if test="${classified.price > 0}">
-			                    <div class="classified_price">
-			                      ${classified.price} &euro;
-			                    </div>
-			                  </c:if>
-			                  
-			                  <div class="classified_creationInfo">
-			                    <c:if test="${not empty classified.validateDate}">
-			                       <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
-			                    </c:if>
-			                    <c:if test="${empty classified.validateDate}">
-			                      <c:if test="${not empty classified.updateDate}">
-			                         <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
-			                      </c:if>
-			                      <c:if test="${empty classified.updateDate}">
-			                         <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
-			                      </c:if>
-			                    </c:if>
-			                  </div>
-			                </li>
-			              </c:forEach>
-			          </ul>
-					</c:if>
-					<c:if test="${empty classifieds}">
-						<p class="message_noResult">
-							<fmt:message key="classifieds.noResult" />
-						</p>
-					</c:if>
-			
-			</view:board>
+      <fmt:message key="classifieds.noResult" var="emptyListMessage"/>
+      <classifiedsTags:listOfClassifieds classifieds="${classifieds}" language="${language}" emptyListMessage="${emptyListMessage}"/>
 
       <view:pagination currentPage="${currentFirstItemIndex}" totalNumberOfItems="${nbResults}" nbItemsPerPage="${nbPerPage}" action="Pagination?ItemIndex=" />
 			

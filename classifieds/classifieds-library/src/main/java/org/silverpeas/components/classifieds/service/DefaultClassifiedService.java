@@ -250,16 +250,10 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
+  public List<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
     Connection con = openConnection();
     try {
-      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsByUser(con,
-          instanceId, userId);
-      for (ClassifiedDetail classified : listClassified) {
-        // add the creator name
-        classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
-      }
-      return listClassified;
+      return ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedsByUser()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
@@ -269,16 +263,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
+  public List<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = openConnection();
     try {
-      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
+      return ClassifiedsDAO.getClassifiedsWithStatus(con,
           instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
-      for (ClassifiedDetail classified : listClassified) {
-        //add the creator name
-        classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
-      }
-      return listClassified;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedsToValidate()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
@@ -610,7 +599,21 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId,
+  public List<ClassifiedDetail> getAllValidClassifieds(String instanceId) {
+    Connection con = openConnection();
+    try {
+      return ClassifiedsDAO
+          .getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, -1, -1);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  @Override
+  public List<ClassifiedDetail> getAllValidClassifieds(String instanceId,
       Map<String, String> mapFields1, Map<String, String> mapFields2,
       String searchField1, String searchField2,
       int firstItemIndex, int elementsPerPage) {
@@ -619,21 +622,21 @@ public class DefaultClassifiedService implements ClassifiedService {
       List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
           instanceId, ClassifiedDetail.VALID, firstItemIndex, elementsPerPage);
 
+      // add the search fields
+      String xmlFormName = organizationController
+          .getComponentParameterValue(instanceId, "XMLFormName");
+
       for (ClassifiedDetail classified : listClassified) {
         String classifiedId = Integer.toString(classified.getClassifiedId());
 
         // add the creator name
         classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
 
-        // add the search fields
-        String xmlFormName = organizationController
-            .getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
         setClassification(classified, searchField1, searchField2, xmlFormName);
 
         // add the images
         try {
-          WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, classified.
-              getInstanceId());
+          WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
           List<SimpleDocument> listSimpleDocument = AttachmentServiceProvider.getAttachmentService().
               listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
           classified.setImages(listSimpleDocument);

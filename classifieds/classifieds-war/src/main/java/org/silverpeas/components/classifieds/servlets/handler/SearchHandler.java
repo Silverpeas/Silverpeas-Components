@@ -54,14 +54,14 @@ public class SearchHandler extends FunctionHandler {
       throws Exception {
 
     QueryDescription query = buildQuery(classifiedsSC, request);
+    if (query != null) {
+      GraphicElementFactory gef = (GraphicElementFactory) request.getSession()
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      classifiedsSC.setPagination(gef.getPagination());
 
-    GraphicElementFactory gef = (GraphicElementFactory) request.getSession()
-        .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    classifiedsSC.setPagination(gef.getPagination());
-
-    // Performs search
-    classifiedsSC.search(query);
-
+      // Performs search
+      classifiedsSC.search(query);
+    }
     return HandlerProvider.getHandler("Pagination").computeDestination(classifiedsSC, request);
   }
 

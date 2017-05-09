@@ -70,6 +70,8 @@ public class HandlerProvider {
 
     handlerMap.put("ToWysiwygHeader", new ToWysiwygHeaderHandler());
     handlerMap.put("FromTopicWysiwyg", new DefaultHandler());
+    handlerMap.put("Previous", new PreviousHandler());
+    handlerMap.put("Next", new NextHandler());
   }
 
   private HandlerProvider() {

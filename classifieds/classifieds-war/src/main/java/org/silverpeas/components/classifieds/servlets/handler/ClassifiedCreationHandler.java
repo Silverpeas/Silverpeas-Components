@@ -48,11 +48,13 @@ import org.silverpeas.core.web.http.HttpRequest;
  */
 public class ClassifiedCreationHandler extends FunctionHandler {
 
+  private static final int NB_IMAGES = 4;
+
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
       throws Exception {
 
-    ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS :
+    ClassifiedsRole highestRole = isAnonymousAccess(request) ? ClassifiedsRole.ANONYMOUS :
         ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
 
     if (request.isContentInMultipart()) {
@@ -61,10 +63,6 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       String title = request.getParameter("Title");
       String description = request.getParameter("Description");
       String price = request.getParameter("Price");
-      FileItem fileImage1 = request.getFile("Image1");
-      FileItem fileImage2 = request.getFile("Image2");
-      FileItem fileImage3 = request.getFile("Image3");
-      FileItem fileImage4 = request.getFile("Image4");
 
       //Classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
@@ -74,17 +72,11 @@ public class ClassifiedCreationHandler extends FunctionHandler {
 
       //Images of the classified
       Collection<FileItem> listImage = new ArrayList<>();
-      if (fileImage1 != null && StringUtil.isDefined(fileImage1.getName())) {
-        listImage.add(fileImage1);
-      }
-      if (fileImage2 != null && StringUtil.isDefined(fileImage2.getName())) {
-        listImage.add(fileImage2);
-      }
-      if (fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {
-        listImage.add(fileImage3);
-      }
-      if (fileImage4 != null && StringUtil.isDefined(fileImage4.getName())) {
-        listImage.add(fileImage4);
+      for (int i = 1; i <= NB_IMAGES; i++) {
+        FileItem fileImage = request.getFile("Image"+i);
+        if (fileImage != null && StringUtil.isDefined(fileImage.getName())) {
+          listImage.add(fileImage);
+        }
       }
       String classifiedId = classifiedsSC.createClassified(classified, listImage, highestRole);
 

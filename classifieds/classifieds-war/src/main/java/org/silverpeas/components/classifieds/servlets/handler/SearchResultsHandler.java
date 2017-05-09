@@ -38,33 +38,22 @@ public class SearchResultsHandler extends FunctionHandler {
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
       throws Exception {
 
-    // retrieves parameters
     String id = request.getParameter("Id");
     String type = request.getParameter("Type");
 
-    try {
-      // Classified
-      if (type.equals("Classified")) {
-        request.setAttribute("ClassifiedId", id);
-        return HandlerProvider.getHandler("ViewClassified")
-            .computeDestination(classifiedsSC, request);
-      }
-
-      // Comment
-      else if (type.startsWith("Comment")) {
-        request.setAttribute("ClassifiedId", id);
-        return HandlerProvider.getHandler("ViewClassified")
-            .computeDestination(classifiedsSC, request);
-      }
-
+    if ("Classified".equals(type)) {
+      request.setAttribute("ClassifiedId", id);
+      return HandlerProvider.getHandler("ViewClassified")
+          .computeDestination(classifiedsSC, request);
+    } else if (type.startsWith("Comment")) {
+      request.setAttribute("ClassifiedId", id);
+      return HandlerProvider.getHandler("ViewClassified")
+          .computeDestination(classifiedsSC, request);
+    } else {
       // Default : Main page
-      else {
-        return HandlerProvider.getHandler("Main").computeDestination(classifiedsSC, request);
-      }
-    } catch (Exception e) {
-      request.setAttribute("ComponentId", classifiedsSC.getComponentId());
-      return "/admin/jsp/documentNotFound.jsp";
+      return HandlerProvider.getHandler("Main").computeDestination(classifiedsSC, request);
     }
+
   }
 
 }

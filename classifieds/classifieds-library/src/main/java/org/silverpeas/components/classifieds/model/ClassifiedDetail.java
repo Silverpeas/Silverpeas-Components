@@ -280,4 +280,27 @@ public class ClassifiedDetail implements SilverpeasContent {
     this.images = images;
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final ClassifiedDetail that = (ClassifiedDetail) o;
+
+    if (classifiedId != that.classifiedId) {
+      return false;
+    }
+    return instanceId.equals(that.instanceId);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = classifiedId;
+    result = 31 * result + instanceId.hashCode();
+    return result;
+  }
 }

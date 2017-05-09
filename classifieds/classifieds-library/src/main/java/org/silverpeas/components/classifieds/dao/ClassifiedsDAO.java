@@ -223,10 +223,10 @@ public class ClassifiedsDAO {
    * @return a collection of ClassifiedDetail
    * @throws SQLException
    */
-  public static Collection<ClassifiedDetail> getClassifiedsByUser(Connection con, String instanceId,
+  public static List<ClassifiedDetail> getClassifiedsByUser(Connection con, String instanceId,
       String userId) throws SQLException {
     // récupérer toutes les petites annonces de l'utilisateur
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
+    List<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query =
         "select * from SC_Classifieds_Classifieds where instanceId = ? and creatorId = ? ";
     PreparedStatement prepStmt = null;
