@@ -37,47 +37,27 @@
 <%@ page import="java.util.StringTokenizer" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 
 <%@include file="checkKmelia.jsp" %>
-<%@include file="publicationsList.jsp" %>
 <%@include file="topicReport.jsp" %>
-
-
-<%!  //Icons
-  String mandatorySrc;
-  String deleteSrc;
-  String alertSrc;
-  String deletePubliSrc;
-  String clipboardCopySrc;
-  String pubDraftInSrc;
-  String pubDraftOutSrc;
-  String inDraftSrc;
-  String outDraftSrc;
-  String validateSrc;
-  String refusedSrc;
-
-// Fin des declarations
-%>
 
 <%
     String name = "";
     String description = "";
     String keywords = "";
-    String content = "";
     String creationDate = "";
     String beginDate = "";
     String endDate = "";
     String updateDate = "";
     String version = "";
     String importance = "";
-    String pubName = "";
-    String vignette = "";
     String status = "";
     String beginHour = "";
     String endHour = "";
@@ -89,8 +69,6 @@
     String draftOutDate = "";
 
     String nextAction = "";
-
-    SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
 
     KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
     User ownerDetail = null;
@@ -115,23 +93,26 @@
       errorThumbnail = true;
     }
 
+    PublicationDetail volatilePublication = (PublicationDetail) request.getAttribute("VolatilePublication");
+    Form extraForm = (Form) request.getAttribute("ExtraForm");
+    PagesContext extraFormPageContext = (PagesContext) request.getAttribute("ExtraFormPageContext");
+    if (extraFormPageContext != null) {
+      extraFormPageContext.setFormName("pubForm");
+    }
+
     //Icons
-    mandatorySrc = m_context + "/util/icons/mandatoryField.gif";
-    deleteSrc = m_context + "/util/icons/delete.gif";
-    alertSrc = m_context + "/util/icons/alert.gif";
-    deletePubliSrc = m_context + "/util/icons/publicationDelete.gif";
-    clipboardCopySrc = m_context + "/util/icons/copy.gif";
-    pubDraftInSrc = m_context + "/util/icons/publicationDraftIn.gif";
-    pubDraftOutSrc = m_context + "/util/icons/publicationDraftOut.gif";
-    inDraftSrc = m_context + "/util/icons/masque.gif";
-    outDraftSrc = m_context + "/util/icons/visible.gif";
-    validateSrc = m_context + "/util/icons/ok.gif";
-    refusedSrc = m_context + "/util/icons/wrong.gif";
+    String mandatorySrc = m_context + "/util/icons/mandatoryField.gif";
+    String alertSrc = m_context + "/util/icons/alert.gif";
+    String deletePubliSrc = m_context + "/util/icons/publicationDelete.gif";
+    String pubDraftInSrc = m_context + "/util/icons/publicationDraftIn.gif";
+    String pubDraftOutSrc = m_context + "/util/icons/publicationDraftOut.gif";
+    String inDraftSrc = m_context + "/util/icons/masque.gif";
+    String outDraftSrc = m_context + "/util/icons/visible.gif";
+    String validateSrc = m_context + "/util/icons/ok.gif";
+    String refusedSrc = m_context + "/util/icons/wrong.gif";
   	String favoriteAddSrc		= m_context + "/util/icons/addFavorit.gif";
 
-    String screenMessage = "";
-
-//Vrai si le user connecte est le createur de cette publication ou si il est admin
+    //Vrai si le user connecte est le createur de cette publication ou si il est admin
     boolean isOwner = false;
 
     boolean suppressionAllowed = false;
@@ -150,13 +131,12 @@
     String linkedPathString = displayPath(path, true, 3, language) + name;
     String pathString = displayPath(path, false, 3, language);
 
-//Action = View, New, Add, UpdateView, Update, Delete, LinkAuthorView, SameSubjectView ou SameTopicView
+    //Action = View, New, Add, UpdateView, Update, Delete, LinkAuthorView, SameSubjectView ou SameTopicView
     if (action.equals("UpdateView") || action.equals("ValidateView")) {
 
       id = kmeliaPublication.getId();
       
       pubDetail = kmeliaPublication.getDetail();
-      pubName = pubDetail.getName(language);
       thumbnail = pubDetail.getThumbnail();
       ownerDetail = kmeliaPublication.getCreator();
 
@@ -217,7 +197,6 @@
       version = pubDetail.getVersion();
       importance = Integer.toString(pubDetail.getImportance());
       keywords = StringUtil.defaultIfBlank(pubDetail.getKeywords(language), "");
-      content = pubDetail.getContent();
       status = pubDetail.getStatus();
       if (beginDate == null || beginDate.length() == 0) {
         beginHour = "";
@@ -280,9 +259,12 @@
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="popup"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-    <script type="text/javascript">
-      var favoriteWindow = window;
 
+    <% if (extraForm != null) { %>
+      <% extraForm.displayScripts(out, extraFormPageContext);%>
+    <% } %>
+
+    <script type="text/javascript">
       function topicGoTo(id) {
         location.href="GoToTopic?Id="+id;
       }
@@ -314,46 +296,52 @@
         });
       }
 
-  function pubDraftIn() {
+      function pubDraftIn() {
         location.href = "<%=routerUrl%>DraftIn";
       }
 
-  function pubDraftOut() {
-	  if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
+      function pubDraftOut() {
+	      if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
 	        location.href = "<%=routerUrl%>DraftOut";
-	    } else {
+	      } else {
 	    	$("#publication-draftout").dialog('open');
-	    }
+	      }
       }
 
-      function alertUsers()
-      {
-      <%
-         if (!"Valid".equals(pubDetail.getStatus())) {
-      %>
+      function alertUsers() {
+      <% if (!"Valid".equals(pubDetail.getStatus())) { %>
           var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
             goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
           });
-      <%
-              } else {
-      %>
-              goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
-      <%
-             }
-      %>
-        }
+      <% } else { %>
+          goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+      <% } %>
+      }
 
       <% }%>
 
-      function sendPublicationDataToRouter(func) {
-        if (isCorrectForm()) {
-          <% if(!kmaxMode && "New".equals(action)) { %>
-                <view:pdcPositions setIn="document.pubForm.Positions.value"/>
-          <% } %>
-          document.pubForm.action = func;
-          document.pubForm.submit();
-        }
+      function sendData() {
+        <% if (extraForm != null) { %>
+          ifCorrectFormExecute(function() {
+            if (isCorrectHeaderForm()) {
+              reallySendData();
+            }
+          });
+        <% } else { %>
+          if (isCorrectHeaderForm()) {
+            reallySendData();
+          }
+        <% } %>
+      }
+
+      function reallySendData() {
+        <% if(!kmaxMode && "New".equals(action)) { %>
+          <view:pdcPositions setIn="document.pubForm.Positions.value"/>
+        <% } %>
+        document.pubForm.action = "<%=nextAction%>";
+        $.progressMessage();
+        document.pubForm.submit();
       }
 
       function closeWindows() {
@@ -362,19 +350,8 @@
         if (window.publicVersionsWindow != null)
           window.publicVersionsWindow.close();
       }
-      
-      function getExtension(filename) {
-    	  var indexPoint = filename.lastIndexOf(".");
-    	  // on verifie qu il existe une extension au nom du fichier
-    	  if (indexPoint != -1) {
-    	    // le fichier contient une extension. On recupere l extension
-    	    var ext = filename.substring(indexPoint + 1);
-    	    return ext;
-    	  }
-    	  return null;
-    	}
 
-      function isCorrectForm() {
+      function isCorrectHeaderForm() {
         var errorMsg = "";
         var errorNb = 0;
         var title = stripInitialWhitespace(document.pubForm.Name.value);
@@ -508,11 +485,6 @@
         OperationPane operationPane = window.getOperationPane();
 
         Frame frame = gef.getFrame();
-        Board board = gef.getBoard();
-
-        // added by LBE : importance field can be hidden (depends on settings file)
-        boolean showImportance = !"no".equalsIgnoreCase(resources.getSetting("showImportance"));
-
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(spaceLabel);
         browseBar.setComponentName(componentLabel, "Main");
@@ -561,7 +533,7 @@
           KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out,
                 kmaxMode);
         } else {
-          KmeliaDisplayHelper.displayOnNewOperations(kmeliaScc, gef, action, out);
+          KmeliaDisplayHelper.displayOnNewOperations(kmeliaScc, out);
         }
 
         out.println(frame.printBefore());
@@ -788,6 +760,17 @@
     </div>
     <% } %>
 
+    <% if (extraForm != null) { %>
+    <fieldset id="pubExtraForm" class="skinFieldset">
+      <legend><%=resources.getString("Model")%></legend>
+      <input type="hidden" name="FormName" value="<%=extraForm.getFormName()%>"/>
+      <input type="hidden" name="VolatileId" value="<%=volatilePublication.getId()%>"/>
+      <%
+        extraForm.display(out, extraFormPageContext);
+      %>
+    </fieldset>
+    <% } %>
+
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
           	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
@@ -813,7 +796,7 @@
           %>
           <view:buttonPane>
             <c:set var="saveLabel"><%=resources.getString("GML.validate")%></c:set>
-            <c:set var="saveAction"><%="javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');"%></c:set>
+            <c:set var="saveAction"><%="javascript:onClick=sendData();"%></c:set>
             <c:set var="cancelLabel"><%=resources.getString("GML.cancel")%></c:set>
             <view:button label="${saveLabel}" action="${saveAction}">
               <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
@@ -823,7 +806,7 @@
                       and subscriptionManagementContext.entityStatusAfterPersistAction.validated
                       and subscriptionManagementContext.entityPersistenceAction.update}">
                   <view:confirmResourceSubscriptionNotificationSending
-                      jsValidationCallbackMethodName="isCorrectForm"
+                      jsValidationCallbackMethodName="isCorrectHeaderForm"
                       subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
                       subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
 
@@ -851,5 +834,6 @@
       	<% } %>
       	</ul>
       </div>
+  <view:progressMessage/>
 </body>
 </html>

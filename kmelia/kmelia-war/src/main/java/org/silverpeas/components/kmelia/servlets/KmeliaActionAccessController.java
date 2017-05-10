@@ -75,7 +75,6 @@ public class KmeliaActionAccessController {
     actionRole.put("GoBackToResults", SilverpeasRole.reader);
     actionRole.put("searchResult", SilverpeasRole.reader);
     actionRole.put("GoToFilesTab", SilverpeasRole.reader);
-    actionRole.put("publicationManager.jsp", SilverpeasRole.reader);
     actionRole.put("ToAddTopic", SilverpeasRole.admin);
     actionRole.put("ToUpdateTopic", SilverpeasRole.admin);
     actionRole.put("AddTopic", SilverpeasRole.reader);

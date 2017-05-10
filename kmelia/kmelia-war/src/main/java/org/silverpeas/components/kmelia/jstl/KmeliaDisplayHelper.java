@@ -155,8 +155,7 @@ public class KmeliaDisplayHelper {
     boolean enabled = StringUtil.isDefined(id);
     List<String> invisibleTabs = kmeliaScc.getInvisibleTabs();
 
-    int i = 0;
-    TabbedPane tabbedPane = gef.getTabbedPane(2);
+    TabbedPane tabbedPane = gef.getTabbedPane();
     PublicationDetail pubDetail = kmeliaScc.getSessionPublication().getDetail();
     PublicationDetail cloneDetail = null;
     if (kmeliaScc.getSessionClone() != null) {
@@ -173,79 +172,60 @@ public class KmeliaDisplayHelper {
       previewTabLabel = resources.getString("kmelia.PublicPreview");
     }
 
-    int row = 2;
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_PREVIEW) == -1) {
-      i++;
       tabbedPane.addTab(previewTabLabel, routerUrl + "ViewPublication?PubId=" + pubId, "View".equals(
-          action) || "ViewPublication".equals(action), enabled, row);
+          action) || "ViewPublication".equals(action), enabled);
     }
     if (cloneDetail != null) {
-      i++;
       tabbedPane.addTab(resources.getString("kmelia.ClonePreview") + decoration, routerUrl
-          + "ViewClone", "ViewClone".equals(action), enabled, row);
+          + "ViewClone", "ViewClone".equals(action), enabled);
     }
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_HEADER) == -1) {
-      i++;
       tabbedPane.addTab(kmeliaScc.getString("Header") + decoration, routerUrl
           + "ToUpdatePublicationHeader", "UpdateView".equals(action)
-          || "New".equals(action) || "KmaxModifyPublication".equals(action), enabled, row);
+          || "New".equals(action) || "KmaxModifyPublication".equals(action), enabled);
     }
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_CONTENT) == -1) {
-      i++;
       tabbedPane.addTab(resources.getString("Model") + decoration,
           "javaScript:onClick=goToOperation('" + routerUrl + "ToPubliContent', '" + sureId
           + "', 'ModelUpdateView')", "ModelUpdateView".equals(action) || "NewModel".equals(action)
-          || "ModelChoice".equals(action), enabled, row);
+          || "ModelChoice".equals(action), enabled);
     }
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ATTACHMENTS) == -1) {
       if (kmeliaScc.getComponentId().startsWith("toolbox")) {
-        i++;
         decoration = "";
         tabbedPane.addTab(resources.getString("GML.attachments") + decoration,
             "javaScript:onClick=goToOperationByGet('" + routerUrl + "ViewAttachments', '" + pubId
-            + "', 'ViewAttachments')", "ViewAttachments".equals(action), enabled, row);
+            + "', 'ViewAttachments')", "ViewAttachments".equals(action), enabled);
       }
     }
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_SEE_ALSO) == -1 && !kmaxMode) {
-      i++;
       List<KmeliaPublication> authorizedAndValidSeeAlsoList = kmeliaScc
           .getLinkedVisiblePublications();
       tabbedPane.addTab(resources.getString("PubReferenceeParAuteur") + " ("
           + authorizedAndValidSeeAlsoList.size() + ")", routerUrl + "SeeAlso",
           "LinkAuthorView".equals(action) || "SameSubjectView".equals(action)
-          || "SameTopicView".equals(action), enabled, row);
+          || "SameTopicView".equals(action), enabled);
     }
 
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ACCESS_PATHS) == -1 && !kmaxMode) {
-      i++;
-      if (i > 5) {
-        row = 1;
-      }
       tabbedPane.addTab(resources.getString("PubGererChemins"), routerUrl
-          + "PublicationPaths?PubId=" + pubId, "ViewPath".equals(action), enabled, row);
+          + "PublicationPaths?PubId=" + pubId, "ViewPath".equals(action), enabled);
     }
 
     if (kmaxMode) {
       tabbedPane.addTab(kmeliaScc.getString("PubPositions"), "KmaxViewCombination?PubId=" + pubId,
-          action.equals("KmaxViewCombination"), enabled, row);
+          action.equals("KmaxViewCombination"), enabled);
     }
 
     if (invisibleTabs.indexOf(kmeliaScc.TAB_READER_LIST) == -1) {
-      i++;
-      if (i > 5) {
-        row = 1;
-      }
       tabbedPane.addTab(resources.getString("PubGererControlesLecture"), routerUrl
-          + "ReadingControl", action.equals("ViewReadingControl"), enabled, row);
+          + "ReadingControl", action.equals("ViewReadingControl"), enabled);
     }
 
     if (kmeliaScc.isValidationTabVisible()) {
-      i++;
-      if (i > 5) {
-        row = 1;
-      }
       tabbedPane.addTab(resources.getString("kmelia.validation"), routerUrl + "ViewValidationSteps",
-          "ViewValidationSteps".equals(action), enabled, row);
+          "ViewValidationSteps".equals(action), enabled);
     }
 
     out.println(tabbedPane.print());
@@ -341,17 +321,9 @@ public class KmeliaDisplayHelper {
 
   }
 
-  public static void displayOnNewOperations(KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, JspWriter out) throws IOException {
+  public static void displayOnNewOperations(KmeliaSessionController kmeliaScc, JspWriter out)
+      throws IOException {
     displayJavascriptAndFormToOperations(kmeliaScc, out);
-    List<String> invisibleTabs = kmeliaScc.getInvisibleTabs();
-
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_HEADER) == -1) {
-      tabbedPane.addTab(kmeliaScc.getString("Header"), "#", action
-          .equals("View") || action.equals("UpdateView") || action.equals("New"), false);
-    }
-    out.println(tabbedPane.print());
   }
 
   public static void displayUserAttachmentsView(PublicationDetail pubDetail, String webContext,
