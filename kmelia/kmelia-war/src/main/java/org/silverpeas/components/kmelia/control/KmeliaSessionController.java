@@ -622,8 +622,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             withParameter(EXPORT_FOR_USER, getUserDetail()).
             withParameter(EXPORT_LANGUAGE, getLanguage()).
             withParameter(EXPORT_TOPIC, getCurrentFolderId()).
-            inFormat(inFormat.name());
-        aKmeliaPublicationExporter().export(descriptor, publication);
+            inMimeType(inFormat.name());
+        aKmeliaPublicationExporter().exports(descriptor, () -> publication);
       } catch (Exception ex) {
         SilverLogger.getLogger(this).error("Publication export failure", ex);
         if (document != null) {

@@ -48,7 +48,7 @@ import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -953,10 +953,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           "almanach.EXE_GET_ALL_EVENTS_FAIL", ex);
       throw new ExportException(ex.getMessage(), ex);
     }
-    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
-      iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));
+      iCalExporter.exports(withWriter(fileWriter), () -> ExportableCalendar.with(eventsToExport));
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
       if (fileToDelete.exists()) {

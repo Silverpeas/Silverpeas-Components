@@ -23,7 +23,7 @@ package org.silverpeas.components.scheduleevent.control;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.components.scheduleevent.notification.ScheduleEventUserCallAgainNotification;
 import org.silverpeas.components.scheduleevent.notification.ScheduleEventUserNotification;
@@ -455,12 +455,12 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     List<CalendarEvent> eventsToExport = asCalendarEvents(event, listDateOption);
 
     // export iCal
-    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
     String icsFileName = ICS_PREFIX + getUserId() + ".ics";
     String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
-      iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));
+      iCalExporter.exports(withWriter(fileWriter), () -> ExportableCalendar.with(eventsToExport));
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
       if (fileToDelete.exists()) {

@@ -22,22 +22,23 @@
  */
 package org.silverpeas.components.kmelia.export;
 
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.core.contribution.converter.ODTConverter;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.apache.commons.io.FileUtils;
 
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
 import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
@@ -75,18 +76,19 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    * @param descriptor the descriptor providing enough information about the export to perform
    * (document name, user for which the export is, the language in which the export has to be done,
    * ...)
-   * @param publication the publication to export. If several publications are passed as parameter,
-   * only the first one is taken.
+   * @param supplier a supplier of the publication to export. If several publications are passed as
+   * parameter, only the first one is taken.
    * @throws ExportException if an error occurs while exporting the publication.
    */
   @Override
-  public void export(ExportDescriptor descriptor, KmeliaPublication publication) throws
+  public void exports(ExportDescriptor descriptor, Supplier<KmeliaPublication> supplier) throws
           ExportException {
     OutputStream output = descriptor.getOutputStream();
     UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
     String language = descriptor.getParameter(EXPORT_LANGUAGE);
     String folderId = descriptor.getParameter(EXPORT_TOPIC);
-    DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
+    DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getMimeType());
+    KmeliaPublication publication = supplier.get();
     String documentPath = getTemporaryExportFilePathFor(publication);
     File odtDocument = null, exportFile = null;
     try {
