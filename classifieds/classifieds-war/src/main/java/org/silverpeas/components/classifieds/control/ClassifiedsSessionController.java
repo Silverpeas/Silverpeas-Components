@@ -53,6 +53,7 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
@@ -105,7 +106,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     String xmlFormShortName;
     if (StringUtil.isDefined(xmlFormName)) {
       xmlFormShortName =
-              xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+              xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       try {
         getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                 + xmlFormShortName, xmlFormName);
@@ -392,16 +393,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private void sendSubscriptionsNotification(String classifiedId) {
     try {
       ClassifiedDetail classified = getClassified(classifiedId);
-      DataRecord data = null;
       PublicationTemplate pubTemplate = getPublicationTemplate();
       if (pubTemplate != null) {
         RecordSet recordSet = pubTemplate.getRecordSet();
-        data = recordSet.getRecord(classifiedId);
+        DataRecord data = recordSet.getRecord(classifiedId);
+        String field1 = data.getField(getSearchFields1()).getValue();
+        String field2 = data.getField(getSearchFields2()).getValue();
+        getClassifiedService().sendSubscriptionsNotification(field1, field2, classified);
       }
-      String field1 = data.getField(getSearchFields1()).getValue();
-      String field2 = data.getField(getSearchFields2()).getValue();
-
-      getClassifiedService().sendSubscriptionsNotification(field1, field2, classified);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Can't send subscriptions notifications", e);
     }
@@ -449,8 +448,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       // création de la hashtable (key,value)
       try {
         PublicationTemplate pubTemplate = getPublicationTemplate();
-        GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate().getFieldTemplate(listName);
-        return field.getKeyValuePairs(getLanguage());
+        if (pubTemplate != null) {
+          GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate().getFieldTemplate(listName);
+          return field.getKeyValuePairs(getLanguage());
+        }
       } catch (Exception e) {
         // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
         throw new SilverpeasRuntimeException("Field is not a list", e);
@@ -729,7 +730,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     String xmlFormName = getXMLFormName();
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       pubTemplate =
           getPublicationTemplateManager().getPublicationTemplate(
               getComponentId() + ":" + xmlFormShortName, xmlFormName);

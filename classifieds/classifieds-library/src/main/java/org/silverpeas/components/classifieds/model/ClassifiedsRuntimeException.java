@@ -23,34 +23,19 @@
  */
 package org.silverpeas.components.classifieds.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class ClassifiedsRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 2413240875023557772L;
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public ClassifiedsRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+
+  public ClassifiedsRuntimeException(final String message) {
+    super(message);
   }
 
-  public ClassifiedsRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public ClassifiedsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "Classifieds";
+  public ClassifiedsRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
 }

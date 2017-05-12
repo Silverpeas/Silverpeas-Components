@@ -49,13 +49,13 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
-    .getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 
 /**
  * @author squere
@@ -230,8 +230,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public ThumbnailSettings getThumbnailSettings() {
     int width = getSettings().getInteger("thumbnail.width", 200);
     int height = getSettings().getInteger("thumbnail.height", 200);
-    ThumbnailSettings settings = ThumbnailSettings.getInstance(getComponentId(), width, height);
-    return settings;
+    return ThumbnailSettings.getInstance(getComponentId(), width, height);
   }
 
   public Boolean isSubscriberUser() {

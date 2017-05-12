@@ -25,17 +25,16 @@ package org.silverpeas.components.classifieds.service;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.ClassifiedsRuntimeException;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -64,8 +63,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(CLASSIFIEDSENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("classifieds", "ScheduledUnpublishExpiredClassifieds.initialize()",
-          "classifieds.EX_CANT_INIT_SCHEDULED_DELETE_CLASSIFIEDS", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -104,9 +102,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
         }
       }
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException(
-          "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ClassifiedsRuntimeException(e.getMessage(), e);
     }
 
   }
@@ -118,9 +114,11 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do when the job has succeeded
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
+    // nothing to do when the job has failed
   }
 }
