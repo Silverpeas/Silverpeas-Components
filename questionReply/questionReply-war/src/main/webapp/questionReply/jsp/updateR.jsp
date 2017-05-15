@@ -38,19 +38,13 @@
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Reply reply = (Reply) request.getAttribute("reply");
-	String title = WebEncodeHelper.javaStringToHtmlString(reply.getTitle());
 	String content = WebEncodeHelper.javaStringToHtmlString(reply.loadWysiwygContent());
-	String date = resource.getOutputDate(reply.getCreationDate());
-	String id = reply.getPK().getId();
-	String creator = WebEncodeHelper.javaStringToHtmlString(reply.readCreatorName());
-	int status = reply.getPublicReply();
 %>
 <c:set var="reply" value="${requestScope['reply']}"/>
 
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel withFieldsetStyle="true"/>
-<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 <!--

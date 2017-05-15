@@ -48,6 +48,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -58,6 +59,7 @@ import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -119,10 +121,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       throws QuestionReplyException {
     return QuestionManagerProvider.getQuestionManager()
         .getAllQuestionsByCategory(getComponentId(), categoryId);
-  }
-
-  public Collection<Question> getAllQuestions() throws QuestionReplyException {
-    return QuestionManagerProvider.getQuestionManager().getAllQuestions(getComponentId());
   }
 
   /*
@@ -247,7 +245,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @return question identifier
    * @throws QuestionReplyException
    */
-  public long saveNewFAQ() throws QuestionReplyException {
+  public long saveNewFAQ(Collection<UploadedFile> uploadedFiles) throws QuestionReplyException {
     newQuestion.setStatus(Question.CLOSED); // close
     newQuestion.setReplyNumber(1);
     newQuestion.setPublicReplyNumber(1);
@@ -258,17 +256,35 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
 
-    return QuestionManagerProvider.getQuestionManager().createQuestionReply(newQuestion, newReply);
+    long questionId =
+        QuestionManagerProvider.getQuestionManager().createQuestionReply(newQuestion, newReply);
+
+    addFilesToReply(uploadedFiles, newReply);
+
+    return questionId;
+  }
+
+  private void addFilesToReply(Collection<UploadedFile> uploadedFiles, Reply reply) {
+    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile
+            .registerAttachment(reply.getPK(), getLanguage(), reply.getPublicReply() == 1);
+      }
+    }
   }
 
   /*
    * enregistre la nouvelle réponse de la question courante met en session la question modifiée
    */
-  public void saveNewReply() throws QuestionReplyException {
+  public void saveNewReply(Collection<UploadedFile> uploadedFiles) throws QuestionReplyException {
     WAPrimaryKey pk = newReply.getPK();
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
     QuestionManagerProvider.getQuestionManager().createReply(newReply, getCurrentQuestion());
+
+    addFilesToReply(uploadedFiles, newReply);
+
     getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
     notifyReply(newReply);
   }
@@ -302,32 +318,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException("QuestionReplySessionController.deleteQuestions",
           SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
-    }
-  }
-
-  /*
-   * Supprime une liste de reponses selon le profil de l'utilisateur courant i.e. suppression des
-   * réponses publiques ou privées si ReplyNumber =0 et que la question est close, la question sera
-   * supprimée => reSetCurrentQuestion appel de deletePublicReplies ou deletePrivateReplies si le
-   * nombre de R publiques ou privées restantes est egal à 0 et que la question est close, la
-   * question n'est plus visible => reSetCurrentQuestion sinon met en session la question
-   */
-  public void deleteReplies(Collection<Long> replyIds) throws QuestionReplyException {
-    try {
-      int rest = 0;
-      if (userProfil == SilverpeasRole.publisher) {
-        rest = deletePrivateReplies(replyIds);
-      } else if (userProfil == SilverpeasRole.writer || userProfil == SilverpeasRole.admin) {
-        rest = deletePublicReplies(replyIds);
-      }
-      if (isQuestionClosedWithoutAnyReply(rest)) {
-        reSetCurrentQuestion();
-      } else {
-        getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
-      }
-    } catch (QuestionReplyException e) {
-      throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
     }
   }
 
@@ -676,11 +666,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
-  public boolean isReplyVisible(Question question, Reply reply) {
-    return QuestionReplyExport
-        .isReplyVisible(question, reply, getUserRole(), getUserId());
-  }
-
   public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
     try {
       NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, getComponentId());
@@ -823,7 +808,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return exportReport;
   }
 
-  public String toHTML(File file, MultiSilverpeasBundle resource)
+  private String toHTML(File file, MultiSilverpeasBundle resource)
       throws QuestionReplyException, ParseException {
     String fileName = file.getName();
     StringBuilder sb = new StringBuilder();
@@ -849,7 +834,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return sb.toString();
   }
 
-  public String addFunction() {
+  private String addFunction() {
     StringBuilder sb = new StringBuilder();
     sb.append("<script language=\"javascript\">\n");
     sb.append("function showHideAnswer() { \n");
@@ -879,7 +864,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return sb.toString();
   }
 
-  public String addBody(MultiSilverpeasBundle resource, File file)
+  private String addBody(MultiSilverpeasBundle resource, File file)
       throws QuestionReplyException, ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
@@ -897,7 +882,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return sb.toString();
   }
 
-  public void exportCategory(QuestionReplyExport exporter, NodeDetail category, String categoryId,
+  private void exportCategory(QuestionReplyExport exporter, NodeDetail category, String categoryId,
       StringBuilder sb) throws QuestionReplyException, ParseException {
     // titre de la catégorie
     sb.append("<tr>\n");

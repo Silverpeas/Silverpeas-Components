@@ -27,7 +27,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -37,19 +36,15 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
-
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Question question = (Question) request.getAttribute("question");
-	String creationDate = resource.getOutputDate(question.getCreationDate());
-	String creator = question.readCreatorName();
 	Collection<NodeDetail> allCategories = (Collection) request.getAttribute("AllCategories");
 	String categoryId = null;
 %>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel withFieldsetStyle="true"/>
-<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script language="JavaScript">
 <!--
 function save() {
@@ -92,7 +87,6 @@ function save() {
 <body id="<%=componentId%>" class="questionReply addQ" onload="document.forms[0].title.focus();">
 
 <%
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setPath(resource.getString("questionReply.addQ"));
 
 	out.println(window.printBefore());

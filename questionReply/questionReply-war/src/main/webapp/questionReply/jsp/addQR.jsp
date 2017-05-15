@@ -39,16 +39,12 @@
 <%@ include file="checkQuestionReply.jsp" %>
 
 <%
-	Question question = (Question) request.getAttribute("question");
-	Reply reply = (Reply) request.getAttribute("reply");
-
 	Collection<NodeDetail> allCategories = (Collection) request.getAttribute("AllCategories");
 	String categoryId = null;
 %>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel withFieldsetStyle="true"/>
-<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 <!--
@@ -149,6 +145,8 @@ $(document).ready(function() {
   </div>
 </fieldset>
 
+  <view:pdcNewContentClassification componentId="<%=scc.getComponentId()%>" />
+
 <fieldset id="answerFieldset" class="skinFieldset">
   <legend><fmt:message key="questionReply.fieldset.answer" /></legend>
   <div class="fields">
@@ -171,7 +169,7 @@ $(document).ready(function() {
   </div>
 </fieldset>
 
-<view:pdcNewContentClassification componentId="<%=scc.getComponentId()%>" />
+  <view:fileUpload fieldset="true" jqueryFormSelector="form[name='myForm']" />
 
 <div class="legend">
   <fmt:message key="GML.requiredField" /> : <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" />

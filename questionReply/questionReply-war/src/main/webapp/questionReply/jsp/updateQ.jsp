@@ -40,24 +40,18 @@
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Question 	question 	= (Question) request.getAttribute("question");
-	String		profil		= (String) request.getAttribute("Flag");
 	Collection allCategories = (Collection) request.getAttribute("AllCategories");
 
 	String categoryId = question.getCategoryId();
 
 	String title = WebEncodeHelper.javaStringToHtmlString(question.getTitle());
-	String content = WebEncodeHelper.javaStringToHtmlString(question.getContent());
-	String date = resource.getOutputDate(question.getCreationDate());
 	String id = question.getPK().getId();
-	int status = question.getStatus();
-	String creator = WebEncodeHelper.javaStringToHtmlString(question.readCreatorName());
 %>
 <c:set var="question" value="${requestScope['question']}"/>
 
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel withFieldsetStyle="true"/>
-<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript" >
 <!--
 function save() {
@@ -105,7 +99,6 @@ function cancel(id)
 <body id="<%=componentId%>" class="questionReply updateQ" onload="document.forms[0].title.focus();">
 
 <%
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setPath("<a href="+routerUrl+"Main></a>" + title);
 	out.println(window.printBefore());
 %>
@@ -168,8 +161,8 @@ function cancel(id)
 <br />
 <%
   ButtonPane buttonPane = gef.getButtonPane();
-  buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-  buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancel('"+id+"');", false));
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancel('"+id+"');", false));
   out.println(buttonPane.print());
 	out.println(window.printAfter());
 %>

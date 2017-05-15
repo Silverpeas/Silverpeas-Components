@@ -31,6 +31,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -83,7 +84,20 @@ public class QuestionResource extends QuestionRelyBaseWebService {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public QuestionEntity[] getAllQuestions(@PathParam("questionId") String onQuestionId) {
+  public QuestionEntity[] getQuestions(@QueryParam("ids") Set<String> ids) {
+    try {
+      List<Question> questions =
+          QuestionManagerProvider.getQuestionManager().getQuestionsByIds(new ArrayList<>(ids));
+      return asWebEntities(extractVisibleQuestions(questions));
+    } catch (Exception ex) {
+      throw encapsulateException(ex);
+    }
+  }
+
+  @GET
+  @Path("all")
+  @Produces(MediaType.APPLICATION_JSON)
+  public QuestionEntity[] getAllQuestions() {
     try {
       List<Question> questions = QuestionManagerProvider.getQuestionManager().getAllQuestions(
           componentId);
