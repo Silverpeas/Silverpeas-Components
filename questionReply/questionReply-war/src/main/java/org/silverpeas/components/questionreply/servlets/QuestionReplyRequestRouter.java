@@ -28,6 +28,8 @@ import org.silverpeas.components.questionreply.control.QuestionReplySessionContr
 import org.silverpeas.components.questionreply.model.Category;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.core.io.upload.FileUploadManager;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.StringUtil;
@@ -98,10 +100,7 @@ public class QuestionReplyRequestRouter
       if (function.startsWith("Main")) {
         scc.setUserProfil();
         flag = scc.getUserProfil();
-        Collection<Question> allQuestions = scc.getAllQuestions();
-        request.setAttribute("questions", allQuestions);
         request.setAttribute("Flag", flag);
-        request.setAttribute("UserId", scc.getUserId());
         request.setAttribute("Categories", scc.getAllCategories());
         request.setAttribute("userAlreadySubscribed",
             SubscriptionServiceProvider.getSubscribeService().existsSubscription(
@@ -185,15 +184,6 @@ public class QuestionReplyRequestRouter
         scc.setCurrentQuestion(question);
         request.setAttribute("QuestionId", questionId);
         destination = getDestination("Main", scc, request);
-      } else if ("ConsultQuestion".equals(function)) {
-        scc.setUserProfil();
-        flag = scc.getUserProfil();
-        request.setAttribute("Flag", flag);
-        request.setAttribute("UserId", scc.getUserId());
-        Question question = scc.getCurrentQuestion();
-        request.setAttribute("question", question);
-        request.setAttribute("contentId", scc.getCurrentQuestionContentId());
-        destination = "/questionReply/jsp/consultQuestion.jsp";
       } else if ("UpdateQ".equals(function)) {
         // mettre à jour la question courante
         String questionId = request.getParameter("QuestionId");
@@ -203,28 +193,6 @@ public class QuestionReplyRequestRouter
         request.setAttribute("Flag", scc.getUserProfil());
         request.setAttribute("AllCategories", scc.getAllCategories());
         destination = "/questionReply/jsp/updateQ.jsp";
-      } else if ("UpdateQQuery".equals(function)) {
-        if (admin == role || writer == role) {
-          request.setAttribute("question", scc.getCurrentQuestion());
-          destination = "/questionReply/jsp/updateQ.jsp";
-        } else {
-          destination = "/admin/jsp/errorpage.jsp";
-        }
-      } else if ("DeleteReplies".equals(function)) {
-        if (canDeleteReply(role)) {
-          String[] checkReplies = request.getParameterValues("checkedReply");
-          List<Long> listToDelete = new ArrayList<>();
-          if (checkReplies != null) {
-            for (String checkReply : checkReplies) {
-              Long replyId = Long.valueOf(checkReply);
-              listToDelete.add(replyId);
-            }
-          }
-          scc.deleteReplies(listToDelete);
-          destination = getDestination("Main", scc, request);
-        } else {
-          destination = "/admin/jsp/errorpage.jsp";
-        }
       } else if ("DeleteR".equals(function)) {
         String questionId = request.getParameter("QuestionId");
         if (StringUtil.isDefined(questionId) && StringUtil.isLong(questionId) &&
@@ -262,12 +230,14 @@ public class QuestionReplyRequestRouter
       } else if ("EffectiveCreateR".equals(function)) {
         int publicReply = 1;
         if (StringUtil.isInteger(request.getParameter("publicReply"))) {
-          publicReply = Integer.parseInt(request.getParameter("publicReply")); // 0 = private, 1 =
-          // public
+          // 0 = private, 1 = public
+          publicReply = Integer.parseInt(request.getParameter("publicReply"));
         }
         scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
             publicReply, publicReply == 1 ? 0 : 1);
-        scc.saveNewReply();
+        Collection<UploadedFile> uploadedFiles =
+            FileUploadManager.getUploadedFiles(request, scc.getUserDetail());
+        scc.saveNewReply(uploadedFiles);
 
         if (scc.getCurrentQuestion() != null) {
           request.setAttribute("QuestionId", scc.getCurrentQuestion().getPK().getId());
@@ -293,19 +263,6 @@ public class QuestionReplyRequestRouter
         }
 
         destination = getDestination("Main", scc, request);
-      } else if ("RelaunchQuery".equals(function)) {
-        if (("admin".equals(flag)) || ("publisher".equals(flag))) {
-          destination = scc.genericWriters();
-        } else {
-          destination = "/admin/jsp/errorpage.jsp";
-        }
-      } else if ("EffectiveRelaunch".equals(function)) {
-        if (("admin".equals(flag)) || ("publisher".equals(flag))) {
-          scc.relaunchRecipients();
-          destination = getDestination("ConsultQuestion", scc, request);
-        } else {
-          destination = "/admin/jsp/errorpage.jsp";
-        }
       } else if ("CreateQueryQR".equals(function)) {
         request.setAttribute("question", scc.getNewQuestion());
         request.setAttribute("reply", scc.getNewReply());
@@ -319,7 +276,9 @@ public class QuestionReplyRequestRouter
             0);
         // Get classification positions
         String positions = request.getParameter("Positions");
-        long questionId = scc.saveNewFAQ();
+        Collection<UploadedFile> uploadedFiles =
+            FileUploadManager.getUploadedFiles(request, scc.getUserDetail());
+        long questionId = scc.saveNewFAQ(uploadedFiles);
         String id = Long.toString(questionId);
         scc.classifyQuestionReply(questionId, positions);
         scc.getQuestion(questionId);
@@ -354,31 +313,14 @@ public class QuestionReplyRequestRouter
         request.setAttribute("CurrentReply", scc.getCurrentReply());
         request.setAttribute("Language", scc.getLanguage());
         destination = "/questionReply/jsp/attachmentManager.jsp";
-      } else if ("ViewCategory".equals(function)) {
-        // gestion des catégories
-        // ----------------------
-        request.setAttribute("Categories", scc.getAllCategories());
-        request.setAttribute("UserId", scc.getUserId());
-        destination = getDestination("Main", scc, request);
-      } else if ("NewCategory".equals(function)) {
-        request.setAttribute("UserName", scc.getUserDetail().getDisplayedName());
-        destination = "/questionReply/jsp/categoryManager.jsp";
       } else if ("CreateCategory".equals(function)) {
-        // récupération des paramètres
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
         NodeDetail node =
             new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
         Category category = new Category(node);
         scc.createCategory(category);
-
-        destination = getDestination("ViewCategory", scc, request);
-      } else if ("EditCategory".equals(function)) {
-        String categoryId = request.getParameter("CategoryId");
-        Category category = scc.getCategory(categoryId);
-        request.setAttribute("Category", category);
-
-        destination = "/questionReply/jsp/categoryManager.jsp";
+        destination = getDestination("Main", scc, request);
       } else if ("UpdateCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         Category category = scc.getCategory(categoryId);
@@ -389,18 +331,16 @@ public class QuestionReplyRequestRouter
         // MAJ base
         scc.updateCategory(category);
 
-        destination = getDestination("ViewCategory", scc, request);
+        destination = getDestination("Main", scc, request);
       } else if ("DeleteCategory".equals(function)) {
         String categoryId = request.getParameter("CategoryId");
         scc.deleteCategory(categoryId);
 
-        destination = getDestination("ViewCategory", scc, request);
+        destination = getDestination("Main", scc, request);
       } else if (function.startsWith("searchResult")) {
         // traitement des recherches
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
-
-
 
         if ("Question".equals(type)) {
           // traitement des questions
@@ -411,9 +351,6 @@ public class QuestionReplyRequestRouter
           Reply reply = scc.getReply(Long.parseLong(id));
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
-
-
-
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Publication")) {
           // traitement des fichiers joints
@@ -431,10 +368,6 @@ public class QuestionReplyRequestRouter
         destination = "/questionReply/jsp/downloadZip.jsp";
       } else if (function.startsWith("portlet")) {
         scc.setUserProfil();
-        Collection<Question> allQuestions = scc.getAllQuestions();
-        request.setAttribute("questions", allQuestions);
-        request.setAttribute("Flag", "user");
-        request.setAttribute("UserId", scc.getUserId());
         request.setAttribute("Categories", scc.getAllCategories());
         destination = "/questionReply/jsp/portlet.jsp";
       } else {
@@ -448,7 +381,7 @@ public class QuestionReplyRequestRouter
     return destination;
   }
 
-  boolean canDeleteReply(SilverpeasRole role) {
-    return (admin == role || writer == role || publisher == role);
+  private boolean canDeleteReply(SilverpeasRole role) {
+    return admin == role || writer == role;
   }
 }

@@ -830,6 +830,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       idQ = pkQ.getIdAsLong();
       reply.setQuestionId(idQ);
       WAPrimaryKey pkR = replyDao.add(con, reply);
+      reply.getPK().setId(pkR.getId());
       WysiwygController
           .createFileAndAttachment(reply.readCurrentWysiwygContent(), pkR, reply.getCreatorId(),
               I18NHelper.defaultLanguage);

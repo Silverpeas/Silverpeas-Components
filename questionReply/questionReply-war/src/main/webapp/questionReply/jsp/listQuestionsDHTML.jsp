@@ -34,25 +34,31 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
+<fmt:message key="GML.subscribe" var="labelSubscribe"/>
+<fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
+
 <%
 	// recuperation des parametres
 	String		profil		= (String) request.getAttribute("Flag");
-	String		userId		= (String) request.getAttribute("UserId");
-	Collection 	questions 	= (Collection) request.getAttribute("questions");
-	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours e ouvrir
-	Collection	categories	= (Collection) request.getAttribute("Categories");
 	boolean		pdcUsed		= (Boolean) request.getAttribute("PDCUsed");
+
+	String attachmentsProfile = profil;
+	if ("publisher".equals(profil)) {
+	  // This is done to avoid operations on files to unauthorized profiles
+    attachmentsProfile = "reader";
+  }
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><fmt:message key="GML.popupTitle"/></title>
   <view:looknfeel />
-  <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
   <!--
 
 var $firstCategoryClickEventProcessedPromise;
+var searchScope = false;
+var categoryIdsToDisplay = [];
 
 var etat = new Array();
 function bindQuestionsEvent() {
@@ -68,31 +74,29 @@ function bindQuestionsEvent() {
       if(etat[id] != "open"){
         $('#a'+id).show();
         etat[id] = "open";
-            var found = $('#a'+id + '>ul>li');
-            if (found.length == 0) {
-
-				$.ajax({
-					url: answersUrl,
-					type: "GET",
-					contentType: "application/json",
-					dataType: "json",
-					cache: false,
-					success: function(data) {
-						$('#a'+id + ' > ul').html('');
-						$.each(data, function(key, answer) {
-						  $('#a'+ id + ' > ul').append(displayAnswer(answer));
-						});
-						$('html, body').animate({scrollTop:$("#q" + id).parent().offset().top}, 500);
-					}
-				});
-
+        var found = $('#a'+id + '>ul>li');
+        if (found.length == 0) {
+          $.ajax({
+            url: answersUrl,
+            type: "GET",
+            contentType: "application/json",
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+              $('#a'+id + ' > ul').html('');
+              $.each(data, function(key, answer) {
+                $('#a'+ id + ' > ul').append(displayAnswer(answer));
+              });
+              $('html, body').animate({scrollTop:$("#q" + id).parent().offset().top}, 500);
             }
-          } else {
-            $('#a'+id).hide();
-            etat[id] = "close";
-		    }
-		    return false;
+          });
         }
+      } else {
+        $('#a'+id).hide();
+        etat[id] = "close";
+      }
+      return false;
+    }
   });
 }
 
@@ -100,53 +104,78 @@ function bindCategoryEvent() {
    $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
-      questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
-      typeLien = category.substring(0,1);
-      if (typeLien!="l") {
-        $('.category').removeClass('select');
-        $('.questions').hide();
-        $('#qc' + id + ' .answers').hide();
-        $.each(etat, function(index) {
-          etat[index] = 'close';
+      openCategory(id);
+      return false;
+    });
+}
+
+function openCategory(id, exclusive) {
+  if (id.length > 0) {
+    questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
+
+    $('.category').removeClass('select');
+    var $internalPromise = $.Deferred();
+    var found = $('#qc'+id + '>li');
+    if (found.length == 0 && !searchScope) {
+      // This category has not been loaded yet
+      $.ajax({
+        url: questionUrl,
+        type: "GET",
+        contentType: "application/json",
+        dataType: "json",
+        cache: false,
+        success: function(data) {
+          $('#qc'+id).html('');
+          if (data.length > 0) {
+            $.each(data, function(key, question) {
+              $('#qc' + id).append(displayQuestion(question));
+            });
+          }
+          $internalPromise.resolve(true);
+        }
+      });
+    } else {
+      //$('#qc' + id).append("<div class=\"inlineMessage\">No result for this category !</div>");
+      $internalPromise.resolve(false);
+    }
+    $internalPromise.then(function(isQuestionBindingRequired) {
+      $('#qc' + id + " .inlineMessage.no-result").remove();
+      var found = $('#qc'+id + '>li');
+      if (found.length == 0 && !searchScope) {
+        $('#qc' + id).append("<div class=\"inlineMessage empty-category\"><fmt:message key="questionReply.category.empty"/></div>");
+      } else {
+        // search case
+        var allHidden = true;
+        $.each(found, function(key, li) {
+          allHidden = allHidden && $(li).css("display") === "none";
         });
-        var $internalPromise = $.Deferred();
-        var found = $('#qc'+id + '>li');
-        if (found.length == 0) {
+        if (allHidden) {
+          $('#qc' + id).append("<div class=\"inlineMessage no-result\"><fmt:message key="questionReply.category.noResult"/></div>");
+        }
+      }
+      $('#qc' + id).show();
+      $(this).parent().addClass('select');
+      if (isQuestionBindingRequired) {
+        bindQuestionsEvent();
+      }
+      $firstCategoryClickEventProcessedPromise.resolve();
+    });
+  }
 
-			   $.ajax({
-					url: questionUrl,
-					type: "GET",
-					contentType: "application/json",
-					dataType: "json",
-					cache: false,
-					success: function(data) {
-						$('#qc'+id).html('');
-						$.each(data, function(key, question) {
-						  answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
-						  answersDiv.append($('<p>').text(question.content));
-						  answersDiv.append($('<ul>'));
-						  answersDiv.hide();
-						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
-						});
-						$internalPromise.resolve(true);
-					}
-				});
-
-
-
-        } else {
-		  $internalPromise.resolve(false);
-		}
-        $internalPromise.then(function(isQuestionBindingRequired) {
-          $('#qc' + id).show();
-          $(this).parent().addClass('select');
-		  if (isQuestionBindingRequired) {
-		    bindQuestionsEvent();
-		  }
-          $firstCategoryClickEventProcessedPromise.resolve();
-        });
+  if (exclusive) {
+    // hide all other categories
+    $(".category").each(function() {
+      var cId = $(this).attr('id');
+      if (cId !== "category-"+id) {
+        $(this).hide();
+      } else {
+        $(this).show();
       }
     });
+
+    $("#filter a").removeClass('active');
+    $("#filter a#"+id).addClass('active');
+  }
 }
 
 $(document).ready(function() {
@@ -189,13 +218,26 @@ $(document).ready(function() {
   <fmt:message key="questionReply.close" bundle="${icons}" var="closeIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="addReplyIcon"/>
   function displayQuestion(questionToBeDisplayed) {
+    var questionId = questionToBeDisplayed.id;
     questionDiv = $('<div>').addClass('question');
-    questionTitleDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('questionTitle');
+
+    answersDiv = $('<div>').addClass('answers').attr('id', 'a' + questionId);
+    if (StringUtil.isDefined(questionToBeDisplayed.content)) {
+      answersDiv.append($('<p>').text(questionToBeDisplayed.content));
+    }
+    answersDiv.append($('<ul>'));
+    answersDiv.hide();
+
+    var li = $('<li>').attr('id', 'question-' + questionId).addClass('questionLI');
+    li.append(questionDiv);
+    li.append(answersDiv);
+
+    questionTitleDiv = $('<div>').attr('id', 'q' + questionId).addClass('questionTitle');
     questionTitle = $('<h4>');
-    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
+    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionId).attr('href', '#'+questionId).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
     questionTitleDiv.append(questionTitle);
-    questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
+    questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionId).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
     hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
     questionHyperlink.append(hyperlinkImg);
     questionTitleDiv.append(questionHyperlink);
@@ -221,35 +263,36 @@ $(document).ready(function() {
     questionDiv.append(questionTitleDiv);
     actionDiv = $('<div>').addClass('action');
     if(questionToBeDisplayed.replyable){
-      replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionToBeDisplayed.id);
+      replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionId);
       replyQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' ).attr('border', '0' );
       replyQuestionLink.append(replyQuestionImg);
       actionDiv.append(replyQuestionLink);
     }
     if(questionToBeDisplayed.reopenable){
-      reopenQuestionLink = $('<a>').addClass('open').attr('title', '<fmt:message key="questionReply.open"/>').attr('href', 'javascript:openQ(\'' + questionToBeDisplayed.id + '\')');
+      reopenQuestionLink = $('<a>').addClass('open').attr('title', '<fmt:message key="questionReply.open"/>').attr('href', 'javascript:openQ(\'' + questionId + '\')');
       reopenQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' ).attr('border', '0' );
       reopenQuestionLink.append(reopenQuestionImg);
       actionDiv.append(reopenQuestionLink);
     }
     if(questionToBeDisplayed.updatable){
-      updateQuestionLink = $('<a>').addClass('update').attr('title', '<fmt:message key="questionReply.modifQ"/>').attr('href', 'UpdateQ?QuestionId=' + questionToBeDisplayed.id);
+      updateQuestionLink = $('<a>').addClass('update').attr('title', '<fmt:message key="questionReply.modifQ"/>').attr('href', 'UpdateQ?QuestionId=' + questionId);
       updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' ).attr('border', '0' );
       updateQuestionLink.append(updateQuestionImg);
       actionDiv.append(updateQuestionLink);
 
-      deleteQuestionLink = $('<a>').addClass('delete').attr('title', '<fmt:message key="questionReply.delQ"/>').attr('href', 'javascript:deleteConfirm(\'' + questionToBeDisplayed.id + '\')');
+      deleteQuestionLink = $('<a>').addClass('delete').attr('title', '<fmt:message key="questionReply.delQ"/>').attr('href', 'javascript:deleteConfirm(\'' + questionId + '\')');
       deleteQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delQ"/>').attr('src', '<c:url value="${deleteIcon}" />' ).attr('border', '0' );
       deleteQuestionLink.append(deleteQuestionImg);
       actionDiv.append(deleteQuestionLink);
     }
     <c:if test="${'user' != requestScope.Flag}">
-      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox').prop('value', questionToBeDisplayed.id));
+      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionId).attr('type', 'checkbox').prop('value', questionId));
       actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
       questionDiv.append(actionDiv);
     </c:if>
-    return questionDiv;
+    return li;
   }
+
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="privateAnswerIcon"/>
   function displayAnswer(answer) {
@@ -277,10 +320,11 @@ $(document).ready(function() {
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     if(answer.attachments != null && answer.attachments.length > 0) {
-      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
+      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Profile=<%=attachmentsProfile%>&Id=' + answer.id);
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
+    answerContentDiv.append("<br clear=\"right\"/>");
     answerBlock.append(answerContentDiv);
     answerAuthorBlock = $('<span>').addClass('answerAuthor txtBaseline').text(answer.creatorName);
     answerDateBlock = $('<span>').addClass('answerDate').text(' - ' + answer.creationDate);
@@ -291,15 +335,12 @@ $(document).ready(function() {
 -->
 </script>
 <script type="text/javascript">
-
-function openSPWindow(fonction, windowName)
-{
+function openSPWindow(fonction, windowName) {
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
 // supprimer une question
-function deleteConfirm(id)
-{
+function deleteConfirm(id) {
 	//confirmation de suppression de la question
   var label = "<fmt:message key="MessageSuppressionQ" />";
   jQuery.popup.confirm(label, function() {
@@ -310,8 +351,7 @@ function deleteConfirm(id)
 }
 
 // clore une question
-function closeQ(id)
-{
+function closeQ(id) {
 	//confirmation de cloture de la question
   var label = "<fmt:message key="MessageCloseQ" />";
   jQuery.popup.confirm(label, function() {
@@ -322,8 +362,7 @@ function closeQ(id)
 }
 
 //reouvrir une question
-function openQ(id)
-{
+function openQ(id) {
 	//confirmation de l'ouverture de la question
   var label = "<fmt:message key="MessageOpenQ" />";
   jQuery.popup.confirm(label, function() {
@@ -334,61 +373,49 @@ function openQ(id)
 }
 
 // supprimer toutes les questions selectionnees
-function DeletesAdmin()
-{
-	if (existSelected())
-	{
-		if (existStatusError('2', '0'))
+function DeletesAdmin() {
+	if (existSelected()) {
+		if (existStatusError('2', '0')) {
 			notyError("<%=resource.getString("questionReply.delStatusErr")%>");
-		else
-		{
+    } else {
       var label = "<fmt:message key="MessageSuppressionsQ" />";
       jQuery.popup.confirm(label, function() {
-				document.forms[0].action = "<%=routerUrl%>DeleteQuestions";
-				document.forms[0].submit();
+				document.mainForm.action = "<%=routerUrl%>DeleteQuestions";
+				document.mainForm.submit();
 			});
 		}
 	}
 }
 
 // clore toutes les questions selectionnees
-function Closes()
-{
-	if (existSelected())
-	{
-		if (existStatusError('1'))
+function Closes() {
+	if (existSelected()) {
+		if (existStatusError('1')) {
 			notyError("<%=resource.getString("questionReply.closeStatusErr")%>");
-		else
-		{
+    } else {
       var label = "<fmt:message key="MessageClosesQ" />";
       jQuery.popup.confirm(label, function() {
-				document.forms[0].action = "<%=routerUrl%>CloseQuestions";
-				document.forms[0].submit();
+				document.mainForm.action = "<%=routerUrl%>CloseQuestions";
+				document.mainForm.submit();
 			});
 		}
 	}
 }
 
 // controler si toutes les cases cochees sont valides pour l'operation demandee
-function existStatusError(status)
-{
+function existStatusError(status) {
 	var err = false;
-	if (document.forms[0].status != null)
-	{
-		if (document.forms[0].status.length != null)
-		{
+	if (document.mainForm.status != null) {
+		if (document.mainForm.status.length != null) {
 			var i = 0;
-			while (i < document.forms[0].status.length)
-			{
-				 var statusQ = document.forms[0].status[i].value;
-				 if ((document.forms[0].checkedQuestion[i] != null)&&(document.forms[0].checkedQuestion[i].checked))
-				 {
-					if (statusQ != status)
-					{
+			while (i < document.mainForm.status.length) {
+        var statusQ = document.mainForm.status[i].value;
+        if ((document.mainForm.checkedQuestion[i] != null)&&(document.mainForm.checkedQuestion[i].checked)) {
+          if (statusQ != status) {
 						err = true;
-						document.forms[0].checkedQuestion[i].checked = false;
+						document.mainForm.checkedQuestion[i].checked = false;
 					}
-				 }
+        }
 				i++;
 			}
 		}
@@ -396,60 +423,28 @@ function existStatusError(status)
 	return err;
 }
 
-function existStatusError(status1, status2)
-{
+function existStatusError(status1, status2) {
 	var err = false;
-	if (document.forms[0].status != null)
-	{
-		if (document.forms[0].status.length != null)
-		{
+	if (document.mainForm.status != null) {
+		if (document.mainForm.status.length != null) {
 			var i = 0;
-			while (i < document.forms[0].status.length)
-			{
-				 var statusQ = document.forms[0].status[i].value;
-				 if ((document.forms[0].checkedQuestion[i] != null)&&(document.forms[0].checkedQuestion[i].checked))
-				 {
-					if (statusQ != status1 && statusQ != status2)
-					{
+			while (i < document.mainForm.status.length) {
+        var statusQ = document.mainForm.status[i].value;
+        if ((document.mainForm.checkedQuestion[i] != null)&&(document.mainForm.checkedQuestion[i].checked)) {
+					if (statusQ != status1 && statusQ != status2) {
 						err = true;
-						document.forms[0].checkedQuestion[i].checked = false;
+						document.mainForm.checkedQuestion[i].checked = false;
 					}
-				 }
+        }
 				i++;
 			}
 		}
 	}
 	return err;
-}
-
-// recherche s'il y a des questions selectionnees
-function existSelect()
-{
-	if (document.forms[0].checkedQuestion != null)
-	{
-		if (document.forms[0].checkedQuestion.length != null)
-		{
-			var i = 0;
-			while (i < document.forms[0].checkedQuestion.length)
-			{
-				 if (document.forms[0].checkedQuestion[i].checked)
-					return true;
-				i ++;
-			}
-		}
-		else
-		{
-			 if (document.forms[0].checkedQuestion.checked)
-				return true;
-
-		}
-	}
-	return false;
 }
 
 // supprimer une reponse
-function deleteConfirmR(replyId, questionId)
-{
+function deleteConfirmR(replyId, questionId) {
   //confirmation de suppression de la question
   var label = "<fmt:message key="MessageSuppressionR" />";
   jQuery.popup.confirm(label, function() {
@@ -466,8 +461,6 @@ function confirmDeleteCategory(categoryId) {
 		window.location.href=("DeleteCategory?CategoryId=" + categoryId + "");
 	});
 }
-<fmt:message key="GML.subscribe" var="labelSubscribe"/>
-<fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
 
 function successUnsubscribe() {
   setSubscriptionMenu('<view:encodeJs string="${labelSubscribe}" />', 'subscribe');
@@ -489,13 +482,186 @@ function unsubscribe() {
 function subscribe() {
   $.post('<c:url value="/services/subscribe/${pageScope.componentId}" />', successSubscribe(), 'json');
 }
+
+function addCategory() {
+  document.categoryForm.action = "CreateCategory";
+  // open modal dialog
+  $('#addOrUpdateCategory').popup('validation', {
+    title : '<fmt:message key="questionReply.createCategory"/>',
+    width : '600px',
+    callback : function() {
+      ifCorrectFormExecute(function() {
+        document.categoryForm.submit();
+      });
+      return true;
+    }
+  });
+}
+
+function updateCategory(id) {
+  document.categoryForm.action = "UpdateCategory";
+  document.categoryForm.CategoryId.value = id;
+  $("#addOrUpdateCategory #categoryName").val($('#c'+id+" a.categoryTitle").text());
+  $("#addOrUpdateCategory #categoryDescription").val($('#c'+id+" .categoryDescription").text());
+  // open modal dialog
+  $('#addOrUpdateCategory').popup('validation', {
+    title : '<fmt:message key="questionReply.updateCategory"/>',
+    width : '600px',
+    callback : function() {
+      ifCorrectFormExecute(function() {
+        document.categoryForm.submit();
+      });
+      return true;
+    }
+  });
+}
+
+function ifCorrectFormExecute(callback) {
+  var errorMsg = "";
+  var errorNb = 0;
+  var name = stripInitialWhitespace(document.categoryForm.Name.value);
+
+  if (name == "") {
+    errorMsg+="  - '<fmt:message key="GML.title"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+    errorNb++;
+  }
+
+  switch(errorNb) {
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
+}
+
+function getComponentId() {
+  return "${pageScope.componentId}";
+}
+
+function search() {
+  var query = $('#query').val();
+  if (query.length > 0) {
+    var queryDescription = {
+      appId : getComponentId(),
+      query : query
+    };
+
+    $.get(webContext+"/services/search", queryDescription,
+      function(results) {
+        // limit results only to 'Question' (main entry)
+        var questionIds = [];
+        $.each(results, function(key, result) {
+          if (result.type === "Question") {
+            questionIds.push(result.id);
+          }
+        });
+        displaySearchResults(questionIds);
+      });
+  } else {
+    location.href = "Main";
+  }
+}
+
+function displaySearchResults(resultQuestionIds) {
+  searchScope = true;
+  categoryIdsToDisplay = [];
+  $("#filter a").removeClass("active");
+  $("#filter-all").addClass("active");
+  $(".inlineMessage.no-result").remove();
+  if (resultQuestionIds.length == 0) {
+    $(".category").hide();
+    $("#noResult").show();
+  } else if (resultQuestionIds.length > 0) {
+    $("#noResult").hide();
+
+    var $internalPromise = $.Deferred();
+
+    // hide displayed questions which are not part of results
+    $(".questionLI").each(function() {
+      aQuestionId = this.id.substring("question-".length);
+      index = resultQuestionIds.indexOf(aQuestionId);
+      if (index == -1) {
+        $(this).hide();
+      } else {
+        $(this).show();
+        $(this).parents('li.category').show();
+        var categId = $(this).parents('li.category').attr('id');
+        categoryIdsToDisplay.push(categId);
+        resultQuestionIds.splice(index, 1);
+      }
+    });
+
+    // display questions
+    if (resultQuestionIds.length > 0) {
+      var param = "";
+      $.each(resultQuestionIds, function(i, questionId) {
+        if (i != 0) {
+          param += "&";
+        }
+        param += "ids="+questionId;
+      });
+
+      questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions?"/>' + param;
+      $.ajax({
+        url: questionUrl,
+        type: "GET",
+        contentType: "application/json",
+        dataType: "json",
+        cache: false,
+        success: function(questions) {
+          $.each(questions, function(key, question) {
+            if (question.categoryId) {
+              categoryId = question.categoryId;
+            } else {
+              categoryId = "null";
+            }
+            categoryIdsToDisplay.push("category-"+categoryId);
+            $('#qc' + categoryId).show();
+            $('#qc' + categoryId).append(displayQuestion(question));
+          });
+          $internalPromise.resolve();
+        }
+      });
+    } else {
+      $internalPromise.resolve();
+    }
+
+    $internalPromise.then(function() {
+      bindQuestionsEvent();
+      showRelevantCategories();
+    });
+  }
+}
+
+// hide empty categories, show the other ones
+function showRelevantCategories() {
+  $(".category").each(function() {
+    var cId = $(this).attr('id');
+    if (categoryIdsToDisplay.indexOf(cId) == -1) {
+      $(this).hide();
+    } else {
+      $(this).show();
+    }
+  });
+}
+
+function filterAll() {
+  if (searchScope) {
+    showRelevantCategories();
+  } else {
+    location.href = "Main";
+  }
+}
 </script>
 </head>
-<body>
+<body class="<%=profil%>">
 <%
-  browseBar.setDomainName(spaceLabel);
-  browseBar.setPath("");
-
   if (profil.equals("admin")) {
     if (pdcUsed) {
 	    // gestion du plan de classement
@@ -506,7 +672,7 @@ function subscribe() {
     }
     // creation des categories
     operationPane.addOperationOfCreation(resource.getIcon("questionReply.createCategory"), resource.getString(
-            "questionReply.createCategory"), "NewCategory");
+            "questionReply.createCategory"), "javascript:onclick=addCategory()");
     operationPane.addLine();
   }
   if (!profil.equals("user")) {
@@ -540,20 +706,40 @@ function subscribe() {
 %>
 <view:frame>
 <view:areaOfOperationOfCreation/>
-<form method="post" action="">
+
+  <div class="container-filter">
+    <div id="search" class="content-container-filter ">
+      <form method="post" action="javascript:search()" name="searchForm">
+        <label for="query"><fmt:message key="GML.search"/> </label>
+        <input size="40" maxlength="60" value="" type="text" id="query" name="query"/>
+        <a class="sp_button" href="javascript:search()"><fmt:message key="GML.ok"/></a>
+      </form>
+    </div>
+    <div id="filter" class="listing-filter content-container-filter "> <fmt:message key="questionReply.filters"/>
+      <c:forEach items="${requestScope.Categories}" var="category">
+        <a id="${category.id}" title="${category.description}" href="#" onclick="javascript:openCategory('${category.id}', true)">${category.name}</a>
+      </c:forEach>
+      <a id="null" href="#" onclick="javascript:openCategory('null', true)"><fmt:message key="questionReply.noCategory"/></a>
+      - <a id="filter-all" class="active" href="#" onclick="filterAll()"><fmt:message key="GML.allFP"/></a> </div>
+  </div>
+
+  <form method="post" action="" name="mainForm">
   <ul>
     <fmt:message key="questionReply.updateCategory" bundle="${icons}" var="updateCategoryIcon"/>
     <fmt:message key="questionReply.deleteCategory" bundle="${icons}" var="deleteCategoryIcon"/>
     <c:forEach items="${requestScope.Categories}" var="category">
-      <li class="category">
+      <li class="category" id="category-${category.id}">
         <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
-          <h3><a class="categoryTitle" id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
-          <p>: <c:out value='${category.description}'/></p>
+          <h3><c:out value='${category.name}'/></h3>
+          <p>
+            <c:if test="${not empty category.description}"> : </c:if>
+            <span class="categoryDescription"><c:out value='${category.description}'/></span>
+          </p>
           <div class="action">
             <c:if test="${'admin' eq requestScope.Flag}">
-            <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>">
+            <a title="<fmt:message key="questionReply.updateCategory"/>" href="#" onclick="javascript:updateCategory('${category.id}')">
               <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>" border="0"/></a>
-            <a title="<fmt:message key="questionReply.deleteCategory"/>" href="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
+            <a title="<fmt:message key="questionReply.deleteCategory"/>" href="#" onclick="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
               <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>" border="0"/></a>
             </c:if>
           </div>
@@ -561,22 +747,45 @@ function subscribe() {
         <ul class="questions" id="qc<c:out value='${category.id}'/>" ></ul>
     </li>
     </c:forEach>
-    <li class="category">
-        <div class="categoryTitle" id="cnull">
-          <h3><a class="categoryTitle"  id="lcnull" title="<fmt:message key="questionReply.openCategory"/>" href="#"><fmt:message key="questionReply.noCategory"/></a></h3>
-          <div class="action">
-          </div>
-        </div>
-        <ul class="questions" id="qcnull" ></ul>
+    <li class="category" id="category-null">
+      <div class="categoryTitle" id="cnull">
+        <h3><fmt:message key="questionReply.noCategory"/></h3>
+      </div>
+      <ul class="questions" id="qcnull" ></ul>
     </li>
 </ul>
 </form>
+
+  <div id="noResult" class="inlineMessage" style="display: none">
+    <fmt:message key="questionReply.noResult"/>
+  </div>
+
+<c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
+<div id="addOrUpdateCategory" style="display: none;">
+  <form name="categoryForm" action="CreateCategory" method="post">
+    <table cellpadding="5" width="100%">
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.title"/> :</td>
+        <td><input type="text" name="Name" id="categoryName" size="60" maxlength="150"/>
+          &nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.description" /> :</td>
+        <td><input type="text" name="Description" id="categoryDescription" size="60" maxlength="150"/></td>
+      </tr>
+      <tr>
+        <td colspan="2"><img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></td>
+      </tr>
+    </table>
+    <input type="hidden" name="CategoryId"/>
+  </form>
+</div>
 
 <form name="QForm" action="" method="post">
   <input type="hidden" name="Id" />
 </form>
 
-<form id ="RForm" name="RForm" action="" method="post">
+<form id="RForm" name="RForm" action="" method="post">
   <input type="hidden" name="replyId" />
   <input type="hidden" name="QuestionId" />
 </form>

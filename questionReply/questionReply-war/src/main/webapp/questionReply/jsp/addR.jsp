@@ -37,15 +37,10 @@
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <%@ include file="checkQuestionReply.jsp" %>
-<%
-	Reply reply = (Reply) request.getAttribute("reply");
-	boolean usedPrivateReplies = (Boolean) request.getAttribute("UsedPrivateReplies");
-%>
 <c:set var="usedPrivateReplies" value="${requestScope['UsedPrivateReplies']}"/>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true"/>
-<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 <!--
@@ -86,11 +81,7 @@ $(document).ready(function() {
 <%
 	browseBar.setExtraInformation(resource.getString("questionReply.reponse"));
 
-	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
-  tabbedPane.addTab(resource.getString("GML.attachments"), "#", false);
-
 	out.println(window.printBefore());
-	out.println(tabbedPane.print());
 %>
 
 <form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateR">
@@ -136,6 +127,8 @@ $(document).ready(function() {
 
   </div>
 </fieldset>
+
+  <view:fileUpload fieldset="true" jqueryFormSelector="form[name='myForm']" />
 
 <div class="legend">
   <fmt:message key="GML.requiredField" /> : <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" />

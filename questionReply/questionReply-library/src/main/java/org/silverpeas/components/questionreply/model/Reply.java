@@ -26,7 +26,6 @@ package org.silverpeas.components.questionreply.model;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -128,8 +127,7 @@ public class Reply extends SilverpeasBean {
   }
 
   public UserDetail readAuthor() {
-    return OrganizationControllerProvider.getOrganisationController().getUserDetail(String.valueOf(
-        getCreatorId()));
+    return UserDetail.getById(getCreatorId());
   }
 
   public String loadWysiwygContent() {
