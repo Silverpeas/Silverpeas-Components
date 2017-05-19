@@ -23,6 +23,26 @@
  */
 package org.silverpeas.components.yellowpages.control;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.yellowpages.ImportReport;
+import org.silverpeas.components.yellowpages.YellowpagesException;
+import org.silverpeas.components.yellowpages.model.TopicDetail;
+import org.silverpeas.components.yellowpages.model.UserContact;
+import org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail;
+import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
+import org.silverpeas.components.yellowpages.service.YellowpagesService;
+import org.silverpeas.core.admin.component.model.CompoSpace;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contribution.content.form.AbstractForm;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -36,44 +56,25 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.contact.model.CompleteContact;
-import org.silverpeas.core.contact.model.ContactDetail;
-import org.silverpeas.core.contact.model.ContactFatherDetail;
-import org.silverpeas.core.contact.model.ContactPK;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.components.yellowpages.ImportReport;
-import org.silverpeas.components.yellowpages.YellowpagesException;
-import org.silverpeas.components.yellowpages.service.YellowpagesService;
-import org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail;
-import org.silverpeas.components.yellowpages.model.TopicDetail;
-import org.silverpeas.components.yellowpages.model.UserContact;
-import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilTrappedException;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -89,6 +90,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings.areUserExtraDataRequired;
 
@@ -765,6 +767,104 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return result;
   }
 
+  private String augmentQuery(String query) {
+    String augmentedQuery = query;
+    if (query.endsWith("*") || query.endsWith("%")) {
+      augmentedQuery = query.substring(0, query.length() - 1);
+    }
+    return "%" + augmentedQuery + "%";
+  }
+
+  private List<ContactFatherDetail> searchByName(final String property, final String query) {
+    List<ContactFatherDetail> result;
+
+    List<ContactDetail> contacts = new ArrayList<>();
+    final UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria();
+    if ("LastName".equals(property)) {
+      criteria.onLastName(augmentQuery(query));
+      contacts = (List<ContactDetail>) getYellowpagesService().getContactDetailsByLastName(
+          new ContactPK("useless", getComponentId()), criteria.getCriterionOnLastName());
+    } else if ("FirstName".equals(property)) {
+      criteria.onFirstName(augmentQuery(query));
+      contacts = (List<ContactDetail>) getYellowpagesService()
+          .getContactDetailsByLastNameAndFirstName(new ContactPK("useless", getComponentId()),
+              "%", criteria.getCriterionOnFirstName());
+    } else if ("LastNameFirstName".equals(property)) {
+      // last name and/or first name
+      int separator = query.indexOf(' ');
+      if (separator == -1) {
+        // only search on the last name or the first name
+        criteria.onName(augmentQuery(query));
+        contacts = (List<ContactDetail>) getYellowpagesService()
+            .getContactDetailsByLastNameOrFirstName(new ContactPK("useless", getComponentId()),
+                criteria.getCriterionOnName());
+      } else {
+        // search both on the last and first names
+        criteria.onLastName(augmentQuery(query.substring(0, separator).trim()));
+        criteria.onFirstName(augmentQuery(query.substring(separator).trim()));
+        contacts = (List<ContactDetail>) getYellowpagesService()
+            .getContactDetailsByLastNameAndFirstName(new ContactPK("useless", getComponentId()),
+                criteria.getCriterionOnLastName(), criteria.getCriterionOnFirstName());
+      }
+    }
+    List<UserDetail> users = getOrganisationController().searchUsers(criteria);
+
+    // filter users who are in the component
+    TopicDetail rootTopic = getTopic(NodePK.ROOT_NODE_ID);
+    Collection<ContactFatherDetail> contactsUser = getAllContactDetails(rootTopic.getNodePK());
+
+    result = contactsUser.stream().filter(contactFatherDetail -> {
+      String userId = contactFatherDetail.getContactDetail().getUserId();
+      return users.stream().anyMatch(userDetail -> userDetail.getId().equals(userId));
+    }).collect(Collectors.toList());
+
+    result.addAll(getListContactFather(contacts, false));
+
+    return result;
+  }
+
+  private List<ContactFatherDetail> searchByAllProperties(String query)
+      throws PublicationTemplateException, FormException {
+    List<ContactFatherDetail> result = new ArrayList<>();
+    // users currently in the session
+    Collection<ContactFatherDetail> contactsUser = setCurrentFullCompleteUsers();
+    // 1 - Look for user in Silverpeas groups
+    List<UserFull> listFullUsers = searchFullUsers(query);
+    // 2 - Look for contacts
+    List<CompleteContact> listCompleteUsers = searchCompleteUsers(query);
+
+    for (ContactFatherDetail contactFather: contactsUser) {
+      findContact(contactFather, listFullUsers, listCompleteUsers, result);
+    }
+
+    return result;
+  }
+
+  private void findContact(final ContactFatherDetail contactFather,
+      final List<UserFull> listFullUsers, final List<CompleteContact> listCompleteUsers,
+      final List<ContactFatherDetail> result) {
+    if (contactFather.getNodeId() != null && contactFather.getNodeId()
+        .startsWith(YellowpagesSessionController.GroupReferentielPrefix) &&
+        contactFather.getContactDetail().getUserId() != null) {
+      // a contact that is a user that belongs to a group in Silverpeas
+      for (UserFull userFull: listFullUsers) {
+        if (contactFather.getContactDetail().getUserId().equals(userFull.getId())) {
+          result.add(contactFather);
+          break;
+        }
+      }
+    } else {
+      // a contact from an internal or external directory
+      for (CompleteContact userComplete: listCompleteUsers) {
+        if (contactFather.getContactDetail().getPK().getId()
+            .equals(userComplete.getContactDetail().getPK().getId())) {
+          result.add(contactFather);
+          break;
+        }
+      }
+    }
+  }
+
   /**
    * @param typeSearch
    * @param query
@@ -775,175 +875,15 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    */
   public List<ContactFatherDetail> search(String typeSearch, String query)
       throws PublicationTemplateException, FormException {
-    List<ContactFatherDetail> result = new ArrayList<>();
-    query = query.trim();
+    List<ContactFatherDetail> result;
+    String _query = query.trim();
 
     if (!"All".equals(typeSearch)) {
-      // typeSearch = LastName || FirstName || LastNameFirstName
-      // Recherche sur nom et/ou prénom
-
-      String nom = null;
-      String prenom = null;
-      int indexEspace = -1;
-
-      if ("LastName".equals(typeSearch)) {
-        nom = query;
-      } else if ("FirstName".equals(typeSearch)) {
-        nom = "*";
-        prenom = query;
-      } else if ("LastNameFirstName".equals(typeSearch)) {
-        // nom et/ou prénom
-        indexEspace = query.indexOf(' ');
-        if (indexEspace == -1) {
-          // seulement recherche sur le nom, on cherchera sur le prénom aprés
-          nom = query;
-        } else {
-          // recherche sur le nom et le prénom
-          nom = query.substring(0, indexEspace);
-          prenom = query.substring(indexEspace);
-          prenom = prenom.trim();
-        }
-      }
-
-      assert nom != null;
-      if (nom.endsWith("*") || nom.endsWith("%")) {
-        nom = nom.substring(0, nom.length() - 1);
-      }
-      nom = "%" + nom + "%";
-
-      if (prenom != null) {
-        if (prenom.endsWith("*") || prenom.endsWith("%")) {
-          prenom = prenom.substring(0, prenom.length() - 1);
-        }
-        prenom = "%" + prenom + "%";
-      }
-
-      // 1 - Look for user in Silverpeas groups
-      UserDetail modelUser = new UserDetail();
-      modelUser.setLastName(nom);
-      if (prenom != null) {
-        modelUser.setFirstName(prenom);
-      }
-
-      UserDetail[] users = getOrganisationController().searchUsers(modelUser, true);
-
-      if ("LastNameFirstName".equals(typeSearch) && indexEspace == -1) {
-        // Add research on firstname
-        modelUser.setLastName(null);
-        if (query.endsWith("*") || query.endsWith("%")) {
-          query = query.substring(0, query.length() - 1);
-        }
-        query = "%" + query + "%";
-        modelUser.setFirstName(query);
-
-        UserDetail[] usersFirstName = getOrganisationController().searchUsers(modelUser, true);
-        UserDetail[] temp = new UserDetail[users.length + usersFirstName.length];
-
-        int i;
-        for (i = 0; i < users.length; i++) {
-          temp[i] = users[i];
-        }
-        int j = i;
-        for (UserDetail anUsersFirstName : usersFirstName) {
-          temp[j] = anUsersFirstName;
-          j++;
-        }
-        users = temp;
-      }
-
-      // filter users who are in the component
-      TopicDetail rootTopic = getTopic(NodePK.ROOT_NODE_ID);
-      Collection<ContactFatherDetail> contactsUser = getAllContactDetails(rootTopic.getNodePK());
-      Iterator<ContactFatherDetail> iterator = contactsUser.iterator();
-      ContactFatherDetail contactFather;
-      ContactDetail contact;
-      String userId;
-      UserDetail userDetail;
-      while (iterator.hasNext()) {
-        contactFather = iterator.next();
-        contact = contactFather.getContactDetail();
-        userId = contact.getUserId();
-        if (userId != null) {
-          for (UserDetail user : users) {
-            userDetail = user;
-            if (userId.equals(userDetail.getId())) {
-              result.add(contactFather);
-              break;
-            }
-          }
-        }
-      }
-
-      // 2 - Look for contacts
-      List<ContactDetail> contacts = new ArrayList<>();
-      if ("LastName".equals(typeSearch)) {
-        contacts = (List<ContactDetail>) getYellowpagesService()
-            .getContactDetailsByLastName(new ContactPK("useless", getComponentId()), nom);
-      } else if ("FirstName".equals(typeSearch)) {
-        contacts = (List<ContactDetail>) getYellowpagesService()
-            .getContactDetailsByLastNameAndFirstName(new ContactPK("useless", getComponentId()),
-                nom, prenom);
-      } else if ("LastNameFirstName".equals(typeSearch)) {
-        if (prenom == null) {
-          // nom ou prenom
-          contacts = (List<ContactDetail>) getYellowpagesService()
-              .getContactDetailsByLastNameOrFirstName(new ContactPK("useless", getComponentId()),
-                  nom);
-        } else {
-          // nom et prenom
-          contacts = (List<ContactDetail>) getYellowpagesService()
-              .getContactDetailsByLastNameAndFirstName(new ContactPK("useless", getComponentId()),
-                  nom, prenom);
-        }
-      }
-
-      result.addAll(getListContactFather(contacts, false));
-
-    } else {// typeSearch = All
-      // Recherche sur tous les champs
-
-      // initialise les listes en session
-      Collection<ContactFatherDetail> contactsUser = setCurrentFullCompleteUsers();
-
-      // 1 - Look for user in Silverpeas groups
-      List<UserFull> listFullUsers = searchFullUsers(query);
-
-      // 2 - Look for contacts
-      List<CompleteContact> listCompleteUsers = searchCompleteUsers(query);
-
-      Iterator<ContactFatherDetail> iterator = contactsUser.iterator();
-      ContactFatherDetail contactFather;
-      Iterator<UserFull> itUserFull;
-      UserFull userFull;
-      Iterator<CompleteContact> itUserComplete;
-      CompleteContact userComplete;
-      while (iterator.hasNext()) {
-        contactFather = iterator.next();
-        if (contactFather.getNodeId() != null && contactFather.getNodeId()
-            .startsWith(YellowpagesSessionController.GroupReferentielPrefix) &&
-            contactFather.getContactDetail().getUserId() != null) {
-          // contact de type user appartenant à un groupe Silverpeas
-          itUserFull = listFullUsers.iterator();
-          while (itUserFull.hasNext()) {
-            userFull = itUserFull.next();
-            if (contactFather.getContactDetail().getUserId().equals(userFull.getId())) {
-              result.add(contactFather);
-              break;
-            }
-          }
-        } else {
-          // contacts annuaire interne et externe
-          itUserComplete = listCompleteUsers.iterator();
-          while (itUserComplete.hasNext()) {
-            userComplete = itUserComplete.next();
-            if (contactFather.getContactDetail().getPK().getId()
-                .equals(userComplete.getContactDetail().getPK().getId())) {
-              result.add(contactFather);
-              break;
-            }
-          }
-        }
-      }
+      // the search is on the name (first name and/or last name) of the users
+      result = searchByName(typeSearch, _query);
+    } else {
+      // the search is on all the user properties
+      result = searchByAllProperties(_query);
     }
 
     return result;
