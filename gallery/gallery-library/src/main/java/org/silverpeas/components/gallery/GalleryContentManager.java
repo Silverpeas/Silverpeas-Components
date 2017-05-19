@@ -33,7 +33,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -102,8 +101,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
           .addSilverContent(con, media.getMediaPK().getId(), media.getMediaPK().getComponentName(),
               userId);
     } catch (SQLException e) {
-      throw new ContentManagerException("GalleryContentManager", SilverpeasException.ERROR, "", "",
-          e);
+      throw new ContentManagerException(e.getMessage(), e);
     }
   }
 
@@ -119,8 +117,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
         getContentManager().removeSilverContent(con, contentId, mediaPK.getComponentName());
       }
     } catch (SQLException e) {
-      throw new ContentManagerException("GalleryContentManager", SilverpeasException.ERROR, "", "",
-          e);
+      throw new ContentManagerException(e.getMessage(), e);
     }
   }
 
