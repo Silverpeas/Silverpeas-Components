@@ -37,6 +37,7 @@ import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -79,7 +80,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
   }
 
   @Override
-  public List<Suggestion> getAll() {
+  public SilverpeasList<Suggestion> getAll() {
     return decorate(suggestionManager.getAll(), SuggestionCriteria.from(null).withWysiwygContent());
   }
 
@@ -90,19 +91,19 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
   }
 
   @Override
-  public List<Suggestion> getById(final String... ids) {
+  public SilverpeasList<Suggestion> getById(final String... ids) {
     return decorate(suggestionManager.getById(ids),
         SuggestionCriteria.from(null).withWysiwygContent());
   }
 
   @Override
-  public List<Suggestion> getById(final Collection<String> ids) {
+  public SilverpeasList<Suggestion> getById(final Collection<String> ids) {
     return decorate(suggestionManager.getById(ids),
         SuggestionCriteria.from(null).withWysiwygContent());
   }
 
   @Override
-  public List<Suggestion> findByCriteria(final QueryCriteria criteria) {
+  public SilverpeasList<Suggestion> findByCriteria(final QueryCriteria criteria) {
     return decorate(suggestionManager.findByCriteria(criteria),
         SuggestionCriteria.from(null).withWysiwygContent());
   }
@@ -121,16 +122,16 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
   }
 
   @Override
-  public List<Suggestion> save(final Suggestion... suggestions) {
+  public SilverpeasList<Suggestion> save(final Suggestion... suggestions) {
     return save(Arrays.asList(suggestions));
   }
 
   @Override
-  public List<Suggestion> save(final List<Suggestion> suggestions) {
+  public SilverpeasList<Suggestion> save(final List<Suggestion> suggestions) {
     for (Suggestion suggestion : suggestions) {
       save(suggestion);
     }
-    return suggestions;
+    return SilverpeasList.wrap(suggestions);
   }
 
   @Override
@@ -182,7 +183,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
     return suggestion;
   }
 
-  private List<Suggestion> decorate(final List<Suggestion> suggestions,
+  private SilverpeasList<Suggestion> decorate(final List<Suggestion> suggestions,
       final SuggestionCriteria criteria) {
     Map<String, ContributionRating> suggestionRatings = RatingService.get()
         .getRatings(suggestions.toArray(new SilverpeasContent[suggestions.size()]));
@@ -193,7 +194,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
       withCommentCount(suggestion);
       suggestion.setRating(suggestionRatings.get(suggestion.getId()));
     }
-    return suggestions;
+    return SilverpeasList.wrap(suggestions);
   }
 
   private void withContent(final Suggestion suggestion) {
