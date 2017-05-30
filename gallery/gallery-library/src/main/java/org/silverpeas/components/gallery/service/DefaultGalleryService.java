@@ -59,6 +59,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -88,6 +90,26 @@ public class DefaultGalleryService implements GalleryService {
   private OrganizationController organizationController;
   @Inject
   private GalleryContentManager galleryContentManager;
+
+  @Override
+  public Media getContentById(final String contentId) {
+    return getMedia(new MediaPK(contentId));
+  }
+
+  @Override
+  public SettingBundle getComponentSettings() {
+    return GalleryComponentSettings.getSettings();
+  }
+
+  @Override
+  public LocalizationBundle getComponentMessages(final String language) {
+    return GalleryComponentSettings.getMessagesIn(language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith(GalleryComponentSettings.COMPONENT_NAME);
+  }
 
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK) {

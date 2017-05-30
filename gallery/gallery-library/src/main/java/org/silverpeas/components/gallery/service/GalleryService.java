@@ -33,6 +33,7 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -44,7 +45,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public interface GalleryService {
+public interface GalleryService extends ApplicationService<Media> {
 
   AlbumDetail getAlbum(NodePK nodePK);
 

@@ -158,7 +158,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public boolean isRelatedTo(final String instanceId) {
-    return instanceId.startsWith("quickInfo");
+    return instanceId.startsWith(QuickInfoComponentSettings.COMPONENT_NAME);
   }
 
   @Override
