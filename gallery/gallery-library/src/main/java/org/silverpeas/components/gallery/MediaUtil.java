@@ -399,7 +399,7 @@ public class MediaUtil {
           getMedia().getVideo().setDefinition(getPhysicalFileMetaData().getDefinition());
         }
         if (getPhysicalFileMetaData().getDuration() != null) {
-          if (mediaType.isPhoto()) {
+          if (mediaType.isVideo()) {
             getMedia().getVideo()
                 .setDuration(getPhysicalFileMetaData().getDuration().getTimeAsLong());
           } else if (mediaType.isSound()) {
