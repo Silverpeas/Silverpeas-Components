@@ -29,7 +29,6 @@ import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * Process to update a media in Database
@@ -88,11 +87,6 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
 
     // Sets functional data media
     if (delegate != null) {
-
-      SilverTrace
-          .info("gallery", "GalleryUpdateMediaDataProcess.process()", "root.MSG_GEN_ENTER_METHOD",
-              "MediaPK = " + getMedia().toString());
-
       if (delegate.isHeaderData()) {
         delegate.updateHeader(getMedia());
       }

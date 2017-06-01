@@ -23,25 +23,24 @@
  */
 package org.silverpeas.components.infoletter.servlets;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.infoletter.control.InfoLetterSessionController;
+import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.DateUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Class declaration
@@ -169,11 +168,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   public String getDestination(String function, InfoLetterSessionController infoLetterSC,
       HttpRequest request) {
     String destination;
-
-    SilverTrace
-        .info("infoLetter", "infoLetterRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "User=" + infoLetterSC.getUserId() + " Function=" + function);
-
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
 

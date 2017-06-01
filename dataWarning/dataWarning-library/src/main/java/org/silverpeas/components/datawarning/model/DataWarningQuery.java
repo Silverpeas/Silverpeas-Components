@@ -23,14 +23,17 @@
  */
 package org.silverpeas.components.datawarning.model;
 
-import java.util.*;
-import java.sql.*;
-
 import org.silverpeas.components.datawarning.DataWarningException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
 
 public class DataWarningQuery extends SilverpeasBean {
 
@@ -175,10 +178,6 @@ public class DataWarningQuery extends SilverpeasBean {
     DataWarningQueryResult valret =
         new DataWarningQueryResult(this, (getPersoValid() == QUERY_PERSO_VALID), getPersoColNB(),
             getPersoUID());
-
-    SilverTrace
-        .info("dataWarning", "DataWarningQueryResult.executeQuery()", "root.MSG_GEN_ENTER_METHOD",
-            "query=" + getQuery());
     try {
       con = dataModel.openConnection();
       prepStmt = con.prepareStatement(getQuery());

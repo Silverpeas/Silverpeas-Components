@@ -166,9 +166,6 @@ public class DataWarningQueryResult extends Object {
             maxVal = theVal;
           }
         }
-        SilverTrace
-            .info("dataWarning", "DataWarningQueryResult.returnTriggerValueFromResult(perso)",
-                "root.MSG_GEN_PARAM_VALUE", "maxVal = " + maxVal);
         return maxVal;
       } else {
         return Long.parseLong(getValue(0, 0));

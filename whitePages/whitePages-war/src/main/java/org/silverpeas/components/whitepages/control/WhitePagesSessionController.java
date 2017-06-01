@@ -24,6 +24,7 @@
 package org.silverpeas.components.whitepages.control;
 
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -821,7 +822,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return new ArrayList<>();
   }
 
-  public List<SearchField> getLdapAttributesList() throws Exception {
+  public List<SearchField> getLdapAttributesList() throws AdminException {
     Map<String, String> properties = getDomainProperties();
     List<SearchField> fields = new ArrayList<>();
     for (Map.Entry<String, String> prop : properties.entrySet()) {
@@ -833,7 +834,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return fields;
   }
 
-  private Map<String, String> getDomainProperties() throws Exception {
+  private Map<String, String> getDomainProperties() throws AdminException {
     return mDDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
   }
 

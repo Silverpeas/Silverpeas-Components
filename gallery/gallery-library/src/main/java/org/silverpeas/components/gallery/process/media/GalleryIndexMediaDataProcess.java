@@ -36,7 +36,6 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -79,10 +78,6 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
    */
   @Override
   public void onSuccessful() throws Exception {
-    SilverTrace
-        .info("gallery", "GalleryIndexMediaDataProcess.onSuccessful()", "root.MSG_GEN_ENTER_METHOD",
-            "getMedia() = " + getMedia().toString());
-
     if (getMedia() != null) {
       // Index the Media
       FullIndexEntry indexEntry = new FullIndexEntry(getMedia().getMediaPK().getComponentName(),

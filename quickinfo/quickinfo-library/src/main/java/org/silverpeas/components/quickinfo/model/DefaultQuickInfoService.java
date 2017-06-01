@@ -317,7 +317,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public List<News> getPlatformNews(String userId) {
-    SilverLogger.getLogger(this).info("Enter Get All Quick Info : User=" + userId);
+    SilverLogger.getLogger(this).debug("Enter Get All Quick Info : User=" + userId);
     List<News> result = new ArrayList<>();
     CompoSpace[] compoSpaces = OrganizationControllerProvider.getOrganisationController()
         .getCompoForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);

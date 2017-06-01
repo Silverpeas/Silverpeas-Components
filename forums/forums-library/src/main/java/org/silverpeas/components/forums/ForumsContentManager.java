@@ -121,7 +121,7 @@ public class ForumsContentManager implements ContentInterface {
     int contentId =
         getContentManager().getSilverContentId(forumPK.getId(), forumPK.getComponentName());
     if (contentId != -1) {
-      getContentManager().removeSilverContent(con, contentId, forumPK.getComponentName());
+      getContentManager().removeSilverContent(con, contentId);
     }
   }
 
