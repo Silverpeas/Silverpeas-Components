@@ -132,7 +132,7 @@ public class InfoLetterContentManager implements ContentInterface {
     int contentId = getContentManager().getSilverContentId(pubId, componentId);
     if (contentId != -1) {
 
-      getContentManager().removeSilverContent(con, contentId, componentId);
+      getContentManager().removeSilverContent(con, contentId);
     }
   }
 

@@ -148,7 +148,7 @@ public class QuestionReplyContentManager implements ContentInterface {
   public void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     int contentId = this.contentManager.getSilverContentId(pk.getId(), pk.getComponentName());
 
-    this.contentManager.removeSilverContent(con, contentId, pk.getComponentName());
+    this.contentManager.removeSilverContent(con, contentId);
   }
 
   private boolean isVisible(Question question) {

@@ -629,9 +629,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public void addGroup(String groupId) {
-    SilverTrace
-        .info("yellowpages", "YellowpagesSessionController.addGroup()", "root.MSG_GEN_ENTER_METHOD",
-            "groupId = " + groupId);
     getYellowpagesService().addGroup(groupId, getCurrentTopic().getNodePK());
   }
 
@@ -876,14 +873,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<ContactFatherDetail> search(String typeSearch, String query)
       throws PublicationTemplateException, FormException {
     List<ContactFatherDetail> result;
-    String _query = query.trim();
-
     if (!"All".equals(typeSearch)) {
       // the search is on the name (first name and/or last name) of the users
-      result = searchByName(typeSearch, _query);
+      result = searchByName(typeSearch, query.trim());
     } else {
       // the search is on all the user properties
-      result = searchByAllProperties(_query);
+      result = searchByAllProperties(query.trim());
     }
 
     return result;

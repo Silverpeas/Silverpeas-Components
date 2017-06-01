@@ -244,8 +244,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public Collection<QuestionContainerHeader> getOpenedSurveys() throws SurveyException {
-    SilverTrace
-        .info("survey", "SurveySessionController.getOpenedSurveys", "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerService.getOpenedQuestionContainers(qcPK);
@@ -256,8 +254,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public Collection<QuestionContainerHeader> getClosedSurveys() throws SurveyException {
-    SilverTrace
-        .info("survey", "SurveySessionController.getClosedSurveys", "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerService.getClosedQuestionContainers(qcPK);
@@ -268,8 +264,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public Collection<QuestionContainerHeader> getInWaitSurveys() throws SurveyException {
-    SilverTrace
-        .info("survey", "SurveySessionController.getInWaitSurveys", "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerService.getInWaitQuestionContainers(qcPK);
@@ -285,7 +279,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @throws SurveyException
    */
   public QuestionContainerDetail getSurvey(String surveyId) throws SurveyException {
-
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       QuestionContainerDetail qc = questionContainerService.getQuestionContainer(qcPK, getUserId());
@@ -346,9 +339,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public void updateSurveyHeader(QuestionContainerHeader surveyHeader, String surveyId)
       throws SurveyException {
-    SilverTrace
-        .info("survey", "SurveySessionController.updateSurveyHeader", "Survey.MSG_ENTRY_METHOD",
-            "id = " + surveyId + ", title = " + surveyHeader.getTitle());
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       surveyHeader.setPK(qcPK);
@@ -1100,8 +1090,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void saveSynthesisFile(FileItem fileSynthesis) throws SurveyException {
-    SilverTrace
-        .info("survey", "SurveySessionController.saveSynthesisFile", "Survey.MSG_ENTRY_METHOD");
     QuestionContainerDetail survey = this.getSessionSurvey();
     try {
       Date creationDate = new Date();
@@ -1130,8 +1118,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void removeSynthesisFile(String idDocument) {
-    SilverTrace
-        .info("survey", "SurveySessionController.removeSynthesisFile", "Survey.MSG_ENTRY_METHOD");
     SimpleDocumentPK primaryKey = new SimpleDocumentPK(idDocument);
     SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(primaryKey, I18NHelper.defaultLanguage);
@@ -1139,8 +1125,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public List<SimpleDocument> getAllSynthesisFile(String surveyId) {
-    SilverTrace
-        .info("survey", "SurveySessionController.getAllSynthesisFile", "Survey.MSG_ENTRY_METHOD");
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
     return AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(surveyForeignKey, I18NHelper.defaultLanguage);

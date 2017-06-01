@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -121,9 +120,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
           .importFromRepository(user, componentId, repository, delegate);
 
     } catch (Exception e) {
-      SilverTrace
-          .info("gallery", "GalleryDragAndDrop.importRepository", "gallery.MSG_NOT_ADD_METADATA",
-              "message = " + e.getMessage());
+      SilverLogger.getLogger(this).error(e);
       if (e instanceof EJBException) {
         throw e;
       }

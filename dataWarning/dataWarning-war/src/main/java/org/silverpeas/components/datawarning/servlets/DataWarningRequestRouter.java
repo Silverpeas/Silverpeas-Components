@@ -432,9 +432,6 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
  * *****************************************************/
       else if (function.startsWith("SaveSelectColumns")) {
         String req = request.getParameter("SQLReq");
-        SilverTrace
-            .info("dataWarning", "DataWarningRequestRouter.getDestination().SaveSelectColumns",
-                "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
         DataWarningQuery dataQuery = dataWarningSC.getCurrentQuery();
         dataQuery.setQuery(req);
         dwe.updateDataWarningQuery(dataQuery);

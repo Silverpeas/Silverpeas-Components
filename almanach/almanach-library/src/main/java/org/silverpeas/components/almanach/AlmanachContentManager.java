@@ -91,7 +91,7 @@ public class AlmanachContentManager implements ContentInterface {
         getContentManager().getSilverContentId(eventPK.getId(), eventPK.getComponentName());
 
     if (contentId != -1) {
-      getContentManager().removeSilverContent(con, contentId, eventPK.getComponentName());
+      getContentManager().removeSilverContent(con, contentId);
     }
   }
 
