@@ -241,7 +241,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
                   .applyJoinOnData(commentJoinData)
                   .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
           if (suggestions instanceof PaginationList) {
-            String maxlength = String.valueOf(((PaginationList) suggestions).maxSize());
+            String maxlength = String.valueOf(((PaginationList) suggestions).originalListSize());
             getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
           }
           return suggestions;

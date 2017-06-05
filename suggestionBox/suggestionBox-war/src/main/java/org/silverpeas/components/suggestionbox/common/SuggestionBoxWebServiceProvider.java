@@ -37,8 +37,8 @@ import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
@@ -47,7 +47,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDA
 @Singleton
 public class SuggestionBoxWebServiceProvider {
 
-  private final static List<SilverpeasRole> MODERATOR_ROLES =
+  private static final List<SilverpeasRole> MODERATOR_ROLES =
       CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
 
   private SuggestionBoxWebServiceProvider() {
@@ -430,13 +429,9 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestions the suggestions to convert.
    * @return the suggestion web entities.
    */
-  public List<SuggestionEntity> asWebEntities(Collection<Suggestion> suggestions) {
-    List<SuggestionEntity> entities = new ArrayList<SuggestionEntity>(suggestions.size());
-    for (Suggestion suggestion : suggestions) {
-      entities.add(asWebEntity(suggestion));
-    }
-    return (suggestions instanceof PaginationList ?
-        PaginationList.from(entities, ((PaginationList) suggestions).maxSize()) : entities);
+  public List<SuggestionEntity> asWebEntities(List<Suggestion> suggestions) {
+    return suggestions.stream().map(this::asWebEntity)
+        .collect(SilverpeasList.collector(suggestions));
   }
 
   /**
