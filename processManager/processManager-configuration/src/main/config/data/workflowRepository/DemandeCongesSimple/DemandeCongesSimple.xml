@@ -120,7 +120,7 @@
 
 	<!-- DESCRIPTION DES ÉTATS -->
 	<states>
-		<state name="AttenteValidation">
+		<state name="AttenteValidation" timeoutNotifyAdmin="true">
 			<label>En attente d'acceptation par responsable</label>
 			<workingUsers>
 				<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
@@ -132,6 +132,9 @@
 				<allow action="Accepter"/>
 				<allow action="Refuser"/>
 			</allowedActions>
+			<timeOutActions>
+			  <timeOutAction action="Relancer" delay="3d" order="1"/>
+			</timeOutActions>
 		</state>
 
 		<state name="Acceptee">
@@ -217,6 +220,21 @@
 					<set state="Refusee"/>
 					<notify message="Votre demande de congés du ${folder.dateDebut} au ${folder.dateFin} a été refusée pour le motif suivant : ${folder.motifRefus}">
 						<relatedUser participant="Demandeur" role="Employe"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+		
+		<action name="Relancer">
+			<label>Relancer</label>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="AttenteValidation"/>
+					<notify message="Relance - Merci de valider les congés de ${action.Creation.actor} du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})">
+						<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
 					</notify>
 				</consequence>
 			</consequences>

@@ -106,7 +106,6 @@
 <body class="yui-skin-sam">
 <%
    out.println(window.printBefore());
-   out.println(tabbedPane.print());
 %>
 <view:frame>
 <form name="<%=context.getFormName()%>" method="post" action="saveAction" enctype="multipart/form-data">
