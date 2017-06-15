@@ -72,10 +72,10 @@ import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.model.ItemImpl;
+import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -118,11 +118,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
 
     // Load user informations
-    try {
-      userSettings = Workflow.getUserManager().getUserSettings(mainSessionCtrl.getUserId(), peasId);
-    } catch (WorkflowException we) {
-      SilverLogger.getLogger(this).error(we.getLocalizedMessage(), we);
-    }
+    userSettings = UserSettingsService.get().get(mainSessionCtrl.getUserId(), peasId);
   }
 
   /**
@@ -842,7 +838,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get assign template (for the re-affectations)
    */
-  public GenericRecordTemplate getAssignTemplate() throws ProcessManagerException {
+  private GenericRecordTemplate getAssignTemplate() throws ProcessManagerException {
     try {
       String[] activeStates = currentProcessInstance.getActiveStates();
       GenericRecordTemplate rt = new GenericRecordTemplate();
@@ -1447,7 +1443,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the data filled during the given step. Returns null if the step is unkwown.
    */
-  public DataRecord getStepRecord(HistoryStep step) {
+  private DataRecord getStepRecord(HistoryStep step) {
 
     try {
       if ("#question#".equals(step.getAction())) {
@@ -1634,13 +1630,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private UserSettings getSettingsOfUser(String userId) {
-    try {
-      return Workflow.getUserManager().getUserSettings(userId, peasId);
-    } catch (WorkflowException we) {
-      SilverLogger.getLogger(this)
-          .error("can not get the user settings (id ''{0}'') ", new String[]{userId}, we);
-    }
-    return null;
+    return UserSettingsService.get().get(userId, peasId);
   }
 
   /**
@@ -1693,11 +1683,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void saveUserSettings(DataRecord data) throws ProcessManagerException {
     try {
-      userSettings.update(data,
-          processModel.getUserInfos().toRecordTemplate(currentRole, getLanguage(), false));
-      userSettings.save();
-
-      Workflow.getUserManager().resetUserSettings(getUserId(), getComponentId());
+      RecordTemplate userSettingsTemplate =
+          processModel.getUserInfos().toRecordTemplate(currentRole, getLanguage(), false);
+      UserSettingsService.get().update(userSettings, data, userSettingsTemplate);
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.SAVE_USERSETTINGS_FAILED", we);
@@ -1818,12 +1806,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   public boolean isViewReturn() {
     // Retrieve global parameter
-    boolean hideReturnGlobal = "yes".equalsIgnoreCase(getSettings().getString("hideReturn"));
+    boolean hideReturnGlobal = getSettings().getBoolean("hideReturn", false);
     boolean viewReturn = !hideReturnGlobal;
 
     if (viewReturn) {
       // Must see "back" buttons if instance don't hide it
-      boolean hideReturnLocal = "yes".equalsIgnoreCase(getComponentParameterValue("hideReturn"));
+      boolean hideReturnLocal =
+          StringUtil.getBooleanValue(getComponentParameterValue("hideReturn"));
       viewReturn = !hideReturnLocal;
     }
     return viewReturn;

@@ -30,7 +30,6 @@ import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.util.UnitUtil;

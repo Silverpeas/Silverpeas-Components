@@ -125,10 +125,14 @@ Item getItem(Item[] items, String itemName)
 		document.<%=context.getFormName()%>.reset();
 	}
 
-	function confirmURL(url, message) {
-		if (confirm(message)) {
-			window.location.href = url;
-		}
+	function removeProcessInstance(id) {
+    $('#removeProcessInstanceConfirmation').popup('confirmation', {
+      //title : "Title of the popup",
+      callback : function() {
+        window.location.href = "adminRemoveProcess?processId="+id;
+        return true;
+      }
+    });
 	}
 
 	function exportCSV() {
@@ -290,7 +294,7 @@ Item getItem(Item[] items, String itemName)
 		}
 
 		if ("supervisor".equalsIgnoreCase(currentRole)) {
-			arrayLine.addArrayCellLink("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.delete") + "\" src=\""  + resource.getIcon("processManager.small_remove") + "\">", "javascript:confirmURL('adminRemoveProcess?processId=" + processList[i].getId() + "', '"+ resource.getString("processManager.confirmDelete") +"')");
+			arrayLine.addArrayCellLink("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.delete") + "\" src=\""  + resource.getIcon("processManager.small_remove") + "\"/>", "javascript:removeProcessInstance(" + processList[i].getId() + ")");
 		}
 	}
 	out.println(arrayPane.print());
@@ -299,5 +303,8 @@ Item getItem(Item[] items, String itemName)
 <%
 out.println(window.printAfter());
 %>
+<div id="removeProcessInstanceConfirmation" style="display: none">
+  <%=resource.getString("processManager.confirmDelete")%>
+</div>
 </body>
 </html>
