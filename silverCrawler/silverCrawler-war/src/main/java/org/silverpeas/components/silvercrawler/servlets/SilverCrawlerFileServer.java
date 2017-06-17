@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -129,9 +130,11 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
   }
 
   private void sendFile(HttpServletResponse response, File file) throws IOException {
-    response.setContentType(FileUtil.getMimeType(file.getName()));
+    final String normalizedFilename = StringUtil.normalize(file.getName());
+    response.setContentType(FileUtil.getMimeType(normalizedFilename));
     response.setHeader("Content-Length", String.valueOf(file.length()));
-    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+    response
+        .setHeader("Content-Disposition", "attachment; filename=\"" + normalizedFilename + "\"");
     try {
       FileUtils.copyFile(file, response.getOutputStream());
       response.getOutputStream().flush();

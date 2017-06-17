@@ -26,6 +26,7 @@ package org.silverpeas.components.mailinglist.servlets;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -60,7 +61,8 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
     }
     if (found) {
       response.setContentType(file.getContentType());
-      response.setHeader("Content-Disposition", "inline; filename=" + file.getFileName());
+      final String normalizeFilename = StringUtil.normalize(file.getFileName());
+      response.setHeader("Content-Disposition", "inline; filename=" + normalizeFilename);
       int length = Long.valueOf(file.getSize()).intValue();
       response.setHeader("Content-Length", String.valueOf(length));
       try (OutputStream out = response.getOutputStream();

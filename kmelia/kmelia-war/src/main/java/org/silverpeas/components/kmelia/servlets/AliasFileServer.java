@@ -20,23 +20,23 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.components.kmelia.KmeliaAuthorization;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -116,7 +116,8 @@ public class AliasFileServer extends HttpServlet {
 
       if (rightsOK) {
         response.setContentType(attachment.getContentType());
-        response.setHeader("Content-Disposition", "inline; filename=\"" + attachment.getFilename() +
+        final String normalizedFileName = StringUtil.normalize(attachment.getFilename());
+        response.setHeader("Content-Disposition", "inline; filename=\"" + normalizedFileName +
             '"');
         response.setHeader("Content-Length", String.valueOf(attachment.getSize()));
         display(response, attachment.getAttachmentPath());

@@ -149,7 +149,7 @@ public class MediaUtil {
       String name = fileItem.getName();
       if (name != null) {
         try {
-          sound.setFileName(FileUtil.getFilename(name));
+          sound.setFileName(StringUtil.normalize(FileUtil.getFilename(name)));
           final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
           handledSoundFile.copyInputStreamToFile(fileItem.getInputStream());
           new SoundProcess(handledSoundFile, sound).process();
@@ -171,7 +171,7 @@ public class MediaUtil {
       final File uploadedFile) throws Exception {
     if (uploadedFile != null) {
       try {
-        sound.setFileName(uploadedFile.getName());
+        sound.setFileName(StringUtil.normalize(uploadedFile.getName()));
         final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
         fileHandler.copyFile(uploadedFile, handledSoundFile);
         new SoundProcess(handledSoundFile, sound).process();
@@ -194,7 +194,7 @@ public class MediaUtil {
       String name = fileItem.getName();
       if (name != null) {
         try {
-          video.setFileName(FileUtil.getFilename(name));
+          video.setFileName(StringUtil.normalize(FileUtil.getFilename(name)));
           final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
           handledVideoFile.copyInputStreamToFile(fileItem.getInputStream());
           new VideoProcess(handledVideoFile, video).process();
@@ -216,7 +216,7 @@ public class MediaUtil {
       final File uploadedFile) throws Exception {
     if (uploadedFile != null) {
       try {
-        video.setFileName(uploadedFile.getName());
+        video.setFileName(StringUtil.normalize(uploadedFile.getName()));
         final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
         fileHandler.copyFile(uploadedFile, handledVideoFile);
         new VideoProcess(handledVideoFile, video).process();
@@ -243,7 +243,7 @@ public class MediaUtil {
       String name = image.getName();
       if (name != null) {
         try {
-          photo.setFileName(FileUtil.getFilename(name));
+          photo.setFileName(StringUtil.normalize(image.getName()));
           final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
           handledImageFile.copyInputStreamToFile(image.getInputStream());
           new PhotoProcess(handledImageFile, photo, watermark, watermarkHD, watermarkOther)
@@ -272,7 +272,7 @@ public class MediaUtil {
       final String watermarkOther) throws Exception {
     if (image != null) {
       try {
-        photo.setFileName(image.getName());
+        photo.setFileName(StringUtil.normalize(image.getName()));
         final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
         fileHandler.copyFile(image, handledImageFile);
         new PhotoProcess(handledImageFile, photo, watermark, watermarkHD, watermarkOther).process();
