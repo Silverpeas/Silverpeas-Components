@@ -39,7 +39,6 @@
       Form formUpdate = (Form) request.getAttribute("Form");
       DataRecord data = (DataRecord) request.getAttribute("Data");
       PublicationDetail pubDetail = (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
-      String xmlFormName = (String) request.getAttribute("XMLFormName");
       String wizardLast = (String) request.getAttribute("WizardLast");
       String wizard = (String) request.getAttribute("Wizard");
       String wizardRow = (String) request.getAttribute("WizardRow");
@@ -180,7 +179,7 @@
       <%
             formUpdate.display(out, context, data);
       %>
-      <input type="hidden" name="Name" value="<%=xmlFormName%>"/>
+      <input type="hidden" name="FormName" value="<%=formUpdate.getFormName()%>"/>
     </form>
     <%
           out.println(board.printAfter());

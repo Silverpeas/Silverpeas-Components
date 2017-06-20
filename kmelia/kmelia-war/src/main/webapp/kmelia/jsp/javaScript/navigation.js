@@ -77,8 +77,14 @@ function displayTopicDescription(id) {
   var componentId = getComponentId();
   $.get(getWebContext() + '/KmeliaAJAXServlet', {Id: id, Action: 'GetTopicWysiwyg', ComponentId: componentId, IEFix: ieFix},
   function(data) {
-    $("#topicDescription").html(data);
-    activateIDCards();
+    if (data && data.length > 0) {
+      $("#topicDescription").show();
+      $("#topicDescription").html(data);
+      activateIDCards();
+    } else {
+      $("#topicDescription").html("");
+      $("#topicDescription").hide();
+    }
   }, "html");
 }
 

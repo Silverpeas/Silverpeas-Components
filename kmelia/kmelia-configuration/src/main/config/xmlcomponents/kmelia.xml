@@ -626,6 +626,24 @@
               <message lang="de">Nur Manager dieser Komponente können Veröffentlichungen entfernen und am Papierkorb der Publikationen zugreifen</message>
             </help>
           </parameter>
+          <parameter>
+            <name>XmlFormForPublis</name>
+            <label>
+              <message lang="fr">Formulaire complémentaire</message>
+              <message lang="en">Additional metadata</message>
+              <message lang="de">XML-Formular für Metadaten</message>
+            </label>
+            <order>32</order>
+            <mandatory>false</mandatory>
+            <value></value>
+            <type>xmltemplates</type>
+            <updatable>always</updatable>
+            <help>
+              <message lang="fr">Ce paramètre permet d'activer la saisie d'informations complémentaires pour chaque publication. Ces informations sont saisies au travers d'un formulaire personnalisé.</message>
+              <message lang="en">This feature allows to enter additional informations on each publication. Customized template is used to enter this data.</message>
+              <message lang="de">Diese Funktion ermöglicht es, zusätzliche Informationen über jede Datei einzugeben. Eine XML-Vorlage wird verwendet, um diese Daten einzugeben.</message>
+            </help>
+          </parameter>
       </parameters>
     </groupOfParameters>
     <groupOfParameters name="files">

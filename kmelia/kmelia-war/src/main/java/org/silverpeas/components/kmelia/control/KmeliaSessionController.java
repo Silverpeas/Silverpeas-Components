@@ -27,6 +27,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.FileImport;
 import org.silverpeas.components.kmelia.InstanceParameters;
@@ -66,7 +67,9 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -81,6 +84,7 @@ import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
@@ -151,6 +155,8 @@ import java.text.ParseException;
 import java.util.*;
 
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -917,6 +923,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isCloneNeeded() {
+    if (getSessionPublication() == null) {
+      return false;
+    }
     String currentStatus = getSessionPublication().getDetail().getStatus();
     return (isPublicationAlwaysVisibleEnabled() && "writer".equals(getUserTopicProfile()) &&
         (getSessionClone() == null) && PublicationDetail.VALID.equals(currentStatus));
@@ -2070,9 +2079,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     getKmeliaBm().setModelUsed(models, getComponentId(), objectId);
   }
 
-  public Collection<String> getModelUsed() {
-    String objectId = getCurrentFolderId();
-    return getKmeliaBm().getModelUsed(getComponentId(), objectId);
+  public List<String> getModelUsed() {
+    List models = new ArrayList();
+    String formNameAppLevel = getXMLFormNameForPublications();
+    if (StringUtil.isDefined(formNameAppLevel)) {
+      models.add(formNameAppLevel);
+    } else {
+      String objectId = getCurrentFolderId();
+      models.addAll(getKmeliaBm().getModelUsed(getComponentId(), objectId));
+    }
+    return models;
   }
 
   public String getWizard() {
@@ -3735,5 +3751,129 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else {//Create reminder
       createResourceDateReminder(pubDetail, dateReminderDate, messageReminder);
     }
+  }
+
+  public boolean isTemplatesSelectionEnabledForRole(SilverpeasRole role) {
+    return !isXMLFormEnabledForPublications() && isContentEnabled() &&
+        SilverpeasRole.admin.equals(role);
+  }
+
+  private String getXMLFormNameForPublications() {
+    return getComponentParameterValue("XmlFormForPublis");
+  }
+
+  private boolean isXMLFormEnabledForPublications() {
+    return StringUtil.isDefined(getXMLFormNameForPublications());
+  }
+
+  public Form getXmlFormForPublications() {
+    Form formUpdate = null;
+    List<String> forms = getModelUsed();
+    if (forms.size() == 1 && !"WYSIWYG".equals(forms.get(0))) {
+      String form = forms.get(0);
+      String formShort = form.substring(0, form.indexOf('.'));
+      try {
+        // register xmlForm to publication
+        getPublicationTemplateManager()
+            .addDynamicPublicationTemplate(getComponentId() + ":" + formShort, form);
+
+        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+            .getPublicationTemplate(getComponentId() + ':' + formShort, form);
+        formUpdate = pubTemplate.getUpdateForm();
+        RecordSet recordSet = pubTemplate.getRecordSet();
+
+        DataRecord record = recordSet.getEmptyRecord();
+
+        formUpdate.setData(record);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return formUpdate;
+  }
+
+  public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,
+      boolean forceUpdatePublication) throws org.silverpeas.core.SilverpeasException {
+    String xmlFormShortName;
+
+    // Is it the creation of the content or an update ?
+    String infoId = pubDetail.getInfoId();
+    if (infoId == null || "0".equals(infoId)) {
+      xmlFormShortName = FileUploadUtil.getParameter(items, "FormName");
+
+      // The publication have no content
+      // We have to register xmlForm to publication
+      pubDetail.setInfoId(xmlFormShortName);
+      updatePublication(pubDetail);
+    } else {
+      xmlFormShortName = pubDetail.getInfoId();
+    }
+    String pubId = pubDetail.getPK().getId();
+
+    try {
+      PublicationTemplate pub = getPublicationTemplateManager()
+          .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+      String language = pubDetail.getLanguageToDisplay(getCurrentLanguage());
+      DataRecord data = set.getRecord(pubId, language);
+      if (data == null || (language != null && !language.equals(data.getLanguage()))) {
+        // This publication haven't got any content at all or for requested language
+        data = set.getEmptyRecord();
+        data.setId(pubId);
+        data.setLanguage(language);
+      }
+      PagesContext context = new PagesContext();
+      context.setLanguage(getLanguage());
+      context.setComponentId(getComponentId());
+      context.setUserId(getUserId());
+      context.setEncoding(CharEncoding.UTF_8);
+      if (!isKmaxMode) {
+        context.setNodeId(getCurrentFolderId());
+      }
+      context.setObjectId(pubId);
+      context.setContentLanguage(getCurrentLanguage());
+
+      form.update(items, data, context);
+      set.save(data);
+    } catch (Exception e) {
+      throw new org.silverpeas.core.SilverpeasException("Can't save XML form of publication", e);
+    }
+
+    String volatileId = FileUploadUtil.getParameter(items, "VolatileId");
+    if (StringUtil.isDefined(volatileId)) {
+      // Attaching all documents linked to volatile publication to the persisted one
+      List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
+          .moveAllDocuments(getPublicationPK(volatileId), pubDetail.getPK());
+      if (!movedDocumentPks.isEmpty()) {
+        // Change images path in wysiwyg
+        WysiwygController.wysiwygPlaceHaveChanged(getComponentId(), volatileId,
+            getComponentId(), pubId);
+      }
+    }
+
+    if (forceUpdatePublication) {
+      // update publication to change updateDate and updaterId
+      updatePublication(pubDetail);
+    }
+  }
+
+  public void saveXMLForm(List<FileItem> items, boolean forceUpdatePublication)
+      throws org.silverpeas.core.SilverpeasException {
+    if (isCloneNeeded()) {
+      clonePublication();
+    }
+
+    PublicationDetail pubDetail = getSessionPubliOrClone().getDetail();
+    saveXMLFormToPublication(pubDetail, items, forceUpdatePublication);
+  }
+
+  public PublicationDetail prepareNewPublication() {
+    String volatileId =
+        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString();
+    PublicationDetail publication = new PublicationDetail();
+    publication.setPk(getPublicationPK(volatileId));
+    getSessionVolatileResourceCacheService().addComponentResource(publication);
+    return publication;
   }
 }

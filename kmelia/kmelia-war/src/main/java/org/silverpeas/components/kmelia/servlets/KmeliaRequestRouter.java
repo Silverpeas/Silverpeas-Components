@@ -380,8 +380,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if ("ToUpdatePublicationHeader".equals(function)) {
         request.setAttribute("Action", "UpdateView");
-        destination = getDestination("publicationManager.jsp", kmelia, request);
-      } else if ("publicationManager.jsp".equals(function)) {
+        destination = getDestination("ToPublicationHeader", kmelia, request);
+      } else if ("ToPublicationHeader".equals(function)) {
         String action = (String) request.getAttribute("Action");
         if ("UpdateView".equals(action)) {
           request.setAttribute("AttachmentsEnabled", false);
@@ -1006,7 +1006,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = "/RimportExportPeas/jsp/ExportPDF";
       } else if (function.equals("NewPublication")) {
         request.setAttribute("Action", "New");
-        destination = getDestination("publicationManager.jsp", kmelia, request);
+        request.setAttribute("ExtraForm", kmelia.getXmlFormForPublications());
+
+        PublicationDetail volatilePublication = kmelia.prepareNewPublication();
+        request.setAttribute("VolatilePublication", volatilePublication);
+
+        PagesContext extraFormPageContext = new PagesContext();
+        extraFormPageContext.setUserId(kmelia.getUserId());
+        extraFormPageContext.setComponentId(kmelia.getComponentId());
+        extraFormPageContext.setObjectId(volatilePublication.getPK().getId());
+        extraFormPageContext.setNodeId(kmelia.getCurrentFolderId());
+        request.setAttribute("ExtraFormPageContext", extraFormPageContext);
+
+        destination = getDestination("ToPublicationHeader", kmelia, request);
       } else if (function.equals("ManageSubscriptions")) {
         destination = kmelia.manageSubscriptions();
       } else if (function.equals("AddPublication")) {
@@ -1036,6 +1048,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         Collection<UploadedFile> uploadedFiles = FileUploadManager
             .getUploadedFiles(request, kmelia.getUserDetail());
         kmelia.addUploadedFilesToPublication(pubDetail, uploadedFiles);
+
+        String volatileId = FileUploadUtil.getParameter(parameters, "VolatileId");
+        if (StringUtil.isDefined(volatileId)) {
+          //process extra form
+          kmelia.saveXMLFormToPublication(pubDetail, parameters, false);
+        }
 
         // force indexation to add thumbnail and files to publication index
         if ((newThumbnail || !uploadedFiles.isEmpty()) && pubDetail.isIndexable()) {
@@ -1211,7 +1229,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           String infoId = completePublication.getPublicationDetail().getInfoId();
           if (infoId == null || "0".equals(infoId)) {
-            List<String> usedModels = (List<String>) kmelia.getModelUsed();
+            List<String> usedModels = kmelia.getModelUsed();
             if (usedModels.size() == 1) {
               String modelId = usedModels.get(0);
               if ("WYSIWYG".equals(modelId)) {
@@ -1335,62 +1353,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
-        if (kmelia.isCloneNeeded()) {
-          kmelia.clonePublication();
-        }
-
-        if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
-        }
-        String encoding = request.getCharacterEncoding();
         List<FileItem> items = request.getFileItems();
 
-        PublicationDetail pubDetail = kmelia.getSessionPubliOrClone().getDetail();
-
-        String xmlFormShortName;
-
-        // Is it the creation of the content or an update ?
-        String infoId = pubDetail.getInfoId();
-        if (infoId == null || "0".equals(infoId)) {
-          String xmlFormName = FileUploadUtil.getParameter(items, "Name", null, encoding);
-
-          // The publication have no content
-          // We have to register xmlForm to publication
-          xmlFormShortName =
-              xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-          pubDetail.setInfoId(xmlFormShortName);
-          kmelia.updatePublication(pubDetail);
-        } else {
-          xmlFormShortName = pubDetail.getInfoId();
-        }
-        String pubId = pubDetail.getPK().getId();
-        PublicationTemplate pub = getPublicationTemplateManager()
-            .getPublicationTemplate(kmelia.getComponentId() + ":" + xmlFormShortName);
-        RecordSet set = pub.getRecordSet();
-        Form form = pub.getUpdateForm();
-        String language = checkLanguage(kmelia, pubDetail);
-        DataRecord data = set.getRecord(pubId, language);
-        if (data == null || (language != null && !language.equals(data.getLanguage()))) {
-          // This publication haven't got any content at all or for requested language
-          data = set.getEmptyRecord();
-          data.setId(pubId);
-          data.setLanguage(language);
-        }
-        PagesContext context =
-            new PagesContext("myForm", "3", kmelia.getLanguage(), false, kmelia.getComponentId(),
-                kmelia.getUserId());
-        context.setEncoding(CharEncoding.UTF_8);
-        if (!kmaxMode) {
-          context.setNodeId(kmelia.getCurrentFolderId());
-        }
-        context.setObjectId(pubId);
-        context.setContentLanguage(kmelia.getCurrentLanguage());
-
-        form.update(items, data, context);
-        set.save(data);
-
-        // update publication to change updateDate and updaterId
-        kmelia.updatePublication(pubDetail);
+        kmelia.saveXMLForm(items, true);
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
@@ -2205,7 +2170,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
     request.setAttribute("Form", formUpdate);
     request.setAttribute("Data", data);
-    request.setAttribute("XMLFormName", xmlFormName);
   }
 
   private void setLanguage(HttpServletRequest request, KmeliaSessionController kmelia) {

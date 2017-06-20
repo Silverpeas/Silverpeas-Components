@@ -227,7 +227,7 @@ function closeWindows() {
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-<form name="pubForm" action="<%=routerUrl%>publicationManager.jsp" method="post">
+<form name="pubForm" action="<%=routerUrl%>ToPublicationHeader" method="post">
   <input type="hidden" name="Action"/>
   <input type="hidden" name="PubId"/>
   <input type="hidden" name="CheckPath"/>

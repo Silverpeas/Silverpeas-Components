@@ -657,6 +657,14 @@ a.button.refuse span {
 	clear: both;
 }
 
+#header #pubExtraForm .legend {
+  display: none;
+}
+
+#header #pubExtraForm legend {
+  background: transparent url(../../../util/icons/component/formsOnlineSmall.gif) 11px 0 no-repeat;
+}
+
 .commentaires {
 	border-top: 2px dotted #CECECE;
 	margin-top: 15px;
