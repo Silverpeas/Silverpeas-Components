@@ -26,7 +26,6 @@ package org.silverpeas.components.mailinglist.servlets;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
+
+import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUtf8;
 
 public class AttachmentServlet extends HttpServlet implements MailingListRoutage {
   private static final long serialVersionUID = -6066054163259803146L;
@@ -61,8 +62,8 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
     }
     if (found) {
       response.setContentType(file.getContentType());
-      final String normalizeFilename = StringUtil.normalize(file.getFileName());
-      response.setHeader("Content-Disposition", "inline; filename=" + normalizeFilename);
+      final String filename = encodeInlineFilenameAsUtf8(file.getFileName());
+      response.setHeader("Content-Disposition", filename);
       int length = Long.valueOf(file.getSize()).intValue();
       response.setHeader("Content-Length", String.valueOf(length));
       try (OutputStream out = response.getOutputStream();

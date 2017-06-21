@@ -49,6 +49,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 
+import static org.silverpeas.core.web.http.FileResponse.encodeAttachmentFilenameAsUtf8;
+
 /**
  * Class declaration
  * @author
@@ -130,11 +132,10 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
   }
 
   private void sendFile(HttpServletResponse response, File file) throws IOException {
+    response.setHeader("Content-Length", String.valueOf(file.length()));
     final String normalizedFilename = StringUtil.normalize(file.getName());
     response.setContentType(FileUtil.getMimeType(normalizedFilename));
-    response.setHeader("Content-Length", String.valueOf(file.length()));
-    response
-        .setHeader("Content-Disposition", "attachment; filename=\"" + normalizedFilename + "\"");
+    response.setHeader("Content-Disposition", encodeAttachmentFilenameAsUtf8(normalizedFilename));
     try {
       FileUtils.copyFile(file, response.getOutputStream());
       response.getOutputStream().flush();

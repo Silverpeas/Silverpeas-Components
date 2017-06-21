@@ -51,6 +51,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUtf8;
+
 /**
  * @author
  */
@@ -116,9 +118,8 @@ public class AliasFileServer extends HttpServlet {
 
       if (rightsOK) {
         response.setContentType(attachment.getContentType());
-        final String normalizedFileName = StringUtil.normalize(attachment.getFilename());
-        response.setHeader("Content-Disposition", "inline; filename=\"" + normalizedFileName +
-            '"');
+        final String filename = encodeInlineFilenameAsUtf8(attachment.getFilename());
+        response.setHeader("Content-Disposition", filename);
         response.setHeader("Content-Length", String.valueOf(attachment.getSize()));
         display(response, attachment.getAttachmentPath());
       }
