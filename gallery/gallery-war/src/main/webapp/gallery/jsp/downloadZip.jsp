@@ -30,39 +30,35 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<%@ page import="org.silverpeas.core.importexport.report.ExportReport" %>
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 
-<%
-  ExportReport report = (ExportReport) request.getAttribute("ExportReport");
-%>
 <c:set var="report" value="${requestScope.ExportReport}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <fmt:message var="browseBarExport" key="GML.export.result"/>
 <fmt:message var="closeButton" key="GML.close"/>
 <c:choose>
-  <c:when test="${ExportReport.error != null}">
-    <c:forEach var="element" items="${ExportReport.error.stackTrace}" >
-      <c:out value="${element}"  /> <br/>
+  <c:when test="${report.error != null}">
+    <c:forEach var="element" items="${report.error.stackTrace}" >
+      <c:out value="${element}" /> <br/>
     </c:forEach>
   </c:when>
   <c:otherwise>
     <table>
     	<tr>
         <td class="txtlibform"><fmt:message key="GML.export.file"/> :</td>
-        <td><a href="${ExportReport.zipFilePath}">${ExportReport.zipFileName}</a>
-        <a href="${ExportReport.zipFilePath}"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="${ExportReport.zipFileName}"/></a></td>
+        <td><a href="${report.zipFilePath}">${report.zipFileName}</a>
+        <a href="${report.zipFilePath}"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="${report.zipFileName}"/></a></td>
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="GML.export.fileSize"/> :</td>
-        <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td>
+        <td>${view:humanReadableSize(report.zipFileSize)}</td>
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="GML.export.duration"/> :</td>
-        <td><%=DateUtil.formatDuration(report.getDuration())%></td>
+        <td>${silfn:getTimeData(report.duration).formattedDurationAsHMS}</td>
       </tr>
     </table>
   </c:otherwise>
