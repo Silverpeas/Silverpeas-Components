@@ -37,10 +37,6 @@
 
 <%
 	// recuperation des parametres
-	String		profil		= (String) request.getAttribute("Flag");
-	String		userId		= (String) request.getAttribute("UserId");
-	Collection 	questions 	= (Collection) request.getAttribute("questions");
-	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours e ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
 %>
 
@@ -48,7 +44,6 @@
 <head>
   <title><fmt:message key="GML.popupTitle"/></title>
   <view:looknfeel />
-  <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
 <!--
 

@@ -48,8 +48,6 @@ boolean openUrl = false;
 </head>
 <body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
 	browseBar.setExtraInformation(resource.getString("questionReply.reponse"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "UpdateRQuery", false);

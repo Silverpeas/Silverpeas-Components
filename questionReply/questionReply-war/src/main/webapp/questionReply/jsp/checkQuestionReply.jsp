@@ -58,18 +58,15 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.components.questionreply.control.QuestionReplySessionController" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
-<%@ page import="java.util.Iterator" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 QuestionReplySessionController scc = (QuestionReplySessionController) request.getAttribute("questionReply");
@@ -85,9 +82,6 @@ if (scc == null)
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 String[] browseContext = (String[]) request.getAttribute("browseContext");
-String spaceLabel = browseContext[0];
-String componentLabel = browseContext[1];
-String spaceId = browseContext[2];
 String componentId = browseContext[3];
 pageContext.setAttribute("componentId", componentId);
 
@@ -95,7 +89,7 @@ String language = scc.getLanguage();
 
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
-String routerUrl = m_context + URLUtil.getURL("questionReplyPDC", spaceId, componentId);
+String routerUrl = m_context + URLUtil.getURL("questionReplyPDC", null, componentId);
 
 Window 			window 			= gef.getWindow();
 BrowseBar 		browseBar 		= window.getBrowseBar();
@@ -104,43 +98,9 @@ TabbedPane 		tabbedPane 		= gef.getTabbedPane();
 Frame 			frame 			= gef.getFrame();
 Board 			board 			= gef.getBoard();
 
-String returnURL = (String) request.getAttribute("ReturnURL");
-
-browseBar.setComponentName(componentLabel, "Main");
-
 %>
 <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
 <view:script src="/util/javaScript/checkForm.js"/>
-<%!
-String displayIcon(String source, String messageAlt)
-{
-	String Html_display = "";
-	Html_display = "<img src=\""+source+"\" alt=\""+messageAlt+"\" title=\""+messageAlt+"\">&nbsp;";
-	return Html_display;
-}
-boolean existQuestionStatus(Collection questions, int status)
-{
-	Iterator it = questions.iterator();
-	while(it.hasNext())
-	{
-		Question question = (Question) it.next();
-		if (question.getStatus() == status)
-			return true;
-	}
-	return false;
-}
-boolean existPublicR(Collection replies)
-{
-	Iterator it = replies.iterator();
-	while(it.hasNext())
-	{
-		Reply reply = (Reply) it.next();
-		if (reply.getPublicReply() == 1)
-			return true;
-	}
-	return false;
-}
-%>
 <script type="text/javascript">
 
 <!--
@@ -159,9 +119,9 @@ function CloseQ(id) {
 
 function existSelected()
 {
-	for (var i = 0; i < document.forms[0].length; i++)
+	for (var i = 0; i < document.mainForm.length; i++)
 	{
-		 if (document.forms[0].elements[i].checked)
+		 if (document.mainForm.elements[i].checked)
 			return true;
 	}
 	return false;
