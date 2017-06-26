@@ -75,12 +75,6 @@
 </head>
 <body class="yui-skin-sam">
 <view:window>
-  <view:tabs>
-    <fmt:message key="webPages.preview" var="tmpLabel"/>
-    <view:tab label="${tmpLabel}" action="Preview" selected="false"/>
-    <fmt:message key="webPages.edit" var="tmpLabel"/>
-    <view:tab label="${tmpLabel}" action="Edit" selected="true"/>
-  </view:tabs>
   <view:frame>
     <table width="100%" border="0">
       <tr>

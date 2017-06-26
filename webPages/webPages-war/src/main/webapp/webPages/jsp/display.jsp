@@ -33,14 +33,15 @@
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%
-	boolean isSubscriber = ((Boolean) request.getAttribute("IsSubscriber")).booleanValue();
+	boolean isSubscriber = (Boolean) request.getAttribute("IsSubscriber");
+	boolean subscriptionEnabled = (Boolean) request.getAttribute("SubscriptionEnabled");
 
 	String action = (String)request.getAttribute("Action");
 	if (action == null) {
 	  action = "Display";
 	}
-	boolean haveGotContent = ((Boolean)request.getAttribute("haveGotContent")).booleanValue();
-	boolean isAnonymous = ((Boolean)request.getAttribute("AnonymousAccess")).booleanValue();
+	boolean haveGotContent = (Boolean)request.getAttribute("haveGotContent");
+	boolean isAnonymous = (Boolean)request.getAttribute("AnonymousAccess");
 
 	Form form = (Form) request.getAttribute("Form");
 	DataRecord data = (DataRecord) request.getAttribute("Data");
@@ -49,38 +50,33 @@
 	context.setObjectId("0");
 	context.setBorderPrinted(false);
 
-	boolean operationsVisibles = !action.equals("Portlet") && webPagesScc.isSubscriptionUsed() && !isAnonymous;
+	boolean operationsVisibles = !action.equals("Portlet") && !isAnonymous;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
+<link type="text/css" rel="stylesheet" href="styleSheets/webPages-print.css" media="print"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 </head>
 <body>
 <%
 	if (operationsVisibles) {
-		if (!isSubscriber) {
-			operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
-		} else {
-			operationPane.addOperation("useless", resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
-		}
-	}
-
-	if (action.equals("Preview") || operationsVisibles) {
+	  if ("Preview".equals(action)) {
+      operationPane.addOperation("useless", resource.getString("webPages.edit"), "Edit");
+      operationPane.addLine();
+    }
+    if (subscriptionEnabled) {
+      if (!isSubscriber) {
+        operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
+      } else {
+        operationPane.addOperation("useless", resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
+      }
+    }
+    operationPane.addOperation("useless", resource.getString("GML.print"), "javaScript:print();");
 		out.println(window.printBefore());
-	}
-
-	//Les onglets
-	if (action.equals("Preview")) {
-		TabbedPane tabbedPane = gef.getTabbedPane();
-		tabbedPane.addTab(resource.getString("webPages.preview"), "Preview", true);
-		tabbedPane.addTab(resource.getString("webPages.edit"), "Edit", false);
-		out.println(tabbedPane.print());
-
-		out.println(frame.printBefore());
 	}
 %>
 	<table width="100%" border="0">
@@ -96,21 +92,14 @@
 				}
 			} else {
 		%>
-				<center>
 				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
 				<span class="txtnav"><%=resource.getString("webPages.emptyPage")%></span>
 				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
-				</center>
 		<% } %>
 	</td></tr>
 	</table>
 <%
-
-	if (action.equals("Preview")) {
-		out.println(frame.printAfter());
-	}
-
-	if (action.equals("Preview") || operationsVisibles) {
+	if (operationsVisibles) {
 		out.println(window.printAfter());
 	}
 %>
