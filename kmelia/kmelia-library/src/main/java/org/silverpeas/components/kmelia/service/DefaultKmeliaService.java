@@ -2160,7 +2160,7 @@ public class DefaultKmeliaService implements KmeliaService {
       }
       if (!hasUserNoMoreValidationRight && !isUserCanValidatePublication(validatedPK, userId)) {
         SilverLogger.getLogger(this)
-            .info("user ''{0}'' is not allowed to validate publication {1}", userId,
+            .debug("user ''{0}'' is not allowed to validate publication {1}", userId,
                 pubPK.toString());
         return false;
       }
@@ -4738,7 +4738,7 @@ public class DefaultKmeliaService implements KmeliaService {
     List<PublicationDetail> publications =
         publicationService.removeUserFromTargetValidators(userId);
     SilverLogger.getLogger(this)
-        .info("User ''{0}'' have been removed from {1} publications as target validator", userId,
+        .debug("User ''{0}'' have been removed from {1} publications as target validator", userId,
             publications.size());
 
     // Validation process is performed, maybe some must be validated.

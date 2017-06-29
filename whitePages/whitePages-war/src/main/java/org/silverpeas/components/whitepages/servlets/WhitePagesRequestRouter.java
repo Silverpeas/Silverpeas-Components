@@ -69,16 +69,11 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
 
   public WhitePagesSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    SilverTrace
-        .info("whitePages", "WhitePagesRequestRouter.createComponentSessionController()", "", "");
     return new WhitePagesSessionController(mainSessionCtrl, componentContext);
   }
 
   public String getDestination(String function, WhitePagesSessionController scc,
       HttpRequest request) {
-    SilverTrace
-        .info("whitePages", "WhitePagesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            function);
     String destination;
 
     /*

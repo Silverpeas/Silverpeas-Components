@@ -226,9 +226,6 @@ public class MailProcessor {
       message.setReferenceId(referenceId[0]);
     }
     message.setTitle(mail.getSubject());
-    SilverTrace
-        .info("mailinglist", "MailProcessor.prepareMessage()", "mailinglist.notification.error",
-            "Processing message " + mail.getSubject());
     Object content = mail.getContent();
     if (content instanceof Multipart) {
       processMultipart((Multipart) content, message);

@@ -20,11 +20,6 @@
  */
 package org.silverpeas.components.mailinglist.service.model;
 
-import org.silverpeas.components.mailinglist.MailingListWarBuilder;
-import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
-import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -32,8 +27,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.mailinglist.MailingListWarBuilder;
+import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
+import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
+import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
+import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +55,7 @@ public class TestMailingListService {
 
   @Before
   public void onSetUp() {
-    OrganizationController.get().reloadAdminCache();
+    Administration.get().reloadCache();
   }
 
   @Test

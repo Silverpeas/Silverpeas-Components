@@ -38,9 +38,6 @@ import java.util.Collection;
 public class QuestionIndexer {
 
   public void createIndex(Question question, Collection<Reply> replies) {
-    SilverTrace
-        .info("questionReply", "QuestionManager.createQuestionIndex()", "root.MSG_GEN_ENTER_METHOD",
-            "Question = " + question.getTitle());
     FullIndexEntry indexEntry =
         new FullIndexEntry(question.getInstanceId(), "Question", question.getPK().getId());
     indexEntry.setTitle(question.getTitle());

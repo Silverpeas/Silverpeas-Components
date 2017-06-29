@@ -100,10 +100,6 @@ public final class DataWarningEngine {
   }
 
   public void updateDataWarning(DataWarning dw) throws DataWarningException {
-
-    SilverTrace
-        .info("dataWarning", "DataWarningEngine.updateDataWarning()", "root.MSG_ENTER_METHOD",
-            "componentId=" + componentId);
     if (dataWarning.getAnalysisType() != dw.getAnalysisType()) {
       stopScheduler();
       deleteDataQueries();

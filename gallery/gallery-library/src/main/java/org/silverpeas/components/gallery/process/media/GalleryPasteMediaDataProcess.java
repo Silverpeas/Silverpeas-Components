@@ -36,7 +36,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -132,11 +131,6 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
     // Commons
     processPasteCommons(context);
-
-    SilverTrace
-        .info("gallery", "GalleryPasteMediaDataProcess.onSuccessful()", "root.MSG_GEN_PARAM_VALUE",
-            "media = " + getMedia().toString() + " toPK = " +
-                getMedia().getMediaPK().toString());
   }
 
   /**

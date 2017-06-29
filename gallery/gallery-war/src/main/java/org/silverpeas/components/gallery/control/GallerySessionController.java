@@ -518,9 +518,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public void setCurrentAlbumId(String currentAlbumId) {
-    SilverTrace
-        .info("gallery", "GallerySessionController.setCurrentAlbumId", "root.MSG_GEN_ENTER_METHOD",
-            "currentAlbumId =  " + currentAlbumId);
     this.currentAlbumId = currentAlbumId;
     this.currentAlbum = getAlbum(this.currentAlbumId);
   }

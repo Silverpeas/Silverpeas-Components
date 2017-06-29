@@ -115,7 +115,7 @@ public class QuickInfoContentManager implements ContentInterface {
     int contentId = getContentManager().getSilverContentId(pubPK.getId(), pubPK.getComponentName());
     if (contentId != -1) {
 
-      getContentManager().removeSilverContent(con, contentId, pubPK.getComponentName());
+      getContentManager().removeSilverContent(con, contentId);
     }
   }
 

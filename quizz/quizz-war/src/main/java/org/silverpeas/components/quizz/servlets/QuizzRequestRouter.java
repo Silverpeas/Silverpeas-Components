@@ -76,8 +76,6 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
    */
   public String getDestination(String function, QuizzSessionController quizzSC,
       HttpRequest request) {
-    SilverTrace
-        .info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
     String destination = "";
     String rootDest = "/quizz/jsp/";
 

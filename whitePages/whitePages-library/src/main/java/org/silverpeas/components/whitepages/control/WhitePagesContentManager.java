@@ -115,7 +115,7 @@ public class WhitePagesContentManager implements ContentInterface {
   public void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pk.getId(), pk.getComponentName());
 
-    getContentManager().removeSilverContent(con, contentId, pk.getComponentName());
+    getContentManager().removeSilverContent(con, contentId);
   }
 
   private boolean isVisible(Card card) {

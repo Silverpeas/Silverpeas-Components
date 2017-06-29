@@ -128,7 +128,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
     int contentId = getContentManager().getSilverContentId(sitePK.getId(), componentId);
     if (contentId != -1) {
 
-      getContentManager().removeSilverContent(con, contentId, componentId);
+      getContentManager().removeSilverContent(con, contentId);
     }
   }
 

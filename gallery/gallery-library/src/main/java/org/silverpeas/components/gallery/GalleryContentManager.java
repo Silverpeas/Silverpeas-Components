@@ -33,10 +33,8 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -77,9 +75,6 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   }
 
   public int getSilverObjectId(String mediaId, String peasId) {
-    SilverTrace
-        .info("gallery", "GalleryContentManager.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-            "mediaId = " + mediaId);
     try {
       return getContentManager().getSilverContentId(mediaId, peasId);
     } catch (Exception e) {
@@ -102,8 +97,7 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
           .addSilverContent(con, media.getMediaPK().getId(), media.getMediaPK().getComponentName(),
               userId);
     } catch (SQLException e) {
-      throw new ContentManagerException("GalleryContentManager", SilverpeasException.ERROR, "", "",
-          e);
+      throw new ContentManagerException(e.getMessage(), e);
     }
   }
 
@@ -116,11 +110,10 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
     try (Connection con = DBUtil.openConnection()) {
       int contentId = getContentManager().getSilverContentId(mediaPK.getId(), mediaPK.getComponentName());
       if (contentId != -1) {
-        getContentManager().removeSilverContent(con, contentId, mediaPK.getComponentName());
+        getContentManager().removeSilverContent(con, contentId);
       }
     } catch (SQLException e) {
-      throw new ContentManagerException("GalleryContentManager", SilverpeasException.ERROR, "", "",
-          e);
+      throw new ContentManagerException(e.getMessage(), e);
     }
   }
 
