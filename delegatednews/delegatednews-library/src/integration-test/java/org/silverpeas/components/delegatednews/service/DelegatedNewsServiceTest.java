@@ -28,9 +28,6 @@
  */
 package org.silverpeas.components.delegatednews.service;
 
-import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,9 +35,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.delegatednews.model.DelegatedNews;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.DateUtil;
 
 import java.util.List;
@@ -58,8 +58,8 @@ public class DelegatedNewsServiceTest {
   }
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "delegatednews-dataset.xml");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("delegatednews-dataset.sql");
 
   @Deployment
   public static Archive<?> createTestArchive() {
