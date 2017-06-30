@@ -35,7 +35,6 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.ActionType;
@@ -50,7 +49,7 @@ import java.util.List;
 public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessionController> {
 
   private static final long serialVersionUID = -707071668797781762L;
-  private final static String USER = "user";
+  private static final String USER = "user";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -86,12 +85,9 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       HttpRequest request) {
     String destination = "";
     String rootDestination = "/webPages/jsp/";
-    SilverTrace
-        .info("webPages", "WebPagesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "User=" + webPagesSC.getUserId() + " Function=" + function);
 
     try {
-      if (function.startsWith("Main") || (function.equals("searchResult"))) {
+      if (function.startsWith("Main") || "searchResult".equals(function)) {
         String profile = webPagesSC.getProfile();
         boolean haveGotContent = processHaveGotContent(webPagesSC, request);
         if (!profile.equals(USER) && !haveGotContent) {
@@ -111,13 +107,12 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           request.setAttribute("ComponentId", webPagesSC.getComponentId());
           request.setAttribute("ComponentName",
               URLEncoder.encode(webPagesSC.getComponentLabel(), CharEncoding.UTF_8));
-          request.setAttribute("BrowseInfo", Encode.forHtml(webPagesSC.getComponentLabel()));
           request.setAttribute("ObjectId", webPagesSC.getComponentId());
           request.setAttribute("Language", webPagesSC.getLanguage());
           request.setAttribute("ReturnUrl",
-              URLUtil.getApplicationURL() + webPagesSC.getComponentUrl() + "Preview");
+              URLUtil.getApplicationURL() + webPagesSC.getComponentUrl() + "Main");
           request.setAttribute("UserId", webPagesSC.getUserId());
-          request.setAttribute("IndexIt", "false");
+          request.setAttribute("IndexIt", "true");
 
           setupRequestForSubscriptionNotificationSending(request, webPagesSC.getComponentId());
 
@@ -127,6 +122,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         processHaveGotContent(webPagesSC, request);
 
         request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
+        request.setAttribute("SubscriptionEnabled", webPagesSC.isSubscriptionUsed());
         if (webPagesSC.isXMLTemplateUsed()) {
           request.setAttribute("Form", webPagesSC.getViewForm());
           request.setAttribute("Data", webPagesSC.getDataRecord());

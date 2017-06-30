@@ -33,62 +33,19 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 
-<%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
 
-
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
-
-<%@ page import="org.silverpeas.core.exception.SilverpeasException"%>
-<%@ page import="javax.ejb.RemoveException"%>
-<%@ page import="javax.ejb.CreateException"%>
-<%@ page import="javax.ejb.FinderException"%>
-<%@ page import="java.rmi.RemoteException"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.sql.SQLException"%>
-<%@ page import="javax.naming.NamingException"%>
-
-<%@ page import="org.silverpeas.core.node.model.NodePK"%>
-<%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
-
-<%@ page import="org.silverpeas.components.webpages.model.WebPagesException"%>
-<%@ page import="org.silverpeas.components.webpages.control.WebPagesSessionController"%>
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();
-BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();
-Frame frame = gef.getFrame();
-WebPagesSessionController webPagesScc = (WebPagesSessionController) request.getAttribute("WebPages");
-
-String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 String[] browseContext = (String[]) request.getAttribute("browseContext");
-String spaceLabel = browseContext[0];
-String componentLabel = browseContext[1];
-String spaceId = browseContext[2];
 String componentId = browseContext[3];
-String webPagesUrl = browseContext[4];
 %>

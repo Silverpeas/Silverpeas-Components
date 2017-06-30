@@ -81,7 +81,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     String flag = "user";
     for (String profile : profiles) {
       // if publisher, return it, we won't find a better profile
-      if (profile.equals("publisher")) {
+      if ("publisher".equals(profile)) {
         return profile;
       }
     }
@@ -97,12 +97,10 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   public synchronized void removeSubscription() {
-
     getSubscribeService().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public synchronized void addSubscription() {
-
     if (isSubscriber()) {
       return;
     }
@@ -110,7 +108,6 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isSubscriber() {
-
     return getSubscribeService().existsSubscription(
         new ComponentSubscription(getUserId(), getComponentId()));
   }
@@ -128,7 +125,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @return boolean
    */
   public boolean isSubscriptionUsed() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("useSubscription"));
+    return StringUtil.getBooleanValue(getComponentParameterValue("useSubscription"));
   }
 
   /*
@@ -152,9 +149,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       registerXMLForm();
     }
     try {
-      PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance().
+      return PublicationTemplateManager.getInstance().
               getPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname());
-      return pubTemplate;
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getXMLTemplate()",
               SilverpeasException.ERROR, "webPages.EX_CANT_GET_TEMPLATE", e);
