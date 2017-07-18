@@ -2794,10 +2794,9 @@ public class DefaultKmeliaService implements KmeliaService {
       for (PublicationDetail pub : pubs) {
         try {
           pubPK = pub.getPK();
-          List<NodePK> pubFathers;
           // index only valid publications
           if (pub.getStatus() != null && pub.isValid()) {
-            pubFathers = (List<NodePK>) publicationService.getAllFatherPK(pubPK);
+            List<NodePK> pubFathers = (List<NodePK>) publicationService.getAllFatherPK(pubPK);
             // index only valid publications which are not only in
             // dz or basket
             if (pubFathers.size() >= 2) {
@@ -2814,8 +2813,10 @@ public class DefaultKmeliaService implements KmeliaService {
             }
           }
         } catch (Exception e) {
-          throw new KmeliaRuntimeException("DefaultKmeliaService.indexPublications()", ERROR,
-              "kmelia.EX_IMPOSSIBLE_DINDEXER_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+          /*throw new KmeliaRuntimeException("DefaultKmeliaService.indexPublications()", ERROR,
+              "kmelia.EX_IMPOSSIBLE_DINDEXER_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);*/
+          SilverLogger.getLogger(this)
+              .error("Error during indexation of publication {0}", pubPK.getId(), e);
         }
       }
     }
