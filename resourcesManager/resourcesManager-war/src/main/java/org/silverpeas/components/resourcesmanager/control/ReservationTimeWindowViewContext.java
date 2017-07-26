@@ -36,6 +36,7 @@ import java.time.ZoneId;
  */
 public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewContext {
 
+  private static final String SERVICES_PATH_PART = "/services/";
   private ResourceManagerDataViewType dataViewType = ResourceManagerDataViewType.reservations;
   private UserDetail currentUser = null;
   private String selectedUserId = null;
@@ -126,7 +127,7 @@ public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewCont
    */
   public String getReservationEventUrl() {
     StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
-    uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
+    uri.append(SERVICES_PATH_PART).append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART);
     uri.append("/").append(getViewType().getPeriodeType().getName());
@@ -160,7 +161,7 @@ public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewCont
       return "";
     }
     StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
-    uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
+    uri.append(SERVICES_PATH_PART).append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART);
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_CATEGORIES_URI_PART);
@@ -176,7 +177,7 @@ public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewCont
       return "";
     }
     StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
-    uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
+    uri.append(SERVICES_PATH_PART).append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART);
     uri.append("/").append(resourceId);
