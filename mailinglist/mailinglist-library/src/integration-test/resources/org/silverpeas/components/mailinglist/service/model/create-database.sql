@@ -84,6 +84,7 @@ UNIQUE (mailId, componentId);
 CREATE TABLE Personalization (
   id                  VARCHAR(100) NOT NULL,
   languages           VARCHAR(100) NULL,
+  zoneId              VARCHAR(100) NULL,
   look                VARCHAR(50)  NULL,
   personalWSpace      VARCHAR(50)  NULL,
   thesaurusStatus     INT          NOT NULL,

@@ -42,8 +42,8 @@
 <view:setConstant var="SMALL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.SMALL"/>
 <view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>
 
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<jsp:useBean id="greaterUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
+<jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:set var="isPdcUsed" value="${requestScope.IsUsePdc}"/>
 <c:set var="isPrivateSearch" value="${requestScope.IsPrivateSearch}"/>
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
@@ -94,7 +94,7 @@
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <script type="text/javascript">
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+<c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
 $(document).ready(function() {
   showAlbumsHelp();
 });
@@ -187,29 +187,29 @@ function checkLuceneQuery(query) {
 </head>
 <body>
 <view:operationPane>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole) and isPdcUsed}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole) and isPdcUsed}">
     <c:url value="/RpdcUtilization/jsp/Main?ComponentId=${componentId}" var="tmpUrl"/>
     <view:operation action="javascript:onClick=openSPWindow('${tmpUrl}','utilizationPdc1')" altText="${pdcLabel}" icon="${pdcIcon}"/>
     <view:operationSeparator/>
   </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
     <view:operationSeparator/>
     <view:operation action="ViewNotVisible" altText="${viewNotVisibleLabel}" icon="${viewNotVisibleIcon}"/>
     <view:operationSeparator/>
   </c:if>
 
-  <c:if test="${greaterUserRole eq userRole and isBasket or (greaterUserRole.isGreaterThanOrEquals(publisherRole) and isExportEnable)}">
+  <c:if test="${highestUserRole eq userRole and isBasket or (highestUserRole.isGreaterThanOrEquals(publisherRole) and isExportEnable)}">
     <view:operation action="BasketView" altText="${viewBasketLabel}" icon="${viewBasketIcon}"/>
   </c:if>
-  <c:if test="${(greaterUserRole eq adminRole or greaterUserRole eq userRole) and isOrder}">
+  <c:if test="${(highestUserRole eq adminRole or highestUserRole eq userRole) and isOrder}">
     <view:operation action="OrderViewList" altText="${viewOrderListLabel}" icon="${viewOrderListIcon}"/>
   </c:if>
-  <c:if test="${greaterUserRole != adminRole and not isGuest}">
+  <c:if test="${highestUserRole != adminRole and not isGuest}">
     <view:operationOfCreation action="javaScript:askMedia()" altText="${askMediaLabel}" icon="${askMediaIcon}"/>
     <view:operationSeparator/>
   </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="javascript:onClick=clipboardPaste()" altText="${pasteLabel}" icon="${pasteIcon}"/>
     <view:operationSeparator/>
   </c:if>

@@ -33,9 +33,9 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<%@ attribute name="greatestUserRole" required="true"
+<%@ attribute name="highestUserRole" required="true"
               type="org.silverpeas.core.admin.user.model.SilverpeasRole"
-              description="The greatest role the user has" %>
+              description="The highest role the user has" %>
 <%@ attribute name="componentInstanceId" required="true"
               type="java.lang.String"
               description="The component instance id associated to the drag and drop" %>
@@ -45,10 +45,10 @@
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
-<c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
+<c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <c:set var="targetValidationEnabled" value="${kmeliaCtrl.targetValidationEnable || kmeliaCtrl.targetMultiValidationEnable}"/>
-  <c:set var="validationMandatory" value="${targetValidationEnabled && greatestUserRole.equals(writerRole)}"/>
+  <c:set var="validationMandatory" value="${targetValidationEnabled && highestUserRole.equals(writerRole)}"/>
   <c:set var="draftEnabled" value="${kmeliaCtrl.draftEnabled}"/>
   <fmt:message var="ValidatorLabel" key="kmelia.Valideur"/>
 

@@ -23,17 +23,20 @@
  */
 package org.silverpeas.components.resourcesmanager.control;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.web.calendar.CalendarViewContext;
 import org.silverpeas.components.resourcesmanager.web.ResourceManagerResourceURIs;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
+
+import java.time.ZoneId;
 
 /**
  * User: Yohann Chastagnier
  * Date: 17/04/13
  */
-public class ReservationViewContext extends CalendarViewContext {
+public class ReservationTimeWindowViewContext extends CalendarTimeWindowViewContext {
 
+  private static final String SERVICES_PATH_PART = "/services/";
   private ResourceManagerDataViewType dataViewType = ResourceManagerDataViewType.reservations;
   private UserDetail currentUser = null;
   private String selectedUserId = null;
@@ -43,12 +46,13 @@ public class ReservationViewContext extends CalendarViewContext {
 
   /**
    * Default constructor.
-   * @param componentInstanceId
-   * @param language
+   * @param componentInstanceId the component instance identifier
+   * @param language the language to take into account (fr for the french locale (fr_FR) for example).
+   * @param zoneId the zoneId to take into account (ZoneId.of("Europe/Paris") for example).
    */
-  public ReservationViewContext(final String componentInstanceId, final UserDetail currentUser,
-      final String language) {
-    super(componentInstanceId, language);
+  public ReservationTimeWindowViewContext(final String componentInstanceId, final UserDetail currentUser,
+      final String language, final ZoneId zoneId) {
+    super(componentInstanceId, language, zoneId);
     this.currentUser = currentUser;
   }
 
@@ -56,7 +60,7 @@ public class ReservationViewContext extends CalendarViewContext {
    * Reset to null all filters.
    */
   @Override
-  public ReservationViewContext resetFilters() {
+  public ReservationTimeWindowViewContext resetFilters() {
     super.resetFilters();
     dataViewType = ResourceManagerDataViewType.reservations;
     selectedUserId = null;
@@ -123,7 +127,7 @@ public class ReservationViewContext extends CalendarViewContext {
    */
   public String getReservationEventUrl() {
     StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
-    uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
+    uri.append(SERVICES_PATH_PART).append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART);
     uri.append("/").append(getViewType().getPeriodeType().getName());
@@ -157,7 +161,7 @@ public class ReservationViewContext extends CalendarViewContext {
       return "";
     }
     StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
-    uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
+    uri.append(SERVICES_PATH_PART).append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART);
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_CATEGORIES_URI_PART);
@@ -173,7 +177,7 @@ public class ReservationViewContext extends CalendarViewContext {
       return "";
     }
     StringBuilder uri = new StringBuilder(URLUtil.getApplicationURL());
-    uri.append("/services/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
+    uri.append(SERVICES_PATH_PART).append(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI);
     uri.append("/").append(getComponentInstanceId());
     uri.append("/").append(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART);
     uri.append("/").append(resourceId);

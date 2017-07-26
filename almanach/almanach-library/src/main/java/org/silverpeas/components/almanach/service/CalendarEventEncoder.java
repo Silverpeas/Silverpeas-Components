@@ -27,7 +27,7 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.Periodicity;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
@@ -92,14 +92,14 @@ public class CalendarEventEncoder {
           .withDescription(eventDetail.getWysiwyg())
           .withPriority(Priority.valueOf(eventDetail.getPriority()));
       if (isDefined(eventDetail.getPlace())) {
-        event.getAttributes().add("location", eventDetail.getPlace());
+        event.getAttributes().set("location", eventDetail.getPlace());
       }
       String url = eventDetail.getEventUrl();
       if (isDefined(url)) {
         if (!StringUtil.startsWithIgnoreCase(url, "http")) {
           url = "http://" + url;
         }
-        event.getAttributes().add("url", url);
+        event.getAttributes().set("url", url);
       }
       if (eventDetail.getPeriodicity() != null) {
         event.recur(withTheRecurrenceRuleOf(eventDetail));
@@ -149,13 +149,16 @@ public class CalendarEventEncoder {
         timeUnit = TimeUnit.DAY;
         break;
     }
-    Recurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
+    Recurrence recurrence = every(periodicity.getFrequency(), timeUnit);
+    if (timeUnit != TimeUnit.DAY) {
+      recurrence.on(daysOfWeek);
+    }
     if (periodicity.getUntilDatePeriod() != null) {
       OffsetDateTime endDateTime = periodicity.getUntilDatePeriod()
           .toInstant()
           .atZone(TimeZone.getDefault().toZoneId())
           .toOffsetDateTime();
-      recurrence.upTo(endDateTime);
+      recurrence.until(endDateTime);
     }
 
     return recurrence;

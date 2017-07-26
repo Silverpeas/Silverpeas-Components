@@ -25,9 +25,9 @@ package org.silverpeas.components.almanach.servlets;
 
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -94,8 +94,8 @@ public class AlmanachICSProducer {
         List<EventDetail> allEventDetails = getAllEvents(almanachId);
         List<CalendarEvent> allEvents = encoder.encode(allEventDetails);
 
-        Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
-        iCalExporter.export(withWriter(writer), ExportableCalendar.with(allEvents));
+        Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
+        iCalExporter.exports(withWriter(writer), () -> ExportableCalendar.with(allEvents));
       } catch (Exception ex) {
         throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
       }

@@ -23,30 +23,7 @@
  */
 package org.silverpeas.components.almanach.control;
 
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.importexport.ExportException;
-import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ExporterProvider;
-import org.silverpeas.core.importexport.ical.ExportableCalendar;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.web.calendar.CalendarViewType;
 import org.silverpeas.components.almanach.model.EventDetail;
 import org.silverpeas.components.almanach.model.EventOccurrence;
 import org.silverpeas.components.almanach.model.EventPK;
@@ -57,20 +34,43 @@ import org.silverpeas.components.almanach.service.AlmanachNoSuchFindEventExcepti
 import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import org.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.components.almanach.service.CalendarEventEncoder;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
+import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.web.calendar.CalendarViewType;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -85,14 +85,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.importexport.ExportDescriptor.withWriter;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
-    .getSessionVolatileResourceCacheService;
-import static org.silverpeas.core.web.calendar.CalendarViewType.*;
 import static org.silverpeas.core.util.DateUtil.parse;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.web.calendar.CalendarViewType.*;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
@@ -840,7 +840,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       throws AlmanachException, AlmanachNoSuchFindEventException {
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), YEARLY, getLanguage());
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), YEARLY, getLanguage(),
+            getPersonalization().getZoneId());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
@@ -860,7 +861,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), MONTHLY, getLanguage());
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), MONTHLY, getLanguage(),
+            getPersonalization().getZoneId());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
@@ -880,7 +882,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), WEEKLY, getLanguage());
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), WEEKLY, getLanguage(),
+            getPersonalization().getZoneId());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
@@ -902,7 +905,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       throws AlmanachException, AlmanachNoSuchFindEventException {
     AlmanachDTO almanachDTO = getAlmanachDTO(aggregated);
     AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), NEXT_EVENTS, getLanguage());
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), NEXT_EVENTS, getLanguage(),
+            getPersonalization().getZoneId());
 
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
@@ -949,10 +953,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           "almanach.EXE_GET_ALL_EVENTS_FAIL", ex);
       throw new ExportException(ex.getMessage(), ex);
     }
-    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
-      iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));
+      iCalExporter.exports(withWriter(fileWriter), () -> ExportableCalendar.with(eventsToExport));
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
       if (fileToDelete.exists()) {

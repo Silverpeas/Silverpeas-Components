@@ -752,23 +752,23 @@ public class SuggestionBoxWebControllerTest {
         .getUsersIdsByRoleNames(anyString(), anyListOf(String.class));
   }
 
-  private SuggestionBoxWebRequestContext prepareViewSuggestionTest(SilverpeasRole greaterUserRole,
+  private SuggestionBoxWebRequestContext prepareViewSuggestionTest(SilverpeasRole highestUserRole,
       ContributionStatus suggestionStatus) {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
-    when(context.getGreaterUserRole())
-        .thenReturn(greaterUserRole != null ? greaterUserRole : SilverpeasRole.reader);
+    when(context.getHighestUserRole())
+        .thenReturn(highestUserRole != null ? highestUserRole : SilverpeasRole.reader);
     SuggestionBox box = context.getSuggestionBox();
     Suggestion theSuggestion = aSuggestionWithStatus(suggestionStatus);
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(theSuggestion);
-    boolean isPublishable = greaterUserRole != null &&
+    boolean isPublishable = highestUserRole != null &&
         (theSuggestion.getValidation().isInDraft() || theSuggestion.getValidation().isRefused()) &&
-        greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
+        highestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
     when(theSuggestion.isPublishableBy(any(UserDetail.class))).thenReturn(isPublishable);
 
     final String[] roles;
-    if (greaterUserRole != null) {
-      roles = new String[]{greaterUserRole.getName()};
+    if (highestUserRole != null) {
+      roles = new String[]{highestUserRole.getName()};
     } else {
       roles = new String[0];
     }

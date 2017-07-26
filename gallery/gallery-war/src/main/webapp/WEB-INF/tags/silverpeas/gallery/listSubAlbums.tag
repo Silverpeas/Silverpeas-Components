@@ -26,8 +26,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<jsp:useBean id="greaterUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
+<jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
@@ -40,7 +40,7 @@
 
 <script type="text/javascript">
 
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
   $(document).ready(function() {
     $("#albumList").sortable({opacity : 0.4, cursor : 'move'});
 

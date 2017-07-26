@@ -249,8 +249,8 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
-        (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getGreatestUserRole(user)
-            .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getGreatestUserRole(user)
+        (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getHighestUserRole(user)
+            .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getHighestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.writer) && user.getId().equals(getCreatorId()))));
   }
 
@@ -502,14 +502,14 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   /**
-   * Retrieve greatest user role
+   * Retrieve highest user role
    * @param user the current user detail
-   * @return the greatest user role
+   * @return the highest user role
    */
-  protected SilverpeasRole getGreatestUserRole(final User user) {
+  protected SilverpeasRole getHighestUserRole(final User user) {
     Set<SilverpeasRole> userRoles =
         SilverpeasRole.from(OrganizationControllerProvider.getOrganisationController()
             .getUserProfiles(user.getId(), getComponentInstanceId()));
-    return SilverpeasRole.getGreatestFrom(userRoles);
+    return SilverpeasRole.getHighestFrom(userRoles);
   }
 }

@@ -41,8 +41,8 @@
 <c:set var="index" value="${requestScope['Index']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <jsp:useBean id="role" type="java.lang.String"/>
-<c:set var="greatestUserRole" value="<%=SilverpeasRole.from(role)%>"/>
-<jsp:useBean id="greatestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
+<c:set var="highestUserRole" value="<%=SilverpeasRole.from(role)%>"/>
+<jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
 <c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
@@ -167,10 +167,10 @@ function onDelete(id) {
   <%-- Attachments --%>
   <c:set var="callbackUrl"><%=
 	URLUtil.getURL("useless", news.getComponentInstanceId()) + (viewOnly ? "ViewOnly" : "View") + "?Id=" + news.getId()%></c:set>
-  <c:set var="greatestUserRoleForAttachments" value="<%=greatestUserRole == SilverpeasRole.user ? SilverpeasRole.user : SilverpeasRole.admin%>"/>
+  <c:set var="highestUserRoleForAttachments" value="<%=highestUserRole == SilverpeasRole.user ? SilverpeasRole.user : SilverpeasRole.admin%>"/>
   <viewTags:displayAttachments componentInstanceId="${news.componentInstanceId}"
                                resourceId="${news.publicationId}"
-                               greatestUserRole="${greatestUserRoleForAttachments}"
+                               highestUserRole="${highestUserRoleForAttachments}"
                                reloadCallbackUrl="${callbackUrl}"/>
                           
   <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>

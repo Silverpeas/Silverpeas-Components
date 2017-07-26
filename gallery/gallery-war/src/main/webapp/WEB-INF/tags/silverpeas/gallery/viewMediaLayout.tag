@@ -75,7 +75,7 @@
               description="Fragment to put additional bloc of metadata" %>
 
 <%-- Request attributes --%>
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
 <c:set var="media" value="${requestScope.Media}" scope="request"/>
 <jsp:useBean id="media" type="org.silverpeas.components.gallery.model.Media" scope="request"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
@@ -137,7 +137,7 @@
     }
     </c:if>
 
-    <c:if test="${greaterUserRole eq adminRole}">
+    <c:if test="${highestUserRole eq adminRole}">
     function clipboardCopy() {
       top.IdleFrame.location.href =
           '<c:url value="${silfn:componentURL(componentId)}"/>copy?Object=Image&Id=${mediaId}';
@@ -175,7 +175,7 @@
     <view:operation altText="${manageLocationLabel}" action="javaScript:manageLocations()"/>
     <view:operation altText="${deleteLabel}" action="javaScript:deleteConfirm()" icon="${deleteIcon}"/>
   </c:if>
-  <c:if test="${greaterUserRole eq adminRole}">
+  <c:if test="${highestUserRole eq adminRole}">
     <fmt:message key="GML.copy" var="copyLabel"/>
     <fmt:message key="gallery.copy" var="copyIcon" bundle="${icons}"/>
     <c:url var="copyIcon" value="${copyIcon}"/>
@@ -193,7 +193,7 @@
     <c:url var="diapoIcon" value="${diapoIcon}"/>
     <view:operation altText="${diapoLabel}" action="javascript:startSlideshow('${mediaId}')" icon="${diapoIcon}"/>
   </c:if>
-  <c:if test="${media.type.photo and greaterUserRole eq userRole and requestScope.IsBasket}">
+  <c:if test="${media.type.photo and highestUserRole eq userRole and requestScope.IsBasket}">
     <view:operationSeparator/>
     <fmt:message var="addBasketLabel" key="gallery.addMediaToBasket"/>
     <fmt:message var="addBasketIcon" key="gallery.addMediaToBasket" bundle="${icons}"/>

@@ -40,7 +40,7 @@
 <c:set var="currentUserId"    value="${currentUser.id}"/>
 <c:set var="isUserSubscribed" value="${requestScope.isUserSubscribed}"/>
 <c:set var="componentId"      value="${requestScope.browseContext[3]}"/>
-<c:set var="greaterUserRole"  value="${requestScope.greaterUserRole}"/>
+<c:set var="highestUserRole"  value="${requestScope.highestUserRole}"/>
 <c:set var="suggestionBox"    value="${requestScope.currentSuggestionBox}"/>
 <c:set var="suggestionBoxId"  value="${suggestionBox.id}"/>
 <c:set var="isEdito"          value="${requestScope.isEdito}"/>
@@ -117,15 +117,15 @@
 </head>
 <body ng-controller="mainController">
 <view:operationPane>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
     <view:operationSeparator/>
   </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operation action="${componentUriBase}suggestions/pending" altText="${suggestionsInPendingLabel}"/>
     <view:operationSeparator/>
   </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
     <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIconURL}"/>
     <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestionsLabel}"/>
   </c:if>
@@ -150,11 +150,11 @@
           <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
         </div>
       </c:when>
-      <c:when test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+      <c:when test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
         <div class="inlineMessage">${silfn:escapeHtmlWhitespaces(editoEmptyMessage)}</div>
       </c:when>
     </c:choose>
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
       <div id="my-suggestionBox">
         <view:areaOfOperationOfCreation/>
         <fmt:message key="suggestionBox.label.suggestions.mine" var="labelMySuggestions"/>
@@ -174,7 +174,7 @@
           <div class="header">
             <h3 class="my-suggestionBox-inProgress-title"><fmt:message key="suggestionBox.label.suggestions.progress"/></h3>
           </div>
-          <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+          <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
             <ul ng-controller="myOutOfDraftSuggestionsController">
               <li ng-if="myOutOfDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
               <li ng-repeat="suggestion in myOutOfDraftSuggestions">
@@ -240,7 +240,7 @@
     suggestionBoxId : '${suggestionBoxId}',
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
-    userRole: '${greaterUserRole}'
+    userRole: '${highestUserRole}'
   });
 </script>
 <script type="text/javascript" src="${suggestionBoxJS}"></script>

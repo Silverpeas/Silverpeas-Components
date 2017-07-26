@@ -36,7 +36,7 @@
 <view:setConstant var="MySuggestionsViewContext"            constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.MySuggestions"/>
 <view:setConstant var="SUGGESTION_LIST_IDENTIFIER"          constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.SUGGESTION_LIST_ARRAYPANE_IDENTIFIER"/>
 
-<c:set var="greaterUserRole"     value="${requestScope.greaterUserRole}"/>
+<c:set var="highestUserRole"     value="${requestScope.highestUserRole}"/>
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
 
 <fmt:setLocale  value="${currentUserLanguage}"/>
@@ -98,16 +98,16 @@
     <%-- ViewContext : all suggestions the user can see --%>
     <c:when test="${viewContext == AllSuggestionsViewContext}">
       <c:set var="routingAddress" value="${allSuggestionsUri}"/>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
         <view:operation action="${pendingSuggestionsUri}" altText="${suggestionsInPendingLabel}"/>
         <view:operationSeparator/>
       </c:if>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
         <view:operationSeparator/>
       </c:if>
       <view:operation action="${publishedSuggestionsUri}" altText="${allPublishedSuggestionsLabel}"/>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
       </c:if>
     </c:when>
@@ -116,18 +116,18 @@
       <c:set var="routingAddress" value="${pendingSuggestionsUri}"/>
       <view:operation action="${publishedSuggestionsUri}" altText="${allPublishedSuggestionsLabel}"/>
       <view:operation action="${allSuggestionsUri}" altText="${allSuggestionsLabel}"/>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
       </c:if>
     </c:when>
     <%-- ViewContext : my suggestions --%>
     <c:when test="${viewContext == MySuggestionsViewContext}">
       <c:set var="routingAddress" value="${mineSuggestionsUri}"/>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
         <view:operation action="${pendingSuggestionsUri}" altText="${suggestionsInPendingLabel}"/>
         <view:operationSeparator/>
       </c:if>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
         <view:operationSeparator/>
       </c:if>
@@ -137,16 +137,16 @@
     <%-- ViewContext : all published suggestions --%>
     <c:otherwise>
       <c:set var="routingAddress" value="${publishedSuggestionsUri}"/>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
         <view:operation action="${pendingSuggestionsUri}" altText="${suggestionsInPendingLabel}"/>
         <view:operationSeparator/>
       </c:if>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
         <view:operationSeparator/>
       </c:if>
       <view:operation action="${allSuggestionsUri}" altText="${allSuggestionsLabel}"/>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
       </c:if>
     </c:otherwise>
@@ -160,7 +160,7 @@
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
       </div>
     </c:if>
-    <c:if test="${viewContext != SuggestionsInValidationViewContext and greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <c:if test="${viewContext != SuggestionsInValidationViewContext and highestUserRole.isGreaterThanOrEquals(writerRole)}">
       <view:areaOfOperationOfCreation/>
     </c:if>
     <view:arrayPane var="${SUGGESTION_LIST_IDENTIFIER}" routingAddress="${routingAddress}" sortableLines="true">

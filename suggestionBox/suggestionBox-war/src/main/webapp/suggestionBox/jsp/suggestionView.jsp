@@ -31,7 +31,7 @@
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <view:setConstant var="adminRole"  constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
 
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
@@ -110,7 +110,7 @@
   <c:if test="${isPublishable}">
     <view:operation action="javascript:publish();" altText="${publishSuggestionMenuLabel}"/>
   </c:if>
-  <c:if test="${isPublishable or greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:if test="${isPublishable or highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="angularjs:remove(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
     <div suggestionbox-deletion></div>
   </c:if>
