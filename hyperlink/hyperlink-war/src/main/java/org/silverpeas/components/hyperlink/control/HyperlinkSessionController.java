@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.hyperlink.control;
 
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
+import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -45,7 +48,7 @@ public class HyperlinkSessionController extends AbstractComponentSessionControll
   }
 
   public boolean isClientSSO() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("clientSSO"));
+    return StringUtil.getBooleanValue(getComponentParameterValue("clientSSO"));
   }
 
   public String getURL() {
@@ -53,7 +56,15 @@ public class HyperlinkSessionController extends AbstractComponentSessionControll
   }
 
   public String getMethodType() {
-    String methodType = getComponentParameterValue("method");
-    return methodType;
+    return getComponentParameterValue("method");
+  }
+
+  public boolean isClientSSOWithoutDefinedConnection() {
+    if (isClientSSO()) {
+      ConnectionDetail connection = WebConnectionsInterface
+          .get().getWebConnection(getComponentId(), getUserId());
+      return connection == null;
+    }
+    return false;
   }
 }

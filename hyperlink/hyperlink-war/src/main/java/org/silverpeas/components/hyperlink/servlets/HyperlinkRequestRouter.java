@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.hyperlink.servlets;
 
+import org.silverpeas.components.hyperlink.control.HyperlinkSessionController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.hyperlink.control.HyperlinkSessionController;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -63,7 +63,6 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return
    */
   @Override
   public String getSessionControlBeanName() {
@@ -82,37 +81,32 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   @Override
   public String getDestination(String function, HyperlinkSessionController hyperlinkSCC,
       HttpRequest request) {
-    SilverTrace
-        .info("hyperlink", "HyperlinkRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "function = " + function);
     String destination = "";
 
     if (function.startsWith("Main") || function.startsWith("portlet")) {
-
       // Retrieves first the openNewWindow parameter
       String winParam = hyperlinkSCC.getComponentParameterValue("openNewWindow");
 
       // Test the parameter
-      if (StringUtil.isDefined(winParam)) {
-        if ("yes".equals(winParam)) {
-          return "/hyperlink/jsp/redirect.jsp";
+      if (StringUtil.getBooleanValue(winParam)) {
+        if (hyperlinkSCC.isClientSSOWithoutDefinedConnection()) {
+          return getDestination("GoToURL", hyperlinkSCC, request);
         }
-        return getDestination("GoToURL", hyperlinkSCC, request);
+        return "/hyperlink/jsp/redirect.jsp";
       }
       return getDestination("GoToURL", hyperlinkSCC, request);
     } else if (function.startsWith("GoToURL")) {
       // Get the URL Parameter
-      String urlParameter = hyperlinkSCC.getComponentParameterValue("URL");
+      String urlParameter = hyperlinkSCC.getURL();
       String sso = hyperlinkSCC.getComponentParameterValue("SSO");
 
       String internalLinkParameter = hyperlinkSCC.getComponentParameterValue("isInternalLink");
-      boolean isInternalLink =
-          ((StringUtil.isDefined(internalLinkParameter)) && (internalLinkParameter.equals("yes")));
+      boolean isInternalLink = StringUtil.getBooleanValue(internalLinkParameter);
 
       if (StringUtil.isDefined(urlParameter)) {
         destination = parseDestination(urlParameter, isInternalLink, request);
         UserDetail userDetail = hyperlinkSCC.getUserDetail();
-        if ("yes".equalsIgnoreCase(sso)) {
+        if (StringUtil.getBooleanValue(sso)) {
           request.setAttribute("Login", userDetail.getLogin());
           request.setAttribute("Domain", hyperlinkSCC.getComponentParameterValue("domain"));
           HttpSession session = request.getSession(false);
@@ -153,14 +147,8 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
           }
           destination = getParsedDestinationWithExtraInfos(destination, hyperlinkSCC);
         }
-      } else {
-        SilverTrace.error("hyperlink", "HyperlinkRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
       }
     }
-    SilverTrace
-        .info("hyperlink", "HyperlinkRequestRooter.getDestination()", "root.MSG_GEN_RETURN_VALUE",
-            "destination = " + destination);
     return destination;
   }
 
@@ -173,7 +161,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
    */
   private String parseDestination(String urlParameter, boolean isInternalLink,
       HttpServletRequest request) {
-    String destination = null;
+    String destination;
     // Special case : www, just add http://
     if (urlParameter.startsWith("www")) {
       destination = "http://" + urlParameter;
