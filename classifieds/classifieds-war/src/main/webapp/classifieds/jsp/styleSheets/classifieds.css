@@ -22,8 +22,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#classifieds #search {
-	/*margin: 1em;*/
+#classifieds #search .forms.mode-search .fields {
+  border-top: 1px solid rgb(204, 204, 204);
+  border-left: 1px solid rgb(204, 204, 204);
+  border-right: 1px solid rgb(204, 204, 204);
+}
+
+#classifieds #search .forms.mode-search .fields > li:nth-child(2n+1) {
+  background-color: #FAFAFA;
+  border-bottom: 1px solid rgb(204, 204, 204);
 }
 
 #classifieds #categories {
@@ -31,10 +38,9 @@
 }
 
 #classifieds #categories .categoryleft {
-	width: 47%;
+	width: 49%;
 	float: left;
     clear: left;
-	margin-left: 10px;
 	margin-bottom: 10px;
 	position: relative;
 	background-color: #FFFFFF;
@@ -46,10 +52,9 @@
 }
 
 #classifieds #categories .categoryright {
-	width: 47%;
+	width: 49%;
 	float: right;
     clear: right;
-	margin-right: 10px;
 	margin-bottom: 10px;
 	position: relative;
 	background-color: #FFFFFF;
@@ -146,8 +151,8 @@
 }
 
 #classifieds #infos {
-	width: 96%;
-	margin-left: 10px;
+	width: 98%;
+	margin-left: 0px;
 	text-align: center;
 	float: left;
 	padding: 10px;
@@ -516,7 +521,7 @@ div.tableBoard {
 
 /**  formulaire de creation **/
 #classifiedInfo legend{
-    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone prï¿½sente dans kmelia */
 }
 
 #pubThumb legend {
@@ -584,4 +589,19 @@ div.tableBoard {
   padding: 0.83em 0;
   line-height: 1.2em;
   text-align: right;
+}
+
+/** portlet view **/
+.classifieds-portletView .cellOperation,
+.classifieds-portletView #menubar-creation-actions,
+.classifieds-portletView #info {
+  display: none !important;
+}
+
+.classifieds-portletView .hautFrame {
+  padding: 0;
+}
+
+.classifieds-portletView #classifieds_rich_list li {
+  max-width: 42%;
 }

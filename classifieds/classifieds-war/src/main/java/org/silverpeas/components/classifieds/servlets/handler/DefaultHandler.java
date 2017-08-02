@@ -53,6 +53,8 @@ public class DefaultHandler extends FunctionHandler {
   public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
       throws Exception {
 
+    boolean portletMode = request.getParameterAsBoolean("PortletMode");
+
     Form formUpdate = null;
     DataRecord data = null;
     String nbTotalClassifieds;
@@ -76,7 +78,7 @@ public class DefaultHandler extends FunctionHandler {
     request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
 
     //Affichage page d'accueil annonces par catégorie
-    if (classifiedsSC.isHomePageDisplayCategorized()) {
+    if (classifiedsSC.isHomePageDisplayCategorized() && !portletMode) {
 
       Collection<Category> categories = null;
 

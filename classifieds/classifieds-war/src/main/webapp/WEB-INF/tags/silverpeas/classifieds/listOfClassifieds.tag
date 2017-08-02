@@ -31,6 +31,13 @@
 <%@ attribute name="language" required="true" type="java.lang.String" %>
 <%@ attribute name="emptyListMessage" required="false" type="java.lang.String" %>
 
+<script type="text/javascript">
+  function viewClassified(id) {
+    $("#ClassifiedId").val(id);
+    document.ViewClassifiedForm.submit();
+  }
+</script>
+
 <c:if test="${not empty classifieds}">
   <ul id="classifieds_rich_list">
     <c:forEach items="${classifieds}" var="classified" varStatus="loopStatus">
@@ -39,17 +46,17 @@
         <c:set var="cssClass" value="add-without-image"/>
       </c:if>
 
-      <li class="${cssClass}" onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
+      <li class="${cssClass}" onclick="javascript:viewClassified('${classified.classifiedId}')">
         <c:if test="${not empty classified.images}">
           <div class="classified_thumb">
             <c:forEach var="image" items="${classified.images}" begin="0" end="0">
-              <a href="ViewClassified?ClassifiedId=${classified.classifiedId}"><view:image src="${image.attachmentURL}" size="250x"/></a>
+              <a href="#" onclick="javascript:viewClassified('${classified.classifiedId}')"><view:image src="${image.attachmentURL}" size="250x"/></a>
             </c:forEach>
           </div>
         </c:if>
 
         <div class="classified_info">
-          <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
+          <h4><a href="#" onclick="javascript:viewClassified('${classified.classifiedId}')">${classified.title}</a></h4>
           <div class="classified_type">
             <a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a>
             <a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
@@ -84,3 +91,7 @@
     ${emptyListMessage}
   </div>
 </c:if>
+
+<form name="ViewClassifiedForm" action="ViewClassified" target="MyMain">
+  <input type="hidden" name="ClassifiedId" id="ClassifiedId" value=""/>
+</form>

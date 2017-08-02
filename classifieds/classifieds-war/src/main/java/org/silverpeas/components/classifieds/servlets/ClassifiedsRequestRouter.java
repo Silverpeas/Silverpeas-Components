@@ -90,12 +90,18 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     request.setAttribute("CurrentFirstItemIndex", classifiedsSC.getCurrentFirstItemIndex());
 
     try {
+      boolean portletMode = "portlet".equalsIgnoreCase(function);
+      String newFunction = function;
+      if (portletMode) {
+        newFunction = "Main";
+        request.setAttribute("PortletMode", true);
+      }
       // Delegate to specific Handler
-      FunctionHandler handler = HandlerProvider.getHandler(function);
+      FunctionHandler handler = HandlerProvider.getHandler(newFunction);
       if (handler != null) {
         destination = handler.computeDestination(classifiedsSC, request);
       } else {
-        destination = rootDest + function;
+        destination = rootDest + newFunction;
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
