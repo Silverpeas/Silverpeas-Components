@@ -121,34 +121,29 @@ function viewClassifieds(fieldNumber, fieldValue) {
 					<jsp:include page="subscriptionManager.jsp"/>
 					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">
-								<div id="search" >
-									<!-- Search Form -->
-									<view:board>
-										<%
-											String language = (String) pageContext.getAttribute("language");
-											String instanceId = (String) pageContext.getAttribute("instanceId");
-											Form formSearch = (Form) pageContext.getAttribute("formSearch");
-											DataRecord data = (DataRecord) pageContext.getAttribute("data");
+              <div id="search" >
+                <!-- Search Form -->
+                  <%
+                    String language = (String) pageContext.getAttribute("language");
+                    String instanceId = (String) pageContext.getAttribute("instanceId");
+                    Form formSearch = (Form) pageContext.getAttribute("formSearch");
+                    DataRecord data = (DataRecord) pageContext.getAttribute("data");
 
-											PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-										    context.setIgnoreDefaultValues(true);
-										    context.setUseMandatory(false);
-										    context.setBorderPrinted(false);
-											formSearch.display(out, context, data);
-										%>
-										<br/>
-										<div class="center">
-										<view:buttonPane>
-											<fmt:message var="searchLabel" key="classifieds.searchButton">
-												<fmt:param value="${nbTotal}" />
-											</fmt:message>
-											<view:button label="${searchLabel}"
-												action="javascript:onClick=sendData();" />
-										</view:buttonPane>
-										</div>
-									</view:board>
-								</div>
-							
+                    PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
+                      context.setIgnoreDefaultValues(true);
+                      context.setUseMandatory(false);
+                      context.setBorderPrinted(false);
+                    formSearch.display(out, context, data);
+                  %>
+                  <br/>
+                  <view:buttonPane>
+                    <fmt:message var="searchLabel" key="classifieds.searchButton">
+                      <fmt:param value="${nbTotal}" />
+                    </fmt:message>
+                    <view:button label="${searchLabel}"
+                      action="javascript:onClick=sendData();" />
+                  </view:buttonPane>
+              </div>
 						</c:if>
 					</form>
 
@@ -204,12 +199,12 @@ function viewClassifieds(fieldNumber, fieldValue) {
 								</div>
 							</c:forEach>
 						</c:if>
-
-						<!-- legal notice -->
-						<div id="infos" class="inlineMessage">
-							<fmt:message key="classifieds.infos" />
-						</div>
 					</div>
+
+          <!-- legal notice -->
+          <div id="infos" class="inlineMessage">
+            <fmt:message key="classifieds.infos" />
+          </div>
 
 				</view:frame>
 			</view:window>

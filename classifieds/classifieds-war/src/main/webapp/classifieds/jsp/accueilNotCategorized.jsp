@@ -55,6 +55,11 @@
 <c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
 <c:set var="currentFirstItemIndex" value="${requestScope.CurrentFirstItemIndex}" />
 <c:set var="nbPerPage" value="${requestScope.NbPerPage}" />
+<c:set var="portletMode" value="${requestScope.PortletMode}" />
+<c:set var="modeView" value=""/>
+<c:if test="${portletMode}">
+  <c:set var="modeView" value="classifieds-portletView"/>
+</c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -72,7 +77,7 @@ function viewClassifieds(fieldNumber, fieldValue) {
 }
 </script>
 </head>
-<body id="classifieds">
+<body id="classifieds" class="${modeView}">
 		<div id="${componentInstanceId}">
 
 			<view:browseBar />
@@ -125,37 +130,35 @@ function viewClassifieds(fieldNumber, fieldValue) {
 				<view:frame>
 					<view:areaOfOperationOfCreation/>
 					<jsp:include page="subscriptionManager.jsp"/>
-					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
+					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" target="MyMain" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">
-								<div id="search" >
-									<!-- Search Form -->
-									<view:board>
-										<%
-											String language = (String) pageContext.getAttribute("language");
-											String instanceId = (String) pageContext.getAttribute("instanceId");
-											Form formSearch = (Form) pageContext.getAttribute("formSearch");
-											DataRecord data = (DataRecord) pageContext.getAttribute("data");
+              <div id="search" >
+                <!-- Search Form -->
+                  <%
+                    String language = (String) pageContext.getAttribute("language");
+                    String instanceId = (String) pageContext.getAttribute("instanceId");
+                    Form formSearch = (Form) pageContext.getAttribute("formSearch");
+                    DataRecord data = (DataRecord) pageContext.getAttribute("data");
 
-											PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-										  context.setIgnoreDefaultValues(true);
-										  context.setUseMandatory(false);
-										  context.setBorderPrinted(false);
-											formSearch.display(out, context, data);
-										%>
-										<br/>
-										<div class="center">
-										<view:buttonPane>
-											<fmt:message var="searchLabel" key="classifieds.searchButton">
-												<fmt:param value="${nbTotal}" />
-											</fmt:message>
-											<view:button label="${searchLabel}"
-												action="javascript:onclick=sendData();" />
-										</view:buttonPane>
-										</div>
-									</view:board>
-								</div>
-							
-						</c:if>
+                    PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
+                    context.setIgnoreDefaultValues(true);
+                    context.setUseMandatory(false);
+                    context.setBorderPrinted(false);
+                    formSearch.display(out, context, data);
+                  %>
+                  <br/>
+                  <div class="center">
+                  <view:buttonPane>
+                    <fmt:message var="searchLabel" key="classifieds.searchButton">
+                      <fmt:param value="${nbTotal}" />
+                    </fmt:message>
+                    <view:button label="${searchLabel}"
+                      action="javascript:onclick=sendData();" />
+                  </view:buttonPane>
+                  </div>
+              </div>
+              <br/>
+            </c:if>
 					</form>
 
           <classifiedsTags:listOfClassifieds classifieds="${classifieds}" language="${language}"/>

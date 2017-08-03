@@ -80,11 +80,9 @@ function viewClassifieds(fieldNumber, fieldValue) {
 	<view:window>
 		<view:frame>
 			<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
-					
 						<div id="search">
 							<!-- AFFICHAGE du formulaire -->
 							<view:board>
-								<div align="center">
 								<%
 								String language = (String) pageContext.getAttribute("language");
 								String instanceId = (String) pageContext.getAttribute("instanceId");
@@ -97,7 +95,6 @@ function viewClassifieds(fieldNumber, fieldValue) {
 								context.setBorderPrinted(false);
 								formSearch.display(out, context, searchContext.getData());
 								%>
-								</div>
 								<br/>
 								<view:buttonPane>
 									<fmt:message var="searchLabel" key="classifieds.searchButton">
@@ -107,7 +104,6 @@ function viewClassifieds(fieldNumber, fieldValue) {
 								</view:buttonPane>
 							</view:board>
 						</div>
-					
 			</form>
 			<br />
 
