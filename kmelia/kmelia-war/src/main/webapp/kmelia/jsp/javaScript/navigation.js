@@ -292,12 +292,12 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
   if (op.copyTopic) {
-    menuItem = new YAHOO.widget.MenuItem(getString('GML.copy'), {url: "javascript:onclick=copyCurrentNode()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.folder.copy'), {url: "javascript:onclick=copyCurrentNode()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
   if (op.cutTopic) {
-    menuItem = new YAHOO.widget.MenuItem(getString('GML.cut'), {url: "javascript:onclick=cutCurrentNode()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.folder.cut'), {url: "javascript:onclick=cutCurrentNode()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }

@@ -520,14 +520,14 @@ function customMenu(node) {
         },
         <% } %>
         copyItem: {
-            label: "<%=resources.getString("GML.copy")%>",
+            label: "<%=resources.getString("kmelia.operation.folder.copy")%>",
             action: function (obj) {
               var node = getTreeview().get_node(obj.reference);
             	copyNode(node.id);
             }
         },
         cutItem: {
-            label: "<%=resources.getString("GML.cut")%>",
+            label: "<%=resources.getString("kmelia.operation.folder.cut")%>",
             action: function (obj) {
               var node = getTreeview().get_node(obj.reference);
             	cutNode(node.id);
