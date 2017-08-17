@@ -744,15 +744,33 @@
         	</div>
        <%
          }
-         if (screenMessage != null && screenMessage.length() > 0) {
+         if (StringUtil.isDefined(screenMessage)) {
            out.println(screenMessage);
          }
+
+         if (kmeliaPublication.isAlias()) {
+      	   NodePK originalFatherPK = kmeliaPublication.getOriginalLocation(user_id);
+      	   if (originalFatherPK != null) {
+        %>
+            <div class="inlineMessage">
+              <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
+                <a href="<%=URLUtil.getSimpleURL(URLUtil.URL_TOPIC, originalFatherPK.getId(), originalFatherPK.getInstanceId())%>">
+                  <view:componentPath componentId="<%=originalFatherPK.getInstanceId()%>" nodeId="<%=originalFatherPK.getId()%>" language="<%=language%>"/>
+                </a></div>
+              <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
+            </div>
+         <% }
+      	   }
+
 				        /*********************************************************************************************************************/
 				        /** Affichage du header de la publication																			**/
 				        /*********************************************************************************************************************/
 				        out.print("<h2 class=\"publiName\">");
 
 						    out.print(WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
+                if (kmeliaPublication.isAlias()) {
+                  out.print(" (" + resources.getString("kmelia.Shortcut") + ")");
+                }
 
 				        out.println("</h2>");
 

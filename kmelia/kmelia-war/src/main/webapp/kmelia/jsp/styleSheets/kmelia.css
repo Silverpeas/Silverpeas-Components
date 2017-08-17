@@ -486,10 +486,10 @@
   border-radius: 5px;
   border: 1px solid #CCCCCC;
   color: #4C4C4C;
-  font-size: 100%;
   line-height: 52px;
   margin: 0px 30px;
   padding: 7px 20px;
+  text-decoration: none;
 }
 
 a.button.validate span {

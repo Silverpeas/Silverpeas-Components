@@ -37,12 +37,17 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
@@ -241,7 +246,7 @@ public class KmeliaPublication implements SilverpeasContent {
 
   public int getNbAccess() {
     try {
-      return getStatisticService().getCount(new ForeignPK(pk), 1, "Publication");
+      return getStatisticService().getCount(new ForeignPK(detail.getPK()), 1, "Publication");
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaPublication.getNbAccess", "kmelia.CANT_GET_NB_ACCESS",
           "pubId = " + pk.getId(), e);
@@ -374,5 +379,20 @@ public class KmeliaPublication implements SilverpeasContent {
   public int getNumberOfComments() {
     return getCommentService().getCommentsCountOnPublication(PublicationDetail.getResourceType(),
         getPk());
+  }
+
+  @SuppressWarnings("unchecked")
+  public NodePK getOriginalLocation(String userId) {
+    List<NodePK> fatherPKs = (List) getKmeliaService().getPublicationFathers(detail.getPK());
+    if (CollectionUtil.isNotEmpty(fatherPKs)) {
+      AccessController<NodePK> accessController =
+          AccessControllerProvider.getAccessController(NodeAccessControl.class);
+      for (NodePK fatherPK : fatherPKs) {
+        if (accessController.isUserAuthorized(userId, fatherPK)) {
+          return fatherPK;
+        }
+      }
+    }
+    return null;
   }
 }
