@@ -35,29 +35,31 @@
    Boolean			isViewReturn			= (Boolean) request.getAttribute("ViewReturn");
    Boolean 			isInErrorState			= (Boolean) request.getAttribute("Error");
    Boolean 			isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
-   boolean 			isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-   boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
-   boolean viewReturn = isViewReturn != null && isViewReturn.booleanValue();
+   boolean 			isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible"));
+   boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled"));
+   boolean viewReturn = isViewReturn != null && isViewReturn;
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	String processId = "";
-	if (isProcessIdVisible)
-		processId = "#"+process.getInstanceId()+" > ";
-	browseBar.setPath(processId+process.getTitle(currentRole, language));
-
-	String toto = process.getInstanceId();
+	if (isProcessIdVisible) {
+    processId = "#" + process.getInstanceId() + " > ";
+  }
+  browseBar.setPath(processId+process.getTitle(currentRole, language));
 
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
-	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
-		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-	tabbedPane.addTab(resource.getString("processManager.actions"), "#", true, true);
+	if (isAttachmentTabEnable && isActiveUser != null && isActiveUser) {
+    tabbedPane.addTab(resource.getString("processManager.attachments"),
+        "attachmentManager?processId=" + process.getInstanceId(), false, true);
+  }
+  tabbedPane.addTab(resource.getString("processManager.actions"), "#", true, true);
 	if (isReturnEnabled) {
 		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId() , false, true);
 	}
-	if (isHistoryTabEnable.booleanValue())
-		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
-
+	if (isHistoryTabEnable) {
+    tabbedPane.addTab(resource.getString("processManager.history"),
+        "viewHistory?processId=" + process.getInstanceId(), false, true);
+  }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -1,4 +1,5 @@
-<%@ page import="org.silverpeas.core.contribution.content.form.Form" %><%--
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="java.util.Map" %><%--
 
     Copyright (C) 2000 - 2017 Silverpeas
 
@@ -124,10 +125,14 @@ Item getItem(Item[] items, String itemName)
 		document.<%=context.getFormName()%>.reset();
 	}
 
-	function confirmURL(url, message) {
-		if (confirm(message)) {
-			window.location.href = url;
-		}
+	function removeProcessInstance(id) {
+    $('#removeProcessInstanceConfirmation').popup('confirmation', {
+      //title : "Title of the popup",
+      callback : function() {
+        window.location.href = "adminRemoveProcess?processId="+id;
+        return true;
+      }
+    });
 	}
 
 	function exportCSV() {
@@ -257,7 +262,7 @@ Item getItem(Item[] items, String itemName)
 				String fieldName = headers[j].getFieldName();
 				Item item = getItem(items, fieldName);
 				if (item != null) {
-					Hashtable keyValuePairs = item.getKeyValuePairs();
+					Map<String, String> keyValuePairs = item.getKeyValuePairs();
 					if (keyValuePairs != null && keyValuePairs.size() > 0)
 					{
 						String newValue = "";
@@ -270,7 +275,7 @@ Item getItem(Item[] items, String itemName)
 							{
 								t = tokenizer.nextToken();
 
-								t = (String) keyValuePairs.get(t);
+								t = keyValuePairs.get(t);
 								newValue += t;
 
 								if (tokenizer.hasMoreTokens())
@@ -279,7 +284,7 @@ Item getItem(Item[] items, String itemName)
 						}
 						else if (fieldString != null && fieldString.length() > 0)
 						{
-							newValue = (String) keyValuePairs.get(fieldString);
+							newValue = keyValuePairs.get(fieldString);
 						}
 						fieldString = newValue;
 					}
@@ -289,7 +294,7 @@ Item getItem(Item[] items, String itemName)
 		}
 
 		if ("supervisor".equalsIgnoreCase(currentRole)) {
-			arrayLine.addArrayCellLink("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.delete") + "\" src=\""  + resource.getIcon("processManager.small_remove") + "\">", "javascript:confirmURL('adminRemoveProcess?processId=" + processList[i].getId() + "', '"+ resource.getString("processManager.confirmDelete") +"')");
+			arrayLine.addArrayCellLink("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.delete") + "\" src=\""  + resource.getIcon("processManager.small_remove") + "\"/>", "javascript:removeProcessInstance(" + processList[i].getId() + ")");
 		}
 	}
 	out.println(arrayPane.print());
@@ -298,5 +303,8 @@ Item getItem(Item[] items, String itemName)
 <%
 out.println(window.printAfter());
 %>
+<div id="removeProcessInstanceConfirmation" style="display: none">
+  <%=resource.getString("processManager.confirmDelete")%>
+</div>
 </body>
 </html>

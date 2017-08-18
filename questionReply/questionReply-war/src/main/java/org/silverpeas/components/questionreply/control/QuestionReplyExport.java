@@ -30,7 +30,6 @@ import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.util.UnitUtil;
@@ -215,8 +214,7 @@ public class QuestionReplyExport {
     sb.append("</a>\n");
     sb.append("</nobr>\n");
     sb.append("<br>\n");
-    sb.append(UnitUtil.formatMemSize(attachment.getSize())).append("  ");
-    sb.append(FileRepositoryManager.formatFileUploadTime(attachment.getSize()));
+    sb.append(UnitUtil.formatMemSize(attachment.getSize()));
     sb.append("</td>\n");
     sb.append("</tr>\n");
   }

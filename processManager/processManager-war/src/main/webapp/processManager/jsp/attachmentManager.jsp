@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.core.util.URLEncoder" %>
 <%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%--
