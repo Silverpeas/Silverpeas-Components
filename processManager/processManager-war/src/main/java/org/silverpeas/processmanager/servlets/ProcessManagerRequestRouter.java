@@ -79,129 +79,9 @@ public class ProcessManagerRequestRouter
   private static final long serialVersionUID = -4758787807784357891L;
 
   /**
-   * Returns the name used by the ComponentRequestRequest to store the session controller in the
-   * user session.
-   */
-  @Override
-  public String getSessionControlBeanName() {
-    return "processManager";
-  }
-
-  /**
-   * Return a new ProcessManagerSessionController wich will be used for each request made in the
-   * given componentContext. Returns a ill session controler when the a fatal error occures. This
-   * ill session controller can only display an error page.
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
-  @Override
-  public ProcessManagerSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-
-    try {
-      return new ProcessManagerSessionController(mainSessionCtrl, componentContext);
-    } catch (ProcessManagerException e) {
-      return new ProcessManagerSessionController(mainSessionCtrl, componentContext, e);
-    }
-  }
-
-  /**
-   * Process the request and returns the response url.
-   * @param function the user request name
-   * @param sessionController the user request context
-   * @param request the user request params
-   */
-  @Override
-  public String getDestination(String function, ProcessManagerSessionController sessionController,
-      HttpRequest request) {
-
-    FunctionHandler handler = getHandlerMap().get(function);
-    Exception error = sessionController.getFatalException();
-    if (handler != null && error == null) {
-      try {
-        return handler.getDestination(function, sessionController, request);
-      } catch (ProcessManagerException e) {
-        error = e;
-      }
-    }
-    if (error != null) {
-      request.setAttribute("javax.servlet.jsp.jspException", error);
-    }
-    if ("Main".equals(function) || "listProcess".equals(function)) {
-      return "/admin/jsp/errorpageMain.jsp";
-    }
-    return "/admin/jsp/errorpageMain.jsp";
-  }
-
-  /**
-   * Init this servlet, before any request.
-   */
-  @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
-    if (handlerMap == null) {
-      initHandlers();
-    }
-  }
-
-  private Map<String, FunctionHandler> getHandlerMap() {
-
-    if (handlerMap == null) {
-      initHandlers();
-    }
-    return handlerMap;
-  }
-
-  /**
    * Map the function name to the function handler
    */
   private static Map<String, FunctionHandler> handlerMap = null;
-
-  /**
-   * Inits the function handler
-   */
-  synchronized private void initHandlers() {
-    if (handlerMap != null) {
-      return;
-    }
-    handlerMap = new HashMap<>(35);
-    handlerMap.put("Main", listProcessHandler);
-    handlerMap.put("listProcess", listProcessHandler);
-    handlerMap.put("listSomeProcess", listSomeProcessHandler);
-    handlerMap.put("changeRole", changeRoleHandler);
-    handlerMap.put("filterProcess", filterProcessHandler);
-    handlerMap.put("viewProcess", viewProcessHandler);
-    handlerMap.put("removeLock", removeLockHandler);
-    handlerMap.put("viewHistory", viewHistoryHandler);
-    handlerMap.put("createProcess", createProcessHandler);
-    handlerMap.put("saveCreation", saveCreationHandler);
-    handlerMap.put("listTasks", listTasksHandler);
-    handlerMap.put("editAction", editActionHandler);
-    handlerMap.put("saveAction", saveActionHandler);
-    handlerMap.put("cancelAction", cancelActionHandler);
-    handlerMap.put("editQuestion", editQuestionHandler);
-    handlerMap.put("saveQuestion", saveQuestionHandler);
-    handlerMap.put("editResponse", editResponseHandler);
-    handlerMap.put("cancelResponse", cancelResponseHandler);
-    handlerMap.put("saveResponse", saveResponseHandler);
-    handlerMap.put("listQuestions", listQuestionsHandler);
-    handlerMap.put("printProcessFrameset", printProcessFramesetHandler);
-    handlerMap.put("printProcess", printProcessHandler);
-    handlerMap.put("printButtons", printButtonsHandler);
-    handlerMap.put("editUserSettings", editUserSettingsHandler);
-    handlerMap.put("saveUserSettings", saveUserSettingsHandler);
-    handlerMap.put("searchResult.jsp", searchResultHandler);
-    handlerMap.put("searchResult", searchResultHandler);
-    handlerMap.put("attachmentManager", attachmentManagerHandler);
-    handlerMap.put("exportCSV", exportCSVHandler);
-    handlerMap.put("ToWysiwygWelcome", toWelcomeWysiwyg);
-    handlerMap.put("FromWysiwygWelcome", listProcessHandler);
-    handlerMap.put("adminRemoveProcess", adminRemoveProcessHandler);
-    handlerMap.put("adminViewErrors", adminViewErrorsHandler);
-    handlerMap.put("adminReAssign", adminReAssignHandler);
-    handlerMap.put("adminDoReAssign", adminDoReAssignHandler);
-  }
 
   /**
    * The removeProcess handler for the supervisor.
@@ -1196,6 +1076,126 @@ public class ProcessManagerRequestRouter
       return "/processManager/jsp/downloadCSV.jsp";
     }
   };
+
+  /**
+   * Inits the function handler
+   */
+  synchronized private void initHandlers() {
+    if (handlerMap != null) {
+      return;
+    }
+    handlerMap = new HashMap<>(35);
+    handlerMap.put("Main", listProcessHandler);
+    handlerMap.put("listProcess", listProcessHandler);
+    handlerMap.put("listSomeProcess", listSomeProcessHandler);
+    handlerMap.put("changeRole", changeRoleHandler);
+    handlerMap.put("filterProcess", filterProcessHandler);
+    handlerMap.put("viewProcess", viewProcessHandler);
+    handlerMap.put("removeLock", removeLockHandler);
+    handlerMap.put("viewHistory", viewHistoryHandler);
+    handlerMap.put("createProcess", createProcessHandler);
+    handlerMap.put("saveCreation", saveCreationHandler);
+    handlerMap.put("listTasks", listTasksHandler);
+    handlerMap.put("editAction", editActionHandler);
+    handlerMap.put("saveAction", saveActionHandler);
+    handlerMap.put("cancelAction", cancelActionHandler);
+    handlerMap.put("editQuestion", editQuestionHandler);
+    handlerMap.put("saveQuestion", saveQuestionHandler);
+    handlerMap.put("editResponse", editResponseHandler);
+    handlerMap.put("cancelResponse", cancelResponseHandler);
+    handlerMap.put("saveResponse", saveResponseHandler);
+    handlerMap.put("listQuestions", listQuestionsHandler);
+    handlerMap.put("printProcessFrameset", printProcessFramesetHandler);
+    handlerMap.put("printProcess", printProcessHandler);
+    handlerMap.put("printButtons", printButtonsHandler);
+    handlerMap.put("editUserSettings", editUserSettingsHandler);
+    handlerMap.put("saveUserSettings", saveUserSettingsHandler);
+    handlerMap.put("searchResult.jsp", searchResultHandler);
+    handlerMap.put("searchResult", searchResultHandler);
+    handlerMap.put("attachmentManager", attachmentManagerHandler);
+    handlerMap.put("exportCSV", exportCSVHandler);
+    handlerMap.put("ToWysiwygWelcome", toWelcomeWysiwyg);
+    handlerMap.put("FromWysiwygWelcome", listProcessHandler);
+    handlerMap.put("adminRemoveProcess", adminRemoveProcessHandler);
+    handlerMap.put("adminViewErrors", adminViewErrorsHandler);
+    handlerMap.put("adminReAssign", adminReAssignHandler);
+    handlerMap.put("adminDoReAssign", adminDoReAssignHandler);
+  }
+
+  /**
+   * Returns the name used by the ComponentRequestRequest to store the session controller in the
+   * user session.
+   */
+  @Override
+  public String getSessionControlBeanName() {
+    return "processManager";
+  }
+
+  /**
+   * Return a new ProcessManagerSessionController wich will be used for each request made in the
+   * given componentContext. Returns a ill session controler when the a fatal error occures. This
+   * ill session controller can only display an error page.
+   * @param mainSessionCtrl
+   * @param componentContext
+   * @return
+   */
+  @Override
+  public ProcessManagerSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+
+    try {
+      return new ProcessManagerSessionController(mainSessionCtrl, componentContext);
+    } catch (ProcessManagerException e) {
+      return new ProcessManagerSessionController(mainSessionCtrl, componentContext, e);
+    }
+  }
+
+  /**
+   * Process the request and returns the response url.
+   * @param function the user request name
+   * @param sessionController the user request context
+   * @param request the user request params
+   */
+  @Override
+  public String getDestination(String function, ProcessManagerSessionController sessionController,
+      HttpRequest request) {
+
+    FunctionHandler handler = getHandlerMap().get(function);
+    Exception error = sessionController.getFatalException();
+    if (handler != null && error == null) {
+      try {
+        return handler.getDestination(function, sessionController, request);
+      } catch (ProcessManagerException e) {
+        error = e;
+      }
+    }
+    if (error != null) {
+      request.setAttribute("javax.servlet.jsp.jspException", error);
+    }
+    if ("Main".equals(function) || "listProcess".equals(function)) {
+      return "/admin/jsp/errorpageMain.jsp";
+    }
+    return "/admin/jsp/errorpageMain.jsp";
+  }
+
+  /**
+   * Init this servlet, before any request.
+   */
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    if (handlerMap == null) {
+      initHandlers();
+    }
+  }
+
+  private Map<String, FunctionHandler> getHandlerMap() {
+
+    if (handlerMap == null) {
+      initHandlers();
+    }
+    return handlerMap;
+  }
 
   /**
    * Set attributes shared by all the processManager pages.
