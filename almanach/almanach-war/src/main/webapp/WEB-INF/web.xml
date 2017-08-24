@@ -29,30 +29,30 @@
   <display-name>Almanach War</display-name>
 
   <servlet>
-    <display-name>AlmanachRequestRouter</display-name>
-    <servlet-name>AlmanachRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.components.almanach.servlets.AlmanachRequestRouter</servlet-class>
+    <display-name>OldAlmanachRequestRouter</display-name>
+    <servlet-name>OldAlmanachRequestRouter</servlet-name>
+    <servlet-class>old.silverpeas.components.almanach.servlets.AlmanachRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <display-name>GoToEvent</display-name>
-    <servlet-name>GoToEvent</servlet-name>
-    <servlet-class>org.silverpeas.components.almanach.servlets.GoToEvent</servlet-class>
+    <display-name>OldGoToEvent</display-name>
+    <servlet-name>OldGoToEvent</servlet-name>
+    <servlet-class>old.silverpeas.components.almanach.servlets.GoToEvent</servlet-class>
   </servlet>
   <servlet>
-    <display-name>AlmanachRssServlet</display-name>
-    <servlet-name>AlmanachRssServlet</servlet-name>
-    <servlet-class>org.silverpeas.components.almanach.servlets.AlmanachRssServlet</servlet-class>
+    <display-name>OldAlmanachRssServlet</display-name>
+    <servlet-name>OldAlmanachRssServlet</servlet-name>
+    <servlet-class>old.silverpeas.components.almanach.servlets.AlmanachRssServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>AlmanachRequestRouter</servlet-name>
-    <url-pattern>/Ralmanach/*</url-pattern>
+    <servlet-name>OldAlmanachRequestRouter</servlet-name>
+    <url-pattern>/Oalmanach/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>GoToEvent</servlet-name>
+    <servlet-name>OldGoToEvent</servlet-name>
     <url-pattern>/Event/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>AlmanachRssServlet</servlet-name>
+    <servlet-name>OldAlmanachRssServlet</servlet-name>
     <url-pattern>/rssalmanach/*</url-pattern>
   </servlet-mapping>
 </web-app>

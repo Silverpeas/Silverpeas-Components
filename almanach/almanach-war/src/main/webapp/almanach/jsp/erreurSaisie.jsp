@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>
+<%@ page import="old.silverpeas.components.almanach.service.AlmanachPrivateException" %>
 <%@ include file="checkAlmanach.jsp" %>
 
 <HTML>

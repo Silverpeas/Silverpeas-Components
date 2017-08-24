@@ -50,7 +50,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.components.almanach.control.AlmanachSessionController"%>
+<%@ page import="old.silverpeas.components.almanach.control.AlmanachSessionController"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>

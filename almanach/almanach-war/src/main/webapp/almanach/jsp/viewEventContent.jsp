@@ -32,9 +32,9 @@
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	%>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
-<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
-<%@ page import="org.silverpeas.components.almanach.service.AlmanachPrivateException" %>
+<%@ page import="old.silverpeas.components.almanach.model.Periodicity" %>
+<%@ page import="old.silverpeas.components.almanach.model.EventDetail" %>
+<%@ page import="old.silverpeas.components.almanach.service.AlmanachPrivateException" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>

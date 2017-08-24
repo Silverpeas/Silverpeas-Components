@@ -32,8 +32,8 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.components.almanach.model.Periodicity" %>
-<%@ page import="org.silverpeas.components.almanach.model.EventDetail" %>
+<%@ page import="old.silverpeas.components.almanach.model.Periodicity" %>
+<%@ page import="old.silverpeas.components.almanach.model.EventDetail" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
