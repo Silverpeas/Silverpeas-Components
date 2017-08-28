@@ -21,40 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package old.silverpeas.components.almanach;
 
-import old.silverpeas.components.almanach.model.EventDAO;
-import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+package org.silverpeas.components.almanach.services;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
-import java.sql.Connection;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.webapi.calendar.ICalendarResource;
+
+import javax.ws.rs.Path;
+
+import static org.silverpeas.components.almanach.services.AlmanachCalendarResource
+    .ALMANACH_CALENDAR_BASE_URI;
 
 /**
- * Before being deleted, remove all events in an almanach instance.
- * @author mmoquillon
+ * A REST Web resource giving calendar data.
+ * @author Yohann Chastagnier
  */
-@Named
-public class AlmanachInstancePreDestruction implements ComponentInstancePreDestruction {
-
-  private EventDAO eventDAO = new EventDAO();
-
-  /**
-   * Performs pre destruction tasks in the behalf of the specified Almanch instance.
-   * @param componentInstanceId the unique identifier of the Almanach instance.
-   */
-  @Transactional
-  @Override
-  public void preDestroy(final String componentInstanceId) {
-    try (Connection connection = DBUtil.openConnection()) {
-      getEventDAO().removeAllEvents(connection, componentInstanceId);
-    } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
-    }
-  }
-
-  public EventDAO getEventDAO() {
-    return eventDAO;
-  }
+@Service
+@RequestScoped
+@Path(ALMANACH_CALENDAR_BASE_URI + "/ical")
+public class AlmanachICalendarResource extends ICalendarResource {
 }

@@ -29,6 +29,15 @@
   <display-name>Almanach War</display-name>
 
   <servlet>
+    <display-name>AlmanachRequestRouter</display-name>
+    <servlet-name>AlmanachRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.components.almanach.AlmanachWebController</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
     <display-name>OldAlmanachRequestRouter</display-name>
     <servlet-name>OldAlmanachRequestRouter</servlet-name>
     <servlet-class>old.silverpeas.components.almanach.servlets.AlmanachRequestRouter</servlet-class>
@@ -43,6 +52,10 @@
     <servlet-name>OldAlmanachRssServlet</servlet-name>
     <servlet-class>old.silverpeas.components.almanach.servlets.AlmanachRssServlet</servlet-class>
   </servlet>
+  <servlet-mapping>
+    <servlet-name>AlmanachRequestRouter</servlet-name>
+    <url-pattern>/Ralmanach/*</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>OldAlmanachRequestRouter</servlet-name>
     <url-pattern>/Oalmanach/*</url-pattern>

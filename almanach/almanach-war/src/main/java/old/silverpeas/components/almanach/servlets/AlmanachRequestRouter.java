@@ -73,7 +73,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
    */
   @Override
   public String getSessionControlBeanName() {
-    return "almanach";
+    return "oldalmanach";
   }
 
   /**
