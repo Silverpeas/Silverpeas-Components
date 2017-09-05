@@ -39,6 +39,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
@@ -58,7 +59,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -219,12 +219,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
             publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
 
     // Attach uploaded files
-    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile.registerAttachment(news.getForeignPK(), I18NHelper.defaultLanguage, false);
-      }
-    }
+    Attachments.from(uploadedFiles).attachTo(news);
 
     // Updating the publication
     if (news.isDraft()) {

@@ -23,16 +23,21 @@
  */
 package org.silverpeas.components.questionreply.model;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
+import java.text.ParseException;
 import java.util.Date;
 
-public class Reply extends SilverpeasBean {
+public class Reply extends SilverpeasBean implements Contribution, WithAttachment {
 
   private static final long serialVersionUID = 5638699228049557540L;
   private long questionId;
@@ -65,6 +70,11 @@ public class Reply extends SilverpeasBean {
     return title;
   }
 
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return false;
+  }
+
   public String getContent() {
     return content;
   }
@@ -73,7 +83,26 @@ public class Reply extends SilverpeasBean {
     return creatorId;
   }
 
-  public String getCreationDate() {
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getPK());
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatorId());
+  }
+
+  @Override
+  public Date getCreationDate() {
+    try {
+      return DateUtil.parse(this.getCreationDateAsString());
+    } catch (ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String getCreationDateAsString() {
     return creationDate;
   }
 
@@ -152,6 +181,11 @@ public class Reply extends SilverpeasBean {
   @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
+  }
+
+  @Override
+  public boolean isIndexable() {
+    return this.getPublicReply() == 1;
   }
 
   @Override

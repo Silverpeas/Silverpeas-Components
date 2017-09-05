@@ -32,7 +32,10 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.period.Period;
@@ -74,7 +77,8 @@ import java.util.List;
     @NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = " +
         ":mandatory"),
     @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
-public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
+public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
+    Contribution, WithAttachment {
 
   public static final String CONTRIBUTION_TYPE = "News";
 
@@ -248,6 +252,11 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getComponentInstanceId(), getId());
+  }
+
+  @Override
   public Date getCreationDate() {
     return getCreateDate();
   }
@@ -255,6 +264,11 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   @Override
   public String getContributionType() {
     return CONTRIBUTION_TYPE;
+  }
+
+  @Override
+  public boolean isIndexable() {
+    return false;
   }
 
   /**

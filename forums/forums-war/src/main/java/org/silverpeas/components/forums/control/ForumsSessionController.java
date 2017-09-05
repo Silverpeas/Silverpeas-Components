@@ -38,12 +38,12 @@ import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -58,7 +58,6 @@ import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -387,6 +386,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @param parentId parent message identifier
    * @param text message content
    * @param keywords the keywords
+   * @param uploadedFiles the files to attach to the message
    * @return new message identifier
    * @author frageade
    */
@@ -413,21 +413,17 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     messagePK.setId(String.valueOf(messageId));
 
     // Send notification to subscribers
+    Message message = getMessage(messageId);
     if (Message.STATUS_VALIDATE.equals(status)) {
-      sendMessageNotification(getMessage(messageId), NotifAction.CREATE);
+      sendMessageNotification(message, NotifAction.CREATE);
     } else {
       // Send notification only if message to validate
-      sendMessageNotificationToValidate(getMessage(messageId));
+      sendMessageNotificationToValidate(message);
     }
 
     // Attach uploaded files
     try {
-      if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-        for (UploadedFile uploadedFile : uploadedFiles) {
-          // Register attachment
-          uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
-        }
-      }
+      Attachments.from(uploadedFiles).attachTo(message);
     } catch (RuntimeException re) {
       SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(re);
     }

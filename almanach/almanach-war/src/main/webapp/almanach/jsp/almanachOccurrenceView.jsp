@@ -37,6 +37,7 @@
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 
 <c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
 <c:set var="currentUser"            value="${requestScope.currentUser}"/>
 <c:set var="currentUserId"          value="${currentUser.id}"/>
@@ -60,6 +61,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel withFieldsetStyle="true"/>
   <view:includePlugin name="calendar"/>
+  <view:includePlugin name="attachment"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>
 </head>
@@ -95,6 +97,11 @@
           ng-if="ceo.attendees && ceo.attendees.length"
           on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
       </silverpeas-calendar-event-view-attendees>
+      <silverpeas-attachment
+          component-id="${componentId}"
+          resource-id="{{ceo.eventId}}"
+          read-only="${publisherRole.isGreaterThan(highestUserRole)}">
+      </silverpeas-attachment>
     </silverpeas-calendar-event-view>
     <view:buttonPane>
       <view:button label="${back}" action="${backUri}"/>

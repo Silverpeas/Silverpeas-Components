@@ -3734,18 +3734,6 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public void addUploadedFilesToPublication(PublicationDetail pubDetail, Collection<UploadedFile> uploadedFiles) {
-    // Attach uploaded files
-    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(),
-            pubDetail.isIndexable());
-      }
-    }
-  }
-
-  @Override
   public void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents) {
     try {

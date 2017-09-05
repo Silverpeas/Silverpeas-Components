@@ -24,19 +24,17 @@
 package org.silverpeas.components.forums.control.helpers;
 
 import org.silverpeas.components.forums.control.ForumsSessionController;
-import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.Message;
-import org.silverpeas.core.io.upload.FileUploadManager;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
-import java.util.Collection;
 
 /**
  * @author ehugonnet
@@ -72,7 +70,7 @@ public class ForumActionHelper {
    */
   public static void createForumAction(HttpServletRequest request, ForumsSessionController fsc)
       throws ForumsException {
-    actionManagement(CREATE_FORUM, -1, request, fsc.isAdmin(), true, fsc.getUserId(),
+    actionManagement(CREATE_FORUM, -1, (HttpRequest)request, fsc.isAdmin(), true, fsc.getUserId(),
         fsc.getMultilang(), null, fsc);
   }
 
@@ -84,7 +82,7 @@ public class ForumActionHelper {
    */
   public static void updateForumAction(HttpServletRequest request, ForumsSessionController fsc)
       throws ForumsException {
-    actionManagement(UPDATE_FORUM, -1, request, fsc.isAdmin(), true, fsc.getUserId(),
+    actionManagement(UPDATE_FORUM, -1, (HttpRequest)request, fsc.isAdmin(), true, fsc.getUserId(),
         fsc.getMultilang(), null, fsc);
   }
 
@@ -103,7 +101,7 @@ public class ForumActionHelper {
       ForumsSessionController fsc) {
     int action = ForumHelper.getIntParameter(request, "action");
     int params = ForumHelper.getIntParameter(request, "params");
-    actionManagement(action, params, request, isAdmin, isModerator, userId, resource, out, fsc);
+    actionManagement(action, params, (HttpRequest)request, isAdmin, isModerator, userId, resource, out, fsc);
   }
 
   /**
@@ -118,7 +116,7 @@ public class ForumActionHelper {
    * @param out
    * @param fsc
    */
-  private static void actionManagement(int action, int params, HttpServletRequest request,
+  private static void actionManagement(int action, int params, HttpRequest request,
       boolean isAdmin, boolean isModerator, String userId, LocalizationBundle resource, JspWriter out,
       ForumsSessionController fsc) {
     if (action != -1) {
@@ -206,11 +204,9 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
-              Collection<UploadedFile> uploadedFiles =
-                  FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
               int messageId =
                   fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
-                      forumKeywords, uploadedFiles);
+                      forumKeywords, request.getUploadedFiles());
               if (subscribe != null) {
                 if (messageId != 0) {
                   fsc.subscribeMessage(messageId);

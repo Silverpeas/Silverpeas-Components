@@ -35,10 +35,10 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
-import old.silverpeas.components.almanach.model.EventOccurrence;
 import old.silverpeas.components.almanach.AlmanachContentManager;
 import old.silverpeas.components.almanach.model.EventDAO;
 import old.silverpeas.components.almanach.model.EventDetail;
+import old.silverpeas.components.almanach.model.EventOccurrence;
 import old.silverpeas.components.almanach.model.EventPK;
 import old.silverpeas.components.almanach.model.Periodicity;
 import old.silverpeas.components.almanach.model.PeriodicityException;
@@ -47,6 +47,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
@@ -60,7 +61,6 @@ import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -202,12 +202,7 @@ public class DefaultAlmanachService implements AlmanachService {
       WysiwygController.createUnindexedFileAndAttachment(event.getDescription(event.getLanguage()),
           event.getPK(), event.getDelegatorId(), event.getLanguage());
       // Attach uploaded files
-      if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-        for (UploadedFile uploadedFile : uploadedFiles) {
-          // Register attachment
-          uploadedFile.registerAttachment(event.getPK(), event.getLanguage(), false);
-        }
-      }
+      Attachments.from(uploadedFiles).attachTo(event);
       createIndex(event);
       return id;
     } catch (Exception e) {

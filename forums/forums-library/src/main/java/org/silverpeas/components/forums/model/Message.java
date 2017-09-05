@@ -23,15 +23,19 @@
  */
 package org.silverpeas.components.forums.model;
 
-import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class Message implements Rateable, Serializable {
+public class Message implements Contribution, Rateable, Serializable, WithAttachment {
   private static final String TYPE = "forum_message";
 
   public static final String STATUS_VALIDATE = "V";
@@ -87,8 +91,28 @@ public class Message implements Rateable, Serializable {
     this.id = id;
   }
 
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getInstanceId(), getIdAsString());
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getAuthor());
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return getDate();
+  }
+
   public String getTitle() {
     return title;
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return false;
   }
 
   public void setTitle(String title) {

@@ -39,6 +39,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.AbstractBean;
@@ -60,7 +62,7 @@ import java.util.Date;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class EventDetail extends AbstractBean
-    implements SilverContentInterface, Serializable, SilverpeasContent {
+    implements LocalizedContribution, SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static SettingBundle almanachSettings =
@@ -418,6 +420,11 @@ public class EventDetail extends AbstractBean
   }
 
   @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getInstanceId(), getId());
+  }
+
+  @Override
   public User getCreator() {
     return User.getById(getCreatorId());
   }
@@ -430,6 +437,11 @@ public class EventDetail extends AbstractBean
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  @Override
+  public boolean isIndexable() {
+    return false;
   }
 
   /**

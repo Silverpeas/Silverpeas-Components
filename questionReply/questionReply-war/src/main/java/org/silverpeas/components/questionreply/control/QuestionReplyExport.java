@@ -191,7 +191,7 @@ public class QuestionReplyExport {
     sb.append("<span class=\"txtBaseline\">");
     sb.append(resource.getString("questionReply.replyOf")).append(" ")
         .append(reply.readCreatorName());
-    sb.append(" - ").append(resource.getOutputDate(reply.getCreationDate()));
+    sb.append(" - ").append(resource.getOutputDate(reply.getCreationDateAsString()));
     sb.append("</span>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");

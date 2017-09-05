@@ -40,9 +40,11 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
@@ -59,7 +61,6 @@ import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -265,13 +266,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   private void addFilesToReply(Collection<UploadedFile> uploadedFiles, Reply reply) {
-    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile
-            .registerAttachment(reply.getPK(), getLanguage(), reply.getPublicReply() == 1);
-      }
-    }
+    Attachments.from(uploadedFiles).attachTo(LocalizedContribution.from(reply, getLanguage()));
   }
 
   /*

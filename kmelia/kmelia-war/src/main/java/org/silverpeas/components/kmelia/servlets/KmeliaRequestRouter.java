@@ -23,50 +23,10 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.importexport.report.ImportReport;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.web.util.ClientBrowserUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
+import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.FileFolder;
@@ -78,17 +38,56 @@ import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.io.upload.FileUploadManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
@@ -1045,9 +1044,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 PublicationDetail.getResourceType(), parameters);
 
         //process files
-        Collection<UploadedFile> uploadedFiles = FileUploadManager
-            .getUploadedFiles(request, kmelia.getUserDetail());
-        kmelia.addUploadedFilesToPublication(pubDetail, uploadedFiles);
+        Collection<UploadedFile> attachments = request.getUploadedFiles();
+        kmelia.addUploadedFilesToPublication(attachments, pubDetail);
 
         String volatileId = FileUploadUtil.getParameter(parameters, "VolatileId");
         if (StringUtil.isDefined(volatileId)) {
@@ -1055,8 +1053,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.saveXMLFormToPublication(pubDetail, parameters, false);
         }
 
-        // force indexation to add thumbnail and files to publication index
-        if ((newThumbnail || !uploadedFiles.isEmpty()) && pubDetail.isIndexable()) {
+        // force indexation to add thumbnail and attachments to publication index
+        if ((newThumbnail || !attachments.isEmpty()) && pubDetail.isIndexable()) {
           kmelia.getPublicationBm().createIndex(pubDetail.getPK());
         }
 
