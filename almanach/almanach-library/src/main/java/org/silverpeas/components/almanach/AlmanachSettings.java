@@ -61,6 +61,10 @@ public final class AlmanachSettings {
    */
   public static final String ICONS_PATH = "org.silverpeas.almanach.settings.almanachIcons";
 
+  public static final String ALMANACH_IN_SUBSPACES = "0";
+  public static final String ALMANACH_IN_SPACE_AND_SUBSPACES = "1";
+  public static final String ALL_ALMANACHS = "2";
+
   /**
    * Hidden constructor.
    */
@@ -119,5 +123,21 @@ public final class AlmanachSettings {
   public static String getDefaultCalendarView(String componentInstanceId) {
     return OrganizationController.get()
         .getComponentParameterValue(componentInstanceId, "defaultView");
+  }
+
+  /**
+   * Gets the limit number of occurrences the next event view has to display.
+   * @return the limit as int.
+   */
+  public static int getNbOccurrenceLimitOfNextEventView() {
+    return getSettings().getInteger("almanach.nextEvents.limit");
+  }
+
+  /**
+   * Gets the aggregation mode for almanachs.
+   * @return the code of the mode as string.
+   */
+  public static String getAggregationMode() {
+    return getSettings().getString("almanachAgregationMode", ALMANACH_IN_SUBSPACES);
   }
 }

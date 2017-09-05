@@ -155,8 +155,8 @@
     <parameter>
       <name>defaultView</name>
       <label>
-        <message lang="fr">Vue calendaire par défaut</message>
-        <message lang="en">Default calendar view</message>
+        <message lang="fr">Vue par défaut</message>
+        <message lang="en">Default view</message>
         <message lang="de">Standard-Ansicht</message>
       </label>
       <order>4</order>
@@ -207,7 +207,7 @@
       <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
-      <updatable>always</updatable>
+      <updatable>hidden</updatable>
       <help>
         <message lang="fr">Permet de générer un flux RSS des événements de cet Almanach.</message>
         <message lang="en">Produce a RSS stream for the events of this almanach.</message>
@@ -223,7 +223,7 @@
       </label>
       <order>6</order>
       <mandatory>false</mandatory>
-      <value>0</value>
+      <value>3</value>
       <options>
         <option>
           <name>
@@ -259,7 +259,7 @@
         </option>
       </options>
       <type>select</type>
-      <updatable>always</updatable>
+      <updatable>hidden</updatable>
       <help>
         <message lang="fr">Permet de choisir quelles autres instances de l'application Almanach sont accessibles depuis
           la liste déroulante.
