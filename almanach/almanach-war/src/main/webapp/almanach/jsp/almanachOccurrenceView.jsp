@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %><%--
   ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -61,7 +61,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel withFieldsetStyle="true"/>
   <view:includePlugin name="calendar"/>
-  <view:includePlugin name="attachment"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>
 </head>
@@ -85,27 +84,31 @@
   <view:frame>
     <silverpeas-calendar-event-view ng-if="ceo"
                                     calendar-event-occurrence="ceo">
-      <silverpeas-calendar-event-view-main
-          calendar-event-occurrence="ceo">
-      </silverpeas-calendar-event-view-main>
-      <silverpeas-calendar-event-view-recurrence
-          calendar-event-occurrence="ceo"
-          ng-if="ceo.recurrence">
-      </silverpeas-calendar-event-view-recurrence>
-      <silverpeas-calendar-event-view-attendees
-          calendar-event-occurrence="ceo"
-          ng-if="ceo.attendees && ceo.attendees.length"
-          on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
-      </silverpeas-calendar-event-view-attendees>
-      <silverpeas-attachment
-          component-id="${componentId}"
-          resource-id="{{ceo.eventId}}"
-          read-only="${publisherRole.isGreaterThan(highestUserRole)}">
-      </silverpeas-attachment>
+      <pane-main>
+        <silverpeas-calendar-event-view-main
+            calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-main>
+        <silverpeas-calendar-event-view-attendees
+            calendar-event-occurrence="ceo"
+            ng-if="ceo.attendees && ceo.attendees.length"
+            on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
+        </silverpeas-calendar-event-view-attendees>
+        <view:buttonPane>
+          <view:button label="${back}" action="${backUri}"/>
+        </view:buttonPane>
+      </pane-main>
+      <pane-extra>
+        <silverpeas-calendar-event-view-recurrence
+            calendar-event-occurrence="ceo"
+            ng-if="ceo.recurrence">
+        </silverpeas-calendar-event-view-recurrence>
+        <silverpeas-calendar-event-view-attachment
+            calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-attachment>
+        <silverpeas-calendar-event-view-crud
+            calendar-event-occurrence="ceo"></silverpeas-calendar-event-view-crud>
+      </pane-extra>
     </silverpeas-calendar-event-view>
-    <view:buttonPane>
-      <view:button label="${back}" action="${backUri}"/>
-    </view:buttonPane>
   </view:frame>
 </view:window>
 <view:progressMessage/>

@@ -44,7 +44,7 @@
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.components.almanach.AlmanachTimeWindowViewContext"/>
 <c:set var="mainCalendar" value="${requestScope.mainCalendar}"/>
 <jsp:useBean id="mainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
-<c:set var="nextEventViewLimi" value="<%=AlmanachSettings.getNbOccurrenceLimitOfNextEventView()%>"/>
+<c:set var="nextEventViewLimit" value="<%=AlmanachSettings.getNbOccurrenceLimitOfNextEventView()%>"/>
 
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
@@ -95,7 +95,7 @@
     componentUriBase : '${componentUriBase}',
     userRole : '${highestUserRole}',
     zoneId : '${timeWindowViewContext.zoneId.toString()}',
-    limit : ${nextEventViewLimi}
+    limit : ${nextEventViewLimit}
   });
 </script>
 </body>
