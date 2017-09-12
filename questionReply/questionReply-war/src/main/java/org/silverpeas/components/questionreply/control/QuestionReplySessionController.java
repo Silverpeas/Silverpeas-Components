@@ -266,7 +266,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   private void addFilesToReply(Collection<UploadedFile> uploadedFiles, Reply reply) {
-    Attachments.from(uploadedFiles).attachTo(LocalizedContribution.from(reply, getLanguage()));
+    Attachments.from(uploadedFiles).attachTo(LocalizedContribution.from(reply));
   }
 
   /*
