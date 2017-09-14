@@ -260,7 +260,7 @@ public class GalleryResource extends AbstractGalleryResource {
         entity.setEmbedHtml(entity.getEmbedHtml().replaceAll("http://", "https://"));
       }
       // noinspection ConstantConditions
-      return entity.withURI(getUriInfo().getRequestUri());
+      return entity.withURI(getUri().getRequestUri());
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

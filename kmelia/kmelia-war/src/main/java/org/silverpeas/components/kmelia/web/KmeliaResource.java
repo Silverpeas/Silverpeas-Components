@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia.web;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -47,12 +48,19 @@ import java.net.URI;
  */
 @Service
 @RequestScoped
-@Path("publications/{componentId}")
+@Path(KmeliaResource.PATH + "/{componentId}")
 @Authorized
 public class KmeliaResource extends RESTWebService {
 
+  static final String PATH = "publications";
+
   @PathParam("componentId")
   private String componentId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -74,7 +82,7 @@ public class KmeliaResource extends RESTWebService {
   public Response savePublication(@PathParam("nodeId") String nodeId,
       PublicationEntity publicationEntity) {
     try {
-      publicationEntity.setCreator(getUserDetail());
+      publicationEntity.setCreator(UserDetail.from(getUser()));
       PublicationDetail publication = publicationEntity.toPublicationDetail();
 
       NodePK nodePK = getNodePK(nodeId);
@@ -82,7 +90,7 @@ public class KmeliaResource extends RESTWebService {
       String pubId = getKmeliaBm().createPublicationIntoTopic(publication, nodePK);
       publication.getPK().setId(pubId);
 
-      URI publicationURI = getUriInfo().getRequestUriBuilder().path(publication.getPK().getId())
+      URI publicationURI = getUri().getRequestUriBuilder().path(publication.getPK().getId())
           .build();
       return Response.created(publicationURI).
           entity(asWebEntity(publication, identifiedBy(publicationURI))).build();
@@ -114,7 +122,7 @@ public class KmeliaResource extends RESTWebService {
       // Now, the update can be performed
       getKmeliaBm().updatePublication(publication);
 
-      URI publicationURI = getUriInfo().getRequestUriBuilder().path(publication.getPK().getId())
+      URI publicationURI = getUri().getRequestUriBuilder().path(publication.getPK().getId())
           .build();
       return Response.ok(publicationURI).
           entity(asWebEntity(publication, identifiedBy(publicationURI))).build();

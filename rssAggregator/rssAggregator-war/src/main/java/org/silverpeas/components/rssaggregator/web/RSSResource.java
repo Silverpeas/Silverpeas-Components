@@ -44,9 +44,11 @@ import java.util.List;
 
 @Service
 @RequestScoped
-@Path("rss/{componentId}")
+@Path(RSSResource.PATH + "/{componentId}")
 @Authorized
 public class RSSResource extends RESTWebService {
+
+  static final String PATH = "rss";
 
   @PathParam("componentId")
   protected String componentId;
@@ -54,6 +56,11 @@ public class RSSResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return this.componentId;
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   /**

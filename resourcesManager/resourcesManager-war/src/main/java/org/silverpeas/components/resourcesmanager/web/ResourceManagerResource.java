@@ -318,7 +318,7 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
       Date dateReference = computeReferenceDate(year, month, day);
 
       List<Reservation> reservations = getResourceManager()
-          .getReservationForValidation(getComponentId(), getUserDetail().getId(),
+          .getReservationForValidation(getComponentId(), getUser().getId(),
               Period.from(dateReference, periodType, getUserPreferences().getLanguage()));
 
       return agregateReservedResourceWebEntities(asWebEntities(reservations));

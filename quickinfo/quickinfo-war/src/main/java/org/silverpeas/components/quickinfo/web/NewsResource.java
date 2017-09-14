@@ -20,7 +20,7 @@ import java.util.List;
 
 @Service
 @RequestScoped
-@Path("news/{componentId}")
+@Path(AbstractNewsResource.PATH + "/{componentId}")
 @Authorized
 public class NewsResource extends AbstractNewsResource {
 
@@ -60,7 +60,7 @@ public class NewsResource extends AbstractNewsResource {
   @Path("{newsId}/acknowledge")
   public void acknowledge(@PathParam("newsId") String onNewsId) {
     try {
-      getService().acknowledgeNews(onNewsId, getUserDetail().getId());
+      getService().acknowledgeNews(onNewsId, getUser().getId());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }

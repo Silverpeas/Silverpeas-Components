@@ -23,7 +23,13 @@
  */
 package org.silverpeas.components.delegatednews.web;
 
-import java.util.List;
+import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
+import org.silverpeas.components.delegatednews.model.DelegatedNews;
+import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -34,14 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
-import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import java.util.List;
 
 /**
  * A REST Web resource representing a given delegated news. It is a web service that provides an
@@ -49,9 +48,11 @@ import org.silverpeas.core.webapi.base.RESTWebService;
  */
 @Service
 @RequestScoped
-@Path("delegatednews/{instanceId}")
+@Path(ListDelegatedNewsResource.PATH + "/{instanceId}")
 @Authorized
 public class ListDelegatedNewsResource extends RESTWebService {
+
+  static final String PATH = "delegatednews";
 
   @Inject
   private DelegatedNewsService delegatednewsService;
@@ -64,6 +65,11 @@ public class ListDelegatedNewsResource extends RESTWebService {
    */
   protected DelegatedNewsService getDelegatedNewsService() {
     return this.delegatednewsService;
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override

@@ -44,9 +44,9 @@ import org.silverpeas.core.annotation.Service;
  */
 @Service
 @RequestScoped
-@Path("questionreply/{componentId}/questions")
+@Path(QuestionReplyBaseWebService.PATH + "/{componentId}/questions")
 @Authorized
-public class QuestionResource extends QuestionRelyBaseWebService {
+public class QuestionResource extends QuestionReplyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
@@ -72,7 +72,7 @@ public class QuestionResource extends QuestionRelyBaseWebService {
     try {
       Question theQuestion = QuestionManagerProvider.getQuestionManager().getQuestion(Long.parseLong(
           onQuestionId));
-      URI questionURI = getUriInfo().getRequestUri();
+      URI questionURI = getUri().getRequestUri();
       if (extractVisibleQuestions(Collections.singletonList(theQuestion)).isEmpty()) {
         throw new WebApplicationException(Status.FORBIDDEN);
       }
@@ -149,7 +149,7 @@ public class QuestionResource extends QuestionRelyBaseWebService {
     QuestionEntity[] entities = new QuestionEntity[questions.size()];
     for (int i = 0; i < questions.size(); i++) {
       Question question = questions.get(i);
-      URI questionURI = getUriInfo().getRequestUriBuilder().path(question.getPK().getId()).
+      URI questionURI = getUri().getRequestUriBuilder().path(question.getPK().getId()).
           build();
       entities[i] = asWebEntity(question, identifiedBy(questionURI));
     }
@@ -164,7 +164,7 @@ public class QuestionResource extends QuestionRelyBaseWebService {
    */
   protected QuestionEntity asWebEntity(final Question question, URI questionURI) {
     QuestionEntity entity = QuestionEntity.fromQuestion(question,
-            getUserPreferences().getLanguage()).withURI(questionURI).withUser(getUserDetail(),
+            getUserPreferences().getLanguage()).withURI(questionURI).withUser(getUser(),
             getUserProfile());
     AuthorEntity author = AuthorEntity.fromUser(question.readAuthor(getOrganisationController()));
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());

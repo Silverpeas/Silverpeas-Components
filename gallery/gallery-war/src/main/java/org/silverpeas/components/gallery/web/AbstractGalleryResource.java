@@ -58,6 +58,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import static org.silverpeas.components.gallery.constant.GalleryResourceURIs.GALLERY_BASE_URI;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -75,6 +77,11 @@ abstract class AbstractGalleryResource extends RESTWebService {
     return componentInstanceId;
   }
 
+  @Override
+  protected String getResourceBasePath() {
+    return GALLERY_BASE_URI;
+  }
+
   /**
    * Converts the album into its corresponding web entity.
    * @param album the album.
@@ -83,7 +90,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
   AlbumEntity asWebEntity(AlbumDetail album) {
     checkNotFoundStatus(album);
     AlbumEntity albumEntity = AlbumEntity.createFrom(album, getUserPreferences().getLanguage())
-        .withURI(getUriInfo().getRequestUri()).withParentURI(GalleryResourceURIs.buildAlbumURI(album.getFatherPK()));
+        .withURI(getUri().getRequestUri())
+        .withParentURI(GalleryResourceURIs.buildAlbumURI(album.getFatherPK()));
     for (Media media : album.getMedia()) {
       if (hasUserMediaAccess(media)) {
         albumEntity.addMedia(asWebEntity(media, album));
@@ -375,7 +383,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @return true if user has media access
    */
   private boolean hasUserMediaAccess(Media media) {
-    return media.canBeAccessedBy(getUserDetail());
+    return media.canBeAccessedBy(getUser());
   }
 
   /**

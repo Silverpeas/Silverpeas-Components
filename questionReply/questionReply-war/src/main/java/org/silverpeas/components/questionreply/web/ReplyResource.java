@@ -50,9 +50,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
  */
 @Service
 @RequestScoped
-@Path("questionreply/{componentId}/replies")
+@Path(QuestionReplyBaseWebService.PATH + "/{componentId}/replies")
 @Authorized
-public class ReplyResource extends QuestionRelyBaseWebService {
+public class ReplyResource extends QuestionReplyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
@@ -114,7 +114,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     ReplyEntity[] entities = new ReplyEntity[replies.size()];
     for (int i = 0; i < replies.size(); i++) {
       Reply reply = replies.get(i);
-      URI commentURI = getUriInfo().getRequestUriBuilder().path(reply.getPK().getId()).build();
+      URI commentURI = getUri().getRequestUriBuilder().path(reply.getPK().getId()).build();
       entities[i] = asWebEntity(reply, identifiedBy(commentURI), profile);
     }
     return entities;
@@ -166,7 +166,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     String authorId = QuestionManagerProvider.getQuestionManager().getQuestion(questionId).
         getCreatorId();
     SilverpeasRole profile = getUserProfile();
-    String userid = getUserDetail().getId();
+    String userid = getUser().getId();
     for (Reply reply : replies) {
       if (isReplyVisible(authorId, reply, profile, userid)) {
         visibleReplies.add(reply);

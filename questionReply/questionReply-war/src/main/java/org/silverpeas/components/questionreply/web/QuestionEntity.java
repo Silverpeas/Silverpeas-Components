@@ -24,23 +24,23 @@
 package org.silverpeas.components.questionreply.web;
 
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
-
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.webapi.base.WebEntity;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.publisher;
 
 /**
  * @author emmanuel.hugonnet@silverpeas.org
@@ -304,37 +304,37 @@ public class QuestionEntity implements WebEntity {
     return question;
   }
 
-  public QuestionEntity withUser(UserDetail userDetail, SilverpeasRole profile) {
-    this.updatable = isQuestionUpdatable(userDetail, profile);
+  public QuestionEntity withUser(User user, SilverpeasRole profile) {
+    this.updatable = isQuestionUpdatable(user, profile);
     this.reopenable = isQuestionReopenable(profile);
-    this.replyable = isQuestionReplyable(userDetail, profile);
-    this.closeable = isQuestionCloseable(userDetail, profile);
+    this.replyable = isQuestionReplyable(user, profile);
+    this.closeable = isQuestionCloseable(user, profile);
     return this;
   }
 
-  boolean isQuestionUpdatable(UserDetail userDetail, SilverpeasRole profile) {
+  boolean isQuestionUpdatable(User user, SilverpeasRole profile) {
     boolean questionUpdatable = true;
-    if (profile == publisher && !this.getCreatorId().equals(userDetail.getId())) {
+    if (profile == publisher && !this.getCreatorId().equals(user.getId())) {
       questionUpdatable = false;
     } else if (profile == publisher) {
       if (this.getStatus() != Question.NEW) {
         questionUpdatable = false;
       }
     }
-    if (profile == user) {
+    if (profile == SilverpeasRole.user) {
       questionUpdatable = false;
     }
     return questionUpdatable;
   }
 
-  boolean isQuestionCloseable(UserDetail userDetail, SilverpeasRole profile) {
+  boolean isQuestionCloseable(User user, SilverpeasRole profile) {
     return publisher != profile && this.getStatus() == Question.WAITING &&
-        isQuestionUpdatable(userDetail, profile);
+        isQuestionUpdatable(user, profile);
   }
 
-  boolean isQuestionReplyable(UserDetail userDetail, SilverpeasRole profile) {
+  boolean isQuestionReplyable(User user, SilverpeasRole profile) {
     return publisher != profile && this.getStatus() != Question.CLOSED &&
-        isQuestionUpdatable(userDetail, profile);
+        isQuestionUpdatable(user, profile);
   }
 
   boolean isQuestionReopenable(SilverpeasRole profile) {

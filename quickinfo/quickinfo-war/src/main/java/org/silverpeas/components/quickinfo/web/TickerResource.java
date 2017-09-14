@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequestScoped
-@Path("news/ticker")
+@Path(AbstractNewsResource.PATH + "/ticker")
 @Authenticated
 public class TickerResource extends AbstractNewsResource {
 
@@ -32,7 +32,7 @@ public class TickerResource extends AbstractNewsResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<NewsEntity> getTickerNews() {
-    List<News> newsForTicker = getService().getNewsForTicker(getUserDetail().getId());
+    List<News> newsForTicker = getService().getNewsForTicker(getUser().getId());
     return asWebEntities(newsForTicker);
   }
 }

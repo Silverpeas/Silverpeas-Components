@@ -61,8 +61,10 @@ import java.util.List;
 @Service
 @RequestScoped
 @Authorized
-@Path("folders/{componentId}")
+@Path(FolderResource.PATH + "/{componentId}")
 public class FolderResource extends RESTWebService {
+
+  static final String PATH = "folders";
 
   @PathParam("componentId")
   private String componentId;
@@ -77,14 +79,14 @@ public class FolderResource extends RESTWebService {
   public NodeEntity getRoot(@QueryParam("lang") String language) {
     NodeDetail root;
     try {
-      root = getKmeliaBm().getRoot(componentId, getUserDetail().getId());
+      root = getKmeliaBm().getRoot(componentId, getUser().getId());
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
 
-    URI uri = getUriInfo().getRequestUriBuilder().path(root.getNodePK().getId()).build();
-    if (getUriInfo().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
-      uri = getUriInfo().getRequestUri();
+    URI uri = getUri().getRequestUriBuilder().path(root.getNodePK().getId()).build();
+    if (getUri().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
+      uri = getUri().getRequestUri();
     }
     NodeEntity entity = NodeEntity.fromNodeDetail(root, uri, language);
     decorateRoot(entity, language);
@@ -106,7 +108,7 @@ public class FolderResource extends RESTWebService {
       return getRoot(language);
     } else {
       NodeDetail node = getNodeDetail(nodeId);
-      URI uri = getUriInfo().getRequestUri();
+      URI uri = getUri().getRequestUri();
       return NodeEntity.fromNodeDetail(node, uri, language);
     }
   }
@@ -129,7 +131,7 @@ public class FolderResource extends RESTWebService {
       nodes = new ArrayList<>(getNodeBm().getPath(nodePK));
       Collections.reverse(nodes);
 
-      String requestUri = getUriInfo().getRequestUri().toString();
+      String requestUri = getUri().getRequestUri().toString();
       String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
       List<NodeEntity> entities = new ArrayList<>();
@@ -165,12 +167,12 @@ public class FolderResource extends RESTWebService {
 
     Collection<NodeDetail> children;
     try {
-      children = getKmeliaBm().getFolderChildren(nodePK, getUserDetail().getId());
+      children = getKmeliaBm().getFolderChildren(nodePK, getUser().getId());
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
 
-    String requestUri = getUriInfo().getRequestUri().toString();
+    String requestUri = getUri().getRequestUri().toString();
     String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
     List<NodeEntity> entities = new ArrayList<>();
@@ -211,7 +213,7 @@ public class FolderResource extends RESTWebService {
 
     Collection<NodeDetail> children;
     try {
-      children = getKmeliaBm().getFolderChildren(nodePK, getUserDetail().getId());
+      children = getKmeliaBm().getFolderChildren(nodePK, getUser().getId());
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
@@ -236,7 +238,7 @@ public class FolderResource extends RESTWebService {
           componentId, parentNodeId, null, userId, nodeName, description);
 
       NodeDetail node = getNodeDetail(nodeId);
-      URI uri = getUriInfo().getRequestUri();
+      URI uri = getUri().getRequestUri();
       NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(node, uri);
 
       return Response.created(uri).entity(newNodeEntity).build();
@@ -287,9 +289,9 @@ public class FolderResource extends RESTWebService {
           componentId)));
       Collections.reverse(nodes);
       NodeDetail root = getKmeliaBm().getExpandedPathToNode(new NodePK(nodeId, componentId),
-          getUserDetail().getId());
+          getUser().getId());
 
-      String requestUri = getUriInfo().getRequestUri().toString();
+      String requestUri = getUri().getRequestUri().toString();
       String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
       NodeEntity rootEntity = NodeEntity.fromNodeDetail(root, uri, language);
@@ -319,6 +321,11 @@ public class FolderResource extends RESTWebService {
       }
     }
     return false;
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override

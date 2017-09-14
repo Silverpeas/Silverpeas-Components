@@ -23,22 +23,29 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
+
 /**
  *
  */
-public abstract class QuestionRelyBaseWebService extends RESTWebService {
+public abstract class QuestionReplyBaseWebService extends RESTWebService {
+
+  static final String PATH = "questionreply";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   SilverpeasRole getUserProfile() {
     String[] roles =
-        getOrganisationController().getUserProfiles(getUserDetail().getId(), getComponentId());
+        getOrganisationController().getUserProfiles(getUser().getId(), getComponentId());
     SilverpeasRole profile = user;
     for (String currentRole : roles) {
       SilverpeasRole role = SilverpeasRole.valueOf(currentRole);

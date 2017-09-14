@@ -5,7 +5,6 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
-import javax.ws.rs.core.UriBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,31 +13,27 @@ import java.util.List;
  */
 abstract class AbstractNewsResource extends RESTWebService {
 
+  static final String PATH = "news";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
+
   List<NewsEntity> asWebEntities(List<News> someNews) {
     List<NewsEntity> entities = new ArrayList<>();
-    UriBuilder baseUri = getBaseUriBuilder();
     for (News news : someNews) {
-      entities.add(asWebEntity(news, baseUri));
+      entities.add(asWebEntity(news));
     }
     return entities;
   }
 
   NewsEntity asWebEntity(News news) {
-    return asWebEntity(news, getBaseUriBuilder());
+    return NewsEntity.fromNews(news)
+        .withURI(getUri().getWebResourcePathBuilder().path(news.getId()).build());
   }
 
   QuickInfoService getService() {
     return QuickInfoServiceProvider.getQuickInfoService();
-  }
-
-  private UriBuilder getBaseUriBuilder() {
-    UriBuilder baseUri = getUriInfo().getBaseUriBuilder();
-    baseUri.path("news/{componentId}/{newsId}");
-    return baseUri;
-  }
-
-  private NewsEntity asWebEntity(News news, UriBuilder baseUri) {
-    return NewsEntity.fromNews(news)
-        .withURI(baseUri.build(news.getComponentInstanceId(), news.getId()));
   }
 }

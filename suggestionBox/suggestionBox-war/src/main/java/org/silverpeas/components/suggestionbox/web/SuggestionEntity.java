@@ -26,14 +26,12 @@ package org.silverpeas.components.suggestionbox.web;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.webapi.validation.ContributionValidationEntity;
 import org.springframework.util.ReflectionUtils;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -44,8 +42,7 @@ import java.net.URI;
 import java.util.Date;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
 
 /**
  * It represents the state of a suggestion in a suggestion box as transmitted within the body of
@@ -212,8 +209,7 @@ public class SuggestionEntity implements WebEntity {
     if (suggestion == null || suggestion.getSuggestionBox() == null) {
       return null;
     }
-    return UriBuilder.fromUri(URLUtil.getApplicationURL())
-        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(BOX_BASE_URI)
+    return SilverpeasWebResource.getBasePathBuilder().path(BOX_BASE_URI)
         .path(suggestion.getSuggestionBox().getComponentInstanceId())
         .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
         .path(suggestion.getId()).build();

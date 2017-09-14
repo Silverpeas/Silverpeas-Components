@@ -104,7 +104,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
       suggestionBoxWebServiceProvider
-          .deleteSuggestion(getSuggestionBox(), suggestion, getUserDetail());
+          .deleteSuggestion(getSuggestionBox(), suggestion, getUser());
       return null;
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
@@ -123,7 +123,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
       return suggestionBoxWebServiceProvider
-          .publishSuggestion(getSuggestionBox(), suggestion, getUserDetail());
+          .publishSuggestion(getSuggestionBox(), suggestion, getUser());
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
@@ -140,7 +140,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInDraft() {
     return process(() -> suggestionBoxWebServiceProvider
-        .getSuggestionsInDraftFor(getSuggestionBox(), getUserDetail()))
+        .getSuggestionsInDraftFor(getSuggestionBox(), getUser()))
         .lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
@@ -157,7 +157,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsOutOfDraft() {
     return process(() -> suggestionBoxWebServiceProvider
-        .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUserDetail()))
+        .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUser()))
         .lowestAccessRole(SilverpeasRole.writer).execute();
   }
 

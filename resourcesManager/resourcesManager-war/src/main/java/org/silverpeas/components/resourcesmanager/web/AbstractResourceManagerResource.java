@@ -45,6 +45,11 @@ import java.util.List;
  */
 public abstract class AbstractResourceManagerResource extends RESTWebService {
 
+  @Override
+  protected String getResourceBasePath() {
+    return ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI;
+  }
+
   @PathParam("componentInstanceId")
   private String componentInstanceId;
 
@@ -174,9 +179,9 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * @return reservation URI
    */
   private URI buildReservationURI(Long reservationId) {
-    return getUriInfo().getBaseUriBuilder().path(
-        ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI).path(getComponentId())
-        .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART).path(reservationId.toString()).build();
+    return getUri().getAbsoluteWebResourcePathBuilder()
+        .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART)
+        .path(reservationId.toString()).build();
   }
 
   /**
@@ -188,9 +193,9 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
     if (reservation == null) {
       return null;
     }
-    return getUriInfo().getBaseUriBuilder().path(
-        ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI).path(getComponentId())
-        .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART).path(reservation.getIdAsString())
+    return getUri().getAbsoluteWebResourcePathBuilder()
+        .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART)
+        .path(reservation.getIdAsString())
         .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART).build();
   }
 
@@ -203,8 +208,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
     if (category == null) {
       return null;
     }
-    return getUriInfo().getBaseUriBuilder().path(
-        ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI).path(getComponentId())
+    return getUri().getAbsoluteWebResourcePathBuilder()
         .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART).path(
             ResourceManagerResourceURIs.RESOURCE_MANAGER_CATEGORIES_URI_PART)
         .path(category.getIdAsString()).build();
@@ -219,9 +223,9 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
     if (resource == null) {
       return null;
     }
-    return getUriInfo().getBaseUriBuilder().path(
-        ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI).path(getComponentId())
-        .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART).path(resource.getIdAsString()).build();
+    return getUri().getAbsoluteWebResourcePathBuilder()
+        .path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART)
+        .path(resource.getIdAsString()).build();
   }
 
   /**
