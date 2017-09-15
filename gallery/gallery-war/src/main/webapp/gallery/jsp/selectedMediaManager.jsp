@@ -61,8 +61,6 @@
           gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
   context.setBorderPrinted(false);
   context.setCurrentFieldIndex("10");
-  context.setUseBlankFields(true);
-  context.setUseMandatory(false);
 %>
 
 <c:set var="formUpdate" value="<%=formUpdate%>"/>
