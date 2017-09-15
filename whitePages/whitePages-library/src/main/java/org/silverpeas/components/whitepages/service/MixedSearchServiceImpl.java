@@ -28,10 +28,10 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.search.SearchService;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,19 +56,16 @@ public class MixedSearchServiceImpl implements MixedSearchService {
 
     // XML search
     if (xmlFields != null && !xmlFields.isEmpty() && xmlTemplate != null) {
-      Map<String, String> newXmlQuery = new HashMap<>();
-
       for (Map.Entry<String, String> entry : xmlFields.entrySet()) {
         String value = entry.getValue();
         value = value.trim().replaceAll("##", " AND ");
-        newXmlQuery.put(xmlTemplate + "$$" + entry.getKey(), value);
+        query.addFieldQuery(
+            new FieldDescription(xmlTemplate + "$$" + entry.getKey(), value, language));
       }
-
-      query.setXmlQuery(newXmlQuery);
     }
 
     // LDAP and classicals Silverpeas fields search
-    if (fieldsQuery != null && !fieldsQuery.isEmpty()) {
+    if (CollectionUtil.isNotEmpty(fieldsQuery)) {
       query.setFieldQueries(fieldsQuery);
     }
 

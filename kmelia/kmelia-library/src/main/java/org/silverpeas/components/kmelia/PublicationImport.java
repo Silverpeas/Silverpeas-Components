@@ -20,37 +20,37 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.fileitem.InternalFileItem;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -330,9 +330,7 @@ public class PublicationImport {
     query.setSearchingUser(userId);
     query.addComponent(componentId);
 
-    Map<String, String> newXmlQuery = new HashMap<String, String>();
-    newXmlQuery.put(xmlFormName + "$$" + fieldName, fieldValue);
-    query.setXmlQuery(newXmlQuery);
+    query.addFieldQuery(new FieldDescription(xmlFormName + "$$" + fieldName, fieldValue, null));
 
     try {
       List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
