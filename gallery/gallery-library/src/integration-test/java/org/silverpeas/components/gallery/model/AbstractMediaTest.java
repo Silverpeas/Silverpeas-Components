@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.gallery.model;
 
+import org.silverpeas.core.web.SilverpeasWebResource;
+
 import java.util.Date;
 
 /**
@@ -33,5 +35,5 @@ public abstract class AbstractMediaTest {
   protected final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
 
   protected final static String GALLERY_REST_WEB_SERVICE_BASE_URI =
-      "/silverpeas/services/gallery/instanceId/";
+      SilverpeasWebResource.getBasePath() + "/gallery/instanceId/";
 }

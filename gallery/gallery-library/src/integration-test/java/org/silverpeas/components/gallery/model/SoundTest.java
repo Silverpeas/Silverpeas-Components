@@ -23,23 +23,23 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.GalleryWarBuilder;
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.gallery.GalleryWarBuilder;
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.silverpeas.components.gallery.constant.MediaResolution.*;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.silverpeas.components.gallery.constant.MediaResolution.*;
 @RunWith(Arquillian.class)
 public class SoundTest extends AbstractMediaTest {
 

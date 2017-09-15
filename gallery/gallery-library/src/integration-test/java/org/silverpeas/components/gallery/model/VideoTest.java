@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.GalleryWarBuilder;
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.gallery.GalleryWarBuilder;
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.io.media.Definition;
 
 import java.util.HashMap;
