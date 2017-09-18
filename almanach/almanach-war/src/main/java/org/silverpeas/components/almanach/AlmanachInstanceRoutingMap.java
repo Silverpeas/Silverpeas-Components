@@ -21,13 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.components.almanach;
 
-import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
+import org.silverpeas.core.web.calendar.AbstractCalendarInstanceRoutingMap;
+
+import javax.inject.Named;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class AlmanachWebRequestContext
-    extends AbstractCalendarWebRequestContext<AlmanachWebController> {
-}
+@Named
+public class AlmanachInstanceRoutingMap extends AbstractCalendarInstanceRoutingMap {}

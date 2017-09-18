@@ -41,7 +41,6 @@ import java.time.temporal.Temporal;
 
 import static org.silverpeas.components.almanach.AlmanachSettings.*;
 import static org.silverpeas.core.web.calendar.CalendarViewType.from;
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.calendarUri;
 
 @WebComponentController(AlmanachSettings.COMPONENT_NAME)
 public class AlmanachWebController
@@ -83,7 +82,7 @@ public class AlmanachWebController
     super.beforeRequestProcessing(context);
     Calendar mainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("mainCalendar", CalendarEntity.fromCalendar(mainCalendar)
-        .withURI(calendarUri(context.getCalendarBaseUri(), mainCalendar)));
+        .withURI(context.uri().ofCalendar(mainCalendar)));
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }
 

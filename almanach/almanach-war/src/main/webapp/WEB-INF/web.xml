@@ -43,9 +43,9 @@
     <servlet-class>old.silverpeas.components.almanach.servlets.AlmanachRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <display-name>OldGoToEvent</display-name>
-    <servlet-name>OldGoToEvent</servlet-name>
-    <servlet-class>old.silverpeas.components.almanach.servlets.GoToEvent</servlet-class>
+    <display-name>GoToEvent</display-name>
+    <servlet-name>GoToEvent</servlet-name>
+    <servlet-class>org.silverpeas.components.almanach.GoToEvent</servlet-class>
   </servlet>
   <servlet>
     <display-name>OldAlmanachRssServlet</display-name>
@@ -61,7 +61,7 @@
     <url-pattern>/Oalmanach/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>OldGoToEvent</servlet-name>
+    <servlet-name>GoToEvent</servlet-name>
     <url-pattern>/Event/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>

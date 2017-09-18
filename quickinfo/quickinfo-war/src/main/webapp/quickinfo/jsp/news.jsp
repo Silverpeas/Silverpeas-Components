@@ -157,11 +157,10 @@ function onDelete(id) {
 			<a href="#commentaires">${news.numberOfComments}</a>
 		</p>
 		</c:if>
-									
-		<p id="permalinkInfo">
-			<a title="<fmt:message key="quickinfo.news.permalink"/>" href="<c:url value="/Publication/${news.publicationId}"/>"><img alt="<fmt:message key="quickinfo.news.permalink"/>" src="<c:url value='/util/icons/link.gif'/>" /></a> <fmt:message key="GML.permalink"/> <br />
-			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.publicationId}"/>" onmouseup="return false" onfocus="select();" />
-		</p>
+
+    <c:url var="permalink" value="/Publication/${news.publicationId}"/>
+    <fmt:message var="permalinkHelp" key="quickinfo.news.permalink"/>
+    <viewTags:displayPermalinkInfo permalink="${permalink}" permalinkHelp="${permalinkHelp}"/>
 	</div>
 
   <%-- Attachments --%>

@@ -23,11 +23,19 @@
  */
 package org.silverpeas.components.almanach;
 
-import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.web.servlets.GoToContribution;
 
 /**
- * @author Yohann Chastagnier
+ * This servlet is still alive because of permalink already in use.
  */
-public class AlmanachWebRequestContext
-    extends AbstractCalendarWebRequestContext<AlmanachWebController> {
+public class GoToEvent extends GoToContribution {
+  private static final long serialVersionUID = -3086487345543160152L;
+
+  @Override
+  protected ContributionIdentifier getContributionIdentifier(final String objectId) {
+    CalendarEvent event = CalendarEvent.getById(AlmanachSettings.COMPONENT_NAME + "-" + objectId);
+    return ContributionIdentifier.from(event.getCalendar().getComponentInstanceId(), event.getId());
+  }
 }

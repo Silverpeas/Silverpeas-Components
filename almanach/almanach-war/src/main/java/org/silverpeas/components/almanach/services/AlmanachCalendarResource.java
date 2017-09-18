@@ -94,9 +94,4 @@ public class AlmanachCalendarResource extends CalendarResource {
 
     return componentInstanceIdsToAggregate;
   }
-
-  @Override
-  protected String getResourceBasePath() {
-    return ALMANACH_CALENDAR_BASE_URI;
-  }
 }

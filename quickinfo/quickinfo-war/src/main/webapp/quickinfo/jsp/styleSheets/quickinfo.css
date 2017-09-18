@@ -164,12 +164,8 @@
 }
 
 #permalinkInfo input {
-  width:100%;
+  width:92%;
 }
-#permalinkInfo img {
-  border:0;
-}
-
 
 fieldset#infoFieldset legend {
   background:transparent url(../../../util/icons/component/quickinfoSmall.gif) 11px 0px no-repeat;
