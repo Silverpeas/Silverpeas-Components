@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.almanach;
 
+import org.silverpeas.components.almanach.services.AlmanachCalendarResource;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
 
 /**
@@ -30,4 +31,8 @@ import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
  */
 public class AlmanachWebRequestContext
     extends AbstractCalendarWebRequestContext<AlmanachWebController> {
+  @Override
+  protected String getWebResourceBasePath() {
+    return AlmanachCalendarResource.ALMANACH_CALENDAR_BASE_URI;
+  }
 }

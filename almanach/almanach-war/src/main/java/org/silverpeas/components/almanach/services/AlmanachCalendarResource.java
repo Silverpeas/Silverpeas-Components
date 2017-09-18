@@ -88,14 +88,15 @@ public class AlmanachCalendarResource extends CalendarResource {
             .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
 
     Arrays.stream(getOrganisationController()
-        .getAllComponentIdsRecur(componentInstance.getSpaceId(), getUserDetail().getId(),
+        .getAllComponentIdsRecur(componentInstance.getSpaceId(), getUser().getId(),
             componentInstance.getName(), inCurrentSpace, inAllSpaces))
         .filter(i -> !i.equals(getComponentId())).forEach(componentInstanceIdsToAggregate::add);
 
     return componentInstanceIdsToAggregate;
   }
 
-  protected String getServiceBaseUri() {
+  @Override
+  protected String getResourceBasePath() {
     return ALMANACH_CALENDAR_BASE_URI;
   }
 }

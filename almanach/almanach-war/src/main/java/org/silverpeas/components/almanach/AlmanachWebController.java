@@ -23,11 +23,8 @@
  */
 package org.silverpeas.components.almanach;
 
-import org.silverpeas.components.almanach.services.AlmanachCalendarResource;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -37,20 +34,14 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 import org.silverpeas.core.webapi.calendar.CalendarEntity;
-import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.time.temporal.Temporal;
 
 import static org.silverpeas.components.almanach.AlmanachSettings.*;
-import static org.silverpeas.components.almanach.services.AlmanachCalendarResource
-    .ALMANACH_CALENDAR_BASE_URI;
 import static org.silverpeas.core.web.calendar.CalendarViewType.from;
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.buildCalendarURI;
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.buildOccurrenceURI;
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.calendarUri;
 
 @WebComponentController(AlmanachSettings.COMPONENT_NAME)
 public class AlmanachWebController
@@ -58,7 +49,6 @@ public class AlmanachWebController
 
   // Some navigation step identifier definitions
   private static final String EVENT_VIEW_NS_ID = "eventViewNavStepIdentifier";
-  private static final int STRING_MAX_LENGTH = 50;
 
   private AlmanachTimeWindowViewContext timeWindowViewContext;
 
@@ -93,7 +83,7 @@ public class AlmanachWebController
     super.beforeRequestProcessing(context);
     Calendar mainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("mainCalendar", CalendarEntity.fromCalendar(mainCalendar)
-        .withURI(buildCalendarURI(ALMANACH_CALENDAR_BASE_URI, mainCalendar)));
+        .withURI(calendarUri(context.getCalendarBaseUri(), mainCalendar)));
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }
 
@@ -135,20 +125,7 @@ public class AlmanachWebController
   @NavigationStep(identifier = EVENT_VIEW_NS_ID)
   @RedirectToInternalJsp("almanachOccurrenceView.jsp")
   public void viewOccurrence(AlmanachWebRequestContext context) {
-    CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
-    if (occurrence != null) {
-      CalendarEventOccurrenceEntity entity = CalendarEventOccurrenceEntity
-          .fromOccurrence(occurrence, context.getComponentInstanceId(),
-              getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
-              buildOccurrenceURI(AlmanachCalendarResource.ALMANACH_CALENDAR_BASE_URI, occurrence));
-      context.getRequest().setAttribute("occurrence", entity);
-
-      context.getNavigationContext().navigationStepFrom(EVENT_VIEW_NS_ID)
-          .withLabel(StringUtil.truncate(entity.getTitle(), STRING_MAX_LENGTH))
-          .setUriMustBeUsedByBrowseBar(false);
-    } else {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
+    processViewOccurrence(context, EVENT_VIEW_NS_ID);
   }
 
   /**
