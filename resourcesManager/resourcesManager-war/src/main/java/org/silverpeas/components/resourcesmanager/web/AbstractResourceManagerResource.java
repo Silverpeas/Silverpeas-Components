@@ -45,13 +45,13 @@ import java.util.List;
  */
 public abstract class AbstractResourceManagerResource extends RESTWebService {
 
+  @PathParam("componentInstanceId")
+  private String componentInstanceId;
+
   @Override
   protected String getResourceBasePath() {
     return ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI;
   }
-
-  @PathParam("componentInstanceId")
-  private String componentInstanceId;
 
   /*
    * (non-Javadoc)
