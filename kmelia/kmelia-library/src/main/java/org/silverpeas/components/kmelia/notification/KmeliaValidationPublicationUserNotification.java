@@ -59,7 +59,7 @@ public class KmeliaValidationPublicationUserNotification extends AbstractKmeliaA
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (!isDefined(refusalMotive)) {
       return "notificationValidation";
     }

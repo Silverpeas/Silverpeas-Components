@@ -54,16 +54,15 @@ public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaP
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notificationSupervisor";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("supervisor");
-    final List<String> supervisors =
-        new ArrayList<String>(Arrays.asList(getOrganisationController().getUsersIdsByRoleNames(
-            getResource().getPK().getInstanceId(), roles)));
+    final List<String> supervisors = new ArrayList<>(Arrays.asList(getOrganisationController()
+        .getUsersIdsByRoleNames(getResource().getPK().getInstanceId(), roles)));
     return supervisors;
   }
 
@@ -73,7 +72,7 @@ public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaP
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

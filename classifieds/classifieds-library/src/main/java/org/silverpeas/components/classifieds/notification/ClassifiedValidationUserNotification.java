@@ -41,7 +41,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
 
   public ClassifiedValidationUserNotification(final ClassifiedDetail resource, final String userIdWhoRefuse,
       final String refusalMotive, final String userToBeNotified) {
-    super(resource, null, "subscription");
+    super(resource);
     this.userIdWhoRefuse = userIdWhoRefuse;
     this.refusalMotive = refusalMotive;
     this.userToBeNotified = userToBeNotified;
@@ -61,7 +61,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (!ClassifiedDetail.VALID.equals(getResource().getStatus())) {
       return "refused";
     }

@@ -24,9 +24,9 @@
 package org.silverpeas.components.scheduleevent.notification;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * @author Yohann Chastagnier
@@ -38,7 +38,7 @@ public abstract class AbstractScheduleEventUserNotification
 
   protected AbstractScheduleEventUserNotification(final ScheduleEvent resource,
       final UserDetail senderUserDetail) {
-    super(resource, null, null);
+    super(resource);
     this.senderUserDetail = senderUserDetail;
   }
 

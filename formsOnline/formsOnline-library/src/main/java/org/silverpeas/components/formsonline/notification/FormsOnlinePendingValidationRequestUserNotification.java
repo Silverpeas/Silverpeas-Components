@@ -55,7 +55,7 @@ public class FormsOnlinePendingValidationRequestUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notificationToValidate";
   }
 
@@ -68,7 +68,7 @@ public class FormsOnlinePendingValidationRequestUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

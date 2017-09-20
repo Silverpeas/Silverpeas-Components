@@ -41,10 +41,6 @@ public abstract class AbstractClassifiedUserNotification extends
     super(resource);
   }
 
-  public AbstractClassifiedUserNotification(final ClassifiedDetail resource, final String title, final String fileName) {
-    super(resource, title, fileName);
-  }
-
   @Override
   protected String getMultilangPropertyFile() {
     return "org.silverpeas.classifieds.multilang.classifiedsBundle";

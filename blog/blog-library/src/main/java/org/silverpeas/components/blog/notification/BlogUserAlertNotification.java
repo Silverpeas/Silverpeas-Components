@@ -46,7 +46,7 @@ public class BlogUserAlertNotification extends AbstractBlogUserNotification {
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "blogNotification";
   }
 

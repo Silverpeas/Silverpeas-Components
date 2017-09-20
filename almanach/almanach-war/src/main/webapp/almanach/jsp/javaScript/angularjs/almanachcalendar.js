@@ -38,8 +38,19 @@ almanachCalendar.controller('mainController',
 
 /* the calendar controller of the application */
 almanachCalendar.controller('calendarController',
-    ['$controller', '$scope', function($controller, $scope) {
+    ['$controller', '$scope', 'context', function($controller, $scope, context) {
       $controller('mainController', {$scope : $scope});
+
+      $scope.participationIds = $scope.participation.getParticipants() || [];
+      $scope.viewMyCalendar = function() {
+        if ($scope.participationIds.indexOfElement(context.currentUserId)) {
+          $scope.participationIds.addElement(context.currentUserId);
+        }
+      };
+      $scope.$watchCollection('participationIds', function(participationIds) {
+        $scope.participationIds = angular.copy(participationIds);
+        $scope.participation.setParticipants(participationIds);
+      });
     }]);
 
 /* the edit controller of the application */
@@ -57,3 +68,14 @@ almanachCalendar.controller('viewController',
 
       $scope.reloadOccurrenceFromContext();
     }]);
+
+
+/* the portlet controller of the application */
+almanachCalendar.controller('portletController', ['$controller', 'CalendarService', '$scope',
+  function($controller, CalendarService, $scope) {
+    $controller('silverpeasCalendarController', {$scope : $scope});
+
+    CalendarService.getNextOccurrences().then(function(occurrences) {
+      $scope.occurrences = occurrences;
+    });
+  }]);

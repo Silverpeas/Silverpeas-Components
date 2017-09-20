@@ -58,7 +58,7 @@ public class KmeliaNotifyPublicationUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notification";
   }
 }

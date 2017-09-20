@@ -583,7 +583,7 @@
 		            }%>
           <fmt:message var="permalinkHelp" key="kmelia.CopyPublicationLink"/>
           <c:set var="permalinkIconUrl"><%=resources.getIcon("kmelia.link")%></c:set>
-          <viewTags:displayPermalinkInfo permalink="<%=link%>" permalinkHelp="${permalinkHelp}" permalinkIconUrl="${permalinkIconUrl}"/>
+          <viewTags:displayPermalinkInfo link="<%=link%>" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
         <% }%>
         </div>
       <%

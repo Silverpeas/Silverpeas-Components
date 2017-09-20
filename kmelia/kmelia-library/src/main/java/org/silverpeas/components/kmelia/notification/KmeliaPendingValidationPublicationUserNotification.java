@@ -55,7 +55,7 @@ public class KmeliaPendingValidationPublicationUserNotification extends Abstract
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notificationToValidate";
   }
 
@@ -73,7 +73,7 @@ public class KmeliaPendingValidationPublicationUserNotification extends Abstract
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

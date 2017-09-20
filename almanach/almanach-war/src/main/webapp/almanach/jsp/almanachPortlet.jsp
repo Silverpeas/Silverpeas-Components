@@ -40,20 +40,11 @@
 <c:set var="currentUserId" value="${currentUser.id}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
-<c:set var="timeWindowViewContext" value="${requestScope.timeWindowViewContext}"/>
-<jsp:useBean id="timeWindowViewContext" type="org.silverpeas.components.almanach.AlmanachTimeWindowViewContext"/>
-<c:set var="mainCalendar" value="${requestScope.mainCalendar}"/>
-<jsp:useBean id="mainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
+<c:set var="zoneId" value="<%=AlmanachSettings.getZoneId()%>"/>
 <c:set var="nextEventViewLimit" value="<%=AlmanachSettings.getNbOccurrenceLimitOfNextEventView()%>"/>
 
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
-<c:set var="canCreateEvent" value="${highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
-
-<fmt:message key="GML.print" var="printLabel" bundle="${calendarBundle}"/>
-<fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
-<fmt:message key="almanach.exportToIcal" var="exportEventLabel"/>
-<fmt:message key="almanach.menu.item.calendar.see.mine" var="viewMyCalendarLabel" bundle="${calendarBundle}"/>
+<fmt:message var="noEventLabel" key="calendar.label.event.none" bundle="${calendarBundle}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.almanachcalendar">
@@ -64,37 +55,13 @@
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>
 </head>
-<body ng-controller="calendarController">
-<view:operationPane>
-  <view:operation action="javascript:print()" altText="${printLabel}"/>
-  <c:if test="${canCreateEvent}">
-    <view:operationSeparator/>
-    <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
-    <c:url var="opIcon" value="${opIcon}"/>
-    <view:operationOfCreation action="angularjs:newEvent()"
-                              altText="${addEventLabel}" icon="${opIcon}"/>
-  </c:if>
-  <view:operationSeparator/>
-  <view:operation action="${mainCalendar.getURI()}/export/ical"
-                  altText="${exportEventLabel}"/>
-  <view:operationSeparator/>
-  <view:operation action="angularjs:viewMyCalendar()"
-                  altText="${viewMyCalendarLabel}"/>
-</view:operationPane>
-<input type="text" ng-disabled="true" style="display: none;" class="user-ids"
-       ng-model="participationIds"
-       ng-list>
-<view:window>
-  <view:frame>
-    <view:areaOfOperationOfCreation/>
-    <silverpeas-calendar participation-user-ids="participationIds"
-                         on-day-click="${canCreateEvent ? 'newEvent(startMoment)' : ''}"
-                         on-event-occurrence-view="viewEventOccurrence(occurrence)"
-                         on-event-occurrence-modify="editEventOccurrence(occurrence)">
-    </silverpeas-calendar>
-  </view:frame>
-</view:window>
-
+<body class="portlet" ng-controller="portletController">
+<silverpeas-calendar-event-occurrence-list
+    ng-if="occurrences"
+    no-occurrence-label="${noEventLabel}"
+    occurrences="occurrences"
+    on-event-occurrence-click="viewEventOccurrence(occurrence)">
+</silverpeas-calendar-event-occurrence-list>
 <script type="text/javascript">
   almanachCalendar.value('context', {
     currentUserId : '${currentUserId}',
@@ -102,7 +69,7 @@
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
     userRole : '${highestUserRole}',
-    zoneId : '${timeWindowViewContext.zoneId.toString()}',
+    zoneId : '${zoneId.toString()}',
     limit : ${nextEventViewLimit}
   });
 </script>

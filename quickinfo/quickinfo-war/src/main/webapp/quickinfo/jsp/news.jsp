@@ -160,7 +160,7 @@ function onDelete(id) {
 
     <c:url var="permalink" value="/Publication/${news.publicationId}"/>
     <fmt:message var="permalinkHelp" key="quickinfo.news.permalink"/>
-    <viewTags:displayPermalinkInfo permalink="${permalink}" permalinkHelp="${permalinkHelp}"/>
+    <viewTags:displayPermalinkInfo link="${permalink}" help="${permalinkHelp}"/>
 	</div>
 
   <%-- Attachments --%>

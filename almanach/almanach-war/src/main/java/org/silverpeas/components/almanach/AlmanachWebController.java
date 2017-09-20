@@ -99,6 +99,17 @@ public class AlmanachWebController
   }
 
   /**
+   * Prepares the rendering of the home page.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("portlet")
+  @RedirectToInternalJsp("almanachPortlet.jsp")
+  public void portlet(AlmanachWebRequestContext context) {
+    // Nothing to do
+  }
+
+  /**
    * Asks for purposing a new event. It renders an HTML page to input the content of a new
    * event.
    * @param context the context of the incoming request.

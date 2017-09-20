@@ -56,7 +56,7 @@ public class NewsManualUserNotification extends AbstractNewsUserNotification {
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notification";
   }
 

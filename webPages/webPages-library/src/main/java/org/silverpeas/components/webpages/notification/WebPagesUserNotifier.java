@@ -74,7 +74,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    * @param resource
    */
   public WebPagesUserNotifier(final NodePK resource, final String userId) {
-    super(resource, "notificationUpdateContent");
+    super(resource);
     this.userId = userId;
   }
 
@@ -159,6 +159,11 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   @Override
   protected String getTemplatePath() {
     return "webpages";
+  }
+
+  @Override
+  protected String getTemplateFileName() {
+    return "notificationUpdateContent";
   }
 
   @Override

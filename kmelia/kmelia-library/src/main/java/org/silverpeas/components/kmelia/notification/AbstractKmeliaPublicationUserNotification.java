@@ -50,7 +50,7 @@ public abstract class AbstractKmeliaPublicationUserNotification
 
   protected AbstractKmeliaPublicationUserNotification(final NodePK nodePK,
       final PublicationDetail resource, final NotifAction action, final String senderName) {
-    super(resource, null, null);
+    super(resource);
     this.nodePK = nodePK;
     this.action = action;
     this.senderName = senderName;

@@ -37,7 +37,7 @@ public abstract class AbstractSuggestionActionUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }
