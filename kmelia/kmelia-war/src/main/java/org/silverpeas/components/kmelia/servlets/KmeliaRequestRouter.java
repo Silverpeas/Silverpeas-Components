@@ -24,7 +24,6 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.SearchContext;
@@ -49,6 +48,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -85,6 +85,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
@@ -93,7 +94,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -893,13 +893,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String flag = kmelia.getProfile();
 
         NodeDetail topic = kmelia.getSubTopicDetail(subTopicId);
-
-        request.setAttribute("SpaceId", kmelia.getSpaceId());
-        request.setAttribute("SpaceName",
-            URLEncoder.encode(kmelia.getSpaceLabel(), CharEncoding.UTF_8));
-        request.setAttribute("ComponentId", kmelia.getComponentId());
-        request.setAttribute("ComponentName",
-            URLEncoder.encode(kmelia.getComponentLabel(), CharEncoding.UTF_8));
         String browseInfo = kmelia.getSessionPathString();
         if (browseInfo != null && !browseInfo.contains(topic.getName())) {
           browseInfo += topic.getName();
@@ -909,15 +902,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           browseInfo += " > " + kmelia.getString("TopicWysiwyg");
         }
-        request.setAttribute("BrowseInfo", browseInfo);
-        request.setAttribute("ObjectId", "Node_" + subTopicId);
-        request.setAttribute("Language", kmelia.getLanguage());
-        request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
-        request.setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
-            URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
-            "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId +
-            "&Profile=" + flag);
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
+
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(kmelia)
+                .withBrowseInfo(browseInfo)
+                .withContributionId(
+                    ContributionIdentifier.from(kmelia.getComponentId(), "Node_" + subTopicId))
+                .withContentLanguage(kmelia.getCurrentLanguage())
+                .withComeBackUrl(URLUtil.getApplicationURL() +
+                    URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
+                    "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId +
+                    "&Profile=" + flag);
+
+        destination = routing.getWysiwygEditorPath(context, request);
       } else if (function.equals("FromTopicWysiwyg")) {
         String subTopicId = request.getParameter("ChildId");
 
@@ -1277,36 +1275,34 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
-        request.setAttribute("SpaceId", kmelia.getSpaceId());
-        request.setAttribute("SpaceName",
-            URLEncoder.encode(kmelia.getSpaceLabel(), CharEncoding.UTF_8));
-        request.setAttribute("ComponentId", kmelia.getComponentId());
-        request.setAttribute("ComponentName",
-            URLEncoder.encode(kmelia.getComponentLabel(), CharEncoding.UTF_8));
+
+        String browseInfo;
         if (kmaxMode) {
-          request.setAttribute("BrowseInfo", publication.getName());
+          browseInfo = publication.getName();
         } else {
-          String browseInfo = kmelia.getSessionPathString();
+          browseInfo = kmelia.getSessionPathString();
           if (StringUtil.isDefined(browseInfo)) {
             browseInfo += " > ";
           }
           browseInfo += publication.getName(kmelia.getCurrentLanguage());
-          request.setAttribute("BrowseInfo", browseInfo);
         }
-        request.setAttribute("ObjectId", publication.getId());
-        request.setAttribute("Language", kmelia.getLanguage());
-        request.setAttribute("ContentLanguage", checkLanguage(kmelia, publication));
-        request.setAttribute("ReturnUrl",
-            URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
-                publication.getId());
-        request.setAttribute("UserId", kmelia.getUserId());
-        request.setAttribute("IndexIt", "false");
 
         // Subscription management
         setupRequestForSubscriptionNotificationSending(request,
             highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(), publication);
 
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(kmelia)
+                .withBrowseInfo(browseInfo)
+                .withContributionId(
+                    ContributionIdentifier.from(kmelia.getComponentId(), publication.getId()))
+                .withContentLanguage(checkLanguage(kmelia, publication))
+                .withComeBackUrl(
+                    URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
+                        publication.getId())
+                .withIndexation(false);
+        destination = routing.getWysiwygEditorPath(context, request);
       } else if ("FromWysiwyg".equals(function)) {
         String id = request.getParameter("PubId");
 

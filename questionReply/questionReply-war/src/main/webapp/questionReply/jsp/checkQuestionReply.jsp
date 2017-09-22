@@ -82,6 +82,7 @@ if (scc == null)
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 String[] browseContext = (String[]) request.getAttribute("browseContext");
+String componentLabel = browseContext[1];
 String componentId = browseContext[3];
 pageContext.setAttribute("componentId", componentId);
 

@@ -23,26 +23,26 @@
  */
 package org.silverpeas.components.blog.servlets;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodeDetail;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.components.blog.control.BlogSessionController;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -355,19 +355,15 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         destination = getDestination("Main", blogSC, request);
       } else if ("UpdateFooter".equals(function)) {
         // mise à jour du pied de page
-        request.setAttribute("SpaceId", blogSC.getSpaceId());
-        request.setAttribute("SpaceName",
-            URLEncoder.encode(blogSC.getSpaceLabel(), CharEncoding.UTF_8));
-        request.setAttribute("ComponentId", blogSC.getComponentId());
-        request.setAttribute("ComponentName",
-            URLEncoder.encode(blogSC.getComponentLabel(), CharEncoding.UTF_8));
-        request.setAttribute("ObjectId", blogSC.getComponentId());
-        request.setAttribute("Language", blogSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
-            URLUtil.getURL("blog", "useless", blogSC.getComponentId()) + "Main");
-        request.setAttribute("UserId", blogSC.getUserId());
-        request.setAttribute("IndexIt", "false");
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(blogSC)
+                .withContributionId(
+                    ContributionIdentifier.from(blogSC.getComponentId(), blogSC.getComponentId()))
+                .withComeBackUrl(URLUtil.getApplicationURL() +
+                    URLUtil.getURL("blog", "useless", blogSC.getComponentId()) + "Main")
+                .withIndexation(false);
+        destination = routing.getWysiwygEditorPath(context, request);
       } else if ("DraftOutPost".equals(function)) {
         // sortir du mode brouillon
         String postId = request.getParameter("PostId");

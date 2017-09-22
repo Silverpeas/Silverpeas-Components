@@ -139,7 +139,7 @@
 		
 		$(document).ready(function() {
 			<view:wysiwyg replace="editor" language="${language}" width="90%" height="300" toolbar="blog"
-				spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=instanceId%>" componentName="<%=componentLabel%>" 
+				spaceLabel="<%=spaceLabel%>" componentId="<%=instanceId%>" componentLabel="<%=componentLabel%>"
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>" />
 		
 			<% if ("CreatePost".equals(action)) {

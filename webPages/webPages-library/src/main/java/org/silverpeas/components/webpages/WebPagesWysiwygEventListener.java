@@ -25,7 +25,8 @@ package org.silverpeas.components.webpages;
 
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -51,8 +52,8 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
   }
 
   private void notifyUsersAboutChange(WysiwygContent content) {
-    String userId = content.getAuthorId();
-    String componentId = content.getContributionId().getComponentInstanceId();
+    String userId = content.getAuthor().getId();
+    String componentId = content.getContribution().getContributionId().getComponentInstanceId();
 
     // If parameter useSubscription is used
     if ("yes".equals(
@@ -64,7 +65,8 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
   }
 
   private boolean isAboutWebPage(WysiwygContent content) {
-    return !content.getContributionId().getLocalId().startsWith("Node") &&
-        content.getContributionId().getComponentInstanceId().startsWith("webPages");
+    final Contribution contribution = content.getContribution();
+    return !contribution.getContributionId().getLocalId().startsWith("Node") &&
+        contribution.getContributionId().getComponentInstanceId().startsWith("webPages");
   }
 }

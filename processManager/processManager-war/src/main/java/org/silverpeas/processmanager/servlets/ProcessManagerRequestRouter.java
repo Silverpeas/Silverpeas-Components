@@ -23,43 +23,46 @@
  */
 package org.silverpeas.processmanager.servlets;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.workflow.api.model.AllowedAction;
-import org.silverpeas.core.workflow.api.model.AllowedActions;
-import org.silverpeas.core.workflow.api.model.Item;
-import org.silverpeas.core.workflow.api.model.QualifiedUsers;
-import org.silverpeas.core.workflow.api.model.State;
-import org.silverpeas.processmanager.LockVO;
-import org.silverpeas.processmanager.ProcessFilter;
-import org.silverpeas.processmanager.ProcessManagerException;
-import org.silverpeas.processmanager.ProcessManagerSessionController;
-import org.silverpeas.processmanager.StepVO;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.workflow.api.error.WorkflowError;
-import org.silverpeas.core.workflow.api.instance.HistoryStep;
-import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.instance.Question;
-import org.silverpeas.core.workflow.api.task.Task;
-import org.silverpeas.core.workflow.engine.model.ActionRefs;
-import org.silverpeas.core.workflow.engine.model.StateImpl;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.util.RoutingException;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
+import org.silverpeas.core.workflow.api.error.WorkflowError;
+import org.silverpeas.core.workflow.api.instance.HistoryStep;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.core.workflow.api.instance.Question;
+import org.silverpeas.core.workflow.api.model.AllowedAction;
+import org.silverpeas.core.workflow.api.model.AllowedActions;
+import org.silverpeas.core.workflow.api.model.Item;
+import org.silverpeas.core.workflow.api.model.QualifiedUsers;
+import org.silverpeas.core.workflow.api.model.State;
+import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.engine.model.ActionRefs;
+import org.silverpeas.core.workflow.engine.model.StateImpl;
+import org.silverpeas.processmanager.LockVO;
+import org.silverpeas.processmanager.ProcessFilter;
+import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerSessionController;
+import org.silverpeas.processmanager.StepVO;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -1035,29 +1038,22 @@ public class ProcessManagerRequestRouter
   private static FunctionHandler toWelcomeWysiwyg = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-
-      StringBuilder destination = new StringBuilder();
-
       try {
         String returnURL = URLEncoder.encode(
             URLUtil.getApplicationURL() + URLUtil.getURL(null, session.getComponentId()) +
                 "FromWysiwygWelcome", "UTF-8");
-        destination.append("/wysiwyg/jsp/htmlEditor.jsp?");
-        destination.append("SpaceName=")
-            .append(URLEncoder.encode(session.getSpaceLabel(), "UTF-8"));
-        destination.append("&ComponentId=").append(session.getComponentId());
-        destination.append("&ComponentName=")
-            .append(URLEncoder.encode(session.getComponentLabel(), "UTF-8"));
-        destination.append("&BrowseInfo=")
-            .append(session.getString("processManager.welcomeWysiwyg"));
-        destination.append("&Language=").append(session.getLanguage());
-        destination.append("&ObjectId=").append(session.getComponentId());
-        destination.append("&ReturnUrl=").append(returnURL);
-      } catch (UnsupportedEncodingException e) {
+
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(session)
+                .withContributionId(ContributionIdentifier.from(session.getComponentId(), session.getComponentId()))
+                .withBrowseInfo(session.getString("processManager.welcomeWysiwyg"))
+                .withComeBackUrl(returnURL);
+
+        return routing.getDestinationToWysiwygEditor(context);
+      } catch (RoutingException | UnsupportedEncodingException e) {
         throw new ProcessManagerException("processManager", "processManager.CANT_GO_TO_WYSIWYG", e);
       }
-
-      return destination.toString();
     }
   };
 
