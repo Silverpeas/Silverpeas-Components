@@ -29,11 +29,8 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -45,7 +42,8 @@ public class QuestionDetail implements SilverpeasContent {
   public static final String TYPE = "QuestionReply";
 
   private Question question;
-  private String silverObjectId; // added for PDC integration
+  // added for PDC integration
+  private String silverObjectId;
 
   /**
    * @param question
@@ -90,6 +88,7 @@ public class QuestionDetail implements SilverpeasContent {
           this.silverObjectId = String.valueOf(objectId);
         }
       } catch (ContentManagerException ex) {
+        SilverLogger.getLogger(this).silent(ex);
         this.silverObjectId = null;
       }
     }
@@ -107,10 +106,19 @@ public class QuestionDetail implements SilverpeasContent {
     try {
       creationDate = DateUtil.parse(question.getCreationDate());
     } catch (ParseException e) {
-      SilverTrace.error("questionReply", "QuestionDetail.getCreationDate", "Problem to parse date",
-          e);
+      SilverLogger.getLogger(this).error(e);
     }
     return creationDate;
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
   }
 
   @Override
@@ -127,20 +135,4 @@ public class QuestionDetail implements SilverpeasContent {
   public String getContributionType() {
     return TYPE;
   }
-
-  /**
-   * Is the specified user can access this question?
-   * <p/>
-   * A user can access a question if it has enough rights to access the QuestionReply instance in
-   * which is managed this question.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this question, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
-  }
-
 }

@@ -39,17 +39,22 @@
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="currentUserId" value="${currentUser.id}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<jsp:useBean id="componentId" type="java.lang.String"/>
 <c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
+<jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:set var="timeWindowViewContext" value="${requestScope.timeWindowViewContext}"/>
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.components.almanach.AlmanachTimeWindowViewContext"/>
 <c:set var="mainCalendar" value="${requestScope.mainCalendar}"/>
 <jsp:useBean id="mainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
 <c:set var="nextEventViewLimit" value="<%=AlmanachSettings.getNbOccurrenceLimitOfNextEventView()%>"/>
+<c:set var="isPdcUsed" value="<%=AlmanachSettings.isPdcUsed(componentId)%>"/>
 
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
 <c:set var="canCreateEvent" value="${highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
 
+<fmt:message key="GML.PDCParam" var="classifyLabel"/>
 <fmt:message key="GML.print" var="printLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
 <fmt:message key="almanach.exportToIcal" var="exportEventLabel"/>
@@ -69,6 +74,13 @@
   <view:operation action="javascript:print()" altText="${printLabel}"/>
   <c:if test="${canCreateEvent}">
     <view:operationSeparator/>
+    <c:if test='${isPdcUsed and highestUserRole.isGreaterThanOrEquals(adminRole)}'>
+      <silverpeas-pdc-classification-management api="pdcApi" instance-id="${componentId}"></silverpeas-pdc-classification-management>
+      <fmt:message key="almanach.icons.paramPdc" var="opIcon" bundle="${icons}"/>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operation action="angularjs:pdcApi.openClassificationSettings()"
+                      altText="${classifyLabel}" icon="${opIcon}"/>
+    </c:if>
     <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationOfCreation action="angularjs:newEvent()"

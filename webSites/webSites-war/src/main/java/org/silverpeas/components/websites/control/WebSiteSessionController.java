@@ -438,9 +438,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       }
       if (pdcClassif != null && !pdcClassif.isUndefined()) {
         List<PdcPosition> pdcPositions = pdcClassif.getPdcPositions();
-        String siteId = siteDetail.getId();
         PdcClassification classification =
-            aPdcClassificationOfContent(siteId, getComponentId()).withPositions(pdcPositions);
+            aPdcClassificationOfContent(siteDetail).withPositions(pdcPositions);
         classification.classifyContent(siteDetail);
       }
     }

@@ -35,7 +35,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
-import old.silverpeas.components.almanach.AlmanachContentManager;
+import org.silverpeas.components.almanach.AlmanachContentManager;
 import old.silverpeas.components.almanach.model.EventDAO;
 import old.silverpeas.components.almanach.model.EventDetail;
 import old.silverpeas.components.almanach.model.EventOccurrence;
@@ -606,7 +606,7 @@ public class DefaultAlmanachService implements AlmanachService {
     EventDetail detail;
     try {
       silverObjectId = almanachContentManager
-          .getSilverObjectId(eventPK.getId(), eventPK.getComponentName());
+          .getSilverContentId(eventPK.getId(), eventPK.getComponentName());
       if (silverObjectId == -1) {
         detail = getEventDetail(eventPK);
         silverObjectId = createSilverContent(null, detail, detail.getDelegatorId());
@@ -641,7 +641,7 @@ public class DefaultAlmanachService implements AlmanachService {
   private void deleteSilverContent(Connection con, EventPK eventPK) {
 
     try {
-      almanachContentManager.deleteSilverContent(con, eventPK);
+      almanachContentManager.deleteSilverContent(con, eventPK.getId(), eventPK.getComponentName());
     } catch (Exception e) {
       throw new AlmanachRuntimeException("DefaultAlmanachService.deleteSilverContent()",
           SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);

@@ -410,9 +410,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
    */
   private void classifyQuickInfo(PublicationDetail publi, List<PdcPosition> pdcPositions) {
     if (pdcPositions != null && !pdcPositions.isEmpty()) {
-      String qiId = publi.getPK().getId();
       PdcClassification classification =
-          aPdcClassificationOfContent(qiId, publi.getInstanceId()).withPositions(pdcPositions);
+          aPdcClassificationOfContent(publi).withPositions(pdcPositions);
       classification.classifyContent(publi);
     }
   }

@@ -43,6 +43,8 @@ import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+
 /**
  * @author sdevolder
  */
@@ -104,7 +106,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           WysiwygRouting routing = new WysiwygRouting();
           WysiwygRouting.WysiwygRoutingContext context =
               WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(webPagesSC)
-                  .withContributionId(ContributionIdentifier.from(webPagesSC.getComponentId(), webPagesSC.getComponentId()))
+                  .withContributionId(ContributionIdentifier.from(webPagesSC.getComponentId(), webPagesSC.getComponentId(), WYSIWYG))
                   .withComeBackUrl(URLUtil.getApplicationURL() + webPagesSC.getComponentUrl() + "Main")
                   .withIndexation(true);
 

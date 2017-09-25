@@ -924,10 +924,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
       if (qiClassification != null && !qiClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
-        String questionIdStr = Long.toString(questionId);
         PdcClassification classification =
-            aPdcClassificationOfContent(questionIdStr, questionDetail.getComponentInstanceId())
-                .withPositions(pdcPositions);
+            aPdcClassificationOfContent(questionDetail).withPositions(pdcPositions);
         classification.classifyContent(questionDetail);
       }
     }

@@ -21,20 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.components.almanach;
 
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.web.servlets.GoToContribution;
+import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
+
+import javax.inject.Named;
 
 /**
- * This servlet is still alive because of permalink already in use.
+ * @author silveryocha
  */
-public class GoToEvent extends GoToContribution {
-  private static final long serialVersionUID = -3086487345543160152L;
-
-  @Override
-  protected ContributionIdentifier getContributionIdentifier(final String objectId) {
-    return CalendarEvent.getById(objectId).getContributionId();
-  }
-}
+@Named
+public class AlmanachInstanceContributionManager
+    extends AbstractCalendarComponentInstanceContributionManager {}

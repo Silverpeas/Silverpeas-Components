@@ -36,9 +36,6 @@ import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -265,12 +262,22 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getComponentInstanceId(), getId());
+    return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
   }
 
   @Override
   public Date getCreationDate() {
     return getCreateDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getLastUpdateDate();
   }
 
   @Override
@@ -288,31 +295,11 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
     return false;
   }
 
-  /**
-   * Is the specified user can access this post?
-   * <p/>
-   * A user can access a post if it has enough rights to access the suggestion box instance in
-   * which is managed this suggestion.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this suggestion, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
-  }
-
   @Override
   public String toString() {
     return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
         + ", content=" + content + ", contentModified=" + contentModified + ", validation="
         + getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate="
         + getLastUpdateDate() + '}';
-  }
-
-  @Override
-  public String getSilverpeasContentId() {
-    return null;
   }
 }

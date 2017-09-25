@@ -25,7 +25,6 @@
 package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
@@ -78,7 +77,7 @@ import java.util.List;
         ":mandatory"),
     @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
 public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
-    Contribution, WithAttachment {
+    WithAttachment {
 
   public static final String CONTRIBUTION_TYPE = "News";
 
@@ -253,12 +252,22 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   @Override
   public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getComponentInstanceId(), getId());
+    return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
   }
 
   @Override
   public Date getCreationDate() {
     return getCreateDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getLastUpdateDate();
   }
 
   @Override
@@ -278,12 +287,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
    */
   public static String getResourceType() {
     return CONTRIBUTION_TYPE;
-  }
-
-  @Override
-  public boolean canBeAccessedBy(User user) {
-    return OrganizationControllerProvider.getOrganisationController()
-        .isComponentAvailable(getComponentInstanceId(), user.getId());
   }
 
   public void setImportant(boolean important) {

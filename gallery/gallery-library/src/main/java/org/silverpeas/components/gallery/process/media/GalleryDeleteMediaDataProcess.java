@@ -26,6 +26,7 @@ package org.silverpeas.components.gallery.process.media;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -77,11 +78,12 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
     removeXMLContentOfMedia(getMedia().getId(), context);
 
     // Supprimer les commentaires
+    final MediaPK mediaPK = getMedia().getMediaPK();
     CommentServiceProvider.getCommentService()
-        .deleteAllCommentsOnPublication(getMedia().getContributionType(), getMedia().getMediaPK());
+        .deleteAllCommentsOnPublication(getMedia().getContributionType(), mediaPK);
 
     // Supprime le silverObject correspond
-    getGalleryContentManager().deleteSilverContent(getMedia().getMediaPK());
+    getGalleryContentManager().deleteSilverContent(getMedia());
   }
 
   /**

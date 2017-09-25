@@ -207,7 +207,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     } else {
       List<PdcPosition> pdcPositions = classification.getPdcPositions();
       PdcClassification withClassification =
-          aPdcClassificationOfContent("unknown", getComponentId()).withPositions(pdcPositions);
+          aPdcClassificationOfContent(newPost).withPositions(pdcPositions);
       return getBlogService().createPost(newPost, withClassification);
     }
   }

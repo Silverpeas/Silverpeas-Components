@@ -118,7 +118,7 @@ function notifyPopup(context,compoId,users,groups)
     arrayLine.addArrayCellLink(quizzHeader.getTitle(),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz");
     arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     
-    Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
+    Date creationDate = quizzHeader.getCreationDate();
 	ArrayCellText arrayCellText5 = arrayLine.addArrayCellText(resources.getOutputDate(creationDate));
 	arrayCellText5.setCompareOn(creationDate);
 	

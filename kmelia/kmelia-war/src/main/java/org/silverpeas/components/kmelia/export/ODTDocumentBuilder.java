@@ -259,7 +259,7 @@ public class ODTDocumentBuilder {
         row.getCellByIndex(0).setStringValue(comment.getOwnerDetail().getDisplayedName());
         row.getCellByIndex(1).setStringValue(comment.getMessage());
         row.getCellByIndex(2).setStringValue(formatDate(comment.getCreationDate()));
-        row.getCellByIndex(3).setStringValue(formatDate(comment.getModificationDate()));
+        row.getCellByIndex(3).setStringValue(formatDate(comment.getLastModificationDate()));
       }
     }
   }

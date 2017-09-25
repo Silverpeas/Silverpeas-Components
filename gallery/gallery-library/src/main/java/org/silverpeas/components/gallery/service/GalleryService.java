@@ -69,6 +69,10 @@ public interface GalleryService extends ApplicationService<Media> {
 
   Media getMedia(MediaPK mediaPK, MediaCriteria.VISIBILITY visibility);
 
+  List<Media> getMedia(List<String> mediaIds, final String componentInstanceId);
+
+  List<Media> getMedia(List<String> mediaIds, final String componentInstanceId, MediaCriteria.VISIBILITY visibility);
+
   Collection<Photo> getAllPhotos(NodePK nodePK);
 
   Collection<Photo> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);

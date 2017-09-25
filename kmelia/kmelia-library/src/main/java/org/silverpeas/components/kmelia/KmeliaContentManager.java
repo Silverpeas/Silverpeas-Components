@@ -20,32 +20,33 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The kmelia implementation of ContentInterface.
  */
 @Singleton
-public class KmeliaContentManager implements ContentInterface, java.io.Serializable {
+public class KmeliaContentManager extends AbstractContentInterface implements Serializable {
   private static final long serialVersionUID = 3525407153404515235L;
+
+  private static final String CONTENT_ICON_FILE_NAME = "kmeliaSmall.gif";
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -53,87 +54,33 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   protected KmeliaContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   *
-   * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @return a List of SilverContent
-   */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer>  ids, String peasId, String userId) {
-    if (getContentManager() == null) {
-      return new ArrayList<>();
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
+  }
+
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    return Optional.ofNullable(
+        getPublicationService().getDetail(new PublicationPK(resourceId, componentInstanceId)));
+  }
+
+  @Override
+  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
+    final KmeliaAuthorization security = new KmeliaAuthorization();
+    final boolean checkRights = security.isRightsOnTopicsEnabled(componentInstanceId);
+
+    final List<PublicationPK> ids =
+        resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))
+            .collect(Collectors.toList());
+    Stream<PublicationDetail> publications = getPublicationService().getPublications(ids).stream();
+    if (checkRights) {
+      publications =
+          publications.filter(p -> security.isPublicationAvailable(p.getPK(), currentUserId));
     }
-
-    return getHeaders(makePKArray(ids, peasId), peasId, userId);
-  }
-
-  public int getSilverObjectId(String pubId, String peasId) {
-
-    try {
-      return getContentManager().getSilverContentId(pubId, peasId);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(
-          "KmeliaContentManager.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
-    }
-  }
-
-  /**
-   * add a new content. It is registered to contentManager service
-   *
-   * @param con a Connection
-   * @param pubDetail the content to register
-   * @param userId the creator of the content
-   * @return the unique silverObjectId which identified the new content
-   */
-  public int createSilverContent(Connection con, PublicationDetail pubDetail,
-      String userId) throws ContentManagerException {
-    SilverContentVisibility scv = new SilverContentVisibility(pubDetail
-        .getBeginDate(), pubDetail.getEndDate(), isVisible(pubDetail));
-    return getContentManager().addSilverContent(con, pubDetail.getPK().getId(),
-        pubDetail.getPK().getComponentName(), userId, scv);
-  }
-
-  /**
-   * update the visibility attributes of the content. Here, the type of content is a
-   * PublicationDetail
-   *
-   * @param pubDetail the content
-   */
-  public void updateSilverContentVisibility(PublicationDetail pubDetail)
-      throws ContentManagerException {
-    updateSilverContentVisibility(pubDetail, isVisible(pubDetail));
-  }
-
-  private void updateSilverContentVisibility(SilverContentVisibility scv,
-      PublicationDetail pubDetail, int silverContentId)
-      throws ContentManagerException {
-    if (silverContentId == -1) {
-      createSilverContent(null, pubDetail, pubDetail.getUpdaterId());
-    } else {
-      getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
-    }
-    ClassifyEngine.clearCache();
-  }
-
-  /**
-   * update the visibility attributes of the content. Here, the type of content is a
-   * PublicationDetail
-   *
-   * @param pubDetail the content
-   * @param isVisible
-   */
-  public void updateSilverContentVisibility(PublicationDetail pubDetail,
-      boolean isVisible) throws ContentManagerException {
-    int silverContentId = getContentManager().getSilverContentId(
-        pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
-    SilverContentVisibility scv = new SilverContentVisibility(pubDetail
-        .getBeginDate(), pubDetail.getEndDate(), isVisible);
-    updateSilverContentVisibility(scv, pubDetail, silverContentId);
+    return publications.collect(Collectors.toList());
   }
 
   /**
@@ -144,64 +91,19 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    */
   public void deleteSilverContent(Connection con, PublicationPK pubPK)
       throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(pubPK.getId(),
-        pubPK.getComponentName());
-    if (contentId != -1) {
-      getContentManager().removeSilverContent(con, contentId);
-    }
+    deleteSilverContent(con, pubPK.getId(), pubPK.getComponentName());
+  }
+
+  @Override
+  protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
+      final T contribution) {
+    final PublicationDetail pubDetail = (PublicationDetail) contribution;
+    return new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(),
+        isVisible(pubDetail));
   }
 
   private boolean isVisible(PublicationDetail pubDetail) {
     return PublicationDetail.VALID.equals(pubDetail.getStatus());
-  }
-
-  /**
-   * return a list of publicationPK according to a list of silverContentId
-   *
-   * @param idList a list of silverContentId
-   * @param peasId the id of the instance
-   * @return a list of publicationPK
-   */
-  private List<PublicationPK> makePKArray(List<Integer> idList, String peasId) {
-    List<PublicationPK> pks = new ArrayList<PublicationPK>();
-    // for each silverContentId, we get the corresponding publicationId
-    for (int contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        PublicationPK pubPK = new PublicationPK(id, peasId);
-        pks.add(pubPK);
-      } catch (ClassCastException | ContentManagerException e) {
-        // ignore unknown item
-        SilverLogger.getLogger(this).debug(e.getMessage(), e);
-      }
-    }
-    return pks;
-  }
-
-  /**
-   * return a list of silverContent according to a list of publicationPK
-   *
-   * @param ids a list of publicationPK
-   * @return a list of publicationDetail
-   */
-  private List<SilverContentInterface> getHeaders(List<PublicationPK> ids, String componentId,
-      String userId) {
-    List<SilverContentInterface> headers = new ArrayList<>();
-    KmeliaAuthorization security = new KmeliaAuthorization();
-    boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
-
-    Collection<PublicationDetail> publicationDetails = getPublicationService().getPublications(ids);
-    for (PublicationDetail pubDetail : publicationDetails) {
-      if (!checkRights || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
-        pubDetail.setIconUrl("kmeliaSmall.gif");
-        headers.add(pubDetail);
-      }
-    }
-    return headers;
-  }
-
-  private ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
   }
 
   private PublicationService getPublicationService() {

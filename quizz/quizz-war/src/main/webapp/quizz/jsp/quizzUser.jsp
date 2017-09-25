@@ -137,7 +137,7 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
     arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
     arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
-    Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
+    Date creationDate = quizzHeader.getCreationDate();
     ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(resources.getOutputDate(creationDate));
     arrayCellText3.setCompareOn(creationDate);
   }

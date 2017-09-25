@@ -126,11 +126,16 @@
           data="data">
       </silverpeas-calendar-event-form-attendees>
       <silverpeas-calendar-event-form-attachments
-          ng-if="!data.id"
+          ng-if="!data.occurrenceId"
           form-validation-priority="3"
           calendar-event-api="almanachCalendarEventApi"
           data="data">
       </silverpeas-calendar-event-form-attachments>
+      <silverpeas-calendar-event-form-pdc-classification
+          form-validation-priority="4"
+          calendar-event-api="almanachCalendarEventApi"
+          data="data">
+      </silverpeas-calendar-event-form-pdc-classification>
     </silverpeas-calendar-event-form>
   </view:frame>
 </view:window>

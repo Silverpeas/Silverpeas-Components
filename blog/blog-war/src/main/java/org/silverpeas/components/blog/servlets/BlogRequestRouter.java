@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
   private static final long serialVersionUID = 6711772954612207110L;
@@ -337,6 +339,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
           // traitement des commentaires
           request.setAttribute("PostId", id);
           destination = getDestination("ViewPost", blogSC, request);
+        } else if (StringUtil.isDefined(id)) {
+          // no type, so given id is surely a post id
+          request.setAttribute("PostId", id);
+          destination = getDestination("ViewPost", blogSC, request);
         } else {
           destination = getDestination("Main", blogSC, request);
         }
@@ -359,7 +365,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         WysiwygRouting.WysiwygRoutingContext context =
             WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(blogSC)
                 .withContributionId(
-                    ContributionIdentifier.from(blogSC.getComponentId(), blogSC.getComponentId()))
+                    ContributionIdentifier.from(blogSC.getComponentId(), blogSC.getComponentId(), WYSIWYG))
                 .withComeBackUrl(URLUtil.getApplicationURL() +
                     URLUtil.getURL("blog", "useless", blogSC.getComponentId()) + "Main")
                 .withIndexation(false);

@@ -207,6 +207,24 @@ public class DefaultGalleryService implements GalleryService {
   }
 
   @Override
+  public List<Media> getMedia(final List<String> mediaIds, final String componentInstanceId) {
+    return getMedia(mediaIds, componentInstanceId, MediaCriteria.VISIBILITY.BY_DEFAULT);
+  }
+
+  @Override
+  public List<Media> getMedia(final List<String> mediaIds, final String componentInstanceId,
+      final MediaCriteria.VISIBILITY visibility) {
+    try {
+      return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(componentInstanceId)
+          .identifierIsOneOf(mediaIds.toArray(new String[mediaIds.size()]))
+          .withVisibility(visibility));
+    } catch (final Exception e) {
+      throw new GalleryRuntimeException("DefaultGalleryService.getMedia()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    }
+  }
+
+  @Override
   public Collection<Media> getAllMedia(final String instanceId) {
     return getAllMedia(instanceId, MediaCriteria.VISIBILITY.BY_DEFAULT);
   }
@@ -588,7 +606,7 @@ public class DefaultGalleryService implements GalleryService {
 
     int silverObjectId;
     try {
-      silverObjectId = galleryContentManager.getSilverObjectId(mediaPK.getId(), mediaPK
+      silverObjectId = galleryContentManager.getSilverContentId(mediaPK.getId(), mediaPK
           .getInstanceId());
 
       if (silverObjectId == -1) {

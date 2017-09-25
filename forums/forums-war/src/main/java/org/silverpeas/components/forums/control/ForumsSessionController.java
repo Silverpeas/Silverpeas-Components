@@ -876,13 +876,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @param forumPK the current ForumDetail
    */
   private void classifyContent(ForumPK forumPK) {
-    List<PdcPosition> positions = this.getPositions();
-    if (positions != null && !positions.isEmpty()) {
+    List<PdcPosition> pdcPositions = this.getPositions();
+    if (pdcPositions != null && !pdcPositions.isEmpty()) {
       ForumDetail forumDetail = getForumsService().getForumDetail(forumPK);
-      String forumId = forumDetail.getPK().getId();
       PdcClassification classification =
-          aPdcClassificationOfContent(forumId, forumDetail.getInstanceId())
-              .withPositions(this.getPositions());
+          aPdcClassificationOfContent(forumDetail).withPositions(this.getPositions());
       classification.classifyContent(forumDetail);
     }
   }

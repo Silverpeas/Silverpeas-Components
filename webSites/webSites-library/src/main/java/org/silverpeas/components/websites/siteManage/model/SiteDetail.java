@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.websites.siteManage.model;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+
+import java.text.ParseException;
+import java.util.Date;
 
 public class SiteDetail extends PublicationDetail {
   private static final long serialVersionUID = 1435448496246944796L;
@@ -157,11 +157,6 @@ public class SiteDetail extends PublicationDetail {
 
   public void setPopup(int popup) {
     this.popup = popup;
-  }
-
-  @Override
-  public String getComponentInstanceId() {
-    return this.getInstanceId();
   }
 
   @Override

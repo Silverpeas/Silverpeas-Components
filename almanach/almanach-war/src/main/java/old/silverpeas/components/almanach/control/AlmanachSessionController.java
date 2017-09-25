@@ -368,8 +368,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     PdcClassification withClassification = NONE_CLASSIFICATION;
     if (!classification.isUndefined()) {
       List<PdcPosition> pdcPositions = classification.getPdcPositions();
-      withClassification = aPdcClassificationOfContent(eventDetail.getId(), eventDetail.
-          getInstanceId()).withPositions(pdcPositions);
+      withClassification = aPdcClassificationOfContent(eventDetail).withPositions(pdcPositions);
     }
     // Add the event
     String eventId = getAlmanachService().addEvent(eventDetail, uploadedFiles, withClassification);

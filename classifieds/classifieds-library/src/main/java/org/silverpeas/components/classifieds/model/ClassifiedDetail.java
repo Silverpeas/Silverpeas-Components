@@ -26,9 +26,6 @@ package org.silverpeas.components.classifieds.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -184,6 +181,11 @@ public class ClassifiedDetail implements SilverpeasContent {
     this.validatorName = validatorName;
   }
 
+  @Override
+  public Date getLastModificationDate() {
+    return getUpdateDate();
+  }
+
   public Date getUpdateDate() {
     return updateDate;
   }
@@ -195,6 +197,11 @@ public class ClassifiedDetail implements SilverpeasContent {
   @Override
   public User getCreator() {
     return User.getById(creatorId);
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getCreator();
   }
 
   @Override
@@ -213,31 +220,11 @@ public class ClassifiedDetail implements SilverpeasContent {
   }
 
   /**
-   * Is the specified user can access this classified?
-   * <p/>
-   * A user can access a classified if it has enough rights to access the Classified instance in
-   * which is managed this classified.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this classified, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
-  }
-
-  /**
    * The type of this resource
    * @return the same value returned by getContributionType()
    */
   public static String getResourceType() {
     return TYPE;
-  }
-
-  @Override
-  public String getSilverpeasContentId() {
-    return "";
   }
 
   public String getSearchValueId1() {

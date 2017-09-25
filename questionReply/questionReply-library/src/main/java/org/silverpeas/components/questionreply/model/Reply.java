@@ -25,14 +25,14 @@ package org.silverpeas.components.questionreply.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -102,6 +102,16 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
     }
   }
 
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
+  }
+
   public String getCreationDateAsString() {
     return creationDate;
   }
@@ -123,11 +133,15 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
   }
 
   public void setCreationDate() {
-    this.creationDate = DateUtil.date2SQLDate(new Date());
+    setCreationDate(new Date());
   }
 
   public void setCreationDate(String creationDate) {
     this.creationDate = creationDate;
+  }
+
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = DateUtil.date2SQLDate(creationDate);
   }
 
   public void setTitle(String title) {

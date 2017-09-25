@@ -353,6 +353,9 @@ public class QuestionReplyRequestRouter
           request.setAttribute("QuestionId", Long.toString(questionId));
           destination = getDestination("Main", scc, request);
         } else {
+          if (StringUtil.isDefined(id)) {
+            request.setAttribute("QuestionId", id);
+          }
           destination = getDestination("Main", scc, request);
         }
       } else if ("Export".equals(function)) {

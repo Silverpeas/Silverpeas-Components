@@ -179,12 +179,12 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
-        if ("Forum".equalsIgnoreCase(type)) {
-          destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
-              "viewForum.jsp?call=main&forumId=" + id;
-        } else {
+        if ("Message".equalsIgnoreCase(type)) {
           destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
               "viewMessage.jsp?action=1&params=" + id;
+        } else {
+          destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
+              "viewForum.jsp?call=main&forumId=" + id;
         }
       } else {
         destination = ROOT_DEST + function;

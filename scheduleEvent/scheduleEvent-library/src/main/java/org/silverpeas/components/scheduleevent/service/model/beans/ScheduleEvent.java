@@ -110,6 +110,16 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   }
 
   @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
+  }
+
+  @Override
   public int getAuthor() {
     return author;
   }
@@ -147,12 +157,6 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   @Override
   public String getComponentInstanceId() {
     return ScheduleEventConstant.TOOL_ID;
-  }
-
-  @Override
-  public String getSilverpeasContentId() {
-    // Currently, it is not used
-    return null;
   }
 
   @Override

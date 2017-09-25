@@ -275,7 +275,7 @@ public class InfoLetterDataManager implements InfoLetterService {
   public int getSilverObjectId(String pubId, String componentId) {
 
     try {
-      int silverObjectId = infoLetterContentManager.getSilverObjectId(pubId, componentId);
+      int silverObjectId = infoLetterContentManager.getSilverContentId(pubId, componentId);
       if (silverObjectId == -1) {
         IdPK publiPK = new IdPK();
         publiPK.setId(pubId);

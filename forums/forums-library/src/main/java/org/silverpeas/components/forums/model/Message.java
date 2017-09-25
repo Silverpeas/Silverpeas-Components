@@ -93,7 +93,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
 
   @Override
   public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getInstanceId(), getIdAsString());
+    return ContributionIdentifier.from(getInstanceId(), getIdAsString(), getContributionType());
   }
 
   @Override
@@ -103,6 +103,16 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
 
   @Override
   public Date getCreationDate() {
+    return getDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
     return getDate();
   }
 

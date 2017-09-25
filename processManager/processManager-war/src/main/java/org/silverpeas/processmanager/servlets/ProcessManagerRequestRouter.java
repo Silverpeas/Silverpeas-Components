@@ -76,6 +76,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
 
@@ -1046,7 +1048,7 @@ public class ProcessManagerRequestRouter
         WysiwygRouting routing = new WysiwygRouting();
         WysiwygRouting.WysiwygRoutingContext context =
             WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(session)
-                .withContributionId(ContributionIdentifier.from(session.getComponentId(), session.getComponentId()))
+                .withContributionId(ContributionIdentifier.from(session.getComponentId(), session.getComponentId(), WYSIWYG))
                 .withBrowseInfo(session.getString("processManager.welcomeWysiwyg"))
                 .withComeBackUrl(returnURL);
 

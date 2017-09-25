@@ -590,7 +590,7 @@ public class DefaultWebSiteService implements WebSiteService {
       String pubPk = createPublication(componentId, description);
       // register the new publication as a new content to content manager
       // connection usefull for content service
-      createSilverContent(con, description, currentUser.getId(), null, componentId);
+      createSilverContent(con, description, currentUser.getId());
       return pubPk;
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.createWebSite()",
@@ -620,7 +620,7 @@ public class DefaultWebSiteService implements WebSiteService {
       // register the new publication as a new content to content manager
       for (String siteId : liste) {
         SiteDetail siteDetail = getWebSite(componentId, siteId);
-        updateSilverContentVisibility(siteDetail, componentId);
+        updateSilverContentVisibility(siteDetail);
       }
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.publish()", SilverpeasRuntimeException.ERROR,
@@ -639,7 +639,7 @@ public class DefaultWebSiteService implements WebSiteService {
       // register the new publication as a new content to content manager
       for (String siteId : liste) {
         SiteDetail siteDetail = getWebSite(componentId, siteId);
-        updateSilverContentVisibility(siteDetail, componentId);
+        updateSilverContentVisibility(siteDetail);
       }
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.dePublish()",
@@ -660,7 +660,7 @@ public class DefaultWebSiteService implements WebSiteService {
         SitePK sitePK = new SitePK(siteId, componentId);
 
 
-        deleteSilverContent(con, sitePK, componentId);
+        deleteSilverContent(con, sitePK);
       }
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.deleteWebSites()",
@@ -710,10 +710,10 @@ public class DefaultWebSiteService implements WebSiteService {
 
     int silverObjectId;
     try {
-      silverObjectId = getWebSitesContentManager().getSilverObjectId(id, componentId);
+      silverObjectId = getWebSitesContentManager().getSilverContentId(id, componentId);
       if (silverObjectId == -1) {
         SiteDetail siteDetail = getWebSite(componentId, id);
-        silverObjectId = createSilverContent(null, siteDetail, "-1", null, componentId);
+        silverObjectId = createSilverContent(null, siteDetail, "-1");
       }
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.getSilverObjectId()",
@@ -722,12 +722,10 @@ public class DefaultWebSiteService implements WebSiteService {
     return silverObjectId;
   }
 
-  private int createSilverContent(Connection con, SiteDetail siteDetail, String creator,
-      String prefixTableName, String componentId) {
+  private int createSilverContent(Connection con, SiteDetail siteDetail, String creator) {
 
     try {
-      return getWebSitesContentManager()
-          .createSilverContent(con, siteDetail, creator, prefixTableName, componentId);
+      return getWebSitesContentManager().createSilverContent(con, siteDetail, creator);
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -737,12 +735,10 @@ public class DefaultWebSiteService implements WebSiteService {
   /**
    * @param con
    * @param sitePK
-   * @param componentId
    */
-  private void deleteSilverContent(Connection con, SitePK sitePK, String componentId) {
-
+  private void deleteSilverContent(Connection con, SitePK sitePK) {
     try {
-      getWebSitesContentManager().deleteSilverContent(con, sitePK, null, componentId);
+      getWebSitesContentManager().deleteSilverContent(con, sitePK);
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.deleteSilverContent()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
@@ -751,11 +747,11 @@ public class DefaultWebSiteService implements WebSiteService {
 
   /**
    * @param siteDetail
-   * @param componentId
+   *
    */
-  private void updateSilverContentVisibility(SiteDetail siteDetail, String componentId) {
+  private void updateSilverContentVisibility(SiteDetail siteDetail) {
     try {
-      getWebSitesContentManager().updateSilverContentVisibility(siteDetail, null, componentId);
+      getWebSitesContentManager().updateSilverContentVisibility(siteDetail);
     } catch (Exception e) {
       throw new WebSitesRuntimeException("DefaultWebSiteService.updateSilverContent()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);

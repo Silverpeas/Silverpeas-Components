@@ -31,15 +31,15 @@ import javax.persistence.Transient;
 import java.util.Date;
 
 public class FormInstance implements SilverpeasContent {
-  public final static int STATE_UNREAD = 1;
-  public final static int STATE_READ = 2;
-  public final static int STATE_VALIDATED = 3;
-  public final static int STATE_REFUSED = 4;
-  public final static int STATE_ARCHIVED = 5;
+  public static final int STATE_UNREAD = 1;
+  public static final int STATE_READ = 2;
+  public static final int STATE_VALIDATED = 3;
+  public static final int STATE_REFUSED = 4;
+  public static final int STATE_ARCHIVED = 5;
 
   private String id;
-  private int formId = -1;;
-  private int state = -1;;
+  private int formId = -1;
+  private int state = -1;
   private String creatorId = null;
   private Date creationDate = new Date();
   private String validatorId = null;
@@ -68,11 +68,6 @@ public class FormInstance implements SilverpeasContent {
   @Override
   public String getComponentInstanceId() {
     return instanceId;
-  }
-
-  @Override
-  public String getSilverpeasContentId() {
-    return "";
   }
 
   /**
@@ -127,8 +122,14 @@ public class FormInstance implements SilverpeasContent {
   /**
    * @return the creationDate
    */
+  @Override
   public Date getCreationDate() {
     return creationDate != null ? new Date(creationDate.getTime()) : creationDate;
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getValidationDate() != null ? getValidationDate() : getCreationDate();
   }
 
   @Override
@@ -155,7 +156,7 @@ public class FormInstance implements SilverpeasContent {
    * @param creationDate the creationDate to set
    */
   public void setCreationDate(Date creationDate) {
-    this.creationDate = (creationDate != null ? new Date(creationDate.getTime()) : creationDate);
+    this.creationDate = creationDate != null ? new Date(creationDate.getTime()) : null;
   }
 
   /**
@@ -176,15 +177,14 @@ public class FormInstance implements SilverpeasContent {
    * @return the validationDate
    */
   public Date getValidationDate() {
-    return validationDate != null ? new Date(validationDate.getTime()) : validationDate;
+    return validationDate != null ? new Date(validationDate.getTime()) : null;
   }
 
   /**
    * @param validationDate the validationDate to set
    */
   public void setValidationDate(Date validationDate) {
-    this.validationDate =
-        (validationDate != null ? new Date(validationDate.getTime()) : validationDate);
+    this.validationDate = validationDate != null ? new Date(validationDate.getTime()) : null;
   }
 
   /**
@@ -236,8 +236,14 @@ public class FormInstance implements SilverpeasContent {
     return !isValidated() && !isDenied() && !isArchived();
   }
 
+  @Override
   public User getCreator() {
     return User.getById(getCreatorId());
+  }
+
+  @Override
+  public User getLastModifier() {
+    return validatorId != null ? getValidator() : getCreator();
   }
 
   public User getValidator() {

@@ -112,6 +112,8 @@
         </silverpeas-calendar-event-view-attachment>
         <silverpeas-calendar-event-view-crud
             calendar-event-occurrence="ceo"></silverpeas-calendar-event-view-crud>
+        <silverpeas-calendar-event-view-pdc-classification
+            calendar-event-occurrence="ceo"></silverpeas-calendar-event-view-pdc-classification>
       </pane-extra>
     </silverpeas-calendar-event-view>
   </view:frame>

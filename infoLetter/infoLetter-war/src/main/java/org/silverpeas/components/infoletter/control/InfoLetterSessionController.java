@@ -216,8 +216,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       }
       if (ilClassification != null && !ilClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = ilClassification.getPdcPositions();
-        String ilpId = ilp.getPK().getId();
-        PdcClassification classification = aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).
+        PdcClassification classification = aPdcClassificationOfContent(ilp).
             withPositions(pdcPositions);
         classification.classifyContent(ilp);
       }

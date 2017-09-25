@@ -24,11 +24,8 @@
 
 package org.silverpeas.components.quizz;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
@@ -36,16 +33,17 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * The quizz implementation of ContentInterface.
  */
 @Singleton
-public class QuizzContentManager implements ContentInterface {
+public class QuizzContentManager  extends AbstractContentInterface {
 
-  @Inject
-  private ContentManager contentManager;
+  private static final String CONTENT_ICON_FILE_NAME = "quizzSmall.gif";
+
   @Inject
   private QuestionContainerService questionContainerService;
 
@@ -56,29 +54,24 @@ public class QuizzContentManager implements ContentInterface {
   }
 
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String instanceId,
-      String userId) {
-    return getHeaders(ContentManagerProvider.getContentManager().getResourcesMatchingContents(ids),
-        instanceId);
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
   }
 
-  /**
-   * return a list of silverContent according to a list of publicationPK
-   * @param ids a list of publicationPK
-   * @return a list of publicationDetail
-   */
-  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
-    List<QuestionContainerPK> pks = ids.stream()
-        .map(id -> new QuestionContainerPK(id, "useles", instanceId))
-        .collect(Collectors.toList());
-    ArrayList<QuestionContainerHeader> questionHeaders =
-        new ArrayList<>(getQuestionContainerService().getQuestionContainerHeaders(pks));
-    List<SilverContentInterface> headers = new ArrayList<>(questionHeaders.size());
-    for (QuestionContainerHeader questionContainerHeader : questionHeaders) {
-      questionContainerHeader.setIconUrl("quizzSmall.gif");
-      headers.add(questionContainerHeader);
-    }
-    return headers;
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    return Optional.ofNullable(getQuestionContainerService().getQuestionContainerHeader(
+        new QuestionContainerPK(resourceId, "useless", componentInstanceId)));
+  }
+
+  @Override
+  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
+    List<QuestionContainerPK> pks =
+        resourceIds.stream().map(id -> new QuestionContainerPK(id, "useless", componentInstanceId))
+            .collect(Collectors.toList());
+    return new ArrayList<>(getQuestionContainerService().getQuestionContainerHeaders(pks));
   }
 
   private QuestionContainerService getQuestionContainerService() {

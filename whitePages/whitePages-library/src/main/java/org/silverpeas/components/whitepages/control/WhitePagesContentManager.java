@@ -25,27 +25,27 @@ package org.silverpeas.components.whitepages.control;
 
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The whitePages implementation of ContentInterface.
  */
 @Singleton
-public class WhitePagesContentManager implements ContentInterface {
+public class WhitePagesContentManager extends AbstractContentInterface {
+
+  private static final String CONTENT_ICON_FILE_NAME = "whitePagesSmall.gif";
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -53,30 +53,32 @@ public class WhitePagesContentManager implements ContentInterface {
   protected WhitePagesContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given SilverContentId
-   */
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId) {
-    return getHeaders(getContentManager().getResourcesMatchingContents(ids), peasId);
+  @Override
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
   }
 
-  @SuppressWarnings("unchecked")
-  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
-    ArrayList<CardHeader> headers = new ArrayList<>();
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    final List<? extends Contribution> contributions =
+        getAccessibleContributions(Collections.singletonList(resourceId), componentInstanceId,
+            null);
+    return contributions.isEmpty() ? Optional.empty() : Optional.of(contributions.get(0));
+  }
+
+  @Override
+  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
     try {
-      ArrayList<Card> cards = (ArrayList<Card>) CardManager.getInstance().getCardsByIds(ids);
-      for (Card card : cards) {
-        CardHeader header = new CardHeader(Long.parseLong(card.getPK().getId()), card, instanceId,
-            card.getCreationDate(), Integer.toString(card.getCreatorId()));
-        headers.add(header);
-      }
+      return CardManager.getInstance().getCardsByIds(resourceIds).stream().map(
+          c -> new CardHeader(Long.parseLong(c.getPK().getId()), c, componentInstanceId,
+              c.getCreationDate(), Integer.toString(c.getCreatorId())))
+          .collect(Collectors.toList());
     } catch (WhitePagesException e) {
-      // skip unknown and ill formed id.
-      SilverLogger.getLogger(this).debug(e.getMessage(), e);
+      SilverLogger.getLogger(this).error(e);
+      return Collections.emptyList();
     }
-    Collections.sort(headers);
-    return (List) headers;
   }
 
   /**
@@ -85,9 +87,8 @@ public class WhitePagesContentManager implements ContentInterface {
    * @param card the user card
    * @return the unique silverObjectId which identified the new content
    */
-  public int createSilverContent(Connection con, Card card) throws ContentManagerException {
+  int createSilverContent(Connection con, Card card) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
-
     return getContentManager()
         .addSilverContent(con, card.getPK().getId(), card.getInstanceId(), card.getUserId(), scv);
   }
@@ -97,14 +98,12 @@ public class WhitePagesContentManager implements ContentInterface {
    * PublicationDetail
    * @param card the user card
    */
-  public void updateSilverContentVisibility(Card card) throws ContentManagerException {
+  void updateSilverContentVisibility(Card card) throws ContentManagerException {
     int silverContentId = getContentManager()
         .getSilverContentId(card.getPK().getId(), card.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
-
     getContentManager()
         .updateSilverContentVisibilityAttributes(scv, silverContentId);
-    ClassifyEngine.clearCache();
   }
 
   /**
@@ -112,18 +111,11 @@ public class WhitePagesContentManager implements ContentInterface {
    * @param con a Connection
    * @param pk the expert identifier to unregister
    */
-  public void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(pk.getId(), pk.getComponentName());
-
-    getContentManager().removeSilverContent(con, contentId);
+  void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
+    deleteSilverContent(con, pk.getId(), pk.getComponentName());
   }
 
   private boolean isVisible(Card card) {
     return card.getHideStatus() == 0;
   }
-
-  private ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
-  }
-
 }

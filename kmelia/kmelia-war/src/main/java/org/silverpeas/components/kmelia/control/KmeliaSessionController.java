@@ -880,8 +880,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       } else {
         List<PdcPosition> pdcPositions = classification.getPdcPositions();
         PdcClassification withClassification =
-            aPdcClassificationOfContent(pubDetail.getId(), pubDetail.getComponentInstanceId())
-                .withPositions(pdcPositions);
+            aPdcClassificationOfContent(pubDetail).withPositions(pdcPositions);
         result = getKmeliaBm()
             .createPublicationIntoTopic(pubDetail, getCurrentFolderPK(), withClassification);
       }

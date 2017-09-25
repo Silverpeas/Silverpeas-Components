@@ -26,9 +26,6 @@ package org.silverpeas.components.whitepages.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -82,6 +79,16 @@ public class SilverCard implements SilverpeasContent {
   }
 
   @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
+  }
+
+  @Override
   public String getTitle() {
     return null;
   }
@@ -94,20 +101,5 @@ public class SilverCard implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return null;
-  }
-
-  /**
-   * Is the specified user can access this card?
-   * <p/>
-   * A user can access a card if it has enough rights to access the WhitePages instance in
-   * which is managed this card.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this card, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

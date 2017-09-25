@@ -23,18 +23,17 @@
  */
 package org.silverpeas.components.gallery.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.components.gallery.constant.MediaMimeType;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.util.DateUtil;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-
-import org.silverpeas.components.gallery.constant.MediaMimeType;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.date.period.Period;
-
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.util.DateUtil;
 
 /**
  * @deprecated
@@ -425,5 +424,15 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
 
   public String getThumbnailUrl(final String formatPrefix) {
     return null;
+  }
+
+  @Override
+  public User getCreator() {
+    return photo.getCreator();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return photo.getLastModifier();
   }
 }

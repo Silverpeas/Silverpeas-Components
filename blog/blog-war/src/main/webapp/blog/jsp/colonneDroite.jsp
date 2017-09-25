@@ -134,3 +134,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	   <div class="separateur"><hr /></div>
 	   <a href="<%=m_context+rssURL%>"><img src="<%=m_context+"/util/icons/rss.gif" %>" border="0" alt="rss"/></a>
 	<% } %>
+<c:if test="${post != null}">
+  <view:pdcClassificationPreview componentId="${post.componentInstanceId}" contentId="${post.id}" />
+</c:if>
+

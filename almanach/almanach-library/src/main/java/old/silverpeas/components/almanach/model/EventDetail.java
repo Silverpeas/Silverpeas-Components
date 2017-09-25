@@ -31,22 +31,16 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
-import old.silverpeas.components.almanach.AlmanachContentManager;
 import old.silverpeas.components.almanach.service.AlmanachRuntimeException;
 import old.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.components.almanach.AlmanachContentManager;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.AbstractBean;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -62,7 +56,7 @@ import java.util.Date;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class EventDetail extends AbstractBean
-    implements LocalizedContribution, SilverContentInterface, Serializable, SilverpeasContent {
+    implements LocalizedContribution, SilverContentInterface, Serializable {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static SettingBundle almanachSettings =
@@ -393,23 +387,13 @@ public class EventDetail extends AbstractBean
   }
 
   @Override
-  public String getComponentInstanceId() {
-    return getInstanceId();
-  }
-
-  @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      try {
-        AlmanachContentManager contentManager =
-            ServiceProvider.getService(AlmanachContentManager.class);
-        int objectId = contentManager.getSilverObjectId(getId(), getInstanceId());
-        if (objectId >= 0) {
-          this.silverObjectId = String.valueOf(objectId);
-        }
-      } catch (ContentManagerException e) {
-        SilverLogger.getLogger(this).debug(e.getMessage(), e);
-        this.silverObjectId = null;
+      AlmanachContentManager contentManager =
+          ServiceProvider.getService(AlmanachContentManager.class);
+      int objectId = contentManager.getSilverContentId(getId(), getInstanceId());
+      if (objectId >= 0) {
+        this.silverObjectId = String.valueOf(objectId);
       }
     }
     return this.silverObjectId;
@@ -421,12 +405,7 @@ public class EventDetail extends AbstractBean
 
   @Override
   public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getInstanceId(), getId());
-  }
-
-  @Override
-  public User getCreator() {
-    return User.getById(getCreatorId());
+    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
   }
 
   @Override
@@ -442,20 +421,5 @@ public class EventDetail extends AbstractBean
   @Override
   public boolean isIndexable() {
     return false;
-  }
-
-  /**
-   * Is the specified user can access this event?
-   * <p/>
-   * A user can access an event if it has enough rights to access the Almanach instance in
-   * which is managed this event.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this event, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }
