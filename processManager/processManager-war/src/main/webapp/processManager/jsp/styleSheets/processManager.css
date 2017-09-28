@@ -39,7 +39,10 @@
 	border-color:#CCC;
 }
 
-.processManager-main #filter,
+.processManager-main #filter {
+  margin: 1em 0;
+}
+
 .processManager-main #filter #filterForm .forms {
   margin: 1em;
 }

@@ -239,6 +239,15 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static FunctionHandler clearFilterHandler = new SessionSafeFunctionHandler() {
+    @Override
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
+      session.clearFilter();
+      return listProcessHandler.getDestination(function, session, request);
+    }
+  };
+
   /**
    * The attachmentManager handler
    */
@@ -904,51 +913,6 @@ public class ProcessManagerRequestRouter
     request.setAttribute("data", data);
   }
 
-  /**
-   * The printProcessFrameset handler
-   */
-  private static FunctionHandler printProcessFramesetHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) {
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/printProcessFrameset.jsp";
-    }
-  };
-
-  /**
-   * The printProcess handler
-   */
-  private static FunctionHandler printProcessHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      // Get the print form
-      Form form = session.getPrintForm();
-      request.setAttribute("form", form);
-
-      // Set the form context
-      PagesContext context = getFormContext("printForm", "0", session);
-      request.setAttribute("context", context);
-
-      // Get the form data
-      DataRecord data = session.getPrintRecord();
-      request.setAttribute("data", data);
-
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/printProcess.jsp";
-    }
-  };
-
-  /**
-   * The printButtons handler
-   */
-  private static FunctionHandler printButtonsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) {
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/printButtons.jsp";
-    }
-  };
-
   private static FunctionHandler toWelcomeWysiwyg = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -1000,6 +964,7 @@ public class ProcessManagerRequestRouter
     handlerMap.put("listSomeProcess", listSomeProcessHandler);
     handlerMap.put("changeRole", changeRoleHandler);
     handlerMap.put("filterProcess", filterProcessHandler);
+    handlerMap.put("clearFilter", clearFilterHandler);
     handlerMap.put("viewProcess", viewProcessHandler);
     handlerMap.put("removeLock", removeLockHandler);
     handlerMap.put("viewHistory", viewHistoryHandler);
@@ -1014,9 +979,6 @@ public class ProcessManagerRequestRouter
     handlerMap.put("cancelResponse", cancelResponseHandler);
     handlerMap.put("saveResponse", saveResponseHandler);
     handlerMap.put("listQuestions", listQuestionsHandler);
-    handlerMap.put("printProcessFrameset", printProcessFramesetHandler);
-    handlerMap.put("printProcess", printProcessHandler);
-    handlerMap.put("printButtons", printButtonsHandler);
     handlerMap.put("editUserSettings", editUserSettingsHandler);
     handlerMap.put("saveUserSettings", saveUserSettingsHandler);
     handlerMap.put("searchResult.jsp", searchResultHandler);

@@ -36,7 +36,6 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
-import org.silverpeas.core.contribution.content.form.form.HtmlForm;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
@@ -79,15 +78,7 @@ import org.silverpeas.processmanager.record.QuestionTemplate;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
@@ -1567,58 +1558,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the form defined to print
-   */
-  public Form getPrintForm() throws ProcessManagerException {
-    try {
-      org.silverpeas.core.workflow.api.model.Form form = processModel.getForm("printForm");
-      if (form == null) {
-        throw new ProcessManagerException("ProcessManagerSessionController",
-            "processManager.NO_PRINTFORM_DEFINED_IN_MODEL");
-      } else {
-        HtmlForm htmlForm = new HtmlForm(
-            processModel.getDataFolder().toRecordTemplate(currentRole, getLanguage(), true));
-
-        htmlForm.setFileName(form.getHTMLFileName());
-        return htmlForm;
-      }
-    } catch (Exception e) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.GET_PRINT_FORM_FAILED", e);
-    }
-  }
-
-  /**
-   * Returns the data of instance
-   */
-  public DataRecord getPrintRecord() throws ProcessManagerException {
-    try {
-      return currentProcessInstance.getAllDataRecord(currentRole, getLanguage());
-    } catch (WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.GET_PRINT_RECORD_FAILED", we);
-    }
-  }
-
-  /**
-   * Get the label of given action
-   * @param actionName action name
-   * @return action label
-   */
-  public String getActionLabel(String actionName) {
-    try {
-      Action action = processModel.getAction(actionName);
-      if (action == null) {
-        return actionName;
-      } else {
-        return action.getLabel(currentRole, getLanguage());
-      }
-    } catch (WorkflowException we) {
-      return actionName;
-    }
-  }
-
-  /**
    * Get the state with the given name
    * @param stateName state name
    * @return State object
@@ -1753,7 +1692,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Reset the current ProcessFilter.
    */
-  public void resetProcessFilter() throws ProcessManagerException {
+  private void resetProcessFilter() throws ProcessManagerException {
     ProcessFilter oldFilter = currentProcessFilter;
     currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage());
 
@@ -1761,6 +1700,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       currentProcessFilter.setCollapse(oldFilter.isCollapse());
       currentProcessFilter.copySharedCriteria(oldFilter);
     }
+  }
+
+  public void clearFilter() {
+    currentProcessFilter = null;
   }
 
   /**

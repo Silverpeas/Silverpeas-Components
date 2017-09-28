@@ -101,21 +101,18 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.processmanager.CurrentState" %>
 <%@ page import="org.silverpeas.core.util.CollectionUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<link type="text/css" rel="stylesheet" href='<c:url value="/processManager/jsp/styleSheets/print.css" />' media="print"/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 function printProcess() {
-    url = "printProcessFrameset";
-    windowName = "printProcess";
-    larg = "600";
-    haut = "600";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-    SP_openWindow(url, windowName, larg , haut, windowParams);
+    window.print();
 }
 </script>
 </head>

@@ -24,6 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkProcessManager.jsp" %>
 
@@ -69,6 +71,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<link type="text/css" rel="stylesheet" href='<c:url value="/processManager/jsp/styleSheets/print.css" />' media="print"/>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="preview"/>
 </head>
@@ -78,7 +81,6 @@
 	out.println(tabbedPane.print());
 %>
 <view:frame>
-
 
 <div class="txt-align-right">
 	<% if ("all".equalsIgnoreCase(enlightedStep)) { %>
@@ -96,7 +98,7 @@
 	  StepVO step = (StepVO) steps.get(i);
 %>
 
-<form name="formCollapse" action="viewHistory">
+<form name="formCollapse" action="viewHistory" class="formCollapse">
 <input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
 
 			<div class="bgDegradeGris ">

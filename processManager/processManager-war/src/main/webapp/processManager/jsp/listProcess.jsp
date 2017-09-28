@@ -117,9 +117,7 @@
   <title><%=resource.getString("GML.popupTitle")%>
   </title>
   <view:looknfeel/>
-  <c:if test="${not collapse}">
-    <% form.displayScripts(out, context); %>
-  </c:if>
+  <% form.displayScripts(out, context); %>
   <script type="text/javascript">
     var filterDisplayed = ${collapse};
     function toggleFilter(){
@@ -224,7 +222,7 @@
       <div class="bgDegradeGris">
         <div id="filterLabel">
           <p>
-            <fmt:message key="${collapse ? 'processManager.boxDown' : 'processManager.boxUp'}" var="opIcon" bundle="${icons}"/>
+            <fmt:message key="${collapse ? 'processManager.boxUp' : 'processManager.boxDown'}" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
             <a href="javascript:toggleFilter()"><img id="imgToggle" border="0" src="${opIcon}" alt=""/></a>
             <span class="txtNav">${labelFilter}</span>
@@ -233,18 +231,16 @@
           <div id="refresh">
             <fmt:message key="processManager.refresh" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
-            <a href="listProcess" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}" align="absmiddle"/></a>
+            <a href="javascript:refreshList()" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}" align="absmiddle"/></a>
           </div>
         </div>
-        <c:if test="${not collapse}">
-          <div id="filterForm" style="display: none">
-            <% form.display(out, context, data); %>
-            <view:buttonPane>
-              <view:button label="${validateLabel}" action="javascript:setFilter()"/>
-              <view:button label="${cancelLabel}" action="javascript:resetFilter()"/>
-            </view:buttonPane>
-          </div>
-        </c:if>
+        <div id="filterForm" style="display: none">
+          <% form.display(out, context, data); %>
+          <view:buttonPane>
+            <view:button label="${validateLabel}" action="javascript:setFilter()"/>
+            <view:button label="${cancelLabel}" action="clearFilter"/>
+          </view:buttonPane>
+        </div>
       </div>
     </form>
     <div id="process-list">
