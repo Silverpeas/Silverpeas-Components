@@ -51,6 +51,7 @@
 <fmt:message var="welcomeLabel" key="processManager.operation.welcome"/>
 <fmt:message var="refreshLabel" key="processManager.refresh"/>
 <fmt:message var="yourRoleLabel" key="processManager.yourRole"/>
+<fmt:message var="labelFilter" key="processManager.filter"/>
 <fmt:message var="validateLabel" key="GML.validate"/>
 <fmt:message var="cancelLabel" key="GML.cancel"/>
 
@@ -100,6 +101,11 @@
 <c:set var="welcomeMessage" value="${requestScope.WelcomeMessage}"/>
 <c:set var="collapse" value="${silfn:booleanValue(empty requestScope.collapse ? 'true' : requestScope.collapse)}"/>
 
+<fmt:message key="processManager.boxDown" var="iconBoxDown" bundle="${icons}"/>
+<c:url var="iconBoxDown" value="${iconBoxDown}"/>
+<fmt:message key="processManager.boxUp" var="iconBoxUp" bundle="${icons}"/>
+<c:url var="iconBoxUp" value="${iconBoxUp}"/>
+
 <%
   Form form = (Form) request.getAttribute("form");
   DataRecord data = (DataRecord) request.getAttribute("data");
@@ -115,10 +121,20 @@
     <% form.displayScripts(out, context); %>
   </c:if>
   <script type="text/javascript">
-    function collapseFilter(arg) {
-      spProgressMessage.show();
-      document.${context.formName}.collapse.value = arg;
-      document.${context.formName}.submit();
+    var filterDisplayed = ${collapse};
+    function toggleFilter(){
+      if (filterDisplayed) {
+        $("#filterForm").hide();
+        $("#imgToggle").attr("src", "${iconBoxDown}");
+      } else {
+        displayFilter();
+      }
+      filterDisplayed = !filterDisplayed;
+    }
+
+    function displayFilter() {
+      $("#filterForm").show();
+      $("#imgToggle").attr("src", "${iconBoxUp}");
     }
 
     function setFilter() {
@@ -152,6 +168,12 @@
       SP_openWindow("exportCSV", "exportWindow", "550", "350",
           "directories=0,menubar=0,toolbar=0,alwaysRaised");
     }
+
+    $(function() {
+      if (filterDisplayed) {
+        displayFilter();
+      }
+    });
   </script>
 </head>
 <body class="yui-skin-sam processManager-main">
@@ -204,18 +226,18 @@
           <p>
             <fmt:message key="${collapse ? 'processManager.boxDown' : 'processManager.boxUp'}" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
-            <a href="javascript:collapseFilter('${not collapse}')"><img border="0" src="${opIcon}" alt=""/></a>
-            <span class="txtNav"><%=resource.getString("processManager.filter") %></span>
+            <a href="javascript:toggleFilter()"><img id="imgToggle" border="0" src="${opIcon}" alt=""/></a>
+            <span class="txtNav">${labelFilter}</span>
           </p>
 
           <div id="refresh">
             <fmt:message key="processManager.refresh" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
-            <a href="javascript:refreshList()" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}" align="absmiddle"/></a>
+            <a href="listProcess" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}" align="absmiddle"/></a>
           </div>
         </div>
         <c:if test="${not collapse}">
-          <div id="filterForm">
+          <div id="filterForm" style="display: none">
             <% form.display(out, context, data); %>
             <view:buttonPane>
               <view:button label="${validateLabel}" action="javascript:setFilter()"/>
@@ -223,7 +245,6 @@
             </view:buttonPane>
           </div>
         </c:if>
-        <input type="hidden" name="collapse" value="${collapse}"/>
       </div>
     </form>
     <div id="process-list">

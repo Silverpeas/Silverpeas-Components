@@ -32,19 +32,19 @@
 <%
 	ProcessInstance process 			= (ProcessInstance) request.getAttribute("process");
 	Boolean 			isHistoryTabEnable 	= (Boolean) request.getAttribute("isHistoryTabEnable");
-	boolean				isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+	boolean				isReturnEnabled = (Boolean) request.getAttribute("isReturnEnabled");
+  int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	browseBar.setPath(process.getTitle(currentRole, language));
 
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId(), false, true);
-	tabbedPane.addTab(resource.getString("processManager.attachments"), "", true, false);
-	tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-	if (isReturnEnabled) {
-		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+	tabbedPane.addTab(resource.getString("processManager.attachments"), "#", true, true);
+	if (isReturnEnabled && nbEntriesAboutQuestions > 0) {
+		tabbedPane.addTab(resource.getString("processManager.questions")+" ("+nbEntriesAboutQuestions+")", "listQuestions?processId=" + process.getInstanceId(), false, true);
 	}
-	if (isHistoryTabEnable.booleanValue())
+	if (isHistoryTabEnable)
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 %>
 

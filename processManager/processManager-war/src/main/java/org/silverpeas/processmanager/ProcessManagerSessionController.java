@@ -71,6 +71,7 @@ import org.silverpeas.core.workflow.api.user.UserSettings;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
+import org.silverpeas.core.workflow.engine.model.ActionRefs;
 import org.silverpeas.core.workflow.engine.model.ItemImpl;
 import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 import org.silverpeas.processmanager.record.QuestionRecord;
@@ -364,125 +365,146 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Get the active states.
    * @return the active states.
    */
-  public String[] getActiveStates() {
-    String[] states = currentProcessInstance.getActiveStates();
-    if (states == null) {
-      return new String[0];
-    }
-    String[] stateLabels = new String[states.length];
-    for (int i = 0; i < states.length; i++) {
-      stateLabels[i] = getState(states[i]).getLabel(currentRole, getLanguage());
+  public List<CurrentState> getActiveStates() throws ProcessManagerException {
+    String[] stateNames = currentProcessInstance.getActiveStates();
+    if (stateNames == null) {
+      return Collections.emptyList();
     }
 
-    return stateLabels;
+    Map<String, List<Task>> tasksByStates = getTasksByStates();
+
+    List<CurrentState> currentStates = new ArrayList<>();
+    for (String stateName : stateNames) {
+      State state = getState(stateName);
+      filterActions(state);
+      CurrentState currentState = new CurrentState(state);
+      currentState.setLabel(state.getLabel(currentRole, getLanguage()));
+      currentState.setWorkingUsersAsString(getActiveRoles(state));
+
+      List<Task> tasks = tasksByStates.get(stateName);
+      currentState.setTasks(tasks);
+
+      currentStates.add(currentState);
+    }
+
+    return currentStates;
   }
 
-  public String[] getActiveRoles() {
-    String[] states = currentProcessInstance.getActiveStates();
-    if (states == null) {
-      return new String[0];
+  private Map<String, List<Task>> getTasksByStates() throws ProcessManagerException {
+    Map<String, List<Task>> result = new HashMap<>();
+    Task[] tasks = getTasks();
+    for (Task task : tasks) {
+      State state = task.getState();
+      List<Task> tasksByState = result.get(state.getName());
+      if (tasksByState == null) {
+        tasksByState = new ArrayList<>();
+        result.put(state.getName(), tasksByState);
+      }
+      tasksByState.add(task);
     }
-    String[] roles = new String[states.length];
-    for (int i = 0; i < states.length; i++) {
-      try {
-        State state = getState(states[i]);
+    return result;
+  }
 
-        QualifiedUsers workingUsers = state.getWorkingUsers();
+  private String getActiveRoles(State state) {
 
-        RelatedUser[] relatedUsers = workingUsers.getRelatedUsers();
-        StringBuilder role = new StringBuilder();
-        if (relatedUsers != null) {
-          for (RelatedUser relatedUser : relatedUsers) {
-            if (role.length() > 0) {
-              role.append(", ");
+    QualifiedUsers workingUsers = state.getWorkingUsers();
+
+    RelatedUser[] relatedUsers = workingUsers.getRelatedUsers();
+    StringBuilder role = new StringBuilder();
+    if (relatedUsers != null) {
+      for (RelatedUser relatedUser : relatedUsers) {
+        if (role.length() > 0) {
+          role.append(", ");
+        }
+        // Process participants
+        Participant participant = relatedUser.getParticipant();
+        String relation = relatedUser.getRelation();
+        if (participant != null && relation == null) {
+          role.append(participant.getLabel(currentRole, getLanguage()));
+        } else if (participant != null && relation != null) {
+          // userSettings of requester (not current user)
+          String requesterId = getCreatorIdOfCurrentProcessInstance();
+          if (requesterId != null) {
+            UserInfo userInfo = getSettingsOfUser(requesterId).getUserInfo(relation);
+            if (userInfo != null) {
+              role.append(getUserDetail(userInfo.getValue()).getDisplayedName());
             }
-            // Process participants
-            Participant participant = relatedUser.getParticipant();
-            String relation = relatedUser.getRelation();
-            if (participant != null && relation == null) {
-              role.append(participant.getLabel(currentRole, getLanguage()));
-            } else if (participant != null && relation != null) {
-              // userSettings of requester (not current user)
-              String requesterId = getCreatorIdOfCurrentProcessInstance();
-              if (requesterId != null) {
-                UserInfo userInfo = getSettingsOfUser(requesterId).getUserInfo(relation);
-                if (userInfo != null) {
-                  role.append(getUserDetail(userInfo.getValue()).getDisplayedName());
+          }
+        }
+
+        // Process folder item
+        Item item = relatedUser.getFolderItem();
+        if (item != null) {
+          try {
+            Field field = currentProcessInstance.getField(item.getName());
+            if (field instanceof UserField) {
+              String userId = field.getStringValue();
+              if (userId != null) {
+                UserDetail user = getUserDetail(userId);
+                if (user != null) {
+                  role.append(user.getDisplayedName());
                 }
               }
-            }
-
-            // Process folder item
-            Item item = relatedUser.getFolderItem();
-            if (item != null) {
-              Field field = currentProcessInstance.getField(item.getName());
-              if (field instanceof UserField) {
-                String userId = field.getStringValue();
+            } else if (field instanceof MultipleUserField) {
+              MultipleUserField multipleUserField = (MultipleUserField) field;
+              String[] userIds = multipleUserField.getUserIds();
+              for (String userId : userIds) {
                 if (userId != null) {
                   UserDetail user = getUserDetail(userId);
                   if (user != null) {
+                    if (role.length() > 0) {
+                      role.append(", ");
+                    }
                     role.append(user.getDisplayedName());
                   }
                 }
-              } else if (field instanceof MultipleUserField) {
-                MultipleUserField multipleUserField = (MultipleUserField) field;
-                String[] userIds = multipleUserField.getUserIds();
-                for (String userId : userIds) {
-                  if (userId != null) {
-                    UserDetail user = getUserDetail(userId);
-                    if (user != null) {
-                      if (role.length() > 0) {
-                        role.append(", ");
-                      }
-                      role.append(user.getDisplayedName());
-                    }
-                  }
-                }
               }
             }
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).warn(e);
           }
         }
-
-        UserInRole[] userInRoles = workingUsers.getUserInRoles();
-        if (userInRoles != null) {
-          for (UserInRole userInRole : userInRoles) {
-            if (role.length() > 0) {
-              role.append(", ");
-            }
-            role.append(processModel.getRole(userInRole.getRoleName())
-                .getLabel(currentRole, getLanguage()));
-          }
-        }
-
-        RelatedGroup[] relatedGroups = workingUsers.getRelatedGroups();
-        if (relatedGroups != null) {
-          for (RelatedGroup relatedGroup : relatedGroups) {
-            if (relatedGroup != null) {
-              if (role.length() > 0) {
-                role.append(", ");
-              }
-
-              // Process folder item
-              Item item = relatedGroup.getFolderItem();
-              if (item != null) {
-                String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-                if (groupId != null) {
-                  Group group = getOrganisationController().getGroup(groupId);
-                  if (group != null) {
-                    role.append(group.getName());
-                  }
-                }
-              }
-            }
-          }
-        }
-        roles[i] = role.toString();
-      } catch (WorkflowException ignored) {
-        // ignore unknown state
-        continue;
       }
     }
-    return roles;
+
+    UserInRole[] userInRoles = workingUsers.getUserInRoles();
+    if (userInRoles != null) {
+      for (UserInRole userInRole : userInRoles) {
+        if (role.length() > 0) {
+          role.append(", ");
+        }
+        role.append(processModel.getRole(userInRole.getRoleName())
+            .getLabel(currentRole, getLanguage()));
+      }
+    }
+
+    RelatedGroup[] relatedGroups = workingUsers.getRelatedGroups();
+    if (relatedGroups != null) {
+      for (RelatedGroup relatedGroup : relatedGroups) {
+        if (relatedGroup != null) {
+          if (role.length() > 0) {
+            role.append(", ");
+          }
+
+          // Process folder item
+          Item item = relatedGroup.getFolderItem();
+          try {
+            if (item != null) {
+              String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
+              if (groupId != null) {
+                Group group = getOrganisationController().getGroup(groupId);
+                if (group != null) {
+                  role.append(group.getName());
+                }
+              }
+            }
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).warn(e);
+          }
+        }
+      }
+    }
+    return role.toString();
   }
 
   /**
@@ -1032,6 +1054,23 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.GET_TASKS_FAILED", e);
     }
+  }
+
+  private void filterActions(State state) {
+    AllowedActions filteredActions = new ActionRefs();
+    if (state.getAllowedActionsEx() != null) {
+      Iterator<AllowedAction> actions = state.getAllowedActionsEx().iterateAllowedAction();
+      while (actions.hasNext()) {
+        AllowedAction action = actions.next();
+        QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
+
+        List<String> grantedUserIds = getUsers(qualifiedUsers, true);
+        if (grantedUserIds.contains(getUserId())) {
+          filteredActions.addAllowedAction(action);
+        }
+      }
+    }
+    state.setFilteredActions(filteredActions);
   }
 
   /**
@@ -1719,7 +1758,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage());
 
     if (oldFilter != null) {
-      currentProcessFilter.setCollapse(oldFilter.getCollapse());
+      currentProcessFilter.setCollapse(oldFilter.isCollapse());
       currentProcessFilter.copySharedCriteria(oldFilter);
     }
   }
@@ -2114,24 +2153,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return isResumingInstance;
   }
 
-  public String getTrace(String function, String extraParam) {
-    StringBuilder trace = new StringBuilder();
-
-    try {
-      String processInstanceId = (currentProcessInstance == null) ? "N-C" : currentProcessInstance.
-          getInstanceId();
-      trace.append("userId=").append(getUserId()).append(",role=").append(getCurrentRole())
-          .append(",function=").append(function).append(",processInstanceId=")
-          .append(processInstanceId).
-          append(",").append(extraParam);
-    } catch (Exception e) {
-      // a debug trace must not generate exception
-      trace.append(e.getClass() + " : " + e.getMessage());
-    }
-
-    return trace.toString();
-  }
-
   /**
    * Get the current tokenId. Token Id prevents users to use several windows with same session.
    * @return the current token id
@@ -2146,6 +2167,21 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void setCurrentTokenId(String newTokenId) {
     this.currentTokenId = newTokenId;
+  }
+
+  public int getNbEntriesAboutQuestions() {
+    int nbEntries = 0;
+    try {
+      Task[] tasks = getTasks();
+      for (Task task : tasks) {
+        nbEntries = task.getPendingQuestions().length;
+        nbEntries += task.getSentQuestions().length;
+        nbEntries += task.getRelevantQuestions().length;
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return nbEntries;
   }
 
   /**

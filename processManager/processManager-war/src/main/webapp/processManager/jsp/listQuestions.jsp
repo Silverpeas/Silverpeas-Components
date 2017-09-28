@@ -35,7 +35,8 @@
 	Boolean 					isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
 	Boolean 					isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
 	Boolean 					isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
-	boolean 					isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
+	boolean 					isProcessIdVisible 		= (Boolean) request.getAttribute("isProcessIdVisible");
+  int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
@@ -45,11 +46,10 @@
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
 
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
-	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
+	if (isAttachmentTabEnable && isActiveUser != null && isActiveUser)
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-	tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-	tabbedPane.addTab(resource.getString("processManager.questions"), "#" , true, true);
-	if (isHistoryTabEnable.booleanValue())
+	tabbedPane.addTab(resource.getString("processManager.questions")+"("+nbEntriesAboutQuestions+")", "#" , true, true);
+	if (isHistoryTabEnable)
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 %>
 
@@ -66,11 +66,9 @@
 	out.println(frame.printBefore());
 
    boolean noQuestion = true;
-	State state = null;
 	Question[] questions = null;
    for (int i=0; tasks!=null && i<tasks.length; i++)
    {
-	   state = tasks[i].getState();
 	   questions = tasks[i].getPendingQuestions();
 
 	   for (int j=0; questions!=null && j<questions.length ; j++)
@@ -91,7 +89,7 @@
 				<td>
 					<%
 						ButtonPane buttonPane = gef.getButtonPane();
-						buttonPane.addButton((Button) gef.getFormButton(
+						buttonPane.addButton(gef.getFormButton(
 							resource.getString("processManager.answer"),
 							"editResponse?questionId="+questions[j].getId(),
 							false));
@@ -137,7 +135,7 @@
 					<td>
 					  <div class="inlineMessage neutral">
 						 <%= questions[j].getResponseText() %>
-					  </span>
+					  </div>
 					</td>
 				</tr>
 			</table>
