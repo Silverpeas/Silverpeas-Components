@@ -173,8 +173,6 @@
                     new PagesContext("myForm", "0", resource.getLanguage(), false, componentId,
                         null);
                 xmlContext.setBorderPrinted(false);
-                xmlContext.setUseMandatory(false);
-                xmlContext.setUseBlankFields(true);
                 form.display(out, xmlContext, data);
               %>
       </fieldset>

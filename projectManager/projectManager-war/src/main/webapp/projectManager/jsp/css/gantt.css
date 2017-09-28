@@ -6,7 +6,6 @@
 }
 
 #navTemporelle {
-  background:transparent url(../../../util/icons/sep-2-tiraits.gif)  83px bottom no-repeat;
   margin-bottom: 5px;
   padding-bottom: 11px;
 }
@@ -234,7 +233,7 @@ td.day { text-align:center; }
 
 /* affichage des bandes qui symbolise les taches */
 
-/* Cas durée 1seul jour... */
+/* Cas durï¿½e 1seul jour... */
 .ganttMois tbody tr td.lenght_oneDay div div{
     background-color: #FFFFFF;
     background-image: url("../icons/pack-gantt.png");

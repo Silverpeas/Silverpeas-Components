@@ -93,7 +93,6 @@
 
 						PagesContext context = new PagesContext("formSearch", "0", language, false, instanceId, null, null);
 					    context.setIgnoreDefaultValues(true);
-					    context.setUseMandatory(false);
 						formSearch.display(out, context, data);
 					%>
 				</td>
