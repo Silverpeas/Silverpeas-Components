@@ -55,7 +55,8 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileIdentifierProvider
+    .newVolatileIntegerIdentifierOn;
 
 /**
  * @author squere
@@ -162,10 +163,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setComponentInstanceId(getComponentId());
     // Dummy identifiers
     news.setId("volatileId@" + getComponentId() + "@" + System.nanoTime());
-    news.setPublicationId(
-        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString());
+    news.setPublicationId(newVolatileIntegerIdentifierOn(getComponentId()));
     news.getPublication().getPK().setId(news.getPublicationId());
-    getSessionVolatileResourceCacheService().addComponentResource(news.getPublication());
     return news;
   }
 

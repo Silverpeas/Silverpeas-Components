@@ -37,7 +37,6 @@ import org.silverpeas.core.webapi.calendar.CalendarEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import java.time.temporal.Temporal;
 
 import static org.silverpeas.components.almanach.AlmanachSettings.*;
 import static org.silverpeas.core.web.calendar.CalendarViewType.from;
@@ -119,10 +118,7 @@ public class AlmanachWebController
   @RedirectToInternalJsp("almanachOccurrenceEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void newEvent(AlmanachWebRequestContext context) {
-    Temporal startDate = context.getOccurrenceStartDate();
-    if (startDate != null) {
-      context.getRequest().setAttribute("occurrenceStartDate", startDate.toString());
-    }
+    processNewEvent(context);
   }
 
   /**

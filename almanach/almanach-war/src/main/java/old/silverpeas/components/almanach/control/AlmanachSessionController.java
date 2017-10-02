@@ -25,15 +25,15 @@ package old.silverpeas.components.almanach.control;
 
 import old.silverpeas.components.almanach.model.EventDetail;
 import old.silverpeas.components.almanach.model.EventOccurrence;
+import old.silverpeas.components.almanach.model.EventPK;
 import old.silverpeas.components.almanach.model.PeriodicityException;
 import old.silverpeas.components.almanach.service.AlmanachBadParamException;
+import old.silverpeas.components.almanach.service.AlmanachException;
 import old.silverpeas.components.almanach.service.AlmanachNoSuchFindEventException;
 import old.silverpeas.components.almanach.service.AlmanachRuntimeException;
+import old.silverpeas.components.almanach.service.AlmanachService;
 import old.silverpeas.components.almanach.service.CalendarEventEncoder;
 import org.apache.commons.io.FileUtils;
-import old.silverpeas.components.almanach.model.EventPK;
-import old.silverpeas.components.almanach.service.AlmanachException;
-import old.silverpeas.components.almanach.service.AlmanachService;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -48,8 +48,8 @@ import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -85,8 +85,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
-    .getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileIdentifierProvider
+    .newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.importexport.ExportDescriptor.withWriter;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -328,12 +328,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   public void prepareNewEvent(EventDetail event) {
-    String volatileId =
-        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString();
+    String volatileId = newVolatileIntegerIdentifierOn(getComponentId());
     EventPK pk = new EventPK(volatileId);
     pk.setComponentName(getComponentId());
     event.setPK(pk);
-    getSessionVolatileResourceCacheService().addComponentResource(event);
   }
 
   /**

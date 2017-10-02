@@ -157,7 +157,8 @@ import java.text.ParseException;
 import java.util.*;
 
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileIdentifierProvider
+    .newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -3870,11 +3871,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public PublicationDetail prepareNewPublication() {
-    String volatileId =
-        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString();
+    String volatileId = newVolatileIntegerIdentifierOn(getComponentId());
     PublicationDetail publication = new PublicationDetail();
     publication.setPk(getPublicationPK(volatileId));
-    getSessionVolatileResourceCacheService().addComponentResource(publication);
     return publication;
   }
 }

@@ -58,7 +58,7 @@ almanachCalendar.controller('editController',
     ['$controller', '$scope', function($controller, $scope) {
       $controller('mainController', {$scope : $scope});
 
-      $scope.loadOccurrenceFromContext();
+      $scope.loadOccurrenceFromContext(true);
     }]);
 
 /* the view controller of the application */

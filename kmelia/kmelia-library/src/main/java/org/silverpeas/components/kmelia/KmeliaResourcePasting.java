@@ -45,7 +45,7 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
   private KmeliaService kmeliaService;
 
   @Override
-  public void paste(PasteDetail pasteDetail) throws RuntimeException {
+  public void paste(PasteDetail pasteDetail) {
     String fromComponentId = pasteDetail.getFromComponentId();
     String toComponentId = pasteDetail.getToComponentId();
 
