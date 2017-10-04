@@ -48,6 +48,7 @@
 <jsp:useBean id="mainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
 <c:set var="nextEventViewLimit" value="<%=AlmanachSettings.getNbOccurrenceLimitOfNextEventView()%>"/>
 <c:set var="isPdcUsed" value="<%=AlmanachSettings.isPdcUsed(componentId)%>"/>
+<c:set var="filterOnPdc" value="<%=AlmanachSettings.isFilterOnPdcActivated(componentId)%>"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
@@ -100,6 +101,7 @@
   <view:frame>
     <view:areaOfOperationOfCreation/>
     <silverpeas-calendar participation-user-ids="participationIds"
+                         filter-on-pdc="${filterOnPdc}"
                          on-day-click="${canCreateEvent ? 'newEvent(startMoment)' : ''}"
                          on-event-occurrence-view="viewEventOccurrence(occurrence)"
                          on-event-occurrence-modify="editEventOccurrence(occurrence)">

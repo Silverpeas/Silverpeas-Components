@@ -137,6 +137,17 @@ public final class AlmanachSettings {
   }
 
   /**
+   * Indicates if the PDC filtering is activated into the context of the component instance
+   * represented bu the given identifier.
+   * @param componentInstanceId the identifier of component instance for parameter values.
+   * @return true if pdc filtering is activated, false otherwise.
+   */
+  public static boolean isFilterOnPdcActivated(String componentInstanceId) {
+    return getBooleanValue(OrganizationController.get()
+        .getComponentParameterValue(componentInstanceId, "filterOnPdc"));
+  }
+
+  /**
    * Gets the limit number of occurrences the next event view has to display.
    * @return the limit as int.
    */

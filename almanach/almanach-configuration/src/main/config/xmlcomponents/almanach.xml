@@ -112,13 +112,31 @@
       </help>
     </parameter>
     <parameter>
+      <name>filterOnPdc</name>
+      <label>
+        <message lang="fr">Filtrage PDC</message>
+        <message lang="en">Classification filter</message>
+        <message lang="de">Classification filter</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si activé, le PDC permet de filtrer les événements présentés.</message>
+        <message lang="en">If activated, the Classification engine permits to filter displayed events.</message>
+        <message lang="de">If activated, the Classification engine permits to filter displayed events.</message>
+      </help>
+    </parameter>
+    <parameter>
       <name>useAgregation</name>
       <label>
         <message lang="fr">Agrégation d'Almanachs</message>
         <message lang="en">Almanach Aggregation</message>
         <message lang="de">Almanach Aggregierung</message>
       </label>
-      <order>2</order>
+      <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -141,7 +159,7 @@
         <message lang="en">Hide week-ends</message>
         <message lang="de">Wochenenden Verstecken</message>
       </label>
-      <order>3</order>
+      <order>4</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -159,7 +177,7 @@
         <message lang="en">Default view</message>
         <message lang="de">Standard-Ansicht</message>
       </label>
-      <order>4</order>
+      <order>5</order>
       <mandatory>true</mandatory>
       <value>MONTHLY</value>
       <options>
@@ -203,7 +221,7 @@
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
       </label>
-      <order>5</order>
+      <order>6</order>
       <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
@@ -221,7 +239,7 @@
         <message lang="en">Aggregation type</message>
         <message lang="de">Aggregierung-Typ</message>
       </label>
-      <order>6</order>
+      <order>7</order>
       <mandatory>false</mandatory>
       <value>3</value>
       <options>
