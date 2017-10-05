@@ -142,14 +142,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces
-          de l'espace de cet Almanach.
+        <message lang="fr">Cet Almanach pourra contenir des évènements d'autres Almanachs selon le
+          paramétrage de la plate-forme (almanachs des sous-espaces, de l'espace ou tous les almanachs).
         </message>
-        <message lang="en">This almanach can aggregate events from other almanachs in subspaces of the space
-          containing this almanach.
+        <message lang="en">This almanach can aggregate events from other almanachs according to the
+          platform settings (almanachs in subspaces, in the space or all the almanachs).
         </message>
-        <message lang="de">Dieser Almanach Kann Ereignisse von anderen Kalendern in Unterbereiche des Bereichs mit
-          diesem Almanach aggregierten.</message>
+        <message lang="de">Dieses Almanach kann Ereignisse von anderen Almanachs gemäß den
+          Einstellungen aggregieren (Almanachs in Unterräumen, im Raum oder in allen Almanachs).
+        </message>
       </help>
     </parameter>
     <parameter>
