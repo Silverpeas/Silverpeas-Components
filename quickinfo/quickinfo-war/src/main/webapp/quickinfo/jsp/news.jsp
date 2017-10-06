@@ -169,6 +169,7 @@ function onDelete(id) {
   <c:set var="highestUserRoleForAttachments" value="<%=highestUserRole == SilverpeasRole.user ? SilverpeasRole.user : SilverpeasRole.admin%>"/>
   <viewTags:displayAttachments componentInstanceId="${news.componentInstanceId}"
                                resourceId="${news.publicationId}"
+                               resourceType="${news.publication.contributionType}"
                                highestUserRole="${highestUserRoleForAttachments}"
                                reloadCallbackUrl="${callbackUrl}"/>
                           
@@ -205,7 +206,7 @@ function onDelete(id) {
 	</div>
     
     <c:if test="${appSettings.commentsEnabled && not viewOnly}">
-		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.id}" indexed="true"/>
+		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="${news.contributionType}" resourceId="${news.id}" indexed="true"/>
 	</c:if>
 </div>
 <!-- /INTEGRATION UNE ACTU -->

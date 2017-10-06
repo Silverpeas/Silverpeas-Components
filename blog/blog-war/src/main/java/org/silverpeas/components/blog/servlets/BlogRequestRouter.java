@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -365,7 +365,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         WysiwygRouting.WysiwygRoutingContext context =
             WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(blogSC)
                 .withContributionId(
-                    ContributionIdentifier.from(blogSC.getComponentId(), blogSC.getComponentId(), WYSIWYG))
+                    ContributionIdentifier.from(blogSC.getComponentId(), blogSC.getComponentId(), COMPONENT_INSTANCE))
                 .withComeBackUrl(URLUtil.getApplicationURL() +
                     URLUtil.getURL("blog", "useless", blogSC.getComponentId()) + "Main")
                 .withIndexation(false);

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
+import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -48,8 +49,7 @@ import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionNotifyManuallyUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
@@ -70,6 +70,7 @@ import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebSer
     .checkAdminAccessOrUserIsCreator;
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
     .checkAdminAccessOrUserIsModerator;
+import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
@@ -317,7 +318,9 @@ public class SuggestionBoxWebController extends
   @Path("edito/modify")
   @LowestRoleAccess(SilverpeasRole.admin)
   public Navigation modifyEdito(SuggestionBoxWebRequestContext context) {
-    return context.redirectToHtmlEditor(context.getSuggestionBox().getId(), "Main", false);
+    final SuggestionBox suggestionBox = context.getSuggestionBox();
+    return context
+        .redirectToHtmlEditor(suggestionBox.getId(), COMPONENT_INSTANCE.name(), "Main", false);
   }
 
   /**

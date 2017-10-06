@@ -57,7 +57,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.websites.servlets.WebSitesUtil.getMachine;
-import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+import static org.silverpeas.core.contribution.model.CoreContributionType.UNKNOWN;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSessionController> {
@@ -734,7 +734,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
     WysiwygRouting routing = new WysiwygRouting();
     WysiwygRouting.WysiwygRoutingContext context =
         WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(scc)
-            .withContributionId(ContributionIdentifier.from(scc.getComponentId(), id, WYSIWYG))
+            .withContributionId(ContributionIdentifier.from(scc.getComponentId(), id, UNKNOWN))
             .withBrowseInfo(URLEncoder.encode(nameSite, "UTF-8"))
             .withFileName(URLEncoder.encode(nameSite, "UTF-8") + FOLDER_PATH_FILTER +
                 URLEncoder.encode(path, "UTF-8"))

@@ -102,7 +102,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
@@ -910,7 +910,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(kmelia)
                 .withBrowseInfo(browseInfo)
                 .withContributionId(
-                    ContributionIdentifier.from(kmelia.getComponentId(), "Node_" + subTopicId, WYSIWYG))
+                    ContributionIdentifier.from(kmelia.getComponentId(), "Node_" + subTopicId, NODE))
                 .withContentLanguage(kmelia.getCurrentLanguage())
                 .withComeBackUrl(URLUtil.getApplicationURL() +
                     URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
@@ -1298,7 +1298,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(kmelia)
                 .withBrowseInfo(browseInfo)
                 .withContributionId(
-                    ContributionIdentifier.from(kmelia.getComponentId(), publication.getId(), WYSIWYG))
+                    ContributionIdentifier.from(kmelia.getComponentId(), publication.getId(), publication.getContributionType()))
                 .withContentLanguage(checkLanguage(kmelia, publication))
                 .withComeBackUrl(
                     URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +

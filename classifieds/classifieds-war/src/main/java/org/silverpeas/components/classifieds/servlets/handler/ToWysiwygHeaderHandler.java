@@ -34,7 +34,7 @@ import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 
 import java.net.URLEncoder;
 
-import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -53,7 +53,7 @@ public class ToWysiwygHeaderHandler extends FunctionHandler {
     WysiwygRouting routing = new WysiwygRouting();
     WysiwygRouting.WysiwygRoutingContext context =
         WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(classifiedsSC)
-            .withContributionId(ContributionIdentifier.from(classifiedsSC.getComponentId(), "Node_0", WYSIWYG))
+            .withContributionId(ContributionIdentifier.from(classifiedsSC.getComponentId(), "Node_0", NODE))
             .withLanguage(I18NHelper.defaultLanguage)
             .withComeBackUrl(returnURL);
 

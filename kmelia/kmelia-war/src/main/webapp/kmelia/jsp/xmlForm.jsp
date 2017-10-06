@@ -205,7 +205,10 @@
                   <view:confirmResourceSubscriptionNotificationSending
                       jsValidationCallbackMethodName="isCorrectForm"
                       subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
-                      subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
+                      subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"
+                      contributionLocalId="<%=pubDetail.getId()%>"
+                      contributionType="<%=pubDetail.getContributionType()%>"
+                      contributionIndexable="<%=pubDetail.isIndexable()%>"/>
 
                 </c:if>
               </c:if>

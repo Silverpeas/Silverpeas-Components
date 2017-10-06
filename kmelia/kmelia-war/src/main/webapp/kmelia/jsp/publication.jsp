@@ -619,6 +619,7 @@
         <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
                                      componentInstanceIdAlias="<%=alias%>"
                                      resourceId="<%=id%>"
+                                     resourceType="<%=resourceType%>"
                                      contentLanguage="<%=language%>"
                                      highestUserRole="<%=SilverpeasRole.from(attProfile)%>"
                                      reloadCallbackUrl="${callbackUrl}"
