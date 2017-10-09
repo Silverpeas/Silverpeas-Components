@@ -68,7 +68,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
     try {
       return CardManager.getInstance().getCardsByIds(resourceIds).stream().map(

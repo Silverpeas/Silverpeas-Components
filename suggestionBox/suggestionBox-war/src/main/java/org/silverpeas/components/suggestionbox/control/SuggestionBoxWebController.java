@@ -23,14 +23,26 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
-import org.silverpeas.core.contribution.model.CoreContributionType;
+import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
+import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
+import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionNotifyManuallyUserNotification;
+import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.webcomponent.AbstractNavigationContextListener;
 import org.silverpeas.core.web.mvc.webcomponent.Navigation;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
@@ -44,18 +56,6 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
-import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
-import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.notification.SuggestionNotifyManuallyUserNotification;
-import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

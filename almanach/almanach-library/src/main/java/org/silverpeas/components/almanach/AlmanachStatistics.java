@@ -21,58 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package old.silverpeas.components.almanach;
+package org.silverpeas.components.almanach;
 
-import old.silverpeas.components.almanach.model.EventDetail;
-import old.silverpeas.components.almanach.service.AlmanachRuntimeException;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import old.silverpeas.components.almanach.service.AlmanachService;
-import old.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Class declaration
- * @author
+ * Statistics about almanach application instances.
  */
 @Singleton
 @Named("almanach" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class AlmanachStatistics implements ComponentStatisticsProvider {
 
-  @Inject
-  private AlmanachService almanachService = null;
-
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    Collection<EventDetail> events = getEvents(spaceId, componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(events.size());
-    for (EventDetail detail : events) {
+    return getEvents(componentId).stream().map(e -> {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-      myCouple.setUserId(detail.getDelegatorId());
+      myCouple.setUserId(e.getLastUpdater().getId());
       myCouple.setCountVolume(1);
-      myArrayList.add(myCouple);
-    }
-    return myArrayList;
+      return myCouple;
+    }).collect(Collectors.toList());
   }
 
-  private AlmanachService getAlmanachService() throws Exception {
-    if (almanachService == null) {
-      throw new AlmanachRuntimeException("almanach", SilverpeasRuntimeException.ERROR,
-          "AlmanachStatistics.getAlmanachService", "CDI bootstrap error");
-    }
-    return almanachService;
+  private List<CalendarEvent> getEvents(String componentId) {
+    return Calendar.getByComponentInstanceId(componentId).stream()
+        .flatMap(c -> Calendar.getEvents().filter(f -> f.onCalendar(c)).stream())
+        .collect(Collectors.toList());
   }
-
-  public Collection<EventDetail> getEvents(String spaceId, String componentId) throws Exception {
-    return getAlmanachService().getAllEvents(new EventPK("", spaceId, componentId));
-  }
-
 }

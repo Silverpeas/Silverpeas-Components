@@ -69,7 +69,7 @@ public class SurveyContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
     List<QuestionContainerPK> pks =
         resourceIds.stream().map(id -> new QuestionContainerPK(id, "useless", componentInstanceId))

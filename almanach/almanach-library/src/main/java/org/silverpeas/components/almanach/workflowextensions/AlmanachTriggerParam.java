@@ -21,39 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * AlmanachException.java
- */
+package org.silverpeas.components.almanach.workflowextensions;
 
-package old.silverpeas.components.almanach.service;
+public enum AlmanachTriggerParam {
+  APPLICATION_ID("tp_almanachId"), EVENT_NAME("tp_eventName"), EVENT_DESCRIPTION("tp_eventDescription"),
+  START_DATE("tp_startDate"), START_HOUR("tp_startHour"), END_DATE("tp_endDate"), END_HOUR("tp_endHour"),
+  PLACE("tp_place"), EVENT_URL("tp_url"), PRIORITY("tp_priority");
 
-import org.silverpeas.core.exception.SilverpeasException;
+  private String parameterName;
 
-public class AlmanachException extends SilverpeasException {
-
-  private static final long serialVersionUID = 4170030551594235164L;
-
-  public AlmanachException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  AlmanachTriggerParam(String parameterName) {
+    this.parameterName = parameterName;
   }
 
-  public AlmanachException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  /**
+   * @return the parameterName
+   */
+  public String getParameterName() {
+    return parameterName;
   }
-
-  public AlmanachException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AlmanachException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "almanach";
-  }
-
 }

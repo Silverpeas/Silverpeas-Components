@@ -63,7 +63,7 @@ public class QuickInfoContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
     List<PublicationPK> pks =
         resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))

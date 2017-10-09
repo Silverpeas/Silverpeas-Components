@@ -71,7 +71,7 @@ public class BlogContentManager extends AbstractContentInterface implements Seri
   }
 
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
     List<PublicationPK> pks =
         resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))

@@ -22,7 +22,6 @@ package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -32,8 +31,6 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,7 +64,7 @@ public class KmeliaContentManager extends AbstractContentInterface implements Se
   }
 
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
     final KmeliaAuthorization security = new KmeliaAuthorization();
     final boolean checkRights = security.isRightsOnTopicsEnabled(componentInstanceId);

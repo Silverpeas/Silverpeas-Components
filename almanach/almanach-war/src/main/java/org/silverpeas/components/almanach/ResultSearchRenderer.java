@@ -21,12 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package old.silverpeas.components.almanach.ui;
+package org.silverpeas.components.almanach;
 
-import old.silverpeas.components.almanach.model.EventDetail;
-import old.silverpeas.components.almanach.model.EventPK;
-import old.silverpeas.components.almanach.model.Periodicity;
-import old.silverpeas.components.almanach.service.AlmanachService;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.Priority;
+import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
@@ -41,9 +41,11 @@ import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 
-import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
 import java.util.Properties;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 /**
  * <pre>
@@ -59,9 +61,6 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
   private static final Properties templateConfig = new Properties();
   private static final String TEMPLATE_FILENAME = "event_result_template";
 
-  /**
-   * Load template configuration
-   */
   static {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
@@ -71,37 +70,26 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
         .getString("customersTemplatePath"));
   }
 
-  /**
-   * Attribute loaded with dependency injection
-   */
-  @Inject
-  private AlmanachService almanachService;
-
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
     String result = "";
 
     // Retrieve the event detail from silverResult
-    GlobalSilverResult silverResult = searchResult.getGsr();
-    EventPK eventPK = new EventPK(silverResult.getId());
-    EventDetail event = null;
-    try {
-      event = getAlmanachService().getEventDetail(eventPK);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this)
-          .warn("Unable to load event {0}: {1}", eventPK.getId(), e.getMessage());
-    }
+    final GlobalSilverResult silverResult = searchResult.getGsr();
+    final CalendarEvent event = CalendarEvent.getById(silverResult.getId());
     // Create a SilverpeasTemplate
-    SilverpeasTemplate template = getNewTemplate();
+    final SilverpeasTemplate template = getNewTemplate();
     this.setCommonAttributes(searchResult, template);
 
     if (event != null) {
       MultiSilverpeasBundle settings = searchResult.getSettings();
       setEventAttributes(event, template, settings);
 
-      result =
-          template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
-              DisplayI18NHelper.getDefaultLanguage());
+      final String language = DisplayI18NHelper.getDefaultLanguage();
+      result = template.applyFileTemplate(TEMPLATE_FILENAME + '_' + language);
+
+    } else {
+      SilverLogger.getLogger(this).warn(failureOnGetting("event", silverResult.getId()));
     }
     return result;
   }
@@ -112,41 +100,38 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    * @param template the template object where we add data
    * @param settings the specific almanach resources wrapper object
    */
-  private void setEventAttributes(EventDetail event, SilverpeasTemplate template,
+  private void setEventAttributes(CalendarEvent event, SilverpeasTemplate template,
       MultiSilverpeasBundle settings) {
-    template.setAttribute("eventDetail", event);
-    template.setAttribute("evtStartDate", event.getStartDate());
-    String location = event.getPlace();
+    final Date startDate = TemporalConverter.applyByType(event.getStartDate(),
+        d -> Date.from(d.atStartOfDay(event.getCalendar().getZoneId()).toInstant()),
+        o -> Date.from(o.atZoneSameInstant(event.getCalendar().getZoneId()).toInstant()));
+    final Date endDate = TemporalConverter.applyByType(event.getEndDate(),
+        d -> Date.from(d.atStartOfDay(event.getCalendar().getZoneId()).toInstant()),
+        o -> Date.from(o.atZoneSameInstant(event.getCalendar().getZoneId()).toInstant()));
+    template.setAttribute("evtStartDate", startDate);
+    template.setAttribute("evtEndDate", endDate);
+    String location = event.getLocation();
     if (StringUtil.isDefined(location)) {
       template.setAttribute("evtLocation", location);
     }
-    if (event.getEndDate() != null) {
-      template.setAttribute("evtEndDate", event.getEndDate());
-    }
-    if (StringUtil.isDefined(event.getStartHour())) {
-      template.setAttribute("evtStartHour", event.getStartHour());
-    }
-    if (StringUtil.isDefined(event.getEndHour())) {
-      template.setAttribute("evtEndHour", event.getEndHour());
-    }
 
-    if (event.getPriority() != 0) {
+    if (Priority.HIGH == event.getPriority()) {
       template.setAttribute("evtPriority", settings.getString("prioriteImportante"));
     } else {
       template.setAttribute("evtPriority", settings.getString("prioriteNormale"));
     }
-    Periodicity periodicity = event.getPeriodicity();
-    String strPeriod = null;
-    if (periodicity == null) {
+    final Recurrence recurrence = event.getRecurrence();
+    final String strPeriod;
+    if (recurrence == null) {
       strPeriod = settings.getString("noPeriodicity");
     } else {
-      if (periodicity.getUnity() == Periodicity.UNIT_DAY) {
+      if (recurrence.getFrequency().isDaily()) {
         strPeriod = settings.getString("allDays");
-      } else if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
+      } else if (recurrence.getFrequency().isWeekly()) {
         strPeriod = settings.getString("allWeeks");
-      } else if (periodicity.getUnity() == Periodicity.UNIT_MONTH) {
+      } else if (recurrence.getFrequency().isMonthly()) {
         strPeriod = settings.getString("allMonths");
-      } else if (periodicity.getUnity() == Periodicity.UNIT_YEAR) {
+      } else {
         strPeriod = settings.getString("allYears");
       }
     }
@@ -154,34 +139,14 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
       template.setAttribute("evtPeriodicity", strPeriod);
     }
 
-    String eventURL = event.getEventUrl();
-    if (StringUtil.isDefined(eventURL)) {
-      if (!eventURL.contains("://")) {
-        eventURL = "http://" + eventURL;
-      }
-      template.setAttribute("evtURL", WebEncodeHelper.javaStringToHtmlString(eventURL));
-    }
+    event.getAttributes().get("externalUrl")
+        .ifPresent(u -> template.setAttribute("evtURL", WebEncodeHelper.javaStringToHtmlString(u)));
   }
 
   /**
    * @return a new Silverpeas Template
    */
-  protected SilverpeasTemplate getNewTemplate() {
+  private SilverpeasTemplate getNewTemplate() {
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
   }
-
-  /**
-   * @return the almanachService
-   */
-  public AlmanachService getAlmanachService() {
-    return almanachService;
-  }
-
-  /**
-   * @param almanachService the almanachService to set
-   */
-  public void setAlmanachService(AlmanachService almanachService) {
-    this.almanachService = almanachService;
-  }
-
 }

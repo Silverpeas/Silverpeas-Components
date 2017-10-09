@@ -21,49 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package old.silverpeas.components.almanach.model;
+package org.silverpeas.components.almanach;
 
-import java.util.Date;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-public class PeriodicityException extends SilverpeasBean {
-
-  private static final long serialVersionUID = 8352364938259264700L;
-  private int periodicityId;
-  private Date beginDateException;
-  private Date endDateException;
-
-  public PeriodicityException() {
-    super();
-  }
-
-  public Date getBeginDateException() {
-    return beginDateException;
-  }
-
-  public void setBeginDateException(Date beginDateException) {
-    this.beginDateException = beginDateException;
-  }
-
-  public Date getEndDateException() {
-    return endDateException;
-  }
-
-  public void setEndDateException(Date endDateException) {
-    this.endDateException = endDateException;
-  }
-
-  public int getPeriodicityId() {
-    return periodicityId;
-  }
-
-  public void setPeriodicityId(int periodicityId) {
-    this.periodicityId = periodicityId;
-  }
+@Singleton
+@Named("almanach" + ComponentIndexation.QUALIFIER_SUFFIX)
+public class AlmanachIndexer implements ComponentIndexation {
 
   @Override
-  public String _getTableName() {
-    return "SC_Almanach_PeriodicityExcept";
+  public void index(ComponentInst inst) throws Exception {
+    // TODO
   }
 }

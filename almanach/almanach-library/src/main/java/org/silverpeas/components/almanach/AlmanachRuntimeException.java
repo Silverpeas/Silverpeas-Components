@@ -21,39 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package old.silverpeas.components.almanach;
 
+package org.silverpeas.components.almanach;
 
-import old.silverpeas.components.almanach.model.EventDetail;
-import old.silverpeas.components.almanach.service.AlmanachService;
-import old.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Collection;
+/**
+ * @author silveryocha
+ */
+public class AlmanachRuntimeException extends SilverpeasRuntimeException {
 
-@Singleton
-@Named("almanach" + ComponentIndexation.QUALIFIER_SUFFIX)
-public class AlmanachIndexer implements ComponentIndexation {
-
-  @Inject
-  private AlmanachService almanach;
-  @Inject
-  private AttachmentService attachmentService;
-
-  @Override
-  public void index(ComponentInst inst) throws Exception {
-
-    EventPK pk = new EventPK("", inst.getSpaceId(), inst.getId());
-    Collection<EventDetail> allEvents = almanach.getAllEvents(pk);
-    for (EventDetail event : allEvents) {
-      almanach.createIndex(event);
-      attachmentService.indexAllDocuments(event.getPK(), null, null);
-    }
+  public AlmanachRuntimeException(final String message) {
+    super(message);
   }
 
+  public AlmanachRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AlmanachRuntimeException(final Throwable cause) {
+    super(cause);
+  }
 }

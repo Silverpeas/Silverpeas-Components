@@ -64,10 +64,11 @@ public class GalleryContentManager extends AbstractContentInterface implements S
             MediaCriteria.VISIBILITY.FORCE_GET_ALL));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
-    return getGalleryService()
+    return (List) getGalleryService()
         .getMedia(resourceIds, componentInstanceId, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
   }
 

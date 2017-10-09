@@ -66,7 +66,7 @@ public class ForumsContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
     List<ForumPK> ids = resourceIds.stream().map(i -> new ForumPK(componentInstanceId, i))
         .collect(Collectors.toList());

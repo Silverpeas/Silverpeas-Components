@@ -56,8 +56,8 @@ public class AlmanachContentManager extends AbstractContentInterface {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected List<? extends Contribution> getAccessibleContributions(final List<String> resourceIds,
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
-    return CalendarEvent.getByIds(resourceIds);
+    return (List) CalendarEvent.getByIds(resourceIds);
   }
 }
