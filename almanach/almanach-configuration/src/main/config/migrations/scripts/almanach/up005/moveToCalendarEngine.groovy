@@ -22,11 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 /**
@@ -132,6 +134,19 @@ final def insertEvent = '''
     (:id, :componentId, 'PUBLIC', :recurrenceId)
 '''
 
+// converts a local date and time into an OffsetDateTime value expressed in UTC.
+def toUTCDateTime = { final String date, final String time ->
+  return LocalDateTime.parse(date + ' ' + time, DATETIME_FORMAT)
+      .atZone(ZoneId.of(timeZone))
+      .toOffsetDateTime().withOffsetSameInstant(ZoneOffset.UTC)
+}
+
+// converts the specified datetime expressed in UTC into a SQL timestamp value without time zone set
+// If the specified OffsetDateTime value is null then returns null
+def toTimestamp = { final OffsetDateTime dateTime ->
+  return dateTime == null ? null : Timestamp.valueOf(dateTime.toLocalDateTime())
+}
+
 /*
  * Now we load each existing almanach events to copy them into the Silverpeas Calendar Engine. We
  *  don't remove these events to avoid any data lost if this migration fails or for whatever other
@@ -218,13 +233,13 @@ events.each { event ->
   try {
     /* compute the start and end date time of the event to import in the expected format and by
        taking into account the implicit rules of Almanach in event dates */
-    LocalDateTime startDate = LocalDateTime.parse(event.eventStartDay + ' ' +
-        (event.eventStartHour ? event.eventStartHour : '00:00'), DATETIME_FORMAT)
-    LocalDateTime endDate
+    OffsetDateTime startDate =
+        toUTCDateTime(event.eventStartDay, (event.eventStartHour ? event.eventStartHour : '00:00'))
+    OffsetDateTime endDate
     boolean inDays = false
     if (!event.eventEndDay || event.eventStartDay == event.eventEndDay) {
       if (event.eventEndHour && event.eventEndHour != event.eventStartHour) {
-        endDate = LocalDateTime.parse(event.eventStartDay + ' ' + event.eventEndHour, DATETIME_FORMAT)
+        endDate = toUTCDateTime(event.eventStartDay, event.eventEndHour)
       } else if (event.eventStartHour) {
         endDate = startDate.plusHours(1)
       } else {
@@ -233,11 +248,11 @@ events.each { event ->
       }
     } else {
       if (event.eventEndHour) {
-        endDate = LocalDateTime.parse(event.eventEndDay + ' ' + event.eventEndHour, DATETIME_FORMAT)
+        endDate = toUTCDateTime(event.eventEndDay, event.eventEndHour)
       } else if (event.eventStartHour) {
-        endDate = LocalDateTime.parse(event.eventEndDay + ' ' + event.eventStartHour, DATETIME_FORMAT)
+        endDate = toUTCDateTime(event.eventEndDay, event.eventStartHour)
       } else {
-        endDate = LocalDateTime.parse(event.eventEndDay + ' 00:00', DATETIME_FORMAT).plusDays(1)
+        endDate = toUTCDateTime(event.eventEndDay, '00:00').plusDays(1)
         inDays = true
       }
     }
@@ -247,15 +262,15 @@ events.each { event ->
     sql.execute insertEventComponent,
         id: componentId,
         calendarId: existingAlmanachs[idx].calendarId,
-        startDate: Timestamp.valueOf(startDate),
-        endDate: Timestamp.valueOf(endDate),
+        startDate: toTimestamp(startDate),
+        endDate: toTimestamp(endDate),
         inDays: inDays,
         title: (event.eventTitle ? event.eventTitle : ''),
         description: (event.eventName ? event.eventName : ''),
         location: event.eventPlace,
         priority: event.eventPriority,
         creator: event.eventDelegatorId,
-        createDate: Timestamp.from(Instant.now())
+        createDate: toTimestamp(OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC))
 
     /* second, we set the event external URL as an attribute of the calendar component */
     if (event.eventUrl) {
@@ -270,19 +285,18 @@ events.each { event ->
     String periodicityId = null
     if (periodicity) {
       periodicityId = periodicity.id as String
-      Timestamp endRecurTimestamp = null
+      OffsetDateTime endRecurDate = null
       if (periodicity.untilDatePeriod) {
-        LocalDateTime endRecurDate = LocalDateTime.parse(periodicity.untilDatePeriod + ' ' +
-            (event.eventStartHour ? event.eventStartHour : '00:00'), DATETIME_FORMAT)
-        endRecurTimestamp = Timestamp.valueOf(endRecurDate)
+        endRecurDate =
+            toUTCDateTime(periodicity.untilDatePeriod, (event.eventStartHour ? event.eventStartHour : '00:00'))
       }
 
       sql.execute insertEventRecurrence, id: periodicityId, interval: periodicity.frequency,
-          unit: timeUnit[periodicity.unity], endDate: endRecurTimestamp
+          unit: timeUnit[periodicity.unity], endDate: toTimestamp(endRecurDate)
 
       if (timeUnit[periodicity.unity] == 'WEEK' && periodicity.daysWeekBinary) {
-        periodicity.daysWeekBinary.each { day ->
-          if (day == '1') {
+        periodicity.daysWeekBinary.eachWithIndex { isSet, day ->
+          if (isSet == '1') {
             sql.execute insertEventRecurrenceDayOfWeek, id: periodicityId, nth: periodicity.numWeek,
                 dayOfWeek: day
           }
@@ -300,9 +314,9 @@ events.each { event ->
 
       if (exceptions) {
         exceptions.each { exception ->
-          LocalDateTime exDate = LocalDateTime.parse(exception.beginDateException + ' ' +
-              (event.eventStartHour ? event.eventStartHour : '00:00'), DATETIME_FORMAT)
-          sql.execute insertEventRecurrenceException, id: periodicityId, date: Timestamp.valueOf(exDate)
+          OffsetDateTime exDate =
+              toUTCDateTime(exception.beginDateException, (event.eventStartHour ? event.eventStartHour : '00:00'))
+          sql.execute insertEventRecurrenceException, id: periodicityId, date: toTimestamp(exDate)
         }
       }
     }
