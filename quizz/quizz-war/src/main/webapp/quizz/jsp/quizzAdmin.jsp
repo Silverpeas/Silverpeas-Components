@@ -184,7 +184,7 @@ function clipboardPaste() {
 						.javaStringToHtmlParagraphe(quizzHeader
 								.getDescription()));
 
-				Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
+				Date creationDate = quizzHeader.getCreationDate();
 				ArrayCellText arrayCellText = arrayLine
 						.addArrayCellText(resources.getOutputDate(creationDate));
 				arrayCellText.setCompareOn(creationDate);

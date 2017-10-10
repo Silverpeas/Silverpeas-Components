@@ -57,7 +57,7 @@ public class ForumsMessagePendingValidationUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "messageToValidate";
   }
 
@@ -82,7 +82,7 @@ public class ForumsMessagePendingValidationUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

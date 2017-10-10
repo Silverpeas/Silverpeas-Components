@@ -59,7 +59,7 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notificationAttachment";
   }
 

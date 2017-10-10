@@ -51,7 +51,7 @@ public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaAc
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notification";
   }
 

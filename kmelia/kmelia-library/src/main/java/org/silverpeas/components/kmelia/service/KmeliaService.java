@@ -20,26 +20,25 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
-import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -594,9 +593,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   Collection<Alias> getAlias(PublicationPK pubPK);
 
   void setAlias(PublicationPK pubPK, List<Alias> alias);
-
-  void addUploadedFilesToPublication(PublicationDetail pubDetail,
-      Collection<UploadedFile> uploadedFiles);
 
   void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);

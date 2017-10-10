@@ -40,7 +40,7 @@ import java.util.List;
 public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUserNotification {
 
   public ClassifiedSupervisorUserNotification(final ClassifiedDetail resource) {
-    super(resource, null, "tovalidate");
+    super(resource);
   }
 
   @Override
@@ -50,6 +50,11 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
         OrganizationControllerProvider.getOrganisationController();
     return new ArrayList<>(Arrays
         .asList(organizationController.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
+  }
+
+  @Override
+  protected String getTemplateFileName() {
+    return "tovalidate";
   }
 
   @Override
@@ -63,7 +68,7 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 

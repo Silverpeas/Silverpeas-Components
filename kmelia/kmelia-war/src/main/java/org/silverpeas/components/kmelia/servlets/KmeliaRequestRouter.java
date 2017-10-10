@@ -23,50 +23,9 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.importexport.report.ImportReport;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.web.util.ClientBrowserUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
+import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.FileFolder;
@@ -78,23 +37,63 @@ import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.io.upload.FileUploadManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -102,6 +101,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
@@ -894,13 +895,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String flag = kmelia.getProfile();
 
         NodeDetail topic = kmelia.getSubTopicDetail(subTopicId);
-
-        request.setAttribute("SpaceId", kmelia.getSpaceId());
-        request.setAttribute("SpaceName",
-            URLEncoder.encode(kmelia.getSpaceLabel(), CharEncoding.UTF_8));
-        request.setAttribute("ComponentId", kmelia.getComponentId());
-        request.setAttribute("ComponentName",
-            URLEncoder.encode(kmelia.getComponentLabel(), CharEncoding.UTF_8));
         String browseInfo = kmelia.getSessionPathString();
         if (browseInfo != null && !browseInfo.contains(topic.getName())) {
           browseInfo += topic.getName();
@@ -910,15 +904,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           browseInfo += " > " + kmelia.getString("TopicWysiwyg");
         }
-        request.setAttribute("BrowseInfo", browseInfo);
-        request.setAttribute("ObjectId", "Node_" + subTopicId);
-        request.setAttribute("Language", kmelia.getLanguage());
-        request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
-        request.setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
-            URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
-            "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId +
-            "&Profile=" + flag);
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
+
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(kmelia)
+                .withBrowseInfo(browseInfo)
+                .withContributionId(
+                    ContributionIdentifier.from(kmelia.getComponentId(), "Node_" + subTopicId, NODE))
+                .withContentLanguage(kmelia.getCurrentLanguage())
+                .withComeBackUrl(URLUtil.getApplicationURL() +
+                    URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +
+                    "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId +
+                    "&Profile=" + flag);
+
+        destination = routing.getWysiwygEditorPath(context, request);
       } else if (function.equals("FromTopicWysiwyg")) {
         String subTopicId = request.getParameter("ChildId");
 
@@ -1045,9 +1044,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 PublicationDetail.getResourceType(), parameters);
 
         //process files
-        Collection<UploadedFile> uploadedFiles = FileUploadManager
-            .getUploadedFiles(request, kmelia.getUserDetail());
-        kmelia.addUploadedFilesToPublication(pubDetail, uploadedFiles);
+        Collection<UploadedFile> attachments = request.getUploadedFiles();
+        kmelia.addUploadedFilesToPublication(attachments, pubDetail);
 
         String volatileId = FileUploadUtil.getParameter(parameters, "VolatileId");
         if (StringUtil.isDefined(volatileId)) {
@@ -1055,8 +1053,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.saveXMLFormToPublication(pubDetail, parameters, false);
         }
 
-        // force indexation to add thumbnail and files to publication index
-        if ((newThumbnail || !uploadedFiles.isEmpty()) && pubDetail.isIndexable()) {
+        // force indexation to add thumbnail and attachments to publication index
+        if ((newThumbnail || !attachments.isEmpty()) && pubDetail.isIndexable()) {
           kmelia.getPublicationBm().createIndex(pubDetail.getPK());
         }
 
@@ -1279,36 +1277,34 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
-        request.setAttribute("SpaceId", kmelia.getSpaceId());
-        request.setAttribute("SpaceName",
-            URLEncoder.encode(kmelia.getSpaceLabel(), CharEncoding.UTF_8));
-        request.setAttribute("ComponentId", kmelia.getComponentId());
-        request.setAttribute("ComponentName",
-            URLEncoder.encode(kmelia.getComponentLabel(), CharEncoding.UTF_8));
+
+        String browseInfo;
         if (kmaxMode) {
-          request.setAttribute("BrowseInfo", publication.getName());
+          browseInfo = publication.getName();
         } else {
-          String browseInfo = kmelia.getSessionPathString();
+          browseInfo = kmelia.getSessionPathString();
           if (StringUtil.isDefined(browseInfo)) {
             browseInfo += " > ";
           }
           browseInfo += publication.getName(kmelia.getCurrentLanguage());
-          request.setAttribute("BrowseInfo", browseInfo);
         }
-        request.setAttribute("ObjectId", publication.getId());
-        request.setAttribute("Language", kmelia.getLanguage());
-        request.setAttribute("ContentLanguage", checkLanguage(kmelia, publication));
-        request.setAttribute("ReturnUrl",
-            URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
-                publication.getId());
-        request.setAttribute("UserId", kmelia.getUserId());
-        request.setAttribute("IndexIt", "false");
 
         // Subscription management
         setupRequestForSubscriptionNotificationSending(request,
             highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(), publication);
 
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(kmelia)
+                .withBrowseInfo(browseInfo)
+                .withContributionId(
+                    ContributionIdentifier.from(kmelia.getComponentId(), publication.getId(), publication.getContributionType()))
+                .withContentLanguage(checkLanguage(kmelia, publication))
+                .withComeBackUrl(
+                    URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
+                        publication.getId())
+                .withIndexation(false);
+        destination = routing.getWysiwygEditorPath(context, request);
       } else if ("FromWysiwyg".equals(function)) {
         String id = request.getParameter("PubId");
 

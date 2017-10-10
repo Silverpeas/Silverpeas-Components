@@ -25,14 +25,16 @@
 package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.period.Period;
@@ -74,7 +76,8 @@ import java.util.List;
     @NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = " +
         ":mandatory"),
     @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
-public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
+public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
+    WithAttachment {
 
   public static final String CONTRIBUTION_TYPE = "News";
 
@@ -248,13 +251,33 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
+  }
+
+  @Override
   public Date getCreationDate() {
     return getCreateDate();
   }
 
   @Override
+  public User getLastModifier() {
+    return getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getLastUpdateDate();
+  }
+
+  @Override
   public String getContributionType() {
     return CONTRIBUTION_TYPE;
+  }
+
+  @Override
+  public boolean isIndexable() {
+    return false;
   }
 
   /**
@@ -264,12 +287,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
    */
   public static String getResourceType() {
     return CONTRIBUTION_TYPE;
-  }
-
-  @Override
-  public boolean canBeAccessedBy(User user) {
-    return OrganizationControllerProvider.getOrganisationController()
-        .isComponentAvailable(getComponentInstanceId(), user.getId());
   }
 
   public void setImportant(boolean important) {

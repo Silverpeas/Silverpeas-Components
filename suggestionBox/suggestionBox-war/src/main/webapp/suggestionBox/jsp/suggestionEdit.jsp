@@ -71,7 +71,7 @@
   <view:includePlugin name="popup"/>
   <script type="text/javascript">
     $(document).ready(function() {
-      <view:wysiwyg replace="editorContent" language="${null}" toolbar="suggestionBox"/>
+      <view:wysiwyg replace="editorContent" language="${null}" toolbar="suggestionBox" componentId="${componentId}"/>
       $('#title').focus();
     });
 

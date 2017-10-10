@@ -24,29 +24,25 @@
 
 package org.silverpeas.components.quickinfo.service;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Singleton
-public class QuickInfoContentManager implements ContentInterface {
+public class QuickInfoContentManager extends AbstractContentInterface {
 
-  private static final String CONTENT_ICON = "quickinfoSmall.gif";
-
-  private PublicationService publicationService;
+  private static final String CONTENT_ICON_FILE_NAME = "quickinfoSmall.gif";
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -54,55 +50,32 @@ public class QuickInfoContentManager implements ContentInterface {
   protected QuickInfoContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param componentId the id of the instance
-   * @param sUserId the id of the user who wants to retrieve silverContent
-   * @return a List of SilverContent
-   */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String componentId,
-      String sUserId) {
-    return getHeaders(getContentManager().getResourcesMatchingContents(ids), componentId);
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
   }
 
-  /**
-   * add a new content. It is registered to contentManager service
-   * @param con a Connection
-   * @param pubDetail the content to register
-   * @param userId the creator of the content
-   * @return the unique silverObjectId which identified the new content
-   */
-  public int createSilverContent(Connection con, PublicationDetail pubDetail, String userId,
-      boolean isVisible) throws ContentManagerException {
-
-    SilverContentVisibility scv =
-        new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
-    return getContentManager()
-        .addSilverContent(con, pubDetail.getPK().getId(), pubDetail.getPK().getComponentName(),
-            userId, scv);
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    return Optional.ofNullable(
+        getPublicationService().getDetail(new PublicationPK(resourceId, componentInstanceId)));
   }
 
-  /**
-   * update the visibility attributes of the content. Here, the type of content is a
-   * PublicationDetail
-   * @param pubDetail the content
-   */
-  public void updateSilverContentVisibility(PublicationDetail pubDetail, boolean isVisible)
-      throws ContentManagerException {
-    int silverContentId = getContentManager()
-        .getSilverContentId(pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
-    if (silverContentId != -1) {
-      SilverContentVisibility scv =
-          new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
+  @Override
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
+    List<PublicationPK> pks =
+        resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))
+            .collect(Collectors.toList());
+    return new ArrayList<>(getPublicationService().getPublications(pks));
+  }
 
-      getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, silverContentId);
-      ClassifyEngine.clearCache();
-    } else {
-      createSilverContent(null, pubDetail, pubDetail.getCreatorId(), isVisible);
-    }
+  @Override
+  protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
+      final T contribution) {
+    final PublicationDetail pubDetail = (PublicationDetail) contribution;
+    return new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), false);
   }
 
   /**
@@ -112,41 +85,10 @@ public class QuickInfoContentManager implements ContentInterface {
    */
   public void deleteSilverContent(Connection con, PublicationPK pubPK)
       throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(pubPK.getId(), pubPK.getComponentName());
-    if (contentId != -1) {
-
-      getContentManager().removeSilverContent(con, contentId);
-    }
-  }
-
-  /**
-   * return a list of silverContent according to a list of publicationPK
-   * @param ids a list of identifiers of publication.
-   * @param instanceId the unique identifier of the component instance.
-   * @return a list of publicationDetail
-   */
-  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
-    List<PublicationPK> pks = ids.stream()
-        .map(id -> new PublicationPK(id, "useles", instanceId))
-        .collect(Collectors.toList());
-    List<PublicationDetail> publicationDetails =
-        new ArrayList<>(getPublicationService().getPublications(pks));
-    List<SilverContentInterface> headers = new ArrayList<>(publicationDetails.size());
-    for (PublicationDetail pubDetail : publicationDetails) {
-      pubDetail.setIconUrl(CONTENT_ICON);
-      headers.add(pubDetail);
-    }
-    return headers;
+    deleteSilverContent(con, pubPK.getId(), pubPK.getComponentName());
   }
 
   private PublicationService getPublicationService() {
-    if (publicationService == null) {
-      publicationService = PublicationService.get();
-    }
-    return publicationService;
-  }
-
-  private ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
+    return PublicationService.get();
   }
 }

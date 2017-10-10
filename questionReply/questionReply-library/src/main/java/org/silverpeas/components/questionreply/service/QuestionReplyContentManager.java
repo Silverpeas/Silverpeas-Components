@@ -25,31 +25,27 @@ package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The questionReply implementation of ContentInterface.
  */
 @Singleton
-public class QuestionReplyContentManager implements ContentInterface {
+public class QuestionReplyContentManager extends AbstractContentInterface {
 
-  @Inject
-  private ContentManager contentManager;
+  private static final String CONTENT_ICON_FILE_NAME = "questionReplySmall.gif";
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -57,98 +53,64 @@ public class QuestionReplyContentManager implements ContentInterface {
   protected QuestionReplyContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given SilverContentId
-   * @param ids
-   * @param userId
-   * @param peasId
-   */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId) {
-    return getHeaders(makeIdArray(ids), peasId);
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
   }
 
-  private List<String> makeIdArray(List<Integer> idList) {
-    List<String> ids = new ArrayList<>(idList.size());
-    for (int contentId : idList) {
-      try {
-        String id = this.contentManager.getInternalContentId(contentId);
-        ids.add(id);
-      } catch (ClassCastException | ContentManagerException e) {
-        // ignore unknown item
-        SilverLogger.getLogger(this).debug(e.getMessage(), e);
-      }
-    }
-    return ids;
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    final List<? extends Contribution> contributions =
+        getAccessibleContributions(Collections.singletonList(resourceId), componentInstanceId,
+            null);
+    return contributions.isEmpty() ? Optional.empty() : Optional.of(contributions.get(0));
   }
 
-  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
-    List<SilverContentInterface> headers = new ArrayList<>();
+  @Override
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
     try {
-      Collection<Question> questions =
-          QuestionManagerProvider.getQuestionManager().getQuestionsByIds(new ArrayList<String>(ids));
-      for (Question question : questions) {
-        headers.add(new QuestionHeader(question, instanceId, question.getCreationDate(),
-            question.getCreatorId()));
-      }
+      return QuestionManagerProvider.getQuestionManager().getQuestionsByIds(resourceIds).stream()
+          .map(q -> new QuestionHeader(q, componentInstanceId, q.getCreationDate(),
+              q.getCreatorId())).collect(Collectors.toList());
     } catch (QuestionReplyException e) {
       // skip unknown and ill formed id.
-      SilverLogger.getLogger(this).debug(e.getMessage(), e);
-    }
-    return headers;
-  }
-
-  public int getSilverObjectId(String id, String peasId) throws QuestionReplyException {
-
-    try {
-      return this.contentManager.getSilverContentId(id, peasId);
-    } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplyContentManager.getSilverObjectId()",
-          SilverpeasException.ERROR, "questionReply.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      SilverLogger.getLogger(this).error(e);
+      return Collections.emptyList();
     }
   }
 
   /**
    * Add a new content. It is registered to contentManager service
-   * @param con
-   * @param question
-   * @return the unique silverObjectId which identified the new content
-   * @throws ContentManagerException
+   * @throws ContentManagerException on technical error.
    */
-  public int createSilverContent(Connection con, Question question) throws ContentManagerException {
+  void createSilverContent(Connection con, Question question) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
-
-    return this.contentManager
-        .addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
-            question.getCreatorId(), scv);
+    getContentManager().addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
+        question.getCreatorId(), scv);
   }
 
   /**
    * update the visibility attributes of the content. Here, the type of content is a Question.
    * @param question the content
-   * @throws ContentManagerException
+   * @throws ContentManagerException on technical error.
    */
-  public void updateSilverContentVisibility(Question question) throws ContentManagerException {
-    int silverContentId = this.contentManager
+  void updateSilverContentVisibility(Question question) throws ContentManagerException {
+    int silverContentId = getContentManager()
         .getSilverContentId(question.getPK().getId(), question.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
-
-    this.contentManager
-        .updateSilverContentVisibilityAttributes(scv, silverContentId);
-    ClassifyEngine.clearCache();
+    getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
   }
 
   /**
    * delete a content. It is registered to contentManager service
    * @param con a Connection
    * @param pk the identity of the content to unregister
-   * @throws ContentManagerException
+   * @throws ContentManagerException on technical error.
    */
-  public void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
-    int contentId = this.contentManager.getSilverContentId(pk.getId(), pk.getComponentName());
-
-    this.contentManager.removeSilverContent(con, contentId);
+  void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
+    deleteSilverContent(con, pk.getId(), pk.getComponentName());
   }
 
   private boolean isVisible(Question question) {

@@ -33,13 +33,9 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.process.io.file.FileBasePath;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -52,10 +48,10 @@ import java.util.Set;
 /**
  * This class represents a Media and provides all the common data.
  */
-public abstract class Media implements SilverpeasContent, SilverContentInterface, Serializable {
+public abstract class Media implements SilverContentInterface, Serializable {
   private static final long serialVersionUID = -3193781401588525351L;
 
-  public final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
+  public static final FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
 
   private MediaPK mediaPK;
   private String title = "";
@@ -100,11 +96,6 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   @Override
   public String getInstanceId() {
     return getMediaPK() != null ? getMediaPK().getInstanceId() : null;
-  }
-
-  @Override
-  public String getComponentInstanceId() {
-    return getInstanceId();
   }
 
   @Override
@@ -208,6 +199,16 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     return getCreator() != null ? getCreator().getDisplayedName() : "";
   }
 
+  @Override
+  public User getLastModifier() {
+    return getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getLastUpdateDate();
+  }
+
   public Date getLastUpdateDate() {
     return lastUpdateDate != null ? lastUpdateDate : getCreationDate();
   }
@@ -246,9 +247,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
+    return SilverContentInterface.super.canBeAccessedBy(user) &&
         (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getHighestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getHighestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.writer) && user.getId().equals(getCreatorId()))));

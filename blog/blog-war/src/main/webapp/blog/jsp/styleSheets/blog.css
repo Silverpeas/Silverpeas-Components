@@ -53,6 +53,17 @@
 	margin:3px 0 3px 0;
 	padding:0
  }
+
+#navBlog .bgDegradeGris ul.list_pdc_position li {
+  margin: 0;
+  padding: 0;
+}
+
+#navBlog .bgDegradeGris ul.list_pdc_position ul li {
+  margin: 0 0 0 1px;
+  padding: 2px 0;
+}
+
  #navBlog .bgDegradeGris ul li a{
 	padding:0 0 0 5px;
 	display:block;

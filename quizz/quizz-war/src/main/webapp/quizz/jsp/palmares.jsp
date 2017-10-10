@@ -127,7 +127,7 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
     ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     ArrayCellText arrayCellText4 = arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
-    Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
+    Date creationDate = quizzHeader.getCreationDate();
     ArrayCellText arrayCellText5 = arrayLine.addArrayCellText(resources.getOutputDate(creationDate));
     arrayCellText5.setCompareOn(creationDate);
     

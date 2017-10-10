@@ -23,33 +23,27 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.components.gallery.model.GalleryRuntimeException;
-import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The gallery implementation of ContentInterface.
  */
 @Singleton
-public class GalleryContentManager implements ContentInterface, java.io.Serializable {
+public class GalleryContentManager extends AbstractContentInterface implements Serializable {
   private static final long serialVersionUID = 1L;
+
+  private static final String CONTENT_ICON_FILE_NAME = "gallerySmall.gif";
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -57,109 +51,31 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   protected GalleryContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @return a List of SilverContent
-   */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId) {
-    if (getContentManager() == null) {
-      return new ArrayList<>();
-    }
-
-    return getHeaders(makePKArray(ids, peasId));
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
   }
 
-  public int getSilverObjectId(String mediaId, String peasId) {
-    try {
-      return getContentManager().getSilverContentId(mediaId, peasId);
-    } catch (Exception e) {
-      throw new GalleryRuntimeException("GalleryContentManager.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
-    }
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    return Optional.ofNullable(getGalleryService()
+        .getMedia(new MediaPK(resourceId, componentInstanceId),
+            MediaCriteria.VISIBILITY.FORCE_GET_ALL));
   }
 
-  /**
-   * add a new content. It is registered to contentManager service
-   * @param media the content to register
-   * @param userId the creator of the content
-   * @return the unique silverObjectId which identified the new content
-   * @throws ContentManagerException
-   */
-  public int createSilverContent(Media media, String userId)
-      throws ContentManagerException {
-    try (Connection con = DBUtil.openConnection()) {
-      return getContentManager()
-          .addSilverContent(con, media.getMediaPK().getId(), media.getMediaPK().getComponentName(),
-              userId);
-    } catch (SQLException e) {
-      throw new ContentManagerException(e.getMessage(), e);
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
+    return (List) getGalleryService()
+        .getMedia(resourceIds, componentInstanceId, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
   }
 
-  /**
-   * delete a content. It is registered to contentManager service
-   * @param mediaPK the identifiant of the content to unregister
-   * @throws ContentManagerException
-   */
-  public void deleteSilverContent(MediaPK mediaPK) throws ContentManagerException {
-    try (Connection con = DBUtil.openConnection()) {
-      int contentId = getContentManager().getSilverContentId(mediaPK.getId(), mediaPK.getComponentName());
-      if (contentId != -1) {
-        getContentManager().removeSilverContent(con, contentId);
-      }
-    } catch (SQLException e) {
-      throw new ContentManagerException(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * return a list of mediaPK according to a list of silverContentId
-   * @param idList a list of silverContentId
-   * @param peasId the id of the instance
-   * @return a list of MediaPK
-   */
-  private List<MediaPK> makePKArray(List<Integer> idList, String peasId) {
-    List<MediaPK> pks = new ArrayList<>();
-    // for each silverContentId, we get the corresponding mediaId
-    for (int contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        MediaPK mediaPK = new MediaPK(id, peasId);
-        pks.add(mediaPK);
-      } catch (ClassCastException | ContentManagerException e) {
-        // ignore unknown item
-        SilverLogger.getLogger(this).debug(e.getMessage(), e);
-      }
-    }
-    return pks;
-  }
-
-  /**
-   * return a list of silverContent according to a list of mediaPK
-   * @param ids a list of mediaPK
-   * @return a list of media
-   */
-  private List<SilverContentInterface> getHeaders(List<MediaPK> ids) {
-    List<SilverContentInterface> headers = new ArrayList<>();
-    // création de la liste "headers" avec toutes les media (format Media)
-    // en fonction de la liste "ids" des media (format MediaPK)
-    if (ids != null) {
-      for (MediaPK mediaPK : ids) {
-        Media media = getGalleryService().getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-        media.setIconUrl("gallerySmall.gif");
-        headers.add(media);
-      }
-    }
-    return headers;
-  }
-
-  private ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
+  @Override
+  protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
+      final T contribution) {
+    return null;
   }
 
   private GalleryService getGalleryService() {

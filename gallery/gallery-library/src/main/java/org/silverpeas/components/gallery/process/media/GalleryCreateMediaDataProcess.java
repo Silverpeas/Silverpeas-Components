@@ -118,8 +118,7 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
       List<PdcPosition> pdcPositions = delegate.getHeaderData().getPdcPositions();
       if (CollectionUtil.isNotEmpty(pdcPositions)) {
         PdcClassification curClassification =
-            aPdcClassificationOfContent(getMedia().getSilverpeasContentId(),
-                getMedia().getInstanceId()).withPositions(pdcPositions);
+            aPdcClassificationOfContent(getMedia()).withPositions(pdcPositions);
         curClassification.classifyContent(getMedia());
       }
     }

@@ -56,7 +56,7 @@ public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotif
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (NotifAction.CREATE.equals(getAction())) {
       return "subscriptionNotificationOnCreate";
     }

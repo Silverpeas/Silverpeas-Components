@@ -581,10 +581,9 @@
 		            } else {
 		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
 		            }%>
-		        <p id="permalinkInfo">
-		        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
-		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLUtil.getServerURL(request)+link%>" />
-		        </p>
+          <fmt:message var="permalinkHelp" key="kmelia.CopyPublicationLink"/>
+          <c:set var="permalinkIconUrl"><%=resources.getIcon("kmelia.link")%></c:set>
+          <viewTags:displayPermalinkInfo link="<%=link%>" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
         <% }%>
         </div>
       <%
@@ -620,6 +619,7 @@
         <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
                                      componentInstanceIdAlias="<%=alias%>"
                                      resourceId="<%=id%>"
+                                     resourceType="<%=resourceType%>"
                                      contentLanguage="<%=language%>"
                                      highestUserRole="<%=SilverpeasRole.from(attProfile)%>"
                                      reloadCallbackUrl="${callbackUrl}"

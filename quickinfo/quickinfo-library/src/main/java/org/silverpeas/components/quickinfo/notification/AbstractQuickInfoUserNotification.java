@@ -24,20 +24,15 @@
 
 package org.silverpeas.components.quickinfo.notification;
 
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 
 public abstract class AbstractQuickInfoUserNotification<T> extends
     AbstractTemplateUserNotificationBuilder<T> {
 
   public AbstractQuickInfoUserNotification(T resource) {
     super(resource);
-  }
-
-  public AbstractQuickInfoUserNotification(final T resource, final String title,
-      final String fileName) {
-    super(resource, title, fileName);
   }
 
   @Override

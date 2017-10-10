@@ -98,9 +98,7 @@
 }
 
 #permalinkInfo input {
-	width:90%;
-	border:1px solid #cacaca;
-	color:#333;
+  width: 92%;
 }
 
 #preview .publiDesc,

@@ -25,11 +25,11 @@
 package org.silverpeas.components.quickinfo.notification;
 
 import org.silverpeas.components.quickinfo.model.News;
-
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.MissingResourceException;
 
@@ -48,6 +48,7 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");

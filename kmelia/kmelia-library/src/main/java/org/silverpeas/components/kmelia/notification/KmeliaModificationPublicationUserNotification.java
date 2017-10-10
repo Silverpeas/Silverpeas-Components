@@ -48,7 +48,7 @@ public class KmeliaModificationPublicationUserNotification extends AbstractKmeli
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (modificationScope == KmeliaHelper.PUBLICATION_HEADER) {
       return "notificationUpdateHeader";
     }

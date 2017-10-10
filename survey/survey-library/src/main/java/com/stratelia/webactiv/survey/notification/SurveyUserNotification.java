@@ -30,6 +30,7 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +55,7 @@ public class SurveyUserNotification
   public SurveyUserNotification(final String componentInstanceId,
       final QuestionContainerDetail surveyDetail, final String pathToSurvey,
       final UserDetail userDetail, final UserDetail[] participants) {
-    super(surveyDetail, null, null);
+    super(surveyDetail);
     this.componentInstanceId = componentInstanceId;
     this.pathToSurvey = pathToSurvey;
     this.userDetail = userDetail;
@@ -74,7 +75,7 @@ public class SurveyUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return this.fileName;
   }
 
@@ -95,12 +96,13 @@ public class SurveyUserNotification
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("UserDetail", this.userDetail);
     template.setAttribute("userName",
-        (this.userDetail != null ? this.userDetail.getDisplayedName() : ""));
+        this.userDetail != null ? this.userDetail.getDisplayedName() : "");
     template.setAttribute("SurveyDetail", resource);
     template.setAttribute("surveyName", resource.getHeader().getName());
     String surveyDesc = resource.getHeader().getDescription();

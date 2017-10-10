@@ -76,7 +76,6 @@ import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
-import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
@@ -2951,7 +2950,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationDetail pubDetail;
     try {
       silverObjectId =
-          kmeliaContentManager.getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
+          kmeliaContentManager.getSilverContentId(pubPK.getId(), pubPK.getInstanceId());
       if (silverObjectId == -1) {
         pubDetail = getPublicationDetail(pubPK);
         silverObjectId = createSilverContent(pubDetail, pubDetail.getCreatorId());
@@ -3731,18 +3730,6 @@ public class DefaultKmeliaService implements KmeliaService {
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     sendSubscriptionsNotification(pubDetail, NotifAction.PUBLISHED, true);
-  }
-
-  @Override
-  public void addUploadedFilesToPublication(PublicationDetail pubDetail, Collection<UploadedFile> uploadedFiles) {
-    // Attach uploaded files
-    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile.registerAttachment(pubDetail.getPK(), pubDetail.getLanguage(),
-            pubDetail.isIndexable());
-      }
-    }
   }
 
   @Override

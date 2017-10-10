@@ -47,7 +47,7 @@ public class ScheduleEventUserNotification extends AbstractScheduleEventUserNoti
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "new";
   }
 

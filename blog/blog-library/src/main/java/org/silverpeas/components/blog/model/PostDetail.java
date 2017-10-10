@@ -25,14 +25,10 @@
 package org.silverpeas.components.blog.model;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.URLUtil;
 
 import java.util.Date;
 
@@ -164,6 +160,16 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   @Override
+  public User getLastModifier() {
+    return publication.getLastModifier();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return publication.getLastModificationDate();
+  }
+
+  @Override
   public String getTitle() {
     return publication.getTitle();
   }
@@ -176,21 +182,6 @@ public final class PostDetail implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return TYPE;
-  }
-
-  /**
-   * Is the specified user can access this post?
-   * <p>
-   * A user can access a post if it has enough rights to access the blog instance in
-   * which is managed this post.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this post, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
   /**

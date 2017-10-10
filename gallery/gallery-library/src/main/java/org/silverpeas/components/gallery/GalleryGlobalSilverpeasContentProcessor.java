@@ -23,26 +23,27 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.core.contribution.contentcontainer.content.DefaultGlobalSilverContentProcessor;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface
+    .ContributionWrapper;
+import org.silverpeas.core.contribution.contentcontainer.content
+    .DefaultGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 
 import javax.inject.Named;
 
-import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor
-    .PROCESSOR_NAME_SUFFIX;
+import static org.silverpeas.core.contribution.contentcontainer.content
+    .IGlobalSilverContentProcessor.PROCESSOR_NAME_SUFFIX;
 
 @Named("gallery" + PROCESSOR_NAME_SUFFIX)
-public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
-    implements IGlobalSilverContentProcessor {
+public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor {
 
   @Override
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci);
-    Media media = (Media) sci;
+    Media media = (Media) ((ContributionWrapper) sci).getWrappedInstance();
     gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
     gsc.setType(media.getType().getName());
     return gsc;

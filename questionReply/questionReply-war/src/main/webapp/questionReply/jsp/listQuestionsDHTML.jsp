@@ -552,17 +552,16 @@ function search() {
       query : query
     };
 
-    $.get(webContext+"/services/search", queryDescription,
-      function(results) {
-        // limit results only to 'Question' (main entry)
-        var questionIds = [];
-        $.each(results, function(key, result) {
-          if (result.type === "Question") {
-            questionIds.push(result.id);
-          }
-        });
-        displaySearchResults(questionIds);
+    sp.search.on(queryDescription).then(function(results) {
+      // limit results only to 'Question' (main entry)
+      var questionIds = [];
+      results.forEach(function(result) {
+        if (result.type === "Question") {
+          questionIds.push(result.id);
+        }
       });
+      displaySearchResults(questionIds);
+    });
   } else {
     location.href = "Main";
   }

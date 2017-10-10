@@ -23,25 +23,27 @@
  */
 package org.silverpeas.components.webpages.servlets;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.webpages.control.WebPagesSessionController;
 import org.silverpeas.components.webpages.model.WebPagesException;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.contribution.ContributionStatus;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.ActionType;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 import java.util.List;
+
+import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
 
 /**
  * @author sdevolder
@@ -101,22 +103,16 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         if (webPagesSC.isXMLTemplateUsed()) {
           destination = getDestination("EditXMLContent", webPagesSC, request);
         } else {
-          request.setAttribute("SpaceId", webPagesSC.getSpaceId());
-          request.setAttribute("SpaceName",
-              URLEncoder.encode(webPagesSC.getSpaceLabel(), CharEncoding.UTF_8));
-          request.setAttribute("ComponentId", webPagesSC.getComponentId());
-          request.setAttribute("ComponentName",
-              URLEncoder.encode(webPagesSC.getComponentLabel(), CharEncoding.UTF_8));
-          request.setAttribute("ObjectId", webPagesSC.getComponentId());
-          request.setAttribute("Language", webPagesSC.getLanguage());
-          request.setAttribute("ReturnUrl",
-              URLUtil.getApplicationURL() + webPagesSC.getComponentUrl() + "Main");
-          request.setAttribute("UserId", webPagesSC.getUserId());
-          request.setAttribute("IndexIt", "true");
+          WysiwygRouting routing = new WysiwygRouting();
+          WysiwygRouting.WysiwygRoutingContext context =
+              WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(webPagesSC)
+                  .withContributionId(ContributionIdentifier.from(webPagesSC.getComponentId(), webPagesSC.getComponentId(), COMPONENT_INSTANCE))
+                  .withComeBackUrl(URLUtil.getApplicationURL() + webPagesSC.getComponentUrl() + "Main")
+                  .withIndexation(true);
 
           setupRequestForSubscriptionNotificationSending(request, webPagesSC.getComponentId());
 
-          destination = "/wysiwyg/jsp/htmlEditor.jsp";
+          destination = routing.getWysiwygEditorPath(context, request);
         }
       } else if ("Preview".equals(function)) {
         processHaveGotContent(webPagesSC, request);

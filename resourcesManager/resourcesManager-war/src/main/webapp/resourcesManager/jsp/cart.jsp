@@ -185,7 +185,7 @@ buttonPane.addButton(cancelButton);
               var url = "<c:url value="/services/contribution/${reservation.instanceId}/"/>" +
                   resourceId + '/content/form/' + formId + '?renderView=true';
               silverpeasAjax(url).then(function(request) {
-                var formData = JSON.parse(request.responseText);
+                var formData = request.responseAsJson();
                 resolve({
                   "label" : resourceLabel,
                   "text" : description,

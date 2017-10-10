@@ -47,7 +47,7 @@ public class KmeliaSubscriptionPublicationUserNotification
 
   private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
       new SubscriptionSubscriberMapBySubscriberType();
-  private Collection<String> userIdsToExcludeFromNotifying = new HashSet<String>();
+  private Collection<String> userIdsToExcludeFromNotifying = new HashSet<>();
 
   public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK,
       final PublicationDetail resource, final NotifAction action) {
@@ -94,13 +94,13 @@ public class KmeliaSubscriptionPublicationUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (NotifAction.CREATE.equals(getAction())) {
       return "notificationSubscriptionCreate";
     } else if(NotifAction.UPDATE.equals(getAction())) {
       return "notificationSubscriptionUpdate";
     } else {
-      // Draft out || Validate || ALIAS
+      // Draft out or Validate or ALIAS
       return "notificationSubscriptionOtherAction";
     }
   }

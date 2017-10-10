@@ -112,11 +112,11 @@
       </help>
     </parameter>
     <parameter>
-      <name>useAgregation</name>
+      <name>filterOnPdc</name>
       <label>
-        <message lang="fr">Agrégation d'Almanachs</message>
-        <message lang="en">Almanach Aggregation</message>
-        <message lang="de">Almanach Aggregierung</message>
+        <message lang="fr">Filtrage PDC</message>
+        <message lang="en">Classification filter</message>
+        <message lang="de">Classification filter</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -124,14 +124,33 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces
-          de l'espace de cet Almanach.
+        <message lang="fr">Si activé, le PDC permet de filtrer les événements présentés.</message>
+        <message lang="en">If activated, the Classification engine permits to filter displayed events.</message>
+        <message lang="de">If activated, the Classification engine permits to filter displayed events.</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useAgregation</name>
+      <label>
+        <message lang="fr">Agrégation d'Almanachs</message>
+        <message lang="en">Almanach Aggregation</message>
+        <message lang="de">Almanach Aggregierung</message>
+      </label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Cet Almanach pourra contenir des évènements d'autres Almanachs selon le
+          paramétrage de la plate-forme (almanachs des sous-espaces, de l'espace ou tous les almanachs).
         </message>
-        <message lang="en">This almanach can aggregate events from other almanachs in subspaces of the space
-          containing this almanach.
+        <message lang="en">This almanach can aggregate events from other almanachs according to the
+          platform settings (almanachs in subspaces, in the space or all the almanachs).
         </message>
-        <message lang="de">Dieser Almanach Kann Ereignisse von anderen Kalendern in Unterbereiche des Bereichs mit
-          diesem Almanach aggregierten.</message>
+        <message lang="de">Dieses Almanach kann Ereignisse von anderen Almanachs gemäß den
+          Einstellungen aggregieren (Almanachs in Unterräumen, im Raum oder in allen Almanachs).
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -141,7 +160,7 @@
         <message lang="en">Hide week-ends</message>
         <message lang="de">Wochenenden Verstecken</message>
       </label>
-      <order>3</order>
+      <order>4</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -155,11 +174,11 @@
     <parameter>
       <name>defaultView</name>
       <label>
-        <message lang="fr">Vue calendaire par défaut</message>
-        <message lang="en">Default calendar view</message>
+        <message lang="fr">Vue par défaut</message>
+        <message lang="en">Default view</message>
         <message lang="de">Standard-Ansicht</message>
       </label>
-      <order>4</order>
+      <order>5</order>
       <mandatory>true</mandatory>
       <value>MONTHLY</value>
       <options>
@@ -203,11 +222,11 @@
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
       </label>
-      <order>5</order>
+      <order>6</order>
       <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
-      <updatable>always</updatable>
+      <updatable>hidden</updatable>
       <help>
         <message lang="fr">Permet de générer un flux RSS des événements de cet Almanach.</message>
         <message lang="en">Produce a RSS stream for the events of this almanach.</message>
@@ -221,9 +240,9 @@
         <message lang="en">Aggregation type</message>
         <message lang="de">Aggregierung-Typ</message>
       </label>
-      <order>6</order>
+      <order>7</order>
       <mandatory>false</mandatory>
-      <value>0</value>
+      <value>3</value>
       <options>
         <option>
           <name>
@@ -259,7 +278,7 @@
         </option>
       </options>
       <type>select</type>
-      <updatable>always</updatable>
+      <updatable>hidden</updatable>
       <help>
         <message lang="fr">Permet de choisir quelles autres instances de l'application Almanach sont accessibles depuis
           la liste déroulante.

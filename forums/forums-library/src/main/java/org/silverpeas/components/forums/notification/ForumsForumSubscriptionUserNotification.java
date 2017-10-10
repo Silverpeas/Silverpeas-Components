@@ -61,7 +61,7 @@ public class ForumsForumSubscriptionUserNotification extends AbstractForumsForum
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (NotifAction.CREATE.equals(getAction())) {
       return "subscriptionNotificationOnForumCreate";
     }

@@ -26,10 +26,15 @@ package org.silverpeas.components.classifieds.servlets.handler;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 
 import java.net.URLEncoder;
+
+import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -45,19 +50,13 @@ public class ToWysiwygHeaderHandler extends FunctionHandler {
             URLUtil.getURL(classifiedsSC.getSpaceId(), classifiedsSC.getComponentId()) +
             "FromTopicWysiwyg", "UTF-8");
 
-    StringBuilder destination = new StringBuilder();
-    destination.append("/wysiwyg/jsp/htmlEditor.jsp?");
-    destination.append("SpaceId=").append(classifiedsSC.getSpaceId());
-    destination.append("&SpaceName=")
-        .append(URLEncoder.encode(classifiedsSC.getSpaceLabel(), "UTF-8"));
-    destination.append("&ComponentId=").append(classifiedsSC.getComponentId());
-    destination.append("&ComponentName=")
-        .append(URLEncoder.encode(classifiedsSC.getComponentLabel(), "UTF-8"));
-    destination.append("&BrowseInfo=").append("");
-    destination.append("&ObjectId=Node_0");
-    destination.append("&Language=fr");
-    destination.append("&ReturnUrl=").append(returnURL);
+    WysiwygRouting routing = new WysiwygRouting();
+    WysiwygRouting.WysiwygRoutingContext context =
+        WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(classifiedsSC)
+            .withContributionId(ContributionIdentifier.from(classifiedsSC.getComponentId(), "Node_0", NODE))
+            .withLanguage(I18NHelper.defaultLanguage)
+            .withComeBackUrl(returnURL);
 
-    return destination.toString();
+    return routing.getDestinationToWysiwygEditor(context);
   }
 }

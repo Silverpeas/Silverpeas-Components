@@ -52,10 +52,6 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     super(resource);
   }
 
-  public AbstractKmeliaUserNotification(final T resource, final String title, final String fileName) {
-    super(resource, title, fileName);
-  }
-
   @Override
   protected String getMultilangPropertyFile() {
     return "org.silverpeas.kmelia.multilang.kmeliaBundle";

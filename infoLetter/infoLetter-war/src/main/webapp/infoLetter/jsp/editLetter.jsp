@@ -69,7 +69,7 @@
 
   $(document).ready(function() {
     <view:wysiwyg replace="Content" language="${userLanguage}" width="95%" height="500" toolbar="infoLetter"
-                  spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=componentId%>" componentName="<%=componentLabel%>"
+                  spaceLabel="<%=spaceLabel%>" componentId="<%=componentId%>" componentLabel="<%=componentLabel%>"
                   browseInfo="${parutionTitle}" objectId="${parution}" />
   });
 </script>

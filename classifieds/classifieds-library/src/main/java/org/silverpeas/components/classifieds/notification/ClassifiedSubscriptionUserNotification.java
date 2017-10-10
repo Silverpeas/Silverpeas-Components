@@ -36,8 +36,13 @@ public class ClassifiedSubscriptionUserNotification extends AbstractClassifiedUs
   private final Collection<String> usersToBeNotified;
 
   public ClassifiedSubscriptionUserNotification(final ClassifiedDetail resource, final Collection<String> usersToBeNotified) {
-    super(resource, null, "subscription");
+    super(resource);
     this.usersToBeNotified = usersToBeNotified;
+  }
+
+  @Override
+  protected String getTemplateFileName() {
+    return "subscription";
   }
 
   @Override

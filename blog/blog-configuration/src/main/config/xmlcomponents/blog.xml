@@ -142,5 +142,23 @@
         <message lang="de">Die Autoren werden in der Lage sein Entwurf Beiträge zu sehen.</message>
       </help>
     </parameter>
+    <parameter>
+      <name>comments</name>
+      <label>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
+        <message lang="de">Kommentare</message>
+      </label>
+      <order>4</order>
+      <mandatory>true</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Pour commenter les billets</message>
+        <message lang="en">To comment posts</message>
+        <message lang="de">To comment posts</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

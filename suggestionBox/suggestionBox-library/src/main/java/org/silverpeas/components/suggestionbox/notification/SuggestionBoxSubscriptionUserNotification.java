@@ -64,7 +64,7 @@ public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestio
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "suggestionPublishedSubscriptionNotification";
   }
 

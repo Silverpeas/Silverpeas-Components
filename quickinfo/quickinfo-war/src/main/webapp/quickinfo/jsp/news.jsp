@@ -157,11 +157,10 @@ function onDelete(id) {
 			<a href="#commentaires">${news.numberOfComments}</a>
 		</p>
 		</c:if>
-									
-		<p id="permalinkInfo">
-			<a title="<fmt:message key="quickinfo.news.permalink"/>" href="<c:url value="/Publication/${news.publicationId}"/>"><img alt="<fmt:message key="quickinfo.news.permalink"/>" src="<c:url value='/util/icons/link.gif'/>" /></a> <fmt:message key="GML.permalink"/> <br />
-			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.publicationId}"/>" onmouseup="return false" onfocus="select();" />
-		</p>
+
+    <c:url var="permalink" value="/Publication/${news.publicationId}"/>
+    <fmt:message var="permalinkHelp" key="quickinfo.news.permalink"/>
+    <viewTags:displayPermalinkInfo link="${permalink}" help="${permalinkHelp}"/>
 	</div>
 
   <%-- Attachments --%>
@@ -170,6 +169,7 @@ function onDelete(id) {
   <c:set var="highestUserRoleForAttachments" value="<%=highestUserRole == SilverpeasRole.user ? SilverpeasRole.user : SilverpeasRole.admin%>"/>
   <viewTags:displayAttachments componentInstanceId="${news.componentInstanceId}"
                                resourceId="${news.publicationId}"
+                               resourceType="${news.publication.contributionType}"
                                highestUserRole="${highestUserRoleForAttachments}"
                                reloadCallbackUrl="${callbackUrl}"/>
                           
@@ -206,7 +206,7 @@ function onDelete(id) {
 	</div>
     
     <c:if test="${appSettings.commentsEnabled && not viewOnly}">
-		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.id}" indexed="true"/>
+		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="${news.contributionType}" resourceId="${news.id}" indexed="true"/>
 	</c:if>
 </div>
 <!-- /INTEGRATION UNE ACTU -->

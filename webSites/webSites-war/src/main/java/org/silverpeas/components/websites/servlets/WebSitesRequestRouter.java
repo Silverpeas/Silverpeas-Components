@@ -29,7 +29,9 @@ import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.design.SiteDesignActionHandler;
 import org.silverpeas.components.websites.siteManage.model.FolderDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
@@ -44,6 +46,8 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.util.RoutingException;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -53,6 +57,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.websites.servlets.WebSitesUtil.getMachine;
+import static org.silverpeas.core.contribution.model.CoreContributionType.UNKNOWN;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSessionController> {
@@ -718,27 +723,27 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   }
 
   private String toWysiwygEditor(final WebSiteSessionController scc, final HttpRequest request,
-      final String userRole) throws WebSitesException, UnsupportedEncodingException {
+      final String userRole) throws WebSitesException, UnsupportedEncodingException,
+      RoutingException {
     String path = request.getParameter(PATH_PARAM);
     scc.checkPath(path);
     String name = request.getParameter("name");
     String nameSite = request.getParameter("nameSite");
     String id = request.getParameter("id");
-    String destination = "/wysiwyg/jsp/htmlEditor.jsp?";
-    destination += "SpaceId=" + scc.getSpaceId();
 
-    destination += "&SpaceName=" + URLEncoder.encode(scc.getSpaceLabel(), "UTF-8");
-    destination += "&ComponentId=" + scc.getComponentId();
-    destination += "&ComponentName=" + URLEncoder.encode(scc.getComponentLabel(), "UTF-8");
-    destination += "&BrowseInfo=" + URLEncoder.encode(nameSite, "UTF-8");
-    destination += "&Language=fr";
-    destination += "&ObjectId=" + id;
-    destination += "&FileName=" + URLEncoder.encode(name, "UTF-8");
-    destination += FOLDER_PATH_FILTER + URLEncoder.encode(path, "UTF-8");
-    destination += "&ReturnUrl=" + URLEncoder.encode(URLUtil.getApplicationURL() +
-        URLUtil.getURL(scc.getSpaceId(), scc.getComponentId()) + "FromWysiwyg?Path=" + path +
-        "&name=" + name + "&nameSite=" + nameSite + "&profile=" + userRole + "&id=" + id, "UTF-8");
-    return destination;
+    WysiwygRouting routing = new WysiwygRouting();
+    WysiwygRouting.WysiwygRoutingContext context =
+        WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(scc)
+            .withContributionId(ContributionIdentifier.from(scc.getComponentId(), id, UNKNOWN))
+            .withBrowseInfo(URLEncoder.encode(nameSite, "UTF-8"))
+            .withFileName(URLEncoder.encode(nameSite, "UTF-8") + FOLDER_PATH_FILTER +
+                URLEncoder.encode(path, "UTF-8"))
+            .withLanguage(I18NHelper.defaultLanguage)
+            .withComeBackUrl(URLEncoder.encode(URLUtil.getApplicationURL() +
+                URLUtil.getURL(scc.getSpaceId(), scc.getComponentId()) + "FromWysiwyg?Path=" +
+                path + "&name=" + name + "&nameSite=" + nameSite + "&profile=" + userRole + "&id=" +
+                id, "UTF-8"));
+    return routing.getDestinationToWysiwygEditor(context);
   }
 
   private String suggestLink(final WebSiteSessionController scc, final HttpRequest request) {

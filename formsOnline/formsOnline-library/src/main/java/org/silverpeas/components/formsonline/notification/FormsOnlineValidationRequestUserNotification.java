@@ -51,7 +51,7 @@ public class FormsOnlineValidationRequestUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (NotifAction.VALIDATE.equals(getAction())) {
       return "notificationValidated";
     }
@@ -78,7 +78,7 @@ public class FormsOnlineValidationRequestUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

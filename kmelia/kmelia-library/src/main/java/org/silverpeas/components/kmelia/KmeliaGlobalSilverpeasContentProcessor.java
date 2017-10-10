@@ -23,10 +23,11 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface
+    .ContributionWrapper;
 import org.silverpeas.core.contribution.contentcontainer.content
     .DefaultGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.StringUtil;
@@ -38,13 +39,12 @@ import static org.silverpeas.core.contribution.contentcontainer.content
     .IGlobalSilverContentProcessor.PROCESSOR_NAME_SUFFIX;
 
 @Named("kmelia" + PROCESSOR_NAME_SUFFIX)
-public class KmeliaGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
-    implements IGlobalSilverContentProcessor {
+public class KmeliaGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor {
 
   @Override
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci);
-    PublicationDetail pub = (PublicationDetail) sci;
+    PublicationDetail pub = (PublicationDetail) ((ContributionWrapper) sci).getWrappedInstance();
     gsc.setType("Publication");
     if (StringUtil.isDefined(pub.getImage())) {
       String imageURL = FileServerUtils.getUrl(pub.getPK().

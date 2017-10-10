@@ -52,6 +52,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -94,11 +95,9 @@
 
                 if ((messageTitle.length() > 0) && (messageText.length() > 0)) {
                     if (params == -1) {
-                      Collection<UploadedFile> uploadedFiles =
-                          FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
                       int result =
                           fsc.createMessage(messageTitle, userId, forumId, parentId,
-                              messageText, null, uploadedFiles);
+                              messageText, null, ((HttpRequest)request).getUploadedFiles());
                       messageId = result;
                     } else {
                         // Modification

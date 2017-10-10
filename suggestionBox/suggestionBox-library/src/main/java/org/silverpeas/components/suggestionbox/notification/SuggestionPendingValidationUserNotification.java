@@ -50,7 +50,7 @@ public class SuggestionPendingValidationUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "pendingValidationNotification";
   }
 

@@ -23,27 +23,26 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
-
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.webapi.attachment.AttachmentEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
 
 /**
  * @author emmanuel.hugonnet@silverpeas.org
@@ -89,10 +88,10 @@ public class ReplyEntity implements WebEntity {
     this.content = reply.readCurrentWysiwygContent();
     this.title = reply.getTitle();
     try {
-      this.creationDate = DateUtil.getOutputDate(reply.getCreationDate(), lang);
+      this.creationDate = DateUtil.getOutputDate(reply.getCreationDateAsString(), lang);
       this.language = lang;
     } catch (ParseException ex) {
-      this.creationDate = reply.getCreationDate();
+      this.creationDate = reply.getCreationDateAsString();
     }
     this.creatorId = reply.getCreatorId();
     this.creatorName = reply.readCreatorName();

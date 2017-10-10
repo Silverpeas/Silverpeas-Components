@@ -24,22 +24,6 @@
 
 package org.silverpeas.components.forums.service;
 
-import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.tagcloud.service.TagCloudService;
-import org.silverpeas.core.tagcloud.model.TagCloud;
-import org.silverpeas.core.tagcloud.dao.TagCloudPK;
-import org.silverpeas.core.tagcloud.model.TagCloudUtil;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.components.forums.ForumsContentManager;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumDetail;
@@ -51,17 +35,33 @@ import org.silverpeas.components.forums.subscription.ForumMessageSubscription;
 import org.silverpeas.components.forums.subscription.ForumMessageSubscriptionResource;
 import org.silverpeas.components.forums.subscription.ForumSubscription;
 import org.silverpeas.components.forums.subscription.ForumSubscriptionResource;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
+import org.silverpeas.core.tagcloud.dao.TagCloudPK;
+import org.silverpeas.core.tagcloud.model.TagCloud;
+import org.silverpeas.core.tagcloud.model.TagCloudUtil;
+import org.silverpeas.core.tagcloud.service.TagCloudService;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -1083,7 +1083,7 @@ public class DefaultForumService implements ForumService {
         instanceId = getForumInstanceId(forumId);
         forumPK.setComponentName(instanceId);
       }
-      silverObjectId = forumsContentManager.getSilverObjectId(forumPK.getId(), instanceId);
+      silverObjectId = forumsContentManager.getSilverContentId(forumPK.getId(), instanceId);
       if (silverObjectId == -1) {
         String creatorId = getForumCreatorId(forumId);
         silverObjectId = forumsContentManager.createSilverContent(null, forumPK, creatorId);

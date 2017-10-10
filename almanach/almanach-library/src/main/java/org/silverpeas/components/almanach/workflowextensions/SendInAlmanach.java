@@ -1,43 +1,54 @@
 /*
  * Copyright (C) 2000 - 2017 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.components.almanach.workflowextensions;
 
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.almanach.service.AlmanachService;
-import org.silverpeas.components.almanach.service.AlmanachRuntimeException;
-import org.silverpeas.components.almanach.model.EventDetail;
-import org.silverpeas.components.almanach.model.EventPK;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
-import java.text.ParseException;
-import java.util.Date;
+import javax.inject.Named;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
  * The aim of this class is to provide a new workflow extension in order to create an almanach event
@@ -52,110 +63,115 @@ import java.util.Date;
  * Watch {@link AlmanachTriggerParam} to get more trigger parameter information
  * @author ebonnet
  */
+@Named("SendInAlmanach")
 public class SendInAlmanach extends ExternalActionImpl {
 
   private String role = "unknown";
-  private final String ADMIN_ID = "0";
+  private static final String ADMIN_ID = "0";
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("dd/MM/yyyy hh:mm");
+  private static final DateTimeFormatter DATE_FORMATTER = ofPattern("dd/MM/yyyy");
 
   @Inject
   private OrganizationController organizationController;
-
-  public SendInAlmanach() {
-  }
 
   @Override
   public void execute() {
     setRole(getEvent().getUserRoleName());
 
-    Parameter almanachParam =
+    final Parameter almanachParam =
         getTriggerParameter(AlmanachTriggerParam.APPLICATION_ID.getParameterName());
 
-    Date startDate = getEventDate(AlmanachTriggerParam.START_DATE);
+    final String componentInstanceId = almanachParam.getValue();
+    final Period eventPeriod = getEventPeriod();
 
     // Check workflow export target parameter is valid
-    if (isMandatoryTriggerParamValid(almanachParam, startDate)) {
+    if (isMandatoryTriggerParamValid(almanachParam, eventPeriod)) {
+
+      // Getting almanach main calendar
+      final Calendar almanach =
+          Calendar.getByComponentInstanceId(componentInstanceId).getMainCalendar().orElseThrow(
+              () -> new IllegalStateException(unknown("main calendar on", componentInstanceId)));
 
       // Set event detail data
-      EventDetail event = new EventDetail();
-      event.setPK(new EventPK("", "useless", almanachParam.getValue()));
-      event.setDelegatorId(getBestUserId());
-      event.setName(getFolderValueFromTriggerParam(AlmanachTriggerParam.EVENT_NAME));
-      event.setDescription(getFolderValueFromTriggerParam(AlmanachTriggerParam.EVENT_DESCRIPTION));
-      event.setStartDate(startDate);
-      String startHour = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_HOUR);
-      if (StringUtil.isValidHour(startHour)) {
-        event.setStartHour(startHour);
-      }
-      Date endDate = getEventDate(AlmanachTriggerParam.END_DATE);
-      if (endDate != null) {
-        event.setEndDate(getEventDate(AlmanachTriggerParam.END_DATE));
-      } else {
-        // End date must be set to start date if not defined
-        event.setEndDate(startDate);
-      }
-      String endHour = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_HOUR);
-      if (StringUtil.isValidHour(endHour)) {
-        event.setEndHour(endHour);
-      }
-      event.setPlace(getFolderValueFromTriggerParam(AlmanachTriggerParam.PLACE));
-      event.setEventUrl(getFolderValueFromTriggerParam(AlmanachTriggerParam.EVENT_URL));
+      CalendarEvent event = CalendarEvent.on(eventPeriod)
+          .withTitle(getFolderValueFromTriggerParam(AlmanachTriggerParam.EVENT_NAME))
+          .withDescription(getFolderValueFromTriggerParam(AlmanachTriggerParam.EVENT_DESCRIPTION));
+      event.setLocation(getFolderValueFromTriggerParam(AlmanachTriggerParam.PLACE));
+      event.getAttributes()
+          .set("externalUrl", getFolderValueFromTriggerParam(AlmanachTriggerParam.EVENT_URL));
       boolean priority =
-          StringUtil.getBooleanValue(getFolderValueFromTriggerParam(AlmanachTriggerParam.PRIORITY));
+          getBooleanValue(getFolderValueFromTriggerParam(AlmanachTriggerParam.PRIORITY));
       if (priority) {
-        event.setPriority(1);
+        event.withPriority(Priority.HIGH);
       }
-      String eventId = getAlmanachBm().addEvent(event, null);
-      SilverTrace
-          .info("processManager", "SendInAlmanach", "Add an event successfully id=" + eventId);
+
+      OperationContext.fromUser(getBestUser());
+      event.planOn(almanach);
     } else {
       StringBuilder warnMsg = new StringBuilder();
       warnMsg.append("Workflow export event problem :");
-      if (almanachParam == null || !StringUtil.isDefined(almanachParam.getValue()) ||
-          !getOrganizationController().isComponentExist(almanachParam.getValue())) {
+      if (!StringUtil.isDefined(componentInstanceId) ||
+          !getOrganizationController().isComponentExist(componentInstanceId)) {
         warnMsg.append("You must set a correct trigger parameter tp_almanachId.");
       }
-      if (startDate == null) {
+      if (eventPeriod == null) {
         warnMsg.append("You must set a correct trigger parameter tp_startDate.");
       }
-      SilverTrace.warn("processManager", "SendInAlmanach", warnMsg.toString());
+      SilverLogger.getLogger(this).warn(warnMsg.toString());
     }
   }
 
   /**
    * Check if almanach target application and event start date exist
    * @param almanachParam the almanach target application trigger parameter
-   * @param startDate the event start date
+   * @param eventPeriod the event period
    * @return true if all mandatory field exist
    */
-  private boolean isMandatoryTriggerParamValid(Parameter almanachParam, Date startDate) {
+  private boolean isMandatoryTriggerParamValid(Parameter almanachParam, Period eventPeriod) {
     return almanachParam != null && StringUtil.isDefined(almanachParam.getValue()) &&
-        getOrganizationController().isComponentExist(almanachParam.getValue()) && startDate != null;
+        getOrganizationController().isComponentExist(almanachParam.getValue()) &&
+        eventPeriod != null;
   }
 
-  Date getEventDate(AlmanachTriggerParam atp) {
-    String triggerParamValue = retrieveTriggerParamValue(atp);
-    if (triggerParamValue != null) {
+  private Period getEventPeriod() {
+    final String startDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_DATE);
+    final String endDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_DATE);
+    if (startDayValue != null) {
+      final String startHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_HOUR);
+      final String endHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_HOUR);
       try {
-        return DateUtil.parse(evaluateFolderValues(triggerParamValue), "dd/MM/yyyy");
-      } catch (ParseException e) {
-        SilverTrace.warn("processManager", "SendInAlmanach", "Start date loading error");
+        final Temporal start;
+        if (StringUtil.isValidHour(startHourValue)) {
+          start = OffsetDateTime.parse(startDayValue + " " + startHourValue, DATE_TIME_FORMATTER);
+        } else {
+          start = LocalDate.parse(startDayValue, DATE_FORMATTER);
+        }
+        final Temporal end;
+        if (endDayValue != null) {
+          if (StringUtil.isValidHour(endHourValue)) {
+            end = OffsetDateTime.parse(endDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
+          } else {
+            end = LocalDate.parse(endDayValue, DATE_FORMATTER).plusDays(1);
+          }
+        } else {
+          if (StringUtil.isValidHour(endHourValue)) {
+            end = OffsetDateTime.parse(startDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
+          } else {
+            end = start.plus(1, ChronoUnit.DAYS);
+          }
+        }
+        return Period.between(start, end);
+      } catch (DateTimeParseException e) {
+        SilverLogger.getLogger(this).warn(e);
       }
     }
     return null;
   }
 
-  /**
-   * @param almanachParam the almanach trigger param
-   * @return
-   */
   private String getFolderValueFromTriggerParam(AlmanachTriggerParam almanachParam) {
     return evaluateFolderValues(retrieveTriggerParamValue(almanachParam));
   }
 
-  /**
-   * @param almanachParam
-   * @return
-   */
   private String retrieveTriggerParamValue(AlmanachTriggerParam almanachParam) {
     String triggerParamValue = StringUtil.EMPTY;
     Parameter triggerParam = getTriggerParameter(almanachParam.getParameterName());
@@ -176,47 +192,36 @@ public class SendInAlmanach extends ExternalActionImpl {
       try {
         evaluateValue =
             DataRecordUtil.applySubstitution(triggerParamValue, getProcessInstance()
-                .getAllDataRecord(role,
-                    "fr"), "fr");
+                .getAllDataRecord(getRole(), "fr"), "fr");
       } catch (WorkflowException e) {
-        SilverTrace.error("workflowEngine", "SendInAlmanach.execute()", "root.MSG_GEN_ERROR", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return evaluateValue;
   }
 
-  public String getRole() {
+  private String getRole() {
     return role;
   }
 
-  public void setRole(String role) {
+  private void setRole(String role) {
     this.role = role;
-  }
-
-  protected AlmanachService getAlmanachBm() {
-    try {
-      return ServiceProvider.getService(AlmanachService.class);
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("SendInAlmanach.getKmeliaBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
   /**
    * Get actor if exist, admin otherwise
-   * @return UserDetail
+   * @return {@link User} instance.
    */
-  private String getBestUserId() {
+  private User getBestUser() {
     String currentUserId = ADMIN_ID;
     // For a manual action (event)
     if (getEvent().getUser() != null) {
       currentUserId = getEvent().getUser().getUserId();
     }
-    return currentUserId;
+    return User.getById(currentUserId);
   }
 
-  protected OrganizationController getOrganizationController() {
+  private OrganizationController getOrganizationController() {
     return organizationController;
   }
-
 }

@@ -21,7 +21,8 @@
 
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -55,17 +56,18 @@ public class KmeliaWysiwygEventListener extends CDIResourceEventListener<Wysiwyg
 
   private void anExternalPublicationElementHaveChanged(WysiwygContent content) {
     if (isAboutKmeliaPublication(content)) {
-      ContributionIdentifier id = content.getContributionId();
+      ContributionIdentifier id = content.getContribution().getContributionId();
       PublicationPK pubPK =
           new PublicationPK(id.getLocalId(), id.getComponentInstanceId());
-      kmeliaService.externalElementsOfPublicationHaveChanged(pubPK, content.getAuthorId());
+      kmeliaService.externalElementsOfPublicationHaveChanged(pubPK, content.getAuthor().getId());
     }
   }
 
   private boolean isAboutKmeliaPublication(WysiwygContent content) {
-    return !content.getContributionId().getLocalId().startsWith("Node") && (
-            content.getContributionId().getComponentInstanceId().startsWith("kmax") ||
-            content.getContributionId().getComponentInstanceId().startsWith("kmelia") ||
-            content.getContributionId().getComponentInstanceId().startsWith("toolbox"));
+    final Contribution contribution = content.getContribution();
+    return !contribution.getContributionId().getLocalId().startsWith("Node") && (
+        contribution.getContributionId().getComponentInstanceId().startsWith("kmax") ||
+        contribution.getContributionId().getComponentInstanceId().startsWith("kmelia") ||
+        contribution.getContributionId().getComponentInstanceId().startsWith("toolbox"));
   }
 }

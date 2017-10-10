@@ -31,9 +31,8 @@ import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotific
 public abstract class AbstractFormsOnlineUserNotification<T>
     extends AbstractTemplateUserNotificationBuilder<T> {
 
-  public AbstractFormsOnlineUserNotification(final T resource, final String title,
-      final String fileName) {
-    super(resource, title, fileName);
+  public AbstractFormsOnlineUserNotification(final T resource) {
+    super(resource);
   }
 
   @Override

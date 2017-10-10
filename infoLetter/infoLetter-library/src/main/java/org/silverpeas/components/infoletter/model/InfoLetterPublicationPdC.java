@@ -25,22 +25,16 @@
 package org.silverpeas.components.infoletter.model;
 
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Date;
 import java.util.Iterator;
 
 /**
  * @author lbertin
  */
 public class InfoLetterPublicationPdC extends InfoLetterPublication
-    implements SilverContentInterface, SilverpeasContent {
+    implements SilverContentInterface {
   private static final long serialVersionUID = -2174573301215680444L;
   /**
    * icone d'une publication
@@ -81,49 +75,54 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
     this.positions = positions;
   }
 
+  @Override
   public String getName() {
     return getTitle();
   }
 
+  @Override
   public String getURL() {
     return "searchResult?Type=Publication&Id=" + getId();
   }
 
+  @Override
   public String getId() {
     return getPK().getId();
   }
 
+  @Override
   public String getDate() {
     return getParutionDate();
   }
 
+  @Override
   public String getCreatorId() {
     return null;
   }
 
+  @Override
   public String getIconUrl() {
     return iconUrl;
   }
 
+  @Override
   public String getSilverCreationDate() {
     return getParutionDate();
   }
 
+  @Override
   public String getDescription(String language) {
     return getDescription();
   }
 
+  @Override
   public String getName(String language) {
     return getName();
   }
 
+  @Override
   public Iterator<String> getLanguages() {
     return null;
-  }
-
-  @Override
-  public String getComponentInstanceId() {
-    return getInstanceId();
   }
 
   @Override
@@ -131,7 +130,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
     if (this.silverObjectId == null) {
       InfoLetterContentManager contentManager =
           ServiceProvider.getService(InfoLetterContentManager.class);
-      int objectId = contentManager.getSilverObjectId(getId(), getComponentInstanceId());
+      int objectId = contentManager.getSilverContentId(getId(), getComponentInstanceId());
       if (objectId >= 0) {
         this.silverObjectId = String.valueOf(objectId);
       }
@@ -140,33 +139,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   }
 
   @Override
-  public User getCreator() {
-    return User.getById(this.getCreatorId());
-  }
-
-  @Override
-  public Date getCreationDate() {
-    // no need date to classify this content
-    return null;
-  }
-
-  @Override
   public String getContributionType() {
     return TYPE;
-  }
-
-  /**
-   * Is the specified user can access this information letter?
-   * <p>
-   * A user can access an information letter if it has enough rights to access the InfoLetter
-   * instance in which is managed this letter.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this letter, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

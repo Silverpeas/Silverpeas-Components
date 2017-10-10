@@ -24,11 +24,12 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.MissingResourceException;
 
@@ -43,7 +44,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
 
   protected AbstractFormsOnlineRequestUserNotification(final FormInstance resource,
       final NotifAction action) {
-    super(resource, null, null);
+    super(resource);
     this.action = action;
     if (NotifAction.PENDING_VALIDATION.equals(action)) {
       this.senderName = UserDetail.getById(resource.getCreatorId()).getDisplayedName();
@@ -59,6 +60,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");

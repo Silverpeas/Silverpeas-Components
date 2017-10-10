@@ -23,16 +23,17 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +52,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
   private final NotifAction action;
 
   public KmeliaTopicUserNotification(final NodePK nodePK, final NodePK fatherPK, final String alertType) {
-    super(null, null, "notificationCreateTopic");
+    super(null);
     this.nodePK = nodePK;
     this.alertType = alertType;
     try {
@@ -146,6 +147,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
@@ -163,6 +165,11 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     notificationResourceData.setResourceType(resource.getType());
     notificationResourceData.setResourceName(resource.getName(language));
     notificationResourceData.setResourceDescription(resource.getDescription(language));
+  }
+
+  @Override
+  protected String getTemplateFileName() {
+    return "notificationCreateTopic";
   }
 
   @Override

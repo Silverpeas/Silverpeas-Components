@@ -733,7 +733,7 @@ public class DefaultBlogService implements BlogService {
     PublicationDetail pubDetail;
     try {
       silverObjectId =
-          blogContentManager.getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
+          blogContentManager.getSilverContentId(pubPK.getId(), pubPK.getInstanceId());
       if (silverObjectId == -1) {
         pubDetail = getPublicationService().getDetail(pubPK);
         silverObjectId = createSilverContent(pubDetail, pubDetail.getCreatorId());

@@ -63,6 +63,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -74,6 +75,7 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
@@ -155,8 +157,8 @@ import java.text.ParseException;
 import java.util.*;
 
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
-    .getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileIdentifierProvider
+    .newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -879,8 +881,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       } else {
         List<PdcPosition> pdcPositions = classification.getPdcPositions();
         PdcClassification withClassification =
-            aPdcClassificationOfContent(pubDetail.getId(), pubDetail.getComponentInstanceId())
-                .withPositions(pdcPositions);
+            aPdcClassificationOfContent(pubDetail).withPositions(pdcPositions);
         result = getKmeliaBm()
             .createPublicationIntoTopic(pubDetail, getCurrentFolderPK(), withClassification);
       }
@@ -891,12 +892,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * attach uploaded files to the specified publication
    *
-   * @param pubDetail publication on which you want to attach files
    * @param uploadedFiles list of uploaded files
+   * @param pubDetail publication on which you want to attach files
    */
-  public synchronized void addUploadedFilesToPublication(PublicationDetail pubDetail,
-      Collection<UploadedFile> uploadedFiles) {
-    getKmeliaBm().addUploadedFilesToPublication(pubDetail, uploadedFiles);
+  public synchronized void addUploadedFilesToPublication(Collection<UploadedFile> uploadedFiles,
+      PublicationDetail pubDetail) {
+    Attachments.from(uploadedFiles).attachTo(LocalizedContribution.from(pubDetail,
+        pubDetail.getLanguage()));
   }
 
   public synchronized void updatePublication(PublicationDetail pubDetail) {
@@ -3869,11 +3871,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public PublicationDetail prepareNewPublication() {
-    String volatileId =
-        getSessionVolatileResourceCacheService().newVolatileIntegerIdentifierAsString();
+    String volatileId = newVolatileIntegerIdentifierOn(getComponentId());
     PublicationDetail publication = new PublicationDetail();
     publication.setPk(getPublicationPK(volatileId));
-    getSessionVolatileResourceCacheService().addComponentResource(publication);
     return publication;
   }
 }

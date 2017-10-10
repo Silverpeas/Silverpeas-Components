@@ -23,23 +23,21 @@
  */
 package org.silverpeas.components.questionreply.servlets;
 
-import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.components.questionreply.control.QuestionReplySessionController;
 import org.silverpeas.components.questionreply.model.Category;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.io.upload.FileUploadManager;
-import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -235,9 +233,7 @@ public class QuestionReplyRequestRouter
         }
         scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
             publicReply, publicReply == 1 ? 0 : 1);
-        Collection<UploadedFile> uploadedFiles =
-            FileUploadManager.getUploadedFiles(request, scc.getUserDetail());
-        scc.saveNewReply(uploadedFiles);
+        scc.saveNewReply(request.getUploadedFiles());
 
         if (scc.getCurrentQuestion() != null) {
           request.setAttribute("QuestionId", scc.getCurrentQuestion().getPK().getId());
@@ -276,9 +272,7 @@ public class QuestionReplyRequestRouter
             0);
         // Get classification positions
         String positions = request.getParameter("Positions");
-        Collection<UploadedFile> uploadedFiles =
-            FileUploadManager.getUploadedFiles(request, scc.getUserDetail());
-        long questionId = scc.saveNewFAQ(uploadedFiles);
+        long questionId = scc.saveNewFAQ(request.getUploadedFiles());
         String id = Long.toString(questionId);
         scc.classifyQuestionReply(questionId, positions);
         scc.getQuestion(questionId);
@@ -359,6 +353,9 @@ public class QuestionReplyRequestRouter
           request.setAttribute("QuestionId", Long.toString(questionId));
           destination = getDestination("Main", scc, request);
         } else {
+          if (StringUtil.isDefined(id)) {
+            request.setAttribute("QuestionId", id);
+          }
           destination = getDestination("Main", scc, request);
         }
       } else if ("Export".equals(function)) {

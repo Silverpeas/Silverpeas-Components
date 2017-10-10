@@ -26,21 +26,15 @@ package org.silverpeas.components.infoletter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.components.infoletter.model.InfoLetterPublication.PUBLICATION_VALIDEE;
 
@@ -48,9 +42,9 @@ import static org.silverpeas.components.infoletter.model.InfoLetterPublication.P
  * The infoletter implementation of ContentInterface.
  */
 @Singleton
-public class InfoLetterContentManager implements ContentInterface {
+public class InfoLetterContentManager extends AbstractContentInterface {
 
-  private InfoLetterService dataInterface = null;
+  private static final String CONTENT_ICON_FILE_NAME = "infoLetterSmall.gif";
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -58,82 +52,29 @@ public class InfoLetterContentManager implements ContentInterface {
   protected InfoLetterContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param sComponentId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @return a List of SilverContent
-   */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String sComponentId,
-      String userId) {
-    if (getContentManager() == null) {
-      return new ArrayList<>();
-    }
-    return getHeaders(makePKArray(ids), sComponentId);
+  protected String getContentIconFileName(final String componentInstanceId) {
+    return CONTENT_ICON_FILE_NAME;
   }
 
-  public int getSilverObjectId(String pubId, String peasId) {
-
-    try {
-      return getContentManager().getSilverContentId(pubId, peasId);
-    } catch (Exception e) {
-      throw new InfoLetterException("InfoLetterContentManager.getSilverObjectId()",
-          SilverpeasException.ERROR, "infoletter.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
-    }
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    return Optional.ofNullable(getInfoLetterPublicationPdC(resourceId, componentInstanceId));
   }
 
-  /**
-   * add a new content. It is registered to contentManager service
-   * @param con a Connection
-   * @param ilPub the content to register
-   * @param userId the creator of the content
-   * @return the unique silverObjectId which identified the new content
-   */
-  public int createSilverContent(Connection con, InfoLetterPublicationPdC ilPub, String userId)
-      throws ContentManagerException {
-    SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
-
-    return getContentManager()
-        .addSilverContent(con, ilPub.getId(), ilPub.getInstanceId(), userId, scv);
+  @Override
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
+    return resourceIds.stream().map(i -> getInfoLetterPublicationPdC(i, componentInstanceId))
+        .collect(Collectors.toList());
   }
 
-  /**
-   * update the visibility attributes of the content. Here, the type of content is a
-   * PublicationDetail
-   * @param ilPub the content
-   */
-  public void updateSilverContentVisibility(InfoLetterPublicationPdC ilPub)
-      throws ContentManagerException {
-    int silverContentId =
-        getContentManager().getSilverContentId(ilPub.getId(), ilPub.getInstanceId());
-    SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
-
-    if (silverContentId == -1) {
-      createSilverContent(null, ilPub, ilPub.getCreatorId());
-    } else {
-      getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, silverContentId);
-      ClassifyEngine.clearCache();
-    }
-
-  }
-
-  /**
-   * delete a content. It is registered to contentManager service
-   * @param con a Connection
-   * @param pubId the identifiant of the content to unregister
-   * @param componentId the identifiant of the component instance where the content to unregister
-   * is
-   */
-  public void deleteSilverContent(Connection con, String pubId, String componentId)
-      throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(pubId, componentId);
-    if (contentId != -1) {
-
-      getContentManager().removeSilverContent(con, contentId);
-    }
+  @Override
+  protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
+      final T contribution) {
+    final InfoLetterPublicationPdC ilPub = (InfoLetterPublicationPdC) contribution;
+    return new SilverContentVisibility(isVisible(ilPub));
   }
 
   private boolean isVisible(InfoLetterPublicationPdC ilPub) {
@@ -141,52 +82,19 @@ public class InfoLetterContentManager implements ContentInterface {
   }
 
   /**
-   * return a list of ids according to a list of silverContentId
-   * @param idList a list of silverContentId
-   * @return a list of ids
-   */
-  private List<String> makePKArray(List<Integer> idList) {
-    List<String> pks = new ArrayList<>();
-    // for each silverContentId, we get the corresponding infoLetterPublicationId
-    for (Integer contentId : idList) {
-      try {
-        String id = getContentManager().getInternalContentId(contentId);
-        pks.add(id);
-      } catch (ClassCastException | ContentManagerException e) {
-        // ignore unknown item
-        SilverLogger.getLogger(this).debug(e.getMessage(), e);
-      }
-    }
-    return pks;
-  }
-
-  /**
-   * return a list of silverContent according to a list of publicationPK
-   * @param ids a list of publicationPK
+   * Gets a publication from info letter.
+   * @param resourceId a publication identifier
    * @param componentId the id of the instance
    * @return a list of publicationDetail
    */
-  private List<SilverContentInterface> getHeaders(List<String> ids, String componentId) {
-    List<SilverContentInterface> headers = new ArrayList<>();
-    for (String pubId : ids) {
-      IdPK pubPK = new IdPK();
-      pubPK.setId(pubId);
-
-      InfoLetterPublicationPdC ilPub = getDataInterface().getInfoLetterPublication(pubPK);
-      ilPub.setInstanceId(componentId);
-      headers.add(ilPub);
-    }
-    return headers;
-  }
-
-  private ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
+  private Contribution getInfoLetterPublicationPdC(String resourceId, String componentId) {
+    InfoLetterPublicationPdC ilPub =
+        getDataInterface().getInfoLetterPublication(new IdPK(resourceId));
+    ilPub.setInstanceId(componentId);
+    return ilPub;
   }
 
   private InfoLetterService getDataInterface() {
-    if (dataInterface == null) {
-      dataInterface = InfoLetterServiceProvider.getInfoLetterData();
-    }
-    return dataInterface;
+    return InfoLetterServiceProvider.getInfoLetterData();
   }
 }

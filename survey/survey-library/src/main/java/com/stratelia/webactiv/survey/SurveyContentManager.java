@@ -23,28 +23,27 @@
  */
 package com.stratelia.webactiv.survey;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * The survey implementation of ContentInterface
  */
 @Singleton
-public class SurveyContentManager implements ContentInterface {
+public class SurveyContentManager extends AbstractContentInterface {
 
-  @Inject
-  private ContentManager contentManager;
+  private static final String SURVEY_CONTENT_ICON_FILE_NAME = "surveySmall.gif";
+  private static final String POLLING_CONTENT_ICON_FILE_NAME = "pollingStationSmall.gif";
+
   @Inject
   private QuestionContainerService questionContainerService;
 
@@ -54,39 +53,28 @@ public class SurveyContentManager implements ContentInterface {
   protected SurveyContentManager() {
   }
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param instanceId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @return a List of SilverContent
-   */
   @Override
-  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String instanceId, String userId) {
-    return getHeaders(contentManager.getResourcesMatchingContents(ids), instanceId);
+  protected String getContentIconFileName(final String componentInstanceId) {
+    if (componentInstanceId.startsWith("pollingStation")) {
+      return POLLING_CONTENT_ICON_FILE_NAME;
+    }
+    return SURVEY_CONTENT_ICON_FILE_NAME;
   }
 
-  /**
-   * return a list of silverContent according to a list of publicationPK
-   * @param instanceId the id of the instance
-   * @param ids a list of question container identifiers.
-   * @return a list of {@link QuestionContainerHeader} instance.
-   */
-  private List<SilverContentInterface> getHeaders(List<String> ids, String instanceId) {
-    List<QuestionContainerPK> pks = ids.stream()
-        .map(id -> new QuestionContainerPK(id, "useles", instanceId))
-        .collect(Collectors.toList());
-    Collection<QuestionContainerHeader> questionContainerHeaders =
-        getQuestionContainerService().getQuestionContainerHeaders(pks);
-    List<SilverContentInterface> headers = new ArrayList<>(questionContainerHeaders.size());
-    for (QuestionContainerHeader qC : questionContainerHeaders) {
-      qC.setIconUrl("surveySmall.gif");
-      if (qC.getPK().getInstanceId().startsWith("pollingStation")) {
-        qC.setIconUrl("pollingStationSmall.gif");
-      }
-      headers.add(qC);
-    }
-    return headers;
+  @Override
+  protected Optional<Contribution> getContribution(final String resourceId,
+      final String componentInstanceId) {
+    return Optional.ofNullable(getQuestionContainerService().getQuestionContainerHeader(
+        new QuestionContainerPK(resourceId, "useless", componentInstanceId)));
+  }
+
+  @Override
+  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
+      final String componentInstanceId, final String currentUserId) {
+    List<QuestionContainerPK> pks =
+        resourceIds.stream().map(id -> new QuestionContainerPK(id, "useless", componentInstanceId))
+            .collect(Collectors.toList());
+    return new ArrayList<>(getQuestionContainerService().getQuestionContainerHeaders(pks));
   }
 
   private QuestionContainerService getQuestionContainerService() {

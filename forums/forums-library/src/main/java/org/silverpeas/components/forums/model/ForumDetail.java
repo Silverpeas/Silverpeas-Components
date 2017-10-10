@@ -24,16 +24,11 @@
 package org.silverpeas.components.forums.model;
 
 import org.silverpeas.components.forums.ForumsContentManager;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.i18n.AbstractBean;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -43,14 +38,15 @@ import java.util.Date;
  * @author Marc Guillemin
  */
 public class ForumDetail extends AbstractBean
-    implements SilverContentInterface, Serializable, SilverpeasContent {
+    implements SilverContentInterface, Serializable {
 
   private static final long serialVersionUID = -5500661559879178630L;
   private static final String TYPE = "forum";
   private ForumPK pk;
   private Date creationDate;
   private String creatorId;
-  private String silverObjectId; // added for the components - PDC integration
+  // added for the components - PDC integration
+  private String silverObjectId;
   private String iconUrl;
 
   public ForumDetail(ForumPK pk, String name, String description,
@@ -70,10 +66,12 @@ public class ForumDetail extends AbstractBean
     this.creatorId = creatorId;
   }
 
+  @Override
   public String getCreatorId() {
     return creatorId;
   }
 
+  @Override
   public Date getCreationDate() {
     return creationDate;
   }
@@ -107,26 +105,28 @@ public class ForumDetail extends AbstractBean
 
   // methods to be implemented by SilverContentInterface
 
+  @Override
   public String getURL() {
     return "searchResult?Type=Forum&Id=" + getId();
   }
 
+  @Override
   public String getId() {
     return getPK().getId();
   }
 
+  @Override
   public String getInstanceId() {
     return getPK().getComponentName();
   }
 
+  @Override
   public String getDate() {
     String formattedDate = null;
     try {
       formattedDate = DateUtil.formatDate(getCreationDate());
     } catch (Exception e) {
-      SilverTrace.warn("publication", "ForumDetail.getDate()",
-          "root.MSG_GEN_ENTER_METHOD", "date to format = "
-          + getCreationDate().toString());
+      SilverLogger.getLogger(this).warn(e);
     }
     return formattedDate;
   }
@@ -135,14 +135,17 @@ public class ForumDetail extends AbstractBean
     this.iconUrl = iconUrl;
   }
 
+  @Override
   public String getIconUrl() {
     return this.iconUrl;
   }
 
+  @Override
   public String getTitle() {
     return getName();
   }
 
+  @Override
   public String getSilverCreationDate() {
     return getDate();
   }
@@ -199,40 +202,15 @@ public class ForumDetail extends AbstractBean
   }
 
   @Override
-  public String getComponentInstanceId() {
-    return getPK().getComponentName();
-  }
-
-  @Override
   public String getContributionType() {
     return TYPE;
-  }
-
-  /**
-   * Is the specified user can access this forum?
-   * <p/>
-   * A user can access a forum if it has enough rights to access the Forums instance in
-   * which is managed this forum.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this forum, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
-  }
-
-  @Override
-  public User getCreator() {
-    return User.getById(this.getCreatorId());
   }
 
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
       ForumsContentManager contentManager = ServiceProvider.getService(ForumsContentManager.class);
-      int objectId = contentManager.getSilverObjectId(getId(), getComponentInstanceId());
+      int objectId = contentManager.getSilverContentId(getId(), getComponentInstanceId());
       if (objectId >= 0) {
         this.silverObjectId = String.valueOf(objectId);
       }

@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@page import="java.util.GregorianCalendar"%>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
@@ -76,6 +77,8 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
         "javaScript:onClick=goToNotify('ToAlertUser?PostId=" + postId + "')");
   }
 %>
+
+<c:set var="post" value="<%=post%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -174,8 +177,11 @@ out.println(window.printBefore());
 		       </span>
 		    </div>
 		    <div class="separateur"><hr /></div>
-		    <view:comments 	userId="<%=userId %>" componentId="<%=instanceId %>"
-		    				resourceType="<%=postResourceType %>" resourceId="<%=postId %>" indexed="true"/>
+        <view:componentParam var="commentsActivated" componentId="<%=instanceId%>" parameter="comments"/>
+        <c:if test="${empty commentsActivated or silfn:booleanValue(commentsActivated)}">
+          <view:comments 	userId="<%=userId %>" componentId="<%=instanceId %>"
+                  resourceType="<%=postResourceType %>" resourceId="<%=postId %>" indexed="true"/>
+        </c:if>
 			</div>
 	<div id="footer">
       <%

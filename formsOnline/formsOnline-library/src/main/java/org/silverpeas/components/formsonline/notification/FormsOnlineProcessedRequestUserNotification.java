@@ -55,7 +55,7 @@ public class FormsOnlineProcessedRequestUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return "notificationProcessed";
   }
 

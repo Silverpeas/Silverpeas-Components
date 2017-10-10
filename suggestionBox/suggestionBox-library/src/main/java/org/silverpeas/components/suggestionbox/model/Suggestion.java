@@ -28,15 +28,14 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ValidableContribution;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -60,7 +59,7 @@ import java.util.Date;
 @Entity
 @Table(name = "sc_suggestion")
 public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
-    implements ValidableContribution, Rateable {
+    implements ValidableContribution, SilverpeasContent, Rateable {
 
   private static final long serialVersionUID = -8559980140411995766L;
 
@@ -220,12 +219,9 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
    */
   public void save() {
     final Suggestion suggestion = this;
-    Transaction.performInOne(new Transaction.Process<Void>() {
-      @Override
-      public Void execute() {
-        SuggestionRepository.get().save(suggestion);
-        return null;
-      }
+    Transaction.performInOne((Transaction.Process<Void>) () -> {
+      SuggestionRepository.get().save(suggestion);
+      return null;
     });
   }
 
@@ -265,13 +261,23 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
   }
 
   @Override
-  public String getSilverpeasContentId() {
-    return null;
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
   }
 
   @Override
   public Date getCreationDate() {
     return getCreateDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getLastUpdateDate();
   }
 
   @Override
@@ -284,23 +290,9 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
     return TYPE;
   }
 
-  /**
-   * Is the specified user can access this post?
-   * <p/>
-   * A user can access a post if it has enough rights to access the suggestion box instance in
-   * which is managed this suggestion.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this suggestion, false otherwise.
-   */
   @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
-  }
-
-  private SuggestionBoxService getSuggestionBoxService() {
-    return SuggestionBoxService.get();
+  public boolean isIndexable() {
+    return false;
   }
 
   @Override

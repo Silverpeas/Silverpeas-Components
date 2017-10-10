@@ -48,7 +48,7 @@ public class SuggestionValidationUserNotification extends AbstractSuggestionActi
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     return getResource().getValidation().isValidated() ? "validatedNotification" :
         "refusedNotification";
   }

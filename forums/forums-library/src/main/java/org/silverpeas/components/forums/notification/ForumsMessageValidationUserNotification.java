@@ -75,7 +75,7 @@ public class ForumsMessageValidationUserNotification extends AbstractForumsMessa
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (NotifAction.VALIDATE.equals(getAction())) {
       return "messageValidated";
     }
@@ -114,7 +114,7 @@ public class ForumsMessageValidationUserNotification extends AbstractForumsMessa
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

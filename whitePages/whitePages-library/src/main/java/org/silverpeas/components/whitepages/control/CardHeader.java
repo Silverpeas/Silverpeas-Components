@@ -114,6 +114,7 @@ public final class CardHeader extends AbstractBean
     init(id, card);
   }
 
+  @Override
   public String getURL() {
     return "consultIdentity?userCardId=" + id;
   }
@@ -151,34 +152,42 @@ public final class CardHeader extends AbstractBean
 
   static Map<String, UserTemplate> templates = new HashMap<>();
 
+  @Override
   public String getId() {
     return (new Long(id)).toString();
   }
 
+  @Override
   public String getInstanceId() {
     return instanceId;
   }
 
+  @Override
   public String getTitle() {
     return getName();
   }
 
+  @Override
   public String getDate() {
     return this.date;
   }
 
+  @Override
   public String getIconUrl() {
     return "whitePagesSmall.gif";
   }
 
+  @Override
   public String getCreatorId() {
     return this.creatorId;
   }
 
+  @Override
   public String getSilverCreationDate() {
     return this.date;
   }
 
+  @Override
   public int compareTo(CardHeader other) {
     return this.getName().compareTo(other.getName());
   }

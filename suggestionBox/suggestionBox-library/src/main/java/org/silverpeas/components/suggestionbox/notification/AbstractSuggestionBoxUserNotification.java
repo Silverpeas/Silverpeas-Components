@@ -44,11 +44,6 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
     super(resource);
   }
 
-  public AbstractSuggestionBoxUserNotification(final T resource, final String title,
-      final String fileName) {
-    super(resource, title, fileName);
-  }
-
   @Override
   protected String getMultilangPropertyFile() {
     return "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle";

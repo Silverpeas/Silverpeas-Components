@@ -11,6 +11,7 @@ import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
@@ -96,27 +97,17 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @param uploadedFiles a collection of file to attach to the suggestion.
    */
   public void add(final Suggestion suggestion, final Collection<UploadedFile> uploadedFiles) {
-    Transaction.performInOne(new Transaction.Process<Void>() {
-      @Override
-      public Void execute() {
-        final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        SuggestionBox actual =
-            SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
-        suggestion.setSuggestionBox(actual);
-        actual.persistedSuggestions().add(suggestion);
-        suggestionRepository.save(suggestion);
+    Transaction.performInOne((Transaction.Process<Void>) () -> {
+      final SuggestionRepository suggestionRepository = getSuggestionRepository();
+      SuggestionBox actual =
+          SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
+      suggestion.setSuggestionBox(actual);
+      actual.persistedSuggestions().add(suggestion);
+      suggestionRepository.save(suggestion);
 
-        // Attach uploaded files
-        if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-          for (UploadedFile uploadedFile : uploadedFiles) {
-            // Register attachment
-            uploadedFile.registerAttachment(
-                new ForeignPK(suggestion.getId(), suggestionBox.getComponentInstanceId()), null,
-                false);
-          }
-        }
-        return null;
-      }
+      // Attach uploaded files
+      Attachments.from(uploadedFiles).attachTo(suggestion);
+      return null;
     });
 
   }

@@ -163,7 +163,7 @@
               var streamingId = mediaElement.getAttribute("id").replace(/mediaId_/g, '');
               silverpeasAjax(providerData.replace(/streamingId/g, streamingId)).then(
                   function(request) {
-                    var providerData = JSON.parse(request.responseText);
+                    var providerData = request.responseAsJson();
                     new ThumbnailPreview(mediaElement, providerData);
                   });
 
