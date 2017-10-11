@@ -219,7 +219,7 @@ def events = sql.rows '''
 migratedAlmanachCount = 0
 long migratedEventCount = 0
 long currentMigratedEventCount = 0
-int idx = existingAlmanachs.findIndexOf { it.instanceId == events[0].instanceId }
+int idx = events.isEmpty() ? 0 : existingAlmanachs.findIndexOf { it.instanceId == events[0].instanceId }
 events.each { event ->
   // next almanach? if true, reset some counters
   if (event.instanceId != existingAlmanachs[idx].instanceId) {
@@ -333,7 +333,9 @@ events.each { event ->
   }
 }
 
-log.info "=> Number of imported events from ${existingAlmanachs[idx].instanceId}: ${currentMigratedEventCount}"
+if (idx < existingAlmanachs.size()) {
+  log.info "=> Number of imported events from ${existingAlmanachs[idx].instanceId}: ${currentMigratedEventCount}"
+}
 
 log.info "=> Total number of imported events: ${migratedEventCount} from ${migratedAlmanachCount} almanachs"
 
