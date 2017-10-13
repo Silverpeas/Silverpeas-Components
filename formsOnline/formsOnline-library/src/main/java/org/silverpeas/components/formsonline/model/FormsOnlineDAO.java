@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.formsonline.model;
 
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
+import org.silverpeas.core.util.SilverpeasList;
+
 import java.util.List;
 
 public interface FormsOnlineDAO {
@@ -134,23 +137,27 @@ public interface FormsOnlineDAO {
    * archived.
    * @param pk the form primary key
    * @param userId the user id
+   * @param states the states to filter on if any
+   * @param paginationCriterion pagination criterion which can be null if no pagination is
+   * requested.
    * @return a list of FormInstance objects
-   * @throws FormsOnlineDatabaseException
    */
-  List<FormInstance> getSentFormInstances(FormPK pk, String userId)
-      throws FormsOnlineDatabaseException;
+  SilverpeasList<FormInstance> getSentFormInstances(FormPK pk, String userId,
+      final List<Integer> states, final PaginationCriterion paginationCriterion);
 
   /**
-   * Get all requests associated to given form.
+   * Get all requests associated to given form ordered from the newest to the older.
    * @param pk the form primary key
-   * @param allRequests
+   * @param allRequests true to get all request of any state, false to get only request to validate
    * @param userId the user id
+   * @param states the states to filter on if any
+   * @param paginationCriterion pagination criterion which can be null if no pagination is
+   * requested.
    * @return if allRequests is false only requests to validate and requests validated by given
    * user are returned. If true, all requests (validated or not) are returned.
-   * @throws FormsOnlineDatabaseException
    */
-  List<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId)
-      throws FormsOnlineDatabaseException;
+  SilverpeasList<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId,
+      final List<Integer> states, final PaginationCriterion paginationCriterion);
 
   List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
       String[] userGroupIds) throws FormsOnlineDatabaseException;

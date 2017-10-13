@@ -23,22 +23,22 @@
  */
 package org.silverpeas.components.formsonline.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
+import org.silverpeas.components.formsonline.model.FormDetail;
+import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
-import org.silverpeas.components.formsonline.model.FormDetail;
-import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.List;
 
@@ -54,11 +54,6 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
     return "FormsOnline";
   }
 
-  /**
-   * @param mainSessionCtrlO
-   * @param componentContext
-   * @return
-   */
   public FormsOnlineSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FormsOnlineSessionController(mainSessionCtrl, componentContext);
@@ -80,14 +75,16 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
     try {
       if ("Main".equals(function)) {
+        formsOnlineSC.getSelectedValidatorRequestIds().clear();
         String role = formsOnlineSC.getBestProfile();
         if ("Administrator".equals(role)) {
           request.setAttribute("formsList", formsOnlineSC.getAllForms(true));
-          request.setAttribute("RequestsAsValidator", formsOnlineSC.getAllValidatorRequests());
+          request.setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
           request.setAttribute("Role", "admin");
         } else {
           if (!formsOnlineSC.getAvailableFormIdsAsReceiver().isEmpty()) {
-            request.setAttribute("RequestsAsValidator", formsOnlineSC.getAllValidatorRequests());
+            request
+                .setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
             request.setAttribute("Role", "validator");
           } else {
             request.setAttribute("Role", "senderOnly");
@@ -118,17 +115,18 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         String[] senderUserIds = StringUtil.split(
             request.getParameter(
-                FormsOnlineSessionController.userPanelSendersPrefix + "UserPanelCurrentUserIds"), ',');
-        String[] senderGroupIds = StringUtil.split(
-            request.getParameter(
-                FormsOnlineSessionController.userPanelSendersPrefix + "UserPanelCurrentGroupIds"), ',');
+                FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + "UserPanelCurrentUserIds"),
+            ',');
+        String[] senderGroupIds = StringUtil.split(request.getParameter(
+            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + "UserPanelCurrentGroupIds"),
+            ',');
 
-        String[] receiverUserIds = StringUtil.split(
-            request.getParameter(
-                FormsOnlineSessionController.userPanelReceiversPrefix + "UserPanelCurrentUserIds"), ',');
-        String[] receiverGroupIds = StringUtil.split(
-            request.getParameter(
-                FormsOnlineSessionController.userPanelReceiversPrefix + "UserPanelCurrentGroupIds"), ',');
+        String[] receiverUserIds = StringUtil.split(request.getParameter(
+            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + "UserPanelCurrentUserIds"),
+            ',');
+        String[] receiverGroupIds = StringUtil.split(request.getParameter(
+            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + "UserPanelCurrentGroupIds"),
+            ',');
 
         formsOnlineSC.updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds,
             receiverGroupIds);
@@ -204,6 +202,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.unpublishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
       } else if (function.equals("InBox")) {
+
+        // Selection
+        request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
+
         request.setAttribute("Requests", formsOnlineSC.getAllValidatorRequests());
         destination = "inbox.jsp";
       } else if (function.equals("NewRequest")) {
@@ -278,8 +280,15 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         return getDestination("InBox", formsOnlineSC, request);
       } else if (function.equals("DeleteRequests")) {
-        String[] ids = request.getParameterValues("Id");
-        formsOnlineSC.deleteRequests(ids);
+
+        // Selection
+        request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
+
+        // Deletion
+        formsOnlineSC.deleteRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+
+        // Clear selection
+        formsOnlineSC.getSelectedValidatorRequestIds().clear();
 
         return getDestination("InBox", formsOnlineSC, request);
       } else {
@@ -287,8 +296,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       }
       destination = "/formsOnline/jsp/" + destination;
     } catch (Exception e) {
-      SilverTrace.warn("formsOnline", "FormsOnlineRequestRouter.getDestination()",
-          "An error occured when processing function", "function = " + function, e);
+      SilverLogger.getLogger(this).warn(e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
@@ -314,9 +322,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   }
 
   private PagesContext getFormContext(FormsOnlineSessionController fosc) {
-    PagesContext formContext =
-        new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(),
-            fosc.getUserId());
-    return formContext;
+    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(),
+        fosc.getUserId());
   }
 }

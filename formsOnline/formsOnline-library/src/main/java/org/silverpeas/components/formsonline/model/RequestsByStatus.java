@@ -1,57 +1,81 @@
 package org.silverpeas.components.formsonline.model;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.silverpeas.components.formsonline.model.FormInstance.*;
 
 /**
  * @author Nicolas Eysseric
  */
 public class RequestsByStatus {
 
-  List<FormInstance> toValidateList = new ArrayList<FormInstance>();
-  List<FormInstance> validatedList = new ArrayList<FormInstance>();
-  List<FormInstance> deniedList = new ArrayList<FormInstance>();
-  List<FormInstance> archivedList = new ArrayList<FormInstance>();
+  static final List<Pair<List<Integer>, BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>>>>
+      MERGING_RULES_BY_STATES =
+      asList(Pair.of(singletonList(STATE_REFUSED), RequestsByStatus::addDenied),
+          Pair.of(singletonList(STATE_VALIDATED), RequestsByStatus::addValidated),
+          Pair.of(singletonList(STATE_ARCHIVED), RequestsByStatus::addArchived),
+          Pair.of(asList(STATE_UNREAD, STATE_READ), RequestsByStatus::addToValidate));
 
-  public void add(List<FormInstance> requests, FormDetail form) {
-    for (FormInstance request : requests) {
-      request.setForm(form);
-      add(request);
+  private static final Comparator<FormInstance> FORM_INSTANCE_COMPARATOR = (a, b) -> {
+    int c = b.getCreationDate().compareTo(a.getCreationDate());
+    if (c == 0) {
+      c = Integer.valueOf(b.getId()) - Integer.valueOf(a.getId());
     }
+    return c;
+  };
+  private final PaginationPage paginationPage;
+
+  private SilverpeasList<FormInstance> toValidateList = new SilverpeasArrayList<>();
+  private SilverpeasList<FormInstance> validatedList = new SilverpeasArrayList<>();
+  private SilverpeasList<FormInstance> deniedList = new SilverpeasArrayList<>();
+  private SilverpeasList<FormInstance> archivedList = new SilverpeasArrayList<>();
+
+  RequestsByStatus(final PaginationPage paginationPage) {
+    this.paginationPage = paginationPage;
   }
 
-  public void add(FormInstance request) {
-    switch (request.getState()) {
-      case FormInstance.STATE_REFUSED :
-        deniedList.add(request);
-        break;
-      case FormInstance.STATE_VALIDATED :
-        validatedList.add(request);
-        break;
-      case FormInstance.STATE_ARCHIVED :
-        archivedList.add(request);
-        break;
-      default:
-        toValidateList.add(request);
-    }
+  private void addArchived(final SilverpeasList<FormInstance> formInstances) {
+    archivedList = merge(formInstances, archivedList);
   }
 
-  public List<FormInstance> getToValidate() {
-    sortByRequestDate(toValidateList);
+  private void addDenied(final SilverpeasList<FormInstance> formInstances) {
+    deniedList = merge(formInstances, deniedList);
+  }
+
+  private void addValidated(final SilverpeasList<FormInstance> formInstances) {
+    validatedList = merge(formInstances, validatedList);
+  }
+
+  private void addToValidate(final SilverpeasList<FormInstance> formInstances) {
+    toValidateList = merge(formInstances, toValidateList);
+  }
+
+  public SilverpeasList<FormInstance> getToValidate() {
     return toValidateList;
   }
 
-  public List<FormInstance> getDenied() {
+  public SilverpeasList<FormInstance> getDenied() {
     return deniedList;
   }
 
-  public List<FormInstance> getValidated() {
+  public SilverpeasList<FormInstance> getValidated() {
     return validatedList;
   }
 
-  public List<FormInstance> getArchived() {
+  public SilverpeasList<FormInstance> getArchived() {
     return archivedList;
   }
 
@@ -60,26 +84,31 @@ public class RequestsByStatus {
         getArchived().isEmpty();
   }
 
-  public List<FormInstance> getAll() {
-    List<FormInstance> all = new ArrayList<FormInstance>();
-    all.addAll(getToValidate());
-    all.addAll(getValidated());
-    all.addAll(getDenied());
-    all.addAll(getArchived());
-    sortByRequestDate(all);
-    return all;
+  public SilverpeasList<FormInstance> getAll() {
+    return merge(getToValidate(), getValidated(), getDenied(), getArchived());
   }
 
-  private void sortByRequestDate(List<FormInstance> requests) {
-    Collections.sort(requests, new Comparator<FormInstance>() {
-      public int compare(FormInstance a, FormInstance b) {
-        int c = b.getCreationDate().compareTo(a.getCreationDate());
-        if (c == 0) {
-          c = Integer.valueOf(b.getId()) - Integer.valueOf(a.getId());
-        }
-        return c;
-      }
-    });
+  /**
+   * Merges the two given lists without modifying them into a new one.
+   * @param lists the lists to merge.
+   * @return the list which is the result of merge.
+   */
+  @SafeVarargs
+  private final SilverpeasList<FormInstance> merge(final SilverpeasList<FormInstance>... lists) {
+    int size = 0;
+    int maxSize = 0;
+    for (SilverpeasList<FormInstance> list : lists) {
+      size += list.size();
+      maxSize += list.originalListSize();
+    }
+    final List<FormInstance> merge = new ArrayList<>(size);
+    for (SilverpeasList<FormInstance> list : lists) {
+      merge.addAll(list);
+    }
+    Stream<FormInstance> resultStream = merge.stream().sorted(FORM_INSTANCE_COMPARATOR);
+    if (paginationPage != null) {
+      resultStream = resultStream.limit(paginationPage.getPageSize());
+    }
+    return PaginationList.from(resultStream.collect(Collectors.toList()), maxSize);
   }
-
 }

@@ -150,7 +150,7 @@ public class FormsOnlineDAOJdbcTest {
   @Test
   public void testGetReceivedRequests() throws Exception {
     List<FormInstance> forms =
-        dao.getReceivedRequests(new FormPK(1000, "formsOnline100"), true, null);
+        dao.getReceivedRequests(new FormPK(1000, "formsOnline100"), true, null, null, null);
     assertEquals(1, forms.size());
     assertEquals(1000, forms.get(0).getFormId());
     assertEquals("20", forms.get(0).getId());

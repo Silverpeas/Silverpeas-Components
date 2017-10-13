@@ -20,8 +20,7 @@
  */
 package org.silverpeas.components.formsonline.control;
 
-import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.contribution.content.form.FormException;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
@@ -31,42 +30,51 @@ import org.silverpeas.components.formsonline.model.FormsOnlineDatabaseException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
 import org.silverpeas.components.formsonline.model.RequestPK;
 import org.silverpeas.components.formsonline.model.RequestsByStatus;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
+  private static final int DEFAULT_ITEM_PER_PAGE = 10;
+  private static final String UPDATE_CURRENT_FORM = "updateCurrentForm";
+  private static final String LOAD_REQUEST = "loadRequest";
   private FormsOnlineDAO dao = ServiceProvider.getService(FormsOnlineDAO.class);
   private FormDetail currentForm;
-  protected Selection m_Selection = null;
+  private Selection selection = null;
+  private Set<String> selectedValidatorRequestIds = new HashSet<>();
 
-  public final static String userPanelSendersPrefix = "listSenders";
-  public final static String userPanelReceiversPrefix = "listReceivers";
+  public static final String USER_PANEL_SENDERS_PREFIX = "listSenders";
+  public static final String USER_PANEL_RECEIVERS_PREFIX = "listReceivers";
 
   /**
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
    */
   public FormsOnlineSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -74,7 +82,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         "org.silverpeas.formsonline.multilang.formsOnlineBundle",
         "org.silverpeas.formsonline.settings.formsOnlineIcons",
         "org.silverpeas.formsonline.settings.formsOnlineSettings");
-    m_Selection = getSelection();
+    selection = getSelection();
   }
 
   public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineDatabaseException {
@@ -93,7 +101,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException {
 
     if (!isAdmin()) {
-      throwForbiddenException("updateCurrentForm");
+      throwForbiddenException(UPDATE_CURRENT_FORM);
     }
 
     if (currentForm.getId() == -1) {
@@ -116,7 +124,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public void deleteForm(int formId) throws FormsOnlineDatabaseException {
     if (!isAdmin()) {
-      throwForbiddenException("updateCurrentForm");
+      throwForbiddenException(UPDATE_CURRENT_FORM);
     }
     getService().deleteForm(getFormPK(formId));
   }
@@ -129,62 +137,61 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     String goUrl = url + goFunction;
     String cancelUrl = url + "SendersReceivers";
 
-    m_Selection.resetAll();
+    selection.resetAll();
 
-    m_Selection.setGoBackURL(goUrl);
-    m_Selection.setCancelURL(cancelUrl);
+    selection.setGoBackURL(goUrl);
+    selection.setCancelURL(cancelUrl);
 
-    m_Selection.setSelectedElements(userIds);
-    m_Selection.setSelectedSets(groupIds);
+    selection.setSelectedElements(userIds);
+    selection.setSelectedSets(groupIds);
 
     // bien que le up s'affiche en popup, le mecanisme de fermeture est
     // assure par le composant=> il est donc necessaire d'indiquer
     // a l'UserPanelPeas de ne pas s'occuper de cette fermeture!
-    m_Selection.setHostPath(null);
+    selection.setHostPath(null);
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    m_Selection.setHostComponentName(hostComponentName);
-    m_Selection.setHostSpaceName(getSpaceLabel());
-    m_Selection.setPopupMode(true);
-    m_Selection.setHtmlFormElementId(goFunction);
-    m_Selection.setHtmlFormName("dummy");
+    selection.setHostComponentName(hostComponentName);
+    selection.setHostSpaceName(getSpaceLabel());
+    selection.setPopupMode(true);
+    selection.setHtmlFormElementId(goFunction);
+    selection.setHtmlFormName("dummy");
 
     // Add extra params
-    m_Selection.setExtraParams(sug);
+    selection.setExtraParams(sug);
     return Selection.getSelectionURL();
   }
 
   public String initSelectionSenders(List<String> userIds, List<String> groupIds)
       throws FormsOnlineDatabaseException {
-    ArrayList<String> profiles = new ArrayList<String>();
-    profiles.add("SenderReceiver");
-    SelectionUsersGroups sugSenders = new SelectionUsersGroups();
-    sugSenders.setComponentId(getComponentId());
-    sugSenders.setProfileNames(profiles);
-
-    return initSelection(sugSenders, userPanelSendersPrefix, userIds, groupIds);
+    return initSelection(userIds, groupIds, USER_PANEL_SENDERS_PREFIX);
   }
 
   public String initSelectionReceivers(List<String> userIds, List<String> groupIds)
       throws FormsOnlineDatabaseException {
-    ArrayList<String> profiles = new ArrayList<String>();
-    profiles.add("SenderReceiver");
-    SelectionUsersGroups sugReceivers = new SelectionUsersGroups();
-    sugReceivers.setComponentId(getComponentId());
-    sugReceivers.setProfileNames(profiles);
+    return initSelection(userIds, groupIds, USER_PANEL_RECEIVERS_PREFIX);
+  }
 
-    return initSelection(sugReceivers, userPanelReceiversPrefix, userIds, groupIds);
+  private String initSelection(final List<String> userIds, final List<String> groupIds,
+      final String userPanelReceiversPrefix) {
+    ArrayList<String> profiles = new ArrayList<>();
+    profiles.add("SenderReceiver");
+    SelectionUsersGroups userGroupSelection = new SelectionUsersGroups();
+    userGroupSelection.setComponentId(getComponentId());
+    userGroupSelection.setProfileNames(profiles);
+
+    return initSelection(userGroupSelection, userPanelReceiversPrefix, userIds, groupIds);
   }
 
   public void publishForm(String formId) throws FormsOnlineDatabaseException {
     if (!isAdmin()) {
-      throwForbiddenException("updateCurrentForm");
+      throwForbiddenException(UPDATE_CURRENT_FORM);
     }
     getService().publishForm(getFormPK(formId));
   }
 
   public void unpublishForm(String formId) throws FormsOnlineDatabaseException {
     if (!isAdmin()) {
-      throwForbiddenException("updateCurrentForm");
+      throwForbiddenException(UPDATE_CURRENT_FORM);
     }
     getService().unpublishForm(getFormPK(formId));
   }
@@ -213,7 +220,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
     FormDetail form = request.getForm();
     if (!request.getCreatorId().equals(getUserId()) && !form.isValidator(getUserId())) {
-      throwForbiddenException("loadRequest");
+      throwForbiddenException(LOAD_REQUEST);
     }
 
     setCurrentForm(form);
@@ -223,7 +230,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   public void updateValidationStatus(String requestId, String decision, String comments)
       throws FormsOnlineDatabaseException {
     if (!getCurrentForm().isValidator(getUserId())) {
-      throwForbiddenException("loadRequest");
+      throwForbiddenException(LOAD_REQUEST);
     }
     getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments);
   }
@@ -237,12 +244,12 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
     FormDetail form = request.getForm();
     if (!form.isValidator(getUserId())) {
-      throwForbiddenException("loadRequest");
+      throwForbiddenException(LOAD_REQUEST);
     }
     getService().deleteRequest(getRequestPK(id));
   }
 
-  public int deleteRequests(String[] ids)
+  public int deleteRequests(Set<String> ids)
       throws PublicationTemplateException, FormsOnlineDatabaseException, FormException {
     int nbDeletedRequests = 0;
     if (ids != null) {
@@ -267,24 +274,28 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public List<PublicationTemplate> getTemplates() {
-    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> templates = new ArrayList<>();
     try {
       GlobalContext aContext = new GlobalContext(getSpaceId(), getComponentId());
       templates = getPublicationTemplateManager().getPublicationTemplates(aContext);
     } catch (PublicationTemplateException e) {
-      SilverTrace.error("formManager", "FormsOnlineSessionController.getForms()",
-          "root.CANT_GET_FORMS", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return templates;
   }
 
   public RequestsByStatus getAllUserRequests() throws FormsOnlineDatabaseException {
-    return getService().getAllUserRequests(getComponentId(), getUserId());
+    return getService().getAllUserRequests(getComponentId(), getUserId(), null);
+  }
+
+  public RequestsByStatus getHomepageValidatorRequests() throws FormsOnlineDatabaseException {
+    return getService().getValidatorRequests(getComponentId(), isWorkgroupEnabled(), getUserId(),
+        new PaginationPage(1, DEFAULT_ITEM_PER_PAGE));
   }
 
   public RequestsByStatus getAllValidatorRequests() throws FormsOnlineDatabaseException {
-    return getService().getAllValidatorRequests(getComponentId(), isWorkgroupEnabled(),
-        getUserId());
+    return getService()
+        .getValidatorRequests(getComponentId(), isWorkgroupEnabled(), getUserId(), null);
   }
 
   public ComponentInstLight getComponentInstLight() {
@@ -317,7 +328,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     String flag = "SenderReceiver";
     for (String profile : getUserRoles()) {
       // if Administrator, return it, we won't find a better profile
-      if (profile.equals("Administrator")) {
+      if ("Administrator".equals(profile)) {
         return profile;
       }
     }
@@ -333,4 +344,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         getComponentParameterValue(FormsOnlineComponentSettings.PARAM_WORKGROUP));
   }
 
+  public Set<String> getSelectedValidatorRequestIds() {
+    return selectedValidatorRequestIds;
+  }
+
+  public SilverpeasList<RequestItem> asRequestItemList(
+      final SilverpeasList<FormInstance> requests) {
+    final Function<FormInstance, RequestItem> converter =
+        r -> new RequestItem(r, getSelectedValidatorRequestIds());
+    return RequestItem.convert(requests, converter);
+  }
 }
