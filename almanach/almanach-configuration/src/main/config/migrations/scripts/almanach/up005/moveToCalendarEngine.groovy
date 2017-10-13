@@ -196,6 +196,9 @@ almanachs.each { almanach ->
 
 log.info "=> Number of imported Almanachs: ${migratedAlmanachCount}"
 
+if (migratedAlmanachCount == 0)
+  return 0
+
 // finally we import all the events into the previously created calendar in the Silverpeas Calendar
 // Engine
 log.info 'Importation of events from all the existing Almanach\'s calendars into the Silverpeas Calendar Engine...'
