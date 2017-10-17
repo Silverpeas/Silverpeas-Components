@@ -198,7 +198,7 @@
 						<relatedUser participant="Demandeur" role="Employe"/>
 					</notify>
           <triggers>
-            <trigger name="SendInAlmanach">
+            <trigger name="SendInAlmanach" handler="SendInAlmanachHandler">
               <param name="tp_almanachId" value=""/>
               <param name="tp_eventName" value="Congés de ${action.Creation.actor}"/>
               <param name="tp_eventDescription" value="Type de congés ${folder.nature}"/>

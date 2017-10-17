@@ -82,7 +82,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Named("SendInKmelia")
+@Named("SendInKmeliaHandler")
 public class SendInKmelia extends ExternalActionImpl {
 
   private static final String UNKNOWN = "unknown";

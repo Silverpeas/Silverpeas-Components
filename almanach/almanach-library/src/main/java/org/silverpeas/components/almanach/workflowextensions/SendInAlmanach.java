@@ -63,7 +63,7 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
  * Watch {@link AlmanachTriggerParam} to get more trigger parameter information
  * @author ebonnet
  */
-@Named("SendInAlmanach")
+@Named("SendInAlmanachHandler")
 public class SendInAlmanach extends ExternalActionImpl {
 
   private String role = "unknown";
