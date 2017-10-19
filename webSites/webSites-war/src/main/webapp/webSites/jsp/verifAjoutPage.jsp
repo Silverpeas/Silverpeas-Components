@@ -90,7 +90,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
     browseBar.setPath("<a href= \"manage.jsp?Action=view\"></a>"+infoPath);
     out.println(laFenetre.printBefore());
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
+    TabbedPane tabbedPane = gef.getTabbedPane();
     Frame laFrame = gef.getFrame();
     out.println(tabbedPane.print());
     out.println(laFrame.printBefore());

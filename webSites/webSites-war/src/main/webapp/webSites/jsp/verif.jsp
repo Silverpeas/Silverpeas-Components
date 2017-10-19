@@ -102,7 +102,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     out.println(laFenetre.printBefore());
 
-        TabbedPane tabbedPane = gef.getTabbedPane(1);
+        TabbedPane tabbedPane = gef.getTabbedPane();
 
     Frame laFrame = gef.getFrame();
 

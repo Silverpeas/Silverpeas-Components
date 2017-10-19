@@ -45,7 +45,7 @@ String		role	= (String) request.getAttribute("Role");
 
     out.println(window.printBefore());
 
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
+    TabbedPane tabbedPane = gef.getTabbedPane();
 
     tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
 	tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);

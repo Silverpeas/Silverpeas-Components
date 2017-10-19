@@ -44,7 +44,7 @@ String 		url 	= (String) request.getAttribute("URL");
 
     out.println(window.printBefore());
 
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
+    TabbedPane tabbedPane = gef.getTabbedPane();
 
   tabbedPane.addTab(resource.getString("projectManager.Definition"), "ViewTask?Id="+task.getId(), false);
 	tabbedPane.addTab(resource.getString("GML.attachments"), "#", true);
