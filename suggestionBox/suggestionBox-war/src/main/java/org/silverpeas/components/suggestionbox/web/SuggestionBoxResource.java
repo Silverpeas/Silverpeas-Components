@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
+import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
@@ -73,7 +73,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   private CommentService commentService;
 
   @Inject
-  private SuggestionBoxWebServiceProvider suggestionBoxWebServiceProvider;
+  private SuggestionBoxWebManager suggestionBoxWebManager;
 
   /**
    * Gets the JSON representation of an suggestion.
@@ -89,7 +89,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public SuggestionEntity getSuggestion(@PathParam("suggestionId") final String suggestionId) {
     return process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-      return suggestionBoxWebServiceProvider.asWebEntity(suggestion);
+      return suggestionBoxWebManager.asWebEntity(suggestion);
     }).execute();
   }
 
@@ -103,7 +103,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public void deleteSuggestion(@PathParam("suggestionId") final String suggestionId) {
     process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-      suggestionBoxWebServiceProvider
+      suggestionBoxWebManager
           .deleteSuggestion(getSuggestionBox(), suggestion, getUser());
       return null;
     }).lowestAccessRole(SilverpeasRole.writer).execute();
@@ -122,7 +122,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public SuggestionEntity publishSuggestion(@PathParam("suggestionId") final String suggestionId) {
     return process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-      return suggestionBoxWebServiceProvider
+      return suggestionBoxWebManager
           .publishSuggestion(getSuggestionBox(), suggestion, getUser());
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
@@ -132,14 +132,14 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * behind the service call.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, User)
+   * @see SuggestionBoxWebManager#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/inDraft")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInDraft() {
-    return process(() -> suggestionBoxWebServiceProvider
+    return process(() -> suggestionBoxWebManager
         .getSuggestionsInDraftFor(getSuggestionBox(), getUser()))
         .lowestAccessRole(SilverpeasRole.writer).execute();
   }
@@ -149,14 +149,14 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * behind the service call.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, User)
+   * @see SuggestionBoxWebManager#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/outOfDraft")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsOutOfDraft() {
-    return process(() -> suggestionBoxWebServiceProvider
+    return process(() -> suggestionBoxWebManager
         .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUser()))
         .lowestAccessRole(SilverpeasRole.writer).execute();
   }
@@ -165,7 +165,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * Gets the JSON representation of a list of suggestion that are pending validation.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getSuggestionsInPendingValidation(SuggestionBox)
+   * @see SuggestionBoxWebManager#getSuggestionsInPendingValidation(SuggestionBox)
    * @see WebProcess#execute()
    */
   @GET
@@ -173,7 +173,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInPendingValidation() {
     return process(
-        () -> suggestionBoxWebServiceProvider.getSuggestionsInPendingValidation(getSuggestionBox()))
+        () -> suggestionBoxWebManager.getSuggestionsInPendingValidation(getSuggestionBox()))
         .lowestAccessRole(SilverpeasRole.publisher).execute();
   }
 
@@ -190,7 +190,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * such property exists for the suggestions, then no sorting is performed.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getPublishedSuggestions(SuggestionBox)
+   * @see SuggestionBoxWebManager#getPublishedSuggestions(SuggestionBox)
    * @see WebProcess#execute()
    */
   @GET
@@ -209,7 +209,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
         if (QUERY_ORDER_BY.COMMENT_COUNT_DESC.equals(orderBy)) {
           commentJoinData = JOIN_DATA_APPLY.COMMENT;
         }
-        List<SuggestionEntity> suggestions = suggestionBoxWebServiceProvider.
+        List<SuggestionEntity> suggestions = suggestionBoxWebManager.
             getSuggestionsByCriteria(getSuggestionBox(),
                 SuggestionCriteria.from(getSuggestionBox())
                     .createdBy(author)
@@ -223,10 +223,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
         }
         return suggestions;
       } else if (author != null) {
-        return suggestionBoxWebServiceProvider
+        return suggestionBoxWebManager
             .getPublishedSuggestionsFor(getSuggestionBox(), author);
       }
-      return suggestionBoxWebServiceProvider.getPublishedSuggestions(getSuggestionBox());
+      return suggestionBoxWebManager.getPublishedSuggestions(getSuggestionBox());
     }).execute();
   }
 

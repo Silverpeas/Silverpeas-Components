@@ -31,7 +31,6 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.WithAttachment;
@@ -165,12 +164,8 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     getPublication().setCreatorId(userId);
   }
 
-  public String getCreatorId() {
-    return getCreatedBy();
-  }
-
   public void setUpdaterId(String userId) {
-    super.setLastUpdatedBy(userId);
+    super.lastUpdatedBy(userId);
     getPublication().setUpdaterId(userId);
   }
 
@@ -253,11 +248,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   @Override
   public ContributionIdentifier getContributionId() {
     return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
-  }
-
-  @Override
-  public Date getCreationDate() {
-    return getCreateDate();
   }
 
   @Override

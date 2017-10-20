@@ -61,12 +61,12 @@ import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDA
  * @author: Yohann Chastagnier
  */
 @Singleton
-public class SuggestionBoxWebServiceProvider {
+public class SuggestionBoxWebManager {
 
   private static final List<SilverpeasRole> MODERATOR_ROLES =
       CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
 
-  private SuggestionBoxWebServiceProvider() {
+  private SuggestionBoxWebManager() {
   }
 
   /**
@@ -253,7 +253,7 @@ public class SuggestionBoxWebServiceProvider {
     if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
         getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
-      suggestion.setLastUpdater(fromUser);
+      suggestion.updatedBy(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
       switch (actual.getValidation().getStatus()) {
@@ -326,7 +326,7 @@ public class SuggestionBoxWebServiceProvider {
       }
       ContributionValidation validation =
           new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
-      suggestion.setLastUpdater(fromUser);
+      suggestion.updatedBy(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getValidation().getStatus()) {
         case REFUSED:

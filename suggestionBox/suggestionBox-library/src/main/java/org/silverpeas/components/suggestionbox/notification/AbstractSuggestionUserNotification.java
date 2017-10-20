@@ -96,6 +96,6 @@ public abstract class AbstractSuggestionUserNotification
     if (sender != null) {
       return sender.getId();
     }
-    return getResource().getCreatedBy();
+    return getResource().getCreatorId();
   }
 }

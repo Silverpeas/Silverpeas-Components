@@ -43,7 +43,7 @@ public class NewsByStatus {
   public NewsByStatus(List<News> allNews, String userId) {
     for (News news : allNews) {
       if (news.isDraft()) {
-        if (news.getCreatedBy().equals(userId)) {
+        if (news.getCreatorId().equals(userId)) {
           drafts.add(news);
         }
       } else if (news.isVisible()) {
