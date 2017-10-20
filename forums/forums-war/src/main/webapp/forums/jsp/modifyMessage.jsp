@@ -38,6 +38,7 @@
     int forumId = message.getForumId();
     String text = message.getText();
     String title = message.getTitle();
+    String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -49,7 +50,9 @@
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript">
         function init() {
-        	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>
+        	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300"
+        	              componentId="<%=instanceId%>" objectId="<%=String.valueOf(messageId)%>"
+        	              toolbar="forum" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
         }
 
         function validateMessage()
@@ -64,8 +67,14 @@
             }
             else
             {
+                sp.editor.wysiwyg.lastBackupManager.clear();
                 document.forms["forumsForm"].submit();
             }
+        }
+
+        function cancel() {
+          sp.editor.wysiwyg.lastBackupManager.clear();
+          sp.formConfig('<%=backUrl%>').submit();
         }
     </script>
 </head>
@@ -114,10 +123,9 @@
                     <br/>
                     <%
 
-    String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
     ButtonPane buttonPane = graphicFactory.getButtonPane();
     buttonPane.addButton(graphicFactory.getFormButton(resource.getString("valider"), "javascript:validateMessage();", false));
-    buttonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), backUrl, false));
+    buttonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), "javascript:cancel();", false));
     buttonPane.setHorizontalPosition();
     out.println(buttonPane.print());
 %>

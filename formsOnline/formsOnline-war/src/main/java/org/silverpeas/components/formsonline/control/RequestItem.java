@@ -26,32 +26,55 @@ package org.silverpeas.components.formsonline.control;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.web.util.DataItemWrapper;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.web.util.SimpleContributionItemWrapper;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
 /**
  * @author silveryocha
  */
-public class RequestItem extends DataItemWrapper<FormInstance> {
+public class RequestItem extends SimpleContributionItemWrapper<FormInstance> {
 
-  RequestItem(final FormInstance data, final Set<String> selectedIds) {
+  /**
+   * Hidden constructor.
+   */
+  private RequestItem(final FormInstance data, final Set<String> selectedIds) {
     super(data, selectedIds);
   }
 
-  @Override
-  public String getId() {
-    return getData().getId();
+  /**
+   * Converts the given data list into a {@link SilverpeasList} of item wrapping the {@link
+   * Contribution}.
+   * @param requests the list of {@link FormInstance}.
+   * @return the {@link SilverpeasList} of {@link RequestItem}.
+   */
+  public static SilverpeasList<RequestItem> convertList(final SilverpeasList<FormInstance> requests,
+      final Set<String> selectedIds) {
+    final Function<FormInstance, RequestItem> converter = c -> new RequestItem(c, selectedIds);
+    return requests.stream().map(converter).collect(SilverpeasList.collector(requests));
   }
 
+  /**
+   * Gets the creator with the use of request cache in order to avoid getting again and again
+   * data from persistence about same users occurring into several lines.
+   * @return the creator.
+   */
   public User getCreator() {
     final String cacheKey = getClass().getSimpleName() + "###user###" + getData().getCreatorId();
     return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class,
         () -> getData().getCreatorId() != null ? getData().getCreator() : null);
   }
 
+  /**
+   * Gets the validator with the use of request cache in order to avoid getting again and again
+   * data from persistence about same validators occurring into several lines.
+   * @return the creator.
+   */
   public User getValidator() {
     final String cacheKey = getClass().getSimpleName() + "###user###" + getData().getValidatorId();
     return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class,

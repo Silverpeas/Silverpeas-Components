@@ -156,6 +156,7 @@ function isCorrectForm() {
 
 function saveNews() {
 	if (isCorrectForm()) {
+    sp.editor.wysiwyg.lastBackupManager.clear();
   		<c:if test="${empty curQuickInfo.taxonomyPositions}">
     		<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
    		</c:if>
@@ -165,6 +166,7 @@ function saveNews() {
 
 function publish() {
   if (isCorrectForm()) {
+    sp.editor.wysiwyg.lastBackupManager.clear();
 	  <c:if test="${empty curQuickInfo.taxonomyPositions}">
 	  	<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
 	  </c:if>
@@ -174,16 +176,25 @@ function publish() {
 }
 
 function abortNews() {
+  sp.editor.wysiwyg.lastBackupManager.clear();
   $("#newsForm").attr("action", "Remove");
   $("#newsForm").submit();
 }
 
 function onDelete(id) {
+  sp.editor.wysiwyg.lastBackupManager.clear();
+  location.href="Main";
+}
+
+function cancel(id) {
+  sp.editor.wysiwyg.lastBackupManager.clear();
   location.href="Main";
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="editorContent" language="<%=language%>" width="98%" height="300" toolbar="quickInfo" displayFileBrowser="${true}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" />
+	<view:wysiwyg replace="editorContent" language="<%=language%>" width="98%" height="300"
+	toolbar="quickInfo" displayFileBrowser="${true}" componentId="${curQuickInfo.componentInstanceId}"
+	objectId="${curQuickInfo.publicationId}" activateWysiwygBackupManager="true"/>
 });
 </script>
 </head>
@@ -329,7 +340,7 @@ $(document).ready(function() {
   </view:button>
 </c:otherwise>
 </c:choose>
-<view:button label="${buttonCancel}" action="Main"/>
+<view:button label="${buttonCancel}" action="javascript:onclick=cancel()"/>
 </view:buttonPane>
     
 </view:frame>

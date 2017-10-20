@@ -145,7 +145,9 @@ function validateMessage() {
 }
 <% } else { %>
 function init() {
-	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300"
+	              componentId="<%=instanceId%>"
+	              toolbar="forum" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
     document.forms["forumsForm"].elements["messageTitle"].focus();
 }
 
@@ -155,8 +157,14 @@ function validateMessage() {
     } else if (!isTextFilled()) {
         jQuery.popup.error('<%=resource.getString("emptyMessageText")%>');
     } else {
+        sp.editor.wysiwyg.lastBackupManager.clear();
         $(document.forumsForm).submit();
     }
+}
+
+function cancel() {
+  sp.editor.wysiwyg.lastBackupManager.clear();
+  sp.formConfig('${pageScope.backURL}').submit();
 }
 <% } %>
 </script>
@@ -261,7 +269,7 @@ function validateMessage() {
         <fmt:message key="annuler" var="cancel"/>
           <view:buttonPane>
             <view:button action="javascript:validateMessage();" label="${validate}" disabled="false" />
-            <view:button action="${pageScope.backURL}" label="${cancel}" disabled="false" />
+            <view:button action="javascript:cancel();" label="${cancel}" disabled="false" />
           </view:buttonPane>
 <%
     out.println(frame.printAfter());

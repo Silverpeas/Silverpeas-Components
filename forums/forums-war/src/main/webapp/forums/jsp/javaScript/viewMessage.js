@@ -9,7 +9,7 @@ function replyMessage(messageId) {
   $('input[name="messageTitle"]').val('Re : ' + $msgContent.find('.txtnav').html());
   var $responseTable = $('#responseTable').show();
   if ($responseTable.length > 0) {
-    initCKeditor();
+    initCKeditor(messageId);
   }
   $('#backButton').hide();
   scrollMessageList(messageId);
@@ -18,6 +18,7 @@ function replyMessage(messageId) {
 }
 
 function cancelMessage() {
+  sp.editor.wysiwyg.lastBackupManager.clear();
   var messageId = currentMessageId;
   currentMessageId = -1;
   $('div[id^="msgContent"]').show();

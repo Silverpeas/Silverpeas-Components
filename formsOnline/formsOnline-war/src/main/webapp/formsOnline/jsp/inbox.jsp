@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="org.silverpeas.components.formsonline.control.RequestItem" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -89,8 +90,7 @@
               (r.data.validated ? statusValidatedLabel :
               (r.data.denied ? statusDeniedLabel :
               (r.data.archived ? statusArchivedLabel : statusUnreadLabel))))}"/>
-      <c:set var="requestItems" value="${controller.asRequestItemList(requests.all)}"/>
-      <jsp:useBean id="requestItems" type="java.util.List<org.silverpeas.components.formsonline.control.RequestItem>"/>
+      <c:set var="requestItems" value="<%=RequestItem.convertList(requests.getAll(), controller.getSelectedValidatorRequestIds())%>"/>
       <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="25">
         <view:arrayColumn width="10" sortable="false"/>
         <view:arrayColumn title="${colStatus}" compareOn="${requestStatusLabelLambda}"/>

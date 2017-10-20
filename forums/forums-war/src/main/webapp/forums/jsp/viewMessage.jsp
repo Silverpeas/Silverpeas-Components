@@ -223,6 +223,7 @@
         } else if (!isTextFilled()) {
           jQuery.popup.confirm('<%=resource.getString("emptyMessageText")%>');
         } else {
+          sp.editor.wysiwyg.lastBackupManager.clear();
           $(document.forumsForm).submit();
         }
       }
@@ -234,10 +235,14 @@
             });
         }
 
-        function initCKeditor() {
+        function initCKeditor(messageId) {
           if (wysiwygEditorInstance == null) {
             wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>;
           }
+          sp.editor.wysiwyg.backupManager({
+            componentInstanceId : '${componentId}',
+            resourceId : messageId
+          });
         }
 
         function callResizeFrame() {

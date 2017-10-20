@@ -75,6 +75,7 @@ function save() {
   switch(errorNb)
   {
      case 0 :
+       sp.editor.wysiwyg.lastBackupManager.clear();
          <view:pdcPositions setIn="document.myForm.Positions.value"/>;
          document.forms[0].submit();
          break;
@@ -88,8 +89,14 @@ function save() {
   }
 }
 
+function cancel() {
+  sp.editor.wysiwyg.lastBackupManager.clear();
+  sp.formConfig('Main').submit();
+}
+
 $(document).ready(function() {
-	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" toolbar="questionReply" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" componentId="<%=componentId%>"
+	              toolbar="questionReply" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
 });
 //-->
 </script>
@@ -180,7 +187,7 @@ $(document).ready(function() {
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancel();", false));
     out.println(buttonPane.print());
 %>
 </view:window>

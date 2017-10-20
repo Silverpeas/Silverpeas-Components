@@ -71,7 +71,9 @@
   <view:includePlugin name="popup"/>
   <script type="text/javascript">
     $(document).ready(function() {
-      <view:wysiwyg replace="editorContent" language="${null}" toolbar="suggestionBox" componentId="${componentId}"/>
+      <view:wysiwyg replace="editorContent" language="${null}" toolbar="suggestionBox" componentId="${componentId}"
+                    objectId="${suggestion != null ? suggestion.id : null}"
+                    activateWysiwygBackupManager="true"/>
       $('#title').focus();
     });
 
@@ -101,11 +103,13 @@
       if (error.count > 0) {
         notyError(error.msg);
       } else {
+        sp.editor.wysiwyg.lastBackupManager.clear();
         $('#suggestion').submit();
       }
     }
 
     function cancel() {
+      sp.editor.wysiwyg.lastBackupManager.clear();
       <c:choose>
       <c:when test="${suggestion == null}">
       $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();

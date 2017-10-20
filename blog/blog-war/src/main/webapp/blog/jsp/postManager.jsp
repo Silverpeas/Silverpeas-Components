@@ -84,6 +84,7 @@
     <script type="text/javascript">
 		function sendData() {
 			if (isCorrectForm()) {
+        sp.editor.wysiwyg.lastBackupManager.clear();
 				<view:pdcPositions setIn="document.postForm.Positions.value"/>
 				document.postForm.action = "UpdatePost";
 				document.postForm.submit();
@@ -118,6 +119,7 @@
 		
 		function sendDataAndDraftOut() {
       if (isCorrectForm()) {
+        sp.editor.wysiwyg.lastBackupManager.clear();
 				<view:pdcPositions setIn="document.postForm.Positions.value"/>
 				document.postForm.action = "UpdatePostAndDraftOut";
 				document.postForm.submit();
@@ -126,6 +128,7 @@
 		
 		function deletePost()
 		{
+      sp.editor.wysiwyg.lastBackupManager.clear();
 	    	document.postForm.action = "DeletePost";
 	    	document.postForm.PostId.value = <%=postId%>;
 			document.postForm.submit();
@@ -133,14 +136,16 @@
 		
 		function cancel()
 		{
-	    	document.postForm.action = "ViewPost";
+      sp.editor.wysiwyg.lastBackupManager.clear();
+      document.postForm.action = "ViewPost";
 			document.postForm.submit();
 		}
 		
 		$(document).ready(function() {
 			<view:wysiwyg replace="editor" language="${language}" width="90%" height="300" toolbar="blog"
 				spaceLabel="<%=spaceLabel%>" componentId="<%=instanceId%>" componentLabel="<%=componentLabel%>"
-				browseInfo="<%=title%>" objectId="<%=post.getId()%>" />
+				browseInfo="<%=title%>" objectId="<%=post.getId()%>"
+				activateWysiwygBackupManager="true"/>
 		
 			<% if ("CreatePost".equals(action)) {
 			%>     

@@ -42,7 +42,6 @@ import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -56,7 +55,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
@@ -346,12 +344,5 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public Set<String> getSelectedValidatorRequestIds() {
     return selectedValidatorRequestIds;
-  }
-
-  public SilverpeasList<RequestItem> asRequestItemList(
-      final SilverpeasList<FormInstance> requests) {
-    final Function<FormInstance, RequestItem> converter =
-        r -> new RequestItem(r, getSelectedValidatorRequestIds());
-    return RequestItem.convert(requests, converter);
   }
 }

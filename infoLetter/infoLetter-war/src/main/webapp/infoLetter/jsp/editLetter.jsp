@@ -56,12 +56,18 @@
     document.viewParution.submit();
   }
 
+  function cancel() {
+    sp.editor.wysiwyg.lastBackupManager.clear();
+    goView();
+  }
+
   function goFiles() {
     document.attachedFiles.submit();
   }
 
   function saveContentData() {
     $.progressMessage();
+    sp.editor.wysiwyg.lastBackupManager.clear();
     document.contentForm.action = "SaveContent";
     CKEDITOR.instances.Content.updateElement();
     document.contentForm.submit();
@@ -70,7 +76,7 @@
   $(document).ready(function() {
     <view:wysiwyg replace="Content" language="${userLanguage}" width="95%" height="500" toolbar="infoLetter"
                   spaceLabel="<%=spaceLabel%>" componentId="<%=componentId%>" componentLabel="<%=componentLabel%>"
-                  browseInfo="${parutionTitle}" objectId="${parution}" />
+                  browseInfo="${parutionTitle}" objectId="${parution}" activateWysiwygBackupManager="true" />
   });
 </script>
 </head>
@@ -110,7 +116,7 @@
   <fmt:message key='GML.validate' var="tmpLabel"/>
   <view:button label="${tmpLabel}" action="javascript:onClick=saveContentData()"/>
   <fmt:message key='GML.cancel' var="tmpLabel"/>
-  <view:button label="${tmpLabel}" action="javascript:onClick=goView()"/>
+  <view:button label="${tmpLabel}" action="javascript:onClick=cancel()"/>
 </view:buttonPane>
 
 <form name="headerParution" action="ParutionHeaders" method="post">

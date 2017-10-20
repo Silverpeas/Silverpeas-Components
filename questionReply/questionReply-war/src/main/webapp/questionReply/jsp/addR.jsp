@@ -37,6 +37,7 @@
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <%@ include file="checkQuestionReply.jsp" %>
+<c:set var="currentQuestion" value="${requestScope['currentQuestion']}"/>
 <c:set var="usedPrivateReplies" value="${requestScope['UsedPrivateReplies']}"/>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -58,6 +59,7 @@ function save() {
   switch(errorNb)
   {
     case 0 :
+      sp.editor.wysiwyg.lastBackupManager.clear();
       document.forms[0].submit();
       break;
     case 1 :
@@ -70,8 +72,14 @@ function save() {
   }
 }
 
+function cancel() {
+  sp.editor.wysiwyg.lastBackupManager.clear();
+  sp.formConfig('ConsultQuestionQuery').submit();
+}
+
 $(document).ready(function() {
-	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" toolbar="questionReply" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" componentId="<%=componentId%>"
+	              toolbar="questionReply" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
 });
 //-->
 </script>
@@ -139,7 +147,7 @@ $(document).ready(function() {
 <%
   ButtonPane buttonPane = gef.getButtonPane();
   buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-  buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancel();", false));
   out.println(buttonPane.print());
 	out.println(window.printAfter());
 %>
