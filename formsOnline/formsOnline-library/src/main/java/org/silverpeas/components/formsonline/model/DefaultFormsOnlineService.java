@@ -21,14 +21,18 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
-import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
-import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.components.formsonline.notification
+    .FormsOnlinePendingValidationRequestUserNotification;
+import org.silverpeas.components.formsonline.notification
+    .FormsOnlineProcessedRequestUserNotification;
+import org.silverpeas.components.formsonline.notification
+    .FormsOnlineValidationRequestUserNotification;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -40,15 +44,19 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiConsumer;
 
-@Service
+@Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Inject
@@ -148,66 +156,89 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return theForm;
   }
 
+  @Override
   public void deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
     getDAO().deleteForm(pk);
   }
 
+  @Override
   public void publishForm(FormPK pk) throws FormsOnlineDatabaseException {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_PUBLISHED);
     getDAO().updateForm(form);
   }
 
+  @Override
   public void unpublishForm(FormPK pk) throws FormsOnlineDatabaseException {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_UNPUBLISHED);
     getDAO().updateForm(form);
   }
 
+  @Override
   public List<FormDetail> getAvailableFormsToSend(String appId, String userId)
       throws FormsOnlineDatabaseException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
     return getDAO().getUserAvailableForms(appId, userId, userGroupIds);
   }
 
-  public RequestsByStatus getAllUserRequests(String appId, String userId)
+  @Override
+  public RequestsByStatus getAllUserRequests(String appId, String userId,
+      final PaginationPage paginationPage)
       throws FormsOnlineDatabaseException {
-    RequestsByStatus allRequests = new RequestsByStatus();
+    RequestsByStatus requests = new RequestsByStatus(paginationPage);
     List<FormDetail> forms = getAllForms(appId, userId, false);
     for (FormDetail form : forms) {
-      List<FormInstance> requests = getUserRequestsByForm(form.getPK(), userId);
-      allRequests.add(requests, form);
-    }
-    return allRequests;
-  }
-
-  public List<FormInstance> getUserRequestsByForm(FormPK pk, String userId)
-      throws FormsOnlineDatabaseException {
-    return getDAO().getSentFormInstances(pk, userId);
-  }
-
-  public RequestsByStatus getAllValidatorRequests(String appId, boolean allRequests, String userId)
-      throws FormsOnlineDatabaseException {
-    List<String> formIds = getAvailableFormIdsAsReceiver(appId, userId);
-    List<FormDetail> availableForms = getDAO().getForms(formIds);
-    RequestsByStatus requests = new RequestsByStatus();
-    for (FormDetail form : availableForms) {
-      List<FormInstance> requestsByForm =
-          getDAO().getReceivedRequests(form.getPK(), allRequests, userId);
-      for (FormInstance request : requestsByForm) {
-        request.setForm(form);
-        requests.add(request);
+      for (Pair<List<Integer>, BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>>>
+          mergingRuleByStates : RequestsByStatus.MERGING_RULES_BY_STATES) {
+        final List<Integer> states = mergingRuleByStates.getLeft();
+        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
+            mergingRuleByStates.getRight();
+        final PaginationCriterion paginationCriterion =
+            paginationPage != null ? paginationPage.asCriterion() : null;
+        final SilverpeasList<FormInstance> result =
+            getDAO().getSentFormInstances(form.getPK(), userId, states, paginationCriterion);
+        merge.accept(requests, result.stream()
+                                     .peek(l -> l.setForm(form))
+                                     .collect(SilverpeasList.collector(result)));
       }
     }
     return requests;
   }
 
+  @Override
+  public RequestsByStatus getValidatorRequests(String appId, boolean allRequests, String userId,
+      final PaginationPage paginationPage)
+      throws FormsOnlineDatabaseException {
+    final List<String> formIds = getAvailableFormIdsAsReceiver(appId, userId);
+    final List<FormDetail> availableForms = getDAO().getForms(formIds);
+    RequestsByStatus requests = new RequestsByStatus(paginationPage);
+    for (FormDetail form : availableForms) {
+      for (Pair<List<Integer>, BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>>>
+          mergingRuleByStates : RequestsByStatus.MERGING_RULES_BY_STATES) {
+        final List<Integer> states = mergingRuleByStates.getLeft();
+        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
+            mergingRuleByStates.getRight();
+        final PaginationCriterion paginationCriterion =
+            paginationPage != null ? paginationPage.asCriterion() : null;
+        final SilverpeasList<FormInstance> result = getDAO()
+            .getReceivedRequests(form.getPK(), allRequests, userId, states, paginationCriterion);
+        merge.accept(requests, result.stream()
+                                     .peek(l -> l.setForm(form))
+                                     .collect(SilverpeasList.collector(result)));
+      }
+    }
+    return requests;
+  }
+
+  @Override
   public List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
       throws FormsOnlineDatabaseException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
     return getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds);
   }
 
+  @Override
   public FormInstance loadRequest(RequestPK pk, String userId)
       throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
 
@@ -217,15 +248,13 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     FormDetail form = loadForm(request.getFormPK());
     request.setForm(form);
     String xmlFormName = form.getXmlFormName();
-    String xmlFormShortName =
-        xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
     // creation du PublicationTemplate
     getPublicationTemplateManager()
         .addDynamicPublicationTemplate(pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
-    PublicationTemplateImpl pubTemplate =
-        (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-            pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
+    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+        .getPublicationTemplate(pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
 
     // Retrieve Form and DataRecord
     Form formView = pubTemplate.getViewForm();
@@ -247,6 +276,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return request;
   }
 
+  @Override
   public void saveRequest(FormPK pk, String userId, List<FileItem> items)
       throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
     FormInstance request = new FormInstance();
@@ -266,8 +296,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
 
     String xmlFormName = formDetail.getXmlFormName();
-    String xmlFormShortName =
-        xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
     // Retrieve data form (with DataRecord object)
     PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(
@@ -289,6 +318,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     notifyReceivers(request);
   }
 
+  @Override
   public void setValidationStatus(RequestPK pk, String userId, String decision, String comments)
       throws FormsOnlineDatabaseException {
     FormInstance request = getDAO().getRequest(pk);
@@ -330,6 +360,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         .buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, userIds));
   }
 
+  @Override
   public void deleteRequest(RequestPK pk)
       throws FormsOnlineDatabaseException, FormException, PublicationTemplateException {
     // delete form data
@@ -337,8 +368,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     FormPK formPK = new FormPK(instance.getFormId(), pk.getInstanceId());
     FormDetail form = getDAO().getForm(formPK);
     String xmlFormName = form.getXmlFormName();
-    String xmlFormShortName =
-        xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
     PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
         pk.getInstanceId() + ":" + xmlFormShortName);
     RecordSet set = pubTemplate.getRecordSet();
@@ -349,6 +379,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     getDAO().deleteRequest(pk);
   }
 
+  @Override
   public void archiveRequest(RequestPK pk) throws FormsOnlineDatabaseException {
     FormInstance request = getDAO().getRequest(pk);
     request.setState(FormInstance.STATE_ARCHIVED);

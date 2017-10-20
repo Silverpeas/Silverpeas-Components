@@ -23,34 +23,56 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<c:set var="controller" value="${requestScope.FormsOnline}"/>
+<jsp:useBean id="controller" type="org.silverpeas.components.formsonline.control.FormsOnlineSessionController"/>
 
-<fmt:setLocale value="${lang}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<fmt:setLocale value="${lang}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <c:set var="requests" value="${requestScope['Requests']}"/>
+<jsp:useBean id="requests" type="org.silverpeas.components.formsonline.model.RequestsByStatus"/>
+
+<fmt:message var="statusReadLabel" key="formsOnline.stateRead"/>
+<fmt:message var="statusValidatedLabel" key="formsOnline.stateValidated"/>
+<fmt:message var="statusDeniedLabel" key="formsOnline.stateRefused"/>
+<fmt:message var="statusArchivedLabel" key="formsOnline.stateArchived"/>
+<fmt:message var="statusUnreadLabel" key="formsOnline.stateUnread"/>
+
+<fmt:message var="colStatus" key="GML.status"/>
+<fmt:message var="colDate" key="formsOnline.sendDate"/>
+<fmt:message var="colSender" key="formsOnline.sender"/>
+<fmt:message var="colForm" key="formsOnline.Form"/>
+<fmt:message var="colValidator" key="formsOnline.receiver"/>
+
+<fmt:message var="deletionConfirmMessage" key="formsOnline.requests.action.delete.confirm"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
-<view:looknfeel/>
-	<script type="text/javascript">
+  <title></title>
+  <view:looknfeel/>
+  <script type="text/javascript">
+
+    var arrayPaneAjaxControl;
+    var checkboxMonitor = sp.selection.newCheckboxMonitor('#list input[name=selection]');
+
     function removeRequests() {
-      var label = "<fmt:message key="formsOnline.requests.action.delete.confirm"/>";
-      jQuery.popup.confirm(label, function() {
-        document.deleteForm.submit();
+      jQuery.popup.confirm('${silfn:escapeJs(deletionConfirmMessage)}', function() {
+        var ajaxConfig = sp.ajaxConfig("DeleteRequests").byPostMethod();
+        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
+        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
-	</script>
+  </script>
 </head>
 <body>
 <fmt:message var="browseBarAll" key="formsOnline.requests.all.breadcrumb"/>
@@ -60,62 +82,52 @@
   <view:operationOfCreation action="javascript:removeRequests()" icon="" altText="${deleteReq}"/>
 </view:operationPane>
 <view:window>
-<form name="deleteForm" action="DeleteRequests">
-  <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="20">
-    <fmt:message var="colStatus" key="GML.status"/>
-    <fmt:message var="colDate" key="formsOnline.sendDate"/>
-    <fmt:message var="colSender" key="formsOnline.sender"/>
-    <fmt:message var="colForm" key="formsOnline.Form"/>
-    <fmt:message var="colValidator" key="formsOnline.receiver"/>
-    <fmt:message var="colOp" key="GML.operations"/>
-    <view:arrayColumn title="${colStatus}"/>
-    <view:arrayColumn title="${colDate}"/>
-    <view:arrayColumn title="${colForm}"/>
-    <view:arrayColumn title="${colSender}"/>
-    <view:arrayColumn title="${colValidator}"/>
-    <view:arrayColumn title="${colOp}"/>
-    <c:forEach items="${requests.all}" var="request">
-    <view:arrayLine>
-      <c:choose>
-        <c:when test="${request.read}">
-          <fmt:message var="statusRead" key="formsOnline.stateRead"/>
-          <view:arrayCellText text="${statusRead}"/>
-        </c:when>
-        <c:when test="${request.validated}">
-          <fmt:message var="statusValidated" key="formsOnline.stateValidated"/>
-          <view:arrayCellText text="${statusValidated}"/>
-        </c:when>
-        <c:when test="${request.denied}">
-          <fmt:message var="statusDenied" key="formsOnline.stateRefused"/>
-          <view:arrayCellText text="${statusDenied}"/>
-        </c:when>
-        <c:when test="${request.archived}">
-          <fmt:message var="statusArchived" key="formsOnline.stateArchived"/>
-          <view:arrayCellText text="${statusArchived}"/>
-        </c:when>
-        <c:otherwise>
-          <fmt:message var="statusUnread" key="formsOnline.stateUnread"/>
-          <view:arrayCellText text="${statusUnread}"/>
-        </c:otherwise>
-      </c:choose>
-      <c:set var="creationDate" value="${silfn:formatDate(request.creationDate, lang)}"/>
-      <view:arrayCellText text="<!-- ${request.creationDate} -->${creationDate}"/>
-      <view:arrayCellText text="<a href=\"ViewRequest?Id=${request.id}&Origin=InBox\">${request.form.title}</a>"/>
-      <view:arrayCellText text="${request.creator.displayedName}"/>
-      <view:arrayCellText text="${request.validator.displayedName}"/>
-      <c:set var="checkbox"><input type="checkbox" name="Id" value="${request.id}"/></c:set>
-        <c:choose>
-          <c:when test="${request.archived}">
-            <view:arrayCellText text="${checkbox}"/>
-          </c:when>
-          <c:otherwise>
-            <view:arrayCellText text=""/>
-          </c:otherwise>
-        </c:choose>
-    </view:arrayLine>
-    </c:forEach>
-  </view:arrayPane>
-</form>
+  <view:frame>
+    <div id="list">
+      <c:set var="requestStatusLabelLambda" value="${r ->
+              (r.data.read ? statusReadLabel :
+              (r.data.validated ? statusValidatedLabel :
+              (r.data.denied ? statusDeniedLabel :
+              (r.data.archived ? statusArchivedLabel : statusUnreadLabel))))}"/>
+      <c:set var="requestItems" value="${controller.asRequestItemList(requests.all)}"/>
+      <jsp:useBean id="requestItems" type="java.util.List<org.silverpeas.components.formsonline.control.RequestItem>"/>
+      <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="25">
+        <view:arrayColumn width="10" sortable="false"/>
+        <view:arrayColumn title="${colStatus}" compareOn="${requestStatusLabelLambda}"/>
+        <view:arrayColumn title="${colDate}" compareOn="${r -> r.data.creationDate}"/>
+        <view:arrayColumn title="${colForm}" compareOn="${r -> r.data.form.title}"/>
+        <view:arrayColumn title="${colSender}" compareOn="${r -> r.creator.displayedName}"/>
+        <view:arrayColumn title="${colValidator}" compareOn="${r -> r.validator.displayedName}"/>
+        <view:arrayLines var="request" items="${requestItems}">
+          <view:arrayLine>
+            <c:choose>
+              <c:when test="${request.data.archived}">
+                <view:arrayCellCheckbox name="selection"
+                                        checked="${request.selected}"
+                                        value="${request.id}"/>
+              </c:when>
+              <c:otherwise>
+                <view:arrayCellText text=""/>
+              </c:otherwise>
+            </c:choose>
+            <view:arrayCellText text="${requestStatusLabelLambda(request)}"/>
+            <view:arrayCellText text="${silfn:formatDate(request.data.creationDate, lang)}"/>
+            <view:arrayCellText><a href="ViewRequest?Id=${request.id}&Origin=InBox">${request.data.form.title}</a></view:arrayCellText>
+            <view:arrayCellText text="${request.creator.displayedName}"/>
+            <view:arrayCellText text="${request.validator.displayedName}"/>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          checkboxMonitor.pageChanged();
+          arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#list', {
+            before : checkboxMonitor.applyToAjaxConfig
+          });
+        });
+      </script>
+    </div>
+  </view:frame>
 </view:window>
 </body>
 </html>

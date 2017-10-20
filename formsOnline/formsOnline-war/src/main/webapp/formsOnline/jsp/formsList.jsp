@@ -96,6 +96,7 @@
 </c:choose>
 
   <c:if test="${requestsAsValidator != null}">
+  <jsp:useBean id="requestsAsValidator" type="org.silverpeas.components.formsonline.model.RequestsByStatus"/>
   <div class="secteur-container formsOnline-waitMyAction">
     <div class="header">
       <c:choose>
@@ -103,7 +104,7 @@
           <h3 class="formsOnline-waitMyAction-title"><fmt:message key="formsOnline.home.toValidate.none.title"/></h3>
         </c:when>
         <c:otherwise>
-          <h3 class="formsOnline-waitMyAction-title"><strong>${fn:length(requestsAsValidator.toValidate)} </strong><fmt:message key="formsOnline.home.toValidate.title"><fmt:param value="${fn:length(requestsAsValidator.toValidate)}"/> </fmt:message></h3>
+          <h3 class="formsOnline-waitMyAction-title"><strong>${requestsAsValidator.toValidate.originalListSize()} </strong><fmt:message key="formsOnline.home.toValidate.title"><fmt:param value="${fn:length(requestsAsValidator.toValidate)}"/> </fmt:message></h3>
         </c:otherwise>
       </c:choose>
     </div>
@@ -135,19 +136,26 @@
       <c:if test="${empty userRequests.toValidate}">
         <li><span class="txt-no-content"><fmt:message key="formsOnline.home.requests.toValidate.none"/></span></li>
       </c:if>
-      <c:forEach items="${userRequests.toValidate}" var="request">
-        <li>
-          <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
-          <c:choose>
-            <c:when test="${request.read}">
-              <span class="form-statut"><fmt:message key="formsOnline.stateRead"/></span>
-            </c:when>
-            <c:otherwise>
-              <span class="form-statut"><fmt:message key="formsOnline.stateUnread"/></span>
-            </c:otherwise>
-          </c:choose>
-        </li>
-      </c:forEach>
+      <view:paginationPane var="toValidateUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:paginationItems items="${userRequests.toValidate}" var="request">
+          <li>
+            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
+            <c:choose>
+              <c:when test="${request.read}">
+                <span class="form-statut"><fmt:message key="formsOnline.stateRead"/></span>
+              </c:when>
+              <c:otherwise>
+                <span class="form-statut"><fmt:message key="formsOnline.stateUnread"/></span>
+              </c:otherwise>
+            </c:choose>
+          </li>
+        </view:paginationItems>
+      </view:paginationPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.paginationPane.ajaxControls('#my-formsOnline-wait');
+        });
+      </script>
     </ul>
   </div>
 
@@ -157,9 +165,16 @@
       <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.validated"/></strong></h3>
     </div>
     <ul>
-      <c:forEach items="${userRequests.validated}" var="request">
-        <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-      </c:forEach>
+      <view:paginationPane var="validatedUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:paginationItems items="${userRequests.validated}" var="request">
+          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
+        </view:paginationItems>
+      </view:paginationPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.paginationPane.ajaxControls('#my-formsOnline-validate');
+        });
+      </script>
     </ul>
   </div>
   </c:if>
@@ -170,9 +185,16 @@
       <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.denied"/></strong></h3>
     </div>
     <ul>
-      <c:forEach items="${userRequests.denied}" var="request">
-        <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-      </c:forEach>
+      <view:paginationPane var="deniedUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:paginationItems items="${userRequests.denied}" var="request">
+          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
+        </view:paginationItems>
+      </view:paginationPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.paginationPane.ajaxControls('#my-formsOnline-refused');
+        });
+      </script>
     </ul>
   </div>
   </c:if>
@@ -183,9 +205,16 @@
         <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.archived"/></strong></h3>
       </div>
       <ul>
-        <c:forEach items="${userRequests.archived}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </c:forEach>
+        <view:paginationPane var="archievedUserRequests" routingAddress="Main" numberLinesPerPage="10">
+          <view:paginationItems items="${userRequests.archived}" var="request">
+            <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
+          </view:paginationItems>
+        </view:paginationPane>
+        <script type="text/javascript">
+          whenSilverpeasReady(function() {
+            sp.paginationPane.ajaxControls('#my-formsOnline-archived');
+          });
+        </script>
       </ul>
     </div>
   </c:if>
@@ -211,7 +240,7 @@
     <c:if test="${not empty forms}">
       <ul>
         <c:forEach items="${forms}" var="form">
-          <li>
+          <li class="showActionsOnMouseOver">
             <c:if test="${form.sendable}">
             <a href="NewRequest?FormId=${form.id}">
               </c:if>
@@ -221,7 +250,7 @@
             </a>
             </c:if>
             <c:if test="${role == 'admin'}">
-              <div class="operation">
+              <div class="operation actionShownOnMouseOver">
                 <a href="EditForm?formId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
                 <c:choose>
                   <c:when test="${form.notYetPublished}">

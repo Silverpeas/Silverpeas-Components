@@ -24,6 +24,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.apache.commons.fileupload.FileItem;
@@ -54,13 +55,12 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   List<FormDetail> getAvailableFormsToSend(String appId, String userId)
       throws FormsOnlineDatabaseException;
 
-  RequestsByStatus getAllUserRequests(String appId, String userId)
+  RequestsByStatus getAllUserRequests(String appId, String userId,
+      final PaginationPage paginationPage)
       throws FormsOnlineDatabaseException;
 
-  List<FormInstance> getUserRequestsByForm(FormPK pk, String userId)
-      throws FormsOnlineDatabaseException;
-
-  RequestsByStatus getAllValidatorRequests(String appId, boolean allRequests, String userId)
+  RequestsByStatus getValidatorRequests(String appId, boolean allRequests, String userId,
+      final PaginationPage paginationPage)
       throws FormsOnlineDatabaseException;
 
   List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
