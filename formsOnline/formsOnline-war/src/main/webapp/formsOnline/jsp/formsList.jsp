@@ -240,7 +240,7 @@
     <c:if test="${not empty forms}">
       <ul>
         <c:forEach items="${forms}" var="form">
-          <li>
+          <li class="showActionsOnMouseOver">
             <c:if test="${form.sendable}">
             <a href="NewRequest?FormId=${form.id}">
               </c:if>
@@ -250,7 +250,7 @@
             </a>
             </c:if>
             <c:if test="${role == 'admin'}">
-              <div class="operation">
+              <div class="operation actionShownOnMouseOver">
                 <a href="EditForm?formId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
                 <c:choose>
                   <c:when test="${form.notYetPublished}">
