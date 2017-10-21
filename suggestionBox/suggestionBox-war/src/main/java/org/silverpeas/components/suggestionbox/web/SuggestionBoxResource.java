@@ -210,8 +210,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
           commentJoinData = JOIN_DATA_APPLY.COMMENT;
         }
         List<SuggestionEntity> suggestions = suggestionBoxWebManager.
-            getSuggestionsByCriteria(getSuggestionBox(),
-                SuggestionCriteria.from(getSuggestionBox())
+            getSuggestionsByCriteria(SuggestionCriteria.from(getSuggestionBox())
                     .createdBy(author)
                     .statusIsOneOf(ContributionStatus.VALIDATED)
                     .paginatedBy(pagination)

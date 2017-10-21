@@ -30,7 +30,7 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
