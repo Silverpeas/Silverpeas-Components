@@ -2841,9 +2841,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           }
 
           if (path.length() == 0) {
-            List<SpaceInst> sPath = getOrganisationController().getSpacePath(space.getId());
+            List<SpaceInstLight> sPath = getOrganisationController().getPathToSpace(space.getId());
             boolean first = true;
-            for (SpaceInst spaceInPath : sPath) {
+            for (SpaceInstLight spaceInPath : sPath) {
               if (!first) {
                 path.append(" > ");
               }
@@ -3294,8 +3294,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return the list of SpaceInst from current space identifier (in session) to root space <br/>
    * (all the subspace)
    */
-  public List<SpaceInst> getSpacePath() {
-    return this.getOrganisationController().getSpacePath(this.getSpaceId());
+  public List<SpaceInstLight> getSpacePath() {
+    return this.getOrganisationController().getPathToSpace(this.getSpaceId());
   }
 
   /**
@@ -3325,8 +3325,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     fileName.append(getUserDetail().getLogin()).append('-');
 
     // add space path to filename
-    List<SpaceInst> listSpaces = getSpacePath();
-    for (SpaceInst space : listSpaces) {
+    List<SpaceInstLight> listSpaces = getSpacePath();
+    for (SpaceInstLight space : listSpaces) {
       fileName.append(space.getName(lang)).append('-');
     }
     // add component name to filename

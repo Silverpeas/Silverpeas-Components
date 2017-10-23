@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -110,10 +111,9 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
 
   private String getSpacesPath(final String componentId, final String language) {
     StringBuilder spacesPath = new StringBuilder();
-    final List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(
-        componentId);
-    final Iterator<SpaceInst> iSpaces = spaces.iterator();
-    SpaceInst spaceInst;
+    final List<SpaceInstLight> spaces = getOrganisationController().getPathToComponent(componentId);
+    final Iterator<SpaceInstLight> iSpaces = spaces.iterator();
+    SpaceInstLight spaceInst;
     while (iSpaces.hasNext()) {
       spaceInst = iSpaces.next();
       spacesPath.append(spaceInst.getName(language));
