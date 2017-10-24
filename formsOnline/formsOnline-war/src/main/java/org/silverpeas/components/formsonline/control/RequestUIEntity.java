@@ -28,7 +28,7 @@ import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.web.util.SimpleContributionItemWrapper;
+import org.silverpeas.core.web.util.SimpleContributionUIEntity;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -38,12 +38,12 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestC
 /**
  * @author silveryocha
  */
-public class RequestItem extends SimpleContributionItemWrapper<FormInstance> {
+public class RequestUIEntity extends SimpleContributionUIEntity<FormInstance> {
 
   /**
    * Hidden constructor.
    */
-  private RequestItem(final FormInstance data, final Set<String> selectedIds) {
+  private RequestUIEntity(final FormInstance data, final Set<String> selectedIds) {
     super(data, selectedIds);
   }
 
@@ -51,11 +51,11 @@ public class RequestItem extends SimpleContributionItemWrapper<FormInstance> {
    * Converts the given data list into a {@link SilverpeasList} of item wrapping the {@link
    * Contribution}.
    * @param requests the list of {@link FormInstance}.
-   * @return the {@link SilverpeasList} of {@link RequestItem}.
+   * @return the {@link SilverpeasList} of {@link RequestUIEntity}.
    */
-  public static SilverpeasList<RequestItem> convertList(final SilverpeasList<FormInstance> requests,
+  public static SilverpeasList<RequestUIEntity> convertList(final SilverpeasList<FormInstance> requests,
       final Set<String> selectedIds) {
-    final Function<FormInstance, RequestItem> converter = c -> new RequestItem(c, selectedIds);
+    final Function<FormInstance, RequestUIEntity> converter = c -> new RequestUIEntity(c, selectedIds);
     return requests.stream().map(converter).collect(SilverpeasList.collector(requests));
   }
 
