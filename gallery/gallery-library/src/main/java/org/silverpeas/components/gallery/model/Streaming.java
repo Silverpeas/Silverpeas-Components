@@ -23,9 +23,14 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.constant.StreamingProvider;
@@ -116,14 +121,14 @@ public class Streaming extends Media {
    */
   public static String getJsonOembedAsString(String homepageUrl) {
     final String oembedUrl = StreamingProvider.getOembedUrl(homepageUrl);
-    final GetMethod httpGet = new GetMethod(oembedUrl);
-    httpGet.addRequestHeader("Accept", "application/json");
-    try {
-      int statusCode = initHttpClient().executeMethod(httpGet);
-      if (statusCode != HttpStatus.SC_OK) {
-        throw new WebApplicationException(statusCode);
+    final HttpGet httpGet = new HttpGet(oembedUrl);
+    httpGet.addHeader("Accept", "application/json");
+    try (CloseableHttpClient httpClient = httpClient();
+         CloseableHttpResponse response = httpClient.execute(httpGet)) {
+      if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        throw new WebApplicationException(response.getStatusLine().getStatusCode());
       }
-      String jsonResponse = httpGet.getResponseBodyAsString();
+      String jsonResponse = EntityUtils.toString(response.getEntity());
       for (StreamingProvider provider : StreamingProvider.values()) {
         jsonResponse = jsonResponse.replaceAll("(?i)" + provider.name(), provider.name());
       }
@@ -140,13 +145,13 @@ public class Streaming extends Media {
     }
   }
 
-  private static HttpClient initHttpClient() {
-    HttpClient client = new HttpClient();
+  private static CloseableHttpClient httpClient() {
+    HttpClientBuilder builder = HttpClients.custom();
     final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
     final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
     if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
-      client.getHostConfiguration().setProxy(proxyHost, Integer.valueOf(proxyPort));
+      builder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
     }
-    return client;
+    return builder.build();
   }
 }

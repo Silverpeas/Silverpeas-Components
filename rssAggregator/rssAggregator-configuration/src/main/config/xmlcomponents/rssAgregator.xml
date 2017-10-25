@@ -90,10 +90,10 @@
         <option>
           <name>
             <message lang="fr">Agrégée</message>
-            <message lang="en">Agregated</message>
-            <message lang="de">Agregated</message>
+            <message lang="en">Aggregated</message>
+            <message lang="de">Aggregated</message>
           </name>
-          <value>AGREGATED</value>
+          <value>AGGREGATED</value>
         </option>
         <option>
           <name>

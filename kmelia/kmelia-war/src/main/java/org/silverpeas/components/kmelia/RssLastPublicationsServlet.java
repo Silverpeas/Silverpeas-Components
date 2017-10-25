@@ -23,14 +23,13 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.util.URLUtil;
-import de.nava.informa.core.ChannelIF;
-import de.nava.informa.core.ItemIF;
-import de.nava.informa.exporters.RSS_2_0_Exporter;
-import de.nava.informa.impl.basic.Channel;
-import de.nava.informa.impl.basic.Item;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndContentImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.io.SyndFeedOutput;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -38,13 +37,16 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import org.silverpeas.core.util.MimeTypes;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -54,8 +56,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class RssLastPublicationsServlet extends HttpServlet {
 
@@ -89,7 +92,11 @@ public class RssLastPublicationsServlet extends HttpServlet {
       if (isUserAuthorized(user, login, password, spaceId)) {
 
         String serverURL = getServerURL(user);
-        ChannelIF channel = new Channel();
+        SyndFeed feed = new SyndFeedImpl();
+        feed.setFeedType("rss_2.0");
+        feed.setTitle(getChannelTitle(spaceId));
+        feed.setDescription(getChannelTitle(spaceId));
+
         MainSessionController mainSessionController = util.getMainSessionController(request);
         KmeliaTransversal kmeliaTransversal;
         String preferredLanguage;
@@ -105,18 +112,17 @@ public class RssLastPublicationsServlet extends HttpServlet {
         Collection<PublicationDetail> publications = getElements(kmeliaTransversal, spaceId);
 
         // création d'une liste de ItemIF en fonction de la liste des éléments
+        List<SyndEntry> entries = new ArrayList<>(publications.size());
         for (PublicationDetail publication : publications) {
-          channel.addItem(toRssItem(publication, serverURL, preferredLanguage));
+          entries.add(toSyndEntry(publication, serverURL, preferredLanguage));
         }
+        feed.setEntries(entries);
 
-        // construction de l'objet Channel
-        channel.setTitle(getChannelTitle(spaceId));
-        // exportation du channel
+        // exportation du feed
         response.setContentType(MimeTypes.RSS_MIME_TYPE);
-        response.setHeader("Content-Disposition", "inline; filename=feeds.rss");
         Writer writer = response.getWriter();
-        RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
-        rssExporter.write(channel);
+        SyndFeedOutput feedOutput = new SyndFeedOutput();
+        feedOutput.output(feed, writer);
       } else {
         objectNotFound(request, response);
       }
@@ -129,29 +135,38 @@ public class RssLastPublicationsServlet extends HttpServlet {
 
   public Collection<PublicationDetail> getElements(KmeliaTransversal kmeliaTransversal,
       String spaceId) {
-    int maxAge = settings.getInteger("max.age.last.publication", 0);
-    int nbReturned = settings.getInteger("max.nb.last.publication", 10);
-    return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, nbReturned);
+    final int defaultMaxAge = 0;
+    final int defaultReturnedNb = 10;
+    int maxAge = settings.getInteger("max.age.last.publication", defaultMaxAge);
+    int returnedNb = settings.getInteger("max.nb.last.publication", defaultReturnedNb);
+    return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, returnedNb);
   }
 
-  public ItemIF toRssItem(PublicationDetail publication, String serverURL, String lang) throws
+  public SyndEntry toSyndEntry(PublicationDetail publication, String serverURL, String lang) throws
       MalformedURLException {
-    ItemIF item = new Item();
-    item.setTitle(publication.getTitle());
-    StringBuilder url = new StringBuilder(256);
+    final int maxUrlLength = 256;
+    SyndEntry entry = new SyndEntryImpl();
+    entry.setTitle(publication.getTitle());
+    StringBuilder url = new StringBuilder(maxUrlLength);
     url.append(serverURL);
     url.append(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getPK().getId()));
-    item.setLink(new URL(url.toString()));
-    item.setDescription(publication.getDescription(lang));
-    item.setDate(publication.getUpdateDate());
+    entry.setLink(url.toString());
+    entry.setPublishedDate(publication.getCreationDate());
+    entry.setUpdatedDate(publication.getUpdateDate());
+
+    SyndContent description = new SyndContentImpl();
+    description.setType("text/plan");
+    description.setValue(publication.getDescription(lang));
+    entry.setDescription(description);
+
     String creatorId = publication.getUpdaterId();
     if (StringUtil.isDefined(creatorId)) {
       UserDetail creator = adminController.getUserDetail(creatorId);
       if (creator != null) {
-        item.setCreator(creator.getDisplayedName());
+        entry.setAuthor(creator.getDisplayedName());
       }
     }
-    return item;
+    return entry;
   }
 
   public String getChannelTitle(String spaceId) {
@@ -168,8 +183,8 @@ public class RssLastPublicationsServlet extends HttpServlet {
   }
 
   public boolean isUserAuthorized(UserFull user, String login, String password, String spaceId) {
-    return ((user != null) && login.equals(user.getLogin()) && password.equals(user.getPassword())
-        && isSpaceAvailable(user.getId(), spaceId));
+    return (user != null) && login.equals(user.getLogin()) && password.equals(user.getPassword())
+        && isSpaceAvailable(user.getId(), spaceId);
   }
 
   public boolean isSpaceAvailable(String userId, String spaceId) {

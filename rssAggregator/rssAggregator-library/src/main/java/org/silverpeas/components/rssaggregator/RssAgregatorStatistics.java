@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.rssaggregator;
 
-import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
-import org.silverpeas.components.rssaggregator.service.RssAgregatorBmImpl;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.components.rssaggregator.service.RssAggregator;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -37,13 +37,16 @@ import java.util.Collection;
 import java.util.List;
 
 @Singleton
-@Named("rssAgregator" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+@Named("rssAggregator" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class RssAgregatorStatistics implements ComponentStatisticsProvider {
+
+  @Inject
+  private RssAggregator rssAggregator;
+
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    RssAgregatorBm rss = new RssAgregatorBmImpl();
-    List<SPChannel> channels = rss.getChannels(componentId);
+    List<SPChannel> channels = rssAggregator.getChannels(componentId);
     List<UserIdCountVolumeCouple> statsList = new ArrayList<>(channels.size());
     for (SPChannel channel : channels) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();

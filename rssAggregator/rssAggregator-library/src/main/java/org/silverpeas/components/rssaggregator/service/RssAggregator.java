@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author neysseric
  */
-public interface RssAgregatorBm {
+public interface RssAggregator {
 
   SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
 

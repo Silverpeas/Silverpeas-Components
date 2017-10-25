@@ -26,11 +26,11 @@ package org.silverpeas.components.rssaggregator.service;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
+import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -39,20 +39,19 @@ import java.util.List;
  * @author neysseri
  */
 @Singleton
-public class RssAgregatorBmImpl implements RssAgregatorBm {
+public class DefaultRssAggregator implements RssAggregator {
 
-  private static SilverpeasBeanDAO<SPChannel> rssDAO;
-
-  public RssAgregatorBmImpl() {
-  }
+  private static final String SYNDICATION_CHANNEL_WITH_ID = "syndication channel with id";
+  private SilverpeasBeanDAO<SPChannel> rssDAO;
 
   public SPChannel addChannel(SPChannel channel) throws RssAgregatorException {
     try {
       WAPrimaryKey pk = getDAO().add(channel);
       channel.setPK(pk);
-    } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()", SilverpeasException.ERROR,
-          "rssAgregator.ADDING_CHANNEL_FAILED", pe);
+    } catch (PersistenceException e) {
+      throw new RssAgregatorException(
+          SilverpeasExceptionMessages.failureOnAdding("syndication channel at", channel.getUrl()),
+          e);
     }
     return channel;
   }
@@ -60,9 +59,10 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
   public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException {
     try {
       getDAO().remove(channelPK);
-    } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()",
-          SilverpeasException.ERROR, "rssAgregator.DELETING_CHANNEL_FAILED", pe);
+    } catch (PersistenceException e) {
+      throw new RssAgregatorException(
+          SilverpeasExceptionMessages.failureOnDeleting(SYNDICATION_CHANNEL_WITH_ID,
+              channelPK.getId()), e);
     }
   }
 
@@ -72,9 +72,10 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
       SPChannelPK pk = new SPChannelPK("useless", instanceId);
       channels = (List<SPChannel>) getDAO().findByWhereClause(pk,
           "instanceId = '" + instanceId + "' ORDER BY id");
-    } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.getChannels()",
-          SilverpeasException.ERROR, "rssAgregator.GETTING_CHANNELS_FAILED", pe);
+    } catch (PersistenceException e) {
+      throw new RssAgregatorException(
+          SilverpeasExceptionMessages.failureOnGetting("syndication channels of component instance",
+              instanceId), e);
     }
     return channels;
   }
@@ -83,18 +84,19 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     try {
       SPChannelPK pk = new SPChannelPK("useless", instanceId);
       getDAO().removeWhere(pk, "instanceId = '" + instanceId + "'");
-    } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.deleteChannels()",
-          SilverpeasException.ERROR, "rssAgregator.DELETING_CHANNELS_FAILED", pe);
+    } catch (PersistenceException e) {
+      throw new RssAgregatorException(SilverpeasExceptionMessages.failureOnDeleting(
+          "syndication channels of component instance", instanceId), e);
     }
   }
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
     try {
       getDAO().update(channel);
-    } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()",
-          SilverpeasException.ERROR, "rssAgregator.UPDATING_CHANNEL_FAILED", pe);
+    } catch (PersistenceException e) {
+      throw new RssAgregatorException(
+          SilverpeasExceptionMessages.failureOnAdding(SYNDICATION_CHANNEL_WITH_ID,
+              channel.getPK().getId()), e);
     }
   }
 
@@ -102,9 +104,9 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     if (rssDAO == null) {
       try {
         rssDAO = SilverpeasBeanDAOFactory.getDAO(SPChannel.class.getName());
-      } catch (PersistenceException pe) {
-        throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()", SilverpeasException.ERROR,
-            "rssAgregator.GETTING_SILVERPEASBEANDAO_FAILED", pe);
+      } catch (PersistenceException e) {
+        throw new RssAgregatorException(
+            SilverpeasExceptionMessages.failureOnGetting("DAO for syndication channels", ""), e);
       }
     }
     return rssDAO;
@@ -115,9 +117,10 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     SPChannel channel;
     try {
       channel = getDAO().findByPrimaryKey(channelPK);
-    } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.getChannel()",
-          SilverpeasException.ERROR, "rssAgregator.GETTING_CHANNEL_FAILED", pe);
+    } catch (PersistenceException e) {
+      throw new RssAgregatorException(
+          SilverpeasExceptionMessages.failureOnGetting(SYNDICATION_CHANNEL_WITH_ID,
+              channelPK.getId()), e);
     }
     return channel;
   }
