@@ -71,10 +71,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.components.rssaggregator.model.SPChannel"%>
 <%@ page import="org.silverpeas.components.rssaggregator.model.RSSItem"%>
 <%@ page import="org.silverpeas.components.rssaggregator.model.RSSViewType"%>
-<%@ page import="de.nava.informa.utils.ItemComparator"%>
-<%@ page import="de.nava.informa.impl.basic.Channel"%>
-<%@ page import="de.nava.informa.impl.basic.Item"%>
-<%@ page import="de.nava.informa.core.ImageIF"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

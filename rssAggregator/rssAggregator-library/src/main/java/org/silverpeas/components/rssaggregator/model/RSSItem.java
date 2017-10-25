@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.rssaggregator.model;
 
-import de.nava.informa.core.ImageIF;
-import de.nava.informa.impl.basic.Channel;
-import de.nava.informa.impl.basic.Item;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndImage;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Use RSSItem to encapsulate RSS news or ATOM data. It allows us having light JSON transfer data.
@@ -55,11 +55,7 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   /**
    * itemLink the item url link
    */
-  private URL itemLink;
-  /**
-   * itemSubject the item subject
-   */
-  private String itemSubject;
+  private String itemLink;
   /**
    * itemDate the item date
    */
@@ -67,7 +63,7 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   /**
    * itemComments the item comments
    */
-  private URL itemComments;
+  private String itemComments;
 
   /*
    * Channel attributes
@@ -92,7 +88,7 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   /**
    * ImageIF the channel image
    */
-  private ImageIF channelImage;
+  private SyndImage channelImage;
   /**
    * url the current channel URL that was filled by user
    */
@@ -105,19 +101,18 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   /**
    * Default RSSItem constructor which encapsulate Item and Channel from informa API
    * @param item
-   * @param channel
+   * @param feed
    */
-  public RSSItem(Item item, Channel channel, SPChannel spChannel) {
+  public RSSItem(SyndEntry item, SyndFeed feed, SPChannel spChannel) {
     this.itemTitle = item.getTitle();
-    this.itemDescription = item.getDescription();
-    this.itemLink = item.getLink();
-    this.itemSubject = item.getSubject();
-    this.itemDate = item.getDate();
+    this.itemDescription = item.getDescription() != null ? item.getDescription().getValue() : null;
+    this.itemLink = item.getLink() == null ? item.getUri() : item.getLink();
+    this.itemDate = item.getUpdatedDate() == null ? item.getPublishedDate() : item.getUpdatedDate();
     this.itemComments = item.getComments();
-    this.externalChannelId = channel.getId();
-    this.channelTitle = channel.getTitle();
-    this.channelImage = channel.getImage();
-    this.channelDescription = channel.getDescription();
+    this.externalChannelId = IdGenerator.GENERATOR.getId();
+    this.channelTitle = feed.getTitle();
+    this.channelImage = feed.getImage();
+    this.channelDescription = feed.getDescription();
     this.channelId = Long.parseLong(spChannel.getPK().getId());
     this.channelUrl = spChannel.getUrl();
     this.nbDisplayedItems = spChannel.getNbDisplayedItems();
@@ -131,13 +126,6 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @param itemTitle the itemTitle to set
-   */
-  public void setItemTitle(String itemTitle) {
-    this.itemTitle = itemTitle;
-  }
-
-  /**
    * @return the itemDescription
    */
   public String getItemDescription() {
@@ -145,38 +133,10 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @param itemDescription the itemDescription to set
-   */
-  public void setItemDescription(String itemDescription) {
-    this.itemDescription = itemDescription;
-  }
-
-  /**
    * @return the itemURL
    */
-  public URL getItemLink() {
+  public String getItemLink() {
     return itemLink;
-  }
-
-  /**
-   * @param itemURL the itemURL to set
-   */
-  public void setItemLink(URL itemURL) {
-    this.itemLink = itemURL;
-  }
-
-  /**
-   * @return the itemSubject
-   */
-  public String getItemSubject() {
-    return itemSubject;
-  }
-
-  /**
-   * @param itemSubject the itemSubject to set
-   */
-  public void setItemSubject(String itemSubject) {
-    this.itemSubject = itemSubject;
   }
 
   /**
@@ -186,25 +146,12 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
     return itemDate != null ? (Date) itemDate.clone() : null;
   }
 
-  /**
-   * @param itemDate the itemDate to set
-   */
-  public void setItemDate(Date itemDate) {
-    this.itemDate = itemDate != null ? (Date) itemDate.clone() : null;
-  }
 
   /**
    * @return the itemComments
    */
-  public URL getItemComments() {
+  public String getItemComments() {
     return itemComments;
-  }
-
-  /**
-   * @param itemComments the itemComments to set
-   */
-  public void setItemComments(URL itemComments) {
-    this.itemComments = itemComments;
   }
 
   /**
@@ -215,24 +162,10 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @param externalChannelId the externalChannelId to set
-   */
-  public void setExternalChannelId(Long externalChannelId) {
-    this.externalChannelId = externalChannelId;
-  }
-
-  /**
    * @return the channelTitle
    */
   public String getChannelTitle() {
     return channelTitle;
-  }
-
-  /**
-   * @param channelTitle the channelTitle to set
-   */
-  public void setChannelTitle(String channelTitle) {
-    this.channelTitle = channelTitle;
   }
 
   /**
@@ -243,24 +176,10 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @param channelDescription the channelDescription to set
-   */
-  public void setChannelDescription(String channelDescription) {
-    this.channelDescription = channelDescription;
-  }
-
-  /**
    * @return the image
    */
-  public ImageIF getChannelImage() {
+  public SyndImage getChannelImage() {
     return channelImage;
-  }
-
-  /**
-   * @param image the image to set
-   */
-  public void setChannelImage(ImageIF image) {
-    this.channelImage = image;
   }
 
   /**
@@ -271,13 +190,6 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @param channelId the channelId to set
-   */
-  public void setChannelId(Long channelId) {
-    this.channelId = channelId;
-  }
-
-  /**
    * @return the channelUrl
    */
   public String getChannelUrl() {
@@ -285,24 +197,10 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @param channelUrl the channelUrl to set
-   */
-  public void setChannelUrl(String channelUrl) {
-    this.channelUrl = channelUrl;
-  }
-
-  /**
    * @return the nbDisplayedItems
    */
   public int getNbDisplayedItems() {
     return nbDisplayedItems;
-  }
-
-  /**
-   * @param nbDisplayedItems the nbDisplayedItems to set
-   */
-  public void setNbDisplayedItems(int nbDisplayedItems) {
-    this.nbDisplayedItems = nbDisplayedItems;
   }
 
   /**
@@ -347,5 +245,20 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   @Override
   public int hashCode() {
     return new HashCodeBuilder().append(itemTitle).append(channelId).append(itemDate).toHashCode();
+  }
+
+  private static class IdGenerator {
+
+    public static final IdGenerator GENERATOR = new IdGenerator();
+    private static final long SEED = 100000L;
+    private final Random rand;
+
+    private IdGenerator() {
+      rand = new Random(System.currentTimeMillis());
+    }
+
+    public long getId() {
+      return SEED + (long)Math.abs(rand.nextInt());
+    }
   }
 }

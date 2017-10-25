@@ -23,8 +23,9 @@
  */
 package org.silverpeas.components.rssaggregator;
 
+import org.silverpeas.components.rssaggregator.service.RssAggregator;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 
 import javax.inject.Inject;
@@ -38,7 +39,7 @@ import javax.inject.Named;
 public class RssAgregatorInstancePreDestruction implements ComponentInstancePreDestruction {
 
   @Inject
-  private RssAgregatorBm rssAgregator;
+  private RssAggregator rssAggregator;
 
   /**
    * Performs pre destruction tasks in the behalf of the specified RssAgregrator instance.
@@ -47,9 +48,9 @@ public class RssAgregatorInstancePreDestruction implements ComponentInstancePreD
   @Override
   public void preDestroy(final String componentInstanceId) {
     try {
-      rssAgregator.deleteChannels(componentInstanceId);
+      rssAggregator.deleteChannels(componentInstanceId);
     } catch (RssAgregatorException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

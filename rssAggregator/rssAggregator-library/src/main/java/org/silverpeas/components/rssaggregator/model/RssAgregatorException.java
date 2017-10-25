@@ -23,32 +23,21 @@
  */
 package org.silverpeas.components.rssaggregator.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class RssAgregatorException extends SilverpeasException {
 
   private static final long serialVersionUID = 270659414571080250L;
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public RssAgregatorException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public RssAgregatorException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public RssAgregatorException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public RssAgregatorException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "rssAgregator";
+  public RssAgregatorException(final Throwable cause) {
+    super(cause);
   }
 }

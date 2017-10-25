@@ -25,8 +25,7 @@ package org.silverpeas.components.rssaggregator.service;
 
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
@@ -36,11 +35,7 @@ import java.util.Map;
  * @author sv
  */
 @Singleton
-public class RssAgregatorCache {
-  // cache refresh rate in millisecond
-  private static long refreshRate = 0;
-  // instance of RssAgregatorCache singleton
-  private static RssAgregatorCache instance = null;
+public class RssAggregatorCache {
   // content of cache
   private Map<SPChannelPK, SPChannel> cache = new HashMap<>();
   // informations about cache refresh
@@ -49,21 +44,14 @@ public class RssAgregatorCache {
   /**
    * Default constructor
    */
-  private RssAgregatorCache() {
-    SettingBundle res = ResourceLocator.getSettingBundle(
-        "org.silverpeas.rssAgregator.settings.rssAgregatorSettings");
-    String refreshRate = res.getString("refreshRate");
-    RssAgregatorCache.refreshRate = (60 * 1000) * Long.valueOf(refreshRate);
+  private RssAggregatorCache() {
   }
 
   /**
-   * Get an instance of RssAgregatorCache
+   * Get an instance of RssAggregatorCache
    */
-  public static RssAgregatorCache getInstance() {
-    if (instance == null) {
-      instance = new RssAgregatorCache();
-    }
-    return instance;
+  public static RssAggregatorCache getInstance() {
+    return ServiceProvider.getService(RssAggregatorCache.class);
   }
 
   /**
@@ -85,8 +73,10 @@ public class RssAgregatorCache {
     // Store time of content informations storage
     long currentTime = System.currentTimeMillis();
     // refresh rate in ms
-    int refreshRate = spChannel.getRefreshRate() * 60 * 1000;
-    cacheNextRefresh.put(key, currentTime + refreshRate);
+    final int secondsInminute = 60;
+    final int milliInSecond = 1000;
+    int channelRefreshRate = spChannel.getRefreshRate() * milliInSecond * secondsInminute;
+    cacheNextRefresh.put(key, currentTime + channelRefreshRate);
   }
 
   /**

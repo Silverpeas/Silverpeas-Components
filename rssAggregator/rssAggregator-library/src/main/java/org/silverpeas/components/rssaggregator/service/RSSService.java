@@ -32,20 +32,28 @@ import java.util.List;
 public interface RSSService {
 
   /**
-   *
+   * Retrieve all the items from all the syndication channels of the specified application.
    * @param applicationId the application identifier
    * @param agregateContent true if sorting all items from date, false else if sorting by channel
    * @return list of RSSItems which are retrieved from application RSS channels
-   * @throws RssAgregatorException
+   * @throws RssAgregatorException if an error occurs.
    */
-  public List<RSSItem> getApplicationItems(String applicationId, boolean agregateContent)  throws RssAgregatorException;
+  List<RSSItem> getApplicationItems(String applicationId, boolean agregateContent)  throws RssAgregatorException;
 
   /**
-   * Retrieve all the channel of an application
+   * Retrieve all the syndication channels of an application
    * @param applicationId the current application identifier (instance of rssagregator application)
    * @return the list of SPChannel
-   * @throws RssAgregatorException
+   * @throws RssAgregatorException if an error occurs.
    */
-  public List<SPChannel> getAllChannels(String applicationId) throws RssAgregatorException;
+  List<SPChannel> getAllChannels(String applicationId) throws RssAgregatorException;
+
+  /**
+   * Retrieve the syndication channel at the specified URL.
+   * @param url the URL of the syndication feed source.
+   * @return the syndication channel through which feeds can be read.
+   * @throws RssAgregatorException if an error occurs.
+   */
+  SPChannel getChannel(String url) throws RssAgregatorException;
 
 }

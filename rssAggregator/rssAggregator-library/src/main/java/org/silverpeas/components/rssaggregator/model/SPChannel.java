@@ -24,12 +24,11 @@
 
 package org.silverpeas.components.rssaggregator.model;
 
-import java.io.Serializable;
-
+import com.rometools.rome.feed.synd.SyndFeed;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
-import de.nava.informa.impl.basic.Channel;
+import java.io.Serializable;
 
 /**
  * @author neysseri
@@ -44,7 +43,7 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   private int displayImage = 0;
   private String creatorId;
   private String creationDate;
-  private Channel channel;
+  private SyndFeed feed;
 
   /**
    * Default constructor
@@ -170,20 +169,6 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   /**
    * @return
    */
-  public Channel _getChannel() {
-    return channel;
-  }
-
-  /**
-   * @param channel
-   */
-  public void _setChannel(Channel channel) {
-    this.channel = channel;
-  }
-
-  /**
-   * @return
-   */
   public int getDisplayImage() {
     return displayImage;
   }
@@ -195,18 +180,11 @@ public class SPChannel extends SilverpeasBean implements Serializable {
     displayImage = i;
   }
 
-  /**
-   * @return the channel
-   */
-  public Channel getChannel() {
-    return channel;
+  public SyndFeed getFeed() {
+    return this.feed;
   }
 
-  /**
-   * @param channel the channel to set
-   */
-  public void setChannel(Channel channel) {
-    this.channel = channel;
+  public void setFeed(final SyndFeed feed) {
+    this.feed = feed;
   }
-
 }

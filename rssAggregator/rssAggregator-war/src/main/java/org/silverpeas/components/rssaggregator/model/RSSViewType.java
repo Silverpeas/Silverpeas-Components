@@ -27,9 +27,9 @@ package org.silverpeas.components.rssaggregator.model;
 public enum RSSViewType {
 
   /**
-   * The AGREGATED RSS view.
+   * The AGGREGATED RSS view.
    */
-  AGREGATED("agregated"),
+  AGGREGATED("aggregated"),
   /**
    * The SEPARATED RSS view
    */
@@ -39,7 +39,7 @@ public enum RSSViewType {
    * Constructs a view type with the specified view mode.
    * @param viewMode the view mode as defined in the underlying calendar renderer.
    */
-  private RSSViewType(final String viewMode) {
+  RSSViewType(final String viewMode) {
     this.rssView = viewMode;
   }
   private String rssView;

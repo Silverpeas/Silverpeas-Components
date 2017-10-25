@@ -24,29 +24,24 @@
 
 package org.silverpeas.components.rssaggregator.control;
 
+import com.rometools.rome.feed.synd.SyndFeed;
 import org.silverpeas.components.rssaggregator.model.RSSViewType;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
+import org.silverpeas.components.rssaggregator.service.DefaultRssAggregator;
+import org.silverpeas.components.rssaggregator.service.RSSService;
+import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
+import org.silverpeas.components.rssaggregator.service.RssAggregator;
+import org.silverpeas.components.rssaggregator.service.RssAggregatorCache;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import de.nava.informa.core.ParseException;
-import de.nava.informa.impl.basic.Channel;
-import de.nava.informa.impl.basic.ChannelBuilder;
-import de.nava.informa.parsers.FeedParser;
-import org.silverpeas.components.rssaggregator.service.RssAgregatorBm;
-import org.silverpeas.components.rssaggregator.service.RssAgregatorBmImpl;
-import org.silverpeas.components.rssaggregator.service.RssAgregatorCache;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,10 +53,9 @@ import java.util.Properties;
  * @author neysseri
  */
 public class RssAgregatorSessionController extends AbstractComponentSessionController {
-  // instance of RssAgregatorCache singleton
-  private RssAgregatorCache cache = RssAgregatorCache.getInstance();
-  private RssAgregatorBm rssBm = null;
-  private ChannelBuilder channelBuilder = new ChannelBuilder();
+  // instance of RssAggregatorCache singleton
+  private RssAggregatorCache cache = RssAggregatorCache.getInstance();
+  private RssAggregator rssBm = null;
   private SPChannel currentChannel = null;
   private SimpleDateFormat dateFormatter = null;
   private static final String DEFAULT_VIEW_PARAMETER = "defaultView";
@@ -88,7 +82,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
    * Extract rss files informations (channels and items). Return a list of Channel.
    */
   public List<SPChannel> getAvailableChannels() throws RssAgregatorException {
-    List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
+    List<SPChannel> channelsFromDB = getRssAggregator().getChannels(getComponentId());
     List<SPChannel> channels = new ArrayList<>();
     for (SPChannel channel : channelsFromDB) {
       SPChannelPK channelPK = (SPChannelPK) channel.getPK();
@@ -103,36 +97,10 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   /**
-   * Extract rss files informations (channels and items). Return a list of Channel.
+   * Extract rss files information (channels and items). Return a list of Channel.
    */
   public List<SPChannel> getChannelsContent() throws RssAgregatorException {
-    List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
-    ArrayList<SPChannel> channels = new ArrayList<>();
-    Channel rssChannel = null;
-    boolean oneChannelLoaded = false;
-
-    for (SPChannel channel : channelsFromDB) {
-      SPChannelPK channelPK = (SPChannelPK) channel.getPK();
-      if (cache.isContentNeedToRefresh(channelPK)) {
-        if (oneChannelLoaded) {
-          channel = null;
-        } else {
-          try {
-            rssChannel = getChannelFromUrl(channel.getUrl());
-          } catch (Exception e) {
-
-          } finally {
-            channel._setChannel(rssChannel);
-            cache.addChannelToCache(channel);
-          }
-        }
-        oneChannelLoaded = true;
-      } else {
-        channel = cache.getChannelFromCache(channelPK);
-      }
-      channels.add(channel);
-    }
-    return channels;
+    return getRssService().getAllChannels(getComponentId());
   }
 
   public SPChannel addChannel(SPChannel channel) throws RssAgregatorException {
@@ -140,8 +108,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     channel.setInstanceId(getComponentId());
     channel.setCreatorId(getUserId());
     channel.setCreationDate(getDateFormatter().format(new Date()));
-    SPChannel newChannel = getRssBm().addChannel(channel);
-    return newChannel;
+    return getRssAggregator().addChannel(channel);
   }
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
@@ -155,17 +122,16 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
       currentChannel.setRefreshRate(channel.getRefreshRate());
       currentChannel.setDisplayImage(channel.getDisplayImage());
     }
+    getRssAggregator().updateChannel(currentChannel);
 
-    getRssBm().updateChannel(currentChannel);
-
-    Channel rssChannel;
+    SyndFeed feed;
     if (urlHaveChanged) {
       // L'url a change, il faut recharger le channel
       cache.removeChannelFromCache((SPChannelPK) channel.getPK());
     } else {
       // L'url n'a pas change, il n'est pas necessaire de recharger le channel
-      rssChannel = cache.getChannelFromCache((SPChannelPK) currentChannel.getPK())._getChannel();
-      currentChannel._setChannel(rssChannel);
+      feed = cache.getChannelFromCache((SPChannelPK) currentChannel.getPK()).getFeed();
+      currentChannel.setFeed(feed);
 
       // add rss channel in cache
       cache.addChannelToCache(currentChannel);
@@ -176,42 +142,26 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     SPChannelPK spChannelPK = new SPChannelPK(id, getComponentId());
 
     // remove channel from database
-    getRssBm().deleteChannel(spChannelPK);
+    getRssAggregator().deleteChannel(spChannelPK);
 
     // remove channel from cache
     cache.removeChannelFromCache(spChannelPK);
   }
 
   public SPChannel getChannel(String id) throws RssAgregatorException {
-    currentChannel = getRssBm().getChannel(new SPChannelPK(id, getComponentId()));
+    currentChannel = getRssAggregator().getChannel(new SPChannelPK(id, getComponentId()));
     return currentChannel;
   }
 
-  private Channel getChannelFromUrl(String sUrl) throws RssAgregatorException {
-    Channel channel = null;
-    try {
-      if (sUrl != null && !sUrl.equals("")) {
-        URL url = new URL(sUrl);
-        channel = (Channel) FeedParser.parse(channelBuilder, url);
-      }
-    } catch (MalformedURLException e) {
-      throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
-          SilverpeasException.WARNING, "RssAgregator.EX_URL_IS_NOT_VALID", e);
-    } catch (IOException e) {
-      throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
-          SilverpeasException.WARNING, "RssAgregator.EX_URL_IS_NOT_REATCHABLE", e);
-    } catch (ParseException e) {
-      throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
-          SilverpeasException.WARNING, "RssAgregator.EX_RSS_BAD_FORMAT", e);
-    }
-    return channel;
-  }
-
-  private RssAgregatorBm getRssBm() {
+  private RssAggregator getRssAggregator() {
     if (rssBm == null) {
-      rssBm = new RssAgregatorBmImpl();
+      rssBm = new DefaultRssAggregator();
     }
     return rssBm;
+  }
+
+  private RSSService getRssService() {
+    return RSSServiceProvider.getRSSService();
   }
 
   /**
@@ -248,7 +198,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
 
   /**
    * Sets the current view mode of the RSS agregator rendering.
-   * @param viewMode the view mode (separated, agregated).
+   * @param viewMode the view mode (separated, aggregated).
    */
   public void setViewMode(final RSSViewType viewMode) {
     this.viewMode = viewMode;

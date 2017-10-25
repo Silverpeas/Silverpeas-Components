@@ -81,9 +81,8 @@ public class RSSResource extends RESTWebService {
     boolean isAgregate = StringUtil.getBooleanValue(agregate);
     // Retrieve rss agregate content
     try {
-      List<RSSItem> items =
+      return
           RSSServiceProvider.getRSSService().getApplicationItems(getComponentId(), isAgregate);
-      return items;
     } catch (RssAgregatorException e) {
       throw encapsulateException(e);
     }

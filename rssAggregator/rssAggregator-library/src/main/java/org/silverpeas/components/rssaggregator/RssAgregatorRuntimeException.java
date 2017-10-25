@@ -23,38 +23,21 @@
  */
 package org.silverpeas.components.rssaggregator;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class RssAgregatorRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -8258500003916960093L;
 
-  /**
-   * constructors
-   */
-  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public RssAgregatorRuntimeException(final String message) {
+    super(message);
   }
 
-  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public RssAgregatorRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public RssAgregatorRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public RssAgregatorRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * getModule
-   */
-  public String getModule() {
-    return "RssAgregator";
-  }
-
 }
