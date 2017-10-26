@@ -353,7 +353,7 @@ function getSubFolder(folder) {
 	}
 	str += '>';
 	str += '<strong>'+name+' ';
-	if (typeof(nbItems) !== "undefined") {
+	if (nbItems && typeof(nbItems) !== "undefined") {
 		str += '<span>'+nbItems+'</span>';
 	}
 	str += '</strong>';
