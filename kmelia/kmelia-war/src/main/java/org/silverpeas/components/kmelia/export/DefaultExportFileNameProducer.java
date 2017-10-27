@@ -22,12 +22,11 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
 import java.util.List;
 import java.util.UUID;

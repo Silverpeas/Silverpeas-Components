@@ -63,10 +63,11 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       String title = request.getParameter("Title");
       String description = request.getParameter("Description");
       String price = request.getParameter("Price");
+      boolean publish = request.getParameterAsBoolean("Publish");
 
       //Classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
-      if (price != null && !price.isEmpty()) {
+      if (StringUtil.isDefined(price)) {
         classified.setPrice(Integer.parseInt(price));
       }
 
@@ -78,7 +79,9 @@ public class ClassifiedCreationHandler extends FunctionHandler {
           listImage.add(fileImage);
         }
       }
-      String classifiedId = classifiedsSC.createClassified(classified, listImage, highestRole);
+
+      String classifiedId =
+          classifiedsSC.createClassified(classified, listImage, highestRole, publish);
 
       PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
       if (pubTemplate != null) {
@@ -97,7 +100,7 @@ public class ClassifiedCreationHandler extends FunctionHandler {
         // save data record
         form.update(items, data, context);
         set.save(data);
-        classifiedsSC.updateClassified(classified, false, false);
+        classifiedsSC.updateClassified(classified, false, false, false);
       }
     }
 

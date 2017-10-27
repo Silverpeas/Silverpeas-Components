@@ -54,7 +54,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
 
   @Override
   protected String getBundleSubjectKey() {
-    if (!ClassifiedDetail.VALID.equals(getResource().getStatus())) {
+    if (!getResource().isValid()) {
       return "classifieds.classifiedRefused";
     }
     return "classifieds.classifiedValidated";
@@ -62,7 +62,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
 
   @Override
   protected String getTemplateFileName() {
-    if (!ClassifiedDetail.VALID.equals(getResource().getStatus())) {
+    if (!getResource().isValid()) {
       return "refused";
     }
     return "validated";
@@ -83,7 +83,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
 
   @Override
   protected NotifAction getAction() {
-    if (!ClassifiedDetail.VALID.equals(getResource().getStatus())) {
+    if (!getResource().isValid()) {
       return NotifAction.REFUSE;
     }
     return NotifAction.VALIDATE;

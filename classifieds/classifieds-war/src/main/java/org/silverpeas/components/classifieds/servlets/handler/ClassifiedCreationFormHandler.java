@@ -61,6 +61,7 @@ public class ClassifiedCreationFormHandler extends FunctionHandler {
     request.setAttribute("Data", data);
     request.setAttribute("FieldKey", fieldKey);
     request.setAttribute("FieldName", classifiedsSC.getSearchFields1());
+    request.setAttribute("DraftEnabled", classifiedsSC.isDraftEnabled());
 
     // Returns jsp to redirect to
     return "classifiedManager.jsp";

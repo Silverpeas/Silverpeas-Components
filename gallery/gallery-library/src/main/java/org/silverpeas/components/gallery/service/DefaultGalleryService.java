@@ -44,7 +44,6 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;

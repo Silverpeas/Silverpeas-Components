@@ -267,6 +267,18 @@ public class ClassifiedDetail implements SilverpeasContent {
     this.images = images;
   }
 
+  public boolean isDraft() {
+    return DRAFT.equals(getStatus());
+  }
+
+  public boolean isToValidate() {
+    return TO_VALIDATE.equals(getStatus());
+  }
+
+  public boolean isValid() {
+    return VALID.equals(getStatus());
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
