@@ -266,11 +266,6 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
   }
 
   @Override
-  public Date getCreationDate() {
-    return getCreateDate();
-  }
-
-  @Override
   public User getLastModifier() {
     return getLastUpdater();
   }

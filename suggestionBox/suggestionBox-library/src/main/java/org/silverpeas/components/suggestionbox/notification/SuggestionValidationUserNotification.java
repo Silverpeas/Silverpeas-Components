@@ -68,7 +68,7 @@ public class SuggestionValidationUserNotification extends AbstractSuggestionActi
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return Collections.singleton(getResource().getCreatedBy());
+    return Collections.singleton(getResource().getCreatorId());
   }
 
   @Override

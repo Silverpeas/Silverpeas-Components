@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox.control;
 
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
-import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
+import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.notification
@@ -66,9 +66,9 @@ import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
     .getUserNotificationDisplayLiveTimeForLongMessage;
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager
     .checkAdminAccessOrUserIsCreator;
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager
     .checkAdminAccessOrUserIsModerator;
 import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
 
@@ -211,8 +211,8 @@ public class SuggestionBoxWebController extends
     context.getRequest().setAttribute("currentSuggestionBox", context.getSuggestionBox());
   }
 
-  private SuggestionBoxWebServiceProvider getWebServiceProvider() {
-    return ServiceProvider.getService(SuggestionBoxWebServiceProvider.class);
+  private SuggestionBoxWebManager getWebServiceProvider() {
+    return ServiceProvider.getService(SuggestionBoxWebManager.class);
   }
 
   /**
@@ -377,7 +377,7 @@ public class SuggestionBoxWebController extends
     String content = context.getRequest().getParameter("editorContent");
     Suggestion suggestion = new Suggestion(title);
     suggestion.setContent(content);
-    suggestion.setCreator(context.getUser());
+    suggestion.createdBy(context.getUser());
     suggestionBox.getSuggestions().add(suggestion, context.getRequest().getUploadedFiles());
     context.getMessager()
         .addSuccess(getMultilang()
@@ -469,7 +469,7 @@ public class SuggestionBoxWebController extends
       }
       suggestion.setTitle(context.getRequest().getParameter("title"));
       suggestion.setContent(context.getRequest().getParameter("editorContent"));
-      suggestion.setLastUpdater(context.getUser());
+      suggestion.updatedBy(context.getUser());
       suggestion.save();
       context.getMessager()
           .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.modified"));

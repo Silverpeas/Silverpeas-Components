@@ -78,7 +78,7 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
   protected String getSender() {
     String userId = getResource().getUpdaterId();
     if (!StringUtil.isDefined(userId)) {
-      userId = getResource().getCreatedBy();
+      userId = getResource().getCreatorId();
     }
     return userId;
   }

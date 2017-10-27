@@ -41,6 +41,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
@@ -61,12 +62,12 @@ import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDA
  * @author: Yohann Chastagnier
  */
 @Singleton
-public class SuggestionBoxWebServiceProvider {
+public class SuggestionBoxWebManager {
 
   private static final List<SilverpeasRole> MODERATOR_ROLES =
       CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
 
-  private SuggestionBoxWebServiceProvider() {
+  private SuggestionBoxWebManager() {
   }
 
   /**
@@ -147,13 +148,11 @@ public class SuggestionBoxWebServiceProvider {
    * <p/>
    * The user asking for the suggestions is required in the criteria as some caching is performed
    * for the given user for better performance.
-   * @param suggestionBox the suggestion box the current user is working on.
    * @param criteria the criteria the suggestions to return must match.
    * @return the published suggestion entities matching the specified criteria.
    * @see SuggestionCollection#findPublished()
    */
-  public List<SuggestionEntity> getSuggestionsByCriteria(SuggestionBox suggestionBox,
-      final SuggestionCriteria criteria) {
+  public List<SuggestionEntity> getSuggestionsByCriteria(final SuggestionCriteria criteria) {
     SuggestionFinderByCriteria suggestionsFinder = new SuggestionFinderByCriteria();
     criteria.processWith(suggestionsFinder);
     return asWebEntities(suggestionsFinder.result());
@@ -195,6 +194,7 @@ public class SuggestionBoxWebServiceProvider {
     } catch (Exception ignore) {
       // If the user has no admin or publisher rights, no suggestion in pending validation are
       // retrieved
+      SilverLogger.getLogger(this).silent(ignore);
     }
     // The final result
     List<SuggestionEntity> finalSuggestionResult =
@@ -220,11 +220,7 @@ public class SuggestionBoxWebServiceProvider {
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       User fromUser) {
     SilverpeasRole highestRole = getHighestUserRoleFrom(fromUser, suggestionBox);
-    if (suggestion.isDefined() &&
-        (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused() ||
-            ((suggestion.getValidation().isPendingValidation() ||
-                suggestion.getValidation().isValidated()) &&
-                (fromUser.isAccessAdmin() || SilverpeasRole.admin == highestRole)))) {
+    if (canBeDeleted(suggestion, fromUser, highestRole)) {
       checkAdminAccessOrAdminRoleOrUserIsCreator(fromUser, suggestion);
       boolean removed = suggestionBox.getSuggestions().remove(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
@@ -240,6 +236,21 @@ public class SuggestionBoxWebServiceProvider {
     }
   }
 
+  private boolean canBeDeleted(final Suggestion suggestion, final User fromUser,
+      final SilverpeasRole highestRole) {
+    if (suggestion.isDefined()) {
+      if (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused()) {
+        return true;
+      }
+      if ((suggestion.getValidation().isPendingValidation() ||
+              suggestion.getValidation().isValidated()) &&
+              (fromUser.isAccessAdmin() || SilverpeasRole.admin == highestRole)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Publishes a suggestion.
    * @param suggestionBox the suggestion box the current user is working on.
@@ -253,21 +264,21 @@ public class SuggestionBoxWebServiceProvider {
     if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
         getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
-      suggestion.setLastUpdater(fromUser);
+      suggestion.updatedBy(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
-      switch (actual.getValidation().getStatus()) {
-        case PENDING_VALIDATION:
-          MessageNotifier.addInfo(
-              getStringTranslation("suggestionBox.message.suggestion.pendingValidation",
-                  userPreferences.getLanguage())
-          );
-          break;
-        case VALIDATED:
-          MessageNotifier.addSuccess(getStringTranslation("suggestionBox.message.suggestion.published",
-              userPreferences.getLanguage()))
-              .setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
-          break;
+      ContributionStatus status = actual.getValidation().getStatus();
+      if (status == ContributionStatus.PENDING_VALIDATION) {
+        MessageNotifier.addInfo(
+            getStringTranslation("suggestionBox.message.suggestion.pendingValidation",
+                userPreferences.getLanguage()));
+
+      } else if (status == ContributionStatus.VALIDATED) {
+        MessageNotifier.addSuccess(
+            getStringTranslation("suggestionBox.message.suggestion.published",
+                userPreferences.getLanguage()))
+            .setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
+
       }
       return asWebEntity(actual);
     } else {
@@ -326,21 +337,21 @@ public class SuggestionBoxWebServiceProvider {
       }
       ContributionValidation validation =
           new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
-      suggestion.setLastUpdater(fromUser);
+      suggestion.updatedBy(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
-      switch (actual.getValidation().getStatus()) {
-        case REFUSED:
-          MessageNotifier.addInfo(MessageFormat.format(
-              getStringTranslation("suggestionBox.message.suggestion.refused",
-                  userPreferences.getLanguage()), suggestion.getTitle()
-          )).setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
-          break;
-        case VALIDATED:
-          MessageNotifier.addSuccess(MessageFormat.format(
-              getStringTranslation("suggestionBox.message.suggestion.validated",
-                  userPreferences.getLanguage()), suggestion.getTitle()
-          )).setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
-          break;
+      ContributionStatus status = actual.getValidation().getStatus();
+      if (status == ContributionStatus.REFUSED) {
+        MessageNotifier.addInfo(MessageFormat.format(
+            getStringTranslation("suggestionBox.message.suggestion.refused",
+                userPreferences.getLanguage()), suggestion.getTitle()))
+            .setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
+
+      } else if (status == ContributionStatus.VALIDATED) {
+        MessageNotifier.addSuccess(MessageFormat.format(
+            getStringTranslation("suggestionBox.message.suggestion.validated",
+                userPreferences.getLanguage()), suggestion.getTitle()))
+            .setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
+
       }
       return asWebEntity(actual);
     } else {

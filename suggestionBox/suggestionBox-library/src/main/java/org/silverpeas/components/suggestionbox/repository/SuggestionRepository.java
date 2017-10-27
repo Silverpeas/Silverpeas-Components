@@ -115,7 +115,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
 
     if (suggestion.isContentModified()) {
       WysiwygController.save(suggestion.getContent(), suggestion.getSuggestionBox().
-          getComponentInstanceId(), suggestion.getId(), suggestion.getLastUpdatedBy(), null, false);
+          getComponentInstanceId(), suggestion.getId(), suggestion.getLastUpdaterId(), null, false);
     }
 
     return suggestion;
@@ -227,7 +227,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
               suggestion.getId());
       indexEntry.setTitle(suggestion.getTitle());
       indexEntry.setCreationDate(suggestion.getValidation().getDate());
-      indexEntry.setCreationUser(suggestion.getCreatedBy());
+      indexEntry.setCreationUser(suggestion.getCreatorId());
       WysiwygController.addToIndex(indexEntry,
           new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()), null);
       IndexEngineProxy.addIndexEntry(indexEntry);

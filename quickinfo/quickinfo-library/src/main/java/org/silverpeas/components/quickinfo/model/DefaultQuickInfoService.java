@@ -231,7 +231,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
       news.setPublicationId(publication.getId());
       if (forcePublishing) {
         news.setPublishDate(new Date());
-        news.setPublishedBy(news.getLastUpdatedBy());
+        news.setPublishedBy(news.getLastUpdaterId());
       }
       return newsRepository.save(news);
     });
@@ -371,7 +371,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private void publish(final News news) {
     news.setPublished();
     news.setPublishDate(new Date());
-    news.setLastUpdatedBy(news.getPublishedBy());
+    news.lastUpdatedBy(news.getPublishedBy());
     performInOne(() -> newsRepository.save(news));
 
     PublicationDetail publication = news.getPublication();

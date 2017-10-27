@@ -173,7 +173,7 @@ function onDelete(id) {
                                highestUserRole="${highestUserRoleForAttachments}"
                                reloadCallbackUrl="${callbackUrl}"/>
                           
-  <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
+  <viewTags:displayLastUserCRUD createDate="${news.creationDate}" createdById="${news.creatorId}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
     
   <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
 </div>

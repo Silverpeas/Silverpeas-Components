@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.components.formsonline.control.RequestItem" %>
+<%@ page import="org.silverpeas.components.formsonline.control.RequestUIEntity" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -68,9 +68,9 @@
 
     function removeRequests() {
       jQuery.popup.confirm('${silfn:escapeJs(deletionConfirmMessage)}', function() {
-        var ajaxConfig = sp.ajaxConfig("DeleteRequests").byPostMethod();
-        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
-        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        var ajaxRequest = sp.ajaxRequest("DeleteRequests").byPostMethod();
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
   </script>
@@ -90,7 +90,7 @@
               (r.data.validated ? statusValidatedLabel :
               (r.data.denied ? statusDeniedLabel :
               (r.data.archived ? statusArchivedLabel : statusUnreadLabel))))}"/>
-      <c:set var="requestItems" value="<%=RequestItem.convertList(requests.getAll(), controller.getSelectedValidatorRequestIds())%>"/>
+      <c:set var="requestItems" value="<%=RequestUIEntity.convertList(requests.getAll(), controller.getSelectedValidatorRequestIds())%>"/>
       <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="25">
         <view:arrayColumn width="10" sortable="false"/>
         <view:arrayColumn title="${colStatus}" compareOn="${requestStatusLabelLambda}"/>
@@ -122,7 +122,7 @@
         whenSilverpeasReady(function() {
           checkboxMonitor.pageChanged();
           arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#list', {
-            before : checkboxMonitor.applyToAjaxConfig
+            before : checkboxMonitor.prepareAjaxRequest
           });
         });
       </script>

@@ -107,7 +107,7 @@ public class SuggestionEntity implements WebEntity {
 
   @XmlElement
   public Date getCreateDate() {
-    return suggestion.getCreateDate();
+    return suggestion.getCreationDate();
   }
 
   @XmlElement
