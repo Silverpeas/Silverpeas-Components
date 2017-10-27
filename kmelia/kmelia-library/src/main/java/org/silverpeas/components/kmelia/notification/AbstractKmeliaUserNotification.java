@@ -23,17 +23,16 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;

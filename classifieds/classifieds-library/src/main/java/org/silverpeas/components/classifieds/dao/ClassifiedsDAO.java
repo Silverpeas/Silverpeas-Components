@@ -40,6 +40,10 @@ import java.util.Locale;
 
 public class ClassifiedsDAO {
 
+  private ClassifiedsDAO() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   /**
    * Create a classified
    * @param con : Connection
@@ -229,6 +233,9 @@ public class ClassifiedsDAO {
     List<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query =
         "select * from SC_Classifieds_Classifieds where instanceId = ? and creatorId = ? ";
+    query +=
+        " order by CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END DESC, " +
+            "classifiedId DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {

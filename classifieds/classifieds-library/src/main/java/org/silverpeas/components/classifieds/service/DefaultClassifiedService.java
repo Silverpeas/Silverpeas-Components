@@ -120,7 +120,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       String id = ClassifiedsDAO.createClassified(con, classified);
       classified.setClassifiedId(Integer.parseInt(id));
       createIndex(classified);
-      if (classified.getStatus().equals(ClassifiedDetail.TO_VALIDATE)) {
+      if (classified.isToValidate()) {
         sendAlertToSupervisors(classified);
       }
       return id;
@@ -290,7 +290,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
-      if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
+      if (classified.isToValidate()) {
         classified.setValidatorId(userId);
         classified.setValidateDate(new Date());
         classified.setStatus(ClassifiedDetail.VALID);
@@ -368,7 +368,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         if (CLASSIFIED_TYPE.equals(matchIndex.getObjectType())) {
           //return only valid classifieds
           ClassifiedDetail classified = this.getContentById(matchIndex.getObjectId());
-          if (classified != null && ClassifiedDetail.VALID.equals(classified.getStatus())) {
+          if (classified != null && classified.isValid()) {
             classifieds.add(classified);
 
           }
@@ -455,7 +455,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) {
     ClassifiedDetail classified = getContentById(classifiedId);
     String status = classified.getStatus();
-    if (status.equals(ClassifiedDetail.DRAFT)) {
+    if (classified.isDraft()) {
       if("admin".equals(profile) || !isValidationEnabled) {
         status = ClassifiedDetail.VALID;
       } else {
@@ -469,11 +469,9 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   private void sendAlertToSupervisors(final ClassifiedDetail classified) {
-    if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
+    if (classified.isToValidate()) {
       try {
-
         UserNotificationHelper.buildAndSend(new ClassifiedSupervisorUserNotification(classified));
-
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
@@ -484,7 +482,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void draftInClassified(String classifiedId) {
     ClassifiedDetail classified = getContentById(classifiedId);
     String status = classified.getStatus();
-    if (status.equals(ClassifiedDetail.TO_VALIDATE) || status.equals(ClassifiedDetail.VALID)) {
+    if (classified.isToValidate() || classified.isValid()) {
       status = ClassifiedDetail.DRAFT;
     }
     classified.setStatus(status);
