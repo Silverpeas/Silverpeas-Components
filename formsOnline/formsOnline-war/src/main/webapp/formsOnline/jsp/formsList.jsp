@@ -136,8 +136,8 @@
       <c:if test="${empty userRequests.toValidate}">
         <li><span class="txt-no-content"><fmt:message key="formsOnline.home.requests.toValidate.none"/></span></li>
       </c:if>
-      <view:paginationPane var="toValidateUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:paginationItems items="${userRequests.toValidate}" var="request">
+      <view:listPane var="toValidateUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:listItems items="${userRequests.toValidate}" var="request">
           <li>
             <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
             <c:choose>
@@ -149,11 +149,11 @@
               </c:otherwise>
             </c:choose>
           </li>
-        </view:paginationItems>
-      </view:paginationPane>
+        </view:listItems>
+      </view:listPane>
       <script type="text/javascript">
         whenSilverpeasReady(function() {
-          sp.paginationPane.ajaxControls('#my-formsOnline-wait');
+          sp.listPane.ajaxControls('#my-formsOnline-wait');
         });
       </script>
     </ul>
@@ -165,14 +165,14 @@
       <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.validated"/></strong></h3>
     </div>
     <ul>
-      <view:paginationPane var="validatedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:paginationItems items="${userRequests.validated}" var="request">
+      <view:listPane var="validatedUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:listItems items="${userRequests.validated}" var="request">
           <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </view:paginationItems>
-      </view:paginationPane>
+        </view:listItems>
+      </view:listPane>
       <script type="text/javascript">
         whenSilverpeasReady(function() {
-          sp.paginationPane.ajaxControls('#my-formsOnline-validate');
+          sp.listPane.ajaxControls('#my-formsOnline-validate');
         });
       </script>
     </ul>
@@ -185,14 +185,14 @@
       <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.denied"/></strong></h3>
     </div>
     <ul>
-      <view:paginationPane var="deniedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:paginationItems items="${userRequests.denied}" var="request">
+      <view:listPane var="deniedUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:listItems items="${userRequests.denied}" var="request">
           <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </view:paginationItems>
-      </view:paginationPane>
+        </view:listItems>
+      </view:listPane>
       <script type="text/javascript">
         whenSilverpeasReady(function() {
-          sp.paginationPane.ajaxControls('#my-formsOnline-refused');
+          sp.listPane.ajaxControls('#my-formsOnline-refused');
         });
       </script>
     </ul>
@@ -205,14 +205,14 @@
         <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.archived"/></strong></h3>
       </div>
       <ul>
-        <view:paginationPane var="archievedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-          <view:paginationItems items="${userRequests.archived}" var="request">
+        <view:listPane var="archievedUserRequests" routingAddress="Main" numberLinesPerPage="10">
+          <view:listItems items="${userRequests.archived}" var="request">
             <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-          </view:paginationItems>
-        </view:paginationPane>
+          </view:listItems>
+        </view:listPane>
         <script type="text/javascript">
           whenSilverpeasReady(function() {
-            sp.paginationPane.ajaxControls('#my-formsOnline-archived');
+            sp.listPane.ajaxControls('#my-formsOnline-archived');
           });
         </script>
       </ul>

@@ -322,7 +322,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return classifiedId : String
    */
   public synchronized String createClassified(ClassifiedDetail classified,
-      Collection<FileItem> listImage, ClassifiedsRole profile) {
+      Collection<FileItem> listImage, ClassifiedsRole profile, boolean publish) {
     UserDetail user = getUserDetail();
     classified.setCreatorId(getUserId());
     classified.setCreationDate(new Date());
@@ -330,7 +330,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     classified.setCreatorEmail(user.geteMail());
     classified.setInstanceId(getComponentId());
     // status
-    if (isDraftEnabled()) {
+    if (isDraftEnabled() && !publish) {
       classified.setStatus(ClassifiedDetail.DRAFT);
     } else {
       if (profile == ClassifiedsRole.MANAGER || !isValidationEnabled()) {
@@ -365,25 +365,31 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param isAdmin : boolean
    */
   public synchronized void updateClassified(ClassifiedDetail classified, boolean isUpdate,
-          boolean isAdmin) {
+          boolean isAdmin, boolean publish) {
     boolean notify = false;
     if (isUpdate) {
       classified.setUpdateDate(new Date());
-
-      if (!isAdmin && isValidationEnabled() && !ClassifiedDetail.TO_VALIDATE.equals(
-          classified.getStatus())) {
-        classified.setStatus(ClassifiedDetail.TO_VALIDATE);
-        notify = true;
-      } else if (isAdmin || !isValidationEnabled()) {
-        classified.setStatus(ClassifiedDetail.VALID);
-      }
+      notify = setStatusOnUpdate(classified, isAdmin, publish);
     }
     getClassifiedService().updateClassified(classified, notify);
 
     // for newly created classifieds by admin : need to force notification
-    if (!isUpdate && classified.getStatus().equals(ClassifiedDetail.VALID)) {
+    if (!isUpdate && classified.isValid()) {
       sendSubscriptionsNotification(Integer.toString(classified.getClassifiedId()));
     }
+  }
+
+  private boolean setStatusOnUpdate(ClassifiedDetail classified, boolean isAdmin, boolean publish) {
+    boolean notify = false;
+    if (isDraftEnabled() && classified.isDraft() && !publish) {
+      // do nothing
+    } else if (!isAdmin && isValidationEnabled() && !classified.isToValidate()) {
+      classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+      notify = true;
+    } else if (isAdmin || !isValidationEnabled()) {
+      classified.setStatus(ClassifiedDetail.VALID);
+    }
+    return notify;
   }
 
   /**
@@ -773,7 +779,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   public void checkScope(ClassifiedDetail classified) {
-    if (ClassifiedDetail.TO_VALIDATE.equals(classified.getStatus())) {
+    if (classified.isToValidate()) {
       getClassifiedsToValidate();
       processIndex(classified);
     }

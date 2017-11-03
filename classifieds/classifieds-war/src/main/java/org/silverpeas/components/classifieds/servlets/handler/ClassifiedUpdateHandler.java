@@ -63,6 +63,7 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       String classifiedId = request.getParameter("ClassifiedId");
       String description = request.getParameter("Description");
       String price = request.getParameter("Price");
+      boolean publish = request.getParameterAsBoolean("Publish");
 
       ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
       classified.setTitle(title);
@@ -90,14 +91,15 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       }
       //Update classified
       classifiedsSC
-          .updateClassified(classified, true, SilverpeasRole.admin.isInRole(highestRole.getName()));
+          .updateClassified(classified, true, SilverpeasRole.admin.isInRole(highestRole.getName()),
+              publish);
       request.setAttribute("ClassifiedId", classifiedId);
 
       //Images
       processImages(classified, classifiedsSC, request);
     }
 
-    return HandlerProvider.getHandler("ViewMyClassifieds")
+    return HandlerProvider.getHandler("ViewClassified")
         .computeDestination(classifiedsSC, request);
   }
 

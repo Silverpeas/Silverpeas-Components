@@ -53,7 +53,7 @@
 <c:set var="data" value="${requestScope.Data}" />
 <c:set var="fieldKey" value="${requestScope.FieldKey}" />
 <c:set var="fieldName" value="${requestScope.FieldName}" />
-
+<c:set var="draftEnabled" value="${requestScope.DraftEnabled}"/>
 <c:set var="action" value="${(not empty classified) ? 'UpdateClassified' : 'CreateClassified' }" />
 
 <c:if test="${not empty classified}">
@@ -112,8 +112,7 @@
 <script type="text/javascript">
 
 	// form validation
-	function sendData()
-	{
+	function sendData() {
 		<c:if test="${not empty formUpdate}">
       ifCorrectLocalFormExecute(function() {
         ifCorrectFormExecute(function() {
@@ -127,6 +126,15 @@
         });
 		</c:if>
 	}
+
+	function save() {
+	  sendData();
+  }
+
+	function publish() {
+    $("#publishInput").val("true");
+    sendData();
+  }
 
 	function ifCorrectLocalFormExecute(callback)
 	{
@@ -239,7 +247,7 @@
         
   <c:if test="${action eq 'UpdateClassified'}">
     <div class="field" id="classifiedNumberArea">
-      <label for="classifiedNumber" class="txtlibform"><fmt:message key="classifieds.number"/> :</label>
+      <label for="classifiedNumber" class="txtlibform"><fmt:message key="classifieds.number"/></label>
       <div class="champs">
         ${displayedId}
       </div>
@@ -247,16 +255,17 @@
 	</c:if>
 	
   <div class="field" id="classifiedNameArea">
-	  <label for="classifiedName" class="txtlibform"><fmt:message key="GML.title"/> :</label>
+	  <label for="classifiedName" class="txtlibform"><fmt:message key="GML.title"/></label>
 	  <div class="champs">
 	    <input type="text" name="Title" id="classifiedName" size="60" maxlength="100" value="${displayedTitle}"/>
 	    &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
 	    <input type="hidden" name="ClassifiedId" value="${displayedId}"/>
+      <input type="hidden" id="publishInput" name="Publish" value=""/>
 	  </div>
 	</div>
 	
 	<div class="field" id="descriptionArea">
-    <label for="classifiedDesc" class="txtlibform"><fmt:message key="GML.description"/> :</label>
+    <label for="classifiedDesc" class="txtlibform"><fmt:message key="GML.description"/></label>
     <div class="champs">
       <textarea cols="100" rows="8" name="Description" id="classifiedDesc">${displayedDescription}</textarea>
       &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
@@ -264,7 +273,7 @@
   </div>
   
   <div class="field" id="priceArea">
-	  <label for="classifiedPrice" class="txtlibform"><fmt:message key="classifieds.price"/> :</label>
+	  <label for="classifiedPrice" class="txtlibform"><fmt:message key="classifieds.price"/></label>
 	  <div class="champs">
 	    <input type="text" name="Price" size="10" maxlength="8" id="classifiedPrice" value="${displayedPrice}"/> &euro;
 	  </div>
@@ -272,7 +281,7 @@
 	
   <c:if test="${action eq 'UpdateClassified'}">
     <div class="field" id="creationDateArea">
-      <label class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</label>
+      <label class="txtlibform"><fmt:message key="classifieds.creationDate"/></label>
       <div class="champs">
 	      <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/>
 	      <view:username userId="${creatorId}" />
@@ -281,7 +290,7 @@
   </c:if>
   <c:if test="${not empty updateDate}">
     <div class="field" id="updateDateArea">
-      <label class="txtlibform"><fmt:message key="classifieds.updateDate"/> :</label>
+      <label class="txtlibform"><fmt:message key="classifieds.updateDate"/></label>
       <div class="champs">
         <view:formatDateTime value="${updateDate}"/>
       </div>
@@ -289,7 +298,7 @@
   </c:if>
   <c:if test="${(not empty validateDate) && (not empty validatorName)}">
     <div class="field" id="validationDateArea">
-      <label class="txtlibform"><fmt:message key="classifieds.validateDate"/> :</label>
+      <label class="txtlibform"><fmt:message key="classifieds.validateDate"/></label>
       <div class="champs">
         <view:formatDateTime value="${validateDate}" /> <fmt:message key="classifieds.by"/> ${validatorName}
       </div>
@@ -403,10 +412,19 @@
 </div>			
 </form>
 <view:buttonPane>
-	<fmt:message var="validateLabel" key="GML.validate"/>
 	<fmt:message var="cancelLabel" key="GML.cancel"/>
-
-	<view:button label="${validateLabel}" action="javascript:onclick=sendData();" />
+  <c:choose>
+    <c:when test="${draftEnabled}">
+      <fmt:message var="publishLabel" key="GML.publish"/>
+      <view:button label="${publishLabel}" action="javascript:onclick=publish();" />
+      <fmt:message var="saveDraftLabel" key="GML.draft.save"/>
+      <view:button label="${saveDraftLabel}" action="javascript:onclick=save();" />
+    </c:when>
+    <c:otherwise>
+      <fmt:message var="validateLabel" key="GML.validate"/>
+      <view:button label="${validateLabel}" action="javascript:onclick=save();" />
+    </c:otherwise>
+  </c:choose>
 	<view:button label="${cancelLabel}" action="Main" />
 </view:buttonPane>
 </view:frame>

@@ -157,16 +157,6 @@ public class OrganisationControllerMockWrapper implements OrganizationController
   }
 
   @Override
-  public int getUserDBId(String sUserId) {
-    return mock.getUserDBId(sUserId);
-  }
-
-  @Override
-  public String getUserDetailByDBId(int id) {
-    return mock.getUserDetailByDBId(id);
-  }
-
-  @Override
   public UserFull getUserFull(String sUserId) {
     return mock.getUserFull(sUserId);
   }

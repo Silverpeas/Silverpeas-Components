@@ -22,11 +22,11 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
 import java.util.List;
 import java.util.UUID;
@@ -49,9 +49,8 @@ public class DefaultExportFileNameProducer implements ExportFileNameProducer {
     StringBuilder fileName = new StringBuilder(250);
 
     // add space path to filename
-    List<SpaceInst> listSpaces = getSpacePathOf(publication);
-    for (SpaceInst space :
-        listSpaces) {
+    List<SpaceInstLight> listSpaces = getSpacePathOf(publication);
+    for (SpaceInstLight space : listSpaces) {
       fileName.append(space.getName(language)).append('-');
     }
     // add component name to filename
@@ -62,13 +61,13 @@ public class DefaultExportFileNameProducer implements ExportFileNameProducer {
     return fileName.toString();
   }
 
-  private List<SpaceInst> getSpacePathOf(final KmeliaPublication publication) {
-    List<SpaceInst> spacePath;
+  private List<SpaceInstLight> getSpacePathOf(final KmeliaPublication publication) {
+    List<SpaceInstLight> spacePath;
     PublicationPK id = publication.getPk();
     if (isDefined(id.getSpaceId())) {
-      spacePath = getOrganisationController().getSpacePath(id.getSpaceId());
+      spacePath = getOrganisationController().getPathToSpace(id.getSpaceId());
     } else {
-      spacePath = getOrganisationController().getSpacePathToComponent(id.getInstanceId());
+      spacePath = getOrganisationController().getPathToComponent(id.getInstanceId());
     }
     return spacePath;
   }

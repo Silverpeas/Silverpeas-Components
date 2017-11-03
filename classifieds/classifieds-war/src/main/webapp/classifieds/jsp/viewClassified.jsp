@@ -70,6 +70,7 @@
 <c:set var="currentScope" value="${requestScope.CurrentScope}"/>
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 <c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
+<c:set var="draftOperationsEnabled" value="${user.id == creatorId and isDraftEnabled}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -84,27 +85,25 @@
     var label = "<c:out value='${deletionConfirm}'/>";
     jQuery.popup.confirm(label, function() {
 			document.classifiedForm.action = "DeleteClassified";
-			document.classifiedForm.ClassifiedId.value = id;
 			document.classifiedForm.submit();
 		});
 	}
 
-	function updateClassified(id) {
-		document.classifiedForm.action = "EditClassified?ClassifiedId="+id;
-		document.classifiedForm.ClassifiedId.value = id;
+	function updateClassified() {
+		document.classifiedForm.action = "EditClassified?ClassifiedId=${classified.id}";
 		document.classifiedForm.submit();
 	}
 
-	function draftIn(id) {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId=" + id;
+	function draftIn() {
+		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId=${classified.id}";
 	}
 
-	function draftOut(id) {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId=" + id;
+	function draftOut() {
+		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId=${classified.id}";
 	}
 
-	function validate(id) {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=" + id;
+	function validate() {
+		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=${classified.id}";
 	}
 
 	function refused(id) {
@@ -202,21 +201,21 @@
 			bundle="${icons}" />
 		<view:operationPane>
 			<view:operation
-				action="javascript:updateClassified('${classified.classifiedId}');"
+				action="javascript:updateClassified();"
 				altText="${updateOp}" icon="${updateIcon}" />
 			<view:operation
-				action="javascript:deleteConfirm('${classified.classifiedId}');"
+				action="javascript:deleteConfirm();"
 				altText="${deleteOp}" icon="${deleteIcon}" />
 
-			<c:if test="${user.id == creatorId and isDraftEnabled}">
+			<c:if test="${draftOperationsEnabled}">
 				<view:operationSeparator />
 				<c:choose>
-					<c:when test="${'Draft' == classified.status}">
-						<fmt:message var="draftOutOp" key="classifieds.draftOut" />
+					<c:when test="${classified.draft}">
+						<fmt:message var="draftOutOp" key="GML.publish" />
 						<fmt:message var="draftOutIcon" key="classifieds.draftOut"
 							bundle="${icons}" />
 						<view:operation
-							action="javascript:draftOut('${classified.classifiedId}');"
+							action="javascript:draftOut();"
 							altText="${draftOutOp}" icon="${draftOutIcon}" />
 					</c:when>
 					<c:otherwise>
@@ -224,13 +223,13 @@
 						<fmt:message var="draftInIcon" key="classifieds.draftIn"
 							bundle="${icons}" />
 						<view:operation
-							action="javascript:draftIn('${classified.classifiedId}');"
+							action="javascript:draftIn();"
 							altText="${draftInOp}" icon="${draftInIcon}" />
 					</c:otherwise>
 				</c:choose>
 			</c:if>
 			<c:if
-				test="${'admin' == profile.name and 'ToValidate' == classified.status}">
+				test="${'admin' == profile.name and classified.toValidate}">
 				<view:operationSeparator />
 				<fmt:message var="validateOp" key="classifieds.validate" />
 				<fmt:message var="validateIcon" key="classifieds.validate"
@@ -239,10 +238,10 @@
 				<fmt:message var="refuseIcon" key="classifieds.refused"
 					bundle="${icons}" />
 				<view:operation
-					action="javascript:validate('${classified.classifiedId}');"
+					action="javascript:validate();"
 					altText="${validateOp}" icon="${validateIcon}" />
 				<view:operation
-					action="javascript:refused('${classified.classifiedId}');"
+					action="javascript:refused();"
 					altText="${refuseOp}" icon="${refuseIcon}" />
 			</c:if>
 		</view:operationPane>
@@ -252,8 +251,7 @@
 		<view:frame>
 			  <table cellpadding="5" width="100%">
 			  <tr>
-            <td valign="top"> 
-              <div id="header_classifieds"> </div>
+            <td valign="top">
               <div class="rightContent">
                 <c:if test="${not empty index}">
                   <viewTags:displayIndex nbItems="${index.nbItems}" index="${index.currentIndex}" />
@@ -284,7 +282,11 @@
                 </div>
               </div>
               <div class="principalContent">
-                <div id="menubar-creation-actions"></div>
+                <c:if test="${draftOperationsEnabled && classified.draft}">
+                  <div class="inlineMessage">
+                    <fmt:message key="classifieds.draft.info"/>
+                  </div>
+                </c:if>
                 <div class="classified_fiche">
                   <h2 class="classified_title">${displayedTitle}</h2>
                   <c:if test="${not empty classified.images}">
@@ -341,7 +343,7 @@
 						<!--Afficher les commentaires-->
 						<c:if test="${isCommentsEnabled}">
 							<view:comments 	userId="${user.id}" componentId="${instanceId}"
-											resourceType="${classified.contributionType}" resourceId="${classified.classifiedId}" />
+											resourceType="${classified.contributionType}" resourceId="${classified.id}" />
 						</c:if>
 					</td>
 				</tr>
@@ -349,7 +351,7 @@
 		</view:frame>
 	</view:window>
 	<form name="classifiedForm" action="" method="post">
-		<input type="hidden" name="ClassifiedId" />
+		<input type="hidden" name="ClassifiedId" value="${classified.id}" />
 	</form>
 	<div id="refusalModalDialog" title="${refuseOp}" style="display: none;">
 		<form name="refusalForm" action="RefusedClassified" method="post">
@@ -359,7 +361,7 @@
 						<table>
 							<tr>
 								<td class="txtlibform"><fmt:message key="classifieds.number" /> :</td>
-								<td>${classified.classifiedId} <input type="hidden" name="ClassifiedId" value="${classified.classifiedId}"/></td>
+								<td>${classified.id} <input type="hidden" name="ClassifiedId" value="${classified.id}"/></td>
 							</tr>
 							<tr>
 								<td class="txtlibform"><fmt:message key="GML.title" /> :</td>
