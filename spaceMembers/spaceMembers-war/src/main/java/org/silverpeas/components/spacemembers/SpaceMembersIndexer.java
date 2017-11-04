@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.spacemembers;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -34,7 +34,7 @@ import javax.inject.Singleton;
 public class SpaceMembersIndexer implements ComponentIndexation {
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     // nothing to index for this application
   }
 }

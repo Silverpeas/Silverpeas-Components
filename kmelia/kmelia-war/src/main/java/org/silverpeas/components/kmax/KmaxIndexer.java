@@ -24,13 +24,13 @@
 
 package org.silverpeas.components.kmax;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,7 +49,7 @@ public class KmaxIndexer implements ComponentIndexation {
   private KmeliaService kmeliaService;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     kmeliaService.indexKmax(componentInst.getId());
 
     Collection<PublicationDetail> publications =

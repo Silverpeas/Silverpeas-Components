@@ -24,8 +24,8 @@
 package org.silverpeas.components.classifieds;
 
 import org.silverpeas.components.classifieds.service.ClassifiedService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +39,7 @@ public class ClassifiedsIndexer implements ComponentIndexation {
   private ClassifiedService service;
 
   @Override
-  public void index(ComponentInst componentInst)
+  public void index(SilverpeasComponentInstance componentInst)
       throws Exception {
     service.indexClassifieds(componentInst.getId());
   }

@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.resourcesmanager;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.resourcesmanager.service.ResourcesManager;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +39,7 @@ public class ResourcesManagerIndexer implements ComponentIndexation {
   private ResourcesManager resourcesManager;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     resourcesManager.indexResourceManager(componentInst.getId());
   }
 }
