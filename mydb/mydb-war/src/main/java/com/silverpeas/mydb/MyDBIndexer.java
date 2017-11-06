@@ -24,7 +24,7 @@
 
 package com.silverpeas.mydb;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Named;
@@ -39,7 +39,7 @@ import javax.inject.Singleton;
 public class MyDBIndexer implements ComponentIndexation {
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
 
   }
 

@@ -136,15 +136,15 @@ $(document).ready(function(){
 });
 
 /**
- * This javascript method allow user to switch from Separated view to Agregated view
+ * This javascript method allow user to switch from Separated view to Aggregated view
  */
-function displayAgregatedView() {
-  $("#hiddenRssFormAction").val("<%=RSSViewType.AGREGATED.toString()%>");
+function displayAggregatedView() {
+  $("#hiddenRssFormAction").val("<%=RSSViewType.AGGREGATED.toString()%>");
   $.progressMessage();
   document.rssForm.submit();
 }
 /**
- * This javascript method allow user to switch from Agregated view to Separated view
+ * This javascript method allow user to switch from Aggregated view to Separated view
  */
 function displaySeparatedView() {
   $("#hiddenRssFormAction").val("<%=RSSViewType.SEPARATED.toString()%>");
@@ -175,7 +175,7 @@ function displayAll() {
 
 	  <ul>
 
-
+	<jsp:useBean id="item" type="org.silverpeas.components.rssaggregator.model.RSSItem"/>
   <c:forEach var="item" items="${rssItems}">
 		<c:set var="channelName" value="${item.channelTitle}"/>
 
@@ -191,7 +191,7 @@ function displayAll() {
 			<a class="deploy-item itemDeploy" title="bend item" href="#" onclick = "return false;" ><img class="deploy-item-rssNews" src="${ctxPath}<fmt:message key="rss.closeChannel" bundle="${icons}"/>" border="0" /></a>
 			<h3 class="title-item-rssNews">
 				<c:if test="${not empty item.channelImage}">
-				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.location}" border="0" /></a>
+				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.url}" border="0" /></a>
 				</c:if>
 				<span  class="channelName-rssNews"><c:out value="${channelName}"/> </span>
 				<a href="<c:out value="${item.itemLink}"/>"><c:out value="${item.itemTitle}"/> </a>

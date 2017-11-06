@@ -23,19 +23,18 @@
  */
 package org.silverpeas.components.forums;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.forums.service.ForumsServiceProvider
-    .getForumsService;
+import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
 
 @Singleton
 @Named("forums" + ComponentIndexation.QUALIFIER_SUFFIX)
@@ -44,7 +43,7 @@ public class ForumsIndexer implements ComponentIndexation {
   private static String ROOT_FORUM_ID = "0";
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     indexForum(componentInst.getId(), ROOT_FORUM_ID);
   }
 

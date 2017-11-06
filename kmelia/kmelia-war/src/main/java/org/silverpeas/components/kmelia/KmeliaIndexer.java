@@ -24,9 +24,9 @@
 
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,7 +40,7 @@ public class KmeliaIndexer implements ComponentIndexation {
   private KmeliaService kmeliaService;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     kmeliaService.indexKmelia(componentInst.getId());
   }
 }

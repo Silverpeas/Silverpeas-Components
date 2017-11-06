@@ -23,11 +23,11 @@
  */
 package com.stratelia.webactiv.survey;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,9 +46,10 @@ public class SurveyIndexer implements ComponentIndexation {
 
   /**
    * Implementation of component indexer interface
+   * @param componentInst
    */
   @Override
-  public void index(ComponentInst componentInst) {
+  public void index(SilverpeasComponentInstance componentInst) {
     QuestionContainerPK pk =
         new QuestionContainerPK(null, componentInst.getSpaceId(), componentInst.getId());
     indexOpenedSurveys(pk);

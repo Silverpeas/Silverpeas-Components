@@ -23,21 +23,20 @@
  */
 package org.silverpeas.components.rssaggregator.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
 import org.silverpeas.components.rssaggregator.control.RssAgregatorSessionController;
 import org.silverpeas.components.rssaggregator.model.RSSViewType;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
+import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.http.HttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public class RssAgregatorRequestRouter
     extends ComponentRequestRouter<RssAgregatorSessionController> {
@@ -69,12 +68,12 @@ public class RssAgregatorRequestRouter
         request.setAttribute("Role", rssSC.getHighestRole());
         if (RSSViewType.SEPARATED.equals(rssSC.getViewMode())) {
           destination = prepareSeparatedView(rssSC, request);
-        } else if (RSSViewType.AGREGATED.equals(rssSC.getViewMode())) {
-          destination = prepareAgregatedView(rssSC, request, false);
+        } else if (RSSViewType.AGGREGATED.equals(rssSC.getViewMode())) {
+          destination = prepareAggregatedView(rssSC, request, false);
         }
       } else if (function.equals("portlet")) {
         request.setAttribute("Role", "user");
-        destination = prepareAgregatedView(rssSC, request, true);
+        destination = prepareAggregatedView(rssSC, request, true);
       } else if (function.equals("LoadChannels")) {
         rssSC.getChannelsContent();
 
@@ -116,14 +115,14 @@ public class RssAgregatorRequestRouter
   }
 
   /**
-   * Prepare data for agregated view
+   * Prepare data for aggregated view
    * @param rssSC the rss session controller
    * @param request the Http Servlet Request
    * @param isPortletView true if for portlet view, false else if
    * @return
    * @throws RssAgregatorException
    */
-  private String prepareAgregatedView(RssAgregatorSessionController rssSC,
+  private String prepareAggregatedView(RssAgregatorSessionController rssSC,
       HttpServletRequest request, boolean isPortletView) throws RssAgregatorException {
     String destination;
     List<SPChannel> channels = rssSC.getAvailableChannels();

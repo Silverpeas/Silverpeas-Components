@@ -24,9 +24,9 @@
 package org.silverpeas.components.gallery;
 
 import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,7 +40,7 @@ public class GalleryIndexer implements ComponentIndexation {
   private GalleryService galleryService;
 
   @Override
-  public void index(ComponentInst componentInst) throws
+  public void index(SilverpeasComponentInstance componentInst) throws
       Exception {
     galleryService.indexGallery(UserDetail.getCurrentRequester(), componentInst.getId());
   }

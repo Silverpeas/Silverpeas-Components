@@ -24,11 +24,11 @@
 
 package org.silverpeas.components.quickinfo;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,7 +45,7 @@ public class QuickinfoIndexer implements ComponentIndexation {
   private PublicationService publicationService;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     List<News> infos = quickInfoService.getVisibleNews(componentInst.getId());
     for (News news : infos) {
       publicationService.createIndex(news.getPublication().getPK());

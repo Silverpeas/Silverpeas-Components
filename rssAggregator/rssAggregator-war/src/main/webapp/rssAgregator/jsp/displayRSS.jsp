@@ -1,4 +1,7 @@
-<%--
+<%@ page import="com.rometools.rome.feed.synd.SyndFeed" %>
+<%@ page import="com.rometools.rome.feed.synd.SyndImage" %>
+<%@ page import="com.rometools.rome.feed.synd.SyndEntry" %>
+<%@ page import="org.silverpeas.components.rssaggregator.service.FeedComparator" %><%--
 
     Copyright (C) 2000 - 2017 Silverpeas
 
@@ -48,27 +51,24 @@
 void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String role, String context, MultiSilverpeasBundle resource, JspWriter out) throws IOException, java.text.ParseException {
 
 	String		sDate		= null;
-	Channel		channel	= null;
+	SyndFeed feed	= null;
 	if (spChannel != null)
     {
-	channel	= spChannel._getChannel();
+	feed	= spChannel.getFeed();
 	}
-
-	Item		item		= null;
-	int			i			= 0;
 
   if (spChannel != null)
   {
 		String 	channelName 	= null;
-		ImageIF channelImage 	= null;
-		if (channel != null) {
-			channelName 	= channel.getTitle();
+		SyndImage channelImage 	= null;
+		if (feed != null) {
+			channelName 	= feed.getTitle();
 			if (channelName.length() > 40) {
 				channelName = channelName.substring(0, 39)+"...";
 			}
-			channelImage 	= channel.getImage();
-			if (spChannel.getDisplayImage() == 1 && channelImage != null && channelImage.getLink()!=null && channelImage.getLocation()!=null) {
-			channelName = "<a href=\""+channelImage.getLink()+"\" target=_blank><img class='img-item-rssNews' src=\""+channelImage.getLocation()+"\" border=\"0\" /></a>"+channelName;
+			channelImage 	= feed.getImage();
+			if (spChannel.getDisplayImage() == 1 && channelImage != null && channelImage.getLink()!=null && channelImage.getUrl()!=null) {
+			channelName = "<a href=\""+channelImage.getLink()+"\" target=_blank><img class='img-item-rssNews' src=\""+channelImage.getUrl()+"\" border=\"0\" /></a>"+channelName;
         }  else {
 	  channelName = "<img class='img-item-rssNews' src=\""+resource.getIcon("rss.logoRSS")+"\" border=\"0\" />"+channelName;
 			  }
@@ -85,30 +85,28 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
       out.println("</h2>");
     }
 
-	if (spChannel != null && channel != null)
+	if (spChannel != null && feed != null)
 	{
     out.println("<ul>");
-		Date pubDate = null;
-		Object[] 	allItems 	= channel.getItems().toArray();
-		java.util.Arrays.sort(allItems, new ItemComparator(true));
-		while (i<allItems.length && i<spChannel.getNbDisplayedItems())
+		SyndEntry[] 	allItems 	= feed.getEntries().toArray(new SyndEntry[feed.getEntries().size()]);
+		java.util.Arrays.sort(allItems, new FeedComparator(true));
+		for (int i = 0; i < allItems.length && i<spChannel.getNbDisplayedItems(); i++)
 		{
-			item = (Item) allItems[i];
+			SyndEntry feedEntry = allItems[i];
 
 			sDate = "";
-			if (item.getDate() != null) {
-				sDate = dateFormatter.format(item.getDate());
+			Date entryDate = feedEntry.getUpdatedDate() == null ? feedEntry.getPublishedDate() : feedEntry.getUpdatedDate();
+			if (entryDate != null) {
+				sDate = dateFormatter.format(entryDate);
 			}
 			out.println("<li class='item-channel'>");
 		  out.println("<a class='deploy-item' title='deploy item' href='#' onclick = 'return false;' ><img class='deploy-item-rssNews' src='../../util/icons/arrow/open.gif' border='0' /></a><a class='deploy-item itemDeploy' title='bend item' href='#' onclick = 'return false;' ><img class='deploy-item-rssNews' src='../../util/icons/arrow/closed.gif' border='0' /></a>");
-			out.println("<h3 class='title-item-rssNews'><a href=\""+item.getLink()+"\" target=_blank>"+item.getTitle()+"</a></h3><div class='lastUpdate-item-rssNews'>"+sDate+"</div>");
-			if (item.getDescription() != null && item.getDescription().length()>0) {
-				out.println("<div class='itemDeploy'><div class='description-item-rssNews'>"+item.getDescription()+"<br clear='all'/></div></div>");
+			out.println("<h3 class='title-item-rssNews'><a href=\""+feedEntry.getLink()+"\" target=_blank>"+feedEntry.getTitle()+"</a></h3><div class='lastUpdate-item-rssNews'>"+sDate+"</div>");
+			if (feedEntry.getDescription() != null && !feedEntry.getDescription().getValue().isEmpty()) {
+				out.println("<div class='itemDeploy'><div class='description-item-rssNews'>"+feedEntry.getDescription().getValue()+"<br clear='all'/></div></div>");
 			}
 			out.println("</li>");
-
-			i++;
-			if (i<allItems.length && i < spChannel.getNbDisplayedItems())
+			if (i+1<allItems.length && i+1 < spChannel.getNbDisplayedItems())
 			{
 				out.println("");
 			}
@@ -119,7 +117,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
     out.println(resource.getString("rss.download"));
     out.println("<br /><img src=\""+context+"/util/icons/attachment_to_upload.gif\" height='20' width='83' /><br /><br />");
     out.println("</center>");
-  } else if (channel==null) {
+  } else if (feed==null) {
     out.println("<center><br />");
     out.println(resource.getString("rss.nonCorrectURL"));
     out.println("<br /><br />"+spChannel.getUrl()+"<br /><br />");
@@ -208,15 +206,15 @@ $(document).ready(function(){
 });
 
 /**
- * This javascript method allow user to switch from Separated view to Agregated view
+ * This javascript method allow user to switch from Separated view to Aggregated view
  */
-function displayAgregatedView() {
-  $("#hiddenRssFormAction").val("<%=RSSViewType.AGREGATED.toString()%>");
+function displayAggregatedView() {
+  $("#hiddenRssFormAction").val("<%=RSSViewType.AGGREGATED.toString()%>");
   $.progressMessage();
   document.rssForm.submit();
 }
 /**
- * This javascript method allow user to switch from Agregated view to Separated view
+ * This javascript method allow user to switch from Aggregated view to Separated view
  */
 function displaySeparatedView() {
   $("#hiddenRssFormAction").val("<%=RSSViewType.SEPARATED.toString()%>");
@@ -252,7 +250,7 @@ function displayAll() {
 <view:window>
 <fmt:message var="urlErrorMsg" key="rss.nonCorrectURL" />
 <c:forEach var="channel" items="${rssChannels}">
-  <c:if test="${empty channel.channel}">
+  <c:if test="${empty channel.feed}">
   <div class="inlineMessage-nok">${urlErrorMsg} ${channel.url}</div>
   </c:if>
 </c:forEach>
@@ -268,7 +266,7 @@ function displayAll() {
   <div class="bend-all-item btn-deploy-all-item bgDegradeGris " title="<fmt:message key="rss.filter.collapse.all"/>" onclick = "return false;" >
     <img class="deploy-item-rssNews" src="${ctxPath}<fmt:message key="rss.closeChannel" bundle="${icons}"/>" border="0" /> ${collapseAllMsg}</div>
   <div id="displaying"  class="bgDegradeGris"><fmt:message key="rss.filter.agregate.view"/>
-    <a id="aggregate-displaying" class="<c:if test='${aggregate}'>active</c:if>" href="javascript:displayAgregatedView();"><fmt:message key="rss.filter.agregate.view.on"/></a>
+    <a id="aggregate-displaying" class="<c:if test='${aggregate}'>active</c:if>" href="javascript:displayAggregatedView();"><fmt:message key="rss.filter.agregate.view.on"/></a>
     <a id="no-aggregate-displaying" class="<c:if test='${not aggregate}'>active</c:if>" href="javascript:displaySeparatedView();"><fmt:message key="rss.filter.agregate.view.off"/></a>
   </div>
   <!--
@@ -289,8 +287,8 @@ function displayAll() {
 			<span <c:if test="${fn:contains(role, 'admin')}"> class="filter" </c:if> >
 
         <c:choose>
-          <c:when test="${empty channel.channel}"><c:set var="channelTitle" value="${urlErrorMsg} ${channel.url}"/> </c:when>
-          <c:otherwise><c:set var="channelTitle" value="${channel.channel.title}"/></c:otherwise>
+          <c:when test="${empty channel.feed}"><c:set var="channelTitle" value="${urlErrorMsg} ${channel.url}"/> </c:when>
+          <c:otherwise><c:set var="channelTitle" value="${channel.feed.title}"/></c:otherwise>
         </c:choose>
 
         <!-- Display filter functionnality -->
@@ -336,7 +334,7 @@ function displayAll() {
 			<a class="deploy-item itemDeploy" title="${collapseMsg}" href="#" onclick = "return false;" ><img class="deploy-item-rssNews" src="${ctxPath}<fmt:message key="rss.closeChannel" bundle="${icons}"/>" border="0" /></a>
 			<h3 class="title-item-rssNews">
 				<c:if test="${not empty item.channelImage}">
-				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.location}" border="0" /></a>
+				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.url}" border="0" /></a>
 				</c:if>
 				<span  class="channelName-rssNews"><c:out value="${channelName}" /> </span>
 				<a href="<c:out value="${item.itemLink}"/>" target="_blank"><c:out value="${item.itemTitle}" escapeXml="false"/> </a>

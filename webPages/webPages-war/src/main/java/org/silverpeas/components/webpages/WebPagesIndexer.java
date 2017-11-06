@@ -30,21 +30,21 @@
  */
 package org.silverpeas.components.webpages;
 
+import org.silverpeas.components.webpages.model.WebPagesException;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.components.webpages.model.WebPagesException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,7 +68,7 @@ public class WebPagesIndexer implements ComponentIndexation {
   private AttachmentService attachmentService;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     if (isXMLTemplateUsed(componentInst.getId())) {
       indexForm(componentInst);
     } else {
@@ -77,7 +77,7 @@ public class WebPagesIndexer implements ComponentIndexation {
     }
   }
 
-  private void indexForm(ComponentInst componentInst) throws WebPagesException {
+  private void indexForm(SilverpeasComponentInstance componentInst) throws WebPagesException {
     RecordSet recordSet;
     try {
       PublicationTemplate pub = templateManager.getPublicationTemplate(

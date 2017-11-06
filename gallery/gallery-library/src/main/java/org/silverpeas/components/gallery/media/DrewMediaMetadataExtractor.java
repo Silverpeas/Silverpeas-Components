@@ -29,11 +29,11 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Descriptor;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.iptc.IptcDirectory;
-import org.silverpeas.components.gallery.model.MetaData;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.components.gallery.model.MetaData;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.EncodingUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import static com.drew.metadata.iptc.IptcDirectory.*;
 
@@ -174,7 +175,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       meta.setProperty(iptcProperty.getProperty() + "");
       if (iptcProperty.isDate()) {
         meta.setDate(true);
-        meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
+        meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty(), TimeZone.getDefault()));
       } else {
         forEncodingDetection.write(value.getBytes());
       }
@@ -192,7 +193,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       meta.setProperty(iptcProperty.getProperty() + "");
       if (iptcProperty.isDate()) {
         meta.setDate(true);
-        meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
+        meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty(), TimeZone.getDefault()));
       } else {
         forEncodingDetection.write(data);
       }

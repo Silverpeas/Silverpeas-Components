@@ -24,8 +24,8 @@
 package org.silverpeas.components.blog;
 
 import org.silverpeas.components.blog.service.BlogService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +39,7 @@ public class BlogIndexer implements ComponentIndexation {
   private BlogService service;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     service.indexBlog(componentInst.getId());
   }
 }

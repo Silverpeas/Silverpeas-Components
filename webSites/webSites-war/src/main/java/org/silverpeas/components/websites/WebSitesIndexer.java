@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.websites;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.components.websites.service.WebSiteService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +39,7 @@ public class WebSitesIndexer implements ComponentIndexation {
   private WebSiteService webSiteService;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     webSiteService.index(componentInst.getId());
   }
 }

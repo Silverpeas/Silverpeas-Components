@@ -28,21 +28,21 @@
  */
 package org.silverpeas.components.whitepages;
 
+import org.silverpeas.components.whitepages.control.CardManager;
+import org.silverpeas.components.whitepages.model.Card;
+import org.silverpeas.components.whitepages.record.UserTemplate;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.components.whitepages.control.CardManager;
-import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.components.whitepages.record.UserTemplate;
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -67,7 +67,7 @@ public class WhitePagesIndexer implements ComponentIndexation {
   private Administration admin;
 
   @Override
-  public void index(ComponentInst componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
     Collection<Card> visibleCards = enrichWithUserRecordsAndCardRecords(componentInst.getId(),
         cardManager.getVisibleCards(componentInst.getId()));
     for (Card card : visibleCards) {

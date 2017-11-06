@@ -53,16 +53,12 @@
       <artifactId>metadata-extractor</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.sanselan</groupId>
-      <artifactId>sanselan</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
     <dependency>
-      <artifactId>commons-httpclient</artifactId>
-      <groupId>commons-httpclient</groupId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

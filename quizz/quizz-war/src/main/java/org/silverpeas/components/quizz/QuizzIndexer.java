@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.quizz;
 
-import org.silverpeas.core.web.index.components.ComponentIndexation;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +42,7 @@ public class QuizzIndexer implements ComponentIndexation {
   private QuestionContainerService service;
 
   @Override
-  public void index(ComponentInst componentInst) throws QuizzException {
+  public void index(SilverpeasComponentInstance componentInst) throws QuizzException {
     try {
       QuestionContainerPK pk =
           new QuestionContainerPK(null, componentInst.getSpaceId(), componentInst.getId());
