@@ -59,6 +59,6 @@ public class SearchHandler extends FunctionHandler {
     request.setAttribute("Word", wordSearch);
 
     // returns page to redirect to
-    return "viewResultSearch.jsp?ArrayPaneAction=ChangePage&ArrayPaneTarget=docs&ArrayPaneIndex=0";
+    return "viewResultSearch.jsp?ArrayPaneAction=ChangePage&ArrayPaneTarget=docs&PaginationPaneIndex=0";
   }
 }
