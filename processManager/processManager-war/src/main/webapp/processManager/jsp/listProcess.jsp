@@ -1,5 +1,4 @@
-<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
-<%@ page import="java.util.Map" %><%--
+<%--
 
     Copyright (C) 2000 - 2017 Silverpeas
 
@@ -24,287 +23,320 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="checkProcessManager.jsp" %>
-<%!
-Item getItem(Item[] items, String itemName)
-{
-	Item item = null;
-	for(int i=0; i<items.length; i++)
-	{
-		item = items[i];
-		if (itemName.equals(item.getName()))
-			return item;
-	}
-	return null;
-}
-%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="java.util.Collections" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/workflowFunctions" prefix="workflowfn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+
+<%-- Set resource bundle --%>
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<jsp:useBean id="userLanguage" type="java.lang.String"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<fmt:message var="createProcessLabel" key="processManager.createProcess"/>
+<fmt:message var="userSettingsLabel" key="processManager.userSettings"/>
+<fmt:message var="csvExportLabel" key="processManager.csvExport"/>
+<fmt:message var="welcomeLabel" key="processManager.operation.welcome"/>
+<fmt:message var="refreshLabel" key="processManager.refresh"/>
+<fmt:message var="yourRoleLabel" key="processManager.yourRole"/>
+<fmt:message var="validateLabel" key="GML.validate"/>
+<fmt:message var="cancelLabel" key="GML.cancel"/>
+
+<fmt:message var="confirmDeleteMessage" key="processManager.confirmDelete"/>
+
+<fmt:message key="processManager.inError" var="tmp" bundle="${icons}"/>
+<c:url var="inErrorIconUrl" value="${tmp}"/>
+<fmt:message var="inErrorLabel" key="processManager.inError"/>
+<fmt:message key="processManager.locked" var="tmp" bundle="${icons}"/>
+<c:url var="lockedByAdminIconUrl" value="${tmp}"/>
+<fmt:message var="lockedByAdminLabel" key="processManager.lockedByAdmin"/>
+<fmt:message key="processManager.timeout" var="tmp" bundle="${icons}"/>
+<c:url var="timeoutIconUrl" value="${tmp}"/>
+<fmt:message var="timeoutLabel" key="processManager.timeout"/>
+<fmt:message key="processManager.small_remove" var="tmp" bundle="${icons}"/>
+<c:url var="deleteIconUrl" value="${tmp}"/>
+<fmt:message var="deleteLabel" key="processManager.delete"/>
+
+<c:set var="processList" value="${requestScope.processList}"/>
+<c:if test="${processList == null}">
+  <c:set var="processList" value="<%=Collections.emptyList()%>"/>
+</c:if>
+<jsp:useBean id="processList" type="java.util.List<org.silverpeas.core.contribution.content.form.DataRecord>"/>
+
+<c:set var="listHeaders" value="${requestScope.listHeaders}"/>
+<jsp:useBean id="listHeaders" type="org.silverpeas.core.contribution.content.form.RecordTemplate"/>
+<c:set var="headers" value="${listHeaders.fieldTemplates}"/>
+<jsp:useBean id="headers" type="org.silverpeas.core.contribution.content.form.FieldTemplate[]"/>
+<c:set var="items" value="${requestScope.FolderItems}"/>
+<jsp:useBean id="items" type="org.silverpeas.core.workflow.api.model.Item[]"/>
+
+<c:set var="roles" value="${requestScope.roles}"/>
+<c:if test="${roles == null}">
+  <c:set var="roles" value="<%=new NamedValue[0]%>"/>
+</c:if>
+<jsp:useBean id="roles" type="org.silverpeas.processmanager.NamedValue[]"/>
+
+<c:set var="context" value="${requestScope.context}"/>
+<jsp:useBean id="context" type="org.silverpeas.core.contribution.content.form.PagesContext"/>
+
+<c:set var="isProcessIdVisible" value="${silfn:booleanValue(requestScope.isProcessIdVisible)}"/>
+<c:set var="canCreate" value="${silfn:booleanValue(requestScope.canCreate)}"/>
+<c:set var="hasUserSettings" value="${silfn:booleanValue(requestScope.hasUserSettings)}"/>
+<c:set var="isCSVExportEnabled" value="${silfn:booleanValue(requestScope.isCSVExportEnabled)}"/>
+<c:set var="currentRole" value="${requestScope.currentRole}"/>
+<c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
+<c:set var="welcomeMessage" value="${requestScope.WelcomeMessage}"/>
+<c:set var="collapse" value="${silfn:booleanValue(empty requestScope.collapse ? 'true' : requestScope.collapse)}"/>
+
 <%
-  DataRecord[] processList = (DataRecord[])request.getAttribute("processList");
-  if (processList == null) processList = new DataRecord[0];
-
-  RecordTemplate listHeaders=(RecordTemplate) request.getAttribute("listHeaders");
-  FieldTemplate[] headers = listHeaders.getFieldTemplates();
-
-  Item[] items = (Item[]) request.getAttribute("FolderItems");
-
-  String canCreate = (String) request.getAttribute("canCreate");
-  if (canCreate.equals("1")) {
-		operationPane.addOperationOfCreation(resource.getIcon("processManager.add"),
-									resource.getString("processManager.createProcess"),
-									"createProcess");
-  }
-
-  String hasUserSettings = (String) request.getAttribute("hasUserSettings");
-  if (hasUserSettings.equals("1")) {
-	operationPane.addOperation(resource.getIcon("processManager.userSettings"),
-								resource.getString("processManager.userSettings"),
-								"editUserSettings");
-  }
-
-  Boolean isCSVExportEnabled = (Boolean) request.getAttribute("isCSVExportEnabled");
-
-  if (isCSVExportEnabled != null && isCSVExportEnabled.booleanValue()) {
-	operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("processManager.csvExport"),
-			resource.getString("processManager.csvExport"),
-			"javaScript:exportCSV();");
-  }
-
-  if ("supervisor".equalsIgnoreCase((String)request.getAttribute("currentRole"))) {
-    operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("processManager.welcome"),
-			resource.getString("processManager.operation.welcome"),
-			"ToWysiwygWelcome");
-  }
-  String welcomeMessage = (String) request.getAttribute("WelcomeMessage");
-
-	String collapse = (String) request.getAttribute("collapse");
-	if (collapse == null) {
-		collapse = "true";
-	}
-	Form form = (Form) request.getAttribute("form");
-   PagesContext context = (PagesContext) request.getAttribute("context");
-   DataRecord data = (DataRecord) request.getAttribute("data");
-
-   ButtonPane buttonPane = gef.getButtonPane();
-   buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:setFilter()", false));
-   buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:resetFilter()", false));
-
-   boolean isProcessIdVisible = ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-
-   ArrayPane arrayPane = gef.getArrayPane("List", "listSomeProcess", request,session);
-   arrayPane.setVisibleLineNumber(20);
+  Form form = (Form) request.getAttribute("form");
+  DataRecord data = (DataRecord) request.getAttribute("data");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<%
-	if (collapse.equals("false")) {
-		form.displayScripts(out, context);
-	}
-%>
-<script type="text/javascript">
-	function collapseFilter(arg){
-		document.<%=context.getFormName()%>.collapse.value=arg;
-		document.<%=context.getFormName()%>.submit();
-	}
+  <title><%=resource.getString("GML.popupTitle")%>
+  </title>
+  <view:looknfeel/>
+  <c:if test="${not collapse}">
+    <% form.displayScripts(out, context); %>
+  </c:if>
+  <script type="text/javascript">
+    function collapseFilter(arg) {
+      spProgressMessage.show();
+      document.${context.formName}.collapse.value = arg;
+      document.${context.formName}.submit();
+    }
 
-	function setFilter() {
-    ifCorrectFormExecute(function() {
-			document.<%=context.getFormName()%>.submit();
-		});
-	}
+    function setFilter() {
+      ifCorrectFormExecute(function() {
+        spProgressMessage.show();
+        document.${context.formName}.submit();
+      });
+    }
 
-	function resetFilter() {
-		document.<%=context.getFormName()%>.reset();
-	}
+    function resetFilter() {
+      document.${context.formName}.reset();
+    }
 
-	function removeProcessInstance(id) {
-    $('#removeProcessInstanceConfirmation').popup('confirmation', {
-      //title : "Title of the popup",
-      callback : function() {
-        window.location.href = "adminRemoveProcess?processId="+id;
-        return true;
-      }
-    });
-	}
+    function refreshList() {
+      spProgressMessage.show();
+      sp.formRequest('listProcess').submit();
+    }
 
-	function exportCSV() {
-		SP_openWindow("exportCSV", "exportWindow", "550", "350", "directories=0,menubar=0,toolbar=0,alwaysRaised");
-	}
-</script>
+    function removeProcessInstance(id) {
+      $('#removeProcessInstanceConfirmation').popup('confirmation', {
+        //title : "Title of the popup",
+        callback : function() {
+          spProgressMessage.show();
+          window.location.href = "adminRemoveProcess?processId=" + id;
+          return true;
+        }
+      });
+    }
+
+    function exportCSV() {
+      SP_openWindow("exportCSV", "exportWindow", "550", "350",
+          "directories=0,menubar=0,toolbar=0,alwaysRaised");
+    }
+  </script>
 </head>
 <body class="yui-skin-sam processManager-main">
-<%
-   out.println(window.printBefore());
-%>
-<view:frame>
-<% if (roles != null && roles.length > 1) { %>
-  <div id="roles">
-<form name="roleChoice" method="post" action="changeRole">
-		<span class="textePetitBold"><%=resource.getString("processManager.yourRole") %> :&nbsp;</span>
-    <select name="role" onchange="document.roleChoice.submit()">
-       <% for (int i=0; i<roles.length ; i++) { %>
-         <option <%=currentRole.equals(roles[i].name)?"selected":""%> value="<%=roles[i].name%>"><%=roles[i].value%></option>
-      <% } %>
-    </select>
-</form>
-  </div>
-<br/>
-<% } %>
-
-<% if (StringUtil.isDefined(welcomeMessage)) { %>
-	<span class="inlineMessage"><%=welcomeMessage %></span>
-<% } %>
-<view:areaOfOperationOfCreation/>
-<form id="filter" name="<%=context.getFormName()%>" method="post" action="filterProcess" enctype="multipart/form-data">
-  <div class="bgDegradeGris">
+<view:operationPane>
+  <c:if test="${canCreate}">
+    <fmt:message key="processManager.add" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operationOfCreation action="createProcess"
+                              altText="${createProcessLabel}" icon="${opIcon}"/>
+  </c:if>
+  <c:if test="${hasUserSettings}">
+    <fmt:message key="processManager.userSettings" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operation action="editUserSettings" altText="${userSettingsLabel}" icon="${opIcon}"/>
+  </c:if>
+  <c:if test="${isCSVExportEnabled}">
+    <fmt:message key="processManager.csvExport" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operationSeparator/>
+    <view:operation action="javaScript:exportCSV();" altText="${csvExportLabel}" icon="${opIcon}"/>
+  </c:if>
+  <c:if test="${isCurrentRoleSupervisor}">
+    <fmt:message key="processManager.welcome" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operationSeparator/>
+    <view:operation action="ToWysiwygWelcome" altText="${welcomeLabel}" icon="${opIcon}"/>
+  </c:if>
+</view:operationPane>
+<view:window>
+  <view:frame>
+    <c:if test="${fn:length(roles) > 0}">
+      <div id="roles">
+        <form name="roleChoice" method="post" action="changeRole">
+          <label class="textePetitBold" for="current-role">${yourRoleLabel} :&nbsp;</label>
+          <select id="current-role" name="role" onchange="spProgressMessage.show();document.roleChoice.submit()">
+            <c:forEach var="role" items="${roles}">
+              <option ${role.name eq currentRole ? 'selected' : ''} value="${role.name}">${role.value}</option>
+            </c:forEach>
+          </select>
+        </form>
+      </div>
+    </c:if>
+    <c:if test="${not empty welcomeMessage}">
+      <span class="inlineMessage">${welcomeMessage}</span>
+    </c:if>
+    <view:areaOfOperationOfCreation/>
+    <form id="filter" name="${context.formName}" method="post" action="filterProcess" enctype="multipart/form-data">
+      <div class="bgDegradeGris">
         <div id="filterLabel">
           <p>
-            <%if (collapse.equals("true")) { %>
-            <a href="javascript:collapseFilter('false')"><img border="0" src="<%=resource.getIcon("processManager.boxDown")%>"/></a>
-            <% } else { %>
-            <a href="javascript:collapseFilter('true')"><img border="0" src="<%=resource.getIcon("processManager.boxUp")%>"/></a>
-            <% } %>
+            <fmt:message key="${collapse ? 'processManager.boxDown' : 'processManager.boxUp'}" var="opIcon" bundle="${icons}"/>
+            <c:url var="opIcon" value="${opIcon}"/>
+            <a href="javascript:collapseFilter('${not collapse}')"><img border="0" src="${opIcon}" alt=""/></a>
             <span class="txtNav"><%=resource.getString("processManager.filter") %></span>
           </p>
 
-          <div id="refresh"><a href="listProcess"><img border="0" src="<%=resource.getIcon("processManager.refresh")%>" alt="<%=resource.getString("processManager.refresh")%>" align="absmiddle"/></a></div>
+          <div id="refresh">
+            <fmt:message key="processManager.refresh" var="opIcon" bundle="${icons}"/>
+            <c:url var="opIcon" value="${opIcon}"/>
+            <a href="javascript:refreshList()" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}" align="absmiddle"/></a>
+          </div>
         </div>
-				<% if (collapse.equals("false")) { %>
-        <div id="filterForm">
-					<% form.display(out, context, data); %>
-					<% out.println(buttonPane.print()); %>
-        </div>
-				<% } %>
-	 <input type="hidden" name="collapse" value="<%=collapse%>"/>
-  </div>
-</form>
-<%
-	ArrayColumn arrayColumn;
+        <c:if test="${not collapse}">
+          <div id="filterForm">
+            <% form.display(out, context, data); %>
+            <view:buttonPane>
+              <view:button label="${validateLabel}" action="javascript:setFilter()"/>
+              <view:button label="${cancelLabel}" action="javascript:resetFilter()"/>
+            </view:buttonPane>
+          </div>
+        </c:if>
+        <input type="hidden" name="collapse" value="${collapse}"/>
+      </div>
+    </form>
+    <div id="process-list">
+      <c:set var="processCompareOnStatus" value="${p ->
+                  (p.inError ? 0 :
+                  (p.lockedByAdmin ? 1 :
+                  (p.inTimeout ? 2 : 3)))}"/>
+      <view:arrayPane var="wf-process-list-${componentId}" routingAddress="listSomeProcess" numberLinesPerPage="20">
+        <c:if test="${isProcessIdVisible}">
+          <view:arrayColumn title="#" compareOn="${p -> silfn:longValue(p.id)}"/>
+        </c:if>
+        <view:arrayColumn title="<>" compareOn="${p -> processCompareOnStatus(p)}"/>
+        <c:forEach var="_header" items="${headers}" varStatus="headerStatus">
+          <view:arrayColumn title="${_header.getLabel(userLanguage)}"
+                            compareOn="${(p,i) -> (
+                              index = isProcessIdVisible ? i - 2 : i - 1;
+                              workflowfn:getFieldComparable(items, headers[index], p.getField(index), userLanguage))}"/>
+        </c:forEach>
+        <c:if test="${isCurrentRoleSupervisor}">
+          <view:arrayColumn sortable="false"/>
+        </c:if>
+        <view:arrayLines var="process" items="${processList}">
+          <c:set var="viewProcessUrl" value="viewProcess?processId=${process.id}"/>
+          <c:set var="field" value="${process.getField(0)}"/>
+          <jsp:useBean id="field" type="org.silverpeas.core.contribution.content.form.Field"/>
+          <c:set var="processTitle" value="${field.getValue(userLanguage)}"/>
+          <c:set var="processTitleLink"><a href="${viewProcessUrl}">${processTitle}</a></c:set>
+          <jsp:useBean id="process" type="org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord"/>
+          <view:arrayLine>
+            <c:choose>
 
-	if (isProcessIdVisible) {
-		arrayColumn = arrayPane.addArrayColumn("#");
-	}
+              <%-- ERROR CASE --%>
+              <c:when test="${process.inError}">
+                <c:if test="${isProcessIdVisible}">
+                  <view:arrayCellText text="${process.id}"/>
+                </c:if>
+                <view:arrayCellText><img class="icon" src="${inErrorIconUrl}" alt="${inErrorLabel}" title="${inErrorLabel}"/></view:arrayCellText>
+                <c:choose>
+                  <c:when test="${isCurrentRoleSupervisor}">
+                    <view:arrayCellText text="${processTitleLink}"/>
+                  </c:when>
+                  <c:otherwise>
+                    <view:arrayCellText text="${processTitle}"/>
+                  </c:otherwise>
+                </c:choose>
+              </c:when>
 
-	arrayColumn = arrayPane.addArrayColumn("<>");
+              <%-- LOCKED BY ADMIN CASE --%>
+              <c:when test="${process.lockedByAdmin}">
+                <c:if test="${isProcessIdVisible}">
+                  <view:arrayCellText text="${process.id}"/>
+                </c:if>
+                <view:arrayCellText><img class="icon" src="${lockedByAdminIconUrl}" alt="${lockedByAdminLabel}" title="${lockedByAdminLabel}"/></view:arrayCellText>
+                <c:choose>
+                  <c:when test="${isCurrentRoleSupervisor}">
+                    <view:arrayCellText text="${processTitleLink}"/>
+                  </c:when>
+                  <c:otherwise>
+                    <view:arrayCellText text="${processTitle}"/>
+                  </c:otherwise>
+                </c:choose>
+              </c:when>
 
-	for (int i=0; i<headers.length; i++) {
-		arrayColumn = arrayPane.addArrayColumn(headers[i].getLabel(language));
-		arrayColumn.setSortable(true);
-	}
+              <%-- TIMEOUT CASE --%>
+              <c:when test="${process.inTimeout}">
+                <c:if test="${isProcessIdVisible}">
+                  <view:arrayCellText text="${process.id}"/>
+                </c:if>
+                <view:arrayCellText><img class="icon" src="${timeoutIconUrl}" alt="${timeoutLabel}" title="${timeoutLabel}"/></view:arrayCellText>
+                <view:arrayCellText text="${processTitleLink}"/>
+              </c:when>
 
-	if ("supervisor".equalsIgnoreCase(currentRole))	{
-		ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
-		arrayColumn0.setSortable(false);
-	}
+              <%-- DEFAULT CASE --%>
+              <c:otherwise>
+                <c:if test="${isProcessIdVisible}">
+                  <view:arrayCellText><a href="${viewProcessUrl}">${process.id}</a></view:arrayCellText>
+                </c:if>
+                <view:arrayCellText/>
+                <view:arrayCellText text="${processTitleLink}"/>
+              </c:otherwise>
+            </c:choose>
 
-	// Les lignes
-	ProcessInstanceRowRecord instance;
-	for (int i=0; i<processList.length; i++) // boucle sur tous les process
-	{
-		instance = (ProcessInstanceRowRecord) processList[i];
-		ArrayLine arrayLine = arrayPane.addArrayLine();
-		ArrayCellText cellId = null;
-		if (instance.isInError()) {
-			if (isProcessIdVisible) {
-				cellId = arrayLine.addArrayCellText(instance.getId());
-			}
-			arrayLine.addArrayCellText("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.inError") + "\" src=\""  + resource.getIcon("processManager.inError") + "\"/>");
-			if ("supervisor".equalsIgnoreCase(currentRole)) {
-				arrayLine.addArrayCellLink(instance.getField(0).getValue(language), "viewProcess?processId=" + instance.getId());
-			} else {
-				arrayLine.addArrayCellText(instance.getField(0).getValue(language));
-			}
-		} else if (instance.isLockedByAdmin()) {
-			if (isProcessIdVisible) {
-				cellId = arrayLine.addArrayCellText(instance.getId());
-			}
-			arrayLine.addArrayCellText("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.lockedByAdmin") + "\" src=\""  + resource.getIcon("processManager.locked") + "\"/>");
-			if ("supervisor".equalsIgnoreCase(currentRole)) {
-				arrayLine.addArrayCellLink(instance.getField(0).getValue(language), "viewProcess?processId=" + instance.getId());
-			} else {
-				arrayLine.addArrayCellText(instance.getField(0).getValue(language));
-			}
-		} else if (instance.isInTimeout()) {
-			if (isProcessIdVisible) {
-				cellId = arrayLine.addArrayCellText("<a href=\"viewProcess?processId="+instance.getId()+"\">"+instance.getId()+"</a>");
-			}
-			arrayLine.addArrayCellText("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.timeout") + "\" src=\""  + resource.getIcon("processManager.timeout") + "\"/>");
-			arrayLine.addArrayCellLink(instance.getField(0).getValue(language), "viewProcess?processId=" + instance.getId());
-		} else {
-			if (isProcessIdVisible) {
-				cellId = arrayLine.addArrayCellText("<a href=\"viewProcess?processId="+instance.getId()+"\">"+instance.getId()+"</a>");
-			}
-			arrayLine.addArrayCellText("");
-			arrayLine.addArrayCellLink(instance.getField(0).getValue(language), "viewProcess?processId="+instance.getId());
-		}
-		if (isProcessIdVisible) {
-			cellId.setCompareOn(new Integer(instance.getId()));
-		}
+            <%-- DYNAMIC COLUMNS--%>
+            <c:forEach var="_header" items="${headers}" varStatus="headerStatus" begin="1">
+              <view:arrayCellText text="${workflowfn:formatFieldValue(items, _header, process.getField(headerStatus.index), userLanguage)}"/>
+            </c:forEach>
 
-		Field field = null;
-		for (int j=1; j<headers.length; j++) {
-			field = instance.getField(j);
-			String fieldString = field.getValue(language);
-			if ("null".equals(fieldString) || fieldString == null)
-				fieldString = "";
-			if (fieldString != null && fieldString.length() > 0 && field.getTypeName().equals(DateField.TYPE)) {
-				ArrayCellText arrayCellDate = arrayLine.addArrayCellText(fieldString);
-				arrayCellDate.setCompareOn(field.getValue());
-			} else {
-				String fieldName = headers[j].getFieldName();
-				Item item = getItem(items, fieldName);
-				if (item != null) {
-					Map<String, String> keyValuePairs = item.getKeyValuePairs();
-					if (keyValuePairs != null && keyValuePairs.size() > 0)
-					{
-						String newValue = "";
-						if (fieldString != null && fieldString.indexOf("##") != -1)
-						{
-							//Try to display a checkbox list
-							StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
-							String t = null;
-							while (tokenizer.hasMoreTokens())
-							{
-								t = tokenizer.nextToken();
-
-								t = keyValuePairs.get(t);
-								newValue += t;
-
-								if (tokenizer.hasMoreTokens())
-									newValue += ", ";
-							}
-						}
-						else if (fieldString != null && fieldString.length() > 0)
-						{
-							newValue = keyValuePairs.get(fieldString);
-						}
-						fieldString = newValue;
-					}
-				}
-				arrayLine.addArrayCellText(fieldString);
-			}
-		}
-
-		if ("supervisor".equalsIgnoreCase(currentRole)) {
-			arrayLine.addArrayCellLink("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.delete") + "\" src=\""  + resource.getIcon("processManager.small_remove") + "\"/>", "javascript:removeProcessInstance(" + processList[i].getId() + ")");
-		}
-	}
-	out.println(arrayPane.print());
-%>
-</view:frame>
-<%
-out.println(window.printAfter());
-%>
+            <%-- LAST COLUMN, if supervisor--%>
+            <c:if test="${isCurrentRoleSupervisor}">
+              <view:arrayCellText>
+                <a href="javascript:removeProcessInstance(${process.id})" title="${deleteLabel}">
+                  <img class="icon" src="${deleteIconUrl}" alt="${deleteLabel}" title="${deleteLabel}"/>
+                </a>
+              </view:arrayCellText>
+            </c:if>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.arrayPane.ajaxControls('#process-list', {
+            before : function(ajaxConfig) {
+              spProgressMessage.show();
+            }
+          });
+        });
+      </script>
+    </div>
+  </view:frame>
+</view:window>
 <div id="removeProcessInstanceConfirmation" style="display: none">
-  <%=resource.getString("processManager.confirmDelete")%>
+  ${confirmDeleteMessage}
 </div>
+<view:progressMessage/>
 </body>
 </html>
