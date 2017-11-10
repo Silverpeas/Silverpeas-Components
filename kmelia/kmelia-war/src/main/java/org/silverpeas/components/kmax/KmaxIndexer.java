@@ -26,37 +26,21 @@ package org.silverpeas.components.kmax;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Collection;
 
 @Singleton
 @Named("kmax" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class KmaxIndexer implements ComponentIndexation {
 
   @Inject
-  private AttachmentService attachmentService;
-  @Inject
-  private PublicationService publicationService;
-  @Inject
   private KmeliaService kmeliaService;
 
   @Override
   public void index(SilverpeasComponentInstance componentInst) throws Exception {
     kmeliaService.indexKmax(componentInst.getId());
-
-    Collection<PublicationDetail> publications =
-        publicationService.getAllPublications(new PublicationPK("useless", componentInst.getId()),
-            "pubId desc");
-    for (PublicationDetail aPublication : publications) {
-      attachmentService.indexAllDocuments(aPublication.getPK(), null, null);
-    }
   }
 }
