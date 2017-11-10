@@ -46,6 +46,13 @@
 
 .processManager-main #roles {
   margin-left: 1em;
+  margin-bottom: 1em;
+}
+
+.processManager-main .arrayPane .icon {
+  border: 0;
+  width: 15px;
+  height: 15px;
 }
 
 .noty_text a {

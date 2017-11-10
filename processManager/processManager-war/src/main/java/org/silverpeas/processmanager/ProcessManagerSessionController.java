@@ -78,9 +78,18 @@ import org.silverpeas.processmanager.record.QuestionTemplate;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
 
 /**
  * The ProcessManager Session controller
@@ -279,7 +288,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the current process instance list.
    */
-  public DataRecord[] getCurrentProcessList() throws ProcessManagerException {
+  public List<DataRecord> getCurrentProcessList() throws ProcessManagerException {
     if (currentProcessList == null) {
       return resetCurrentProcessList(false);
     } else {
@@ -291,7 +300,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Updates the current process instance list with current filter and returns this list. Doesn't
    * change the current process instance when an error occurs.
    */
-  public DataRecord[] resetCurrentProcessList(boolean doAPause) throws ProcessManagerException {
+  public List<DataRecord> resetCurrentProcessList(boolean doAPause) throws ProcessManagerException {
     // Wait to display processes list up-to-date
     if (doAPause) {
       doAPause();
@@ -299,7 +308,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
     try {
       String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
-      ProcessInstance[] processList = Workflow.getProcessInstanceManager()
+      List<ProcessInstance> processList = Workflow.getProcessInstanceManager()
           .getProcessInstances(peasId, currentUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     } catch (WorkflowException e) {
@@ -1831,7 +1840,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   private List<StringBuilder> exportAllFolderAsCSV() throws ProcessManagerException {
     try {
-      DataRecord[] processList = getCurrentProcessList();
+      List<DataRecord> processList = getCurrentProcessList();
       Item[] items = getFolderItems();
       RecordTemplate listHeaders = getProcessListHeaders();
       FieldTemplate[] headers = listHeaders.getFieldTemplates();
@@ -1856,7 +1865,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           addCSVValue(csvRow, headers[i].getLabel(getLanguage()));
         } else {
           col = csvCols.get(i);
-          item = (ItemImpl) getItem(items, col);
+          item = (ItemImpl) getItemByName(items, col);
           addCSVValue(csvRow, item.getLabel(getCurrentRole(), getLanguage()));
         }
       }
@@ -1905,7 +1914,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   private List<StringBuilder> exportDefinedItemsAsCSV() throws ProcessManagerException {
     try {
-      DataRecord[] processList = getCurrentProcessList();
+      List<DataRecord> processList = getCurrentProcessList();
       Item[] items = getFolderItems();
       RecordTemplate listHeaders = getProcessListHeaders();
       FieldTemplate[] headers = listHeaders.getFieldTemplates();
@@ -1934,7 +1943,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       addCSVValue(csvHeader, headers[0].getLabel(getLanguage()));
       for (String csvCol : csvCols) {
         col = csvCol;
-        item = (ItemImpl) getItem(items, col);
+        item = (ItemImpl) getItemByName(items, col);
         if (item != null) {
           addCSVValue(csvHeader, item.getLabel(getCurrentRole(), getLanguage()));
         } else {
@@ -2000,7 +2009,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       Field field = instance.getFullProcessInstance().getField(fieldName);
       fieldString = field.getValue(getLanguage());
       if (!StringUtil.isDefined(fieldString) || !field.getTypeName().equals(DateField.TYPE)) {
-        ItemImpl item = (ItemImpl) getItem(items, fieldName);
+        ItemImpl item = (ItemImpl) getItemByName(items, fieldName);
         if (item != null) {
           Map<String, String> keyValuePairs = item.getKeyValuePairs();
           if (keyValuePairs != null && keyValuePairs.size() > 0) {
@@ -2087,15 +2096,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       row.append(value.replaceAll("\"", "\"\""));
     }
     row.append("\"").append(",");
-  }
-
-  private Item getItem(Item[] items, String itemName) {
-    for (final Item item : items) {
-      if (itemName.equals(item.getName())) {
-        return item;
-      }
-    }
-    return null;
   }
 
   /**
@@ -2190,7 +2190,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * The session saves a current process instance list.
    */
-  private DataRecord[] currentProcessList = null;
+  private List<DataRecord> currentProcessList = null;
   /**
    * The user settings
    */

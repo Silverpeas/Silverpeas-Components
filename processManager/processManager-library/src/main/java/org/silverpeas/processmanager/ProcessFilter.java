@@ -24,10 +24,7 @@
 
 package org.silverpeas.processmanager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -35,20 +32,32 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.filter.FilterManager;
+import org.silverpeas.core.contribution.content.form.filter.RecordFilter;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.State;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * A ProcessFilter is used to select some process from all the process.
  */
 public class ProcessFilter {
+
+  private FilterManager filter = null;
+  private String collapse = "true";
+  private DataRecord criteria;
+
   /**
    * Builds a process filter which can be used to select process intance of a given process model.
    */
-  public ProcessFilter(ProcessModel model, String role, String lang)
+  ProcessFilter(ProcessModel model, String role, String lang)
       throws ProcessManagerException {
     RecordTemplate rowTemplate = model.getRowTemplate(role, lang);
     filter = new FilterManager(rowTemplate, lang);
@@ -85,7 +94,7 @@ public class ProcessFilter {
         Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null &&
             (parameters.containsKey("values") || parameters.containsKey("keys") ||
-                folderField.getTypeName().equals("jdbc"))) {
+                "jdbc".equals(folderField.getTypeName()))) {
           filter.addFieldParameter(field.getFieldName(), folderField);
         }
       }
@@ -133,16 +142,15 @@ public class ProcessFilter {
    * Copy the criteria filled in another context but shared by this filter. We ignore all the form
    * exception, since this copy is only done to simplify the user life.
    */
-  public void copySharedCriteria(ProcessFilter source) {
+  void copySharedCriteria(ProcessFilter source) {
     DataRecord copiedCriteria = null;
     String[] criteriaNames = null;
     try {
       copiedCriteria = source.getCriteriaRecord();
       criteriaNames = source.filter.getCriteriaTemplate().getFieldNames();
       this.getCriteriaRecord();
-    } catch (ProcessManagerException ignored) {
-      return;
-    } catch (FormException ignored) {
+    } catch (ProcessManagerException | FormException e) {
+      SilverLogger.getLogger(this).silent(e);
       return;
     }
 
@@ -153,8 +161,8 @@ public class ProcessFilter {
         if (criteriumField != null && copiedCriteria != null) {
           criteriumField.setValue(copiedCriteria.getField(criteriaNames[i]).getValue(""), "");
         }
-      } catch (FormException ignored) {
-        continue;
+      } catch (FormException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
     }
   }
@@ -180,29 +188,34 @@ public class ProcessFilter {
   /**
    * Returns only the process instance matching the filter.
    */
-  public DataRecord[] filter(ProcessInstance[] allInstances, String role, String lang)
+  List<DataRecord> filter(List<ProcessInstance> allInstances, String role, String lang)
       throws ProcessManagerException {
     try {
-      List<DataRecord> allRecords = new ArrayList<DataRecord>();
-      for (int i = 0; i < allInstances.length; i++) {
-        allRecords.add(allInstances[i].getRowDataRecord(role, lang));
-      }
-
+      Stream<DataRecord> stream = allInstances.stream().map(p -> getDataRecord(p, role, lang));
       if (getCriteriaRecord() != null) {
-        allRecords = filter.filter(criteria, allRecords);
+        final RecordFilter recordFilter = filter.getRecordFilter(getCriteriaRecord());
+        stream = stream.filter(d -> matchCriteria(recordFilter, d));
       }
-
-      return allRecords.toArray(new DataRecord[0]);
-    } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessFilter",
-          "processFilter.FAIL_TO_USE_CRITERIA_RECORD", e);
-    } catch (FormException e) {
+      return stream.collect(Collectors.toList());
+    } catch (SilverpeasRuntimeException | FormException e) {
       throw new ProcessManagerException("ProcessFilter",
           "processFilter.FAIL_TO_USE_CRITERIA_RECORD", e);
     }
   }
 
-  private FilterManager filter = null;
-  private String collapse = "true";
-  private DataRecord criteria;
+  private boolean matchCriteria(final RecordFilter recordFilter, final DataRecord dataRecord) {
+    try {
+      return recordFilter.match(dataRecord);
+    } catch (FormException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  private DataRecord getDataRecord(final ProcessInstance p, final String role, final String lang) {
+    try {
+      return p.getRowDataRecord(role, lang);
+    } catch (WorkflowException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
 }
