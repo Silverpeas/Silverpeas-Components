@@ -31,7 +31,7 @@ import java.sql.SQLException
 
 final def replaceValue = '''
   UPDATE st_instance_data SET value = REPLACE(value, 'AGREGATED', 'AGGREGATED') 
-  WHERE componentid in (SELECT id FROM st_componentinstance WHERE componentname = 'rssAgregator');
+  WHERE componentid in (SELECT id FROM st_componentinstance WHERE componentname = 'rssAgregator')
 '''
 
 log.info 'Replace all the misspelling \'AGREGATED\' value to \'AGGREGATED\' for the \'defaultView\' parameter'
