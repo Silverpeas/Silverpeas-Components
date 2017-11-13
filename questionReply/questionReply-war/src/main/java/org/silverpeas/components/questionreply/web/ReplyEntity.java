@@ -181,10 +181,7 @@ public class ReplyEntity implements WebEntity {
     if (this.publicReply != other.publicReply) {
       return false;
     }
-    if (this.privateReply != other.privateReply) {
-      return false;
-    }
-    return true;
+    return this.privateReply == other.privateReply;
   }
 
   @Override

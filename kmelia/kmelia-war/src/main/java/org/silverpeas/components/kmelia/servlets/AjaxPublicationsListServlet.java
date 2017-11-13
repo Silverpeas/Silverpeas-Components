@@ -416,7 +416,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         String cssClasses = "important" + pub.getImportance();
         if (toSearch) {
-          if (aPub.read) {
+          if (aPub.isRead()) {
             cssClasses += " read";
           } else {
             cssClasses += " unread";

@@ -181,12 +181,7 @@ public class ForumDetail extends AbstractBean
     if (pk != null ? !pk.equals(that.pk) : that.pk != null) {
       return false;
     }
-    if (silverObjectId != null ? !silverObjectId.equals(
-        that.silverObjectId) : that.silverObjectId != null) {
-      return false;
-    }
-
-    return true;
+    return silverObjectId != null ? silverObjectId.equals(that.silverObjectId) : that.silverObjectId == null;
   }
 
   @Override

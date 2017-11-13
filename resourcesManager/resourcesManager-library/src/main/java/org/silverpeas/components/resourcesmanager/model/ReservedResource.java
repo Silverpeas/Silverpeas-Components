@@ -90,9 +90,6 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
       = "id")
   private Reservation reservation;
 
-  public ReservedResource() {
-  }
-
   public void setReservedResourceId(String resourceId, String reservationId) {
     setId(resourceId + ReservedResourcePk.COMPOSITE_SEPARATOR + reservationId);
   }
@@ -103,9 +100,6 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
 
   public void setReservation(Reservation reservation) {
     this.reservation = reservation;
-//    if (reservation != null && reservation.getId() != null) {
-//      this.reservedResourcePk.setReservationId(reservation.getIdAsLong());
-//    }
   }
 
   private String[] getStringIds() {
@@ -122,9 +116,6 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
 
   public void setResource(Resource resource) {
     this.resource = resource;
-//    if (resource != null && resource.getIdAsLong() != null) {
-//      this.reservedResourcePk.setResourceId(resource.getIdAsLong());
-//    }
   }
 
   public long getResourceId() {
@@ -164,10 +155,7 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
         equals(other.getId()))) {
       return false;
     }
-    if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
-      return false;
-    }
-    return true;
+    return this.status == null ? other.status == null : this.status.equals(other.status);
   }
 
   @Override

@@ -26,13 +26,12 @@ package org.silverpeas.components.questionreply.control;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.File;
 import java.text.ParseException;
@@ -46,12 +45,10 @@ public class QuestionReplyExport {
 
   private File file;
   private MultiSilverpeasBundle resource;
-  private UserDetail currentUser;
 
-  public QuestionReplyExport(UserDetail currentUser, MultiSilverpeasBundle resource, File file) {
+  public QuestionReplyExport(MultiSilverpeasBundle resource, File file) {
     this.file = file;
     this.resource = resource;
-    this.currentUser = currentUser;
   }
 
   public void exportQuestion(Question question, StringBuilder sb,
@@ -231,9 +228,6 @@ public class QuestionReplyExport {
     if (SilverpeasRole.publisher == role && isPrivate) {
       isPublisherQuestion = question.getCreatorId().equals(userId);
     }
-    if (isPrivate && SilverpeasRole.user == role || !isPublisherQuestion) {
-      return false;
-    }
-    return true;
+    return !(isPrivate && SilverpeasRole.user == role || !isPublisherQuestion);
   }
 }

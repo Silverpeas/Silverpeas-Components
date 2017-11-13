@@ -267,11 +267,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
     if (text != null ? !text.equals(message.text) : message.text != null) {
       return false;
     }
-    if (title != null ? !title.equals(message.title) : message.title != null) {
-      return false;
-    }
-
-    return true;
+    return title != null ? title.equals(message.title) : message.title == null;
   }
 
   @Override

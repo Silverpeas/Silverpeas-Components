@@ -51,7 +51,6 @@ import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -157,8 +156,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
-import static org.silverpeas.core.cache.service.VolatileIdentifierProvider
-    .newVolatileIntegerIdentifierOn;
+import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -1167,7 +1165,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (getSessionPublicationsList() != null) {
         rang = getSessionPublicationsList().indexOf(pub);
         if (rang != -1 && getSearchContext() != null) {
-          getSessionPublicationsList().get(rang).read = true;
+          getSessionPublicationsList().get(rang).setAsRead();
         }
       }
     }

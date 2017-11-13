@@ -83,11 +83,7 @@ public class SocialInformationGallery extends AbstractSocialInformation {
     } else if (!type.toString().equals(other.type.toString())) {
       return false;
     }
-    if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
-      return false;
-    }
-
-    return true;
+    return this.url == null ? other.url == null : this.url.equals(other.url);
   }
 
   @Override

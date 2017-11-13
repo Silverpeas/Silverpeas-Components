@@ -243,10 +243,7 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
     if ((this.endDate == null) ? (other.endDate != null) : !this.endDate.equals(other.endDate)) {
       return false;
     }
-    if ((this.newsOrder == -1) ? (other.newsOrder != -1) : this.newsOrder != other.newsOrder) {
-      return false;
-    }
-    return true;
+    return this.newsOrder == -1 ? other.newsOrder == -1 : this.newsOrder == other.newsOrder;
   }
 
 

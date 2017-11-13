@@ -78,10 +78,7 @@ public class ReservedResourcePk implements CompositeEntityIdentifier {
     if (this.resourceId != other.resourceId) {
       return false;
     }
-    if (this.reservationId != other.reservationId) {
-      return false;
-    }
-    return true;
+    return this.reservationId == other.reservationId;
   }
 
 

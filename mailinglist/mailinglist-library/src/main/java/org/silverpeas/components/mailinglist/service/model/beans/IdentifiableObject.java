@@ -87,9 +87,6 @@ public abstract class IdentifiableObject implements Serializable {
     } else if (!id.equals(other.id)) {
       return false;
     }
-    if (version != other.version) {
-      return false;
-    }
-    return true;
+    return version == other.version;
   }
 }

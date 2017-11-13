@@ -86,6 +86,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -106,6 +107,8 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionC
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 
+  private static final String ERROR_MSG = "root.EX_CANT_GET_REMOTE_OBJECT";
+  private static final String SUBJECT_NOTIF = "gallery.orderNotifAskSubject";
   private String currentAlbumId = "0";
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
   private int rang = 0;
@@ -140,17 +143,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private SettingBundle settings = DEFAULT_SETTINGS;
 
   /**
-   * Gets the business service of operations on comments
-   * @return a DefaultCommentService instance.
-   */
-  private CommentService getCommentService() {
-    if (commentService == null) {
-      commentService = CommentServiceProvider.getCommentService();
-    }
-    return commentService;
-  }
-
-  /**
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
@@ -163,12 +155,23 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         "org.silverpeas.gallery.settings.gallerySettings");
   }
 
+  /**
+   * Gets the business service of operations on comments
+   * @return a DefaultCommentService instance.
+   */
+  private CommentService getCommentService() {
+    if (commentService == null) {
+      commentService = CommentServiceProvider.getCommentService();
+    }
+    return commentService;
+  }
+
   public List<Media> getLastRegisteredMedia() {
     try {
       return getMediaService().getLastRegisteredMedia(getComponentId());
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getLastRegistredMedia()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
   }
 
@@ -210,7 +213,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       sort(album.getMedia());
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
     return album;
   }
@@ -222,7 +225,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       album = getMediaService().getAlbum(nodePK);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbumLight()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
     return album;
   }
@@ -235,7 +238,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       return media;
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getNotVisible()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
   }
 
@@ -244,7 +247,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       return getMediaService().getAllAlbums(getComponentId());
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
   }
 
@@ -293,7 +296,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       goToAlbum(parentId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GGallerySessionController.deleteAlbum()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
   }
 
@@ -353,7 +356,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.get" + type + "()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasException.ERROR, ERROR_MSG, e);
     }
     return media;
   }
@@ -377,7 +380,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       return createdMedia.getId();
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.createMedia()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
   }
 
@@ -387,8 +390,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    * @param delegate
    * @throws Exception
    */
-  public void updateMediaByUser(final String mediaId, final MediaDataUpdateDelegate delegate)
-      throws Exception {
+  public void updateMediaByUser(final String mediaId, final MediaDataUpdateDelegate delegate) {
     // Persisting data
     getMediaService()
         .updateMedia(getUserDetail(), getComponentId(), getMedia(mediaId), isMakeWatermark(),
@@ -402,7 +404,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    * @throws Exception
    */
   public void updateMediaByUser(final Collection<String> mediaIds,
-      final MediaDataUpdateDelegate delegate) throws Exception {
+      final MediaDataUpdateDelegate delegate) {
     if (mediaIds != null) {
       // Persisting data
       getMediaService()
@@ -435,7 +437,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.deleteMedia()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
 
     // Reloading the album to take into account the deletion.
@@ -560,12 +562,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public Integer getSlideshowWait() {
     String wait = getComponentParameterValue("slideshow");
+    final int defaultWait = 5;
     if (wait == null || "null".equalsIgnoreCase(wait) || wait.length() == 0) {
       wait = "5";
     }
     Integer iWait = Integer.parseInt(wait);
     if (iWait <= 0) {
-      iWait = 5;
+      iWait = defaultWait;
     }
     return iWait;
   }
@@ -580,6 +583,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         getPublicationTemplateManager()
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName, formName);
       } catch (PublicationTemplateException e) {
+        SilverLogger.getLogger(this).silent(e);
         formName = null;
       }
     }
@@ -877,6 +881,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     try {
       return getMediaService().countAllMedia(album.getNodePK());
     } catch (Exception e) {
+      SilverLogger.getLogger(this).silent(e);
       return 0;
     }
   }
@@ -895,7 +900,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
-    String subject = message.getString("gallery.orderNotifAskSubject");
+    String subject = message.getString(SUBJECT_NOTIF);
     StringBuilder messageBody = new StringBuilder();
     messageBody =
         messageBody.append(user).append(" ").append(message.getString("gallery.orderNotifBodyAsk"))
@@ -906,7 +911,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
-      subject = message.getString("gallery.orderNotifAskSubject");
+      subject = message.getString(SUBJECT_NOTIF);
       messageBody = new StringBuilder();
       messageBody = messageBody.append(user).append(" ").append(
           message.getString("gallery.orderNotifBodyAsk")).append("\n");
@@ -938,7 +943,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
-    String subject = message.getString("gallery.orderNotifAskSubject");
+    String subject = message.getString(SUBJECT_NOTIF);
     StringBuilder messageBody = new StringBuilder();
     messageBody = messageBody.append(user).append(" ")
         .append(message.getString("gallery.orderNotifBodyAskOk")).append("\n");
@@ -948,7 +953,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
-      subject = message.getString("gallery.orderNotifAskSubject");
+      subject = message.getString(SUBJECT_NOTIF);
       messageBody = new StringBuilder();
       messageBody = messageBody.append(user).append(" ").append(
           message.getString("gallery.orderNotifBodyAskOk")).append("\n");
@@ -1187,12 +1192,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public boolean isExportEnable() {
     String exportParam = getComponentParameterValue("exportImages");
-    if (ExportOptionValue.YES_ALL.name().equalsIgnoreCase(exportParam) ||
+    return ExportOptionValue.YES_ALL.name().equalsIgnoreCase(exportParam) ||
         (ExportOptionValue.YES_PUBLISHER.name().equalsIgnoreCase(exportParam) &&
-            getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher))) {
-      return true;
-    }
-    return false;
+            getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher));
   }
 
   public void setViewNotVisible(boolean isViewNotVisible) {
@@ -1254,7 +1256,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       getMediaService().sortAlbums(albumPKs);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.sortAlbums()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
     }
   }
 
