@@ -84,12 +84,8 @@ public class ResourceValidator
       return false;
     }
     final ResourceValidator other = (ResourceValidator) obj;
-    if (this.getId() != other.getId() &&
-        (this.getId() == null || !this.getId().
-            equals(other.getId()))) {
-      return false;
-    }
-    return true;
+    return this.getId() == other.getId() ||
+        (this.getId() != null && this.getId().equals(other.getId()));
   }
 
   @Override

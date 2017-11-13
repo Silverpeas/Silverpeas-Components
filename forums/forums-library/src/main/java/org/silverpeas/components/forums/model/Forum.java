@@ -183,11 +183,7 @@ public class Forum implements Rateable, Serializable {
     if (name != null ? !name.equals(forum.name) : forum.name != null) {
       return false;
     }
-    if (pk != null ? !pk.equals(forum.pk) : forum.pk != null) {
-      return false;
-    }
-
-    return true;
+    return pk != null ? pk.equals(forum.pk) : forum.pk == null;
   }
 
   @Override

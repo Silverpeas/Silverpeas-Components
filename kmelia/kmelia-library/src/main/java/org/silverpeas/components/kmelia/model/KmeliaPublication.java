@@ -68,7 +68,16 @@ public class KmeliaPublication implements SilverpeasContent {
   private boolean alias = false;
   private final PublicationPK pk;
   private int rank;
-  public boolean read = false;
+  private boolean read = false;
+
+  private KmeliaPublication(PublicationPK id) {
+    this.pk = id;
+  }
+
+  private KmeliaPublication(PublicationPK id, int rank) {
+    this.pk = id;
+    this.rank = rank;
+  }
 
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely. If no such
@@ -122,6 +131,14 @@ public class KmeliaPublication implements SilverpeasContent {
   public KmeliaPublication asAlias() {
     this.alias = true;
     return this;
+  }
+
+  public boolean isRead() {
+    return this.read;
+  }
+
+  public void setAsRead() {
+    this.read = true;
   }
 
   /**
@@ -264,10 +281,7 @@ public class KmeliaPublication implements SilverpeasContent {
       return false;
     }
     final KmeliaPublication other = (KmeliaPublication) obj;
-    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
-      return false;
-    }
-    return true;
+    return this.pk == other.pk || (this.pk != null && this.pk.equals(other.pk));
   }
 
   @Override
@@ -275,15 +289,6 @@ public class KmeliaPublication implements SilverpeasContent {
     int hash = 7;
     hash = 67 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     return hash;
-  }
-
-  private KmeliaPublication(PublicationPK id) {
-    this.pk = id;
-  }
-
-  private KmeliaPublication(PublicationPK id, int rank) {
-    this.pk = id;
-    this.rank = rank;
   }
 
   private void setPublicationDetail(final PublicationDetail detail) {

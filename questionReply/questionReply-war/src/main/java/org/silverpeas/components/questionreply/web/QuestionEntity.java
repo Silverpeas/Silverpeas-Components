@@ -230,11 +230,8 @@ public class QuestionEntity implements WebEntity {
         !this.instanceId.equals(other.instanceId)) {
       return false;
     }
-    if ((this.categoryId == null) ? (other.categoryId != null) :
-        !this.categoryId.equals(other.categoryId)) {
-      return false;
-    }
-    return true;
+    return this.categoryId == null ? other.categoryId == null :
+        this.categoryId.equals(other.categoryId);
   }
 
   @Override
@@ -316,10 +313,8 @@ public class QuestionEntity implements WebEntity {
     boolean questionUpdatable = true;
     if (profile == publisher && !this.getCreatorId().equals(user.getId())) {
       questionUpdatable = false;
-    } else if (profile == publisher) {
-      if (this.getStatus() != Question.NEW) {
-        questionUpdatable = false;
-      }
+    } else if (profile == publisher && this.getStatus() != Question.NEW) {
+      questionUpdatable = false;
     }
     if (profile == SilverpeasRole.user) {
       questionUpdatable = false;

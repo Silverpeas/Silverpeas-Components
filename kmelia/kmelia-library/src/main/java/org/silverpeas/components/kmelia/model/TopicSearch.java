@@ -176,11 +176,8 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
       return false;
     }
     TopicSearch other = (TopicSearch) obj;
-    if ((this.getId() == null && other.getId() != null) ||
-        (this.getId() != null && !this.getId().equals(other.getId()))) {
-      return false;
-    }
-    return true;
+    return this.getId() == other.getId() ||
+        (this.getId() != null && this.getId().equals(other.getId()));
   }
 
   @Override

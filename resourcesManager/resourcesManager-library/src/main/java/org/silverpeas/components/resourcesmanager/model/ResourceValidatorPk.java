@@ -76,10 +76,7 @@ public class ResourceValidatorPk implements CompositeEntityIdentifier {
     if (this.resourceId != other.resourceId) {
       return false;
     }
-    if (this.managerId != other.managerId) {
-      return false;
-    }
-    return true;
+    return this.managerId == other.managerId;
   }
 
 
