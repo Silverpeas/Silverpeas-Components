@@ -29,7 +29,10 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.text.ParseException;
 import java.util.Collection;
 
 /**
@@ -42,7 +45,11 @@ public class QuestionIndexer {
         new FullIndexEntry(question.getInstanceId(), "Question", question.getPK().getId());
     indexEntry.setTitle(question.getTitle());
     indexEntry.setPreView(question.getContent());
-    indexEntry.setCreationDate(question.getCreationDate());
+    try {
+      indexEntry.setCreationDate(DateUtil.parse(question.getCreationDate()));
+    } catch (ParseException e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
     indexEntry.setCreationUser(question.getCreatorId());
     indexEntry.addTextContent(question.getContent());
     indexEntry.addTextContent(question.getTitle());

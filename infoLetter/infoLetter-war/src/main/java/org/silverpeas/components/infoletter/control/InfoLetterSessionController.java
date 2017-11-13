@@ -59,6 +59,7 @@ import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscrib
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
@@ -69,6 +70,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -79,6 +81,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -492,7 +495,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           new FullIndexEntry(getComponentId(), "Publication", ilp.getPK().getId());
       indexEntry.setTitle(ilp.getTitle());
       indexEntry.setPreView(ilp.getDescription());
-      indexEntry.setCreationDate(ilp.getParutionDate());
+      try {
+        indexEntry.setCreationDate(DateUtil.parse(ilp.getParutionDate()));
+      } catch (ParseException e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
       indexEntry.setCreationUser(getUserId());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }

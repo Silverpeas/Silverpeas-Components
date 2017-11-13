@@ -119,10 +119,8 @@ public class WhitePagesIndexer implements ComponentIndexation {
         admin.getComponentParameterValue(componentId, "cardTemplate").replace('\\', '/');
     SettingBundle templateSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.template");
-    UserDetail currentUser = UserDetail.getCurrentRequester();
-    String language = currentUser.getUserPreferences().getLanguage();
     String templateDir = templateSettings.getString("templateDir").replace('\\', '/');
-    return new UserTemplate(templateDir + "/" + userTemplateFileName, language);
+    return new UserTemplate(templateDir + "/" + userTemplateFileName, null);
   }
 
   private void deleteCard(PublicationTemplate cardTemplate, String cardId)

@@ -59,6 +59,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -402,7 +403,11 @@ public class CardManager {
     indexEntry.setTitle(userName);
     indexEntry.setKeyWords(userName);
     indexEntry.setPreView(userMail);
-    indexEntry.setCreationDate(card.getCreationDate());
+    try {
+      indexEntry.setCreationDate(DateUtil.parse(card.getCreationDate()));
+    } catch (ParseException e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
     indexEntry.setCreationUser(Integer.toString(card.getCreatorId()));
 
     try {
