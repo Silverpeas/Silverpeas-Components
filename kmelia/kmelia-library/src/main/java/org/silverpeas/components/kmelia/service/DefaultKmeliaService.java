@@ -3010,8 +3010,14 @@ public class DefaultKmeliaService implements KmeliaService {
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
     if (KmeliaHelper.isIndexable(pubDetail)) {
       try {
-        AttachmentServiceProvider.getAttachmentService()
-            .indexAllDocuments(pubDetail.getPK(), pubDetail.getBeginDate(), pubDetail.getEndDate());
+        // index all files except Wysiwyg which are already indexed as publication content
+        List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
+            listAllDocumentsByForeignKey(pubDetail.getPK(), null);
+        for (SimpleDocument doc : documents) {
+          if (doc.getDocumentType() != DocumentType.wysiwyg) {
+            AttachmentServiceProvider.getAttachmentService().createIndex(doc, pubDetail.getBeginDate(), pubDetail.getEndDate());
+          }
+        }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Indexing versioning documents failed for publication {0}",
             new String[] {pubDetail.getPK().getId()}, e);

@@ -88,12 +88,10 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
       indexEntry.setCreationUser(getMedia().getCreatorId());
       indexEntry.setKeyWords(getMedia().getKeyWord());
       if (getMedia().getVisibilityPeriod().getBeginDatable().isDefined()) {
-        indexEntry.setStartDate(
-            DateUtil.date2SQLDate(getMedia().getVisibilityPeriod().getBeginDatable()));
+        indexEntry.setStartDate(getMedia().getVisibilityPeriod().getBeginDatable());
       }
       if (getMedia().getVisibilityPeriod().getEndDatable().isDefined()) {
-        indexEntry
-            .setEndDate(DateUtil.date2SQLDate(getMedia().getVisibilityPeriod().getEndDatable()));
+        indexEntry.setEndDate(getMedia().getVisibilityPeriod().getEndDatable());
       }
 
       if (getMedia() instanceof InternalMedia) {

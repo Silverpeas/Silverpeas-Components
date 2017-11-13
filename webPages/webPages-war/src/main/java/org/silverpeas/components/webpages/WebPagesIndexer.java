@@ -22,34 +22,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 19 avr. 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.silverpeas.components.webpages;
 
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Date;
 
 /**
  * @author sdevolder
@@ -64,46 +56,47 @@ public class WebPagesIndexer implements ComponentIndexation {
   private Administration admin;
   @Inject
   private PublicationTemplateManager templateManager;
-  @Inject
-  private AttachmentService attachmentService;
 
   @Override
   public void index(SilverpeasComponentInstance componentInst) throws Exception {
+    FullIndexEntry indexEntry = getFullIndexEntry((ComponentInstLight) componentInst);
     if (isXMLTemplateUsed(componentInst.getId())) {
-      indexForm(componentInst);
+      indexForm(componentInst.getId(), indexEntry);
     } else {
       ForeignPK foreignPK = new ForeignPK(componentInst.getId(), componentInst.getId());
-      attachmentService.indexAllDocuments(foreignPK, null, null);
+      WysiwygController.addToIndex(indexEntry, foreignPK, null);
     }
+    IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
-  private void indexForm(SilverpeasComponentInstance componentInst) throws WebPagesException {
+  private void indexForm(String componentId, FullIndexEntry indexEntry) throws WebPagesException {
     RecordSet recordSet;
     try {
       PublicationTemplate pub = templateManager.getPublicationTemplate(
-          componentInst.getId() + ":" + getShortNameOfXMLTemplateUsedFor(componentInst.getId()));
+          componentId + ":" + getShortNameOfXMLTemplateUsedFor(componentId));
       recordSet = pub.getRecordSet();
+      recordSet.indexRecord("0", getShortNameOfXMLTemplateUsedFor(componentId), indexEntry);
     } catch (Exception e) {
-      throw new WebPagesException("WebPagesIndexer.indexForm()", SilverpeasException.ERROR,
-          "webPages.EX_CANT_GET_FORM", e);
+      SilverLogger.getLogger(this).error(e);
     }
-    // index data
-    try {
-      FullIndexEntry indexEntry =
-          new FullIndexEntry(componentInst.getId(), "Component", componentInst.getId());
-      indexEntry.setCreationDate(new Date());
-      indexEntry.setCreationUser(UserDetail.getCurrentRequester().getId());
-      indexEntry.setTitle(componentInst.getLabel());
-      indexEntry.setPreView(componentInst.getDescription());
+  }
 
-      recordSet
-          .indexRecord("0", getShortNameOfXMLTemplateUsedFor(componentInst.getId()), indexEntry);
-
-      IndexEngineProxy.addIndexEntry(indexEntry);
-    } catch (FormException e) {
-      throw new WebPagesException("WebPagesIndexer.indexForm()", SilverpeasException.ERROR,
-          "webPages.EX_CANT_INDEX_DATA", e);
+  private FullIndexEntry getFullIndexEntry(ComponentInstLight component) {
+    FullIndexEntry indexEntry =
+        new FullIndexEntry(component.getId(), "Component", component.getId());
+    indexEntry.setCreationDate(component.getCreateDate());
+    int createdBy = component.getCreatedBy();
+    if (createdBy != -1) {
+      indexEntry.setCreationUser(String.valueOf(createdBy));
     }
+    indexEntry.setLastModificationDate(component.getUpdateDate());
+    int updatedBy = component.getUpdatedBy();
+    if (updatedBy != -1) {
+      indexEntry.setLastModificationUser(String.valueOf(createdBy));
+    }
+    indexEntry.setTitle(component.getLabel());
+    indexEntry.setPreView(component.getDescription());
+    return indexEntry;
   }
 
   private String getXMLTemplateUsedFor(String componentId) {

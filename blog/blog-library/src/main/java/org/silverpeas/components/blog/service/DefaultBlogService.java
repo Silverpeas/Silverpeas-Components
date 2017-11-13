@@ -222,16 +222,10 @@ public class DefaultBlogService implements BlogService {
       // Update event date
       PostDAO.updateDateEvent(con, pubPk.getId(), post.getDateEvent());
 
-      // Save wysiwyg content
-      if (pub.isValid()) {
-        WysiwygController
-            .updateFileAndAttachment(post.getContent(), pub.getInstanceId(), pubPk.getId(),
-                pub.getUpdaterId(), pub.getLanguage());
-      } else if (pub.isDraft()) {//DRAFT mode -> do not index
-        WysiwygController
-            .updateFileAndAttachment(post.getContent(), pub.getInstanceId(), pubPk.getId(),
-                pub.getUpdaterId(), pub.getLanguage(), false);
-      }
+      // Save wysiwyg content and do not index it (cause it is already indexed as publication content)
+      WysiwygController
+          .updateFileAndAttachment(post.getContent(), pub.getInstanceId(), pubPk.getId(),
+              pub.getUpdaterId(), pub.getLanguage(), false);
 
       // Send notification if subscription
       if (pub.isValid()) {
@@ -451,10 +445,8 @@ public class DefaultBlogService implements BlogService {
       Collection<String> allEvents = PostDAO.getAllEvents(con, instanceId);
       for (final String pubId : allEvents) {
         for (MatchingIndexEntry matchIndex : result) {
-          String objectType = matchIndex.getObjectType();
           String objectId = matchIndex.getObjectId();
-          if ("Publication".equals(objectType) || objectType.startsWith("Attachment") &&
-              (pubId.equals(objectId) && !postIds.contains(objectId))) {
+          if (pubId.equals(objectId) && !postIds.contains(objectId)) {
             PostDetail post = getContentById(objectId);
             postIds.add(objectId);
             posts.add(post);
@@ -682,11 +674,6 @@ public class DefaultBlogService implements BlogService {
     getPublicationService().setDetail(pub);
 
     if (pub.getStatus().equals(PublicationDetail.VALID)) {
-
-      // index wysiwyg content
-      WysiwygController.updateFileAndAttachment(
-          WysiwygController.load(pub.getInstanceId(), pub.getPK().getId(), pub.getLanguage()),
-          pub.getInstanceId(), pub.getPK().getId(), pub.getUpdaterId(), pub.getLanguage());
 
       // update visibility attribute on PDC
       updateSilverContentVisibility(pub);

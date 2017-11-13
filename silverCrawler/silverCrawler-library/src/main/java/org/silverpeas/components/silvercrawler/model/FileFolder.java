@@ -26,6 +26,7 @@ package org.silverpeas.components.silvercrawler.model;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
@@ -35,6 +36,7 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -107,9 +109,9 @@ public class FileFolder implements java.io.Serializable {
         if (isAdmin) {
           // ouverture de l'index
           Directory indexPath =
-              FSDirectory.open(new File(IndexFileManager.getAbsoluteIndexPath(componentId)));
-          if (IndexReader.indexExists(indexPath)) {
-            reader = IndexReader.open(indexPath);
+              FSDirectory.open(Paths.get(IndexFileManager.getAbsoluteIndexPath(componentId)));
+          if (DirectoryReader.indexExists(indexPath)) {
+            reader = DirectoryReader.open(indexPath);
           }
         }
         if (children != null && children.length > 0) {
