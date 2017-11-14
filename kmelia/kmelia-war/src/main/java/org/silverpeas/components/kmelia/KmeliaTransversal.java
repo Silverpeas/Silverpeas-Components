@@ -75,7 +75,13 @@ public class KmeliaTransversal implements PublicationHelper {
 
   @Override
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis) {
+    return getPublications(spaceId, new ArrayList<>(), nbPublis);
+  }
+
+  @Override
+  public List<PublicationDetail> getPublications(String spaceId, List<String> excluded, int nbPublis) {
     List<String> componentIds = getAvailableComponents(spaceId);
+    componentIds.removeAll(excluded);
     List<PublicationPK> publicationPKs = null;
     try {
       publicationPKs = (List<PublicationPK>) getPublicationService().getPublicationPKsByStatus(
