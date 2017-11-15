@@ -55,7 +55,7 @@ public class MailingListWarBuilder extends BasicWarBuilder{
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
     warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
-    warBuilder.addPackages(true, "com.silverpeas.mailinglist");
+    warBuilder.addPackages(true, "org.silverpeas.components.mailinglist");
     return warBuilder;
   }
 

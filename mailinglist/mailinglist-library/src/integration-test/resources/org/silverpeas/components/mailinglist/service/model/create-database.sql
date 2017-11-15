@@ -442,21 +442,6 @@ INSERT INTO ST_AccessLevel (id, name) VALUES ('R', 'Removed');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('K', 'KMManager');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('D', 'DomainManager');
 
-INSERT INTO ST_User (id, specificId, domainId, lastName, login, accessLevel, state, stateSaveDate)
-VALUES (0, '0', 0, 'Administrateur', '${ADMINLOGIN}', 'A', 'VALID', CURRENT_TIMESTAMP);
-
-INSERT INTO DomainSP_User (id, lastName, login, password)
-VALUES (0, 'Administrateur', '${ADMINLOGIN}', '${ADMINPASSWD}');
-
-INSERT INTO ST_Domain (id, name, description, propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL)
-VALUES (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '-', '0', '');
-
-INSERT INTO ST_Domain (id, name, description, propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL)
-VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
-        'com.stratelia.silverpeas.domains.domainSP',
-        'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP', '0',
-        '${URLSERVER}');
-
 CREATE TABLE ST_NotifChannel (
   id               INT          NOT NULL,
   name             VARCHAR(20)  NOT NULL,
