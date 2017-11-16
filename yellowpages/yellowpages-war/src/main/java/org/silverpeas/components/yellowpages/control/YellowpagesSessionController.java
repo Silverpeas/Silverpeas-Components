@@ -71,6 +71,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -92,7 +93,9 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings.areUserExtraDataRequired;
+import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings
+    .areUserExtraDataRequired;
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
@@ -218,6 +221,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   public YellowPagesGroupDetail getGroup(String groupId) {
     Group group = getOrganisationController().getGroup(groupId);
+    if (group == null) {
+      SilverLogger.getLogger(this).warn(failureOnGetting("group", groupId));
+      return null;
+    }
+
     YellowPagesGroupDetail groupDetail = new YellowPagesGroupDetail(group);
 
     // add sub groups
@@ -595,6 +603,10 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<ContactFatherDetail> getAllUsersOfGroup(String groupId) {
     List<ContactFatherDetail> users = new ArrayList<>();
     YellowPagesGroupDetail groupDetail = getGroup(groupId);
+    if (groupDetail == null) {
+      return users;
+    }
+
     UserDetail[] userDetails = getOrganisationController().getFiltredDirectUsers(groupId, "");
 
     for (UserDetail userDetail : userDetails) {
