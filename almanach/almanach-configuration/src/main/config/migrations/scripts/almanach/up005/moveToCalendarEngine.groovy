@@ -25,6 +25,7 @@
 import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -39,8 +40,10 @@ import java.time.format.DateTimeFormatter
  * throws a SQL exception.
  */
 
-/* The format of the datetime read from an existing almanach event */
+/* The format of the local datetime read from an existing almanach event */
 final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern('yyyy/MM/dd HH:mm')
+/* The format of the local date read from an existing almanach event */
+final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern('yyyy/MM/dd')
 
 /* The default timezone to use with all the Almanachs' calendars */
 Properties almanachSettings = new Properties()
@@ -136,9 +139,15 @@ final def insertEvent = '''
 
 // converts a local date and time into an OffsetDateTime value expressed in UTC.
 def toUTCDateTime = { final String date, final String time ->
-  return LocalDateTime.parse(date + ' ' + time, DATETIME_FORMAT)
-      .atZone(ZoneId.of(timeZone))
-      .toOffsetDateTime().withOffsetSameInstant(ZoneOffset.UTC)
+  if (time) {
+    return LocalDateTime.parse(date + ' ' + time, DATETIME_FORMAT)
+        .atZone(ZoneId.of(timeZone))
+        .toOffsetDateTime().withOffsetSameInstant(ZoneOffset.UTC)
+  } else {
+    return LocalDate.parse(date, DATE_FORMAT)
+        .atStartOfDay()
+        .atOffset(ZoneOffset.UTC)
+  }
 }
 
 // converts the specified datetime expressed in UTC into a SQL timestamp value without time zone set
@@ -155,7 +164,7 @@ def toTimestamp = { final OffsetDateTime dateTime ->
 
 // first we load all the existing almanachs in order to create their respective main calendar in
 // the Silverpeas Calendar Engine
-log.info 'Importation of the existing Almanach applications\' calendar into the Silverpeas Calendar Engine...'
+log.info 'Importation of the existing Almanach application\'s calendar into the Silverpeas Calendar Engine...'
 
 long migratedAlmanachCount = 0
 List existingAlmanachs = []
@@ -236,10 +245,10 @@ events.each { event ->
   try {
     /* compute the start and end date time of the event to import in the expected format and by
        taking into account the implicit rules of Almanach in event dates */
-    OffsetDateTime startDate =
-        toUTCDateTime(event.eventStartDay, (event.eventStartHour ? event.eventStartHour : '00:00'))
+    boolean inDays = !(event.eventStartHour && event.eventEndHour)
+    OffsetDateTime startDate = toUTCDateTime(event.eventStartDay,
+        (inDays ? '' : (event.eventStartHour ? event.eventStartHour : '00 00')))
     OffsetDateTime endDate
-    boolean inDays = false
     if (!event.eventEndDay || event.eventStartDay == event.eventEndDay) {
       if (event.eventEndHour && event.eventEndHour != event.eventStartHour) {
         endDate = toUTCDateTime(event.eventStartDay, event.eventEndHour)
@@ -247,7 +256,6 @@ events.each { event ->
         endDate = startDate.plusHours(1)
       } else {
         endDate = startDate.plusDays(1)
-        inDays = true
       }
     } else {
       if (event.eventEndHour) {
@@ -255,8 +263,7 @@ events.each { event ->
       } else if (event.eventStartHour) {
         endDate = toUTCDateTime(event.eventEndDay, event.eventStartHour)
       } else {
-        endDate = toUTCDateTime(event.eventEndDay, '00:00').plusDays(1)
-        inDays = true
+        endDate = toUTCDateTime(event.eventEndDay, '').plusDays(1)
       }
     }
 
