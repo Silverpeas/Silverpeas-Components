@@ -79,7 +79,7 @@ public class ListDelegatedNewsResource extends RESTWebService {
 
   /**
    * Updates order or delete the delegatedNews from the JSON representation. If the user isn't
-   * authentified, a 401 HTTP code is returned. If the user isn't authorized to save the delegated
+   * authenticated, a 401 HTTP code is returned. If the user isn't authorized to save the delegated
    * news, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
    * @param newDelegatedNews an array of delegated news to update order or to delete
