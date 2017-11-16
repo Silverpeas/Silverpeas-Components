@@ -31,6 +31,7 @@ import org.silverpeas.core.util.SettingBundle;
 
 import java.time.ZoneId;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 
@@ -121,8 +122,9 @@ public final class AlmanachSettings {
    * @return the default view as string.
    */
   public static String getDefaultCalendarView(String componentInstanceId) {
-    return OrganizationController.get()
-        .getComponentParameterValue(componentInstanceId, "defaultView");
+    final String defaultView =
+        OrganizationController.get().getComponentParameterValue(componentInstanceId, "defaultView");
+    return defaultStringIfNotDefined(defaultView, "MONTHLY");
   }
 
   /**
