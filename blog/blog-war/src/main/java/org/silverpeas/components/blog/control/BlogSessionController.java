@@ -62,6 +62,7 @@ import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -69,7 +70,6 @@ import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.security.AccessControlException;
@@ -84,6 +84,8 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 
 public final class BlogSessionController extends AbstractComponentSessionController {
 
+  private static final int DEFAULT_POST_COUNT = 10;
+  private static final String STYLES_CSS = "styles.css";
   private Calendar currentBeginDate = Calendar.getInstance();
   private Calendar currentEndDate = Calendar.getInstance();
   private String serverURL = null;
@@ -134,7 +136,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     setMonthFirstDay(calendar);
     setMonthLastDay(calendar);
 
-    return getBlogService().getAllValidPosts(getComponentId(), 10);
+    return getBlogService().getAllValidPosts(getComponentId(), DEFAULT_POST_COUNT);
   }
 
   private void setMonthFirstDay(Calendar calendar) {
@@ -150,7 +152,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public Collection<PostDetail> postsByCategory(String categoryId) {
     // rechercher les billets de la catégorie
-    if (categoryId.equals("0")) {
+    if ("0".equals(categoryId)) {
       // on veux arriver sur l'accueil
       return lastPosts();
     } else {
@@ -258,7 +260,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     // set id du composant pour appel selectionPeas (extra param permettant de filtrer les users
     // ayant acces au composant)
     sel.setHostComponentId(getComponentId());
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null); // set nom du
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
+    // set nom du
     // composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
     // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en
     // popup => pas de lien sur nom du composant)
@@ -355,8 +358,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   @Override
   public String getRSSUrl() {
     if (isUseRss()) {
+      //replace to remove when all composants will be XHTML compliant
       return super.getRSSUrl()
-          .replaceAll("&", "&amp;"); //replace to remove when all composants will be XHTML compliant
+          .replaceAll("&", "&amp;");
     }
     return null;
   }
@@ -440,9 +444,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   /**
    * Converts the list of Delegated News into its JSON representation.
    * @return a JSON representation of the list of Delegated News (as string)
-   * @throws JAXBException
    */
-  public String getListNodeJSON(Collection<NodeDetail> listNode) throws JAXBException {
+  public String getListNodeJSON(Collection<NodeDetail> listNode) {
     List<NodeEntity> listNodeEntity = new ArrayList<>();
     for (NodeDetail node : listNode) {
       NodeEntity nodeEntity = NodeEntity.fromNodeDetail(node, node.getNodePK().getId());
@@ -457,7 +460,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * @return a JSON representation of the list of Delegated News Entity (as string)
    * @throws BlogRuntimeException
    */
-  private String listAsJSON(List<NodeEntity> listNodeEntity) throws BlogRuntimeException {
+  private String listAsJSON(List<NodeEntity> listNodeEntity) {
     NodeEntity[] entities = listNodeEntity.toArray(new NodeEntity[listNodeEntity.size()]);
     try {
       return JSONCodec.encode(entities);
@@ -477,6 +480,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
+      SilverLogger.getLogger(this).silent(e);
       files = new ArrayList<>();
     }
 
@@ -506,16 +510,16 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Save the banner file.
    * @throws BlogRuntimeException
    */
-  public void saveWallPaperFile(FileItem fileItemWallPaper) throws BlogRuntimeException {
+  public void saveWallPaperFile(FileItem fileItemWallPaper) {
     //extension
     String extension = FileRepositoryManager.getFileExtension(fileItemWallPaper.getName());
-    if (extension != null && extension.equalsIgnoreCase("jpeg")) {
+    if (extension != null && "jpeg".equalsIgnoreCase(extension)) {
       extension = "jpg";
     }
 
     if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
         equalsIgnoreCase(extension)) {
-      throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
+      throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
           SilverpeasRuntimeException.ERROR, "blog.EX_EXTENSION_WALLPAPER");
     }
 
@@ -582,11 +586,12 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
+      SilverLogger.getLogger(this).silent(e);
       files = new ArrayList<>();
     }
 
     for (File file : files) {
-      if ("styles.css".equals(file.getName())) {
+      if (STYLES_CSS.equals(file.getName())) {
         this.styleSheet = new StyleSheet();
         this.styleSheet.setName(file.getName());
         this.styleSheet.setUrl(FileServerUtils
@@ -618,7 +623,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Save the stylesheet file.
    * @throws BlogRuntimeException
    */
-  public void saveStyleSheetFile(FileItem fileItemStyleSheet) throws BlogRuntimeException {
+  public void saveStyleSheetFile(FileItem fileItemStyleSheet) {
     //extension
     String extension = FileRepositoryManager.getFileExtension(fileItemStyleSheet.getName());
     if (!"css".equalsIgnoreCase(extension)) {
@@ -633,7 +638,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     removeStyleSheetFile();
 
     try {
-      String nameFile = "styles.css";
+      String nameFile = STYLES_CSS;
       File fileStyleSheet = new File(path, nameFile);
 
       //create the file
@@ -650,17 +655,21 @@ public final class BlogSessionController extends AbstractComponentSessionControl
           .getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile),
               ""));
       this.styleSheet.setSize(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
-      try {
-        this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
-      } catch (IOException e) {
-        SilverTrace.warn("blog", "BlogSessionController.saveStyleSheetFile()",
-            "blog.EX_DISPLAY_STYLESHEET", e);
-        this.styleSheet.setContent(null);
-      }
+      setStylesheetContent(fileStyleSheet);
 
     } catch (Exception ex) {
       throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
           SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_STYLESHEET", ex);
+    }
+  }
+
+  private void setStylesheetContent(final File fileStyleSheet) {
+    try {
+      this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
+    } catch (IOException e) {
+      SilverTrace.warn("blog", "BlogSessionController.setStylesheetContent()",
+          "blog.EX_DISPLAY_STYLESHEET", e);
+      this.styleSheet.setContent(null);
     }
   }
 
@@ -669,7 +678,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    */
   public void removeStyleSheetFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
-    File styles = new File(path, "styles.css");
+    File styles = new File(path, STYLES_CSS);
     if (styles.exists()) {
       styles.delete();
     }

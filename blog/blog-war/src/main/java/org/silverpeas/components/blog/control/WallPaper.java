@@ -29,9 +29,6 @@ public class WallPaper {
   private String url = null;
   private String size = null;
 
-  public WallPaper() {
-  }
-
   public String getName() {
     return name;
   }
@@ -40,19 +37,19 @@ public class WallPaper {
     this.name = name;
   }
 
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
   public String getSize() {
     return size;
   }
 
   public void setSize(String size) {
     this.size = size;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 }

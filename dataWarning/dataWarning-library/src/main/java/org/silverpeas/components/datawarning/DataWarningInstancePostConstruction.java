@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
@@ -47,15 +48,16 @@ public class DataWarningInstancePostConstruction implements ComponentInstancePos
   @Override
   public void postConstruct(final String componentInstanceId) {
     try {
+      final int tuesday = 2;
       DataWarningDataManager dataManager = new DataWarningDataManager();
       dataManager.createDataWarning(
           new DataWarning("", "", "", "", 0, componentInstanceId, DataWarning.INCONDITIONAL_QUERY));
       dataManager.createDataWarningScheduler(new DataWarningScheduler(componentInstanceId, 1,
-          DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR, 0, 0, 2, 0, 0,
+          DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR, 0, 0, tuesday, 0, 0,
           DataWarningScheduler.SCHEDULER_STATE_OFF));
       dataManager.createDataWarningQuery(new DataWarningQuery(componentInstanceId));
     } catch (DataWarningException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

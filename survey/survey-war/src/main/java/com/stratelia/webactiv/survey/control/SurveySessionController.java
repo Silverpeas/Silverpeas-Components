@@ -27,6 +27,7 @@ import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -58,7 +59,6 @@ import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -73,6 +73,7 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -83,6 +84,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -93,6 +95,14 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
  */
 public class SurveySessionController extends AbstractComponentSessionController {
 
+  private static final String GALLERY_COMPONENT = "gallery";
+  private static final String IMAGES_SUB_DIRECTORY_KEY = "imagesSubDirectory";
+  private static final String ACTION_PARAM = "Action";
+  private static final String SEND_NEW_QUESTION_ACTION = "SendNewQuestion";
+  private static final String SEND_UPDATE_QUESTION_ACTION = "SendUpdateQuestion";
+  private static final String SURVEY_EX_PROBLEM_TO_DELETE_SURVEY =
+      "Survey.EX_PROBLEM_TO_DELETE_SURVEY";
+  private static final String ID_MSG = "id = ";
   private QuestionContainerService questionContainerService;
   private QuestionResultService questionResultService;
   private QuestionContainerDetail sessionSurveyUnderConstruction = null;
@@ -101,9 +111,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private Map<String, List<String>> sessionResponses = null;
   private String sessionSurveyId = null;
   private String sessionSurveyName = null;
-  public final static int OPENED_SURVEYS_VIEW = 1;
-  public final static int CLOSED_SURVEYS_VIEW = 2;
-  public final static int INWAIT_SURVEYS_VIEW = 3;
+  public static final int OPENED_SURVEYS_VIEW = 1;
+  public static final int CLOSED_SURVEYS_VIEW = 2;
+  public static final int INWAIT_SURVEYS_VIEW = 3;
   private int viewType = OPENED_SURVEYS_VIEW;
   private boolean pollingStationMode = false;
   private boolean participationMultipleAllowedForUser = false;
@@ -125,10 +135,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public QuestionContainerService getQuestionContainerService() {
-    if (questionContainerService == null) {
-      SilverTrace.fatal("survey", "SurveySessionController.getQuestionContainerService()",
-          "cannot inject question container BM");
-    }
     return questionContainerService;
   }
 
@@ -286,7 +292,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       return qc;
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getSurvey", SurveyException.WARNING,
-          "Survey.EX_NO_SURVEY", "id = " + surveyId, e);
+          "Survey.EX_NO_SURVEY", ID_MSG + surveyId, e);
     }
   }
 
@@ -346,7 +352,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.updateSurveyHeader",
           SurveyException.WARNING, "Survey.EX_PROBLEM_TO_UPDATE_SURVEY",
-          "id = " + surveyId + ", title = " + surveyHeader.getTitle(), e);
+          ID_MSG + surveyId + ", title = " + surveyHeader.getTitle(), e);
     }
   }
 
@@ -358,7 +364,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerService.updateQuestions(qcPK, questions);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.updateQuestions", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", "id = " + surveyId, e);
+          "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", ID_MSG + surveyId, e);
     }
   }
 
@@ -369,7 +375,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerService.deleteQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
+          SURVEY_EX_PROBLEM_TO_DELETE_SURVEY, ID_MSG + surveyId, e);
     }
   }
 
@@ -380,7 +386,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerService.deleteVotes(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.deleteVotes", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
+          SURVEY_EX_PROBLEM_TO_DELETE_SURVEY, ID_MSG + surveyId, e);
     }
   }
 
@@ -391,7 +397,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerService.deleteQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.deleteResponse", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
+          SURVEY_EX_PROBLEM_TO_DELETE_SURVEY, ID_MSG + surveyId, e);
     }
   }
 
@@ -449,7 +455,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerService.closeQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.closeSurvey", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_CLOSE_SURVEY", "id = " + surveyId, e);
+          "Survey.EX_PROBLEM_TO_CLOSE_SURVEY", ID_MSG + surveyId, e);
     }
   }
 
@@ -460,7 +466,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerService.openQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.openSurvey", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_OPEN_SURVEY", "id = " + surveyId, e);
+          "Survey.EX_PROBLEM_TO_OPEN_SURVEY", ID_MSG + surveyId, e);
     }
   }
 
@@ -471,7 +477,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     } catch (Exception e) {
 
       throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
-          "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
+          "Survey.EX_RECORD_REPLY_FAILED", ID_MSG + surveyId, e);
     }
   }
 
@@ -484,7 +490,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
               isAnonymousComment);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
-          "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
+          "Survey.EX_RECORD_REPLY_FAILED", ID_MSG + surveyId, e);
     }
   }
 
@@ -494,7 +500,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       return questionContainerService.getSuggestions(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getSuggestions", SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", "id = " + surveyId, e);
+          "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", ID_MSG + surveyId, e);
     }
   }
 
@@ -535,8 +541,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
       silverObjectId = questionContainerService.getSilverObjectId(qcPK);
     } catch (Exception e) {
-      SilverTrace.error("survey", "SurveySessionClientController.getSilverObjectId()",
-          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return silverObjectId;
   }
@@ -647,7 +652,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
     // popup => pas de lien sur nom du composant)
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
-    sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId)); // set NotificationMetaData
+    sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId));
+    // set NotificationMetaData
     // contenant les informations à notifier
     // fin initialisation de AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et
     // retournée
@@ -696,6 +702,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         translation = message.getString("survey.notifSubject");
       } catch (MissingResourceException ex) {
+        SilverLogger.getLogger(this).silent(ex);
         translation = subject;
       }
       notifMetaData.addLanguage(language, translation, "");
@@ -729,11 +736,13 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = new ArrayList<>();
     OrganizationController orgaController = getOrganisationController();
-    String[] compoIds = orgaController.getCompoId("gallery");
+    String[] compoIds = orgaController.getCompoId(GALLERY_COMPONENT);
     for (final String compoId : compoIds) {
       if ("yes".equalsIgnoreCase(
-          orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
+          orgaController.getComponentParameterValue(GALLERY_COMPONENT + compoId,
+              "viewInWysiwyg"))) {
+        ComponentInstLight gallery =
+            orgaController.getComponentInstLight(GALLERY_COMPONENT + compoId);
         galleries.add(gallery);
       }
     }
@@ -745,33 +754,40 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerDetail survey = getSurvey(surveyId);
       return questionContainerService.exportCSV(survey, false);
     } catch (Exception e) {
-      SilverTrace.error("survey", SurveySessionController.class.getName(),
-          "exportSurveyCSV error surveyId=" + surveyId, e);
+      SilverLogger.getLogger(this).error("CSV export of survey " + surveyId + " failed", e);
     }
     return null;
   }
 
-  public void copySurvey(String surveyId) throws ClipboardException, SurveyException {
-    QuestionContainerDetail survey = getSurvey(surveyId);
-    QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(survey);
-    addClipboardSelection(questionContainerSelect);
+  public void copySurvey(String surveyId) throws SilverpeasException {
+    try {
+      QuestionContainerDetail survey = getSurvey(surveyId);
+      QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(survey);
+      addClipboardSelection(questionContainerSelect);
+    } catch (ClipboardException | SurveyException e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /**
    * Paste surveys which are in the clipboard selection
    * @throws Exception
    */
-  public void paste() throws Exception {
-    Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-    for (ClipboardSelection clipObject : clipObjects) {
-      if (clipObject != null && clipObject.isDataFlavorSupported(
-          QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-        QuestionContainerDetail survey = (QuestionContainerDetail) clipObject.getTransferData(
-            QuestionContainerSelection.QuestionContainerDetailFlavor);
-        pasteSurvey(survey);
+  public void paste() throws SilverpeasException {
+    try {
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection clipObject : clipObjects) {
+        if (clipObject != null && clipObject.isDataFlavorSupported(
+            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          QuestionContainerDetail survey = (QuestionContainerDetail) clipObject.getTransferData(
+              QuestionContainerSelection.QuestionContainerDetailFlavor);
+          pasteSurvey(survey);
+        }
       }
+      clipboardPasteDone();
+    } catch (Exception e) {
+      throw new SilverpeasException(e.getMessage(), e);
     }
-    clipboardPasteDone();
   }
 
   /**
@@ -811,17 +827,17 @@ public class SurveySessionController extends AbstractComponentSessionController 
             // in the same component
             String absolutePath = FileRepositoryManager.getAbsolutePath(componentId);
             String dir =
-                absolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
+                absolutePath + getSettings().getString(IMAGES_SUB_DIRECTORY_KEY) + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
           } else {
             // in other component
             String fromAbsolutePath =
                 FileRepositoryManager.getAbsolutePath(survey.getHeader().getInstanceId());
             String toAbsolutePath = FileRepositoryManager.getAbsolutePath(componentId);
-            String fromDir =
-                fromAbsolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
+            String fromDir = fromAbsolutePath + getSettings().getString(IMAGES_SUB_DIRECTORY_KEY) +
+                File.separator;
             String toDir =
-                toAbsolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
+                toAbsolutePath + getSettings().getString(IMAGES_SUB_DIRECTORY_KEY) + File.separator;
             FileRepositoryManager.copyFile(fromDir + physicalName, toDir + newPhysicalName);
           }
           // update answer
@@ -853,7 +869,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @param request the current HttpServletRequest
    */
   public void questionsUpdateBusinessModel(HttpServletRequest request) {
-    String action = request.getParameter("Action");
+    String action = request.getParameter(ACTION_PARAM);
     String surveyId = request.getParameter("SurveyId");
 
     if ("UpQuestion".equals(action)) {
@@ -885,8 +901,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         StringBuilder message = new StringBuilder();
         message.append("Trying to delete a wrong question, questionIndexToDelete=").append(qId).
             append(", questions list size=").append(qV.size());
-        SilverTrace.warn("survey", "SurveySessionController.questionsUpdateBusinessModel", message.
-            toString());
+        SilverLogger.getLogger(this).warn(message.toString());
       }
 
     } else if ("SendQuestions".equals(action)) {
@@ -896,8 +911,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         this.updateQuestions(qV, surveyId);
         request.setAttribute("UpdateSucceed", Boolean.TRUE);
       } catch (SurveyException e) {
-        SilverTrace.error("survey", "SurveySessionController.questionsUpdateBusinessModel",
-            "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
         request.setAttribute("UpdateSucceed", Boolean.FALSE);
       }
     }
@@ -914,8 +928,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         // Cast Collection to List
         questionsV = new ArrayList<>(questions);
       } catch (SurveyException e) {
-        SilverTrace.error("survey", "SurveySessionController.questionsUpdateBusinessModel",
-            "Survey.EX_PROBLEM_TO_OPEN_SURVEY", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
       this.setSessionQuestions(questionsV);
       this.setSessionSurveyId(surveyId);
@@ -946,12 +959,12 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public String manageQuestionBusiness(String function, HttpServletRequest request) {
     String surveyImageDirectory = FileServerUtils
         .getUrl(this.getComponentId(), "REPLACE_FILE_NAME", "REPLACE_FILE_NAME", "image/gif",
-            getSettings().getString("imagesSubDirectory"));
+            getSettings().getString(IMAGES_SUB_DIRECTORY_KEY));
     // Retrieve all the parameter from request
     Parameters parameters = fetchAllParameters(request);
 
-    if ("SendUpdateQuestion".equals(parameters.getAction()) ||
-        "SendNewQuestion".equals(parameters.getAction())) {
+    if (SEND_UPDATE_QUESTION_ACTION.equals(parameters.getAction()) ||
+        SEND_NEW_QUESTION_ACTION.equals(parameters.getAction())) {
       processQuestionModification(parameters);
     } else if ("End".equals(parameters.getAction())) {
       processEndSurvey();
@@ -969,15 +982,15 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     // Prepare destination request attribute
     String view;
-    if ("SendNewQuestion".equals(parameters.getAction()) ||
-        "SendUpdateQuestion".equals(parameters.getAction())) {
-      request.setAttribute("Action", "UpdateQuestions");
+    if (SEND_NEW_QUESTION_ACTION.equals(parameters.getAction()) ||
+        SEND_UPDATE_QUESTION_ACTION.equals(parameters.getAction())) {
+      request.setAttribute(ACTION_PARAM, "UpdateQuestions");
       request.setAttribute("SurveyName", this.getSessionSurveyName());
       view = "questionsUpdate.jsp";
     } else {
       request.setAttribute("Suggestion", parameters.getSuggestion());
       request.setAttribute("Style", parameters.getStyle());
-      request.setAttribute("Action", parameters.getAction());
+      request.setAttribute(ACTION_PARAM, parameters.getAction());
       view = function;
     }
     return view;
@@ -988,7 +1001,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @param request the HttpServletRequest which contains all the request parameter
    */
   public void sendNewSurveyAction(HttpServletRequest request) {
-    String action = request.getParameter("Action");
+    String action = request.getParameter(ACTION_PARAM);
     if ("SendNewSurvey".equals(action)) {
       String title = request.getParameter("title");
       String description = request.getParameter("description");
@@ -1015,9 +1028,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         try {
           beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
         } catch (ParseException e) {
-          SilverTrace.error("survey", "SurveySessionControler.sendNewSurveyAction",
-              "root.EX_CANT_PARSE_DATE", "impossible to parse begin date, beginDate=" + beginDate,
-              e);
+          SilverLogger.getLogger(this).error("Impossible to parse start date " + beginDate, e);
           beginDate = null;
         }
       }
@@ -1051,8 +1062,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("survey", "SurveySessionController.sendNewSurveyPositionsFromJSON",
-            "root.EX_IGNORED", "Problem to read JSON, positions=" + positions, e);
+        SilverLogger.getLogger(this).error("Problem to read JSON, positions: " + positions, e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();
@@ -1104,15 +1114,13 @@ public class SurveySessionController extends AbstractComponentSessionController 
           getInputStream(), true);
     } catch (IOException e) {
       throw new SurveyException("SurveySessionController.saveSynthesisFile",
-          SurveyException.WARNING, "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "id = " + survey.getId(),
+          SurveyException.WARNING, "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", ID_MSG + survey.getId(),
           e);
     }
   }
 
   public void updateSynthesisFile(FileItem newFileSynthesis, String idDocument)
       throws SurveyException {
-    SilverTrace
-        .info("survey", "SurveySessionController.updateSynthesisFile", "Survey.MSG_ENTRY_METHOD");
     removeSynthesisFile(idDocument);
     saveSynthesisFile(newFileSynthesis);
   }
@@ -1149,73 +1157,70 @@ public class SurveySessionController extends AbstractComponentSessionController 
       List<FileItem> items = HttpRequest.decorate(request).getFileItems();
       Answer answer = null;
       boolean file = false;
-      File dir;
-      String logicalName;
-      String type;
-      String physicalName;
-      long size;
       int attachmentSuffix = 0;
       for (FileItem item : items) {
         if (item.isFormField()) {
-          String mpName = item.getFieldName();
-          if ("Action".equals(mpName)) {
-            parameters.setAction(item.getString());
-          } else if ("question".equals(mpName)) {
-            parameters.setQuestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-          } else if ("nbAnswers".equals(mpName)) {
-            parameters.setAnswerCount(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-          } else if ("SuggestionAllowed".equals(mpName)) {
-            parameters.setSuggestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-          } else if ("questionStyle".equals(mpName)) {
-            parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-          } else if (mpName.startsWith("answer")) {
-            parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-            answer = new Answer(null, null, parameters.getAnswerInput(), 0, 0, false, "", 0, false,
-                null);
-            parameters.addAnswer(answer);
-          } else if ("suggestionLabel".equals(mpName)) {
-            parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-            answer =
-                new Answer(null, null, parameters.getAnswerInput(), 0, 0, false, "", 0, true, null);
-            parameters.addAnswer(answer);
-          } else if (mpName.startsWith("valueImageGallery")) {
-            if (StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING))) {
-              // traiter les images venant de la gallery si pas d'image externe
-              if (!file) {
-                answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-              }
-            }
-          } else if ("QuestionId".equals(mpName)) {
-            parameters.setQuestionId(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-          }
-          // String value = paramPart.getStringValue();
-        } else {
+          answer = fetchFormFieldParameters(parameters, answer, file, item);
+        } else if (FileHelper.isCorrectFile(item)) {
           // it's a file part
-          if (FileHelper.isCorrectFile(item)) {
-            // the part actually contained a file
-            logicalName = item.getName();
-            type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
-            physicalName = Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
-            attachmentSuffix = attachmentSuffix + 1;
-            dir = new File(FileRepositoryManager.getAbsolutePath(this.getComponentId()) +
-                getSettings().getString("imagesSubDirectory") + File.separator + physicalName);
-            FileUploadUtil.saveToFile(dir, item);
-            size = item.getSize();
-            if (size > 0) {
-              answer.setImage(physicalName);
-              file = true;
-            }
-          } else {
-            // the field did not contain a file
-            file = false;
+
+          // the part actually contained a file
+          String physicalName = getFilePhysicalName(attachmentSuffix, item);
+          attachmentSuffix = attachmentSuffix + 1;
+          long size = saveFile(item, physicalName);
+          if (size > 0) {
+            answer.setImage(physicalName);
+            file = true;
           }
+        } else {
+          // the field did not contain a file
+          file = false;
         }
       }
     } catch (UtilException | IOException e) {
-      SilverTrace.error("survey", "SurveySessionController.manageQuestionBusiness",
-          "root.EX_IGNORED", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return parameters;
+  }
+
+  private long saveFile(final FileItem item, final String physicalName) throws IOException {
+    File dir = new File(FileRepositoryManager.getAbsolutePath(this.getComponentId()) +
+        getSettings().getString(IMAGES_SUB_DIRECTORY_KEY) + File.separator + physicalName);
+    FileUploadUtil.saveToFile(dir, item);
+    return item.getSize();
+  }
+
+  private String getFilePhysicalName(final int attachmentSuffix, final FileItem item) {
+    String logicalName = item.getName();
+    String type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+    return Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
+  }
+
+  private Answer fetchFormFieldParameters(final Parameters parameters, Answer answer,
+      final boolean file, final FileItem item) throws UnsupportedEncodingException {
+    String mpName = item.getFieldName();
+    if (ACTION_PARAM.equals(mpName)) {
+      parameters.setAction(item.getString());
+    } else if ("question".equals(mpName)) {
+      parameters.setQuestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+    } else if ("nbAnswers".equals(mpName)) {
+      parameters.setAnswerCount(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+    } else if ("SuggestionAllowed".equals(mpName)) {
+      parameters.setSuggestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+    } else if ("questionStyle".equals(mpName)) {
+      parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+    } else if (mpName.startsWith("answer") || "suggestionLabel".equals(mpName)) {
+      parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      answer = new Answer(null, null, parameters.getAnswerInput(), 0, 0, false, "", 0, false, null);
+      parameters.addAnswer(answer);
+    } else if (mpName.startsWith("valueImageGallery") &&
+        StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING)) && !file) {
+      // traiter les images venant de la gallery si pas d'image externe
+      answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+    } else if ("QuestionId".equals(mpName)) {
+      parameters.setQuestionId(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+    }
+    return answer;
   }
 
   private void processEndSurvey() {
@@ -1239,7 +1244,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           .findFirst()
           .ifPresent(parameters::removeAnswer);
     }
-    if ("SendNewQuestion".equals(parameters.getAction())) {
+    if (SEND_NEW_QUESTION_ACTION.equals(parameters.getAction())) {
       Question questionObject =
           new Question(null, null, parameters.getQuestion(), "", "", null, parameters.getStyle(),
               0);
@@ -1247,7 +1252,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       List<Question> questionsV = this.getSessionQuestions();
       questionsV.add(questionObject);
       this.setSessionQuestions(questionsV);
-    } else if (parameters.getAction().equals("SendUpdateQuestion")) {
+    } else if (SEND_UPDATE_QUESTION_ACTION.equals(parameters.getAction())) {
       Question questionObject =
           new Question(null, null, parameters.getQuestion(), "", "", null, parameters.getStyle(),
               0);

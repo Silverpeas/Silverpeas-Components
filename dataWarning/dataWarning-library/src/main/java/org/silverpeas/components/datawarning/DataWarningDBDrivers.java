@@ -33,8 +33,8 @@ import java.util.Map;
 public final class DataWarningDBDrivers extends Object {
 
   // This one is there for optimized research
-  static protected Map<String, DataWarningDBDriver> allDBDrivers = new HashMap<>();
-  static protected DataWarningDBDriver[] sortedDBDrivers = null;
+  protected static Map<String, DataWarningDBDriver> allDBDrivers = new HashMap<>();
+  protected static DataWarningDBDriver[] sortedDBDrivers = null;
 
   private static final String XML_SETTING_PATH =
       "org.silverpeas.dataWarning.settings.dataWarningSettings";

@@ -167,7 +167,7 @@
 						arrayPane.setSortable(false);
 						arrayPane.setVisibleLineNumber(20);
 
-						Iterator itCols = resultQuery.getColumns(userId).iterator();
+						Iterator itCols = resultQuery.getPersoColumns().iterator();
 						while (itCols.hasNext())
 							arrayPane.addArrayColumn((String)itCols.next());
 

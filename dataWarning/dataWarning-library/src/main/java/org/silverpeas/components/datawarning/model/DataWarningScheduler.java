@@ -25,6 +25,7 @@ package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class DataWarningScheduler extends SilverpeasBean {
 
@@ -36,6 +37,11 @@ public class DataWarningScheduler extends SilverpeasBean {
   public static final int SCHEDULER_N_TIMES_MOMENT_YEAR = 4;
   public static final int SCHEDULER_STATE_OFF = 0;
   public static final int SCHEDULER_STATE_ON = 1;
+  private static final int MINUTES_IN_HOUR = 60;
+  private static final int HOURS_IN_DAY = 24;
+  private static final int DAYS_IN_WEEK = 7;
+  private static final int MONTHS_IN_YEAR = 12;
+  private static final int MIN_DAYS_IN_MONTH = 28;
   private String instanceId;
   private int numberOfTimes;
   private int numberOfTimesMoment;
@@ -69,7 +75,13 @@ public class DataWarningScheduler extends SilverpeasBean {
 
   @Override
   public Object clone() {
-    DataWarningScheduler newOne = new DataWarningScheduler();
+    DataWarningScheduler newOne;
+    try {
+      newOne = (DataWarningScheduler) super.clone();
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).silent(e);
+      newOne = new DataWarningScheduler();
+    }
 
     newOne.instanceId = instanceId;
     newOne.numberOfTimes = numberOfTimes;
@@ -173,45 +185,61 @@ public class DataWarningScheduler extends SilverpeasBean {
 
 // Cron String creation
   public String createCronString() {
-    String retour = null;
+    String cron;
     if (numberOfTimes == 1) {
-      switch (numberOfTimesMoment) {
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
-          retour = minits + " * * * ?";
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
-          retour = minits + " " + hours + " * * ?";
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
-          retour = minits + " " + hours + " ? * " + dayOfWeek;
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
-          retour = minits + " " + hours + " " + (dayOfMonth + 1) + " * ?";
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
-          retour = minits + " " + hours + " " + (dayOfMonth + 1) + " " + (theMonth + 1) + " ?";
-          break;
-      }
+      cron = cronForOneTime();
     } else {
-      switch (numberOfTimesMoment) {
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
-          retour = cronSystem(60, numberOfTimes, false) + " * * * ?";
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
-          retour = "* " + cronSystem(24, numberOfTimes, false) + " * * ?";
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
-          retour = "* 12 ? * " + cronSystem(7, numberOfTimes, false);
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
-          retour = "* 12 " + cronSystem(28, numberOfTimes, true) + " * ?";
-          break;
-        case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
-          retour = "* 12 1 " + cronSystem(12, numberOfTimes, true) + " ?";
-          break;
-      }
+      cron = cronForSeveralTimes();
     }
-    return retour;
+    return cron;
+  }
+
+  private String cronForSeveralTimes() {
+    String cron = null;
+    switch (numberOfTimesMoment) {
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
+        cron = cronSystem(MINUTES_IN_HOUR, numberOfTimes, false) + " * * * ?";
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
+        cron = "* " + cronSystem(HOURS_IN_DAY, numberOfTimes, false) + " * * ?";
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
+        cron = "* 12 ? * " + cronSystem(DAYS_IN_WEEK, numberOfTimes, false);
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
+        cron = "* 12 " + cronSystem(MIN_DAYS_IN_MONTH, numberOfTimes, true) + " * ?";
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
+        cron = "* 12 1 " + cronSystem(MONTHS_IN_YEAR, numberOfTimes, true) + " ?";
+        break;
+      default:
+        break;
+    }
+    return cron;
+  }
+
+  private String cronForOneTime() {
+    String cron = null;
+    switch (numberOfTimesMoment) {
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
+        cron = minits + " * * * ?";
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
+        cron = minits + " " + hours + " * * ?";
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
+        cron = minits + " " + hours + " ? * " + dayOfWeek;
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
+        cron = minits + " " + hours + " " + (dayOfMonth + 1) + " * ?";
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
+        cron = minits + " " + hours + " " + (dayOfMonth + 1) + " " + (theMonth + 1) + " ?";
+        break;
+      default:
+        break;
+    }
+    return cron;
   }
 
   private String cronSystem(int nb, int numberOfTimes, boolean startFromOne) {

@@ -20,8 +20,8 @@
  */
 package org.silverpeas.components.datawarning.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class DataWarningResult extends Object {
   // Trigger static values
@@ -92,8 +92,7 @@ public class DataWarningResult extends Object {
       try {
         return triggerResult.returnTriggerValueFromResult(userId);
       } catch (Exception e) {
-        SilverTrace.warn("dataWarning", "DataWarningResult.getTriggerActualValue()",
-            "root.MSG_GEN_ENTER_METHOD");
+        SilverLogger.getLogger(this).error(e);
         return 0;
       }
     } else {
@@ -121,8 +120,7 @@ public class DataWarningResult extends Object {
             return triggerQuery.checkTriggerSatisfied(triggerResult.returnTriggerValueFromResult());
           }
         } catch (Exception e) {
-          SilverTrace.warn("dataWarning", "DataWarningResult.getTriggerEnabled()",
-              "root.MSG_GEN_ENTER_METHOD");
+          SilverLogger.getLogger(this).error(e);
           return false;
         }
       } else {
@@ -155,8 +153,7 @@ public class DataWarningResult extends Object {
       try {
         setTriggerActualValue(triggerResult.returnTriggerValueFromResult());
       } catch (Exception e) {
-        SilverTrace.warn("dataWarning", "DataWarningResult.setTriggerResult()",
-            "root.MSG_GEN_ENTER_METHOD");
+        SilverLogger.getLogger(this).error(e);
         triggerResult.addError(e, "Value = " + triggerResult.getValue(0, 0));
       }
     }

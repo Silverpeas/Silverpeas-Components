@@ -39,8 +39,10 @@ public class DataWarningQuery extends SilverpeasBean {
 
   private static final long serialVersionUID = -7619202031176865356L;
   public static final int QUERY_CONDITION_FIRST = 0;
-  public static final int QUERY_CONDITION_AND = 1; // Not used yet
-  public static final int QUERY_CONDITION_OR = 2; // Not used yet
+  // Not used yet
+  public static final int QUERY_CONDITION_AND = 1;
+  // Not used yet
+  public static final int QUERY_CONDITION_OR = 2;
   public static final int QUERY_TYPE_RESULT = 0;
   public static final int QUERY_TYPE_TRIGGER = 1;
   public static final int TRIGGER_CONDITION_SUP = 0;
@@ -241,6 +243,8 @@ public class DataWarningQuery extends SilverpeasBean {
         break;
       case TRIGGER_CONDITION_DIF:
         valret = (theValue != theTrigger);
+        break;
+      default:
         break;
     }
     return valret;

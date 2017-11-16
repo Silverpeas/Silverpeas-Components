@@ -25,13 +25,13 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.components.datawarning.DataWarningException;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -42,6 +42,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class DataWarningDataManager {
+  private static final String DATA_WARNING_EX_DATA_ACCESS_FAILED =
+      "DataWarning.EX_DATA_ACCESS_FAILED";
+  private static final String INSTANCE_ID_MSG = "instanceId = '";
   private SilverpeasBeanDAO<DataWarning> dataWarningDAO;
   private SilverpeasBeanDAO<DataWarningGroup> dataWarningGroupDAO;
   private SilverpeasBeanDAO<DataWarningUser> dataWarningUserDAO;
@@ -62,7 +65,7 @@ public class DataWarningDataManager {
           SilverpeasBeanDAOFactory.getDAO(DataWarningScheduler.class.getName());
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.DataWarningDataManager()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -75,7 +78,7 @@ public class DataWarningDataManager {
       dataWarningDAO.add(dw);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.createDataWarning()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -85,7 +88,7 @@ public class DataWarningDataManager {
       dataWarningDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarning()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -99,22 +102,22 @@ public class DataWarningDataManager {
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.updateDataWarning()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public DataWarning getDataWarning(String instanceId) throws DataWarningException {
     DataWarning retour = null;
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       Collection<DataWarning> datas = dataWarningDAO.findByWhereClause(new IdPK(), whereClause);
-      if (datas != null && datas.size() > 0) {
+      if (datas != null && !datas.isEmpty()) {
         Iterator<DataWarning> it = datas.iterator();
         retour = it.next();
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarning()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
   }
@@ -128,17 +131,17 @@ public class DataWarningDataManager {
       dataWarningQueryDAO.add(dwq);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.createDataWarningQuery()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public void deleteDataWarningQuery(String instanceId) throws DataWarningException {
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       dataWarningQueryDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningQuery()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -146,11 +149,11 @@ public class DataWarningDataManager {
       throws DataWarningException {
     try {
       String whereClause =
-          "instanceId = '" + instanceId + "' and queryCondition = " + queryCondition;
+          INSTANCE_ID_MSG + instanceId + "' and queryCondition = " + queryCondition;
       dataWarningQueryDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningQuery()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -165,7 +168,7 @@ public class DataWarningDataManager {
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.updateDataWarningQuery()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -174,16 +177,16 @@ public class DataWarningDataManager {
     DataWarningQuery retour = null;
     try {
       String whereClause =
-          "instanceId = '" + instanceId + "' and queryCondition = " + queryCondition;
+          INSTANCE_ID_MSG + instanceId + "' and queryCondition = " + queryCondition;
       Collection<DataWarningQuery> datas =
           dataWarningQueryDAO.findByWhereClause(new IdPK(), whereClause);
-      if (datas != null && datas.size() > 0) {
+      if (datas != null && !datas.isEmpty()) {
         Iterator<DataWarningQuery> it = datas.iterator();
         retour = it.next();
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarningQuery()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
 
@@ -192,11 +195,11 @@ public class DataWarningDataManager {
   public Collection<DataWarningQuery> getDataWarningQueries(String instanceId)
       throws DataWarningException {
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       return dataWarningQueryDAO.findByWhereClause(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarningQueries()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -209,17 +212,17 @@ public class DataWarningDataManager {
       dataWarningSchedulerDAO.add(dws);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.createDataWarningScheduler()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public void deleteDataWarningScheduler(String instanceId) throws DataWarningException {
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       dataWarningSchedulerDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningScheduler()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -233,7 +236,7 @@ public class DataWarningDataManager {
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.updateDataWarningScheduler()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -241,16 +244,16 @@ public class DataWarningDataManager {
       throws DataWarningException {
     DataWarningScheduler retour = null;
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       Collection<DataWarningScheduler> datas =
           dataWarningSchedulerDAO.findByWhereClause(new IdPK(), whereClause);
-      if (datas != null && datas.size() > 0) {
+      if (datas != null && !datas.isEmpty()) {
         Iterator<DataWarningScheduler> it = datas.iterator();
         retour = it.next();
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarningScheduler()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
   }
@@ -288,28 +291,28 @@ public class DataWarningDataManager {
       dataWarningGroupDAO.add(dwg);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.createDataWarningGroup()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public void deleteDataWarningGroup(String instanceId, int groupId) throws DataWarningException {
     try {
       String whereClause =
-          "instanceId = '" + instanceId + "' and groupId = " + Integer.toString(groupId);
+          INSTANCE_ID_MSG + instanceId + "' and groupId = " + Integer.toString(groupId);
       dataWarningGroupDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningGroup()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public void deleteDataWarningGroups(String instanceId) throws DataWarningException {
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       dataWarningGroupDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningGroups()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -318,7 +321,7 @@ public class DataWarningDataManager {
       dataWarningGroupDAO.update(dwg);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.updateDataWarningGroup()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -326,11 +329,11 @@ public class DataWarningDataManager {
       throws DataWarningException {
     Collection<DataWarningGroup> retour;
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       retour = dataWarningGroupDAO.findByWhereClause(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarningGroups()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
   }
@@ -340,16 +343,16 @@ public class DataWarningDataManager {
     DataWarningGroup retour = null;
     try {
       String whereClause =
-          "instanceId = '" + instanceId + "' and groupId = " + Integer.toString(groupId);
+          INSTANCE_ID_MSG + instanceId + "' and groupId = " + Integer.toString(groupId);
       Collection<DataWarningGroup> datas =
           dataWarningGroupDAO.findByWhereClause(new IdPK(), whereClause);
-      if (datas != null && datas.size() > 0) {
+      if (datas != null && !datas.isEmpty()) {
         Iterator<DataWarningGroup> it = datas.iterator();
         retour = it.next();
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarningGroup()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
   }
@@ -363,27 +366,27 @@ public class DataWarningDataManager {
       dataWarningUserDAO.add(dwu);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.createDataWarningUser()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public void deleteDataWarningUser(String instanceId, int userId) throws DataWarningException {
     try {
-      String whereClause = "instanceId = '" + instanceId + "' and userId = " + userId;
+      String whereClause = INSTANCE_ID_MSG + instanceId + "' and userId = " + userId;
       dataWarningUserDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningSessionController.deleteDataWarningUser()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
   public void deleteDataWarningUsers(String instanceId) throws DataWarningException {
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
+      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
       dataWarningUserDAO.removeWhere(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningSessionController.deleteDataWarningUsers()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -392,7 +395,7 @@ public class DataWarningDataManager {
       dataWarningUserDAO.update(dwu);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningSessionController.updateDataWarningUser()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
   }
 
@@ -404,7 +407,7 @@ public class DataWarningDataManager {
       retour = dataWarningUserDAO.findByWhereClause(new IdPK(), whereClause);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningSessionController.getDataWarningUsers()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
   }
@@ -413,16 +416,16 @@ public class DataWarningDataManager {
       throws DataWarningException {
     DataWarningUser retour = null;
     try {
-      String whereClause = "instanceId = '" + instanceId + "' and userId = " + userId;
+      String whereClause = INSTANCE_ID_MSG + instanceId + "' and userId = " + userId;
       Collection<DataWarningUser> datas =
           dataWarningUserDAO.findByWhereClause(new IdPK(), whereClause);
-      if (datas != null && datas.size() > 0) {
+      if (datas != null && !datas.isEmpty()) {
         Iterator<DataWarningUser> it = datas.iterator();
         retour = it.next();
       }
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.getDataWarningUser()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+          SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
     }
     return retour;
   }
@@ -451,8 +454,7 @@ public class DataWarningDataManager {
         con.close();
       }
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningDataManager.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -462,8 +464,7 @@ public class DataWarningDataManager {
         st.close();
       }
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningDataManager.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       closeConnection(con);
     }
@@ -475,8 +476,7 @@ public class DataWarningDataManager {
         rs.close();
       }
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningDataManager.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       closeAllConnection(con, st);
     }

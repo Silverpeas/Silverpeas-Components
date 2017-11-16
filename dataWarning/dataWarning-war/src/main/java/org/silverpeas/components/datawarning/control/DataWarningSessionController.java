@@ -28,20 +28,20 @@ import org.silverpeas.components.datawarning.model.DataWarningGroup;
 import org.silverpeas.components.datawarning.model.DataWarningQuery;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
 import org.silverpeas.components.datawarning.model.DataWarningUser;
+import org.silverpeas.components.datawarning.service.DataWarningEngine;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.datawarning.service.DataWarningEngine;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +52,9 @@ import java.util.Properties;
 
 public class DataWarningSessionController extends AbstractComponentSessionController {
 
+  private static final String FREQUENCY_SCHEDULER_REQUEST_KEY = "frequenceSchedulerRequete";
+  private static final String HOUR_KEY = "heure";
+  private static final String MINUTE_KEY = "minute";
   /**
    * Interface metier du composant
    */
@@ -77,8 +80,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     try {
       dataWarningEngine = new DataWarningEngine(getComponentId());
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningSessionController.DataWarningSessionController",
-          "DataWarning.EX_DATA_ACCESS_FAILED", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
     sel = getSelection();
   }
@@ -95,8 +97,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     return getDataWarningDBDrivers().getDBDrivers();
   }
 
-  public void setCurrentDBDriver(String DBDriverUniqueId) {
-    currentDBDriver = DBDriverUniqueId;
+  public void setCurrentDBDriver(String dbDriverUniqueId) {
+    currentDBDriver = dbDriverUniqueId;
   }
 
   public DataWarningDBDriver getCurrentDBDriver() {
@@ -111,18 +113,18 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     //transforme la collection en tableau de string
     String[] idGroups = null;
     String[] idUsers = null;
-    if (groups != null && groups.size() > 0) {
+    if (groups != null && !groups.isEmpty()) {
       idGroups = new String[groups.size()];
-      DataWarningGroup[] Groups = groups.toArray(new DataWarningGroup[groups.size()]);
+      DataWarningGroup[] dataWarningGroups = groups.toArray(new DataWarningGroup[groups.size()]);
       for (int i = 0; i < groups.size(); i++) {
-        idGroups[i] = String.valueOf(Groups[i].getGroupId());
+        idGroups[i] = String.valueOf(dataWarningGroups[i].getGroupId());
       }
     }
-    if (users != null && users.size() > 0) {
+    if (users != null && !users.isEmpty()) {
       idUsers = new String[users.size()];
-      DataWarningUser[] Users = users.toArray(new DataWarningUser[users.size()]);
+      DataWarningUser[] dataWarningUsers = users.toArray(new DataWarningUser[users.size()]);
       for (int i = 0; i < users.size(); i++) {
-        idUsers[i] = String.valueOf(Users[i].getUserId());
+        idUsers[i] = String.valueOf(dataWarningUsers[i].getUserId());
       }
     }
     try {
@@ -147,8 +149,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
 
       retour = Selection.getSelectionURL();
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningSessionController.initSelectionPeas",
-          "DataWarning.MSG_CANT_INIT_SELECTIONPEAS", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return retour;
   }
@@ -319,75 +320,40 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
             .getGroups(groupIds.toArray(new String[groupIds.size()]));
         for (Group group : groups) {
           String[] userIds = group.getUserIds();
-          if (userIds != null && userIds.length > 0) {
-            for (final String userId : userIds) {
-              if (userId.equals(getUserId())) {
-                return true;
-              }
-            }
+          if (userIds != null && userIds.length > 0 && isUserIn(userIds)) {
+            return true;
           }
         }
       } catch (Exception e) {
-        SilverTrace.error("dataWarning", "DataWarningSessionController.isUserInDataWarningGroups",
-            "DataWarning.DataWarning.EX_LOAD_GROUPS", null, e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return false;
   }
 
-  public String getTextFrequenceScheduler() throws DataWarningException {
+  private boolean isUserIn(final String[] userIds) {
+    for (final String userId : userIds) {
+      if (userId.equals(getUserId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public String getTextFrequenceScheduler() {
     String retour = "";
     DataWarningScheduler scheduler = dataWarningEngine.getDataWarningScheduler();
     LocalizationBundle messages =
         ResourceLocator.getLocalizationBundle("org.silverpeas.dataWarning.multilang.dataWarning");
     if (scheduler != null) {
       if (scheduler.getNumberOfTimes() == 1) {
-        switch (scheduler.getNumberOfTimesMoment()) {
-          case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
-            retour += messages.getString("frequenceSchedulerRequete") + " " +
-                messages.getString("schedulerPeriodicity0") + " (" + messages.getString("minute") +
-                " : " + scheduler.
-                getMinits() + ")";
-            break;
-          case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
-            retour += messages.getString("frequenceSchedulerRequete") + " " +
-                messages.getString("schedulerPeriodicity1") + " (" + messages.getString("heure") +
-                " : " + scheduler.
-                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits() +
-                ")";
-            break;
-          case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
-            retour += messages.getString("frequenceSchedulerRequete") + " " +
-                messages.getString("schedulerPeriodicity2") + " (" +
-                messages.getString("jourSemaine") + " : " + scheduler.getDayOfWeek() + ", " +
-                messages.getString("heure") + " : " + scheduler.
-                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits() +
-                ")";
-            break;
-          case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
-            retour += messages.getString("frequenceSchedulerRequete") + " " +
-                messages.getString("schedulerPeriodicity3") + " (" +
-                messages.getString("jourMois") + " : " + (scheduler.getDayOfMonth() + 1) + ", " +
-                messages.getString("heure") + " : " + scheduler.getHours() + ", " +
-                messages.getString("minute") + " : " + scheduler.
-                getMinits() + ")";
-            break;
-          case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
-            retour += messages.getString("frequenceSchedulerRequete") + " " +
-                messages.getString("schedulerPeriodicity4") + " (" + messages.getString("mois") +
-                " : " + (scheduler.
-                getTheMonth() + 1) + ", " + messages.getString("jourMois") + " : " + (scheduler.
-                getDayOfMonth() + 1) + ", " + messages.getString("heure") + " : " + scheduler.
-                getHours() + ", " + messages.getString("minute") + " : " + scheduler.getMinits() +
-                ")";
-            break;
-        }
+        retour = setTextFrequencyFromTimesMoment(retour, scheduler, messages);
       } else {
-        retour += messages.getString("frequenceSchedulerRequete") + " " + scheduler.
+        retour += messages.getString(FREQUENCY_SCHEDULER_REQUEST_KEY) + " " + scheduler.
             getNumberOfTimes() + " " + messages.getString("schedulerPeriodicity5") + " ";
         if (scheduler.getNumberOfTimesMoment() ==
             DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR) {
-          retour += messages.getString("heure");
+          retour += messages.getString(HOUR_KEY);
         } else if (scheduler.getNumberOfTimesMoment() ==
             DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY) {
           retour += messages.getString("jour");
@@ -406,6 +372,79 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     return retour;
   }
 
+  private String setTextFrequencyFromTimesMoment(String retour,
+      final DataWarningScheduler scheduler, final LocalizationBundle messages) {
+    switch (scheduler.getNumberOfTimesMoment()) {
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR:
+        retour = nTimesMomentHour(retour, scheduler, messages);
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_DAY:
+        retour = nTimesMomentDay(retour, scheduler, messages);
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_WEEK:
+        retour = nTimesMomentWeek(retour, scheduler, messages);
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_MONTH:
+        retour = nTimesMomentMonth(retour, scheduler, messages);
+        break;
+      case DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_YEAR:
+        retour = nTimesMomentYear(retour, scheduler, messages);
+        break;
+      default:
+        break;
+    }
+    return retour;
+  }
+
+  private String nTimesMomentYear(String retour, final DataWarningScheduler scheduler,
+      final LocalizationBundle messages) {
+    retour += messages.getString(FREQUENCY_SCHEDULER_REQUEST_KEY) + " " +
+        messages.getString("schedulerPeriodicity4") + " (" + messages.getString("mois") + " : " +
+        (scheduler.
+            getTheMonth() + 1) + ", " + messages.getString("jourMois") + " : " + (scheduler.
+        getDayOfMonth() + 1) + ", " + messages.getString(HOUR_KEY) + " : " + scheduler.
+        getHours() + ", " + messages.getString(MINUTE_KEY) + " : " + scheduler.getMinits() + ")";
+    return retour;
+  }
+
+  private String nTimesMomentMonth(String retour, final DataWarningScheduler scheduler,
+      final LocalizationBundle messages) {
+    retour += messages.getString(FREQUENCY_SCHEDULER_REQUEST_KEY) + " " +
+        messages.getString("schedulerPeriodicity3") + " (" + messages.getString("jourMois") +
+        " : " + (scheduler.getDayOfMonth() + 1) + ", " + messages.getString(HOUR_KEY) + " : " +
+        scheduler.getHours() + ", " + messages.getString(MINUTE_KEY) + " : " + scheduler.
+        getMinits() + ")";
+    return retour;
+  }
+
+  private String nTimesMomentWeek(String retour, final DataWarningScheduler scheduler,
+      final LocalizationBundle messages) {
+    retour += messages.getString(FREQUENCY_SCHEDULER_REQUEST_KEY) + " " +
+        messages.getString("schedulerPeriodicity2") + " (" + messages.getString("jourSemaine") +
+        " : " + scheduler.getDayOfWeek() + ", " + messages.getString(HOUR_KEY) + " : " + scheduler.
+        getHours() + ", " + messages.getString(MINUTE_KEY) + " : " + scheduler.getMinits() + ")";
+    return retour;
+  }
+
+  private String nTimesMomentDay(String retour, final DataWarningScheduler scheduler,
+      final LocalizationBundle messages) {
+    retour += messages.getString(FREQUENCY_SCHEDULER_REQUEST_KEY) + " " +
+        messages.getString("schedulerPeriodicity1") + " (" + messages.getString(HOUR_KEY) + " : " +
+        scheduler.
+            getHours() + ", " + messages.getString(MINUTE_KEY) + " : " + scheduler.getMinits() +
+        ")";
+    return retour;
+  }
+
+  private String nTimesMomentHour(String retour, final DataWarningScheduler scheduler,
+      final LocalizationBundle messages) {
+    retour += messages.getString(FREQUENCY_SCHEDULER_REQUEST_KEY) + " " +
+        messages.getString("schedulerPeriodicity0") + " (" + messages.getString(MINUTE_KEY) +
+        " : " + scheduler.
+        getMinits() + ")";
+    return retour;
+  }
+
   public String[] getColumns() {
     return columns != null ? columns.clone() : null;
   }
@@ -418,21 +457,21 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     }
   }
 
-  public String getAnalysisTypeString() throws DataWarningException {
+  public String getAnalysisTypeString() {
     return getString("typeAnalyse" + Integer.toString(dataWarningEngine.getDataWarning().
         getAnalysisType()));
   }
 
-  public DataWarningEngine getDataWarningEngine() throws DataWarningException {
+  public DataWarningEngine getDataWarningEngine() {
     return dataWarningEngine;
   }
 
-  public DataWarningQuery setCurrentQueryType(int qt) throws DataWarningException {
+  public DataWarningQuery setCurrentQueryType(int qt) {
     queryType = qt;
     return getCurrentQuery();
   }
 
-  public DataWarningQuery getCurrentQuery() throws DataWarningException {
+  public DataWarningQuery getCurrentQuery() {
     return dataWarningEngine.getDataWarningQuery(queryType);
   }
 

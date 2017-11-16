@@ -35,9 +35,6 @@ import java.util.List;
  */
 public class DataWarningInitialize implements Initialization {
 
-  public DataWarningInitialize() {
-  }
-
   @Override
   public void init() {
     try {

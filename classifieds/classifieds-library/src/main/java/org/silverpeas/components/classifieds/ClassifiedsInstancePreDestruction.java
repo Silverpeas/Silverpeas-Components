@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.classifieds;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
@@ -48,7 +49,7 @@ public class ClassifiedsInstancePreDestruction implements ComponentInstancePreDe
       service.deleteAllClassifieds(componentInstanceId);
       service.deleteAllSubscribes(componentInstanceId);
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

@@ -61,7 +61,8 @@ public class DataWarningQueryResult extends Object {
     } else {
       valuesByUser = null;
     }
-    persoColumnNumber = colNum - 1; // Turn to Zero-based number
+    // Turn to Zero-based number
+    persoColumnNumber = colNum - 1;
     persoUID = puid;
   }
 
@@ -176,7 +177,7 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public void addRow(ArrayList row) {
+  public void addRow(List row) {
     // Add Full row to global result
     values.add(row);
 
@@ -184,7 +185,7 @@ public class DataWarningQueryResult extends Object {
     if (isPersoEnabled()) {
       String userPersoValue = (String) row.get(persoColumnNumber);
       List allUserRows = getValues(userPersoValue);
-      List clonedOne = (ArrayList) row.clone();
+      List clonedOne = new ArrayList(row);
       if (allUserRows == null) {
         allUserRows = new ArrayList();
       }
@@ -247,10 +248,8 @@ public class DataWarningQueryResult extends Object {
       List<List> valret = new ArrayList<>();
       for (int i = 0; i < values.size(); i++) {
         List valeur = (List) getValues().get(i);
-        if (valeur.size() > 1) {
-          if (valeur.get(persoColumnNumber).equals(userPersoValue)) {
-            valret.add(valeur);
-          }
+        if (valeur.size() > 1 && valeur.get(persoColumnNumber).equals(userPersoValue)) {
+          valret.add(valeur);
         }
       }
 
@@ -291,7 +290,8 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public List getColumns(String userId) {
+  public List getPersoColumns() {
+
     if (isPersoEnabled()) {
       ArrayList clo = ((ArrayList) columns.clone());
       if (clo.size() > persoColumnNumber) {
@@ -303,7 +303,7 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public int getNbColumns(String userId) {
+  public int getPersoNbColumns() {
     if (isPersoEnabled()) {
       return columns.size() - 1;
     } else {

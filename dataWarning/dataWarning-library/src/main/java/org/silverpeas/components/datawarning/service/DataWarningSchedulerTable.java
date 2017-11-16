@@ -33,6 +33,10 @@ public class DataWarningSchedulerTable {
   private static Map<String, DataWarningSchedulerImpl> schedulers =
       Collections.synchronizedMap(new HashMap<>());
 
+  private DataWarningSchedulerTable() {
+
+  }
+
   /**
    * Add a scheduler
    */

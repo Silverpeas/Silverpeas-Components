@@ -30,9 +30,6 @@ public class StyleSheet {
   private String size = null;
   private String content = null;
 
-  public StyleSheet() {
-  }
-
   public String getName() {
     return name;
   }

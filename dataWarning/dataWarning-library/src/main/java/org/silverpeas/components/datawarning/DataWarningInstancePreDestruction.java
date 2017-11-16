@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
 
@@ -51,7 +52,7 @@ public class DataWarningInstancePreDestruction implements ComponentInstancePreDe
       dataManager.deleteDataWarningScheduler(componentInstanceId);
       dataManager.deleteDataWarning(componentInstanceId);
     } catch (DataWarningException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

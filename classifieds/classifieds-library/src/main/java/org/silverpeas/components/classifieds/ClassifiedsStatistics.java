@@ -41,7 +41,7 @@ public class ClassifiedsStatistics implements ComponentStatisticsProvider {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
-    Collection<ClassifiedDetail> c = getElements(spaceId, componentId);
+    Collection<ClassifiedDetail> c = getElements(componentId);
     for (ClassifiedDetail classified : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(classified.getCreatorId());
@@ -51,7 +51,7 @@ public class ClassifiedsStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public Collection<ClassifiedDetail> getElements(String spaceId, String componentId) {
+  public Collection<ClassifiedDetail> getElements(String componentId) {
     ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
     return service.getAllClassifieds(componentId);
   }

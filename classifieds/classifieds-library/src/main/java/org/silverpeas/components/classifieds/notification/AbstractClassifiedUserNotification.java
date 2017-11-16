@@ -28,6 +28,7 @@ import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.MissingResourceException;
 
@@ -58,6 +59,7 @@ public abstract class AbstractClassifiedUserNotification extends
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");

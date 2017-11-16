@@ -31,6 +31,10 @@ import org.silverpeas.components.classifieds.model.ClassifiedDetail;
  */
 public final class ClassifiedUtil {
 
+  private ClassifiedUtil() {
+
+  }
+
   /**
    * Gets the URL of the specified classified in Silverpeas.
    * @param classified the classified.

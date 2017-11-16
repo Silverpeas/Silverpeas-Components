@@ -103,7 +103,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       HttpRequest request) {
     String flag = getFlag(surveySC.getUserRoles());
     String rootDest = "/survey/jsp/";
-    if (flag.equals("userMultiple")) {
+    if ("userMultiple".equals(flag)) {
       surveySC.setParticipationMultipleAllowedForUser(true);
     }
 

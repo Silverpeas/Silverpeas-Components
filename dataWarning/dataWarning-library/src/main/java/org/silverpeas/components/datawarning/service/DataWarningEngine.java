@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.datawarning.service;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
@@ -33,6 +32,7 @@ import org.silverpeas.components.datawarning.model.DataWarningQueryResult;
 import org.silverpeas.components.datawarning.model.DataWarningResult;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
 import org.silverpeas.components.datawarning.model.DataWarningUser;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -69,33 +69,47 @@ public final class DataWarningEngine {
   // --- DataWarning ---
   public DataWarningResult run() {
     DataWarningResult valret = null;
-    DataWarningQuery theQuery = null;
-    DataWarningQueryResult theResult = null;
-
-
     switch (dataWarning.getAnalysisType()) {
       case DataWarning.INCONDITIONAL_QUERY:
-        valret = new DataWarningResult(false);
-        theQuery = getDataWarningQuery(DataWarningQuery.QUERY_TYPE_RESULT);
-        theResult = theQuery.executeQuery(dataWarning);
-        valret.setDataQuery(theQuery);
-        valret.setQueryResult(theResult);
+        valret = executeInconditionalQuery();
         break;
       case DataWarning.TRIGGER_ANALYSIS:
-        valret = new DataWarningResult(true);
-        valret.setTriggerQuery(getDataWarningQuery(DataWarningQuery.QUERY_TYPE_TRIGGER));
-        valret.computeTriggerResult(dataWarning);
-        if (valret.getTriggerEnabled()) {
-          // Get the result
-          theQuery = getDataWarningQuery(DataWarningQuery.QUERY_TYPE_RESULT);
-          if (theQuery.getQuery().length() > 0) {
-            theResult = theQuery.executeQuery(dataWarning);
-          }
-        }
-        valret.setDataQuery(theQuery);
-        valret.setQueryResult(theResult);
+        valret = triggerAnalysisQuery();
+        break;
+      default:
         break;
     }
+    return valret;
+  }
+
+  private DataWarningResult triggerAnalysisQuery() {
+    DataWarningQueryResult theResult = null;
+    DataWarningQuery theQuery = null;
+    final DataWarningResult valret;
+    valret = new DataWarningResult(true);
+    valret.setTriggerQuery(getDataWarningQuery(DataWarningQuery.QUERY_TYPE_TRIGGER));
+    valret.computeTriggerResult(dataWarning);
+    if (valret.getTriggerEnabled()) {
+      // Get the result
+      theQuery = getDataWarningQuery(DataWarningQuery.QUERY_TYPE_RESULT);
+      if (theQuery.getQuery().length() > 0) {
+        theResult = theQuery.executeQuery(dataWarning);
+      }
+    }
+    valret.setDataQuery(theQuery);
+    valret.setQueryResult(theResult);
+    return valret;
+  }
+
+  private DataWarningResult executeInconditionalQuery() {
+    final DataWarningResult valret;
+    final DataWarningQuery theQuery;
+    final DataWarningQueryResult theResult;
+    valret = new DataWarningResult(false);
+    theQuery = getDataWarningQuery(DataWarningQuery.QUERY_TYPE_RESULT);
+    theResult = theQuery.executeQuery(dataWarning);
+    valret.setDataQuery(theQuery);
+    valret.setQueryResult(theResult);
     return valret;
   }
 
@@ -110,6 +124,8 @@ public final class DataWarningEngine {
         case DataWarning.TRIGGER_ANALYSIS:
           createDataWarningQuery(DataWarningQuery.QUERY_TYPE_RESULT);
           createDataWarningQuery(DataWarningQuery.QUERY_TYPE_TRIGGER);
+          break;
+        default:
           break;
       }
     }
@@ -129,10 +145,6 @@ public final class DataWarningEngine {
   // --- DataWarningQuery ---
   protected void createDataWarningQuery(int queryType) throws DataWarningException {
     DataWarningQuery dwq = new DataWarningQuery();
-
-    SilverTrace
-        .info("dataWarning", "DataWarningEngine.createDataWarningQuery()", "root.MSG_ENTER_METHOD",
-            "queryType=" + queryType);
     dwq.setInstanceId(componentId);
     dwq.setType(queryType);
     dataManager.createDataWarningQuery(dwq);
@@ -169,8 +181,7 @@ public final class DataWarningEngine {
       dataScheduler.setWakeUp(nextTime);
       dataManager.updateDataWarningScheduler(dataScheduler);
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningEngine.updateSchedulerWakeUp()",
-          "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -258,4 +269,4 @@ public final class DataWarningEngine {
   public DataWarningUser getDataWarningUser(String userId) throws DataWarningException {
     return dataManager.getDataWarningUser(componentId, userId);
   }
-};
+}
