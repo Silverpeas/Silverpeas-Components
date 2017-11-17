@@ -35,5 +35,6 @@ public class DelegatednewsIndexer implements ComponentIndexation {
 
   @Override
   public void index(SilverpeasComponentInstance componentInst) throws Exception {
+    // nothing to index
   }
 }

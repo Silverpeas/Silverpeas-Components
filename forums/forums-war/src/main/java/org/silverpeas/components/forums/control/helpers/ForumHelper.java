@@ -27,9 +27,9 @@ import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -58,6 +58,10 @@ public class ForumHelper {
   public static final String STATUS_VALIDATE = "V";
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
+
+  private ForumHelper() {
+
+  }
 
   public static int getIntParameter(HttpServletRequest request, String name) {
     return getIntParameter(request, name, -1);
@@ -95,9 +99,7 @@ public class ForumHelper {
       }
       out.print("\"");
     } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPmessagesListManager.addBodyOnload()", "root.EX_NO_MESSAGE", null,
-              ioe);
+      SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
   }
 
@@ -107,9 +109,7 @@ public class ForumHelper {
         out.print("resizeFrame();");
       }
     } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPmessagesListManager.addJsResizeFrameCall()", "root.EX_NO_MESSAGE",
-              null, ioe);
+      SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
   }
 
@@ -298,9 +298,7 @@ public class ForumHelper {
 
       out.println("  </tr>");
     } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPmessagesListManager.displayMessageLine()", "root.EX_NO_MESSAGE", null,
-              ioe);
+      SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
   }
 
@@ -322,9 +320,7 @@ public class ForumHelper {
             resource.getString("noMessages") + "</span></td></tr>");
       }
     } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPmessagesListManager.displayMessagesList()", "root.EX_NO_MESSAGE",
-              null, ioe);
+      SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
   }
 
@@ -369,15 +365,12 @@ public class ForumHelper {
                 "</span></td></tr>");
         out.println("</table>");
       }
-    } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPmessagesListManager.displaySingleMessageList()", "root.EX_NO_MESSAGE",
-              null, ioe);
     } catch (Exception e) {
+      SilverLogger.getLogger(ForumHelper.class).warn(e);
       try {
         out.println("ERROR");
       } catch (IOException ioe2) {
-
+        SilverLogger.getLogger(ForumHelper.class).warn(ioe2);
       }
     }
   }

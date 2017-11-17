@@ -45,6 +45,10 @@ import java.util.List;
 public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnlineSessionController> {
 
   private static final long serialVersionUID = -6152014003939730643L;
+  private static final String INBOX = "InBox";
+  private static final String USER_PANEL_CURRENT_USER_IDS = "UserPanelCurrentUserIds";
+  private static final String USER_PANEL_CURRENT_GROUP_IDS = "UserPanelCurrentGroupIds";
+  private static final String FORM_CONTEXT = "FormContext";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -115,24 +119,25 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         String[] senderUserIds = StringUtil.split(
             request.getParameter(
-                FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + "UserPanelCurrentUserIds"),
+                FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX +
+                    USER_PANEL_CURRENT_USER_IDS),
             ',');
         String[] senderGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + "UserPanelCurrentGroupIds"),
+            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
             ',');
 
         String[] receiverUserIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + "UserPanelCurrentUserIds"),
+            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
             ',');
         String[] receiverGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + "UserPanelCurrentGroupIds"),
+            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
             ',');
 
         formsOnlineSC.updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds,
             receiverGroupIds);
 
         return getDestination("Main", formsOnlineSC, request);
-      } else if (function.equals("EditForm")) {
+      } else if ("EditForm".equals(function)) {
         String formId = request.getParameter("formId");
         FormDetail form;
         if (formId != null) {
@@ -155,20 +160,20 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           formsOnlineSC.deleteForm(Integer.parseInt(formId));
         }
         return getDestination("Main", formsOnlineSC, request);
-      } else if (function.equals("ModifySenders") || function.equals("ModifyReceivers")) {
+      } else if ("ModifySenders".equals(function) || "ModifyReceivers".equals(function)) {
         List<String> userIds =
-            (List<String>) StringUtil.splitString(request.getParameter("UserPanelCurrentUserIds"),
+            (List<String>) StringUtil.splitString(request.getParameter(USER_PANEL_CURRENT_USER_IDS),
                 ',');
         List<String> groupIds =
-            (List<String>) StringUtil.splitString(request.getParameter("UserPanelCurrentGroupIds"),
+            (List<String>) StringUtil.splitString(request.getParameter(USER_PANEL_CURRENT_GROUP_IDS),
                 ',');
 
-        if (function.equals("ModifySenders")) {
+        if ("ModifySenders".equals(function)) {
           return formsOnlineSC.initSelectionSenders(userIds, groupIds);
         }
 
         return formsOnlineSC.initSelectionReceivers(userIds, groupIds);
-      } else if (function.equals("Preview")) {
+      } else if ("Preview".equals(function)) {
         // form object and data fetching
         String xmlFormName = request.getParameter("Form");
         String xmlFormShortName =
@@ -192,23 +197,23 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
+        request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
 
         destination = "preview.jsp";
-      } else if (function.equals("PublishForm")) {
+      } else if ("PublishForm".equals(function)) {
         formsOnlineSC.publishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
-      } else if (function.equals("UnpublishForm")) {
+      } else if ("UnpublishForm".equals(function)) {
         formsOnlineSC.unpublishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
-      } else if (function.equals("InBox")) {
+      } else if (INBOX.equals(function)) {
 
         // Selection
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
 
         request.setAttribute("Requests", formsOnlineSC.getAllValidatorRequests());
         destination = "inbox.jsp";
-      } else if (function.equals("NewRequest")) {
+      } else if ("NewRequest".equals(function)) {
         String formId = request.getParameter("FormId");
         FormDetail form = formsOnlineSC.loadForm(Integer.parseInt(formId));
         formsOnlineSC.setCurrentForm(form);
@@ -234,11 +239,11 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         // call of the JSP with required parameters
         request.setAttribute("Form", formUpdate);
-        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
+        request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
         request.setAttribute("FormDetail", form);
 
         destination = "newFormInstance.jsp";
-      } else if (function.equals("SaveRequest")) {
+      } else if ("SaveRequest".equals(function)) {
         // recuperation des donnees saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
 
@@ -254,14 +259,14 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("Form", userRequest.getFormWithData());
         PagesContext formContext = getFormContext(formsOnlineSC);
         formContext.setObjectId(formInstanceId);
-        request.setAttribute("FormContext", formContext);
+        request.setAttribute(FORM_CONTEXT, formContext);
         request.setAttribute("ValidationEnabled", userRequest.isValidationEnabled());
         request.setAttribute("UserRequest", userRequest);
         request.setAttribute("FormDetail", userRequest.getForm());
         request.setAttribute("Origin", checkOrigin(request));
 
         destination = "viewInstance.jsp";
-      } else if (function.equals("EffectiveValideForm")) {
+      } else if ("EffectiveValideForm".equals(function)) {
         String requestId = request.getParameter("Id");
         String decision = request.getParameter("decision");
         String comment = request.getParameter("comment");
@@ -269,17 +274,17 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.updateValidationStatus(requestId, decision, comment);
 
         return getDestination(origin, formsOnlineSC, request);
-      } else if (function.equals("ArchiveRequest")) {
+      } else if ("ArchiveRequest".equals(function)) {
         String id = request.getParameter("Id");
         formsOnlineSC.archiveRequest(id);
 
         return getDestination("Main", formsOnlineSC, request);
-      } else if (function.equals("DeleteRequest")) {
+      } else if ("DeleteRequest".equals(function)) {
         String id = request.getParameter("Id");
         formsOnlineSC.deleteRequest(id);
 
-        return getDestination("InBox", formsOnlineSC, request);
-      } else if (function.equals("DeleteRequests")) {
+        return getDestination(INBOX, formsOnlineSC, request);
+      } else if ("DeleteRequests".equals(function)) {
 
         // Selection
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
@@ -290,7 +295,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         // Clear selection
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
 
-        return getDestination("InBox", formsOnlineSC, request);
+        return getDestination(INBOX, formsOnlineSC, request);
       } else {
         destination = "welcome.jsp";
       }

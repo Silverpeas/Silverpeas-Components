@@ -30,6 +30,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -327,6 +328,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       try {
         con.rollback();
       } catch (SQLException e1) {
+        SilverLogger.getLogger(this).warn(e1);
       }
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.updateRights()",
           SilverpeasException.ERROR, "formsOnline.UPDATE_RIGHTS_FAILED", e);
@@ -334,6 +336,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       try {
         con.setAutoCommit(true);
       } catch (SQLException e1) {
+        SilverLogger.getLogger(this).warn(e1);
       }
       freeConnection(con);
     }
@@ -727,6 +730,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       try {
         con.close();
       } catch (Exception exception) {
+        SilverLogger.getLogger(this).warn(exception);
       }
     }
   }

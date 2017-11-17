@@ -27,6 +27,7 @@ import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ public class FormsOnlineProcessedRequestUserNotification
   @Override
   protected Collection<String> getUserIdsToNotify() {
     if (usersToBeNotified == null) {
-      return null;
+      return Collections.emptyList();
     }
     return usersToBeNotified;
   }

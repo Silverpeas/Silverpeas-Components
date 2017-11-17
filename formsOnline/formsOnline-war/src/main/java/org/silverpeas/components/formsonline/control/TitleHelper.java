@@ -38,7 +38,8 @@ public final class TitleHelper {
     while (title.contains("${")) {
       int begin = title.indexOf("${");
       int end = title.indexOf('}');
-      String keyword = title.substring(begin + 2, end);
+      final int startField = 2;
+      String keyword = title.substring(begin + startField, end);
       title = title.substring(0, begin) + computeKeyword(instance, keyword) +
           title.substring(end + 1, title.length());
     }
@@ -48,33 +49,15 @@ public final class TitleHelper {
   private static String computeKeyword(FormInstance instance, String keyword) {
     StringTokenizer tokenizer = new StringTokenizer(keyword, ".");
 
-    if (tokenizer.countTokens() == 2) {
+    final int fieldToken = 2;
+    final int attributeToken = 3;
+    if (tokenizer.countTokens() == fieldToken) {
       String firstToken = tokenizer.nextToken();
-      if (!firstToken.equals("sender")) {
+      if (!"sender".equals(firstToken)) {
         return "$$" + keyword + "$$";
       }
-      String fieldName = tokenizer.nextToken();
-      UserDetail user = UserDetail.getById(instance.getCreatorId());
-      String value;
-      switch (fieldName) {
-        case "firstName":
-          value = user.getFirstName();
-          break;
-        case "lastName":
-          value = user.getLastName();
-          break;
-        case "fullName":
-          value = user.getDisplayedName();
-          break;
-        case "emailName":
-          value = user.geteMail();
-          break;
-        default:
-          value = "$$" + keyword + "$$";
-          break;
-      }
-      return value;
-    } else if (tokenizer.countTokens() == 3) {
+      return getFieldValue(instance, keyword, tokenizer);
+    } else if (tokenizer.countTokens() == attributeToken) {
       String firstToken = tokenizer.nextToken();
       String secondToken = tokenizer.nextToken();
       if (!"sender".equals(firstToken) || (!"attribute".equals(secondToken))) {
@@ -86,6 +69,31 @@ public final class TitleHelper {
     } else {
       return "$$" + keyword + "$$";
     }
+  }
+
+  private static String getFieldValue(final FormInstance instance, final String keyword,
+      final StringTokenizer tokenizer) {
+    String fieldName = tokenizer.nextToken();
+    UserDetail user = UserDetail.getById(instance.getCreatorId());
+    String value;
+    switch (fieldName) {
+      case "firstName":
+        value = user.getFirstName();
+        break;
+      case "lastName":
+        value = user.getLastName();
+        break;
+      case "fullName":
+        value = user.getDisplayedName();
+        break;
+      case "emailName":
+        value = user.geteMail();
+        break;
+      default:
+        value = "$$" + keyword + "$$";
+        break;
+    }
+    return value;
   }
 
 }

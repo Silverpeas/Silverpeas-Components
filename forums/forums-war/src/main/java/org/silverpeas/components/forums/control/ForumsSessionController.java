@@ -55,7 +55,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.DateUtil;
@@ -64,6 +63,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -100,8 +100,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * Used to send notification
    */
   private NotificationSender notifSender = null;
-  public String typeMessages = "Messages";
-  public String typeSubjects = "Subjects";
+  private static final String TYPE_MESSAGES = "Messages";
+  private static final String TYPE_SUBJECTS = "Subjects";
   private SettingBundle settings = null;
   private PublicationService publicationService = null;
   private StatisticService statisticService = null;
@@ -134,8 +134,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public Forum[] getForumsListByCategory(String categoryId) {
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
     List<Forum> forums = getForumsService().getForumsByCategory(forumPK, categoryId);
-    Forum[] result = forums.toArray(new Forum[forums.size()]);
-    return result;
+    return forums.toArray(new Forum[forums.size()]);
   }
 
   public Forum getForum(int forumId) {
@@ -291,7 +290,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return messageList.toArray(new Message[messageList.size()]);
   }
 
-  protected boolean isVisible(String status, int forumId) throws ForumsException {
+  protected boolean isVisible(String status, int forumId) {
     return isModerator(getUserId(), forumId) || Message.STATUS_VALIDATE.equals(status);
   }
 
@@ -299,12 +298,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       throws ForumsException {
     for (Message message : messages) {
       int forumId = message.getForumId();
-      if (isVisible(message.getStatus(), forumId) || "admin".equals(getHighestSilverpeasUserRole().getName()) ||
-          message.getAuthor().equals(getUserId())) {
-        if (message.getParentId() == messageId) {
-          messageList.add(message);
-          fillMessageList(messageList, messages, message.getId());
-        }
+      if (message.getParentId() == messageId && (isVisible(message.getStatus(), forumId) ||
+          "admin".equals(getHighestSilverpeasUserRole().getName()) ||
+          message.getAuthor().equals(getUserId()))) {
+        messageList.add(message);
+        fillMessageList(messageList, messages, message.getId());
       }
     }
   }
@@ -331,7 +329,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       return new Object[]{String.valueOf(message.getId()), message.getDate(),
           (user != null ? user.getDisplayedName() : "Unknown")};
     }
-    return null;
+    return new Object[0];
   }
 
   /**
@@ -340,7 +338,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author sfariello
    */
   public int getNbSubjects(int forumId) {
-    return getForumsService().getNbMessages(forumId, typeSubjects, Message.STATUS_VALIDATE);
+    return getForumsService().getNbMessages(forumId, TYPE_SUBJECTS, Message.STATUS_VALIDATE);
   }
 
   /**
@@ -349,7 +347,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author sfariello
    */
   public int getNbMessages(int forumId) {
-    return getForumsService().getNbMessages(forumId, typeMessages, Message.STATUS_VALIDATE);
+    return getForumsService().getNbMessages(forumId, TYPE_MESSAGES, Message.STATUS_VALIDATE);
   }
 
   public int getAuthorNbMessages(String userId) {
@@ -572,7 +570,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return false;
   }
 
-  public boolean isModerator(String userId, int forumId) throws ForumsException {
+  public boolean isModerator(String userId, int forumId) {
     boolean result = getForumsService().isModerator(userId, getForumPK(forumId));
     int parentId = getForumParentId(forumId);
     while ((!result) && (parentId != 0)) {
@@ -658,19 +656,13 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isNewMessageByForum(String userId, int forumId) {
-    boolean isNewMessage =
+    return
         getForumsService().isNewMessageByForum(userId, getForumPK(forumId), Message.STATUS_VALIDATE);
-    SilverTrace
-        .info("forums", "ForumsSessionController.isNewMessageByForum()", "root.MSG_GEN_PARAM_VALUE",
-            "isNewMessageByForum = " + isNewMessage);
-    return isNewMessage;
   }
 
   public boolean isNewMessage(String userId, int forumId, int messageId) {
-    boolean isNewMessage =
+    return
         getForumsService().isNewMessage(userId, getForumPK(forumId), messageId, Message.STATUS_VALIDATE);
-
-    return isNewMessage;
   }
 
   public void setLastVisit(String userId, int messageId) {
@@ -714,7 +706,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public boolean isPdcUsed() {
     String value = getComponentParameterValue("usePdc");
-    return (value != null && "yes".equals(value.toLowerCase()));
+    return (value != null && "yes".equalsIgnoreCase(value));
   }
 
   public boolean isUseRss() {
@@ -723,7 +715,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public boolean isForumInsideForum() {
     String value = getComponentParameterValue("forumInsideForum");
-    return (value != null && "yes".equals(value.toLowerCase()));
+    return (value != null && "yes".equalsIgnoreCase(value));
   }
 
   public int getSilverObjectId(int objectId) {
@@ -748,14 +740,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized void updateCategory(NodeDetail category) {
-    SilverTrace.error("forums", "ForumsSessionController.updateCategory", "",
-        "category = " + category.getName());
     getForumsService().updateCategory(category);
   }
 
   public synchronized void deleteCategory(String categoryId) {
-    SilverTrace.error("forums", "ForumsSessionController.deleteCategory", "",
-        "categoryId = " + categoryId);
     getForumsService().deleteCategory(categoryId, getComponentId());
   }
 
@@ -891,9 +879,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace
-            .error("Forum", "ForumActionHelper.actionManagement", "PdcClassificationEntity error",
-                "Problem to read JSON", e);
+        SilverLogger.getLogger(this).error(e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();

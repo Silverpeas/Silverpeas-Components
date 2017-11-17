@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.formsonline;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
@@ -41,8 +42,6 @@ import java.util.Arrays;
 @Named
 public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDestruction {
 
-  private static final String FORMS_QUERY =
-      "select distinct xmlFormName from SC_FormsOnline_Forms where instanceId = ?";
   private static final String USER_RIGHTS_DELETION =
       "delete from SC_FormsOnline_UserRights where instanceId = ?";
   private static final String GROUP_RIGHTS_DELETION =
@@ -63,7 +62,7 @@ public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDe
     try(Connection connection = DBUtil.openConnection()) {
       deleteForms(connection, componentInstanceId);
     } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 
@@ -74,7 +73,7 @@ public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDe
         stmt.setString(1, componentId);
         stmt.executeUpdate();
       } catch (SQLException e) {
-        throw new RuntimeException(
+        throw new SilverpeasRuntimeException(
             "Cannot delete forms in " + componentId + " (query: " + deletion + ")", e);
       }
     }

@@ -40,7 +40,19 @@ public class ForumModeratorBean {
   private int forumId;
   private Collection<Moderator> moderators;
   private Collection<String> specificModerators;
-  private Collection<String> inheritedModerators;
+
+  /**
+   * Default constructor.
+   * @param forumId
+   * @param moderators
+   * @param specificModerators
+   */
+  private ForumModeratorBean(final int forumId, final Collection<Moderator> moderators,
+      final Collection<String> specificModerators) {
+    this.forumId = forumId;
+    this.moderators = moderators;
+    this.specificModerators = specificModerators;
+  }
 
   /**
    * Initializing a bean that handle moderators of a forum.
@@ -50,7 +62,6 @@ public class ForumModeratorBean {
    */
   public static ForumModeratorBean from(int forumId, List<Moderator> moderators) {
     Collection<String> specificModerators = new ArrayList<>(moderators.size());
-    Collection<String> inheritedModerators = new ArrayList<>(moderators.size());
     Collections.sort(moderators, new AbstractComplexComparator<Moderator>() {
       @Override
       protected ValueBuffer getValuesToCompare(final Moderator moderator) {
@@ -59,28 +70,11 @@ public class ForumModeratorBean {
       }
     });
     for (Moderator moderator : moderators) {
-      if (moderator.isByInheritance()) {
-        inheritedModerators.add(moderator.getUserId());
-      } else {
+      if (!moderator.isByInheritance()) {
         specificModerators.add(moderator.getUserId());
       }
     }
-    return new ForumModeratorBean(forumId, moderators, specificModerators, inheritedModerators);
-  }
-
-  /**
-   * Default constructor.
-   * @param forumId
-   * @param moderators
-   * @param specificModerators
-   * @param inheritedModerators
-   */
-  private ForumModeratorBean(final int forumId, final Collection<Moderator> moderators,
-      final Collection<String> specificModerators, final Collection<String> inheritedModerators) {
-    this.forumId = forumId;
-    this.moderators = moderators;
-    this.specificModerators = specificModerators;
-    this.inheritedModerators = inheritedModerators;
+    return new ForumModeratorBean(forumId, moderators, specificModerators);
   }
 
   /**

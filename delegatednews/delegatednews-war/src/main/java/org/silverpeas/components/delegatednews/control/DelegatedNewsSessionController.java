@@ -146,8 +146,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * @return a JSON representation of the list of Delegated News (as string)
    * @throws DelegatedNewsRuntimeException
    */
-  public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews)
-      throws DelegatedNewsRuntimeException {
+  public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews) {
     List<DelegatedNewsEntity> listDelegatedNewsEntity = new ArrayList<>();
     for (DelegatedNews delegatedNews : listDelegatedNews) {
       DelegatedNewsEntity delegatedNewsEntity =
@@ -163,8 +162,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * @return a JSON representation of the list of Delegated News Entity (as string)
    * @throws DelegatedNewsRuntimeException
    */
-  private String listAsJSON(List<DelegatedNewsEntity> listDelegatedNewsEntity)
-      throws DelegatedNewsRuntimeException {
+  private String listAsJSON(List<DelegatedNewsEntity> listDelegatedNewsEntity) {
     DelegatedNewsEntity[] entities =
         listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[listDelegatedNewsEntity.size()]);
     try {

@@ -72,6 +72,30 @@ public class DelegatedNewsEntity implements WebEntity {
   @XmlElement(defaultValue = "0")
   private int newsOrder;
 
+  @SuppressWarnings("unused")
+  private DelegatedNewsEntity(final DelegatedNews delegatednews) {
+    this.pubId = delegatednews.getPubId();
+    this.instanceId = delegatednews.getInstanceId();
+    this.status = delegatednews.getStatus();
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    UserDetail user = organizationController.getUserDetail(delegatednews.getContributorId());
+    this.contributor = UserProfileEntity.fromUser(user);
+    if (delegatednews.getValidatorId() != null) {
+      user = organizationController.getUserDetail(delegatednews.getValidatorId());
+      if (user != null) {
+        this.validator = UserProfileEntity.fromUser(user);
+      }
+    }
+    this.validationDate = delegatednews.getValidationDate();
+    this.beginDate = delegatednews.getBeginDate();
+    this.endDate = delegatednews.getEndDate();
+    this.newsOrder = delegatednews.getNewsOrder();
+  }
+
+  protected DelegatedNewsEntity() {
+  }
+
   /**
    * Gets the URI of this comment entity.
    * @return the URI with which this entity can be access through the Web.
@@ -162,27 +186,6 @@ public class DelegatedNewsEntity implements WebEntity {
     return this.newsOrder;
   }
 
-  @SuppressWarnings("unused")
-  private DelegatedNewsEntity(final DelegatedNews delegatednews) {
-    this.pubId = delegatednews.getPubId();
-    this.instanceId = delegatednews.getInstanceId();
-    this.status = delegatednews.getStatus();
-    OrganizationController organizationController =
-        OrganizationControllerProvider.getOrganisationController();
-    UserDetail user = organizationController.getUserDetail(delegatednews.getContributorId());
-    this.contributor = UserProfileEntity.fromUser(user);
-    if (delegatednews.getValidatorId() != null) {
-      user = organizationController.getUserDetail(delegatednews.getValidatorId());
-      if (user != null) {
-        this.validator = UserProfileEntity.fromUser(user);
-      }
-    }
-    this.validationDate = delegatednews.getValidationDate();
-    this.beginDate = delegatednews.getBeginDate();
-    this.endDate = delegatednews.getEndDate();
-    this.newsOrder = delegatednews.getNewsOrder();
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -195,13 +198,17 @@ public class DelegatedNewsEntity implements WebEntity {
     if (this.pubId != -1 && other.getPubId() != -1) {
       return this.pubId == other.getPubId();
     } else {
-      return this.instanceId.equals(other.getInstanceId()) &&
-          this.status.equals(other.getStatus()) &&
-          this.contributor.equals(other.getContributor()) &&
-          this.validator.equals(other.getValidator()) &&
-          this.validationDate.equals(other.getValidationDate()) &&
-          this.beginDate.equals(other.getBeginDate()) && this.endDate.equals(other.getEndDate()) &&
-          this.newsOrder == other.getNewsOrder();
+      if (!this.instanceId.equals(other.getInstanceId()) ||
+          !this.status.equals(other.getStatus()) ||
+          !this.contributor.equals(other.getContributor())) {
+        return false;
+      }
+      if (!this.validator.equals(other.getValidator()) ||
+          !this.validationDate.equals(other.getValidationDate()) ||
+          this.newsOrder != other.getNewsOrder()) {
+        return false;
+      }
+      return this.beginDate.equals(other.getBeginDate()) && this.endDate.equals(other.getEndDate());
     }
   }
 
@@ -222,18 +229,14 @@ public class DelegatedNewsEntity implements WebEntity {
     return hash;
   }
 
-  protected DelegatedNewsEntity() {
-  }
-
   /**
    * Gets the delegated news business objet that this entity represents.
    * @return a delegated news instance.
    */
   public DelegatedNews toDelegatedNews() {
-    DelegatedNews delegatedNews =
+    return
         new DelegatedNews(this.pubId, this.instanceId, this.contributor.getId(),
             this.validationDate, this.beginDate, this.endDate);
-    return delegatedNews;
   }
 
   /**

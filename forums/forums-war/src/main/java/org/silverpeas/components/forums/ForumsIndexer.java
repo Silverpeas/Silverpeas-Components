@@ -63,7 +63,7 @@ public class ForumsIndexer implements ComponentIndexation {
     }
   }
 
-  private void indexMessageNoRecursive(String componentId, int messageId) throws Exception {
+  private void indexMessageNoRecursive(String componentId, int messageId) {
     getForumsService().createIndex(new MessagePK(componentId, String.valueOf(messageId)));
   }
 

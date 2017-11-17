@@ -27,4 +27,7 @@ public class FormsOnlineComponentSettings {
 
   public static final String PARAM_WORKGROUP = "workgroup";
 
+  private FormsOnlineComponentSettings() {
+
+  }
 }
