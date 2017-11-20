@@ -42,18 +42,6 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
   private final boolean isCutted;
 
   /**
-   * Gets an instance
-   * @param media
-   * @param fromMediaPk
-   * @param isCutted
-   * @return
-   */
-  public static GalleryPasteMediaFileProcess getInstance(final Media media,
-      final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPasteMediaFileProcess(media, fromMediaPk, isCutted);
-  }
-
-  /**
    * Default hidden constructor
    * @param media
    * @param fromMediaPk
@@ -66,6 +54,18 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
     this.isCutted = isCutted;
   }
 
+  /**
+   * Gets an instance
+   * @param media
+   * @param fromMediaPk
+   * @param isCutted
+   * @return
+   */
+  public static GalleryPasteMediaFileProcess getInstance(final Media media,
+      final MediaPK fromMediaPk, final boolean isCutted) {
+    return new GalleryPasteMediaFileProcess(media, fromMediaPk, isCutted);
+  }
+
   /*
    * (non-Javadoc)
    * @see AbstractFileProcess#processFiles(org.silverpeas.process.
@@ -76,10 +76,9 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
   public void processFiles(final ProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
     InternalMedia internalMedia = getMedia().getInternalMedia();
-    if (internalMedia != null) {
-      if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
+    if (internalMedia != null &&
+        (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId()))) {
         MediaUtil.pasteInternalMedia(fileHandler, fromMediaPk, internalMedia, isCutted);
-      }
     }
   }
 }

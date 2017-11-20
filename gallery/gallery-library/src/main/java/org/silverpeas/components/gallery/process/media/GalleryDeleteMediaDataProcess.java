@@ -47,20 +47,20 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
 
   /**
+   * Default hidden constructor
+   * @param media
+   */
+  protected GalleryDeleteMediaDataProcess(final Media media) {
+    super(media);
+  }
+
+  /**
    * Gets an instance
    * @param media
    * @return
    */
   public static GalleryDeleteMediaDataProcess getInstance(final Media media) {
     return new GalleryDeleteMediaDataProcess(media);
-  }
-
-  /**
-   * Default hidden constructor
-   * @param media
-   */
-  protected GalleryDeleteMediaDataProcess(final Media media) {
-    super(media);
   }
 
   /*
@@ -113,21 +113,5 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
       throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractProcess#onSuccessful()
-   */
-  @Override
-  public void onSuccessful() throws Exception {
-    super.onSuccessful();
-
-    /*
-     * TODO - YCH - JMS ?
-     * AttachmentController
-     * .deleteAttachment(AttachmentController.searchAttachmentByCustomerPK(new ForeignPK(
-     * mediaId, context.getComponentInstanceId())));
-     */
   }
 }

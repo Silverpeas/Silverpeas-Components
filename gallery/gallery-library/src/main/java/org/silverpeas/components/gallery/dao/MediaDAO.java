@@ -23,9 +23,6 @@
  */
 package org.silverpeas.components.gallery.dao;
 
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.constant.StreamingProvider;
@@ -41,12 +38,14 @@ import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
-import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -59,17 +58,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
 import static org.silverpeas.core.persistence.jdbc.DBUtil.getUniqueId;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
 
 public class MediaDAO {
 
-  private MediaDAO() {
-  }
+  private static final String GALLERY_PATH_TABLE = "SC_Gallery_Path";
 
   private static final String SELECT_INTERNAL_MEDIA_PREFIX =
       "I.mediaId, I.fileName, I.fileSize, I.fileMimeType, I.download, I.beginDownloadDate," +
           " I.endDownloadDate, ";
+  private static final String GALLERY_MEDIA_TABLE = "SC_Gallery_Media";
+  private static final String GALLERY_PHOTO_TABLE = "SC_Gallery_Photo";
+  private static final String GALLERY_VIDEO_TABLE = "SC_Gallery_Video";
+  private static final String GALLERY_SOUND_TABLE = "SC_Gallery_Sound";
+  private static final String GALLERY_STREAMING_TABLE = "SC_Gallery_Streaming";
+  private static final String GALLERY_INTERNAL_TABLE = "SC_Gallery_Internal";
+  private static final String MEDIA_ID_CRITERIA = "mediaId = ?";
+  private static final String MEDIA_ID_PARAM = "mediaId";
+  private static final String INSTANCE_ID_PARAM = "instanceId";
+
+  private MediaDAO() {
+  }
 
   /**
    * Gets the media behind the specified criteria.
@@ -80,7 +90,7 @@ public class MediaDAO {
    * @throws IllegalArgumentException
    */
   public static Media getByCriteria(final MediaCriteria criteria)
-      throws SQLException, IllegalArgumentException {
+      throws SQLException {
     return unique(findByCriteria(criteria));
   }
 
@@ -104,46 +114,8 @@ public class MediaDAO {
       String mediaId = row.getString(1);
       MediaType mediaType = MediaType.from(row.getString(2));
       String instanceId = row.getString(3);
-      final Media currentMedia;
-      switch (mediaType) {
-        case Photo:
-          currentMedia = new Photo();
-          photos.put(mediaId, (Photo) currentMedia);
-          break;
-        case Video:
-          currentMedia = new Video();
-          videos.put(mediaId, (Video) currentMedia);
-          break;
-        case Sound:
-          currentMedia = new Sound();
-          sounds.put(mediaId, (Sound) currentMedia);
-          break;
-        case Streaming:
-          currentMedia = new Streaming();
-          streamings.put(mediaId, (Streaming) currentMedia);
-          break;
-        default:
-          currentMedia = null;
-      }
-      if (currentMedia == null) {
-        // Unknown media ...
-        SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
-            "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
-        return null;
-      }
-
-      currentMedia.setMediaPK(new MediaPK(mediaId, instanceId));
-      currentMedia.setTitle(row.getString(4));
-      currentMedia.setDescription(row.getString(5));
-      currentMedia.setAuthor(row.getString(6));
-      currentMedia.setKeyWord(row.getString(7));
-      currentMedia.setVisibilityPeriod(
-          Period.check(Period.from(new Date(row.getLong(8)), new Date(row.getLong(9)))));
-      currentMedia.setCreationDate(row.getTimestamp(10));
-      currentMedia.setCreatorId(row.getString(11));
-      currentMedia.setLastUpdateDate(row.getTimestamp(12));
-      currentMedia.setLastUpdatedBy(row.getString(13));
-      return currentMedia;
+      MediaInfo mediaInfo = new MediaInfo(mediaId, mediaType, instanceId);
+      return fetchCurrentMedia(photos, videos, sounds, streamings, row, mediaInfo);
     });
 
     decoratePhotos(media, photos);
@@ -152,6 +124,52 @@ public class MediaDAO {
     decorateStreamings(media, streamings);
 
     return queryBuilder.orderingResult(media);
+  }
+
+  private static Media fetchCurrentMedia(final Map<String, Photo> photos,
+      final Map<String, Video> videos, final Map<String, Sound> sounds,
+      final Map<String, Streaming> streaming, final ResultSetWrapper row, final MediaInfo mediaInfo)
+      throws SQLException {
+    final Media currentMedia;
+    switch (mediaInfo.getMediaType()) {
+      case Photo:
+        currentMedia = new Photo();
+        photos.put(mediaInfo.getMediaId(), (Photo) currentMedia);
+        break;
+      case Video:
+        currentMedia = new Video();
+        videos.put(mediaInfo.getMediaId(), (Video) currentMedia);
+        break;
+      case Sound:
+        currentMedia = new Sound();
+        sounds.put(mediaInfo.getMediaId(), (Sound) currentMedia);
+        break;
+      case Streaming:
+        currentMedia = new Streaming();
+        streaming.put(mediaInfo.getMediaId(), (Streaming) currentMedia);
+        break;
+      default:
+        currentMedia = null;
+    }
+    if (currentMedia == null) {
+      // Unknown media ...
+      SilverLogger.getLogger(MediaDAO.class)
+          .warn("Unknown media type {0}", mediaInfo.getMediaType());
+      return null;
+    }
+
+    currentMedia.setMediaPK(new MediaPK(mediaInfo.getMediaId(), mediaInfo.getInstanceId()));
+    currentMedia.setTitle(row.getString(4));
+    currentMedia.setDescription(row.getString(5));
+    currentMedia.setAuthor(row.getString(6));
+    currentMedia.setKeyWord(row.getString(7));
+    currentMedia.setVisibilityPeriod(
+        Period.check(Period.from(new Date(row.getLong(8)), new Date(row.getLong(9)))));
+    currentMedia.setCreationDate(row.getTimestamp(10));
+    currentMedia.setCreatorId(row.getString(11));
+    currentMedia.setLastUpdateDate(row.getTimestamp(12));
+    currentMedia.setLastUpdatedBy(row.getString(13));
+    return currentMedia;
   }
 
   /**
@@ -181,9 +199,8 @@ public class MediaDAO {
         for (String mediaIdNotFound : mediaIds) {
           Photo currentPhoto = photos.remove(mediaIdNotFound);
           media.remove(currentPhoto);
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.decoratePhotos()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "photo not found (removed from result): " + mediaIdNotFound);
+          SilverLogger.getLogger(MediaDAO.class)
+              .warn("Photo not found (removed from result): {0}", mediaIdNotFound);
         }
       }
     }
@@ -218,9 +235,8 @@ public class MediaDAO {
         for (String mediaIdNotFound : mediaIds) {
           Video currentVideo = videos.remove(mediaIdNotFound);
           media.remove(currentVideo);
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.decorateVideos()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "video not found (removed from result): " + mediaIdNotFound);
+          SilverLogger.getLogger(MediaDAO.class)
+              .warn("Video not found (removed from result): {0}", mediaIdNotFound);
         }
       }
     }
@@ -254,9 +270,8 @@ public class MediaDAO {
         for (String mediaIdNotFound : mediaIds) {
           Sound currentSound = sounds.remove(mediaIdNotFound);
           media.remove(currentSound);
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.decorateSounds()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "sound not found (removed from result): " + mediaIdNotFound);
+          SilverLogger.getLogger(MediaDAO.class)
+              .warn("Sound not found (removed from result): {0}", mediaIdNotFound);
         }
       }
     }
@@ -288,9 +303,8 @@ public class MediaDAO {
         for (String mediaIdNotFound : mediaIds) {
           Streaming currentStreaming = streamings.remove(mediaIdNotFound);
           media.remove(currentStreaming);
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.decorateStreamings()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "streaming not found (removed from result): " + mediaIdNotFound);
+          SilverLogger.getLogger(MediaDAO.class)
+              .warn("Streaming not found (removed from result): {0}", mediaIdNotFound);
         }
       }
     }
@@ -359,7 +373,7 @@ public class MediaDAO {
     String uuid = media.getId();
 
     boolean isInsert = !isSqlDefined(uuid) ||
-        createCountFor("SC_Gallery_Media").where("mediaId = ?", uuid).execute() == 0;
+        createCountFor(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, uuid).execute() == 0;
 
     // A new ID
     if (isInsert) {
@@ -403,16 +417,16 @@ public class MediaDAO {
     updateQueries.add(prepareSaveInternalMedia(photo, isInsert));
     final JdbcSqlQuery photoSave;
     if (isInsert) {
-      photoSave = createInsertFor("SC_Gallery_Photo");
-      photoSave.addInsertParam("mediaId", photo.getId());
+      photoSave = createInsertFor(GALLERY_PHOTO_TABLE);
+      photoSave.addInsertParam(MEDIA_ID_PARAM, photo.getId());
     } else {
-      photoSave = createUpdateFor("SC_Gallery_Photo");
+      photoSave = createUpdateFor(GALLERY_PHOTO_TABLE);
     }
     Definition definition = photo.getDefinition();
     photoSave.addSaveParam("resolutionW", definition.getWidth(), isInsert);
     photoSave.addSaveParam("resolutionH", definition.getHeight(), isInsert);
     if (!isInsert) {
-      photoSave.where("mediaId = ?", photo.getId());
+      photoSave.where(MEDIA_ID_CRITERIA, photo.getId());
     }
     updateQueries.add(photoSave);
     return updateQueries;
@@ -429,10 +443,10 @@ public class MediaDAO {
     updateQueries.add(prepareSaveInternalMedia(video, isInsert));
     final JdbcSqlQuery videoSave;
     if (isInsert) {
-      videoSave = createInsertFor("SC_Gallery_Video");
-      videoSave.addInsertParam("mediaId", video.getId());
+      videoSave = createInsertFor(GALLERY_VIDEO_TABLE);
+      videoSave.addInsertParam(MEDIA_ID_PARAM, video.getId());
     } else {
-      videoSave = createUpdateFor("SC_Gallery_Video");
+      videoSave = createUpdateFor(GALLERY_VIDEO_TABLE);
     }
     Definition definition = video.getDefinition();
     videoSave.addSaveParam("resolutionW", definition.getWidth(), isInsert);
@@ -440,7 +454,7 @@ public class MediaDAO {
     videoSave.addSaveParam("bitrate", video.getBitrate(), isInsert);
     videoSave.addSaveParam("duration", video.getDuration(), isInsert);
     if (!isInsert) {
-      videoSave.where("mediaId = ?", video.getId());
+      videoSave.where(MEDIA_ID_CRITERIA, video.getId());
     }
     updateQueries.add(videoSave);
     return updateQueries;
@@ -457,15 +471,15 @@ public class MediaDAO {
     updateQueries.add(prepareSaveInternalMedia(sound, isInsert));
     final JdbcSqlQuery soundSave;
     if (isInsert) {
-      soundSave = createInsertFor("SC_Gallery_Sound");
-      soundSave.addInsertParam("mediaId", sound.getId());
+      soundSave = createInsertFor(GALLERY_SOUND_TABLE);
+      soundSave.addInsertParam(MEDIA_ID_PARAM, sound.getId());
     } else {
-      soundSave = createUpdateFor("SC_Gallery_Sound");
+      soundSave = createUpdateFor(GALLERY_SOUND_TABLE);
     }
     soundSave.addSaveParam("bitrate", sound.getBitrate(), isInsert);
     soundSave.addSaveParam("duration", sound.getDuration(), isInsert);
     if (!isInsert) {
-      soundSave.where("mediaId = ?", sound.getId());
+      soundSave.where(MEDIA_ID_CRITERIA, sound.getId());
     }
     updateQueries.add(soundSave);
     return updateQueries;
@@ -480,15 +494,15 @@ public class MediaDAO {
   private static JdbcSqlQuery prepareSaveStreaming(Streaming streaming, boolean isInsert) {
     final JdbcSqlQuery streamingSave;
     if (isInsert) {
-      streamingSave = createInsertFor("SC_Gallery_Streaming");
-      streamingSave.addInsertParam("mediaId", streaming.getId());
+      streamingSave = createInsertFor(GALLERY_STREAMING_TABLE);
+      streamingSave.addInsertParam(MEDIA_ID_PARAM, streaming.getId());
     } else {
-      streamingSave = createUpdateFor("SC_Gallery_Streaming");
+      streamingSave = createUpdateFor(GALLERY_STREAMING_TABLE);
     }
     streamingSave.addSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
     streamingSave.addSaveParam("provider", streaming.getProvider(), isInsert);
     if (!isInsert) {
-      streamingSave.where("mediaId = ?", streaming.getId());
+      streamingSave.where(MEDIA_ID_CRITERIA, streaming.getId());
     }
     return streamingSave;
   }
@@ -504,13 +518,13 @@ public class MediaDAO {
       boolean isInsert) {
     final JdbcSqlQuery mediaSave;
     if (isInsert) {
-      mediaSave = createInsertFor("SC_Gallery_Media");
-      mediaSave.addInsertParam("mediaId", media.getId());
+      mediaSave = createInsertFor(GALLERY_MEDIA_TABLE);
+      mediaSave.addInsertParam(MEDIA_ID_PARAM, media.getId());
     } else {
-      mediaSave = createUpdateFor("SC_Gallery_Media");
+      mediaSave = createUpdateFor(GALLERY_MEDIA_TABLE);
     }
     mediaSave.addSaveParam("mediaType", media.getType(), isInsert);
-    mediaSave.addSaveParam("instanceId", media.getComponentInstanceId(), isInsert);
+    mediaSave.addSaveParam(INSTANCE_ID_PARAM, media.getComponentInstanceId(), isInsert);
     mediaSave.addSaveParam("title", media.getTitle(), isInsert);
     mediaSave.addSaveParam("description", media.getDescription(), isInsert);
     mediaSave.addSaveParam("author", media.getAuthor(), isInsert);
@@ -537,7 +551,7 @@ public class MediaDAO {
       mediaSave.addUpdateParam("lastUpdatedBy", media.getLastUpdatedBy());
     }
     if (!isInsert) {
-      mediaSave.where("mediaId = ?", media.getId());
+      mediaSave.where(MEDIA_ID_CRITERIA, media.getId());
     }
     return mediaSave;
   }
@@ -551,10 +565,10 @@ public class MediaDAO {
   private static JdbcSqlQuery prepareSaveInternalMedia(InternalMedia iMedia, boolean isInsert) {
     final JdbcSqlQuery iMediaSave;
     if (isInsert) {
-      iMediaSave = createInsertFor("SC_Gallery_Internal");
-      iMediaSave.addInsertParam("mediaId", iMedia.getId());
+      iMediaSave = createInsertFor(GALLERY_INTERNAL_TABLE);
+      iMediaSave.addInsertParam(MEDIA_ID_PARAM, iMedia.getId());
     } else {
-      iMediaSave = createUpdateFor("SC_Gallery_Internal");
+      iMediaSave = createUpdateFor(GALLERY_INTERNAL_TABLE);
     }
     iMediaSave.addSaveParam("fileName", iMedia.getFileName(), isInsert);
     iMediaSave.addSaveParam("fileSize", iMedia.getFileSize(), isInsert);
@@ -567,7 +581,7 @@ public class MediaDAO {
         iMedia.getDownloadPeriod().getEndDate().getTime() : null;
     iMediaSave.addSaveParam("endDownloadDate", endDate, isInsert);
     if (!isInsert) {
-      iMediaSave.where("mediaId = ?", iMedia.getId());
+      iMediaSave.where(MEDIA_ID_CRITERIA, iMedia.getId());
     }
     return iMediaSave;
   }
@@ -580,27 +594,26 @@ public class MediaDAO {
   public static void deleteMedia(Media media) throws SQLException {
     String mediaId = media.getId();
     JdbcSqlQueries updateQueries = new JdbcSqlQueries();
-    updateQueries.add(createDeleteFor("SC_Gallery_Media").where("mediaId = ?", mediaId));
+    updateQueries.add(createDeleteFor(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
     if (MediaType.Photo == media.getType() || MediaType.Video == media.getType() ||
         MediaType.Sound == media.getType()) {
-      updateQueries.add(createDeleteFor("SC_Gallery_Internal").where("mediaId = ?", mediaId));
+      updateQueries.add(createDeleteFor(GALLERY_INTERNAL_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
     }
     switch (media.getType()) {
       case Photo:
-        updateQueries.add(createDeleteFor("SC_Gallery_Photo").where("mediaId = ?", mediaId));
+        updateQueries.add(createDeleteFor(GALLERY_PHOTO_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       case Video:
-        updateQueries.add(createDeleteFor("SC_Gallery_Video").where("mediaId = ?", mediaId));
+        updateQueries.add(createDeleteFor(GALLERY_VIDEO_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       case Sound:
-        updateQueries.add(createDeleteFor("SC_Gallery_Sound").where("mediaId = ?", mediaId));
+        updateQueries.add(createDeleteFor(GALLERY_SOUND_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       case Streaming:
-        updateQueries.add(createDeleteFor("SC_Gallery_Streaming").where("mediaId = ?", mediaId));
+        updateQueries.add(createDeleteFor(GALLERY_STREAMING_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       default:
-        SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.deleteMedia",
-            "Unknown media type to delete id=" + media.getId());
+        SilverLogger.getLogger(MediaDAO.class).warn("Unknown media type: {0}", media.getId());
         break;
     }
     updateQueries.execute();
@@ -617,14 +630,14 @@ public class MediaDAO {
     List<?> pathParams =
         Arrays.asList(media.getId(), media.getInstanceId(), Integer.valueOf(albumId));
 
-    boolean isInsert = createCountFor("SC_Gallery_Path")
+    boolean isInsert = createCountFor(GALLERY_PATH_TABLE)
         .where("mediaId = ? and instanceId = ? and nodeId = ?", pathParams).execute() == 0;
 
     if (isInsert) {
       Iterator<?> paramIt = pathParams.iterator();
-      JdbcSqlQuery insert = createInsertFor("SC_Gallery_Path");
-      insert.addInsertParam("mediaId", paramIt.next());
-      insert.addInsertParam("instanceId", paramIt.next());
+      JdbcSqlQuery insert = createInsertFor(GALLERY_PATH_TABLE);
+      insert.addInsertParam(MEDIA_ID_PARAM, paramIt.next());
+      insert.addInsertParam(INSTANCE_ID_PARAM, paramIt.next());
       insert.addInsertParam("nodeId", paramIt.next());
       insert.execute();
     }
@@ -636,7 +649,7 @@ public class MediaDAO {
    * @throws SQLException
    */
   public static void deleteAllMediaPath(Media media) throws SQLException {
-    createDeleteFor("SC_Gallery_Path")
+    createDeleteFor(GALLERY_PATH_TABLE)
         .where("mediaId = ? and instanceId = ?", media.getId(), media.getInstanceId()).execute();
   }
 
@@ -692,12 +705,12 @@ public class MediaDAO {
       List<String> availableComponents, Period period) throws SQLException {
     JdbcSqlQuery query = create("(select createDate as dateinformation, mediaId, 'new' as type");
     query.addSqlPart("from SC_Gallery_Media where createdBy").in(userIds);
-    query.and("instanceId").in(availableComponents);
+    query.and(INSTANCE_ID_PARAM).in(availableComponents);
     query.and("createDate >= ? and createDate <= ?)", period.getBeginDatable(),
         period.getEndDatable());
     query.addSqlPart("union (select lastUpdateDate as dateinformation, mediaId, 'update' as type");
     query.addSqlPart("from SC_Gallery_Media where lastUpdatedBy").in(userIds);
-    query.and("instanceId").in(availableComponents);
+    query.and(INSTANCE_ID_PARAM).in(availableComponents);
     query.and("lastUpdateDate <> createDate");
     query.and("lastUpdateDate >= ? and lastUpdateDate <= ?)", period.getBeginDatable(),
         period.getEndDatable());
@@ -710,5 +723,29 @@ public class MediaDAO {
           new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
       return new SocialInformationGallery(withStatus);
     });
+  }
+
+  private static class MediaInfo {
+    private final String mediaId;
+    private final MediaType mediaType;
+    private final String instanceId;
+
+    public MediaInfo(final String mediaId, final MediaType mediaType, final String instanceId) {
+      this.mediaId = mediaId;
+      this.mediaType = mediaType;
+      this.instanceId = instanceId;
+    }
+
+    public String getMediaId() {
+      return mediaId;
+    }
+
+    public MediaType getMediaType() {
+      return mediaType;
+    }
+
+    public String getInstanceId() {
+      return instanceId;
+    }
   }
 }

@@ -27,6 +27,7 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.components.forums.model.ForumDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.MissingResourceException;
 
@@ -61,6 +62,7 @@ public abstract class AbstractForumsForumUserNotification
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).warn(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");

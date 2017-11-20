@@ -25,6 +25,7 @@ package org.silverpeas.components.gallery.delegate;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -187,7 +188,8 @@ public abstract class AbstractMediaDataDelegate {
    * Perform a form update
    * @param pagesContext
    */
-  public void updateForm(final String mediaId, final PagesContext pagesContext) throws Exception {
+  public void updateForm(final String mediaId, final PagesContext pagesContext) throws
+      FormException {
     final RecordSet set = recordSet;
     DataRecord data = set.getRecord(mediaId);
     if (data == null) {

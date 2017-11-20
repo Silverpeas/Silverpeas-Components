@@ -41,6 +41,7 @@ import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * @author Yohann Chastagnier
@@ -75,7 +76,7 @@ public abstract class AbstractGalleryDataProcess extends
    * @param session
    * @throws Exception
    */
-  abstract protected void processData(final ProcessExecutionContext context,
+  protected abstract void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception;
 
   /**
@@ -137,6 +138,7 @@ public abstract class AbstractGalleryDataProcess extends
         getPublicationTemplateManager().getPublicationTemplate(
             context.getComponentInstanceId() + ":" + xmlFormShortName, formName);
       } catch (final PublicationTemplateException e) {
+        SilverLogger.getLogger(this).warn(e);
         formName = null;
       }
     }
@@ -173,10 +175,8 @@ public abstract class AbstractGalleryDataProcess extends
    */
   protected void updateMedia(final boolean updateTechnicalDataRequired,
       final ProcessExecutionContext context) throws Exception {
-    if (getMedia() instanceof InternalMedia) {
-      if (!StringUtil.isDefined(getMedia().getTitle())) {
-        getMedia().setTitle(((InternalMedia) getMedia()).getFileName());
-      }
+    if (getMedia() instanceof InternalMedia && !StringUtil.isDefined(getMedia().getTitle())) {
+      getMedia().setTitle(((InternalMedia) getMedia()).getFileName());
     }
     MediaDAO.saveMedia(OperationContext.fromUser(context.getUser())
         .setUpdatingInCaseOfCreation(!updateTechnicalDataRequired), getMedia());

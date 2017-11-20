@@ -24,13 +24,18 @@
 
 package org.silverpeas.components.gallery.constant;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class StreamingProviderTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testFrom() {

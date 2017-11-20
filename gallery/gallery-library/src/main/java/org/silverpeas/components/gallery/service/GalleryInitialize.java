@@ -30,8 +30,6 @@ import org.silverpeas.core.initialization.Initialization;
  * user, the other to delete orders.
  */
 public class GalleryInitialize implements Initialization {
-  public GalleryInitialize() {
-  }
 
   @Override
   public void init() {

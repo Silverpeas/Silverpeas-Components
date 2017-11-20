@@ -157,6 +157,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override

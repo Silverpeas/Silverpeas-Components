@@ -39,6 +39,14 @@ import static org.silverpeas.core.persistence.jdbc.DBUtil.getUniqueId;
 
 public class OrderDAO {
 
+  private static final String GALLERY_ORDER_TABLE = "SC_Gallery_Order";
+  private static final String GALLERY_ORDER_DETAIL_TABLE = "SC_Gallery_OrderDetail";
+  private static final String ORDER_ID_CRITERION = "orderId = ?";
+
+  private OrderDAO() {
+
+  }
+
   /**
    * Persists a new order.
    * @param mediaIds the identifier list of media to attach to a new order.
@@ -52,7 +60,7 @@ public class OrderDAO {
 
     // New order
     String uuid = getUniqueId();
-    JdbcSqlQuery insert = createInsertFor("SC_Gallery_Order");
+    JdbcSqlQuery insert = createInsertFor(GALLERY_ORDER_TABLE);
     insert.addInsertParam("orderId", uuid);
     insert.addInsertParam("userId", userId);
     insert.addInsertParam("instanceId", instanceId);
@@ -76,7 +84,7 @@ public class OrderDAO {
    */
   private static void addOrderMedia(String mediaId, String orderId, String instanceId)
       throws SQLException {
-    JdbcSqlQuery insert = createInsertFor("SC_Gallery_OrderDetail");
+    JdbcSqlQuery insert = createInsertFor(GALLERY_ORDER_DETAIL_TABLE);
     insert.addInsertParam("orderId", orderId);
     insert.addInsertParam("mediaId", mediaId);
     insert.addInsertParam("instanceId", instanceId);
@@ -92,7 +100,7 @@ public class OrderDAO {
     updateOrderStatus(order);
     List<OrderRow> rows = order.getRows();
     for (OrderRow row : rows) {
-      JdbcSqlQuery update = createUpdateFor("SC_Gallery_OrderDetail");
+      JdbcSqlQuery update = createUpdateFor(GALLERY_ORDER_DETAIL_TABLE);
       update.addUpdateParam("downloadDecision", row.getDownloadDecision());
       update.where("orderId = ? and mediaId = ?", row.getOrderId(), row.getMediaId());
       update.execute();
@@ -105,10 +113,10 @@ public class OrderDAO {
    * @throws SQLException
    */
   private static void updateOrderStatus(Order order) throws SQLException {
-    JdbcSqlQuery update = createUpdateFor("SC_Gallery_Order");
+    JdbcSqlQuery update = createUpdateFor(GALLERY_ORDER_TABLE);
     update.addUpdateParam("processDate", new Timestamp(new Date().getTime()));
     update.addUpdateParam("processUser", order.getProcessUserId());
-    update.where("orderId = ?", order.getOrderId());
+    update.where(ORDER_ID_CRITERION, order.getOrderId());
     update.execute();
   }
 
@@ -118,7 +126,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   public static void deleteOrder(Order order) throws SQLException {
-    createDeleteFor("SC_Gallery_Order").where("orderId = ?", order.getOrderId()).execute();
+    createDeleteFor(GALLERY_ORDER_TABLE).where(ORDER_ID_CRITERION, order.getOrderId()).execute();
     Collection<OrderRow> orderRows = getAllOrderDetails(order.getOrderId());
     if (orderRows != null) {
       for (final OrderRow row : orderRows) {
@@ -134,7 +142,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   private static void deleteMediaFromOrder(String mediaId, String orderId) throws SQLException {
-    createDeleteFor("SC_Gallery_OrderDetail").where("mediaId = ? and orderId = ?", mediaId, orderId)
+    createDeleteFor(GALLERY_ORDER_DETAIL_TABLE).where("mediaId = ? and orderId = ?", mediaId, orderId)
         .execute();
   }
 
@@ -147,7 +155,7 @@ public class OrderDAO {
   public static List<OrderRow> getAllOrderDetails(final String orderId) throws SQLException {
     return createSelect(
         "mediaId, instanceId, downloadDate, downloadDecision from SC_Gallery_OrderDetail")
-        .where("orderId = ?", orderId).execute(row -> {
+        .where(ORDER_ID_CRITERION, orderId).execute(row -> {
           String mediaId = row.getString(1);
           String instanceId = row.getString(2);
           OrderRow orderRow = new OrderRow(orderId, mediaId, instanceId);
@@ -163,7 +171,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   public static void updateOrderRow(OrderRow row) throws SQLException {
-    JdbcSqlQuery update = createUpdateFor("SC_Gallery_OrderDetail");
+    JdbcSqlQuery update = createUpdateFor(GALLERY_ORDER_DETAIL_TABLE);
     update.addUpdateParam("downloadDate", new Timestamp(new Date().getTime()));
     update.addUpdateParam("downloadDecision", row.getDownloadDecision());
     update.where("orderId = ? and mediaId = ?", row.getOrderId(), row.getMediaId());

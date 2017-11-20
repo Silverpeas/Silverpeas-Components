@@ -34,10 +34,10 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -128,26 +128,9 @@ public abstract class InternalMedia extends Media {
       mediaResolution = MediaResolution.PREVIEW;
     }
     if (getType().isPhoto()) {
-      if (MediaResolution.WATERMARK == mediaResolution) {
-        SilverpeasFile fileWatermark = getFile(MediaResolution.WATERMARK);
-        if (!fileWatermark.exists()) {
-          return "";
-        }
-      }
-      if (StringUtil.isDefined(getFileName()) && isPreviewable()) {
-        return GalleryResourceURIs.buildMediaContentURI(this, mediaResolution).toString();
-      } else {
-        String thumbnailUrl = URLUtil.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
-            MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix() + ".jpg";
-        return FilenameUtils.normalize(thumbnailUrl, true);
-      }
+      return getPhotoThumbnailUrl(mediaResolution);
     } else if (getType().isVideo()) {
-      SilverpeasFile thumbFile =
-          SilverpeasFileProvider.getFile(FileUtils
-              .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(),
-                  getWorkspaceSubFolderName(),
-                  "img0.jpg").getPath());
-      if (thumbFile != null && thumbFile.exists()) {
+      if (getVideoThumbnailUrl()) {
         return GalleryResourceURIs.buildVideoThumbnailURI(this, ThumbnailPeriod.Thumbnail0)
             .toString();
       }
@@ -157,12 +140,38 @@ public abstract class InternalMedia extends Media {
     }
   }
 
+  private boolean getVideoThumbnailUrl() {
+    SilverpeasFile thumbFile =
+        SilverpeasFileProvider.getFile(FileUtils
+            .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(),
+                getWorkspaceSubFolderName(),
+                "img0.jpg").getPath());
+    return thumbFile != null && thumbFile.exists();
+  }
+
+  private String getPhotoThumbnailUrl(final MediaResolution mediaResolution) {
+    if (MediaResolution.WATERMARK == mediaResolution) {
+      SilverpeasFile fileWatermark = getFile(MediaResolution.WATERMARK);
+      if (!fileWatermark.exists()) {
+        return "";
+      }
+    }
+    if (StringUtil.isDefined(getFileName()) && isPreviewable()) {
+      return GalleryResourceURIs.buildMediaContentURI(this, mediaResolution).toString();
+    } else {
+      String thumbnailUrl = URLUtil.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
+          MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix() + ".jpg";
+      return FilenameUtils.normalize(thumbnailUrl, true);
+    }
+  }
+
   @Override
   public SilverpeasFile getFile(final MediaResolution mediaResolution) {
     if (StringUtil.isNotDefined(getFileName())) {
       return SilverpeasFile.NO_FILE;
     }
-    List<String> potentialFileNames = new ArrayList<String>(2);
+    final int maxSize = 2;
+    List<String> potentialFileNames = new ArrayList<>(maxSize);
     potentialFileNames.add(getFileName());
     if (getType().isPhoto()) {
       String thumbnailSuffix = mediaResolution.getThumbnailSuffix();
@@ -191,8 +200,7 @@ public abstract class InternalMedia extends Media {
       try {
         GalleryLoadMetaDataProcess.load(this);
       } catch (Exception e) {
-        SilverTrace.error("gallery", "Media.getAllMetaData", "gallery.MSG_NOT_ADD_METADATA",
-            "mediaId =  " + getId());
+        SilverLogger.getLogger(this).warn(e);
       }
     }
     return metaData;

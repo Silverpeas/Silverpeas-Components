@@ -38,7 +38,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
-import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -106,7 +105,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   }
 
   private void importRepository(final File repository, final String userId,
-      final String componentId, final String albumId) throws Exception {
+      final String componentId, final String albumId)  {
     boolean download = !"no".equalsIgnoreCase(
         organizationController.getComponentParameterValue(componentId, "download"));
 
@@ -121,9 +120,6 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
-      if (e instanceof EJBException) {
-        throw e;
-      }
     }
   }
 

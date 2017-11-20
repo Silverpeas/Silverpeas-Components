@@ -125,7 +125,7 @@ public class MediaUtil {
           extractor.extractImageIptcMetaData(handledFile.getFile(), lang)
               .forEach(photo::addMetaData);
         } catch (UnsupportedEncodingException e) {
-          SilverLogger.getLogger(MediaUtil.class)
+          SilverLogger.getLogger(MediaUtil.class).silent(e)
               .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
         }
       }
@@ -143,7 +143,7 @@ public class MediaUtil {
    * @param fileItem the current uploaded sound
    * @throws Exception
    */
-  public synchronized static void processSound(final FileHandler fileHandler, Sound sound,
+  public static synchronized void processSound(final FileHandler fileHandler, Sound sound,
       final FileItem fileItem) throws Exception {
     if (fileItem != null) {
       String name = fileItem.getName();
@@ -167,7 +167,7 @@ public class MediaUtil {
    * @param uploadedFile the current uploaded sound
    * @throws Exception
    */
-  public synchronized static void processSound(final FileHandler fileHandler, Sound sound,
+  public static synchronized void processSound(final FileHandler fileHandler, Sound sound,
       final File uploadedFile) throws Exception {
     if (uploadedFile != null) {
       try {
@@ -188,7 +188,7 @@ public class MediaUtil {
    * @param fileItem the current uploaded video
    * @throws Exception
    */
-  public synchronized static void processVideo(final FileHandler fileHandler, Video video,
+  public static synchronized void processVideo(final FileHandler fileHandler, Video video,
       final FileItem fileItem) throws Exception {
     if (fileItem != null) {
       String name = fileItem.getName();
@@ -212,7 +212,7 @@ public class MediaUtil {
    * @param uploadedFile the current uploaded video
    * @throws Exception
    */
-  public synchronized static void processVideo(final FileHandler fileHandler, Video video,
+  public static synchronized void processVideo(final FileHandler fileHandler, Video video,
       final File uploadedFile) throws Exception {
     if (uploadedFile != null) {
       try {
@@ -236,7 +236,7 @@ public class MediaUtil {
    * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
-  public synchronized static void processPhoto(final FileHandler fileHandler, final Photo photo,
+  public static synchronized void processPhoto(final FileHandler fileHandler, final Photo photo,
       final FileItem image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
     if (image != null) {
@@ -267,7 +267,7 @@ public class MediaUtil {
    * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
-  public synchronized static void processPhoto(final FileHandler fileHandler, final Photo photo,
+  public static synchronized void processPhoto(final FileHandler fileHandler, final Photo photo,
       final File image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
     if (image != null) {
@@ -289,7 +289,7 @@ public class MediaUtil {
    * @param media the destination.
    * @param cut true if it is a cut operation, false if it is a copy one.
    */
-  public synchronized static void pasteInternalMedia(final FileHandler fileHandler,
+  public static synchronized void pasteInternalMedia(final FileHandler fileHandler,
       final MediaPK fromPK, final InternalMedia media, final boolean cut) {
     InternalMedia fromMedia = media.getType().newInstance();
     fromMedia.setMediaPK(fromPK);
@@ -305,7 +305,7 @@ public class MediaUtil {
           fromDir.listFiles(
               or(
                   prefixFileFilter(fromPK.getId()),
-                  asFileFilter((file) -> file.getName().matches(
+                  asFileFilter(file -> file.getName().matches(
                       "^" + VIDEO_THUMBNAIL_FILE_PREFIX + "[0-9]+" +
                           VIDEO_THUMBNAIL_FILE_EXTENSION + "$"))
               ),
@@ -342,15 +342,19 @@ public class MediaUtil {
    * @throws MediaMetadataException
    */
   public static void setMetaData(final FileHandler fileHandler, final Photo photo)
-      throws IOException, MediaMetadataException {
-    setMetaData(fileHandler, photo, MessageManager.getLanguage());
+      throws MediaMetadataException {
+    try {
+      setMetaData(fileHandler, photo, MessageManager.getLanguage());
+    } catch (IOException e) {
+      throw new MediaMetadataException(e);
+    }
   }
 
   /**
    * In charge of processing an internal media.
    * @param <M>
    */
-  private static abstract class MediaProcess<M extends InternalMedia> {
+  private abstract static class MediaProcess<M extends InternalMedia> {
 
     private final HandledFile handledFile;
     private final M media;
@@ -520,7 +524,7 @@ public class MediaUtil {
           createThumbnails(nameForWatermark);
         } catch (final Exception e) {
           SilverLogger.getLogger(MediaUtil.class)
-              .error("image = " + photo.getTitle() + " (#" + photo.getId() + ")");
+              .error("image = " + photo.getTitle() + " (#" + photo.getId() + ")", e);
         }
       }
     }
@@ -543,7 +547,8 @@ public class MediaUtil {
             .error("impossible to read the width and height of file ''{0}''",
                 new Object[]{getHandledFile().getFile().getName()}, e);
       }
-      if (widthAndHeight == null || widthAndHeight.length != 2) {
+      final int widthAndHeightSize = 2;
+      if (widthAndHeight == null || widthAndHeight.length != widthAndHeightSize) {
         getMedia().setDefinition(Definition.fromZero());
       } else {
         getMedia().setDefinition(
@@ -642,13 +647,16 @@ public class MediaUtil {
             }
           }
         } catch (MediaMetadataException e) {
-          SilverLogger.getLogger(MediaUtil.class).error(
-              "Bad image file format " + getHandledFile().getFile().getPath() + ": " +
+          SilverLogger.getLogger(MediaUtil.class)
+              .silent(e)
+              .error("Bad image file format " + getHandledFile().getFile().getPath() + ": " +
                   e.getMessage());
         } catch (IOException e) {
-          SilverLogger.getLogger(MediaUtil.class).error(
-              "Bad metadata encoding in image " + getHandledFile().getFile().getPath() + ": " +
-                  e.getMessage());
+          SilverLogger.getLogger(MediaUtil.class)
+              .silent(e)
+              .error(
+                  "Bad metadata encoding in image " + getHandledFile().getFile().getPath() + ": " +
+                      e.getMessage());
         }
       }
       return nameForWatermark;

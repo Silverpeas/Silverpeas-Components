@@ -40,6 +40,14 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
   private final InternalMedia media;
 
   /**
+   * Default hidden constructor
+   * @param media
+   */
+  private GalleryLoadMetaDataProcess(final InternalMedia media) {
+    this.media = media;
+  }
+
+  /**
    * Method to call to load MetaData
    * @param media
    * @throws Exception
@@ -47,14 +55,6 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
   public static void load(final InternalMedia media) throws Exception {
     ProcessProvider.getProcessManagement().execute(new GalleryLoadMetaDataProcess(media),
         new ProcessExecutionContext(null, null));
-  }
-
-  /**
-   * Default hidden constructor
-   * @param media
-   */
-  private GalleryLoadMetaDataProcess(final InternalMedia media) {
-    this.media = media;
   }
 
   /*

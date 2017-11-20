@@ -23,25 +23,6 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodeDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.ParameterNames;
 import org.silverpeas.components.gallery.constant.MediaResolution;
@@ -55,17 +36,37 @@ import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.web.MediaSort;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -186,7 +187,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // récupération de l'album en cours
         String currentAlbumId = gallerySC.getCurrentAlbumId();
-        if (currentAlbumId.equals("0")) {
+        if ("0".equals(currentAlbumId)) {
           // on est à la racine, on retourne à l'accueil
           destination = getDestination("Main", gallerySC, request);
         } else {
@@ -381,38 +382,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           mediaId = (String) request.getAttribute("MediaId");
         }
         request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
-        try {
-          Media media = gallerySC.getMedia(mediaId);
-
-          request.setAttribute("SearchKeyWord", request.getParameter("SearchKeyWord"));
-          request.setAttribute("Rang", gallerySC.getRang());
-          request.setAttribute("NbMedia", gallerySC.goToAlbum().getMedia().size());
-          request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
-          request.setAttribute("IsWatermark", gallerySC.isMakeWatermark());
-          request.setAttribute("ImageResolutionPreview", gallerySC.getImageResolutionPreview(media));
-
-          boolean linkDownload = gallerySC.getHighestSilverpeasUserRole()
-              .isGreaterThanOrEquals(SilverpeasRole.publisher) ||
-              (SilverpeasRole.privilegedUser == highestUserRole && media.isDownloadable()) ||
-              (SilverpeasRole.writer == highestUserRole &&
-              media.getCreatorId().equals(gallerySC.getUserId()));
-          request.setAttribute("ViewLinkDownload", linkDownload);
-
-          putMediaCommonParameters(request, gallerySC, media, highestUserRole);
-
-          // Prepare XML form data
-          putXMLDisplayerIntoRequest(media, request, gallerySC);
-          // Slideshow requirements
-          request.setAttribute("albumId", gallerySC.getCurrentAlbumId());
-          request.setAttribute("wait", gallerySC.getSlideshowWait());
-          // Add this following line for backward compatibility TODO create migration script in
-          // order to insert each media inside content manager
-          request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(mediaId));
-          // appel jsp
-          destination = rootDest + "media" + media.getType().toString() + "View.jsp";
-        } catch (Exception e) {
-          destination = getDocumentNotFoundDestination(gallerySC, request);
-        }
+        destination = processMedia(gallerySC, request, rootDest, highestUserRole, mediaId);
       } else if ("PreviousMedia".equals(function)) {
         Media media = gallerySC.getPrevious();
         request.setAttribute("MediaId", media.getId());
@@ -425,31 +395,17 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // traitement des recherches
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
-        try {
-          MediaType mediaType = MediaType.from(type);
-          if (mediaType != MediaType.Unknown) {
-            // traitement des médias
-            request.setAttribute("MediaId", id);
-            destination = getDestination("MediaView", gallerySC, request);
-          } else if ("Node".equals(type)) {
-            // traitement des noeuds = les albums
-            destination = getDestination("ViewAlbum", gallerySC, request);
-          } else {
-            destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-          }
-        } catch (Exception e) {
-          destination = getDocumentNotFoundDestination(gallerySC, request);
-        }
+        destination = processMediaType(gallerySC, request, id, type);
       } else if ("AccessPath".equals(function)) {
 
         // visualisation des emplacements
         request.setAttribute("Path", gallerySC.getPath());
         // récupération du média
         String mediaId = request.getParameter("MediaId");
-        if (mediaId == null || mediaId.equals("")) {
+        if (mediaId == null || mediaId.isEmpty()) {
           mediaId = request.getParameter("PubId");
         }
-        if (mediaId == null || mediaId.equals("")) {
+        if (mediaId == null || mediaId.isEmpty()) {
           mediaId = (String) request.getAttribute("MediaId");
         }
 
@@ -486,7 +442,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = rootDest + "askMedia.jsp";
       } else if ("SendAsk".equals(function)) {
         // envoie d'une notification au gestionnaire
-        // String title = request.getParameter("Title");
         String description = request.getParameter("Description");
         gallerySC.sendAskMedia(description);
         destination = rootDest + "closeWindow.jsp";
@@ -511,13 +466,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = returnToAlbum(request, gallerySC);
       } else if ("ToAlertUser".equals(function)) {
         String mediaId = request.getParameter("MediaId");
-        try {
-          destination = gallerySC.initAlertUser(mediaId);
-        } catch (Exception e) {
-          SilverTrace
-              .warn("gallery", "GalleryRequestRouter.getDestination()", "root.EX_USERPANEL_FAILED",
-                  "function = " + function, e);
-        }
+        destination = processAlertUser(gallerySC, destination, mediaId);
       } else if ("EditSelectedMedia".equals(function)) {
         // traitement par lot
         String albumId = request.getParameter("AlbumId");
@@ -593,7 +542,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         processSelection(request, gallerySC);
 
         // liste des médias sélectionnés
-        if (gallerySC.getListSelected().size() > 0) {
+        if (!gallerySC.getListSelected().isEmpty()) {
           // récupération des médias à supprimer
           Collection<String> mediaIds = gallerySC.getListSelected();
 
@@ -609,7 +558,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         processSelection(request, gallerySC);
 
         // liste des médias sélectionnés
-        if (gallerySC.getListSelected().size() > 0) {
+        if (!gallerySC.getListSelected().isEmpty()) {
           final List<String> selectedIds = (List<String>) gallerySC.getListSelected();
 
           // get silverObjectIds according to selected mediaIds
@@ -634,7 +583,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
         processSelection(request, gallerySC);
         // liste des médias sélectionnés
-        if (gallerySC.getListSelected().size() > 0) {
+        if (!gallerySC.getListSelected().isEmpty()) {
           // passage des paramètres globaux
           request.setAttribute("AlbumId", albumId);
           request.setAttribute("Path", gallerySC.getPath());
@@ -964,7 +913,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if ("CopySelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
         // check list of selected media
-        if (gallerySC.getListSelected().size() > 0) {
+        if (!gallerySC.getListSelected().isEmpty()) {
           // retrieve media to copy
           Collection<String> mediaIds = gallerySC.getListSelected();
           // copy media
@@ -987,7 +936,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if ("CutSelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
 
-        if (gallerySC.getListSelected().size() > 0) {
+        if (!gallerySC.getListSelected().isEmpty()) {
           Collection<String> mediaIds = gallerySC.getListSelected();
           gallerySC.cutSelectedMedia(mediaIds);
           deselectAll(gallerySC);
@@ -1021,7 +970,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else if ("BasketDeleteSelectedMedia".equals(function)) {
           // delete selected medias from basket
           processSelection(request, gallerySC);
-          if (gallerySC.getListSelected().size() > 0) {
+          if (!gallerySC.getListSelected().isEmpty()) {
             gallerySC.deleteSelectedPhotosFromBasket();
           }
           destination = getDestination("BasketView", gallerySC, request);
@@ -1180,6 +1129,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = rootDest + function;
       }
     } catch (AccessForbiddenException afe) {
+      SilverLogger.getLogger(this).warn(afe);
       destination = "/admin/jsp/accessForbidden.jsp";
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -1187,6 +1137,83 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     }
 
     return destination;
+  }
+
+  private String processAlertUser(final GallerySessionController gallerySC, String destination,
+      final String mediaId) {
+    try {
+      destination = gallerySC.initAlertUser(mediaId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
+    return destination;
+  }
+
+  private String processMediaType(final GallerySessionController gallerySC,
+      final HttpRequest request, final String id, final String type) {
+    String destination;
+    try {
+      MediaType mediaType = MediaType.from(type);
+      if (mediaType != MediaType.Unknown) {
+        // traitement des médias
+        request.setAttribute("MediaId", id);
+        destination = getDestination("MediaView", gallerySC, request);
+      } else if ("Node".equals(type)) {
+        // traitement des noeuds = les albums
+        destination = getDestination("ViewAlbum", gallerySC, request);
+      } else {
+        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+      destination = getDocumentNotFoundDestination(gallerySC, request);
+    }
+    return destination;
+  }
+
+  private String processMedia(final GallerySessionController gallerySC, final HttpRequest request,
+      final String rootDest, final SilverpeasRole highestUserRole, final String mediaId) {
+    String destination;
+    try {
+      Media media = gallerySC.getMedia(mediaId);
+
+      request.setAttribute("SearchKeyWord", request.getParameter("SearchKeyWord"));
+      request.setAttribute("Rang", gallerySC.getRang());
+      request.setAttribute("NbMedia", gallerySC.goToAlbum().getMedia().size());
+      request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
+      request.setAttribute("IsWatermark", gallerySC.isMakeWatermark());
+      request.setAttribute("ImageResolutionPreview", gallerySC.getImageResolutionPreview(media));
+
+      boolean linkDownload = isLinkDownloadable(gallerySC, highestUserRole, media);
+      request.setAttribute("ViewLinkDownload", linkDownload);
+
+      putMediaCommonParameters(request, gallerySC, media, highestUserRole);
+
+      // Prepare XML form data
+      putXMLDisplayerIntoRequest(media, request, gallerySC);
+      // Slideshow requirements
+      request.setAttribute("albumId", gallerySC.getCurrentAlbumId());
+      request.setAttribute("wait", gallerySC.getSlideshowWait());
+      // Add this following line for backward compatibility TODO create migration script in
+      // order to insert each media inside content manager
+      request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(mediaId));
+      // appel jsp
+      destination = rootDest + "media" + media.getType().toString() + "View.jsp";
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+      destination = getDocumentNotFoundDestination(gallerySC, request);
+    }
+    return destination;
+  }
+
+  private boolean isLinkDownloadable(final GallerySessionController gallerySC,
+      final SilverpeasRole highestUserRole, final Media media) {
+    if (gallerySC.getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+      return true;
+    }
+    return (SilverpeasRole.privilegedUser == highestUserRole && media.isDownloadable()) ||
+        (SilverpeasRole.writer == highestUserRole &&
+            media.getCreatorId().equals(gallerySC.getUserId()));
   }
 
   private Integer getNbOrdersProcess(Collection<Order> orders) {
@@ -1200,7 +1227,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private String createMediaData(HttpRequest request, GallerySessionController gallerySC)
-      throws Exception {
+      throws ParseException, PublicationTemplateException {
 
     final List<FileItem> parameters = request.getFileItems();
     MediaType mediaType = MediaType.from(request.getParameter("type"));
@@ -1271,7 +1298,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
    * @throws Exception
    */
   private void updateSelectedMedia(HttpRequest request, GallerySessionController gallerySC,
-      Collection<String> mediaIds, String encoding) throws Exception {
+      Collection<String> mediaIds, String encoding)
+      throws ParseException, PublicationTemplateException {
 
     // Getting all HTTP parameters
     final List<FileItem> parameters = new ArrayList<FileItem>();
@@ -1341,7 +1369,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private void updateMediaData(String mediaId, HttpRequest request,
-      GallerySessionController gallerySC) throws Exception {
+      GallerySessionController gallerySC) throws ParseException, PublicationTemplateException {
 
     final MediaDataUpdateDelegate delegate =
         new MediaDataUpdateDelegate(MediaType.Photo, gallerySC.getLanguage(),
@@ -1375,7 +1403,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     gallerySC.updateMediaByUser(mediaId, delegate);
 
     // mise à jour de l'album courant
-    // String albumId = media.getAlbumId();
     Collection<String> albumIds = gallerySC.getAlbumIdsOf(mediaId);
     // regarder si l'album courant est dans la liste des albums
     boolean inAlbum = false;
@@ -1396,14 +1423,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private void putMediaCommonParameters(HttpServletRequest request,
-      GallerySessionController gallerySC, Media media, SilverpeasRole userRole) throws Exception {
+      GallerySessionController gallerySC, Media media, SilverpeasRole userRole) {
     request.setAttribute("Media", media);
     Integer nbComments = 0;
     try {
       nbComments = gallerySC.getAllComments(media).size();
     } catch (Exception e) {
-      SilverTrace.error("gallery", "GalleryRequestRouter.putMediaCommonParameters()",
-          "root.MSG_GEN_PARAM_VALUE", "userId=" + gallerySC.getUserId(), e);
+      SilverLogger.getLogger(this).error(e);
     }
     request.setAttribute("NbComments", nbComments);
     request.setAttribute("Path", gallerySC.getPath());

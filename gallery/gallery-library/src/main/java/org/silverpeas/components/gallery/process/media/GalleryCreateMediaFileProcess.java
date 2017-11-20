@@ -33,7 +33,7 @@ import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 
@@ -48,20 +48,6 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
   private final boolean watermark;
   private final String watermarkHD;
   private final String watermarkOther;
-
-  /**
-   * Gets an instance
-   * @param media
-   * @param file
-   * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
-   * @return
-   */
-  public static GalleryCreateMediaFileProcess getInstance(final Media media, final Object file,
-      final boolean watermark, final String watermarkHD, final String watermarkOther) {
-    return new GalleryCreateMediaFileProcess(media, file, watermark, watermarkHD, watermarkOther);
-  }
 
   /**
    * Default hidden constructor
@@ -95,6 +81,20 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
     this.watermarkOther = watermarkOther;
   }
 
+  /**
+   * Gets an instance
+   * @param media
+   * @param file
+   * @param watermark
+   * @param watermarkHD
+   * @param watermarkOther
+   * @return
+   */
+  public static GalleryCreateMediaFileProcess getInstance(final Media media, final Object file,
+      final boolean watermark, final String watermarkHD, final String watermarkOther) {
+    return new GalleryCreateMediaFileProcess(media, file, watermark, watermarkHD, watermarkOther);
+  }
+
   /*
    * (non-Javadoc)
    * @see AbstractFileProcess#processFiles(org.silverpeas.process.
@@ -114,19 +114,23 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
         processVideoMedia(fileHandler);
         break;
       case Sound:
-        Sound sound = getMedia().getSound();
-        if (fileItem != null) {
-          MediaUtil.processSound(fileHandler, sound, fileItem);
-        } else {
-          MediaUtil.processSound(fileHandler, sound, file);
-        }
+        processSoundMedia(fileHandler);
         break;
 
       default:
         // In other cases, there is no file to manage.
-        SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
-            getMedia().getType().name() + " media type is never processed");
+        SilverLogger.getLogger(this).warn("{0} media type not taken into charge",
+            getMedia().getType().getName());
         break;
+    }
+  }
+
+  private void processSoundMedia(final FileHandler fileHandler) throws Exception {
+    Sound sound = getMedia().getSound();
+    if (fileItem != null) {
+      MediaUtil.processSound(fileHandler, sound, fileItem);
+    } else {
+      MediaUtil.processSound(fileHandler, sound, file);
     }
   }
 

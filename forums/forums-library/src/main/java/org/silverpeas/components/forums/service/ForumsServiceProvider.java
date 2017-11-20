@@ -29,6 +29,10 @@ package org.silverpeas.components.forums.service;
  */
 public class ForumsServiceProvider {
 
+  private ForumsServiceProvider() {
+
+  }
+
   /**
    * @return an instance of {@link ForumService} EJB.
    */

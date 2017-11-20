@@ -52,17 +52,6 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
   private final MediaDataCreateDelegate delegate;
 
   /**
-   * Gets an instance
-   * @param media
-   * @param delegate
-   * @return
-   */
-  public static GalleryCreateMediaDataProcess getInstance(final Media media, final String albumId,
-      final MediaDataCreateDelegate delegate) {
-    return new GalleryCreateMediaDataProcess(media, albumId, delegate);
-  }
-
-  /**
    * Default hidden constructor
    * @param media
    * @param delegate
@@ -72,6 +61,17 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
     super(media);
     this.delegate = delegate;
     this.albumId = albumId;
+  }
+
+  /**
+   * Gets an instance
+   * @param media
+   * @param delegate
+   * @return
+   */
+  public static GalleryCreateMediaDataProcess getInstance(final Media media, final String albumId,
+      final MediaDataCreateDelegate delegate) {
+    return new GalleryCreateMediaDataProcess(media, albumId, delegate);
   }
 
   /*

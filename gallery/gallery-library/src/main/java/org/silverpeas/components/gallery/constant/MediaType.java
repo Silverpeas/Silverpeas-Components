@@ -27,6 +27,7 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * @author: Yohann Chastagnier
@@ -56,6 +57,7 @@ public enum MediaType {
     try {
       return valueOf(StringUtil.capitalize(type));
     } catch (Exception e) {
+      SilverLogger.getLogger(MediaType.class).warn(e);
       return Unknown;
     }
   }
@@ -67,14 +69,15 @@ public enum MediaType {
 
   /**
    * Instantiates a new model instance according to the media type.
-   * @param <MEDIA>
+   * @param <M>
    * @return
    */
   @SuppressWarnings("unchecked")
-  public <MEDIA extends Media> MEDIA newInstance() {
+  public <M extends Media> M newInstance() {
     try {
-      return (MEDIA) mediaClass.newInstance();
+      return (M) mediaClass.newInstance();
     } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
       return null;
     }
   }
@@ -116,11 +119,10 @@ public enum MediaType {
    * @return
    */
   public String getTechnicalFolder() {
-    switch (this) {
-      case Photo:
-        return "image";
-      default:
-        return this.name().toLowerCase();
+    if (this == MediaType.Photo) {
+      return "image";
+    } else {
+      return this.name().toLowerCase();
     }
   }
 

@@ -67,6 +67,13 @@ public class MediaCriteria {
     private final String instructionBase;
     private final boolean asc;
 
+    QUERY_ORDER_BY(final boolean applicableOnSQLQuery, final String instructionBase,
+        final boolean asc) {
+      this.applicableOnSQLQuery = applicableOnSQLQuery;
+      this.instructionBase = instructionBase;
+      this.asc = asc;
+    }
+
     public static QUERY_ORDER_BY fromPropertyName(String property, String sort) {
       QUERY_ORDER_BY orderBy = null;
       for (QUERY_ORDER_BY queryOrderBy : values()) {
@@ -77,13 +84,6 @@ public class MediaCriteria {
         }
       }
       return orderBy;
-    }
-
-    private QUERY_ORDER_BY(final boolean applicableOnSQLQuery, final String instructionBase,
-        final boolean asc) {
-      this.applicableOnSQLQuery = applicableOnSQLQuery;
-      this.instructionBase = instructionBase;
-      this.asc = asc;
     }
 
     public boolean isApplicableOnSQLQuery() {

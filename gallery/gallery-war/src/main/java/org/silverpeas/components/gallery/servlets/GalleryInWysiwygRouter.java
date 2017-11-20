@@ -34,7 +34,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -182,8 +181,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         read = input.read();
       }
     } catch (Exception e) {
-      SilverTrace.warn("gallery", "GalleryInWysiwygRouter.doPost", "root.EX_CANT_READ_FILE",
-          "filePath = " + filePath);
+      SilverLogger.getLogger(this).warn(e);
     } finally {
 
       // we must close the in and out streams
@@ -193,8 +191,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         }
         out2.close();
       } catch (Exception e) {
-        SilverTrace.warn("gallery", "GalleryInWysiwygRouter.displayImage",
-            "root.EX_CANT_READ_FILE", "close failed");
+        SilverLogger.getLogger(this).warn(e);
       }
     }
   }

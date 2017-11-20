@@ -36,12 +36,20 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 
 public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
+
+  /**
+   * Default hidden conctructor
+   * @param media
+   */
+  protected GalleryIndexMediaDataProcess(final Media media) {
+    super(media);
+  }
 
   /**
    * Process to index a media in Database
@@ -50,14 +58,6 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
    */
   public static GalleryIndexMediaDataProcess getInstance(final Media media) {
     return new GalleryIndexMediaDataProcess(media);
-  }
-
-  /**
-   * Default hidden conctructor
-   * @param media
-   */
-  protected GalleryIndexMediaDataProcess(final Media media) {
-    super(media);
   }
 
   /*
@@ -80,13 +80,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
   public void onSuccessful() throws Exception {
     if (getMedia() != null) {
       // Index the Media
-      FullIndexEntry indexEntry = new FullIndexEntry(getMedia().getMediaPK().getComponentName(),
-          getMedia().getContributionType(), getMedia().getMediaPK().getId());
-      indexEntry.setTitle(getMedia().getTitle());
-      indexEntry.setPreView(getMedia().getDescription());
-      indexEntry.setCreationDate(getMedia().getCreationDate());
-      indexEntry.setCreationUser(getMedia().getCreatorId());
-      indexEntry.setKeyWords(getMedia().getKeyWord());
+      FullIndexEntry indexEntry = setUpIndexEntry();
       if (getMedia().getVisibilityPeriod().getBeginDatable().isDefined()) {
         indexEntry.setStartDate(getMedia().getVisibilityPeriod().getBeginDatable());
       }
@@ -95,37 +89,11 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
       }
 
       if (getMedia() instanceof InternalMedia) {
-        InternalMedia iMedia = (InternalMedia) getMedia();
-        if (StringUtil.isDefined(iMedia.getFileName())) {
-          indexEntry.setThumbnail(iMedia.getFileName());
-          indexEntry.setThumbnailMimeType(iMedia.getFileMimeType().getMimeType());
-          indexEntry.setThumbnailDirectory(getMedia().getWorkspaceSubFolderName());
-        }
+        setThumbnailData(indexEntry);
       }
 
       if (getMedia() instanceof Photo) {
-        Photo photo = (Photo) getMedia();
-        // récupération des méta données pour les indéxer
-        StringBuilder metaDataStr = new StringBuilder();
-        MetaData metaData;
-        final Collection<String> properties = photo.getMetaDataProperties();
-        for (final String property : properties) {
-          metaData = photo.getMetaData(property);
-          final String value = metaData.getValue();
-          metaDataStr.append(" ").append(value);
-        }
-        indexEntry.addTextContent(metaDataStr.toString());
-        // indexation des méta données (une donnée par champ d'index)
-        for (final String property : properties) {
-          metaData = photo.getMetaData(property);
-          final String value = metaData.getValue();
-
-          if (metaData.isDate()) {
-            indexEntry.addField("IPTC_" + property, metaData.getDateValue());
-          } else {
-            indexEntry.addField("IPTC_" + property, value);
-          }
-        }
+        setPhotoMetadata(indexEntry);
       }
 
 
@@ -144,11 +112,56 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
           set.indexRecord(getMedia().getMediaPK().getId(), xmlFormShortName, indexEntry);
 
         } catch (final Exception e) {
-
+          SilverLogger.getLogger(this).warn(e);
         }
       }
 
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
+  }
+
+  private void setPhotoMetadata(final FullIndexEntry indexEntry) {
+    Photo photo = (Photo) getMedia();
+    // récupération des méta données pour les indéxer
+    StringBuilder metaDataStr = new StringBuilder();
+    MetaData metaData;
+    final Collection<String> properties = photo.getMetaDataProperties();
+    for (final String property : properties) {
+      metaData = photo.getMetaData(property);
+      final String value = metaData.getValue();
+      metaDataStr.append(" ").append(value);
+    }
+    indexEntry.addTextContent(metaDataStr.toString());
+    // indexation des méta données (une donnée par champ d'index)
+    for (final String property : properties) {
+      metaData = photo.getMetaData(property);
+      final String value = metaData.getValue();
+
+      if (metaData.isDate()) {
+        indexEntry.addField("IPTC_" + property, metaData.getDateValue());
+      } else {
+        indexEntry.addField("IPTC_" + property, value);
+      }
+    }
+  }
+
+  private void setThumbnailData(final FullIndexEntry indexEntry) {
+    InternalMedia iMedia = (InternalMedia) getMedia();
+    if (StringUtil.isDefined(iMedia.getFileName())) {
+      indexEntry.setThumbnail(iMedia.getFileName());
+      indexEntry.setThumbnailMimeType(iMedia.getFileMimeType().getMimeType());
+      indexEntry.setThumbnailDirectory(getMedia().getWorkspaceSubFolderName());
+    }
+  }
+
+  private FullIndexEntry setUpIndexEntry() {
+    FullIndexEntry indexEntry = new FullIndexEntry(getMedia().getMediaPK().getComponentName(),
+        getMedia().getContributionType(), getMedia().getMediaPK().getId());
+    indexEntry.setTitle(getMedia().getTitle());
+    indexEntry.setPreView(getMedia().getDescription());
+    indexEntry.setCreationDate(getMedia().getCreationDate());
+    indexEntry.setCreationUser(getMedia().getCreatorId());
+    indexEntry.setKeyWords(getMedia().getKeyWord());
+    return indexEntry;
   }
 }

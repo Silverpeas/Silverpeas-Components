@@ -23,14 +23,16 @@
  */
 package org.silverpeas.components.gallery.service;
 
-import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * @author Yohann Chastagnier
  */
 public class MediaServiceProvider {
+
+  private MediaServiceProvider() {
+
+  }
 
   /**
    * @return an instance of {@link GalleryService} gallery service layer using JEE CDI BeanManager.

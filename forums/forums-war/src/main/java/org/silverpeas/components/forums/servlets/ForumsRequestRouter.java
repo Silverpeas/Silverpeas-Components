@@ -140,11 +140,10 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         String motive = request.getParameter("Motive");
         forumsSC.refuseMessage(Integer.parseInt(messageId), motive);
         destination = getDestination("viewMessage", forumsSC, request);
-      } // gestion des catégories
-      // ----------------------
-      else if ("ViewCategory".equals(function)) {
+      } else if ("ViewCategory".equals(function)) {
+        // gestion des catégories
         destination = ROOT_DEST + "main.jsp";
-      } else if (function.equals("NewCategory")) {
+      } else if ("NewCategory".equals(function)) {
         destination = ROOT_DEST + "categoryManager.jsp";
       } else if ("CreateCategory".equals(function)) {
         // récupération des paramètres

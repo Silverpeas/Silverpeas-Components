@@ -42,8 +42,7 @@ public class ForumsRssServlet extends RssServlet {
    */
   @Override
   public Collection getListElements(String instanceId, int nbReturned) {
-    Collection events = getForumsService().getLastMessageRSS(instanceId, nbReturned);
-    return events;
+    return getForumsService().getLastMessageRSS(instanceId, nbReturned);
   }
 
   /*
@@ -63,10 +62,10 @@ public class ForumsRssServlet extends RssServlet {
   @Override
   public String getElementLink(Object element, String userId) {
     List message = (List) element;
-    String messageUrl = URLUtil.getApplicationURL() + "/ForumsMessage/"
+    final int forumIdIndex = 4;
+    return URLUtil.getApplicationURL() + "/ForumsMessage/"
         + message.get(0) + "?ForumId="
-        + message.get(4);
-    return messageUrl;
+        + message.get(forumIdIndex);
   }
 
   /*
@@ -87,14 +86,14 @@ public class ForumsRssServlet extends RssServlet {
   @Override
   public Date getElementDate(Object element) {
     List message = (List) element;
-    // Date messageCreationDate = new Date(Long.parseLong((String) message.get(3)));
-    Date messageCreationDate = (Date) message.get(3);
-    return messageCreationDate;
+    final int dateIndex = 3;
+    return  (Date) message.get(dateIndex);
   }
 
   @Override
   public String getElementCreatorId(Object element) {
     List message = (List) element;
-    return (String) message.get(2);
+    final int creatorIdIndex = 2;
+    return (String) message.get(creatorIdIndex);
   }
 }

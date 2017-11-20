@@ -29,14 +29,19 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.sql.SQLException;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -65,11 +70,13 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * @param albumId
    * @param fromMediaPk
    * @param isCutted
-   * @return
    */
-  public static GalleryPasteMediaDataProcess getInstance(final Media media, final String albumId,
+  protected GalleryPasteMediaDataProcess(final Media media, final String albumId,
       final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPasteMediaDataProcess(media, albumId, fromMediaPk, isCutted);
+    super(media);
+    this.albumId = albumId;
+    this.fromMediaPk = fromMediaPk;
+    this.isCutted = isCutted;
   }
 
   /**
@@ -78,13 +85,11 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * @param albumId
    * @param fromMediaPk
    * @param isCutted
+   * @return
    */
-  protected GalleryPasteMediaDataProcess(final Media media, final String albumId,
+  public static GalleryPasteMediaDataProcess getInstance(final Media media, final String albumId,
       final MediaPK fromMediaPk, final boolean isCutted) {
-    super(media);
-    this.albumId = albumId;
-    this.fromMediaPk = fromMediaPk;
-    this.isCutted = isCutted;
+    return new GalleryPasteMediaDataProcess(media, albumId, fromMediaPk, isCutted);
   }
 
   /*
@@ -141,18 +146,15 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * @throws Exception
    */
   private void moveMediaPath(final String fromComponentInstanceId, final String albumId,
-      final ProcessExecutionContext context) throws Exception {
+      final ProcessExecutionContext context) throws SQLException {
     getMedia().setComponentInstanceId(fromComponentInstanceId);
     MediaDAO.deleteAllMediaPath(getMedia());
     getMedia().setComponentInstanceId(context.getComponentInstanceId());
     MediaDAO.saveMediaPath(getMedia(), albumId);
   }
 
-  /**
-   * Centralized method
-   * @throws Exception
-   */
-  private void processPasteCommons(final ProcessExecutionContext context) throws Exception {
+  private void processPasteCommons(final ProcessExecutionContext context)
+      throws PdcException, FormException {
     if (!isCutted || !isSameComponentInstanceDestination) {
       // Paste positions on Pdc
       final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromMediaPk);
@@ -174,9 +176,9 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   /**
    * Paste XML Form
    * @param context
-   * @throws Exception
+   * @throws FormException
    */
-  private void pasteXmlForm(final ProcessExecutionContext context) throws Exception {
+  private void pasteXmlForm(final ProcessExecutionContext context) throws FormException {
     if (!isCutted || !isSameComponentInstanceDestination) {
       try {
         final String xmlFormName = getXMLFormName(context);
@@ -205,7 +207,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
           }
         }
       } catch (final PublicationTemplateException e) {
-
+        SilverLogger.getLogger(this).warn(e);
       }
     }
   }

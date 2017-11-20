@@ -45,14 +45,31 @@ public enum MediaResolution {
   ORIGINAL(false, "original", null, null, null);
 
   @SuppressWarnings("unchecked")
-  public final static Set<MediaResolution> ALL =
+  public static final Set<MediaResolution> ALL =
       Collections.unmodifiableSet(EnumSet.allOf(MediaResolution.class));
+
+  private final boolean displayed;
+  private final String label;
+  private final Integer width;
+  private final Integer height;
+  private final String thumbnailSuffix;
+  private final Integer watermarkSize;
+
+  MediaResolution(final boolean displayed, final String label, final Integer width,
+      final Integer height, final String bundlePartOfWaterwarkSizeLabel) {
+    this.displayed = displayed;
+    this.label = label;
+    this.width = width;
+    this.height = height;
+    this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
+    this.thumbnailSuffix = "original".equals(label) ? "" : ("_" + label);
+  }
 
   @JsonCreator
   public static MediaResolution fromNameOrLabel(String nameOrLabel) {
     MediaResolution result = null;
     for (MediaResolution mediaResolution : values()) {
-      if (mediaResolution.name().toLowerCase().equals(nameOrLabel.toLowerCase()) ||
+      if (mediaResolution.name().equalsIgnoreCase(nameOrLabel) ||
           (StringUtil.isDefined(mediaResolution.getLabel()) &&
               nameOrLabel.contains(mediaResolution.getLabel()))) {
         result = mediaResolution;
@@ -65,23 +82,6 @@ public enum MediaResolution {
   @JsonValue
   public String getName() {
     return name();
-  }
-
-  private final boolean displayed;
-  private final String label;
-  private final Integer width;
-  private final Integer height;
-  private final String thumbnailSuffix;
-  private final Integer watermarkSize;
-
-  private MediaResolution(final boolean displayed, final String label, final Integer width,
-      final Integer height, final String bundlePartOfWaterwarkSizeLabel) {
-    this.displayed = displayed;
-    this.label = label;
-    this.width = width;
-    this.height = height;
-    this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
-    this.thumbnailSuffix = "original".equals(label) ? "" : ("_" + label);
   }
 
   /**

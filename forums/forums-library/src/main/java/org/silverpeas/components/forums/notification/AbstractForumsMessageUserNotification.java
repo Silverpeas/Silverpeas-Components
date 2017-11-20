@@ -28,6 +28,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,6 +66,7 @@ public abstract class AbstractForumsMessageUserNotification
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).warn(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
@@ -95,7 +97,8 @@ public abstract class AbstractForumsMessageUserNotification
 
   @Override
   protected String getResourceURL(final Message resource) {
-    Map<String, String> params = new HashMap<>(2);
+    final int initialSize = 2;
+    Map<String, String> params = new HashMap<>(initialSize);
     params.put("componentId", getComponentInstanceId());
     params.put("messageId", resource.getIdAsString());
     return StringUtil.format(settings.getString("forums.message.link"), params);

@@ -41,6 +41,14 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
   private static final Integer EMPTY_DIMENSION_DESC = Integer.MIN_VALUE;
 
   /**
+   * Hidden constructor.
+   * @param logicalOrderBy
+   */
+  private MediaLogicalComparator(final List<QUERY_ORDER_BY> logicalOrderBy) {
+    this.logicalOrderBy = logicalOrderBy;
+  }
+
+  /**
    * Easy way to obtain an instance of the comparator.
    * @param logicalOrderBy
    * @return
@@ -58,103 +66,117 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
     return new MediaLogicalComparator(logicalOrderBy);
   }
 
-  /**
-   * Hidden constructor.
-   * @param logicalOrderBy
-   */
-  private MediaLogicalComparator(final List<QUERY_ORDER_BY> logicalOrderBy) {
-    this.logicalOrderBy = logicalOrderBy;
-  }
-
   @Override
   protected ValueBuffer getValuesToCompare(final Media media) {
     ValueBuffer valueBuffer = new ValueBuffer();
-    String author;
     for (QUERY_ORDER_BY queryOrderBy : logicalOrderBy) {
-      switch (queryOrderBy) {
-        case TITLE_DESC:
-        case TITLE_ASC:
-          String titre = media.getTitle();
-          if (StringUtil.isDefined(titre)) {
-            titre = titre.toLowerCase();
-          }
-          valueBuffer.append(titre, queryOrderBy.isAsc());
-          break;
-        case COMPONENT_INSTANCE_ASC:
-        case COMPONENT_INSTANCE_DESC:
-          valueBuffer.append(media.getComponentInstanceId(), queryOrderBy.isAsc());
-          break;
-        case IDENTIFIER_ASC:
-        case IDENTIFIER_DESC:
-          valueBuffer.append(media.getId(), queryOrderBy.isAsc());
-          break;
-        case CREATE_DATE_ASC:
-        case CREATE_DATE_DESC:
-          valueBuffer.append(media.getCreationDate(), queryOrderBy.isAsc());
-          break;
-        case LAST_UPDATE_DATE_ASC:
-        case LAST_UPDATE_DATE_DESC:
-          valueBuffer.append(media.getLastUpdateDate(), queryOrderBy.isAsc());
-          break;
-        case AUTHOR_ASC_EMPTY_END:
-        case AUTHOR_DESC_EMPTY_END:
-          author = media.getAuthor();
-          if (StringUtil.isDefined(author)) {
-            author = author.toLowerCase();
-          }
-          valueBuffer.append(new StringWrapper(author, queryOrderBy.isAsc(), true),
-              queryOrderBy.isAsc());
-          break;
-        case AUTHOR_ASC:
-        case AUTHOR_DESC:
-          author = media.getAuthor();
-          if (StringUtil.isDefined(author)) {
-            author = author.toLowerCase();
-          }
-          valueBuffer.append(author, queryOrderBy.isAsc());
-          break;
-        case SIZE_ASC:
-        case SIZE_DESC:
-          if (media instanceof InternalMedia) {
-            valueBuffer.append(((InternalMedia) media).getFileSize(), queryOrderBy.isAsc());
-          } else {
-            valueBuffer.append(
-                queryOrderBy.isAsc() ? (long) EMPTY_DIMENSION_ASC : (long) EMPTY_DIMENSION_DESC,
-                queryOrderBy.isAsc());
-          }
-          break;
-        case DIMENSION_ASC:
-        case DIMENSION_DESC:
-          if (media.getType().isPhoto()) {
-            Photo photo = media.getPhoto();
-            if (photo.getDefinition().isDefined()) {
-              valueBuffer.append(
-                  Math.max(photo.getDefinition().getWidth(), photo.getDefinition().getHeight()),
-                  queryOrderBy.isAsc());
-              valueBuffer.append(
-                  Math.min(photo.getDefinition().getWidth(), photo.getDefinition().getHeight()),
-                  queryOrderBy.isAsc());
-            }
-          } else if (media.getType().isVideo()) {
-            Video video = media.getVideo();
-            if (video.getDefinition().isDefined()) {
-              valueBuffer.append(
-                  Math.max(video.getDefinition().getWidth(), video.getDefinition().getHeight()),
-                  queryOrderBy.isAsc());
-              valueBuffer.append(
-                  Math.min(video.getDefinition().getWidth(), video.getDefinition().getHeight()),
-                  queryOrderBy.isAsc());
-            }
-          } else {
-            valueBuffer.append(queryOrderBy.isAsc() ? EMPTY_DIMENSION_ASC : EMPTY_DIMENSION_DESC,
-                queryOrderBy.isAsc());
-          }
-          break;
-        default:
-          throw new UnsupportedOperationException(
-              "You must add a new logical data order by management...");
-      }
+      setValueToCompare(media, valueBuffer, queryOrderBy);
     }
     return valueBuffer;
+  }
+
+  private void setValueToCompare(final Media media, final ValueBuffer valueBuffer,
+      final QUERY_ORDER_BY queryOrderBy) {
+    String author;
+    switch (queryOrderBy) {
+      case TITLE_DESC:
+      case TITLE_ASC:
+        setTitle(media, valueBuffer, queryOrderBy);
+        break;
+      case COMPONENT_INSTANCE_ASC:
+      case COMPONENT_INSTANCE_DESC:
+        valueBuffer.append(media.getComponentInstanceId(), queryOrderBy.isAsc());
+        break;
+      case IDENTIFIER_ASC:
+      case IDENTIFIER_DESC:
+        valueBuffer.append(media.getId(), queryOrderBy.isAsc());
+        break;
+      case CREATE_DATE_ASC:
+      case CREATE_DATE_DESC:
+        valueBuffer.append(media.getCreationDate(), queryOrderBy.isAsc());
+        break;
+      case LAST_UPDATE_DATE_ASC:
+      case LAST_UPDATE_DATE_DESC:
+        valueBuffer.append(media.getLastUpdateDate(), queryOrderBy.isAsc());
+        break;
+      case AUTHOR_ASC_EMPTY_END:
+      case AUTHOR_DESC_EMPTY_END:
+        author = getAuthor(media);
+        valueBuffer.append(new StringWrapper(author, queryOrderBy.isAsc(), true),
+            queryOrderBy.isAsc());
+        break;
+      case AUTHOR_ASC:
+      case AUTHOR_DESC:
+        author = getAuthor(media);
+        valueBuffer.append(author, queryOrderBy.isAsc());
+        break;
+      case SIZE_ASC:
+      case SIZE_DESC:
+        setSize(media, valueBuffer, queryOrderBy);
+        break;
+      case DIMENSION_ASC:
+      case DIMENSION_DESC:
+        setDimensions(media, valueBuffer, queryOrderBy);
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "You must add a new logical data order by management...");
+    }
+  }
+
+  private void setDimensions(final Media media, final ValueBuffer valueBuffer,
+      final QUERY_ORDER_BY queryOrderBy) {
+    if (media.getType().isPhoto()) {
+      Photo photo = media.getPhoto();
+      if (photo.getDefinition().isDefined()) {
+        valueBuffer.append(
+            Math.max(photo.getDefinition().getWidth(), photo.getDefinition().getHeight()),
+            queryOrderBy.isAsc());
+        valueBuffer.append(
+            Math.min(photo.getDefinition().getWidth(), photo.getDefinition().getHeight()),
+            queryOrderBy.isAsc());
+      }
+    } else if (media.getType().isVideo()) {
+      Video video = media.getVideo();
+      if (video.getDefinition().isDefined()) {
+        valueBuffer.append(
+            Math.max(video.getDefinition().getWidth(), video.getDefinition().getHeight()),
+            queryOrderBy.isAsc());
+        valueBuffer.append(
+            Math.min(video.getDefinition().getWidth(), video.getDefinition().getHeight()),
+            queryOrderBy.isAsc());
+      }
+    } else {
+      valueBuffer.append(queryOrderBy.isAsc() ? EMPTY_DIMENSION_ASC : EMPTY_DIMENSION_DESC,
+          queryOrderBy.isAsc());
+    }
+  }
+
+  private void setSize(final Media media, final ValueBuffer valueBuffer,
+      final QUERY_ORDER_BY queryOrderBy) {
+    if (media instanceof InternalMedia) {
+      valueBuffer.append(((InternalMedia) media).getFileSize(), queryOrderBy.isAsc());
+    } else {
+      valueBuffer.append(
+          queryOrderBy.isAsc() ? (long) EMPTY_DIMENSION_ASC : (long) EMPTY_DIMENSION_DESC,
+          queryOrderBy.isAsc());
+    }
+  }
+
+  private String getAuthor(final Media media) {
+    String author = media.getAuthor();
+    if (StringUtil.isDefined(author)) {
+      author = author.toLowerCase();
+    }
+    return author;
+  }
+
+  private void setTitle(final Media media, final ValueBuffer valueBuffer,
+      final QUERY_ORDER_BY queryOrderBy) {
+    String titre = media.getTitle();
+    if (StringUtil.isDefined(titre)) {
+      titre = titre.toLowerCase();
+    }
+    valueBuffer.append(titre, queryOrderBy.isAsc());
   }
 }

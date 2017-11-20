@@ -73,46 +73,9 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       String value;
       if (exifDirectory != null) {
         for (ExifProperty property : imageProperties) {
-          // rechercher la valeur de la metadata "label"
-          int currentMetadata = property.getProperty();
-          switch (currentMetadata) {
-            case ExifIFD0Directory.TAG_WIN_AUTHOR:
-              value = descriptor.getWindowsAuthorDescription();
-              break;
-            case ExifIFD0Directory.TAG_WIN_COMMENT:
-              value = descriptor.getWindowsCommentDescription();
-              break;
-
-            case ExifIFD0Directory.TAG_WIN_KEYWORDS:
-              value = descriptor.getWindowsKeywordsDescription();
-              break;
-
-            case ExifIFD0Directory.TAG_WIN_SUBJECT:
-              value = descriptor.getWindowsSubjectDescription();
-              break;
-
-            case ExifIFD0Directory.TAG_WIN_TITLE:
-              value = descriptor.getWindowsTitleDescription();
-              break;
-
-            case ExifIFD0Directory.TAG_RESOLUTION_UNIT:
-              value = exifDirectory.getString(currentMetadata);
-              if("2".equals(value)) {//dots per inch
-                value = "DPI";
-              } else if ("3".equals(value)) {//dots per cm
-                value = "DPC";
-              }
-              break;
-
-            default:
-              value = exifDirectory.getString(currentMetadata);
-          }
+          value = fetchLabel(exifDirectory, descriptor, property);
           if (value != null) {
-            // ajout de cette metadata à la photo
-            MetaData metaData = new MetaData(value);
-            metaData.setLabel(property.getLabel(lang));
-            metaData.setProperty(property.getProperty() + "");
-            result.add(metaData);
+            addLabelToMediaMetadata(lang, result, value, property);
           }
         }
       }
@@ -120,6 +83,63 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
     } catch (IOException | ImageProcessingException ex) {
       throw new MediaMetadataException(ex);
     }
+  }
+
+  private void addLabelToMediaMetadata(final String lang, final List<MetaData> result,
+      final String value, final ExifProperty property) {
+    // ajout de cette metadata à la photo
+    MetaData metaData = new MetaData(value);
+    metaData.setLabel(property.getLabel(lang));
+    metaData.setProperty(property.getProperty() + "");
+    result.add(metaData);
+  }
+
+  private String fetchLabel(final ExifIFD0Directory exifDirectory,
+      final ExifIFD0Descriptor descriptor, final ExifProperty property) {
+    // rechercher la valeur de la metadata "label"
+    final String value;
+    int currentMetadata = property.getProperty();
+    switch (currentMetadata) {
+      case ExifIFD0Directory.TAG_WIN_AUTHOR:
+        value = descriptor.getWindowsAuthorDescription();
+        break;
+      case ExifIFD0Directory.TAG_WIN_COMMENT:
+        value = descriptor.getWindowsCommentDescription();
+        break;
+
+      case ExifIFD0Directory.TAG_WIN_KEYWORDS:
+        value = descriptor.getWindowsKeywordsDescription();
+        break;
+
+      case ExifIFD0Directory.TAG_WIN_SUBJECT:
+        value = descriptor.getWindowsSubjectDescription();
+        break;
+
+      case ExifIFD0Directory.TAG_WIN_TITLE:
+        value = descriptor.getWindowsTitleDescription();
+        break;
+
+      case ExifIFD0Directory.TAG_RESOLUTION_UNIT:
+        value = getExifDirectoryValue(exifDirectory, currentMetadata);
+        break;
+
+      default:
+        value = exifDirectory.getString(currentMetadata);
+    }
+    return value;
+  }
+
+  private String getExifDirectoryValue(final ExifIFD0Directory exifDirectory,
+      final int currentMetadata) {
+    String value = exifDirectory.getString(currentMetadata);
+    if("2".equals(value)) {
+      //dots per inch
+      value = "DPI";
+    } else if ("3".equals(value)) {
+      //dots per cm
+      value = "DPC";
+    }
+    return value;
   }
 
   @Override
@@ -132,9 +152,10 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
   public List<MetaData> extractImageIptcMetaData(File image, String lang)
       throws IOException, MediaMetadataException {
     try {
+      final int defaultSize = 1024;
       List<MetaData> result = new ArrayList<>();
       Metadata metadata = ImageMetadataReader.readMetadata(image);
-      ByteArrayOutputStream forEncodingDetection = new ByteArrayOutputStream(1024);
+      ByteArrayOutputStream forEncodingDetection = new ByteArrayOutputStream(defaultSize);
       IptcDirectory iptcDirectory = metadata.getFirstDirectoryOfType(IptcDirectory.class);
       String iptcCharset = getIptcCharset(iptcDirectory);
       for (IptcProperty iptcProperty : imageIptcProperties) {
@@ -205,7 +226,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
     if (iptcDirectory != null && iptcDirectory.containsTag(iptcTag)) {
       return iptcDirectory.getByteArray(iptcTag);
     }
-    return null;
+    return new byte[0];
   }
 
   private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) {

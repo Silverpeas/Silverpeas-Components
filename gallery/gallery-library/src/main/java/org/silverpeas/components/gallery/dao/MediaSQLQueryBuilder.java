@@ -56,16 +56,16 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   private boolean distinct = false;
   private int resultLimit = 0;
 
+  private MediaSQLQueryBuilder(boolean count) {
+    this.count = count;
+  }
+
   static MediaSQLQueryBuilder selectBuilder() {
     return new MediaSQLQueryBuilder(false);
   }
 
   static MediaSQLQueryBuilder countBuilder() {
     return new MediaSQLQueryBuilder(true);
-  }
-
-  private MediaSQLQueryBuilder(boolean count) {
-    this.count = count;
   }
 
   @Override
@@ -124,22 +124,7 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
       case VISIBLE_ONLY:
       case HIDDEN_ONLY:
       case BY_DEFAULT:
-        final StringBuilder clause;
-        if (visibility == MediaCriteria.VISIBILITY.HIDDEN_ONLY) {
-          clause =
-              where(conjunction).append("((? < M.beginVisibilityDate or ? > M.endVisibilityDate)");
-          parameters.add(dateReference.getTime());
-          parameters.add(dateReference.getTime());
-        } else {
-          clause = where(conjunction)
-              .append("((? between M.beginVisibilityDate and M.endVisibilityDate)");
-          parameters.add(dateReference.getTime());
-        }
-        if (creator != null) {
-          clause.append(" or M.createdBy = ?");
-          parameters.add(creator.getId());
-        }
-        clause.append(")");
+        setVisibilityClause(visibility, dateReference, creator);
         break;
       case FORCE_GET_ALL:
         // No clause
@@ -147,6 +132,26 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
     }
     conjunction = "";
     return this;
+  }
+
+  private void setVisibilityClause(final MediaCriteria.VISIBILITY visibility,
+      final Date dateReference, final UserDetail creator) {
+    final StringBuilder clause;
+    if (visibility == MediaCriteria.VISIBILITY.HIDDEN_ONLY) {
+      clause =
+          where(conjunction).append("((? < M.beginVisibilityDate or ? > M.endVisibilityDate)");
+      parameters.add(dateReference.getTime());
+      parameters.add(dateReference.getTime());
+    } else {
+      clause = where(conjunction)
+          .append("((? between M.beginVisibilityDate and M.endVisibilityDate)");
+      parameters.add(dateReference.getTime());
+    }
+    if (creator != null) {
+      clause.append(" or M.createdBy = ?");
+      parameters.add(creator.getId());
+    }
+    clause.append(")");
   }
 
   @Override

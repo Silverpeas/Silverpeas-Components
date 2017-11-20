@@ -26,6 +26,7 @@ package org.silverpeas.components.gallery.constant;
 import org.silverpeas.core.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -84,6 +85,7 @@ public enum StreamingProvider {
     try {
       return valueOf(provider.toLowerCase());
     } catch (Exception e) {
+      SilverLogger.getLogger(StreamingProvider.class).warn(e);
       return unknown;
     }
   }
@@ -115,13 +117,12 @@ public enum StreamingProvider {
     StreamingProvider streamingProvider = StreamingProvider.fromUrl(homepageUrl);
     if (streamingProvider != unknown) {
       final String streamingId;
-      switch (streamingProvider) {
-        case youtube:
-          streamingId = homepageUrl;
-          break;
-        default:
-          streamingId = streamingProvider.extractStreamingId(homepageUrl);
-          break;
+      if (streamingProvider == StreamingProvider.youtube) {
+        streamingId = homepageUrl;
+
+      } else {
+        streamingId = streamingProvider.extractStreamingId(homepageUrl);
+
       }
       return MessageFormat.format(streamingProvider.oembedUrlPattern, streamingId);
     }
@@ -155,9 +156,10 @@ public enum StreamingProvider {
    * @return
    */
   public String extractStreamingId(String url) {
+    final int matchedGroup = 2;
     Matcher matcher = isExtractorPattern.matcher(url);
     if (matcher.find()) {
-      return matcher.group(2);
+      return matcher.group(matchedGroup);
     }
     return "";
   }
