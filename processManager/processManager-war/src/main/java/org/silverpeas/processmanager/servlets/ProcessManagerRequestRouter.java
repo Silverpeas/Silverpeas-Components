@@ -187,7 +187,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("FolderItems", folderItems);
       RecordTemplate listHeaders = session.getProcessListHeaders();
       request.setAttribute("listHeaders", listHeaders);
-      DataRecord[] processList;
+      List<DataRecord> processList;
       if (request.getAttribute("dontreset") == null) {
         String from = (String) request.getAttribute("From");
         boolean doAPause = "Creation".equals(from) || "Action".equals(from);

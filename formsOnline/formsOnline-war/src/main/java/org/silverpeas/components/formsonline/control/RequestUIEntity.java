@@ -33,8 +33,6 @@ import org.silverpeas.core.web.util.SimpleContributionUIEntity;
 import java.util.Set;
 import java.util.function.Function;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
-
 /**
  * @author silveryocha
  */
@@ -65,9 +63,7 @@ public class RequestUIEntity extends SimpleContributionUIEntity<FormInstance> {
    * @return the creator.
    */
   public User getCreator() {
-    final String cacheKey = getClass().getSimpleName() + "###user###" + getData().getCreatorId();
-    return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class,
-        () -> getData().getCreatorId() != null ? getData().getCreator() : null);
+    return getUserByIdFromCache(getData().getCreatorId());
   }
 
   /**
@@ -76,8 +72,6 @@ public class RequestUIEntity extends SimpleContributionUIEntity<FormInstance> {
    * @return the creator.
    */
   public User getValidator() {
-    final String cacheKey = getClass().getSimpleName() + "###user###" + getData().getValidatorId();
-    return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class,
-        () -> getData().getValidatorId() != null ? getData().getValidator() : null);
+    return getUserByIdFromCache(getData().getValidatorId());
   }
 }

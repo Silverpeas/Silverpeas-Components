@@ -33,56 +33,32 @@ response.setDateHeader ("Expires",-1);          //prevents caching
 
 <%@ page isELIgnored="false"%>
 
-<%@ page import="java.net.URLEncoder"%>
-<%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="java.util.Date"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.util.Hashtable"%>
-<%@ page import="java.util.StringTokenizer"%>
-
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 
-<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
-<%@ page import="org.silverpeas.core.workflow.api.error.WorkflowError" %>
-<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
-<%@ page import="org.silverpeas.core.workflow.api.model.State" %>
-<%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
-<%@ page import="org.silverpeas.core.workflow.api.instance.HistoryStep" %>
-<%@ page import="org.silverpeas.core.workflow.api.instance.Question" %>
-<%@page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.contribution.content.form.RecordTemplate" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.FieldTemplate" %>
-<%@ page import="org.silverpeas.core.workflow.api.model.Item" %>
-<%@ page import="org.silverpeas.core.workflow.api.task.Task" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.Field" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.HistoryStep" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.ProcessInstance" %>
+<%@ page import="org.silverpeas.core.workflow.api.instance.Question" %>
+<%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
+<%@ page import="org.silverpeas.core.workflow.api.model.State" %>
+<%@ page import="org.silverpeas.core.workflow.api.task.Task" %>
+<%@page import="org.silverpeas.processmanager.NamedValue"%>
+<%@ page import="java.util.List" %>
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord"%>
-<%@ page import="org.silverpeas.core.contribution.content.form.field.DateField"%>
-<%@ page import="org.silverpeas.processmanager.NamedValue" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%
@@ -106,10 +82,6 @@ OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 TabbedPane tabbedPane = gef.getTabbedPane();
 Board board = gef.getBoard();
-
-// Shared attributes
-NamedValue[] roles = (NamedValue[]) request.getAttribute("roles");
-if (roles == null) roles = new NamedValue[0];
 
 String currentRole  = (String) request.getAttribute("currentRole");
 if (currentRole == null) currentRole = "";

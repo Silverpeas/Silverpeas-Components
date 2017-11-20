@@ -30,6 +30,7 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 
 import javax.inject.Named;
+import java.util.List;
 
 import static org.silverpeas.core.admin.component.ComponentInstancePreDestruction
     .WORKFLOW_PRE_DESTRUCTION;
@@ -49,7 +50,7 @@ public class ProcessManagerInstancePreDestruction implements ComponentInstancePr
   @Override
   public void preDestroy(final String componentInstanceId) {
     try {
-      ProcessInstance[] processInstances = Workflow.getProcessInstanceManager()
+      List<ProcessInstance> processInstances = Workflow.getProcessInstanceManager()
           .getProcessInstances(componentInstanceId, null, "supervisor");
       for (ProcessInstance instance : processInstances) {
         ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).
