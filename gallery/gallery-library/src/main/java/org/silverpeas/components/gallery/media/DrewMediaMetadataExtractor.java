@@ -193,7 +193,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
     if (value != null) {
       MetaData meta = new MetaData(value.getBytes());
       meta.setLabel(iptcProperty.getLabel(lang));
-      meta.setProperty(iptcProperty.getProperty() + "");
+      meta.setProperty(String.valueOf(iptcProperty.getProperty()));
       if (iptcProperty.isDate()) {
         meta.setDate(true);
         meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty(), TimeZone.getDefault()));
@@ -211,7 +211,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
     if (data != null && !ArrayUtil.isEmpty(data)) {
       MetaData meta = new MetaData(data);
       meta.setLabel(iptcProperty.getLabel(lang));
-      meta.setProperty(iptcProperty.getProperty() + "");
+      meta.setProperty(String.valueOf(iptcProperty.getProperty()));
       if (iptcProperty.isDate()) {
         meta.setDate(true);
         meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty(), TimeZone.getDefault()));

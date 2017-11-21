@@ -23,13 +23,6 @@
  */
 package org.silverpeas.components.gallery.image;
 
-import org.silverpeas.components.gallery.GalleryWarBuilder;
-import org.silverpeas.components.gallery.media.AbstractMediaMetadataExtractor;
-import org.silverpeas.components.gallery.media.DrewMediaMetadataExtractor;
-import org.silverpeas.components.gallery.media.ExifProperty;
-import org.silverpeas.components.gallery.media.IptcProperty;
-import org.silverpeas.components.gallery.media.MediaMetadataExtractor;
-import org.silverpeas.components.gallery.model.MetaData;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,11 +30,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.gallery.GalleryWarBuilder;
+import org.silverpeas.components.gallery.media.AbstractMediaMetadataExtractor;
+import org.silverpeas.components.gallery.media.DrewMediaMetadataExtractor;
+import org.silverpeas.components.gallery.media.ExifProperty;
+import org.silverpeas.components.gallery.media.IptcProperty;
+import org.silverpeas.components.gallery.media.MediaMetadataExtractor;
+import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -60,14 +63,12 @@ public class MetadataExtractorIT {
   public static Archive<?> createTestArchive() {
     return GalleryWarBuilder.onWarForTestClass(MetadataExtractorIT.class)
         .testFocusedOn(warBuilder -> {
-          warBuilder.addMavenDependencies("com.drewnoakes:metadata-extractor");
           warBuilder.addClasses(MediaMetadataExtractor.class, DrewMediaMetadataExtractor.class,
               AbstractMediaMetadataExtractor.class);
           warBuilder.addAsResource(
               "org/silverpeas/gallery/settings/metadataSettings_gallery52.properties");
           warBuilder.addAsResource("org/silverpeas/gallery/settings/metadataSettings.properties");
           warBuilder.addAsResource("org/silverpeas/gallery/multilang/metadataBundle.properties");
-          warBuilder.addAsResource("maven.properties");
         }).build();
   }
 
@@ -262,15 +263,9 @@ public class MetadataExtractorIT {
     meta = metadata.get(6);
     assertThat(meta.getProperty(), is("567"));
     assertThat(meta.getLabel(), is("Date de création"));
-    Calendar calend = Calendar.getInstance();
-    calend.set(Calendar.DAY_OF_MONTH, 28);
-    calend.set(Calendar.MONTH, Calendar.FEBRUARY);
-    calend.set(Calendar.YEAR, 2012);
-    calend.set(Calendar.HOUR_OF_DAY, 0);
-    calend.set(Calendar.MINUTE, 0);
-    calend.set(Calendar.SECOND, 0);
-    calend.set(Calendar.MILLISECOND, 0);
-    assertThat(calend.getTime(), is(meta.getDateValue()));
+    LocalDate date = LocalDate.of(2012, 2, 28);
+    assertThat(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+        is(meta.getDateValue()));
     meta = metadata.get(7);
     assertThat(meta.getProperty(), is("572"));
     assertThat(meta.getLabel(), is("572"));

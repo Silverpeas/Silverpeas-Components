@@ -46,9 +46,6 @@ public class WarBuilder4ResourcesManager extends BasicWarBuilder {
     addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer");
-    addMavenDependencies("org.apache.tika:tika-core");
-    addMavenDependencies("org.apache.tika:tika-parsers");
-    addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     addAsResource("org/silverpeas/components/resourcesmanager/service");
     addPackages(true, "org.silverpeas.components.resourcesmanager");
   }

@@ -47,11 +47,8 @@ public class NewsRepositoryIT {
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
-      warBuilder.addMavenDependencies("org.apache.tika:tika-core");
-      warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
       warBuilder.addPackages(true, "org.silverpeas.components.quickinfo");
       warBuilder.addPackages(true, "com.stratelia.webactiv.quickinfo");
-      warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     }).build();
   }
 

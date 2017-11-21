@@ -35,13 +35,10 @@ public class WarBuilder4Forums extends BasicWarBuilder {
   public static <T> WarBuilder4Forums onWarForTestClass(Class<T> test) {
     return (WarBuilder4Forums) new WarBuilder4Forums(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.components.forums")
-              .addAsResource("org/silverpeas/components/forums")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+              .addAsResource("org/silverpeas/components/forums");
         });
   }
   /**

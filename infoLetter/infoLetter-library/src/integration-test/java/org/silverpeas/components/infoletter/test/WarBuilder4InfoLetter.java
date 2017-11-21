@@ -34,13 +34,10 @@ public class WarBuilder4InfoLetter extends BasicWarBuilder {
   public static <T> WarBuilder4InfoLetter onWarForTestClass(Class<T> test) {
     return (WarBuilder4InfoLetter) new WarBuilder4InfoLetter(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.components.infoletter")
-              .addAsResource("org/silverpeas/components/infoletter")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+              .addAsResource("org/silverpeas/components/infoletter");
         });
   }
 

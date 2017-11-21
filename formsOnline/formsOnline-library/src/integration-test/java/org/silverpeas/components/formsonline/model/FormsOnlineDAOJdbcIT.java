@@ -57,9 +57,6 @@ public class FormsOnlineDAOJdbcIT {
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-          warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
-          warBuilder.addMavenDependencies("org.apache.tika:tika-core");
-          warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
           warBuilder.addPackages(true, "org.silverpeas.components.formsonline");
         }).build();
   }
