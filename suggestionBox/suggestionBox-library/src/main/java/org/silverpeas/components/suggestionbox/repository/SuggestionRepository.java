@@ -91,12 +91,6 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
   }
 
   @Override
-  public SilverpeasList<Suggestion> getById(final String... ids) {
-    return decorate(suggestionManager.getById(ids),
-        SuggestionCriteria.from(null).withWysiwygContent());
-  }
-
-  @Override
   public SilverpeasList<Suggestion> getById(final Collection<String> ids) {
     return decorate(suggestionManager.getById(ids),
         SuggestionCriteria.from(null).withWysiwygContent());

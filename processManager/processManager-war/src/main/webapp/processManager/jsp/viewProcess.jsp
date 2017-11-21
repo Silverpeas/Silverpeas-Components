@@ -30,6 +30,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<c:set var="backToLabel" value='<%=resource.getString("processManager.backTo")%>'/>
+
 <%
 	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
 	Form form 						= (Form) request.getAttribute("form");
@@ -164,6 +166,7 @@ function printProcess() {
           <% } else {
 							for (CurrentState currentState : activeStates) {
 							%>
+                 <c:set var="currentState" value="<%=currentState%>"/>
 								 <span class="textePetitBold">&#149;&nbsp;<%=currentState.getLabel()%></span>
 								<% if (StringUtil.isDefined(currentState.getWorkingUsersAsString())) { %>
 								   (<%=currentState.getWorkingUsersAsString()%>)
@@ -177,13 +180,16 @@ function printProcess() {
                                action.getName() + "&processId=" + process.getInstanceId()%>" class="button"><span><%=action.getLabel(currentRole, language)%></span></a>
                    <%
                      }
-                     if (isReturnEnabled) {
-                       for (HistoryStep backStep : currentState.getBackSteps()) {
-                         %>
-                   <a href="<%="editQuestion?state=" + currentState.getName() + "&stepId=" + backStep.getId()%>" class="button"><span><%=resource.getString("processManager.backTo") + " " + backStep.getUser().getFullName()%></span></a>
-                   <%
-                       }
-                     }
+                     if (isReturnEnabled) { %>
+                      <c:forEach var="backStep" items="<%=currentState.getBackSteps()%>">
+                        <c:set var="realUser" value="${backStep.user}"/>
+                        <c:if test="${realUser != null}">
+                          <a href="editQuestion?state=${currentState.name}&stepId=${backStep.id}" class="button">
+                            <span>${backToLabel} ${realUser.fullName}</span>
+                          </a>
+                        </c:if>
+                      </c:forEach>
+                   <%}
                    }
                 %>
 							<%

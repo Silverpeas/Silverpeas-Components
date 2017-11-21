@@ -202,7 +202,7 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <c:if test="${fn:length(roles) > 0}">
+    <c:if test="${fn:length(roles) > 1}">
       <div id="roles">
         <form name="roleChoice" method="post" action="changeRole">
           <label class="textePetitBold" for="current-role">${yourRoleLabel} :&nbsp;</label>

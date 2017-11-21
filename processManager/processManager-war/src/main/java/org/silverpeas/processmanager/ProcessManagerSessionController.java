@@ -41,6 +41,7 @@ import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -386,12 +387,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     Task[] tasks = getTasks();
     for (Task task : tasks) {
       State state = task.getState();
-      List<Task> tasksByState = result.get(state.getName());
-      if (tasksByState == null) {
-        tasksByState = new ArrayList<>();
-        result.put(state.getName(), tasksByState);
-      }
-      tasksByState.add(task);
+      MapUtil.putAddList(result, state.getName(), task);
     }
     return result;
   }
@@ -1381,14 +1377,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     HistoryStep[] steps = currentProcessInstance.getHistorySteps();
 
     // Invert history to get newest history at the beginning
-    Arrays.sort(steps, new Comparator<HistoryStep>() {
-
-      public int compare(HistoryStep o1, HistoryStep o2) {
-        if (ascending) {
-          return o1.getId().compareTo(o2.getId());
-        } else {
-          return o2.getId().compareTo(o1.getId());
-        }
+    Arrays.sort(steps, (o1, o2) -> {
+      final Integer id1 = Integer.parseInt(o1.getId());
+      final Integer id2 = Integer.parseInt(o2.getId());
+      if (ascending) {
+        return id1.compareTo(id2);
+      } else {
+        return id2.compareTo(id1);
       }
     });
 
@@ -1427,11 +1422,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @return an array of string containing actors full name
    */
   public String getStepActor(HistoryStep step) {
-    String actorFullName;
+    String actorFullName = "##";
     try {
-      actorFullName = step.getUser().getFullName();
+      final User user = step.getUser();
+      if (user != null) {
+        actorFullName = user.getFullName();
+      }
     } catch (WorkflowException we) {
-      actorFullName = "##";
+      SilverLogger.getLogger(this).warn(we);
     }
     return actorFullName;
   }
