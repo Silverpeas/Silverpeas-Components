@@ -30,44 +30,44 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<c:set var="backToLabel" value='<%=resource.getString("processManager.backTo")%>'/>
+
 <%
 	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
 	Form form 						= (Form) request.getAttribute("form");
 	PagesContext 				context 					= (PagesContext) request.getAttribute("context");
 	DataRecord 					data 						= (DataRecord) request.getAttribute("data");
 	String[] 					deleteAction 				= (String[]) request.getAttribute("deleteAction");
-	String[] 					activeStates 				= (String[]) request.getAttribute("activeStates");
-	String[] 					activeRoles 				= (String[]) request.getAttribute("activeRoles");
-	Boolean 					isActiveUser 				= (Boolean) request.getAttribute("isActiveUser");
-	Boolean 					isAttachmentTabEnable 		= (Boolean) request.getAttribute("isAttachmentTabEnable");
-	Boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
-	boolean 					isProcessIdVisible 			= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-	boolean 					isPrintButtonEnabled 		= ((Boolean) request.getAttribute("isPrintButtonEnabled")).booleanValue();
-	List	 					locks		 				= ((List) request.getAttribute("locks"));
-	boolean						hasLockingUsers				= (locks != null) && (locks.size()>0);
-	boolean						isCurrentUserIsLockingUser 	= ((Boolean) request.getAttribute("isCurrentUserIsLockingUser")).booleanValue();
-	boolean						isReturnEnabled 			= ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+	List<CurrentState> activeStates 				= (List<CurrentState>) request.getAttribute("activeStates");
+	boolean 					isActiveUser 				= (Boolean) request.getAttribute("isActiveUser");
+	boolean 					isAttachmentTabEnable 		= (Boolean) request.getAttribute("isAttachmentTabEnable");
+  boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
+	boolean 					isProcessIdVisible 			= (Boolean) request.getAttribute("isProcessIdVisible");
+	boolean 					isPrintButtonEnabled 		= (Boolean) request.getAttribute("isPrintButtonEnabled");
+	List	 					locks		 				= (List) request.getAttribute("locks");
+	boolean						hasLockingUsers				= CollectionUtil.isNotEmpty(locks);
+	boolean						isCurrentUserIsLockingUser 	= (Boolean) request.getAttribute("isCurrentUserIsLockingUser");
+	boolean						isReturnEnabled 			= (Boolean) request.getAttribute("isReturnEnabled");
 	String 						versionning 				= (String) request.getAttribute("isVersionControlled");
 	boolean isVersionControlled = "1".equals(versionning);
+	int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
 
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 
 	String processId = "";
-	if (isProcessIdVisible)
-		processId = "#"+process.getInstanceId()+" > ";
+	if (isProcessIdVisible) {
+    processId = "#" + process.getInstanceId() + " > ";
+  }
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
 
-	if (isPrintButtonEnabled)
-	{
+	if (isPrintButtonEnabled) {
 		operationPane.addOperation(resource.getIcon("processManager.print"),
 			resource.getString("processManager.print"),
 			"javascript:printProcess()");
 	}
 	tabbedPane.addTab(resource.getString("processManager.details"), "#", true, true);
 
-	if ("supervisor".equalsIgnoreCase(currentRole))
-	{
+	if ("supervisor".equalsIgnoreCase(currentRole)) {
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("processManager.reassign"),
 				resource.getString("processManager.reassign"),
@@ -79,47 +79,42 @@
 
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
-	}
-	else
-	{
-		if (deleteAction != null)
-		{
-			operationPane.addOperation(resource.getIcon("processManager.remove"),
-										deleteAction[2],
-										"editAction?state="+deleteAction[1]+"&action="+deleteAction[0]);
+	} else {
+		if (deleteAction != null) {
+			operationPane.addOperation(resource.getIcon("processManager.remove"), deleteAction[2],
+          "editAction?state="+deleteAction[1]+"&action="+deleteAction[0]);
 		}
 
-		if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
-			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-		if (!hasLockingUsers || isCurrentUserIsLockingUser)
-		  tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-
-		if (isReturnEnabled) {
-			tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+		if (isAttachmentTabEnable && isActiveUser) {
+      tabbedPane.addTab(resource.getString("processManager.attachments"),
+          "attachmentManager?processId=" + process.getInstanceId(), false, true);
+    }
+		if (isReturnEnabled && nbEntriesAboutQuestions > 0) {
+			tabbedPane.addTab(resource.getString("processManager.questions") + " ("+nbEntriesAboutQuestions+")", "listQuestions?processId=" + process.getInstanceId(), false, true);
 		}
-		if (isHistoryTabEnable.booleanValue())
-			tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
+		if (isHistoryTabEnable) {
+      tabbedPane.addTab(resource.getString("processManager.history"),
+          "viewHistory?processId=" + process.getInstanceId(), false, true);
+    }
 	}
 
 %>
 
-<%@page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.processmanager.CurrentState" %>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<link type="text/css" rel="stylesheet" href='<c:url value="/processManager/jsp/styleSheets/print.css" />' media="print"/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 function printProcess() {
-    url = "printProcessFrameset";
-    windowName = "printProcess";
-    larg = "600";
-    haut = "600";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-    SP_openWindow(url, windowName, larg , haut, windowParams);
+    window.print();
 }
 </script>
 </head>
@@ -132,92 +127,97 @@ function printProcess() {
 <view:frame>
 			<% if (hasLockingUsers) {%>
 			
-		<div class="inlineMessage un">	
+		<div class="inlineMessage" id="actionsInProgress">
 			<p class="txtnav"><%=resource.getString("processManager.actionInProgress") %> </p>
-					
-			
 				<c:choose>
 					<c:when test="${isCurrentUserIsLockingUser}">
-
 						<p class="textePetitBold">
 						<%=resource.getString("processManager.youHaveAnActionToFinish") %>
 						</p>
-
 					</c:when>
-
 					<c:otherwise>
 						<c:forEach items="${locks}" var="userlock">
-
-								<p class="textePetitBold">
-									<%=resource.getString("processManager.instanceLockedBy")%> ${userlock.user.fullName}
-									<%=resource.getString("processManager.since")%> <fmt:formatDate value="${userlock.lockDate}" pattern="dd MMM yyyy"/>
-									<c:if test="${currentRole eq 'supervisor'}">
-										<c:if test="${userlock.removableBySupervisor}">
-											<c:url value="/util/icons/delete.gif" var="removeIconUrl" />
-											<a href="removeLock?processId=${process.instanceId}&stateName=${userlock.state}&userId=${userlock.user.userId}">
-												<img alt="" src="${removeIconUrl}" border="0"/>
-											</a>
-										</c:if>
-									</c:if>
-								</p>
-	
+              <p class="textePetitBold">
+                <%=resource.getString("processManager.instanceLockedBy")%> ${userlock.user.fullName}
+                <%=resource.getString("processManager.since")%> <fmt:formatDate value="${userlock.lockDate}" pattern="dd MMM yyyy"/>
+                <c:if test="${currentRole eq 'supervisor'}">
+                  <c:if test="${userlock.removableBySupervisor}">
+                    <c:url value="/util/icons/delete.gif" var="removeIconUrl" />
+                    <a href="removeLock?processId=${process.instanceId}&stateName=${userlock.state}&userId=${userlock.user.userId}">
+                      <img alt="" src="${removeIconUrl}" border="0"/>
+                    </a>
+                  </c:if>
+                </c:if>
+              </p>
 						</c:forEach>
 					</c:otherwise>
 				</c:choose>
 			</div>
-
 			<br/>
-			<%
-			}
-			%>
+			<% } %>
 			
-		<div class="inlineMessage deux">
+		<div class="inlineMessage" id="activeStates">
 			<p class="txtnav"><%=resource.getString("processManager.activeStates") %> </p>
 					
-					<%
-						if (activeStates==null || activeStates.length==0)
-						{
-							%>
-
+					<% if (CollectionUtil.isEmpty(activeStates))  { %>
 							<p class="textePetitBold">
 							<%=resource.getString("processManager.noActiveState") %>
 							</p>
-
-							<%
-						}
-						else
-						{
-							for (int i=0; i<activeStates.length; i++)
-							{
+          <% } else {
+							for (CurrentState currentState : activeStates) {
 							%>
-
-							   <p>
-								 <span class="textePetitBold">&#149;&nbsp;
-								<%=activeStates[i]%></span>
-								<% if (activeRoles != null && i<activeRoles.length && activeRoles[i] != null && activeRoles[i].length() > 0) { %>
-								   (<%=activeRoles[i]%>)
+                 <c:set var="currentState" value="<%=currentState%>"/>
+								 <span class="textePetitBold">&#149;&nbsp;<%=currentState.getLabel()%></span>
+								<% if (StringUtil.isDefined(currentState.getWorkingUsersAsString())) { %>
+								   (<%=currentState.getWorkingUsersAsString()%>)
 								<% } %>
-							   </p>
-
+                <%
+                   if (!process.getErrorStatus() && (!hasLockingUsers || isCurrentUserIsLockingUser)) {
+                     Action[] actions = currentState.getActions();
+                     for (Action action : actions) {
+                       %>
+                      <a href="<%="editAction?state=" + currentState.getName() + "&action=" +
+                               action.getName() + "&processId=" + process.getInstanceId()%>" class="button"><span><%=action.getLabel(currentRole, language)%></span></a>
+                   <%
+                     }
+                     if (isReturnEnabled) { %>
+                      <c:forEach var="backStep" items="<%=currentState.getBackSteps()%>">
+                        <c:set var="realUser" value="${backStep.user}"/>
+                        <c:if test="${realUser != null}">
+                          <a href="editQuestion?state=${currentState.name}&stepId=${backStep.id}" class="button">
+                            <span>${backToLabel} ${realUser.fullName}</span>
+                          </a>
+                        </c:if>
+                      </c:forEach>
+                   <%}
+                   }
+                %>
 							<%
 							}
 						}
 					%>
-		</div>	
+		</div>
+
+    <% if (process.getErrorStatus()) { %>
+      <div class="inlineMessage-nok">
+          <%=resource.getString("processManager.ERR_PROCESS_IN_ERROR")%>
+          <%=resource.getString("processManager.noTask")%>
+      </div>
+    <% } %>
 <br/>
 
 <table width="100%">
 <tr><td>
 <%
 	context.setBorderPrinted(false);
-   	form.display(out, context, data);
+  form.display(out, context, data);
 %>
 </td><td valign="top">
 
 <%
 	out.flush();
 	if (!isVersionControlled) {
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
+    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 	} else {
 		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 	}

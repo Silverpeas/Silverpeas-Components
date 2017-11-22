@@ -24,6 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkProcessManager.jsp" %>
 
@@ -31,15 +33,11 @@
 	ProcessInstance process 				= (ProcessInstance) request.getAttribute("process");
 	List 			steps 					= (List) request.getAttribute("steps");
 	String   		enlightedStep 			= (String) request.getAttribute("enlightedStep");
-	List			stepContents			= (List) request.getAttribute("StepsContent");
 	Boolean 		isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
 	Boolean 		isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
-	boolean 		isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-    boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
-
-	Form form  = (Form) request.getAttribute("form");
-	PagesContext context = (PagesContext) request.getAttribute("context");
-	DataRecord data = (DataRecord) request.getAttribute("data");
+	boolean 		isProcessIdVisible 		= (Boolean) request.getAttribute("isProcessIdVisible");
+  boolean			isReturnEnabled = (Boolean) request.getAttribute("isReturnEnabled");
+  int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
@@ -50,18 +48,14 @@
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
 	
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
-	if ("supervisor".equalsIgnoreCase(currentRole))
-	{
+	if ("supervisor".equalsIgnoreCase(currentRole)) {
 		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
-	}
-	else
-	{
-		if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
+  } else {
+		if (isAttachmentTabEnable && isActiveUser != null && isActiveUser)
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-		tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-		if (isReturnEnabled) {
-			tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+		if (isReturnEnabled & nbEntriesAboutQuestions > 0) {
+			tabbedPane.addTab(resource.getString("processManager.questions")+" ("+nbEntriesAboutQuestions+")", "listQuestions?processId=" + process.getInstanceId(), false, true);
 		}
 		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 	}
@@ -69,7 +63,7 @@
 	operationPane.addOperation(resource.getIcon("processManager.print"), resource.getString("GML.print"), "javascript:window.print();");
 %>
 
-<%@page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.processmanager.StepVO" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -77,6 +71,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<link type="text/css" rel="stylesheet" href='<c:url value="/processManager/jsp/styleSheets/print.css" />' media="print"/>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="preview"/>
 </head>
@@ -86,7 +81,6 @@
 	out.println(tabbedPane.print());
 %>
 <view:frame>
-
 
 <div class="txt-align-right">
 	<% if ("all".equalsIgnoreCase(enlightedStep)) { %>
@@ -104,7 +98,7 @@
 	  StepVO step = (StepVO) steps.get(i);
 %>
 
-<form name="formCollapse" action="viewHistory">
+<form name="formCollapse" action="viewHistory" class="formCollapse">
 <input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
 
 			<div class="bgDegradeGris ">
@@ -130,9 +124,9 @@
 			</div>
 			<%
 			if (step.getContent() != null) 	{
-				form = step.getContent().getForm();
-				context = step.getContent().getPageContext();
-				data = step.getContent().getRecord();
+				Form form = step.getContent().getForm();
+				PagesContext context = step.getContent().getPageContext();
+				DataRecord data = step.getContent().getRecord();
 				
 				if (form == null || data == null || ( !step.isVisible() && !("supervisor".equalsIgnoreCase(currentRole))) ) {
 				%>

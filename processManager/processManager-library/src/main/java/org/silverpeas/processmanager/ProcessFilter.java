@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 public class ProcessFilter {
 
   private FilterManager filter = null;
-  private String collapse = "true";
+  private boolean collapse = false;
   private DataRecord criteria;
 
   /**
@@ -81,15 +81,13 @@ public class ProcessFilter {
         }
         values.append(states[s].getLabel(role, lang));
       }
-      // state.addParameter("keys", "A qualifier##Correction en attente##Correction en cours");
       state.addParameter("keys", values.toString());
       filter.addFieldParameter("instance.state", state);
 
       // Affichage d'une liste déroulante pour chaque donnée multivaluée
       FieldTemplate[] fields = rowTemplate.getFieldTemplates();
-      FieldTemplate field = null;
       for (int f = 2; f < fields.length; f++) {
-        field = fields[f];
+        FieldTemplate field = fields[f];
         FieldTemplate folderField = folderTemplate.getFieldTemplate(field.getFieldName());
         Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null &&
@@ -170,19 +168,15 @@ public class ProcessFilter {
   /**
    * Returns the collapse status of the filter panel.
    */
-  public String getCollapse() {
+  public boolean isCollapse() {
     return collapse;
   }
 
   /**
    * Set the collapse status of the filter panel.
    */
-  public void setCollapse(String collapse) {
-    if ("false".equals(collapse)) {
-      this.collapse = "false";
-    } else {
-      this.collapse = "true";
-    }
+  public void setCollapse(boolean collapse) {
+    this.collapse = collapse;
   }
 
   /**

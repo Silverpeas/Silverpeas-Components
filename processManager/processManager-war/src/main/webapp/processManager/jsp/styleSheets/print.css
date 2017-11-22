@@ -1,0 +1,18 @@
+.sp_goToTop, #gef-tabs,
+a.button, .cellBrowseBar, .cellOperation {
+  display: none;
+}
+
+a.btn-deploy-all-item, a.bend-all-item, a.deploy-item,
+a.btn-closed {
+  display: none;
+}
+
+.formCollapse {
+  margin-top: 10px;
+}
+
+.bgDegradeGris {
+  background-image: none;
+  background-color: #cdcdcd;
+}

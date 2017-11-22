@@ -35,6 +35,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -48,16 +49,12 @@ import org.silverpeas.core.web.mvc.util.RoutingException;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
-import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.Question;
-import org.silverpeas.core.workflow.api.model.AllowedAction;
-import org.silverpeas.core.workflow.api.model.AllowedActions;
 import org.silverpeas.core.workflow.api.model.Item;
-import org.silverpeas.core.workflow.api.model.QualifiedUsers;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
-import org.silverpeas.core.workflow.engine.model.ActionRefs;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
+import org.silverpeas.processmanager.CurrentState;
 import org.silverpeas.processmanager.LockVO;
 import org.silverpeas.processmanager.ProcessFilter;
 import org.silverpeas.processmanager.ProcessManagerException;
@@ -71,7 +68,6 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -199,7 +195,7 @@ public class ProcessManagerRequestRouter
       String welcomeMessage = WysiwygController
           .load(session.getComponentId(), session.getComponentId(), session.getLanguage());
       request.setAttribute("WelcomeMessage", welcomeMessage);
-      setProcessFilterAttributes(session, request, session.getCurrentFilter());
+      setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
     }
@@ -238,7 +234,16 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       ProcessFilter filter = session.getCurrentFilter();
-      updateProcessFilter(session, request, filter, items);
+      updateProcessFilter(session, filter, items);
+      return listProcessHandler.getDestination(function, session, request);
+    }
+  };
+
+  private static FunctionHandler clearFilterHandler = new SessionSafeFunctionHandler() {
+    @Override
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
+      session.clearFilter();
       return listProcessHandler.getDestination(function, session, request);
     }
   };
@@ -287,8 +292,19 @@ public class ProcessManagerRequestRouter
 
       session.resetCurrentProcessInstance(processId);
 
-      if ((force == null || !force.equals("true")) && (session.hasPendingQuestions())) {
+      if ((force == null || !force.equals("true")) && session.hasPendingQuestions()) {
         return listQuestionsHandler.getDestination(function, session, request);
+      }
+
+      List<LockVO> locks = session.getLockingUsers();
+
+      // check if an action must be resumed
+      if (!locks.isEmpty()) {
+        // Detects special case where user has killed his navigator while filling an action form
+        HistoryStep savedStep = session.getSavedStep();
+        if (savedStep != null) {
+          return resumeActionHandler.getDestination(function, session, request);
+        }
       }
 
       Form form = session.getPresentationForm();
@@ -297,11 +313,8 @@ public class ProcessManagerRequestRouter
       PagesContext context = getFormContext("presentation", "0", session, true);
       request.setAttribute("context", context);
 
-      String[] activeStates = session.getActiveStates();
+      List<CurrentState> activeStates = session.getActiveStates();
       request.setAttribute("activeStates", activeStates);
-
-      String[] roles = session.getActiveRoles();
-      request.setAttribute("activeRoles", roles);
 
       DataRecord data = session.getFolderRecord();
       request.setAttribute("data", data);
@@ -311,14 +324,12 @@ public class ProcessManagerRequestRouter
         request.setAttribute("deleteAction", deleteAction);
       }
 
-      List<LockVO> locks = session.getLockingUsers();
-      if (locks != null) {
+      if (CollectionUtil.isNotEmpty(locks)) {
         request.setAttribute("locks", locks);
         request.setAttribute("isCurrentUserIsLockingUser", session.isCurrentUserIsLockingUser());
       } else {
         request.setAttribute("isCurrentUserIsLockingUser", false);
       }
-
 
       setSharedAttributes(session, request);
       return "/processManager/jsp/viewProcess.jsp";
@@ -370,36 +381,7 @@ public class ProcessManagerRequestRouter
         return listQuestionsHandler.getDestination(function, session, request);
       }
 
-      Form form = session.getPresentationForm();
-      request.setAttribute("form", form);
-
-      PagesContext context = getFormContext("presentation", "0", session, true);
-      request.setAttribute("context", context);
-
-      String[] activeStates = session.getActiveStates();
-      request.setAttribute("activeStates", activeStates);
-
-      String[] roles = session.getActiveRoles();
-      request.setAttribute("activeRoles", roles);
-
-      DataRecord data = session.getFolderRecord();
-      request.setAttribute("data", data);
-
-      String[] deleteAction = session.getDeleteAction();
-      if (deleteAction != null) {
-        request.setAttribute("deleteAction", deleteAction);
-      }
-
-      List<LockVO> locks = session.getLockingUsers();
-      if (locks != null) {
-        request.setAttribute("locks", locks);
-        request.setAttribute("isCurrentUserIsLockingUser", session.isCurrentUserIsLockingUser());
-      } else {
-        request.setAttribute("isCurrentUserIsLockingUser", false);
-      }
-
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/viewProcess.jsp";
+      return viewProcessHandler.getDestination(function, session, request);
     }
   };
 
@@ -503,64 +485,6 @@ public class ProcessManagerRequestRouter
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_CREATE_FORM", e);
       }
-    }
-  };
-
-  /**
-   * The listTasks handler
-   */
-  private static FunctionHandler listTasksHandler = new SessionSafeFunctionHandler() {
-    @Override
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
-
-      ProcessInstance process = session.resetCurrentProcessInstance(processId);
-
-      // checking locking users
-      List<LockVO> locks = session.getLockingUsers();
-      if (!locks.isEmpty() && !session.isCurrentUserIsLockingUser()) {
-        return listProcessHandler.getDestination(function, session, request);
-      }
-
-      // check if an action must be resumed
-      if (!locks.isEmpty()) {
-        // Detects special case where user has killed his navigator while filling an action form
-        HistoryStep savedStep = session.getSavedStep();
-        if (savedStep != null) {
-          return resumeActionHandler.getDestination(function, session, request);
-        }
-      }
-
-      if (!process.getErrorStatus()) {
-        Task[] tasks = session.getTasks();
-
-        for (int i = 0; tasks != null && i < tasks.length; i++) {
-          State state = tasks[i].getState();
-          AllowedActions filteredActions = new ActionRefs();
-          if (state.getAllowedActionsEx() != null) {
-            Iterator<AllowedAction> actions = state.getAllowedActionsEx().iterateAllowedAction();
-            while (actions.hasNext()) {
-              AllowedAction action = actions.next();
-              QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
-
-              List<String> grantedUserIds = session.getUsers(qualifiedUsers, true);
-              if (grantedUserIds.contains(session.getUserId())) {
-                filteredActions.addAllowedAction(action);
-              }
-            }
-          }
-          state.setFilteredActions(filteredActions);
-        }
-
-        request.setAttribute("tasks", tasks);
-        request.setAttribute("ViewReturn", session.isViewReturn());
-        request.setAttribute("Error", Boolean.FALSE);
-      } else {
-        request.setAttribute("Error", Boolean.TRUE);
-      }
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/listTasks.jsp";
     }
   };
 
@@ -723,7 +647,7 @@ public class ProcessManagerRequestRouter
       // unlock the process instance
       session.unlock(stateName);
 
-      return listTasksHandler.getDestination(function, session, request);
+      return viewProcessHandler.getDestination(function, session, request);
     }
   };
 
@@ -950,24 +874,21 @@ public class ProcessManagerRequestRouter
    * Builds the ProcessFilter from the http request parameters.
    */
   private static void updateProcessFilter(ProcessManagerSessionController session,
-      HttpServletRequest request, ProcessFilter filter, List<FileItem> items)
-      throws ProcessManagerException {
-
+      ProcessFilter filter, List<FileItem> items) throws ProcessManagerException {
     try {
-      String collapse = FileUploadUtil.getParameter(items, "collapse");
+      Form form = filter.getPresentationForm();
+      PagesContext context = getFormContext("filter", "1", session);
+      DataRecord data = filter.getCriteriaRecord();
 
-      String oldC = filter.getCollapse();
-      filter.setCollapse(collapse);
+      form.update(items, data, context);
+      filter.setCriteriaRecord(data);
 
-      // unless the filterPanel was not open.
-      if ("false".equals(oldC)) {
-        Form form = filter.getPresentationForm();
-        PagesContext context = getFormContext("filter", "1", session);
-        DataRecord data = filter.getCriteriaRecord();
-
-        form.update(items, data, context);
-        filter.setCriteriaRecord(data);
+      boolean isEmpty = true;
+      Map<String, String> values = data.getValues(null);
+      for (String value : values.values()) {
+        isEmpty = isEmpty && !StringUtil.isDefined(value);
       }
+      filter.setCollapse(!isEmpty);
     } catch (Exception e) {
       throw new ProcessManagerException("ProcessManagerRequestRouter",
           "processManager.ILL_FILTER_FORM", e);
@@ -978,9 +899,9 @@ public class ProcessManagerRequestRouter
    * Send the filter parameters
    */
   private static void setProcessFilterAttributes(ProcessManagerSessionController session,
-      HttpServletRequest request, ProcessFilter filter) throws ProcessManagerException {
-    String collapse = filter.getCollapse();
-    request.setAttribute("collapse", collapse);
+      HttpServletRequest request) throws ProcessManagerException {
+    ProcessFilter filter = session.getCurrentFilter();
+    request.setAttribute("collapse", filter.isCollapse());
 
     Form form = filter.getPresentationForm();
     request.setAttribute("form", form);
@@ -991,51 +912,6 @@ public class ProcessManagerRequestRouter
     DataRecord data = filter.getCriteriaRecord();
     request.setAttribute("data", data);
   }
-
-  /**
-   * The printProcessFrameset handler
-   */
-  private static FunctionHandler printProcessFramesetHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) {
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/printProcessFrameset.jsp";
-    }
-  };
-
-  /**
-   * The printProcess handler
-   */
-  private static FunctionHandler printProcessHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      // Get the print form
-      Form form = session.getPrintForm();
-      request.setAttribute("form", form);
-
-      // Set the form context
-      PagesContext context = getFormContext("printForm", "0", session);
-      request.setAttribute("context", context);
-
-      // Get the form data
-      DataRecord data = session.getPrintRecord();
-      request.setAttribute("data", data);
-
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/printProcess.jsp";
-    }
-  };
-
-  /**
-   * The printButtons handler
-   */
-  private static FunctionHandler printButtonsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) {
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/printButtons.jsp";
-    }
-  };
 
   private static FunctionHandler toWelcomeWysiwyg = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
@@ -1088,12 +964,12 @@ public class ProcessManagerRequestRouter
     handlerMap.put("listSomeProcess", listSomeProcessHandler);
     handlerMap.put("changeRole", changeRoleHandler);
     handlerMap.put("filterProcess", filterProcessHandler);
+    handlerMap.put("clearFilter", clearFilterHandler);
     handlerMap.put("viewProcess", viewProcessHandler);
     handlerMap.put("removeLock", removeLockHandler);
     handlerMap.put("viewHistory", viewHistoryHandler);
     handlerMap.put("createProcess", createProcessHandler);
     handlerMap.put("saveCreation", saveCreationHandler);
-    handlerMap.put("listTasks", listTasksHandler);
     handlerMap.put("editAction", editActionHandler);
     handlerMap.put("saveAction", saveActionHandler);
     handlerMap.put("cancelAction", cancelActionHandler);
@@ -1103,9 +979,6 @@ public class ProcessManagerRequestRouter
     handlerMap.put("cancelResponse", cancelResponseHandler);
     handlerMap.put("saveResponse", saveResponseHandler);
     handlerMap.put("listQuestions", listQuestionsHandler);
-    handlerMap.put("printProcessFrameset", printProcessFramesetHandler);
-    handlerMap.put("printProcess", printProcessHandler);
-    handlerMap.put("printButtons", printButtonsHandler);
     handlerMap.put("editUserSettings", editUserSettingsHandler);
     handlerMap.put("saveUserSettings", saveUserSettingsHandler);
     handlerMap.put("searchResult.jsp", searchResultHandler);
@@ -1200,9 +1073,9 @@ public class ProcessManagerRequestRouter
    */
   private static void setSharedAttributes(ProcessManagerSessionController session,
       HttpServletRequest request) {
-    String canCreate = (session.getCreationRights()) ? "1" : "0";
+    String canCreate = session.getCreationRights() ? "1" : "0";
     boolean isVersionControlled = session.isVersionControlled();
-    String s_isVersionControlled = (isVersionControlled ? "1" : "0");
+    String s_isVersionControlled = isVersionControlled ? "1" : "0";
 
     request.setAttribute("isVersionControlled", s_isVersionControlled);
     request.setAttribute("language", session.getLanguage());
@@ -1217,21 +1090,7 @@ public class ProcessManagerRequestRouter
     request.setAttribute("isPrintButtonEnabled", session.isPrintButtonEnabled());
     request.setAttribute("isSaveButtonEnabled", session.isSaveButtonEnabled());
     request.setAttribute("isReturnEnabled", session.isViewReturn());
-  }
-
-  /**
-   * Read an int parameter.
-   */
-  static int intValue(String parameter, int defaultValue) {
-    try {
-      if (parameter != null) {
-        return Integer.parseInt(parameter);
-      } else {
-        return defaultValue;
-      }
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
+    request.setAttribute("NbEntriesAboutQuestions", session.getNbEntriesAboutQuestions());
   }
 
   private static PagesContext getFormContext(String formName, String formIndex,

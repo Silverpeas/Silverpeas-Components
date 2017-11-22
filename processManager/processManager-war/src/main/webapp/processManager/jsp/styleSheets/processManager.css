@@ -39,7 +39,10 @@
 	border-color:#CCC;
 }
 
-.processManager-main #filter,
+.processManager-main #filter {
+  margin: 1em 0;
+}
+
 .processManager-main #filter #filterForm .forms {
   margin: 1em;
 }
@@ -57,4 +60,17 @@
 
 .noty_text a {
   text-decoration: underline;
+}
+
+.inlineMessage a.button {
+  background-color:#F4F4F4;
+  background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  -moz-background-size: 100%;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  color: #4C4C4C;
+  line-height: 52px;
+  margin: 0px 10px;
+  padding: 7px 20px;
+  text-decoration: none;
 }
