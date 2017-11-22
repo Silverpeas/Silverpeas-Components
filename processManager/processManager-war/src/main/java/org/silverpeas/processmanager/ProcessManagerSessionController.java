@@ -1481,49 +1481,33 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the data filled during the given step. Returns null if the step is unkwown.
    */
   private DataRecord getStepRecord(HistoryStep step) {
-
     try {
+      final Date actionDate = step.getActionDate();
       if ("#question#".equals(step.getAction())) {
-        Question question = null;
-        Question[] questions = currentProcessInstance.getQuestions();
-        for (int j = 0; question == null && j < questions.length; j++) {
-          if (step.getResolvedState().equals(questions[j].getFromState().getName())) {
-            if (((questions[j].getQuestionDate().getTime() - step.getActionDate().getTime()) <
-                30000) &&
-                ((questions[j].getQuestionDate().getTime() - step.getActionDate().getTime()) > 0)) {
-              question = questions[j];
-            }
+        final Optional<Question> question = Arrays.stream(currentProcessInstance.getQuestions()).filter(q-> {
+          if (step.getResolvedState().equals(q.getFromState().getName())) {
+            final Date questionDate = q.getQuestionDate();
+            final long elapsedTimeBetweenActionAndQuestion = questionDate.getTime() - actionDate.getTime();
+            return 0 < elapsedTimeBetweenActionAndQuestion && elapsedTimeBetweenActionAndQuestion < 30000;
           }
-        }
-
-        if (question == null) {
-          return null;
-        } else {
-          return new QuestionRecord(question.getQuestionText());
-        }
+          return false;
+        }).findFirst();
+        return question.<DataRecord>map(q -> new QuestionRecord(q.getQuestionText())).orElse(null);
       } else if ("#response#".equals(step.getAction())) {
-        Question question = null;
-        Question[] questions = currentProcessInstance.getQuestions();
-        for (int j = 0; question == null && j < questions.length; j++) {
-          if (step.getResolvedState().equals(questions[j].getTargetState().getName())) {
-            if (((questions[j].getResponseDate().getTime() - step.getActionDate().getTime()) <
-                30000) &&
-                ((questions[j].getResponseDate().getTime() - step.getActionDate().getTime()) > 0)) {
-              question = questions[j];
-            }
+        final Optional<Question> question = Arrays.stream(currentProcessInstance.getQuestions()).filter(q -> {
+          if (step.getResolvedState().equals(q.getTargetState().getName())) {
+            final Date responseDate = q.getResponseDate();
+            final long elapsedTimeBetweenActionAndResponse = responseDate != null ? responseDate.getTime() - actionDate.getTime() : -1;
+            return 0 < elapsedTimeBetweenActionAndResponse && elapsedTimeBetweenActionAndResponse < 30000;
           }
-        }
-
-        if (question == null) {
-          return null;
-        } else {
-          return new QuestionRecord(question.getResponseText());
-        }
+          return false;
+        }).findFirst();
+        return question.<DataRecord>map(q -> new QuestionRecord(q.getResponseText())).orElse(null);
       } else {
         return step.getActionRecord();
       }
     } catch (WorkflowException e) {
-
+      SilverLogger.getLogger(this).silent(e);
       return null;
     }
   }
