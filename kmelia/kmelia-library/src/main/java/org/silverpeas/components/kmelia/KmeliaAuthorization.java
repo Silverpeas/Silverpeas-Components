@@ -202,8 +202,16 @@ public class KmeliaAuthorization implements ComponentAuthorization {
   }
 
   protected boolean isRightsOnTopicsEnabled(String componentId) {
-    String param = controller.getComponentParameterValue(componentId, RIGHTS_ON_TOPIC_PARAM);
-    return StringUtil.getBooleanValue(param);
+    String key = RIGHTS_ON_TOPIC_PARAM+componentId;
+    Boolean enabled = cache.get(key);
+    if (enabled == null) {
+      enabled = StringUtil.getBooleanValue(
+          controller.getComponentParameterValue(componentId, RIGHTS_ON_TOPIC_PARAM));
+      if (cacheEnabled) {
+        cache.put(key, enabled);
+      }
+    }
+    return enabled;
   }
 
   protected boolean isDraftVisibleWithCoWriting() {
