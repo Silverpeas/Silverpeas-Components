@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.almanach.services;
 
+import org.silverpeas.components.almanach.AlmanachSettings;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -93,5 +94,10 @@ public class AlmanachCalendarResource extends CalendarResource {
         .filter(i -> !i.equals(getComponentId())).forEach(componentInstanceIdsToAggregate::add);
 
     return componentInstanceIdsToAggregate;
+  }
+
+  @Override
+  protected Integer[] getNextEventTimeWindows() {
+    return AlmanachSettings.getNextEventTimeWindows();
   }
 }

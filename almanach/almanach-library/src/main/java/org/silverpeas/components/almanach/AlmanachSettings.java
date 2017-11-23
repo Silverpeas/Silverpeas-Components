@@ -30,9 +30,9 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.time.ZoneId;
+import java.util.Arrays;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.*;
 
 
 /**
@@ -154,7 +154,35 @@ public final class AlmanachSettings {
    * @return the limit as int.
    */
   public static int getNbOccurrenceLimitOfNextEventView() {
-    return getSettings().getInteger("almanach.nextEvents.limit");
+    int limit = getSettings().getInteger("almanach.nextEvents.limit", -1);
+    if (limit == -1) {
+      limit = getCommonSetting().getInteger("calendar.nextEvents.limit");
+    }
+    return limit;
+  }
+
+  /**
+   * Gets the limit number of occurrences the short next event view has to display.
+   * @return the limit as int.
+   */
+  public static int getNbOccurrenceLimitOfShortNextEventView() {
+    int limit = getSettings().getInteger("almanach.nextEvents.short.limit", -1);
+    if (limit == -1) {
+      limit = getCommonSetting().getInteger("calendar.nextEvents.short.limit");
+    }
+    return limit;
+  }
+
+  /**
+   * Gets the limit number of occurrences the next event view has to display.
+   * @return the limit as int.
+   */
+  public static Integer[] getNextEventTimeWindows() {
+    String timeWindows = getSettings().getString("almanach.nextEvents.time.windows", "");
+    if (isNotDefined(timeWindows)) {
+      timeWindows = getCommonSetting().getString("calendar.nextEvents.time.windows");
+    }
+    return Arrays.stream(timeWindows.split(",")).map(w -> Integer.parseInt(w.trim())).toArray(Integer[]::new);
   }
 
   /**
@@ -163,5 +191,9 @@ public final class AlmanachSettings {
    */
   public static String getAggregationMode() {
     return getSettings().getString("almanachAgregationMode", ALMANACH_IN_SUBSPACES);
+  }
+
+  private static SettingBundle getCommonSetting() {
+    return ResourceLocator.getSettingBundle("org.silverpeas.calendar.settings.calendar");
   }
 }
