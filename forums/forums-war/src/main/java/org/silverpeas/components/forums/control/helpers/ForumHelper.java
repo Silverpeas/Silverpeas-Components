@@ -27,6 +27,7 @@ import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -211,7 +212,7 @@ public class ForumHelper {
           String lastMessageDate = "";
           String lastMessageUser = "";
           Object[] lastMessage = fsc.getLastMessage(forumId, messageId);
-          if (lastMessage != null) {
+          if (ArrayUtil.isNotEmpty(lastMessage)) {
             lastMessageId = Integer.parseInt((String) lastMessage[0]);
             lastMessageDate = convertDate((Date) lastMessage[1], resources);
             lastMessageUser = (String) lastMessage[2];

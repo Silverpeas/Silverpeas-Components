@@ -28,9 +28,9 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.url.ActionUrl;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspWriter;
@@ -86,7 +86,7 @@ public class ForumListHelper {
       String lastMessageDate = "";
       String lastMessageUser = "";
       Object[] lastMessage = fsc.getLastMessage(forumId);
-      if (lastMessage != null) {
+      if (ArrayUtil.isNotEmpty(lastMessage)) {
         lastMessageId = Integer.parseInt((String) lastMessage[0]);
         lastMessageDate = ForumHelper.convertDate((Date) lastMessage[1], resources);
         lastMessageUser = (String) lastMessage[2];
