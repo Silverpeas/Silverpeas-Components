@@ -27,6 +27,7 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
@@ -684,4 +685,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile, String userId);
 
   void userHaveBeenDeleted(String userId);
+
+  public void onDocumentDeletion(AttachmentRef attachment);
 }

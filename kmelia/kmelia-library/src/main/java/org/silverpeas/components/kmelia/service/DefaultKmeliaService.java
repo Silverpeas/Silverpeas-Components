@@ -49,6 +49,7 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -1418,6 +1419,11 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId) {
+    externalElementsOfPublicationHaveChanged(pubPK, userId, true);
+  }
+
+  private void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
+      boolean indexExternalElements) {
     // check if related contribution is managed by kmelia
     if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) && (pubPK.getInstanceId().
         startsWith("kmelia") || pubPK.getInstanceId().startsWith("toolbox") ||
@@ -1471,8 +1477,10 @@ public class DefaultKmeliaService implements KmeliaService {
         publicationService.createIndex(pubDetail);
       }
 
-      // index all attached files to taking into account visibility period
-      indexExternalElementsOfPublication(pubDetail);
+      if (indexExternalElements) {
+        // index all attached files to taking into account visibility period
+        indexExternalElementsOfPublication(pubDetail);
+      }
     }
   }
 
@@ -4814,5 +4822,12 @@ public class DefaultKmeliaService implements KmeliaService {
     // DataRecord data = set.getRecord(fromId);
 
     return set;
+  }
+
+  @Override
+  public void onDocumentDeletion(AttachmentRef attachment) {
+    PublicationPK pubPK =
+        new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
+    externalElementsOfPublicationHaveChanged(pubPK, attachment.getUserId(), false);
   }
 }

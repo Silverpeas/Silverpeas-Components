@@ -43,8 +43,8 @@ public class KmeliaAttachmentEventListener extends CDIResourceEventListener<Atta
   @Override
   public void onDeletion(final AttachmentEvent event) throws Exception {
     AttachmentRef attachment = event.getTransition().getBefore();
-    if (attachment != null) {
-      anExternalPublicationElementHaveChanged(attachment, null);
+    if (attachment != null && isAboutKmeliaPublication(attachment)) {
+      kmeliaService.onDocumentDeletion(attachment);
     }
   }
 
