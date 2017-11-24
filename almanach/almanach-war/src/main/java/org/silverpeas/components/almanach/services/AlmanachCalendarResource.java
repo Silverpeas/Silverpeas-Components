@@ -24,23 +24,13 @@
 
 package org.silverpeas.components.almanach.services;
 
-import org.silverpeas.components.almanach.AlmanachSettings;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import static org.silverpeas.components.almanach.AlmanachSettings.*;
 import static org.silverpeas.components.almanach.services.AlmanachCalendarResource
     .ALMANACH_CALENDAR_BASE_URI;
 
@@ -54,50 +44,5 @@ import static org.silverpeas.components.almanach.services.AlmanachCalendarResour
 @Authorized
 public class AlmanachCalendarResource extends CalendarResource {
 
-  public static final String ALMANACH_CALENDAR_BASE_URI = "almanach";
-
-  @Override
-  protected List<Calendar> getComponentInstanceCalendars() {
-    final List<Calendar> calendars = super.getComponentInstanceCalendars();
-    getComponentInstanceIdsToAggregate()
-        .forEach(i -> calendars.addAll(getCalendarWebServiceProvider().getCalendarsOf(i)));
-    return calendars;
-  }
-
-  private List<String> getComponentInstanceIdsToAggregate() {
-    final List<String> componentInstanceIdsToAggregate = new ArrayList<>();
-
-    // if the parameter is not activated, the empty list is returned immediately
-    if (!StringUtil.getBooleanValue(getOrganisationController()
-        .getComponentParameterValue(getComponentId(), "useAgregation"))) {
-      return componentInstanceIdsToAggregate;
-    }
-
-    final String aggregationMode = getAggregationMode();
-
-    boolean inCurrentSpace = false;
-    boolean inAllSpaces = false;
-    if (ALMANACH_IN_SPACE_AND_SUBSPACES.equals(aggregationMode)) {
-      inCurrentSpace = true;
-    } else if (ALL_ALMANACHS.equals(aggregationMode)) {
-      inCurrentSpace = true;
-      inAllSpaces = true;
-    }
-
-    final SilverpeasComponentInstance componentInstance =
-        SilverpeasComponentInstance.getById(getComponentId())
-            .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
-
-    Arrays.stream(getOrganisationController()
-        .getAllComponentIdsRecur(componentInstance.getSpaceId(), getUser().getId(),
-            componentInstance.getName(), inCurrentSpace, inAllSpaces))
-        .filter(i -> !i.equals(getComponentId())).forEach(componentInstanceIdsToAggregate::add);
-
-    return componentInstanceIdsToAggregate;
-  }
-
-  @Override
-  protected Integer[] getNextEventTimeWindows() {
-    return AlmanachSettings.getNextEventTimeWindows();
-  }
+  static final String ALMANACH_CALENDAR_BASE_URI = "almanach";
 }
