@@ -407,7 +407,7 @@ public class DefaultClassifiedService implements ClassifiedService {
           new FullIndexEntry(classified.getInstanceId(), CLASSIFIED_TYPE, Integer.toString(classified
           .getClassifiedId()));
       indexEntry.setTitle(classified.getTitle());
-      indexEntry.setPreView(classified.getDescription());
+      indexEntry.setPreview(classified.getDescription());
       indexEntry.setCreationDate(classified.getCreationDate());
       indexEntry.setCreationUser(classified.getCreatorId());
       indexEntry.setLastModificationDate(classified.getUpdateDate());

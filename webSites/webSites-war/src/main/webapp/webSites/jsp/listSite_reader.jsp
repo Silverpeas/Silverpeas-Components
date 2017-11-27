@@ -165,7 +165,7 @@ function publicationGoToUniqueSite(){
 		String siteId = site.getVersion();
 		String sitePage = site.getContent();
 		SiteDetail siteDetail = scc.getWebSite(siteId);
-		out.println("publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')");
+		out.println("publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getSiteType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')");
 	}
 %>
 }
@@ -334,7 +334,7 @@ function openSuggestionConfirmation() { //v2.0
 			else
 				liste+="<td valign=\"top\">&nbsp;</td>\n";
 			SiteDetail siteDetail = scc.getWebSite(siteId);
-			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
+			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getSiteType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
 			liste += listeIcones;
 			liste += "</td></tr><tr><td class=intfdcolor51>&nbsp;</td><td colspan=2 width=\"100%\" class=intfdcolor51><span class=\"txtnote\">"+siteDescription+"</span></td></tr><tr><td colspan=3><img src=\""+pxmag+"\" height=3 width=200></td>\n";
 		}

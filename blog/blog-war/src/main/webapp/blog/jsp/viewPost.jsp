@@ -64,7 +64,7 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
       SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
     operationPane.addOperation("useless", resource.getString("blog.updatePost"),
         "EditPost?PostId=" + postId);
-    if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+    if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT_STATUS)) {
       operationPane.addOperation("useless", resource.getString("blog.draftOutPost"),
           "DraftOutPost?PostId=" + postId);
     }

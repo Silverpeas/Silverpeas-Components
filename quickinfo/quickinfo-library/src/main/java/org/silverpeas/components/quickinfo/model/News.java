@@ -320,11 +320,11 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   public void setDraft() {
-    getPublication().setStatus(PublicationDetail.DRAFT);
+    getPublication().setStatus(PublicationDetail.DRAFT_STATUS);
   }
 
   public void setPublished() {
-    getPublication().setStatus(PublicationDetail.VALID);
+    getPublication().setStatus(PublicationDetail.VALID_STATUS);
   }
 
   public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {

@@ -40,7 +40,7 @@ public class MessageIndexer {
           new FullIndexEntry(message.getComponentId(), "message", message.getId());
       index.setTitle(message.getTitle());
       index.setCreationDate(message.getSentDate());
-      index.setPreView(message.getSummary());
+      index.setPreview(message.getSummary());
       index.addTextContent(message.getTitle());
       index.addTextContent(message.getSender());
       index.addTextContent(message.getBody());

@@ -401,8 +401,8 @@ public class CardManager {
 
     FullIndexEntry indexEntry = new FullIndexEntry(card.getInstanceId(), "card", pk.getId());
     indexEntry.setTitle(userName);
-    indexEntry.setKeyWords(userName);
-    indexEntry.setPreView(userMail);
+    indexEntry.setKeywords(userName);
+    indexEntry.setPreview(userMail);
     try {
       indexEntry.setCreationDate(DateUtil.parse(card.getCreationDate()));
     } catch (ParseException e) {

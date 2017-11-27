@@ -645,21 +645,23 @@ public class ForumsDAO {
   public static void deleteForum(Connection con, ForumPK forumPK) throws SQLException {
     String sForumId = forumPK.getId();
     int forumId = Integer.parseInt(sForumId);
-    PreparedStatement deleteStmt = null;
+    PreparedStatement deleteStmt1 = null, deleteStmt2 = null, deleteStmt3 = null;
     try {
-      deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_RIGHTS);
-      deleteStmt.setString(1, sForumId);
-      deleteStmt.executeUpdate();
+      deleteStmt1 = con.prepareStatement(QUERY_DELETE_FORUM_RIGHTS);
+      deleteStmt1.setString(1, sForumId);
+      deleteStmt1.executeUpdate();
 
-      deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_MESSAGE);
-      deleteStmt.setInt(1, forumId);
-      deleteStmt.executeUpdate();
+      deleteStmt2 = con.prepareStatement(QUERY_DELETE_FORUM_MESSAGE);
+      deleteStmt2.setInt(1, forumId);
+      deleteStmt2.executeUpdate();
 
-      deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_FORUM);
-      deleteStmt.setInt(1, forumId);
-      deleteStmt.executeUpdate();
+      deleteStmt3 = con.prepareStatement(QUERY_DELETE_FORUM_FORUM);
+      deleteStmt3.setInt(1, forumId);
+      deleteStmt3.executeUpdate();
     } finally {
-      DBUtil.close(deleteStmt);
+      DBUtil.close(deleteStmt1);
+      DBUtil.close(deleteStmt2);
+      DBUtil.close(deleteStmt3);
     }
   }
 

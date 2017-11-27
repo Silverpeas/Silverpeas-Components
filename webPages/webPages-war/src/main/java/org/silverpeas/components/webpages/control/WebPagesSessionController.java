@@ -263,7 +263,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       indexEntry.setTitle(getComponentLabel());
       ComponentInstLight component = getOrganisationController().getComponentInstLight(getComponentId());
       if (component != null) {
-        indexEntry.setPreView(component.getDescription());
+        indexEntry.setPreview(component.getDescription());
       }
 
       recordSet.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);

@@ -247,7 +247,7 @@ function publicationGoTo(type, theURL, nom){
 
 		String thePage = site.getContent();
 
-	    String type = new Integer(site.getType()).toString();
+	    String type = new Integer(site.getSiteType()).toString();
 	    int theEtat = site.getState();
 
 		ArrayLine arrayLine = arrayPane.addArrayLine();

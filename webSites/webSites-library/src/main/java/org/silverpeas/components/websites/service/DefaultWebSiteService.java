@@ -344,7 +344,7 @@ public class DefaultWebSiteService implements WebSiteService {
   public String createPublication(String componentId, PublicationDetail pubDetail) {
 
     pubDetail.getPK().setComponentName(componentId);
-    pubDetail.setStatus(PublicationDetail.VALID);
+    pubDetail.setStatus(PublicationDetail.VALID_STATUS);
     try {
       // create the publication
       PublicationPK pubPK = publicationService.createPublication(pubDetail);

@@ -1046,7 +1046,7 @@ public class DefaultForumService implements ForumService {
       FullIndexEntry indexEntry = new FullIndexEntry(forumPK.getComponentName(), "Forum", forumPK.
           getId());
       indexEntry.setTitle(forum.getName());
-      indexEntry.setPreView(forum.getDescription());
+      indexEntry.setPreview(forum.getDescription());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }

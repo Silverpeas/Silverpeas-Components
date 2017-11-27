@@ -4,25 +4,22 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.core.contribution.converter.DocumentFormat;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.core.util.MimeTypes;
-
-import org.silverpeas.core.web.util.ClientBrowserUtil;
-
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -72,20 +69,16 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
   private void exportInArchive(final HttpServletRequest request,
       final HttpServletResponse response) throws IOException {
     response.setContentType(MimeTypes.ARCHIVE_MIME_TYPE);
-    String componentId = request.getParameter("ComponentId");
+    String componentId = request.getParameter(COMPONENT_INSTANCE_ID_PARAMETER);
     KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
         "Silverpeas_kmelia_" + componentId);
     File exportFile = kmelia.exportPublication();
     String fileName = ClientBrowserUtil.rfc2047EncodeFilename(request, exportFile.getName());
-    InputStream in = new FileInputStream(exportFile);
-    OutputStream out = response.getOutputStream();
-    try {
+    try (InputStream in = new FileInputStream(exportFile);
+         OutputStream out = response.getOutputStream()) {
       response.setHeader("Content-Length", String.valueOf(exportFile.length()));
       response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
       IOUtils.copy(in, out);
-    } finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
     }
   }
 
@@ -97,9 +90,8 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
     KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
         "Silverpeas_kmelia_" + componentId);
     File generatedDocument = kmelia.generateDocument(inFormat(format), fromPublicationId);
-    InputStream in = new FileInputStream(generatedDocument);
-    OutputStream out = response.getOutputStream();
-    try {
+    try (InputStream in = new FileInputStream(generatedDocument);
+         OutputStream out = response.getOutputStream()) {
       String documentName = ClientBrowserUtil.rfc2047EncodeFilename(request, generatedDocument.
           getName());
       response.setHeader("Content-Disposition", "inline; filename=\"" + documentName + "\"");
@@ -110,8 +102,6 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
       if (generatedDocument != null) {
         generatedDocument.delete();
       }
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
     }
   }
 }

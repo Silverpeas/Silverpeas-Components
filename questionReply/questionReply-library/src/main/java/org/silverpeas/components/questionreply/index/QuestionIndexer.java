@@ -44,7 +44,7 @@ public class QuestionIndexer {
     FullIndexEntry indexEntry =
         new FullIndexEntry(question.getInstanceId(), "Question", question.getPK().getId());
     indexEntry.setTitle(question.getTitle());
-    indexEntry.setPreView(question.getContent());
+    indexEntry.setPreview(question.getContent());
     try {
       indexEntry.setCreationDate(DateUtil.parse(question.getCreationDate()));
     } catch (ParseException e) {

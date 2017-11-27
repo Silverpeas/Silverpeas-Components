@@ -148,7 +148,7 @@ public class DefaultBlogService implements BlogService {
     try (Connection con = openConnection()) {
       // Create publication
       PublicationDetail pub = post.getPublication();
-      pub.setStatus(PublicationDetail.DRAFT);
+      pub.setStatus(PublicationDetail.DRAFT_STATUS);
       PublicationPK pk = getPublicationService().createPublication(pub);
 
       // Create post
@@ -349,7 +349,7 @@ public class DefaultBlogService implements BlogService {
           getPublicationService().getAllPublications(pubPK);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
-          if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID.
+          if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID_STATUS.
               equals(publication.getStatus()) && count > 0) {
             count--;
             posts.add(getPost(publication));
@@ -623,12 +623,12 @@ public class DefaultBlogService implements BlogService {
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId) {
     PublicationDetail pubDetail = getPublicationService().getDetail(pubPK);
     pubDetail.setUpdaterId(userId);
-    if (PublicationDetail.DRAFT.equals(pubDetail.getStatus())) {
+    if (PublicationDetail.DRAFT_STATUS.equals(pubDetail.getStatus())) {
       pubDetail.setIndexOperation(IndexManager.NONE);
     }
     getPublicationService().setDetail(pubDetail);
     // envoie notification si abonnement
-    if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+    if (pubDetail.getStatus().equals(PublicationDetail.VALID_STATUS)) {
       PostDetail post = getPost(pubDetail);
       sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()),
           post, null, "update", pubDetail.getUpdaterId());
@@ -668,12 +668,12 @@ public class DefaultBlogService implements BlogService {
   public void draftOutPost(PostDetail post) {
 
     PublicationDetail pub = post.getPublication();
-    pub.setStatus(PublicationDetail.VALID);
+    pub.setStatus(PublicationDetail.VALID_STATUS);
 
     // update the publication
     getPublicationService().setDetail(pub);
 
-    if (pub.getStatus().equals(PublicationDetail.VALID)) {
+    if (pub.getStatus().equals(PublicationDetail.VALID_STATUS)) {
 
       // update visibility attribute on PDC
       updateSilverContentVisibility(pub);

@@ -31,11 +31,13 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,7 +92,7 @@ public class FileFolder implements java.io.Serializable {
     this.path = path;
     files = new ArrayList<>(0);
     folders = new ArrayList<>(0);
-
+    IndexReader reader = null;
     try {
       // Check security access : cannot browse inside rootPath
       FileUtil.validateFilename(path, rootPath);
@@ -102,8 +104,6 @@ public class FileFolder implements java.io.Serializable {
         this.name = f.getName();
         this.readable = f.canRead();
         File[] children = f.listFiles();
-
-        IndexReader reader = null;
         boolean isIndexed = false;
 
         if (isAdmin) {
@@ -119,14 +119,14 @@ public class FileFolder implements java.io.Serializable {
             isIndexed = false;
             if (isAdmin) {
               // rechercher si le répertoire (ou le fichier) est indexé
-              String pathIndex = componentId + "|";
+              StringBuilder pathIndex = new StringBuilder(componentId).append("|");
               if (childFile.isDirectory()) {
-                pathIndex = pathIndex + "LinkedDir" + "|";
+                pathIndex.append("LinkedDir").append("|");
               } else {
-                pathIndex = pathIndex + "LinkedFile" + "|";
+                pathIndex.append("LinkedFile").append("|");
               }
-              pathIndex = pathIndex + FilenameUtils.separatorsToUnix(childFile.getPath());
-              Term term = new Term("key", pathIndex);
+              pathIndex.append(FilenameUtils.separatorsToUnix(childFile.getPath()));
+              Term term = new Term("key", pathIndex.toString());
               if (reader != null && reader.docFreq(term) == 1) {
                 isIndexed = true;
               }
@@ -144,15 +144,18 @@ public class FileFolder implements java.io.Serializable {
             }
           }
         }
-        // fermeture de l'index
-        if (reader != null && isAdmin) {
-          reader.close();
-        }
-
       }
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException("FileFolder.FileFolder()",
-          SilverpeasRuntimeException.ERROR, "silverCrawler.IMPOSSIBLE_DACCEDER_AU_REPERTOIRE", e);
+      throw new SilverpeasRuntimeException(e);
+    } finally {
+      // fermeture de l'index
+      if (reader != null && isAdmin) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          SilverLogger.getLogger(this).warn(e);
+        }
+      }
     }
   }
 

@@ -2006,30 +2006,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private String writeCSVFile(List<StringBuilder> csvRows) {
-    FileOutputStream fileOutput = null;
     String csvFilename = new Date().getTime() + ".csv";
-    try {
-      fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath() + csvFilename);
-
+    try (FileOutputStream fileOutput = new FileOutputStream(
+        FileRepositoryManager.getTemporaryPath() + csvFilename)) {
       StringBuilder csvRow;
       for (StringBuilder csvRow1 : csvRows) {
         csvRow = csvRow1;
         fileOutput.write(csvRow.toString().getBytes());
         fileOutput.write("\n".getBytes());
       }
+      fileOutput.flush();
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       csvFilename = null;
-    } finally {
-      if (fileOutput != null) {
-        try {
-          fileOutput.flush();
-          fileOutput.close();
-        } catch (IOException e) {
-          csvFilename = null;
-          SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-        }
-      }
     }
     return csvFilename;
   }

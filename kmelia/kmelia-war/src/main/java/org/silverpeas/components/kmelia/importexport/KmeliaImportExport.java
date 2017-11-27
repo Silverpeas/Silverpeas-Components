@@ -117,9 +117,9 @@ public class KmeliaImportExport extends GEDImportExport {
             topicPK.getInstanceId()));
       }
       if ("publisher".equals(profile) || "admin".equals(profile)) {
-        pubDetTemp.setStatus(VALID);
+        pubDetTemp.setStatus(VALID_STATUS);
       } else {
-        pubDetTemp.setStatus(TO_VALIDATE);
+        pubDetTemp.setStatus(TO_VALIDATE_STATUS);
       }
     }
     return getKmeliaService().createPublicationIntoTopic(pubDetTemp, topicPK);
@@ -247,7 +247,7 @@ public class KmeliaImportExport extends GEDImportExport {
     try {
       PublicationDetail publication = getKmeliaService().getPublicationDetail(
           new PublicationPK(pubId, getCurrentComponentId()));
-      publication.setStatus(DRAFT);
+      publication.setStatus(DRAFT_STATUS);
       getKmeliaService().updatePublication(publication);
     } catch (Exception e) {
       throw new KmeliaException("GEDImportExport.publicationNotClassifiedOnPDC(String)",
@@ -264,7 +264,7 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected PublicationDetail createPublication(PublicationDetail pubDetail) throws Exception {
     try {
-      pubDetail.setStatus(VALID);
+      pubDetail.setStatus(VALID_STATUS);
       String pubId = getKmeliaService().createKmaxPublication(pubDetail);
       pubDetail.getPK().setId(pubId);
       return pubDetail;

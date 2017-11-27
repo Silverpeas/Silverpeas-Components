@@ -49,10 +49,10 @@ import java.util.List;
 public class SiteDAO {
 
   private Connection dbConnection;
-  private static final String tableSiteName = "SC_WebSites_Site";
-  private static final String tableIconsName = "SC_WebSites_Icons";
-  private static final String tableSiteIconsName = "SC_WebSites_SiteIcons";
-  private static final String tablePublicationName = "SB_Publication_Publi";
+  private static final String TABLE_SITE_NAME = "SC_WebSites_Site";
+  private static final String TABLE_ICONS_NAME = "SC_WebSites_Icons";
+  private static final String TABLE_SITE_ICONS_NAME = "SC_WebSites_SiteIcons";
+  private static final String TABLE_PUBLICATION_NAME = "SB_Publication_Publi";
 
   private String componentId;
 
@@ -222,9 +222,9 @@ public class SiteDAO {
 
   public void deleteAllWebSites() throws SQLException {
     final String siteIcons =
-        "DELETE FROM " + tableSiteIconsName + " WHERE siteId in (SELECT siteId FROM " +
-            tableSiteName + " WHERE instanceId = ?)";
-    final String sites = "DELETE FROM " + tableSiteName + " WHERE instanceId =?";
+        "DELETE FROM " + TABLE_SITE_ICONS_NAME + " WHERE siteId in (SELECT siteId FROM " +
+            TABLE_SITE_NAME + " WHERE instanceId = ?)";
+    final String sites = "DELETE FROM " + TABLE_SITE_NAME + " WHERE instanceId =?";
     try (Connection connection = openConnection()) {
       try (PreparedStatement deletion = connection.prepareStatement(siteIcons)) {
         deletion.setString(1, componentId);
@@ -257,7 +257,7 @@ public class SiteDAO {
   private String daoGetIdPublication(String idSite) throws SQLException {
     String idPub = null;
     String queryStr1 =
-        "select pubId from " + tablePublicationName + " where instanceId = '" + componentId +
+        "select pubId from " + TABLE_PUBLICATION_NAME + " where instanceId = '" + componentId +
             "' AND pubVersion = '" + idSite + "'";
 
     try (Statement stmt = dbConnection.createStatement()) {
@@ -284,7 +284,7 @@ public class SiteDAO {
 
     String queryStr1 =
         "SELECT siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, " +
-            "siteDate, siteState, popup FROM " + tableSiteName + " where instanceId = '" +
+            "siteDate, siteState, popup FROM " + TABLE_SITE_NAME + " where instanceId = '" +
             componentId + "'" + " order by siteid";
 
     try {
@@ -327,7 +327,7 @@ public class SiteDAO {
     ResultSet rs1 = null;
     String queryStr1 =
         "select siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, " +
-            "siteDate, siteState, popup from " + tableSiteName + " where siteId = " + pk.getId();
+            "siteDate, siteState, popup from " + TABLE_SITE_NAME + " where siteId = " + pk.getId();
 
     try {
 
@@ -386,7 +386,7 @@ public class SiteDAO {
             "select siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, " +
                 "siteDate, siteState, popup");
 
-        queryStr1.append(" from ").append(tableSiteName);
+        queryStr1.append(" from ").append(TABLE_SITE_NAME);
         queryStr1.append(" where").append("(").append(paramBuffer).append(")");
         queryStr1.append(" and instanceId = '").append(componentId).append("'");
 
@@ -428,13 +428,14 @@ public class SiteDAO {
     Statement stmt = null;
     ResultSet rs1 = null;
     StringBuilder queryStr1 = new StringBuilder();
-    queryStr1.append("select ").append(tableIconsName).append(".iconsId, ").append(tableIconsName)
-        .append(".iconsName, ").append(tableIconsName).append(".iconsDescription, ")
-        .append(tableIconsName).append(".iconsAddress");
-    queryStr1.append(" from ").append(tableSiteIconsName).append(", ").append(tableIconsName);
-    queryStr1.append(" where ").append(tableSiteIconsName).append(".siteId = ").append(pk.getId());
-    queryStr1.append(" and ").append(tableIconsName).append(".iconsId = ")
-        .append(tableSiteIconsName).append(".iconsId");
+    queryStr1.append("select ").append(TABLE_ICONS_NAME).append(".iconsId, ").append(
+        TABLE_ICONS_NAME)
+        .append(".iconsName, ").append(TABLE_ICONS_NAME).append(".iconsDescription, ")
+        .append(TABLE_ICONS_NAME).append(".iconsAddress");
+    queryStr1.append(" from ").append(TABLE_SITE_ICONS_NAME).append(", ").append(TABLE_ICONS_NAME);
+    queryStr1.append(" where ").append(TABLE_SITE_ICONS_NAME).append(".siteId = ").append(pk.getId());
+    queryStr1.append(" and ").append(TABLE_ICONS_NAME).append(".iconsId = ")
+        .append(TABLE_SITE_ICONS_NAME).append(".iconsId");
 
     try {
 
@@ -460,7 +461,7 @@ public class SiteDAO {
    * @throws SQLException
    */
   private String daoGetNextId() throws SQLException {
-    int nextid = DBUtil.getNextId(tableSiteName, "siteId");
+    int nextid = DBUtil.getNextId(TABLE_SITE_NAME, "siteId");
     return Integer.toString(nextid);
   }
 
@@ -474,7 +475,7 @@ public class SiteDAO {
     Statement stmt = null;
     ResultSet rs1 = null;
     String queryStr1 =
-        "SELECT iconsId, iconsName, iconsDescription, iconsAddress FROM " + tableIconsName;
+        "SELECT iconsId, iconsName, iconsDescription, iconsAddress FROM " + TABLE_ICONS_NAME;
 
     try {
 
@@ -503,7 +504,7 @@ public class SiteDAO {
   private void daoCreateWebSite(SiteDetail site) throws SQLException {
 
 
-    String queryStr = "insert into " + tableSiteName + " values (?,?,?,?,?,?,?,?,?,?)";
+    String queryStr = "insert into " + TABLE_SITE_NAME + " values (?,?,?,?,?,?,?,?,?,?)";
 
     PreparedStatement stmt = null;
     try {
@@ -512,7 +513,7 @@ public class SiteDAO {
       stmt.setString(2, site.getName());
       stmt.setString(3, site.getDescription());
       stmt.setString(4, site.getContent());
-      stmt.setInt(5, site.getType());
+      stmt.setInt(5, site.getSiteType());
       stmt.setString(6, site.getCreatorId());
       stmt.setString(7, DateUtil.date2SQLDate(site.getCreationDate()));
       stmt.setInt(8, site.getState());
@@ -536,7 +537,7 @@ public class SiteDAO {
    * @throws SQLException
    */
   private void daoAssociateIcons(String id, Collection<String> liste) throws SQLException {
-    String queryStr = "INSERT INTO " + tableSiteIconsName + " VALUES (?,?)";
+    String queryStr = "INSERT INTO " + TABLE_SITE_ICONS_NAME + " VALUES (?,?)";
     PreparedStatement stmt = null;
 
     try {
@@ -562,7 +563,7 @@ public class SiteDAO {
    * @throws SQLException
    */
   private void daoPublishDepublishSite(String id, int state) throws SQLException {
-    String queryStr = "update " + tableSiteName + " set siteState=? where siteId= ?";
+    String queryStr = "update " + TABLE_SITE_NAME + " set siteState=? where siteId= ?";
 
     PreparedStatement stmt = null;
     try {
@@ -607,7 +608,7 @@ public class SiteDAO {
    * @throws SQLException
    */
   private void daoDeleteAssociateIcons(SitePK pk) throws SQLException {
-    String deleteStr = "delete from " + tableSiteIconsName + " where siteId = ?";
+    String deleteStr = "delete from " + TABLE_SITE_ICONS_NAME + " where siteId = ?";
 
 
     PreparedStatement prepStmt = null;
@@ -627,7 +628,7 @@ public class SiteDAO {
    */
   private void daoDeleteWebSite(SitePK pk) throws SQLException {
     daoDeleteAssociateIcons(pk);
-    String deleteStr = "delete from " + tableSiteName + " where siteId = ?";
+    String deleteStr = "delete from " + TABLE_SITE_NAME + " where siteId = ?";
 
 
     PreparedStatement prepStmt = null;
@@ -669,7 +670,7 @@ public class SiteDAO {
     daoDeleteAssociateIcons(description.getSitePK());
 
     String updateStr =
-        "update " + tableSiteName + " set " + "siteName = ?, " + "siteDescription = ?, " +
+        "update " + TABLE_SITE_NAME + " set " + "siteName = ?, " + "siteDescription = ?, " +
             "sitePage = ?, " + "siteAuthor = ?, " + "siteDate = ?, " + "siteState = ?, " +
             "popup = ? " + " where siteId = ?";
 

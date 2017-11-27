@@ -317,7 +317,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       FullIndexEntry indexEntry = new FullIndexEntry(category.getInstanceId(), "Category", category.
           getIdAsString());
       indexEntry.setTitle(category.getName());
-      indexEntry.setPreView(category.getDescription());
+      indexEntry.setPreview(category.getDescription());
       if (category.getUpdateDate() != null) {
         indexEntry.setCreationDate(category.getUpdateDate());
       } else {
@@ -336,7 +336,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       FullIndexEntry indexEntry =
           new FullIndexEntry(resource.getInstanceId(), "Resource", resource.getIdAsString());
       indexEntry.setTitle(resource.getName());
-      indexEntry.setPreView(resource.getDescription());
+      indexEntry.setPreview(resource.getDescription());
       if (resource.getUpdateDate() != null) {
         indexEntry.setCreationDate(resource.getUpdateDate());
       } else {
@@ -381,10 +381,10 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       FullIndexEntry indexEntry = new FullIndexEntry(reservation.getInstanceId(), "Reservation",
           reservation.getIdAsString());
       indexEntry.setTitle(reservation.getEvent());
-      indexEntry.setPreView(reservation.getReason());
+      indexEntry.setPreview(reservation.getReason());
       indexEntry.setCreationDate(reservation.getCreationDate());
       indexEntry.setCreationUser(reservation.getUserId());
-      indexEntry.setKeyWords(reservation.getPlace());
+      indexEntry.setKeywords(reservation.getPlace());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }

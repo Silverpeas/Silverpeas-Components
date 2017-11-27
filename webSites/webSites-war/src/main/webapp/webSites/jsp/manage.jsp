@@ -211,7 +211,7 @@ function openSPWindow(fonction, windowName){
 		if (theDescription == null)
 			theDescription = "";
 
-		int theType = site.getType();
+		int theType = site.getSiteType();
 		int theEtat = site.getState();
 		ArrayLine arrayLine = arrayPane.addArrayLine();
 

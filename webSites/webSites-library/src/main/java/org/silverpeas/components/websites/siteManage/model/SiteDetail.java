@@ -39,14 +39,14 @@ public class SiteDetail extends PublicationDetail {
   /**
    * page interne creee (0) ou externe (1) ou page interne uploadee (2)
    */
-  private int type;
+  private int siteType;
   /** site non publie (0) ou publie (1) */
   private int state;
   private int popup = 1;
   private String silverObjectId;
   private String positions;
 
-  public static final String SITETYPE = "Website";
+  public static final String SITE_TYPE = "Website";
 
   /**
    * SiteDetail default constructor
@@ -70,7 +70,7 @@ public class SiteDetail extends PublicationDetail {
       try {
         theCreationDate = DateUtil.parse(date);
       } catch (ParseException e) {
-        SilverTrace.error(SITETYPE, "SiteDetail constructor", "Problem to parse date", e);
+        SilverTrace.error(SITE_TYPE, "SiteDetail constructor", "Problem to parse date", e);
       }
       this.setCreationDate(theCreationDate);
     }
@@ -87,12 +87,12 @@ public class SiteDetail extends PublicationDetail {
     sitePk = new SitePK(val.getId(), val.getComponentName());
   }
 
-  public int getType() {
-    return type;
+  public int getSiteType() {
+    return siteType;
   }
 
-  public void setType(int val) {
-    type = val;
+  public void setSiteType(int val) {
+    siteType = val;
   }
 
   public int getState() {
@@ -103,6 +103,7 @@ public class SiteDetail extends PublicationDetail {
     state = val;
   }
 
+  @Override
   public String getURL() {
     return "searchResult?Type=Site&Id=" + getId();
   }
@@ -136,7 +137,7 @@ public class SiteDetail extends PublicationDetail {
    */
   private void init(SitePK sitePK, int type, int state, int popup) {
     this.setSitePK(sitePK);
-    this.type = type;
+    this.siteType = type;
     this.state = state;
     this.popup = popup;
   }
@@ -147,7 +148,7 @@ public class SiteDetail extends PublicationDetail {
   @Override
   public String toString() {
     return sitePk.getId() + "|" + this.getName() + "|" + this.getDescription() + "|" +
-        this.getContent() + "|" + "|" + type + "|" + this.getCreatorId() + "|" +
+        this.getContent() + "|" + "|" + siteType + "|" + this.getCreatorId() + "|" +
         this.getCreationDate() + "|" + state;
   }
 
@@ -161,7 +162,7 @@ public class SiteDetail extends PublicationDetail {
 
   @Override
   public String getContributionType() {
-    return SITETYPE;
+    return SITE_TYPE;
   }
 
   @Override

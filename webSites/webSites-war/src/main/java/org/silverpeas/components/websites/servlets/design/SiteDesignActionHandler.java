@@ -282,7 +282,7 @@ public class SiteDesignActionHandler {
 
     SiteDetail ancien = controller.getSessionSite();
     String id = ancien.getSitePK().getId();
-    int type = ancien.getType();
+    int type = ancien.getSiteType();
 
           /* verif que le nom de la page principale est correcte */
     boolean searchOk = false;

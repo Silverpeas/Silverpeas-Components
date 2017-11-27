@@ -295,7 +295,7 @@ public class DefaultKmeliaService implements KmeliaService {
       boolean isRightsOnTopicsUsed, String userId) {
     PublicationPK pubPK = new PublicationPK("unknown", instanceId);
     Collection<PublicationDetail> pubDetails = publicationService.
-        getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK, PublicationDetail.VALID,
+        getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK, PublicationDetail.VALID_STATUS,
             nbPublisOnRoot, NodePK.BIN_NODE_ID);
     if (isRightsOnTopicsUsed) {// The list of publications must be filtered
       List<PublicationDetail> filteredList = new ArrayList<>();
@@ -1035,16 +1035,16 @@ public class DefaultKmeliaService implements KmeliaService {
       NodePK nodePK) {
     String status = pubDetail.getStatus();
     if (!isDefined(status)) {
-      status = PublicationDetail.TO_VALIDATE;
+      status = PublicationDetail.TO_VALIDATE_STATUS;
 
       boolean draftModeUsed = isDraftModeUsed(pubDetail.getPK().getInstanceId());
 
       if (draftModeUsed) {
-        status = PublicationDetail.DRAFT;
+        status = PublicationDetail.DRAFT_STATUS;
       } else {
         String profile = getProfile(pubDetail.getCreatorId(), nodePK);
         if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
-          status = PublicationDetail.VALID;
+          status = PublicationDetail.VALID_STATUS;
         }
       }
     }
@@ -1056,11 +1056,11 @@ public class DefaultKmeliaService implements KmeliaService {
   private boolean changePublicationStatusOnMove(PublicationDetail pub, NodePK to) {
     String oldStatus = pub.getStatus();
     String status = pub.getStatus();
-    if (!status.equals(PublicationDetail.DRAFT)) {
-      status = PublicationDetail.TO_VALIDATE;
+    if (!status.equals(PublicationDetail.DRAFT_STATUS)) {
+      status = PublicationDetail.TO_VALIDATE_STATUS;
       String profile = getProfile(pub.getUpdaterId(), to);
       if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
-        status = PublicationDetail.VALID;
+        status = PublicationDetail.VALID_STATUS;
       }
     }
     pub.setStatus(status);
@@ -1087,10 +1087,10 @@ public class DefaultKmeliaService implements KmeliaService {
         }
         String profile = getProfile(pubDetail.getUpdaterId(), nodePK);
         if (SilverpeasRole.writer.isInRole(profile)) {
-          newStatus = PublicationDetail.TO_VALIDATE;
+          newStatus = PublicationDetail.TO_VALIDATE_STATUS;
         } else if (pubDetail.isRefused() && (SilverpeasRole.admin.isInRole(profile) ||
             SilverpeasRole.publisher.isInRole(profile))) {
-          newStatus = PublicationDetail.VALID;
+          newStatus = PublicationDetail.VALID_STATUS;
         }
         pubDetail.setStatus(newStatus);
       }
@@ -1596,14 +1596,14 @@ public class DefaultKmeliaService implements KmeliaService {
         Collection<NodePK> fathers = publicationService.getAllFatherPK(pubPK);
         if (isPublicationInBasket(pubPK, fathers)) {
           publicationService.removeFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, fatherPK));
-          if (PublicationDetail.VALID.equalsIgnoreCase(pubDetail.getStatus())) {
+          if (PublicationDetail.VALID_STATUS.equalsIgnoreCase(pubDetail.getStatus())) {
             // index publication
             publicationService.createIndex(pubPK);
             // index external elements
             indexExternalElementsOfPublication(pubDetail);
             // publication is accessible again
             updateSilverContentVisibility(pubDetail);
-          } else if (PublicationDetail.TO_VALIDATE.equalsIgnoreCase(pubDetail.getStatus())) {
+          } else if (PublicationDetail.TO_VALIDATE_STATUS.equalsIgnoreCase(pubDetail.getStatus())) {
             // create validation todos for publishers
             createTodosForPublication(pubDetail, true);
           }
@@ -1968,7 +1968,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationPK pubPK = new PublicationPK("useless", componentId);
     try {
       Collection<PublicationDetail> temp =
-          publicationService.getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
+          publicationService.getPublicationsByStatus(PublicationDetail.TO_VALIDATE_STATUS, pubPK);
       // only publications which must be validated by current user must be returned
       for (PublicationDetail publi : temp) {
         boolean isClone = publi.isValidationRequired() && !"-1".equals(publi.getCloneId());
@@ -2206,7 +2206,7 @@ public class DefaultKmeliaService implements KmeliaService {
               // save his decision
 
               ValidationStep validation =
-                  new ValidationStep(validatedPK, userId, PublicationDetail.VALID);
+                  new ValidationStep(validatedPK, userId, PublicationDetail.VALID_STATUS);
               publicationService.addValidationStep(validation);
               // check if all validators have give their decision
               validationComplete = isValidationComplete(validatedPK, allValidators);
@@ -2276,7 +2276,7 @@ public class DefaultKmeliaService implements KmeliaService {
         } else if (currentPubDetail.isValidationRequired()) {
           currentPubDetail.setValidatorId(validatorUserId);
           currentPubDetail.setValidateDate(validationDate);
-          currentPubDetail.setStatus(PublicationDetail.VALID);
+          currentPubDetail.setStatus(PublicationDetail.VALID_STATUS);
         }
         KmeliaHelper.checkIndex(currentPubDetail);
         publicationService.setDetail(currentPubDetail);
@@ -2466,7 +2466,7 @@ public class DefaultKmeliaService implements KmeliaService {
         publicationService.setDetail(clone);
 
         // Modification de la publication de reference
-        currentPubDetail.setCloneStatus(PublicationDetail.REFUSED);
+        currentPubDetail.setCloneStatus(PublicationDetail.REFUSED_STATUS);
         currentPubDetail.setUpdateDateMustBeSet(false);
         publicationService.setDetail(currentPubDetail);
 
@@ -2514,7 +2514,7 @@ public class DefaultKmeliaService implements KmeliaService {
       PublicationDetail currentPubDetail = publicationService.getDetail(pubPK);
 
       // change publication's status
-      currentPubDetail.setStatus(PublicationDetail.TO_VALIDATE);
+      currentPubDetail.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
 
       KmeliaHelper.checkIndex(currentPubDetail);
 
@@ -2587,20 +2587,20 @@ public class DefaultKmeliaService implements KmeliaService {
         if (pubDetail.haveGotClone()) {
           pubDetail = mergeClone(currentPub, null, null);
         }
-        pubDetail.setStatus(PublicationDetail.VALID);
+        pubDetail.setStatus(PublicationDetail.VALID_STATUS);
         changedPublication = pubDetail;
       } else {
         if (pubDetail.haveGotClone()) {
           // changement du statut du clone
           PublicationDetail clone = publicationService.getDetail(pubDetail.getClonePK());
-          clone.setStatus(PublicationDetail.TO_VALIDATE);
+          clone.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
           clone.setIndexOperation(IndexManager.NONE);
           clone.setUpdateDateMustBeSet(false);
           publicationService.setDetail(clone);
           changedPublication = clone;
-          pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE);
+          pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE_STATUS);
         } else {
-          pubDetail.setStatus(PublicationDetail.TO_VALIDATE);
+          pubDetail.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
           changedPublication = pubDetail;
         }
       }
@@ -2654,7 +2654,7 @@ public class DefaultKmeliaService implements KmeliaService {
     try {
       PublicationDetail pubDetail = publicationService.getDetail(pubPK);
       if (pubDetail.isRefused() || pubDetail.isValid()) {
-        pubDetail.setStatus(PublicationDetail.DRAFT);
+        pubDetail.setStatus(PublicationDetail.DRAFT_STATUS);
         pubDetail.setUpdaterId(userId);
         KmeliaHelper.checkIndex(pubDetail);
         publicationService.setDetail(pubDetail);
@@ -2865,7 +2865,7 @@ public class DefaultKmeliaService implements KmeliaService {
       removeAllTodosForPublication(pubDetail.getPK());
     }
     if (pubDetail.isValidationRequired() ||
-        PublicationDetail.TO_VALIDATE.equalsIgnoreCase(pubDetail.getCloneStatus())) {
+        PublicationDetail.TO_VALIDATE_STATUS.equalsIgnoreCase(pubDetail.getCloneStatus())) {
       int validationType = getValidationType(pubDetail.getPK().getInstanceId());
       if (validationType == KmeliaHelper.VALIDATION_TARGET_N ||
           validationType == KmeliaHelper.VALIDATION_COLLEGIATE) {
@@ -4621,12 +4621,12 @@ public class DefaultKmeliaService implements KmeliaService {
       // manage status explicitly to bypass Draft mode
       if (StringUtil.isDefined(copyDetail.getPublicationStatus())) {
         String profile = getProfile(userId, nodePK);
-        if (!copyDetail.getPublicationStatus().equals(PublicationDetail.DRAFT)) {
+        if (!copyDetail.getPublicationStatus().equals(PublicationDetail.DRAFT_STATUS)) {
           if (SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-            newPubli.setStatus(PublicationDetail.VALID);
+            newPubli.setStatus(PublicationDetail.VALID_STATUS);
           } else {
             // case of writer
-            newPubli.setStatus(PublicationDetail.TO_VALIDATE);
+            newPubli.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
           }
         }
       }
@@ -4801,7 +4801,7 @@ public class DefaultKmeliaService implements KmeliaService {
       clone.setValidatorId(validatorUserId);
       clone.setValidateDate(validationDate != null ? validationDate : new Date());
     }
-    clone.setStatus(PublicationDetail.VALID);
+    clone.setStatus(PublicationDetail.VALID_STATUS);
     clone.setCloneId("-1");
     clone.setCloneStatus(null);
     return clone;

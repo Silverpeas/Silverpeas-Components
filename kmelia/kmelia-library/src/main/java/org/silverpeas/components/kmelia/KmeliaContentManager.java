@@ -100,7 +100,7 @@ public class KmeliaContentManager extends AbstractContentInterface implements Se
   }
 
   private boolean isVisible(PublicationDetail pubDetail) {
-    return PublicationDetail.VALID.equals(pubDetail.getStatus());
+    return PublicationDetail.VALID_STATUS.equals(pubDetail.getStatus());
   }
 
   private PublicationService getPublicationService() {

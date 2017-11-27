@@ -85,7 +85,7 @@ public class BlogContentManager extends AbstractContentInterface implements Seri
    * @return boolean
    */
   private boolean isVisible(PublicationDetail pubDetail) {
-    return PublicationDetail.VALID.equals(pubDetail.getStatus());
+    return PublicationDetail.VALID_STATUS.equals(pubDetail.getStatus());
   }
 
   @Override

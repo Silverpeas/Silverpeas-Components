@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.util.ArrayList" %><%--
   Copyright (C) 2000 - 2017 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
@@ -131,7 +131,7 @@
 		String SQLreq = request.getParameter("SqlReq");
 
 		connecteurJDBC.getCurrentConnectionInfo().setSqlRequest(SQLreq);
-		connecteurJDBC.setSelectedColumn(new Vector());
+		connecteurJDBC.setSelectedColumn(new ArrayList<>());
 	}
 
 	if(action.equals("end"))
@@ -141,7 +141,7 @@
 
 	if (action.equals("endCriter"))
 	{
-		connecteurJDBC.setSelectedColumn(new Vector());
+		connecteurJDBC.setSelectedColumn(new ArrayList<>());
 	}
 
 	if(action.equals("addCriter"))

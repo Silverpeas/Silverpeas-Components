@@ -232,9 +232,8 @@ public class ClassifiedsDAO {
     // récupérer toutes les petites annonces de l'utilisateur
     List<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query =
-        "select * from SC_Classifieds_Classifieds where instanceId = ? and creatorId = ? ";
-    query +=
-        " order by CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END DESC, " +
+        "SELECT * FROM SC_Classifieds_Classifieds WHERE instanceId = ? AND creatorId = ? ORDER BY" +
+            " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END DESC, " +
             "classifiedId DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

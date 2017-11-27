@@ -861,7 +861,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     // Index the Composed Task
     indexEntry = new FullIndexEntry(task.getInstanceId(), "Action", Integer.toString(task.getId()));
     indexEntry.setTitle(task.getNom());
-    indexEntry.setPreView(task.getDescription());
+    indexEntry.setPreview(task.getDescription());
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 

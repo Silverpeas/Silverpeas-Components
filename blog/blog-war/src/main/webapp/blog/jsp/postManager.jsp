@@ -259,14 +259,14 @@
     <fmt:message key="GML.cancel" var="cancelLabel"/>
     <view:buttonPane>
     <% if("CreatePost".equals(action) || 
-        ("UpdatePost".equals(action) && PublicationDetail.DRAFT.equals(post.getPublication().getStatus()))) { 
+        ("UpdatePost".equals(action) && PublicationDetail.DRAFT_STATUS.equals(post.getPublication().getStatus()))) {
     %>
 		<view:button action="javascript:onClick=sendDataAndDraftOut();" disabled="false"
                    label="${publishLabel}"/>
 		<view:button action="javascript:onClick=sendData();" disabled="false"
                    label="${draftLabel}"/>    
     <%
-    } else if ("UpdatePost".equals(action) && PublicationDetail.VALID.equals(post.getPublication().getStatus())) {
+    } else if ("UpdatePost".equals(action) && PublicationDetail.VALID_STATUS.equals(post.getPublication().getStatus())) {
     %>
 		<view:button action="javascript:onClick=sendData();" disabled="false"
                    label="${validateLabel}">

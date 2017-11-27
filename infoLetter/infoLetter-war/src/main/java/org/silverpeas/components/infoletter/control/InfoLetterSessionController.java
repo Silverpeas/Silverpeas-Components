@@ -494,7 +494,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       FullIndexEntry indexEntry =
           new FullIndexEntry(getComponentId(), "Publication", ilp.getPK().getId());
       indexEntry.setTitle(ilp.getTitle());
-      indexEntry.setPreView(ilp.getDescription());
+      indexEntry.setPreview(ilp.getDescription());
       try {
         indexEntry.setCreationDate(DateUtil.parse(ilp.getParutionDate()));
       } catch (ParseException e) {
@@ -518,7 +518,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       FullIndexEntry indexEntry =
           new FullIndexEntry(getComponentId(), "Lettre", il.getPK().getId());
       indexEntry.setTitle(il.getName());
-      indexEntry.setPreView(il.getDescription());
+      indexEntry.setPreview(il.getDescription());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }

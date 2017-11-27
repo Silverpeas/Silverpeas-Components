@@ -85,7 +85,7 @@ public class KmeliaTransversal implements PublicationHelper {
     List<PublicationPK> publicationPKs = null;
     try {
       publicationPKs = (List<PublicationPK>) getPublicationService().getPublicationPKsByStatus(
-          PublicationDetail.VALID, componentIds);
+          PublicationDetail.VALID_STATUS, componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS_PKS", "spaceId = " + spaceId, e);
@@ -119,7 +119,7 @@ public class KmeliaTransversal implements PublicationHelper {
     List<PublicationPK> publicationPKs = null;
     try {
       publicationPKs = (List<PublicationPK>) getPublicationService().getUpdatedPublicationPKsByStatus(
-          PublicationDetail.VALID, since, 0, componentIds);
+          PublicationDetail.VALID_STATUS, since, 0, componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS_PKS", "spaceId = " + spaceId, e);

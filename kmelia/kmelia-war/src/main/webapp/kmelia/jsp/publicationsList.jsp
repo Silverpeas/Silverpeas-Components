@@ -161,7 +161,7 @@ void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel
                             out.println("<td valign=\"top\" width=\"80\" align=\"center\">"+percent.format(new Double(pub.getScore()))+" </td>");
                             out.println("<td valign=\"top\" colspan=\"2\">");
                              out.println("<p>&#149; <a href=\"javascript:onClick=publicationGoTo('"+pub.getObjectId()+"')\"><b>"+pub.getTitle()+"</b></a><br> "+userName+" - "+resources.getOutputDate(pub.getCreationDate())+"<br>");
-                             out.println(""+Encode.javaStringToHtmlString(pub.getPreView())+"<BR><BR></p>");
+                             out.println(""+Encode.javaStringToHtmlString(pub.getPreview())+"<BR><BR></p>");
                             out.println("</td>");
                           out.println("</tr>");
                       }

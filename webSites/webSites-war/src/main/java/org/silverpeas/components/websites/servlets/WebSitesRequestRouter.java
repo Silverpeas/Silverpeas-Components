@@ -324,7 +324,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       }
     }
     SiteDetail ancien = scc.getWebSite(id);
-    int type = ancien.getType();
+    int type = ancien.getSiteType();
           /* update description en BD */
     SiteDetail descriptionSite2 =
         new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, type, null, null,
@@ -368,7 +368,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         // recup info sur ce webSite
         SiteDetail info = scc.getWebSite(siteId);
         // type = 0 : site cree, type = 1 : site bookmark, type = 2 : site upload
-        if (info.getType() != 1) {
+        if (info.getSiteType() != 1) {
           // type != bookmark
           // delete directory
           scc.deleteDirectory(scc.getWebSitePathById(siteId));
@@ -869,7 +869,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
     String nomPage = sitedetail.getContent();
 
-    int type = sitedetail.getType();
+    int type = sitedetail.getSiteType();
 
     if (type == 1) {
       // type bookmark

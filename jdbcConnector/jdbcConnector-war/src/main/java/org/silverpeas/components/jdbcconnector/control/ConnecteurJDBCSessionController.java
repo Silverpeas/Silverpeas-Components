@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.jdbcconnector.control;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
 import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
 import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -44,7 +44,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
-import java.util.Vector;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
@@ -74,7 +73,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   // Current row number
   private int rowNumber;
   // columns selected in the sql query
-  private Vector<String> selectedColumn = new Vector<>();
+  private List<String> selectedColumn = new ArrayList<>();
   private Connection connection;
 
   /**
@@ -149,17 +148,16 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     rowNumber = 0;
 
     if (!isConnectionOpened() && (currentConnectionInfo != null)) {
-      try {
-        Connection conn = currentConnectionInfo.openConnection();
+      try (Connection conn = currentConnectionInfo.openConnection()) {
         dbMetaData = conn.getMetaData();
-        Statement stmt = conn.createStatement();
-        if (!StringUtil.isDefined(request)) {
-          rs = null;
-        } else {
-          rs = stmt.executeQuery(request);
+        try (Statement stmt = conn.createStatement()) {
+          if (!StringUtil.isDefined(request)) {
+            rs = null;
+          } else {
+            rs = stmt.executeQuery(request);
+          }
         }
       } catch (Exception e) {
-        closeConnection();
         SilverLogger.getLogger(this).error("Failure in executing SQL request: " + request, e);
       }
     }
@@ -299,11 +297,11 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     return column;
   }
 
-  public void setSelectedColumn(Vector<String> selectedColumn) {
+  public void setSelectedColumn(List<String> selectedColumn) {
     this.selectedColumn = selectedColumn;
   }
 
-  public Vector<String> getSelectedColumn() {
+  public List<String> getSelectedColumn() {
     return selectedColumn;
   }
 
@@ -476,18 +474,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
       } else if (!temp.trim().toLowerCase().startsWith("select")) {
         return getString("erreurModifTable");
       } else {
-        Connection conn = null;
-        try {
-          conn = currentConnectionInfo.openConnection();
-          if (conn == null) {
-            return getString("erreurParametresConnectionIncorrects");
-          } else {
-            try (Statement stmt = conn.createStatement()) {
-              rs = stmt.executeQuery(request);
-            }
-          }
-        } finally {
-          DBUtil.close(conn);
+        try (Connection conn = currentConnectionInfo.openConnection();
+             Statement stmt = conn.createStatement()) {
+          rs = stmt.executeQuery(request);
         }
       }
     } catch (ConnecteurJDBCException | SQLException e) {

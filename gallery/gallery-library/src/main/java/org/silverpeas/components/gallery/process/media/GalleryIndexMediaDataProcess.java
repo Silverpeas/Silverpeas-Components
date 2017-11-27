@@ -158,10 +158,10 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
     FullIndexEntry indexEntry = new FullIndexEntry(getMedia().getMediaPK().getComponentName(),
         getMedia().getContributionType(), getMedia().getMediaPK().getId());
     indexEntry.setTitle(getMedia().getTitle());
-    indexEntry.setPreView(getMedia().getDescription());
+    indexEntry.setPreview(getMedia().getDescription());
     indexEntry.setCreationDate(getMedia().getCreationDate());
     indexEntry.setCreationUser(getMedia().getCreatorId());
-    indexEntry.setKeyWords(getMedia().getKeyWord());
+    indexEntry.setKeywords(getMedia().getKeyWord());
     return indexEntry;
   }
 }

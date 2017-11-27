@@ -1,5 +1,6 @@
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %><%--
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+<%--
 
     Copyright (C) 2000 - 2017 Silverpeas
 
@@ -203,7 +204,7 @@ catch (Exception e)
 	// A voir peut etre que �a ne sert � rien !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if (action.equals("Update")) {
         //selectedColumns = (String[]) request.getParameterValues("sColumns");
-        Vector sCol = new Vector();
+        List<String> sCol = new ArrayList<>();
         if (selectedColumns != null) {
             for (int i = 0; i < selectedColumns.length; i++) {
                   sCol.add(selectedColumns[i]);
@@ -214,7 +215,7 @@ catch (Exception e)
 	} else if (action.equals("updateColumnList"))
 	  {
 		  //selectedColumns = (String[]) request.getParameterValues("sColumns");
-		  Vector sCol = new Vector();
+		  List<String> sCol = new ArrayList<>();
 			if (selectedColumns != null) {
 				for (int i = 0; i < selectedColumns.length; i++) {
                   sCol.add(selectedColumns[i]);
@@ -230,7 +231,7 @@ catch (Exception e)
 
 		  selectedColumns = new String[n];
 		  for (int i=0; i < n; i++) {
-		selectedColumns[i]= (String) connecteurJDBC.getSelectedColumn().elementAt(i);
+		selectedColumns[i]= connecteurJDBC.getSelectedColumn().get(i);
 		  }
 
 		  // Non Selected Columns
@@ -570,11 +571,11 @@ if (count.equals("false"))
 {
   sqlRequest = request.getParameter("SQLReq");
   if (connecteurJDBC.getSelectedColumn().size() > 0) {
-    SCOL = (String) connecteurJDBC.getSelectedColumn().elementAt(0);
+    SCOL = connecteurJDBC.getSelectedColumn().get(0);
     int n = connecteurJDBC.getSelectedColumn().size();
     int i = 1;
     while (i < n) {
-      SCOL = SCOL + " , " + (String) connecteurJDBC.getSelectedColumn().elementAt(i);
+      SCOL = SCOL + " , " + connecteurJDBC.getSelectedColumn().get(i);
       i++;
     }
     connecteurJDBC.setColumn(SCOL);
@@ -655,8 +656,8 @@ if(addConst.equals("true"))
 		{
 			for(int nI = 0; nI < n; nI++)
 			{
-				value = (String) connecteurJDBC.getSelectedColumn().elementAt(nI);
-				label = (String) connecteurJDBC.getSelectedColumn().elementAt(nI);
+				value = connecteurJDBC.getSelectedColumn().get(nI);
+				label = connecteurJDBC.getSelectedColumn().get(nI);
 				if ((label == null) || (label.length() == 0)) label = value;
 				selected = (value.equals(ssColumn))?"selected":"";
 				out.println("<option "+selected

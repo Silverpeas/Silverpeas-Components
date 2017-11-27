@@ -342,15 +342,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write("<!-- Publication Body -->");
 
         if (pub.getStatus() != null && pub.isValid()) {
-          if (pub.haveGotClone() && CLONE.equals(pub.getCloneStatus()) && !user.isInRole(profile)) {
+          if (pub.haveGotClone() && CLONE_STATUS.equals(pub.getCloneStatus()) && !user.isInRole(profile)) {
             pubColor = "blue";
             pubState = resources.getString("kmelia.UpdateInProgress");
-          } else if (DRAFT.equals(pub.getCloneStatus())) {
+          } else if (DRAFT_STATUS.equals(pub.getCloneStatus())) {
             if (currentUserId.equals(currentUser.getId())) {
               pubColor = "gray";
               pubState = resources.getString("PubStateDraft");
             }
-          } else if (TO_VALIDATE.equals(pub.getCloneStatus())) {
+          } else if (TO_VALIDATE_STATUS.equals(pub.getCloneStatus())) {
             if (admin.isInRole(profile) || publisher.isInRole(profile) ||
                 currentUserId.equals(currentUser.getId())) {
               pubColor = "red";

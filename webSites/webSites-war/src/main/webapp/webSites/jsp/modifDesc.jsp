@@ -409,7 +409,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
   BrowseBar browseBar = window.getBrowseBar();
   browseBar.setDomainName(spaceLabel);
   browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
-  if (site.getType() == 1) { //bookmark
+  if (site.getSiteType() == 1) { //bookmark
     browseBar.setPath(resources.getString("ModificationSite"));
   } else { //autres sites
     browseBar.setPath(infoPath+" - "+resources.getString("ModificationSite"));
@@ -558,9 +558,9 @@ while (iconIterator.hasNext()) {
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = null;
 	if (type == null) {
-		validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+", '"+site.getType()+"');", false);
+		validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+", '"+site.getSiteType()+"');", false);
 	} else {
-	validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK(0, "+size+", '"+site.getType()+"');", false);
+	validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK(0, "+size+", '"+site.getSiteType()+"');", false);
 	}
 
 	Button annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);

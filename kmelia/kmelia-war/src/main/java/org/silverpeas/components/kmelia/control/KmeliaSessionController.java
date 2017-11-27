@@ -928,7 +928,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
     String currentStatus = getSessionPublication().getDetail().getStatus();
     return (isPublicationAlwaysVisibleEnabled() && "writer".equals(getUserTopicProfile()) &&
-        (getSessionClone() == null) && PublicationDetail.VALID.equals(currentStatus));
+        (getSessionClone() == null) && PublicationDetail.VALID_STATUS.equals(currentStatus));
   }
 
   public boolean isCloneNeededWithDraft() {
@@ -940,9 +940,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public String clonePublication(PublicationDetail pubDetail) {
-    String cloneStatus = PublicationDetail.TO_VALIDATE;
+    String cloneStatus = PublicationDetail.TO_VALIDATE_STATUS;
     if (isDraftEnabled()) {
-      cloneStatus = PublicationDetail.DRAFT;
+      cloneStatus = PublicationDetail.DRAFT_STATUS;
     }
     return clonePublication(pubDetail, cloneStatus);
   }
@@ -1349,7 +1349,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       List<String> fatherIds) {
     Collection<PublicationDetail> result = getPublicationBm().
         getDetailsByFatherIdsAndStatus(fatherIds, pubPK, "P.pubUpdateDate desc, P.pubId desc",
-            PublicationDetail.VALID);
+            PublicationDetail.VALID_STATUS);
 
     return result;
   }
@@ -1363,7 +1363,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     Collection<PublicationDetail> allPublications = getAllPublications();
 
     for (PublicationDetail pubDetail : allPublications) {
-      if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+      if (pubDetail.getStatus().equals(PublicationDetail.VALID_STATUS)) {
         allVisiblesPublications.add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.
             getInstanceId()));
       }
@@ -1387,7 +1387,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     Collection<PublicationDetail> allPublications = getAllPublicationsByTopic(pubPK, fatherIds);
 
     for (PublicationDetail pubDetail : allPublications) {
-      if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+      if (pubDetail.getStatus().equals(PublicationDetail.VALID_STATUS)) {
         allVisiblesPublications.add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.
             getInstanceId()));
       }
@@ -1399,7 +1399,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<WAAttributeValuePair> allPublicationsIds = new ArrayList<>();
     Collection<PublicationDetail> allPublications = getAllPublications("pubName asc");
     for (PublicationDetail pubDetail : allPublications) {
-      if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+      if (pubDetail.getStatus().equals(PublicationDetail.VALID_STATUS)) {
         allPublicationsIds
             .add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.getInstanceId()));
       }
@@ -1902,7 +1902,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isValidationTabVisible() {
     boolean tabVisible =
-        PublicationDetail.TO_VALIDATE.equalsIgnoreCase(getSessionPubliOrClone().getDetail().
+        PublicationDetail.TO_VALIDATE_STATUS.equalsIgnoreCase(getSessionPubliOrClone().getDetail().
             getStatus());
 
     return tabVisible && (getValidationType() == KmeliaHelper.VALIDATION_COLLEGIATE ||
@@ -2262,7 +2262,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     for (KmeliaPublication aPubli : allPublications) {
       PublicationDetail pubDetail = aPubli.getDetail();
-      if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+      if (pubDetail.getStatus().equals(PublicationDetail.VALID_STATUS)) {
         currentPublications
             .add(new WAAttributeValuePair(pubDetail.getId(), pubDetail.getInstanceId()));
       }

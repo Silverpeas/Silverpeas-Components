@@ -95,7 +95,7 @@ public class WebPagesIndexer implements ComponentIndexation {
       indexEntry.setLastModificationUser(String.valueOf(createdBy));
     }
     indexEntry.setTitle(component.getLabel());
-    indexEntry.setPreView(component.getDescription());
+    indexEntry.setPreview(component.getDescription());
     return indexEntry;
   }
 
