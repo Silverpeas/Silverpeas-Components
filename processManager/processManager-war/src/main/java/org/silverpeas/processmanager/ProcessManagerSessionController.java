@@ -2086,7 +2086,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public int getNbEntriesAboutQuestions() {
     int nbEntries = 0;
     try {
-      Task[] tasks = getTasks();
+      Task[] tasks = currentProcessInstance != null ? getTasks() : new Task[0];
       for (Task task : tasks) {
         nbEntries = task.getPendingQuestions().length;
         nbEntries += task.getSentQuestions().length;
