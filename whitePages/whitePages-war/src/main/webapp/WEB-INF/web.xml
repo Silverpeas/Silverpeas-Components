@@ -41,7 +41,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>whitePagesLoginFilter</filter-name>
-    <url-pattern>/admin/jsp/MainFrameSilverpeasV5.jsp</url-pattern>
+    <url-pattern>/admin/jsp/silverpeas-main.jsp</url-pattern>
   </filter-mapping>
   <servlet>
     <display-name>WhitePagesRequestRouter</display-name>
