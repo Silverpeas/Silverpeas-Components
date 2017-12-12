@@ -82,7 +82,7 @@
       <label>
         <message lang="fr">Travail de groupe</message>
         <message lang="en">Team work</message>
-        <message lang="en">Zusammenspiel</message>
+        <message lang="de">Zusammenspiel</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
