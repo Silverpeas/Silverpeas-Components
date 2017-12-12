@@ -28,16 +28,16 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
-    <message lang="fr">Almanach</message>
-    <message lang="en">Almanach</message>
-    <message lang="de">Almanach</message>
+    <message lang="fr">Calendrier</message>
+    <message lang="en">Calendar</message>
+    <message lang="de">Kalender</message>
   </label>
   <description>
     <message lang="fr">Les différentes vues proposées présentent des événements ponctuels
 		ou périodiques. L’application permet l’agrégation et l’accès rapide vers d’autres
-		almanachs. Tous les événements peuvent être exportés au format iCal.
+		calendriers. Tous les événements peuvent être exportés au format iCal.
     </message>
-    <message lang="en">Enable to create and aggregate agendas from collaborative spaces or subspaces. Events can
+    <message lang="en">Enable to create and aggregate calendars from collaborative spaces or subspaces. Events can
       have attachments. You can view events using different time scales.
     </message>
     <message lang="de">Ermöglicht Ihnen das Erstellen und Anzeigen der verschiedenen Agenden von Veranstaltungen in den definierten
@@ -132,9 +132,9 @@
     <parameter>
       <name>useAgregation</name>
       <label>
-        <message lang="fr">Agrégation d'Almanachs</message>
-        <message lang="en">Almanach Aggregation</message>
-        <message lang="de">Almanach Aggregierung</message>
+        <message lang="fr">Agrégation</message>
+        <message lang="en">Aggregation</message>
+        <message lang="de">Aggregierung</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -142,14 +142,14 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cet Almanach pourra contenir des évènements d'autres Almanachs selon le
-          paramétrage de la plate-forme (almanachs des sous-espaces, de l'espace ou tous les almanachs).
+        <message lang="fr">Cette application pourra afficher des évènements d'autres Calendriers selon le
+          paramétrage de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la plate-forme).
         </message>
-        <message lang="en">This almanach can aggregate events from other almanachs according to the
-          platform settings (almanachs in subspaces, in the space or all the almanachs).
+        <message lang="en">This application can aggregate events from other Calendars according to the
+          platform settings (calendars in subspaces, in the space or from the whole platform).
         </message>
-        <message lang="de">Dieses Almanach kann Ereignisse von anderen Almanachs gemäß den
-          Einstellungen aggregieren (Almanachs in Unterräumen, im Raum oder in allen Almanachs).
+        <message lang="de">Dieses Kalender kann Ereignisse von anderen Kalenders gemäß den
+          Einstellungen aggregieren (Kalenders in Unterräumen, im Raum oder in allen Kalenders).
         </message>
       </help>
     </parameter>
@@ -210,9 +210,9 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
-        <message lang="en">Choose the view to display by default when the user accesses the almanach.</message>
-        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die Almanach.</message>
+        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède au calendrier.</message>
+        <message lang="en">Choose the view to displayed by default when the user accesses the calendar.</message>
+        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die Kalender.</message>
       </help>
     </parameter>
     <parameter>
@@ -228,9 +228,9 @@
       <type>checkbox</type>
       <updatable>hidden</updatable>
       <help>
-        <message lang="fr">Permet de générer un flux RSS des événements de cet Almanach.</message>
-        <message lang="en">Produce a RSS stream for the events of this almanach.</message>
-        <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Almanach.</message>
+        <message lang="fr">Permet de générer un flux RSS des événements de ce calendrier.</message>
+        <message lang="en">Produce a RSS stream for the events of this calendar.</message>
+        <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Kalender.</message>
       </help>
     </parameter>
     <parameter>
@@ -280,11 +280,11 @@
       <type>select</type>
       <updatable>hidden</updatable>
       <help>
-        <message lang="fr">Permet de choisir quelles autres instances de l'application Almanach sont accessibles depuis
+        <message lang="fr">Permet de choisir quelles autres instances de l'application Calendrier sont accessibles depuis
           la liste déroulante.
         </message>
-        <message lang="en">Choose which almanachs can be aggregated into this almanach.</message>
-        <message lang="de">Wählen Sie die Almanache, die in diesem Almanach aggregiert werden können.</message>
+        <message lang="en">Choose which calendars can be aggregated into this calendar.</message>
+        <message lang="de">Wählen Sie die Kalender, die in diesem Kalender aggregiert werden können.</message>
       </help>
     </parameter>
   </parameters>
