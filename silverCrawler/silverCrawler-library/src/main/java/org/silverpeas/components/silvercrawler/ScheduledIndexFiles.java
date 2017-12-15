@@ -28,16 +28,15 @@ import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeExcepti
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,19 +46,18 @@ import java.util.List;
 public class ScheduledIndexFiles implements SchedulerEventListener {
 
   public static final String SILVERCRAWLERENGINE_JOB_NAME = "SilverCrawlerEngineJob";
-  private SettingBundle resources = ResourceLocator.getSettingBundle(
-      "org.silverpeas.silvercrawler.settings.silverCrawlerSettings");
 
   public void initialize() {
     try {
+      SettingBundle resources = ResourceLocator.getSettingBundle(
+          "org.silverpeas.silvercrawler.settings.silverCrawlerSettings");
       String cron = resources.getString("cronScheduledIndex");
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(SILVERCRAWLERENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(SILVERCRAWLERENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("silverCrawler", "ScheduledIndexFiles.initialize()",
-          "silverCrawler.EX_CANT_INIT_SCHEDULED_INDEX_FILES", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -88,23 +86,24 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
         }
       }
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException("ScheduledIndexFiles.doScheduledIndex()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new SilverCrawlerRuntimeException(e);
     }
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     doScheduledIndex();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("silverCrawler", "ScheduledIndexFiles.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverLogger.getLogger(this)
+        .error(
+            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

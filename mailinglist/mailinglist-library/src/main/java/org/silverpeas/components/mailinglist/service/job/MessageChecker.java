@@ -27,12 +27,16 @@ import org.silverpeas.components.mailinglist.service.event.MessageEvent;
 import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.mail.engine.SmtpConfiguration;
+import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.mail.engine.SmtpConfiguration;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -56,7 +60,9 @@ import java.util.Properties;
 import java.util.Set;
 
 @Singleton
-public class MessageChecker implements SchedulerEventListener {
+public class MessageChecker {
+
+  private static final String MAILING_LIST_JOB_NAME = "mailingListScheduler";
 
   public static final String IMAP_PROTOCOL = "imap";
   public static final String IMAP_SSL_PROTOCOL = "imaps";
@@ -81,6 +87,18 @@ public class MessageChecker implements SchedulerEventListener {
 
   public Session getMailSession() {
     return mailSession;
+  }
+
+  public void schedule(final JobTrigger trigger) throws SchedulerException {
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+    scheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, new MessageCheckingListener());
+  }
+
+  public void unschedule() throws SchedulerException {
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+    if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
+      scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
+    }
   }
 
   /**
@@ -188,38 +206,14 @@ public class MessageChecker implements SchedulerEventListener {
       }
       Map<MessageListener, MessageEvent> eventsMap = new HashMap<>();
       for (final Message msg : msgs) {
-        try {
-          MimeMessage message = (MimeMessage) msg;
-          if (isImap()) {
-            if (!message.isSet(Flag.SEEN) && !message.isSet(Flag.DELETED)) {
-              message = new MimeMessage(message);
-              processEmail(message, eventsMap, listenersByEmail);
-            }
-          } else {
-            processEmail(message, eventsMap, listenersByEmail);
-          }
-
-          if (isLeaveOnServer() && inbox.getMode() == Folder.READ_WRITE) {
-            msg.setFlag(Flag.SEEN, true);
-          } else {
-            msg.setFlag(Flag.DELETED, true);
-          }
-        } catch (MessagingException mex) {
-          SilverTrace
-              .error("mailinglist", "MessageChecker.checkNewMessages", "mail.processing.error",
-                  mex);
-        } catch (IOException ioex) {
-          SilverTrace
-              .error("mailinglist", "MessageChecker.checkNewMessages", "mail.io.error", ioex);
-        }
+        processMessage(inbox, listenersByEmail, eventsMap, msg);
       }
       for (final Map.Entry<MessageListener, MessageEvent> entry : eventsMap.entrySet()) {
         MessageListener mailingList = entry.getKey();
         mailingList.onMessage(entry.getValue());
       }
     } catch (Exception mex) {
-      SilverTrace
-          .error("mailinglist", "MessageChecker.checkNewMessages", "mail.processing.error", mex);
+      SilverLogger.getLogger(this).error(mex);
     } finally {
       // -- Close down nicely --
       try {
@@ -230,11 +224,34 @@ public class MessageChecker implements SchedulerEventListener {
           mailAccount.close();
         }
       } catch (Exception ex2) {
-        SilverTrace
-            .error("mailinglist", "MessageChecker.checkNewMessages", "mail.processing.error", ex2);
+        SilverLogger.getLogger(this).error(ex2);
       }
     }
 
+  }
+
+  private void processMessage(final Folder inbox,
+      final Map<String, MessageListener> listenersByEmail,
+      final Map<MessageListener, MessageEvent> eventsMap, final Message msg) {
+    try {
+      MimeMessage message = (MimeMessage) msg;
+      if (isImap()) {
+        if (!message.isSet(Flag.SEEN) && !message.isSet(Flag.DELETED)) {
+          message = new MimeMessage(message);
+          processEmail(message, eventsMap, listenersByEmail);
+        }
+      } else {
+        processEmail(message, eventsMap, listenersByEmail);
+      }
+
+      if (isLeaveOnServer() && inbox.getMode() == Folder.READ_WRITE) {
+        msg.setFlag(Flag.SEEN, true);
+      } else {
+        msg.setFlag(Flag.DELETED, true);
+      }
+    } catch (MessagingException | IOException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
   /**
@@ -361,36 +378,21 @@ public class MessageChecker implements SchedulerEventListener {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final MessageChecker other = (MessageChecker) obj;
-    if (login == null) {
-      if (other.login != null) {
-        return false;
-      }
-    } else if (!login.equals(other.login)) {
+    return isEqualTo((MessageChecker) obj);
+  }
+
+  private boolean isEqualTo(final MessageChecker obj) {
+    final MessageChecker other = obj;
+    if ((mailServer == null && other.mailServer != null) ||
+        (mailServer != null && !mailServer.equals(other.mailServer))) {
       return false;
     }
-    if (mailServer == null) {
-      if (other.mailServer != null) {
-        return false;
-      }
-    } else if (!mailServer.equals(other.mailServer)) {
+    if ((password == null && other.password != null) ||
+        (password != null && !password.equals(other.password))) {
       return false;
     }
-    if (password == null) {
-      if (other.password != null) {
-        return false;
-      }
-    } else if (!password.equals(other.password)) {
-      return false;
-    }
-    if (protocol == null) {
-      if (other.protocol != null) {
-        return false;
-      }
-    } else if (!protocol.equals(other.protocol)) {
-      return false;
-    }
-    return true;
+    return (protocol == null && other.protocol == null) ||
+        (protocol != null && protocol.equals(other.protocol));
   }
 
   protected boolean isImap() {
@@ -398,25 +400,26 @@ public class MessageChecker implements SchedulerEventListener {
         IMAP_SSL_PROTOCOL.equalsIgnoreCase(getProtocol());
   }
 
-  @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    final String jobName = anEvent.getJobExecutionContext().getJobName();
-    if (this.listeners != null && !this.listeners.isEmpty()) {
+  public class MessageCheckingListener implements SchedulerEventListener {
 
-      this.checkNewMessages(new Date());
-
-    } else {
-
+    @Override
+    public void triggerFired(SchedulerEvent anEvent) {
+      if (listeners != null && !listeners.isEmpty()) {
+        checkNewMessages(new Date());
+      }
     }
-  }
 
-  @Override
-  public void jobSucceeded(SchedulerEvent anEvent) {
-  }
+    @Override
+    public void jobSucceeded(SchedulerEvent anEvent) {
+      // nothing to do
+    }
 
-  @Override
-  public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("mailinglist", "MessageChecker.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    @Override
+    public void jobFailed(SchedulerEvent anEvent) {
+      SilverLogger.getLogger(this)
+          .error(
+              "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull",
+              anEvent.getJobThrowable());
+    }
   }
 }

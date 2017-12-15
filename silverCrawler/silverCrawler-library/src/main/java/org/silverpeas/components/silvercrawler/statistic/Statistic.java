@@ -25,13 +25,10 @@
 package org.silverpeas.components.silvercrawler.statistic;
 
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.sql.Connection;
@@ -42,18 +39,21 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class Statistic {
-  private final static String historyTableName = "SC_SilverCrawler_Statistic";
+  private static final String HISTORY_TABLE_NAME = "SC_SilverCrawler_Statistic";
 
-  public static String DIRECTORY = "Directory";
-  public static String FILE = "File";
+  public static final String DIRECTORY = "Directory";
+  public static final String FILE = "File";
+
+  private Statistic() {
+
+  }
 
   private static Connection getConnection() {
     Connection con;
     try {
       con = DBUtil.openConnection();
     } catch (SQLException e) {
-      throw new SilverCrawlerRuntimeException("Statistic.getConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new SilverCrawlerRuntimeException(e);
     }
     return con;
   }
@@ -63,15 +63,14 @@ public class Statistic {
     try (Connection con = getConnection()) {
       // ajout dans les stats de l'objet
       HistoryDAO
-          .add(con, historyTableName, userId, path.getAbsolutePath(), componentId, objectType);
+          .add(con, HISTORY_TABLE_NAME, userId, path.getAbsolutePath(), componentId, objectType);
       if (objectType.equals(DIRECTORY)) {
         // dans le cas d'un répertoire, on le parcours pour ajouter les stats
         // sur les sous répertoires et les fichiers
         processFileList(con, path, userId, componentId);
       }
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException("Statistic.addstat()",
-          SilverpeasRuntimeException.ERROR, "silverCrawler.CANNOT_ADD_STAT", e);
+      throw new SilverCrawlerRuntimeException(e);
     }
   }
 
@@ -84,14 +83,14 @@ public class Statistic {
           if (currentFile.isDirectory()) {
             // ajout du répertoire dans les stats
             HistoryDAO
-                .add(con, historyTableName, userId, currentFile.getAbsolutePath(), componentId,
+                .add(con, HISTORY_TABLE_NAME, userId, currentFile.getAbsolutePath(), componentId,
                     DIRECTORY);
             // et appel récursif de la fonction sur ce répertoire
             processFileList(con, currentFile, userId, componentId);
           } else {
             // ajout du fichier dans les stats
             HistoryDAO
-                .add(con, historyTableName, userId, currentFile.getAbsolutePath(), componentId,
+                .add(con, HISTORY_TABLE_NAME, userId, currentFile.getAbsolutePath(), componentId,
                     FILE);
           }
         }
@@ -100,8 +99,6 @@ public class Statistic {
   }
 
   public static Collection<HistoryByUser> getHistoryByObject(String path, String componentId) {
-    SilverTrace
-        .info("silverCrawler", "Statistic.getHistoryByObject()", "root.MSG_GEN_ENTER_METHOD");
     Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
@@ -139,13 +136,10 @@ public class Statistic {
   public static Collection<HistoryDetail> getHistoryByAction(String path, String componentId) {
 
     try (Connection con = getConnection()) {
-      Collection<HistoryDetail> result =
-          HistoryDAO.getHistoryDetailByObject(con, historyTableName, path, componentId);
-      return result;
+      return
+          HistoryDAO.getHistoryDetailByObject(con, HISTORY_TABLE_NAME, path, componentId);
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException("Statistic.getHistoryByAction()",
-          SilverpeasRuntimeException.ERROR,
-          "silverCrawler.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new SilverCrawlerRuntimeException(e);
     }
   }
 
@@ -153,24 +147,18 @@ public class Statistic {
       String componentId) {
 
     try (Connection con = getConnection()) {
-      Collection<HistoryDetail> result = HistoryDAO
-          .getHistoryDetailByObjectAndUser(con, historyTableName, path, userId, componentId);
-      return result;
+      return HistoryDAO
+          .getHistoryDetailByObjectAndUser(con, HISTORY_TABLE_NAME, path, userId, componentId);
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException("Statistic.getHistoryByObjectAndUser()",
-          SilverpeasRuntimeException.ERROR,
-          "silverCrawler.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new SilverCrawlerRuntimeException(e);
     }
   }
 
   public static void deleteHistoryByObject(String path, String componentId) {
-    SilverTrace
-        .info("silverCrawler", "Statistic.deleteHistoryByObject", "root.MSG_GEN_ENTER_METHOD");
     try (Connection con = getConnection()) {
-      HistoryDAO.deleteHistoryByObject(con, historyTableName, path, componentId);
+      HistoryDAO.deleteHistoryByObject(con, HISTORY_TABLE_NAME, path, componentId);
     } catch (Exception e) {
-      throw new SilverCrawlerRuntimeException("Statistic.deleteHistoryByObject()",
-          SilverpeasRuntimeException.ERROR, "silverCrawler.CANNOT_DELETE_HISTORY_STATISTICS", e);
+      throw new SilverCrawlerRuntimeException(e);
     }
   }
 

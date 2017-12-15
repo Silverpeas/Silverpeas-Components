@@ -23,41 +23,21 @@
  */
 package org.silverpeas.components.silvercrawler.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class SilverCrawlerRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = -6141354570945767515L;
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public SilverCrawlerRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public SilverCrawlerRuntimeException(final String message) {
+    super(message);
   }
 
-  public SilverCrawlerRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public SilverCrawlerRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public SilverCrawlerRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public SilverCrawlerRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public SilverCrawlerRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "silverCrawler";
-  }
-
 }

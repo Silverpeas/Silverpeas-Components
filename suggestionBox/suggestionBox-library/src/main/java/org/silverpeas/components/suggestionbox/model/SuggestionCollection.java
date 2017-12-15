@@ -7,7 +7,6 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
@@ -16,7 +15,7 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Process;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.Collection;
@@ -97,7 +96,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @param uploadedFiles a collection of file to attach to the suggestion.
    */
   public void add(final Suggestion suggestion, final Collection<UploadedFile> uploadedFiles) {
-    Transaction.performInOne((Transaction.Process<Void>) () -> {
+    Transaction.performInOne((Process<Void>) () -> {
       final SuggestionRepository suggestionRepository = getSuggestionRepository();
       SuggestionBox actual =
           SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
@@ -122,7 +121,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
   @Override
   public boolean remove(Object aSuggestion) {
     final Suggestion suggestion = (Suggestion) aSuggestion;
-    boolean r = Transaction.performInOne(new Transaction.Process<Boolean>() {
+    boolean r = Transaction.performInOne(new Process<Boolean>() {
       @Override
       public Boolean execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
@@ -143,7 +142,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   @Override
   public boolean addAll(final Collection<? extends Suggestion> suggestions) {
-    Transaction.performInOne(new Transaction.Process<Void>() {
+    Transaction.performInOne(new Process<Void>() {
       @Override
       public Void execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
@@ -162,7 +161,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   @Override
   public boolean removeAll(final Collection<?> theSuggestions) {
-    boolean r = Transaction.performInOne(new Transaction.Process<Boolean>() {
+    boolean r = Transaction.performInOne(new Process<Boolean>() {
       @Override
       public Boolean execute() {
         final Collection<Suggestion> suggestions = (Collection<Suggestion>) theSuggestions;
@@ -281,7 +280,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
     // Persisting the publishing.
     final SuggestionRepository suggestionRepository = getSuggestionRepository();
     Pair<Suggestion, Boolean> result =
-        Transaction.performInOne(new Transaction.Process<Pair<Suggestion, Boolean>>() {
+        Transaction.performInOne(new Process<Pair<Suggestion, Boolean>>() {
               @Override
               public Pair<Suggestion, Boolean> execute() {
                 boolean triggerNotif = false;
@@ -342,7 +341,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
     // Persisting the validation.
     final SuggestionRepository suggestionRepository = getSuggestionRepository();
     Pair<Suggestion, Boolean> result =
-        Transaction.performInOne(new Transaction.Process<Pair<Suggestion, Boolean>>() {
+        Transaction.performInOne(new Process<Pair<Suggestion, Boolean>>() {
               @Override
               public Pair<Suggestion, Boolean> execute() {
                 boolean triggerNotif = false;

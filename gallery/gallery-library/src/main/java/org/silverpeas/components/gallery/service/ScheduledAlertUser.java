@@ -56,13 +56,13 @@ import static org.silverpeas.core.admin.service.OrganizationControllerProvider.g
 public class ScheduledAlertUser implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJob";
-  private SettingBundle resources =
-      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
 
   public void initialize() {
     try {
+      SettingBundle resources =
+          ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       String cron = resources.getString("cronScheduledAlertUser");
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
@@ -76,6 +76,8 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   public void doScheduledAlertUser() {
     try {
       // Finding media for which the visibility will soon end
+      SettingBundle resources =
+          ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       int nbDays = resources.getInteger("nbDaysForAlertUser");
       Collection<Media> mediaList = getMediaService().getAllMediaThatWillBeNotVisible(nbDays);
 
@@ -151,7 +153,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     doScheduledAlertUser();
   }
 
@@ -191,11 +193,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
     private static void append(Map<String, StringBuilder> container, String language,
         String message) {
-      StringBuilder sb = container.get(language);
-      if (sb == null) {
-        sb = new StringBuilder();
-        container.put(language, sb);
-      }
+      StringBuilder sb =  container.computeIfAbsent(language, l -> new StringBuilder());
       sb.append(message);
     }
 
