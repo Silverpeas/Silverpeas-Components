@@ -41,11 +41,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%!
  //Icons
-String folderSrc;
 String publicationSrc;
 String seeAlsoSrc;
 String seeAlsoDeleteSrc;
-String hLineSrc;
 
 void displayLinkViewSelection(int selectedId, KmeliaSessionController kmeliaScc, JspWriter out) throws IOException {
       out.println("<script language=\"Javascript\">");

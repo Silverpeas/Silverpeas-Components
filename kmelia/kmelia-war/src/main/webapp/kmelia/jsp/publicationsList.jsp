@@ -36,6 +36,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%!
 String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaScc)
 {
@@ -132,9 +133,6 @@ out.println("</table>");
 
 void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, MultiSilverpeasBundle resources, JspWriter out) throws IOException, java.text.ParseException {
 
-    NumberFormat				percent		= NumberFormat.getPercentInstance();
-	User					user		= null;
-
       out.println("<!-- Publications Header -->");
           out.println("<table width=\"98%\" align=center border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
             out.println("<tr>");
@@ -152,16 +150,18 @@ void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel
                   if (!pub.getObjectId().equals(currentPubId)) {
                       if (pub.getObjectType().equals("Publication")) {
 							String userName = "";
-							user = kmeliaScc.getOrganisationController().getUserDetail(pub.getCreationUser());
-							if ((user != null) && ((user.getFirstName().length() > 0) || (user.getLastName().length() > 0)))
-								userName = user.getFirstName() + " " + user.getLastName();
-							else
-								userName = kmeliaScc.getString("UnknownAuthor");
+							User user = User.getById(pub.getCreationUser());
+							if (user != null) {
+                userName = user.getDisplayedName();
+              } else{
+                userName = kmeliaScc.getString("UnknownAuthor");
+              }
                           out.println("<tr>");
-                            out.println("<td valign=\"top\" width=\"80\" align=\"center\">"+percent.format(new Double(pub.getScore()))+" </td>");
+                            out.println("<td valign=\"top\" width=\"80\" align=\"center\"></td>");
                             out.println("<td valign=\"top\" colspan=\"2\">");
-                             out.println("<p>&#149; <a href=\"javascript:onClick=publicationGoTo('"+pub.getObjectId()+"')\"><b>"+pub.getTitle()+"</b></a><br> "+userName+" - "+resources.getOutputDate(pub.getCreationDate())+"<br>");
-                             out.println(""+Encode.javaStringToHtmlString(pub.getPreview())+"<BR><BR></p>");
+                             out.println("<p>&#149; <a href=\"javascript:onClick=publicationGoTo('"+pub.getObjectId()+"')\"><b>"+pub.getTitle()+"</b></a><br> "+userName+" - "+resources.getOutputDate(
+                                 DateUtil.parseFromLucene(pub.getLastModificationDate()))+"<br/>");
+                             out.println(""+Encode.javaStringToHtmlString(pub.getPreview())+"</p>");
                             out.println("</td>");
                           out.println("</tr>");
                       }
