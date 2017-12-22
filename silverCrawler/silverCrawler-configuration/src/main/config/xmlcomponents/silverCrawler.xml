@@ -125,9 +125,9 @@
     <parameter>
       <name>privateSearch</name>
       <label>
-        <message lang="fr">Moteur de recherche dédié (O/N)</message>
-        <message lang="en">Use a dedicated serarch engine (Y/N)</message>
-        <message lang="de">Verwenden Sie eine dedizierte Suchmaschine (Y/N)</message>
+        <message lang="fr">Moteur de recherche dédié</message>
+        <message lang="en">Dedicated search engine</message>
+        <message lang="de">Verwenden Sie eine dedizierte Suchmaschine</message>
       </label>
       <order>4</order>
       <mandatory>false</mandatory>
@@ -148,9 +148,9 @@
 		<parameter>
 			<name>allowedNav</name>
 			<label>
-				<message lang="fr">Navigation autorisée (O/N)</message>
-				<message lang="en">Allow browsing of files and directories (Y/N)</message>
-				<message lang="de">Durchsuchen von Dateien und Verzeichnissen Zulassen(Y / N)</message>
+				<message lang="fr">Navigation autorisée</message>
+				<message lang="en">Allow browsing of files and directories</message>
+				<message lang="de">Durchsuchen von Dateien und Verzeichnissen Zulassen</message>
 			</label>
 			<order>5</order>
 			<mandatory>false</mandatory>
@@ -166,9 +166,9 @@
 		<parameter>
 			<name>periodicIndex</name>
 			<label>
-				<message lang="fr">Indexation périodique (O/N)</message>
-				<message lang="en">Periodic indexing (Y/N)</message>
-				<message lang="de">Periodische Indizierung (Y / N)</message>
+				<message lang="fr">Indexation périodique</message>
+				<message lang="en">Periodic indexing</message>
+				<message lang="de">Periodische Indizierung</message>
 			</label>
 			<order>6</order>
 			<mandatory>false</mandatory>
