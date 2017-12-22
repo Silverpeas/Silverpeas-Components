@@ -414,6 +414,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return StringUtil.getBooleanValue(getComponentParameterValue("useReminder"));
   }
 
+  public boolean isStatisticAllowed() {
+    boolean statisticEnabled = getSettings().getBoolean("kmelia.stats.enable", false);
+    return statisticEnabled && !isToolbox() &&
+        (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher) ||
+        getSilverpeasUserRoles().contains(SilverpeasRole.supervisor));
+  }
+
   public boolean openSingleAttachmentAutomatically() {
     return StringUtil.getBooleanValue(getComponentParameterValue("openSingleAttachment"));
   }

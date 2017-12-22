@@ -69,9 +69,7 @@ String userId = kmeliaScc.getUserId();
 boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
 boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
 
-boolean userCanSeeStats =
-  SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
-  SilverpeasRole.admin.isInRole(profile) && !KmeliaHelper.isToolbox(kmeliaScc.getComponentId());
+boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 
 %>
 

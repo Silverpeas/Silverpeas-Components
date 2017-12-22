@@ -161,7 +161,6 @@ $(document).ready(function() {
 <view:browseBar extraInformations='${browseBarLabel}'/>
 <view:window>
 <view:frame>
-<view:board>
 <h1><fmt:message key="kmelia.stat.title" /> <c:out value="${requestScope.kmelia.componentLabel}" /></h1>
 
 <fieldset>
@@ -251,7 +250,6 @@ $(document).ready(function() {
 </fieldset>
 </c:if>
 
-</view:board>
 </view:frame>
 </view:window>
 </body>

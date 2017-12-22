@@ -81,9 +81,7 @@ public class JSONServlet extends HttpServlet {
       boolean isWriter = SilverpeasRole.writer.isInRole(profile);
       boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
       boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
-      boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
-      boolean canShowStats = isPublisher || SilverpeasRole.supervisor.isInRole(profile) ||
-          isAdmin && !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
+      boolean canShowStats = kmeliaSC.isStatisticAllowed();
 
       if (isBasket) {
         boolean binOperationsAllowed = isAdmin || isPublisher || isWriter;
@@ -149,7 +147,7 @@ public class JSONServlet extends HttpServlet {
         operations.put("manageSubscriptions", isAdmin);
         operations.put("subscriptions", !isBasket && !user.isAnonymous());
         operations.put("favorites", !isRoot && !isBasket && !user.isAnonymous());
-        if (statisticEnable && isRoot && canShowStats) {
+        if (isRoot && canShowStats) {
           operations.put("statistics", true);
         }
         operations.put("mylinks", !user.isAnonymous());
