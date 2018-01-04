@@ -174,11 +174,12 @@
 
 #pubList #pubsHeader {
 	border-bottom: 1px solid #E9E9E9;
+	background-color: #f3f3f3;
 	font-weight:bold;
-	float: left;
 	width: 100%;
-	line-height: 27px;
+	line-height: 28px;
 	padding-bottom: 3px;
+	vertical-align:middle;
 }
 
 #pubList #pubsHeader img {
@@ -187,6 +188,13 @@
 	margin-left: 5px;
 }
 
+#pubList .tableBoard{
+	padding:0;
+	width: inherit;
+	display: block;
+}
+
+
 #pubList #pubsCounter {
 	position:relative;
 }
@@ -194,23 +202,31 @@
 #pubList #pubsSort {
 	float: right;
 	margin-top: 3px;
+	margin-right: 3px;
 	position: relative;
 }
 
 #pubList ul {
 	list-style: none;
-	float: left;
-	width: 95%;
+	width: 100%;
 	white-space: normal;
 	padding: 5px 0px 0px 0px;
 	margin: 0px;
 }
 
 #pubList ul li {
-	margin: 0px 0px 10px 0px;
-	padding: 3px 0px 0px 0px;
-	float: left;
+	margin: 0px;
+	padding: 0.8em 0px 0.8em 0px;
 	width: 100%;
+	border-bottom:1px solid #ddd;
+}
+
+#pubList ul li:last-child {
+	border-bottom:0px solid #ddd;
+}
+
+#pubList ul.list-publication-home li:last-child {
+	border-bottom:1px solid #ddd;
 }
 
 #pubList ul li.over-publication {
@@ -231,14 +247,18 @@
 	float: left;
 }
 
+#pubList .thumbnail .vignette{
+	margin-right:0.5em;
+}
+
 /*#pubList .unit-operation {
 	display: none;
 }*/
 
 #pubList .selection {
-  left: 3px;
-  position: absolute;
-  top: 0px;
+	left: 5px;
+	position: absolute;
+	top: 3px;
 }
 
 #pubList .selection input {
@@ -265,7 +285,8 @@
 
 #pubList .publication .line2, 
 #pubList .publication .line3,
-#pubList .publication .files {
+#pubList .publication .files,
+#pubList .publication .publication-name {
 	padding-left: 32px;
 	white-space: normal;
 }
@@ -273,14 +294,14 @@
 #pubList .publication .files {
 	padding-left: 45px;
 	display:block;
+  margin-top: 0.5em;
 }
 
-#pubList .publication .line3 {
-	margin-top: 2px;
-}
-
-#pubList .publication .line3 .description {
+#pubList .publication .description.line3  ,
+#pubList .list-publication-home li .publication-description{
+	font-size:90%;
 	white-space: normal;
+	margin-bottom: 0;
 }
 
 #pubList .important3 .line1 > font > a,
@@ -288,19 +309,6 @@
 #pubList .important5 .line1 > font > a {
   background: url(../../../util/icons/flag-important.png) 0 0 no-repeat;
   padding-left: 18px;
-}
-
-#pubList .important1 .line1 > font > a:before,
-#pubList .important2 .line1 > font > a:before {
- content: '•';
- padding-right: 10px;
-}
-
-#pubList #pagination {
-	float: left;
-	width: 100%;
-	background-image:url("../../../util/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
-	background-repeat:repeat-x;
 }
 
 #pubList .publication .user {
@@ -743,10 +751,6 @@ a.button.refuse span {
  }
 .table-result-statistics .principal-element-table {
 	font-weight:bold;
- }
-
-#pubList {
-  padding:6px 14px;
 }
 
 /*** rightPane ****/
@@ -890,4 +894,53 @@ a.button.refuse span {
   scrollbar-shadow-color: #d6d6d6;
   scrollbar-dark-shadow-color: #f1f1f1;
   scrollbar-darkshadow-color: #f1f1f1;
-	}
+}
+
+#pubList  .list-publication-home {
+	list-style-type:none;
+	display:flex;
+	flex-flow: row wrap;
+}
+
+#pubList  .list-publication-home li{
+	flex-grow:1;
+	flex-shrink:2;
+	flex-basis:30%;
+	padding:1em 0 0.5em;
+	margin:0em 1em 1em;
+	border-bottom:1px solid #ddd;
+}
+
+#pubList .list-publication-home li .publication-user::after,
+#pubList .list-publication-home li .publication-date::after{
+	content:' - ';
+	display:inline;
+}
+
+#pubList li .publication-name a{
+	font-weight:700;
+}
+#pubList .publication-name > div {
+	display:inline;
+}
+
+#pubList .blue ,
+#pubList .blue a,
+#pubList .blue .date{
+	color:#1c94d4 !important
+}
+#pubList .gray,
+#pubList .gray a,
+#pubList .gray .date,
+#pubList .state_Plus{
+	color:#888 !important
+}
+#pubList .red ,
+#pubList .red a,
+#pubList .red .date{
+	color:#cf3636 !important
+}
+
+#noPublicationMessage p {
+	padding:0.5em 1em;
+}

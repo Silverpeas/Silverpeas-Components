@@ -24,6 +24,8 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.ecs.wml.Alignment;
+import org.apache.ecs.wml.Img;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
@@ -43,7 +45,6 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -58,6 +59,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerProvider;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -108,7 +110,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String componentId = req.getParameter("ComponentId");
     String nodeId = req.getParameter("Id");
     String sToLink = req.getParameter("ToLink");
-    String TopicToLinkId = req.getParameter("TopicToLinkId");
+    String topicToLinkId = req.getParameter("TopicToLinkId");
     // check if trying to link attachment
     String attachmentLink = req.getParameter("attachmentLink");
     boolean attachmentToLink = StringUtil.getBooleanValue(attachmentLink);
@@ -133,11 +135,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(nodeId)) {
         kmeliaSC.setCurrentFolderId(nodeId, true);
         kmeliaSC.getPublicationsOfCurrentFolder();
-        session.setAttribute("Silverpeas_DragAndDrop_TopicId", nodeId); // used by drag n drop
+        // used by drag n drop
+        session.setAttribute("Silverpeas_DragAndDrop_TopicId", nodeId);
       }
 
-      if ((toLink || attachmentToLink) && StringUtil.isDefined(TopicToLinkId)) {
-        TopicDetail currentTopicToLink = kmeliaSC.getTopic(TopicToLinkId, false);
+      if ((toLink || attachmentToLink) && StringUtil.isDefined(topicToLinkId)) {
+        TopicDetail currentTopicToLink = kmeliaSC.getTopic(topicToLinkId, false);
         kmeliaSC.setSessionTopicToLink(currentTopicToLink);
       }
 
@@ -232,7 +235,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write(board.printAfter());
       } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
           getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
-        displayLastPublications(kmeliaSC, resources, gef, writer);
+        try {
+          displayLastPublications(kmeliaSC, resources, writer);
+        } catch (IOException e) {
+          SilverLogger.getLogger(this).error(e);
+        }
       } else {
         if (publications != null) {
           displayPublications(publications, sortAllowed, linksAllowed, seeAlso, searchInProgress,
@@ -444,15 +451,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           ThumbnailDetail thumbnail = pub.getThumbnail();
           if (thumbnail != null && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
-            try {
-              displayThumbnail(pub, kmeliaScc, publicationSettings, out);
-            } catch (ThumbnailException e) {
-
-            }
-            out.write("</span>");
-          } else {
-            out.write("<span class=\"thumbnail\">");
-            out.write("<img src=\"" + resources.getIcon("kmelia.1px") + "\" alt=\"\"/>");
+            displayThumbnail(pub, kmeliaScc, publicationSettings, out);
             out.write("</span>");
           }
         }
@@ -484,20 +483,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (toSearch) {
         noPublications = kmeliaScc.getString("NoPubFound");
       }
-      out.write("<div id=\"noPublicationMessage\">");
-      out.write(board.printBefore());
-      out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
-      out.write("<tr valign=\"middle\">");
-      out.write("<td width=\"80\"><img src=\"" + publicationSrc + "\" border=\"0\"/></td>");
+      out.write("<div class=\"tableBoard\" id=\"noPublicationMessage\">");
+      out.write("<div id=\"pubsHeader\"><img src=\"" + publicationSrc + "\" border=\"0\" /> ");
       out.write(
-          "<td align=\"left\"><b>" + resources.getString("GML.publications") + "</b></td></tr>");
-      out.write("<tr><td colspan=\"2\">&#160;</td></tr>");
-      out.write("<tr>");
-      out.write("<td>&#160;</td>");
-      out.write("<td>" + noPublications + "</td>");
-      out.write("</tr>");
-      out.write("</table>");
-      out.write(board.printAfter());
+          "<span>" + resources.getString("GML.publications") + "</span></div>");
+      out.write("<p>" + noPublications + "</p>");
       out.write("</div>");
     }
     out.write("</form>");
@@ -548,16 +538,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     fragmentSettings.draggable = canBeCut && !alias && !KmeliaHelper.isToValidateFolder(topicId);
 
     if (specificTemplateUsed) {
-      displayTemplatedFragmentOfPublication(aPub, fragmentSettings, language, userId, topicId,
-          kmeliaScc, resources, out);
+      displayTemplatedFragmentOfPublication(aPub, fragmentSettings, language, kmeliaScc, resources,
+          out);
     } else {
-      displayDefaultFragmentOfPublication(aPub, fragmentSettings, language, userId, topicId,
-          kmeliaScc, resources, out);
+      displayDefaultFragmentOfPublication(aPub, fragmentSettings, language, kmeliaScc, resources,
+          out);
     }
   }
 
   void displayTemplatedFragmentOfPublication(KmeliaPublication aPub,
-      PublicationFragmentSettings fragmentSettings, String language, String userId, String topicId,
+      PublicationFragmentSettings fragmentSettings, String language,
       KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources, Writer out)
       throws IOException {
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
@@ -612,10 +602,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     template.setAttribute("showAuthor", showAuthor);
     template.setAttribute("author", pub.getAuthor());
     template.setAttribute("files",
-        displayFiles(pub, fragmentSettings.linkAttachment, fragmentSettings.seeAlso, userId,
-            topicId, kmeliaScc, resources));
+        displayFiles(pub, fragmentSettings.linkAttachment, fragmentSettings.seeAlso, kmeliaScc,
+            resources));
 
-    if (!pub.getInfoId().equals("0")) {
+    if (!"0".equals(pub.getInfoId())) {
       template.setAttribute("formName", pub.getInfoId());
       template.setAttribute("form", pub.getFormValues(language));
     }
@@ -626,18 +616,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   void displayDefaultFragmentOfPublication(KmeliaPublication aPub,
-      PublicationFragmentSettings fragmentSettings, String language, String userId, String topicId,
+      PublicationFragmentSettings fragmentSettings, String language,
       KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources, Writer out)
       throws IOException {
     PublicationDetail pub = aPub.getDetail();
     String name = Encode.forHtml(pub.getName(language));
-    out.write("<div class=\"line1\">");
+    out.write("<div class=\"publication-name line1\">");
     if (fragmentSettings.linksAllowed) {
-      out.write("<font color=\"");
+      out.write("<div class=\"");
       out.write(fragmentSettings.pubColor);
       out.write("\"><a href=\"javascript:onClick=publicationGoTo('");
       out.write(pub.getPK().getId());
-      out.write("')\"><b class=\"" + fragmentSettings.highlightClass + "\">");
+      out.write("')\"><span class=\"" + fragmentSettings.highlightClass + "\">");
       if (fragmentSettings.draggable) {
         out.write("<span class=\"jstree-draggable\" id=\"pub-" + pub.getPK().getId() + "\">");
         out.write(name);
@@ -645,23 +635,23 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       } else {
         out.write(name);
       }
-      out.write("</b></a></font>");
+      out.write("</span></a></div>");
     } else {
       String ref = "";
       if (fragmentSettings.seeAlso && resources.getSetting("linkManagerShowPubId", false)) {
         ref = " [ " + pub.getPK().getId() + " ] ";
       }
-      out.write("<font color=\"");
+       out.write("<div class=\"");
       out.write(fragmentSettings.pubColor);
-      out.write("\"><b class=\"" + fragmentSettings.highlightClass + "\">");
+      out.write("\"><span class=\"" + fragmentSettings.highlightClass + "\">");
       out.write(ref);
       out.write(name);
-      out.write("</b></font>");
+      out.write("</span></div>");
     }
     out.write("&#160;");
     if (StringUtil.isDefined(fragmentSettings.pubState)) {
-      out.write("<span class=\"state_");
-      out.write(fragmentSettings.pubState);
+      out.write("<span class=\"state ");
+      out.write(fragmentSettings.pubColor);
       out.write("\">(");
       out.write(fragmentSettings.pubState);
       out.write(")</span>");
@@ -679,8 +669,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
 
     out.write("</div>");
-    out.write("<div class=\"line2\">");
-    out.write("<font color=\"");
+    out.write("<div class=\"line2 ");
     out.write(fragmentSettings.pubColor);
     out.write("\">");
     // Show topic name only in search in topic case
@@ -733,17 +722,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String description = pub.getDescription(language);
     // displays publication description
     if (StringUtil.isDefined(description) && !description.equals(name)) {
-      out.write("<div class=\"line3\">");
-      out.write("<span class=\"description\">");
+      out.write("<p class=\"description line3\">");
       out.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(description)));
-      out.write("</span>");
-      out.write("</div>");
+      out.write("</p>");
     }
 
-    out.write("</font>");
-
-    out.write(displayFiles(pub, fragmentSettings.linkAttachment, fragmentSettings.seeAlso, userId,
-        topicId, kmeliaScc, resources));
+    out.write(
+        displayFiles(pub, fragmentSettings.linkAttachment, fragmentSettings.seeAlso, kmeliaScc,
+            resources));
   }
 
   String displayDate(PublicationDetail pub, KmeliaSessionController kmeliaScc,
@@ -755,9 +741,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
   }
 
-  String displayFiles(PublicationDetail pub, boolean linkAttachment, boolean seeAlso, String userId,
-      String topicId, KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources)
-      throws IOException {
+  String displayFiles(PublicationDetail pub, boolean linkAttachment, boolean seeAlso,
+      KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources) {
     StringBuilder sb = new StringBuilder(1024);
     boolean displayFiles =
         (KmeliaHelper.isToolbox(kmeliaScc.getComponentId()) || kmeliaScc.attachmentsInPubList()) &&
@@ -777,18 +762,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return !kmeliaScc.getComponentId().equalsIgnoreCase(pub.getPK().getInstanceId());
   }
 
-  void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
-      SettingBundle publicationSettings, Writer out)
-      throws IOException, NumberFormatException, ThumbnailException {
+  private void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
+      SettingBundle publicationSettings, Writer out) throws IOException {
     ThumbnailSettings thumbnailSettings = ksc.getThumbnailSettings();
-    String vignette_url;
+    String vignetteUrl;
     String width = String.valueOf(thumbnailSettings.getWidth());
     String height = String.valueOf(thumbnailSettings.getHeight());
 
     if (pub.getImage().startsWith("/")) {
-      vignette_url = pub.getImage();
+      vignetteUrl = pub.getImage();
     } else {
-      vignette_url = FileServerUtils.getUrl(pub.getPK().
+      vignetteUrl = FileServerUtils.getUrl(pub.getPK().
               getComponentName(), "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
       if (StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
@@ -799,7 +783,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
 
     ImageTag imageTag = new ImageTag();
-    imageTag.setSrc(vignette_url);
+    imageTag.setSrc(vignetteUrl);
     imageTag.setType("vignette");
     String size = defaultStringIfNotDefined(width) + "x" + defaultStringIfNotDefined(height);
     if (!"x".equals(size)) {
@@ -865,7 +849,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       MultiSilverpeasBundle resources, KmeliaSessionController ksc, Writer out) throws IOException {
     String publicationSrc = resources.getIcon("kmelia.publication");
     out.write("<div id=\"pubsHeader\">");
-    out.write("<img src=\"" + publicationSrc + "\" alt=\"\"/>");
+    Img img = new Img(publicationSrc).setAlt("");
+    out.write(img.toString());
     out.write("<span id=\"pubsCounter\">");
     out.write("<span>" + pagination.printCounter() + "</span> ");
     if (nbPubs > 1) {
@@ -883,7 +868,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String getUserName(KmeliaPublication userPub, KmeliaSessionController kmeliaScc) {
-    User currentUser = userPub.getCreator(); // contains creator
+    User currentUser = userPub.getCreator();
     PublicationDetail pub = userPub.getDetail();
     String updaterId = pub.getUpdaterId();
     User updater = null;
@@ -935,7 +920,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         String title = attachment.getTitle();
         if (!StringUtil.isDefined(attachment.getTitle())) {
           title = logicalName;
-          logicalName = null; // do not display filename twice
+          // do not display filename twice
+          logicalName = null;
         }
         if (attachment.isVersioned()) {
           title += " v" + attachment.getMajorVersion();
@@ -999,11 +985,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           "<span class=\"forbidden-download\">";
       result.append("<tr><td valign=\"top\">");
       // Add doc type icon
-      result.append(link).append("<img src=\"").append(icon)
-          .append("\" border=\"0\" align=\"absmiddle\"/></a>&#160;</td>");
+      Img iconImg = new Img(icon).setAlignment(Alignment.MIDDLE);
+      result.append(link).append(iconImg.toString()).append("</a>&#160;</td>");
       result.append("<td valign=\"top\">").append(link);
       boolean showTitle = resources.getSetting("showTitle", true);
-      String fileTitle = (StringUtil.isDefined(title) ? title : logicalName);
+      String fileTitle = StringUtil.isDefined(title) ? title : logicalName;
       if (StringUtil.isDefined(fileTitle) && showTitle) {
         result.append(fileTitle);
       }
@@ -1120,107 +1106,61 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private void displayLastPublications(KmeliaSessionController kmeliaScc,
-      MultiSilverpeasBundle resources, GraphicElementFactory gef, Writer writer) throws IOException {
+      MultiSilverpeasBundle resources, Writer writer) throws IOException {
 
     List<KmeliaPublication> pubs = kmeliaScc.getLatestPublications();
     boolean displayLinks = URLUtil.displayUniversalLinks();
-    PublicationDetail pub;
-    KmeliaPublication kmeliaPub;
     String language = kmeliaScc.getCurrentLanguage();
 
     Iterator<KmeliaPublication> iterator = pubs.iterator();
 
-    Board board = gef.getBoard();
-    writer.write(board.printBefore());
-    writer.write("<table border=\"0\" width=\"98%\" align=\"center\" id=\"latestPublications\">");
-    writer.write("<tr>");
-    writer.write(
-        "<td width=\"40\" align=\"left\"><img src=\"" + resources.getIcon("kmelia.publication") +
-            "\" border=0></td>");
-    writer.write("<td align=\"left\" width=\"100%\"><b>" + kmeliaScc.getString("PublicationsLast") +
-        "</b></td>");
-    writer.write("</tr>");
+    writer.write("<div class=\"tableBoard\" id=\"latestPublications\">");
+
+    Img img = new Img(resources.getIcon("kmelia.publication"));
+    writer.write("<div id=\"pubsHeader\">"+img.toString());
+    writer.write("<b>" + kmeliaScc.getString("PublicationsLast") +
+        "</b></div>");
+
     if (iterator.hasNext()) {
-      writer.write("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-      writer.write("<!-- Publications Header End -->");
-      writer.write("<tr><td colspan=\"2\"><table border=\"0\" width=\"100%\">");
-      int j = 1;
-      int nbCol = Integer.parseInt(resources.getSetting("HomeNbCols"));
-      if (pubs.size() < nbCol) {
-        nbCol = pubs.size();
-      }
-      String width = Integer.toString(100 / nbCol);
-      boolean endRaw = false;
+      writer.write("<ul class=\"list-publication-home\">");
       String linkIcon = resources.getIcon("kmelia.link");
       while (iterator.hasNext()) {
-        if (j == 1) {
-          writer.write("<tr>\n");
-          writer.write("<td valign=\"top\">&nbsp;</td>\n");
-          endRaw = false;
+        KmeliaPublication kmeliaPub = iterator.next();
+        PublicationDetail pub = kmeliaPub.getDetail();
+        String shortcut;
+        if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
+          shortcut = " (" + resources.getString("kmelia.Shortcut") + ")";
+        } else {
+          shortcut = "";
         }
-        if (j <= nbCol) {
-          kmeliaPub = iterator.next();
-          pub = kmeliaPub.getDetail();
-          String shortcut;
-          if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
-            shortcut = " (" + resources.getString("kmelia.Shortcut") + ")";
-          } else {
-            shortcut = "";
-          }
 
-          writer.write("<!-- Publication Body -->");
-          writer.write("<td valign=\"top\" width=\"100\">&#149; </td>");
-          writer.write("<td valign=\"top\" width=\"" + width + "%\">");
-          writer.write("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('" + pub.getPK().
+        writer.write("<li>");
+        writer.write("<div class=\"publication-name line1\"><a href=\"javascript:onClick=publicationGoToFromMain('" + pub.getPK().
               getId() + "')\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut +
-              "</b><br/>");
+              "</div>");
 
-          if (kmeliaScc.showUserNameInList()) {
-            writer.write(getUserName(kmeliaPub, kmeliaScc) + " - ");
-          }
-          writer.write(resources.getOutputDate(pub.getUpdateDate()));
-          if (displayLinks) {
-            String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
-            writer.write(" - <a href=\"" + link + "\"><img src=\"" + linkIcon +
-                "\" border=\"0\" align=\"absmiddle\" alt=\"" +
-                resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +
-                resources.getString("kmelia.CopyPublicationLink") + "\"></a>");
-          }
-          writer.write("<br/>");
-          writer.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
-              getDescription(language))));
-          writer.write("</p>");
-          writer.write("</td>");
-          writer.write("<!-- Publication Body End -->");
-          j++;
+        if (kmeliaScc.showUserNameInList()) {
+          writer.write("<span class=\"publication-user\">");
+          writer.write(getUserName(kmeliaPub, kmeliaScc));
+          writer.write("</span>");
         }
-        if (j > nbCol) {
-          writer.write("\t</tr>");
-          endRaw = true;
-          j = 1;
+        writer.write("<span class=\"publication-date\">"+resources.getOutputDate(pub.getUpdateDate())+"</span>");
+        if (displayLinks) {
+          String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
+          writer.write("<a class=\"publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +
+              "\"  alt=\"" +
+              resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +
+              resources.getString("kmelia.CopyPublicationLink") + "\" /></a>");
         }
+        writer.write("<p class=\"publication-description\">"+WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
+        getDescription(language))));
+        writer.write("</li>");
       }
-      if (!endRaw) {
-        int nbTd = nbCol - j + 1;
-        int k = 1;
-        while (k <= nbTd) {
-          writer.write("<td colspan=\"3\" valign=\"top\">&nbsp;</td>\n");
-          k++;
-        }
-        writer.write("</tr>\n");
-      }
-      writer.write("</td></tr></table>");
-    } // End if
-    else {
-      writer.write("<tr>");
-      writer.write("<td>&nbsp;</td>");
-      writer.write("<td>" + kmeliaScc.getString("PubAucune") + "</td>");
-      writer.write("</tr>");
+      
+      writer.write("</ul>");
     }
-    writer.write("</td>");
-    writer.write("</tr>");
-    writer.write("</table>");
-    writer.write(board.printAfter());
+
+    writer.write("</div>");
   }
 
   private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub) {
@@ -1240,13 +1180,5 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
     return "";
   }
-
-  private File getThumbnail(PublicationDetail pubDetail, SettingBundle publicationSettings) {
-    if (StringUtil.isDefined(pubDetail.getImage())) {
-      return new File(FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId()) +
-          publicationSettings.getString("imagesSubDirectory") + File.separatorChar +
-          pubDetail.getImage());
-    }
-    return null;
-  }
+  
 }
