@@ -26,7 +26,6 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerForbiddenActionException;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,8 +48,7 @@ public class RenameFileFormHandler extends FunctionHandler {
         (userHisghestRole.equals("admin") || userHisghestRole.equals("publisher"));
 
     if (!isAdminOrPublisher) {
-      throw new SilverCrawlerForbiddenActionException("RenameFileFormHandler.getDestination",
-          SilverpeasException.ERROR, "user has not admin or publisher rights");
+      throw new SilverCrawlerForbiddenActionException("user has not admin or publisher rights");
     }
 
     // store objects in request as attributes

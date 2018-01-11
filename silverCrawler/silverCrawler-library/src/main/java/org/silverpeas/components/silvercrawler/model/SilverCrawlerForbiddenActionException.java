@@ -23,34 +23,19 @@
  */
 package org.silverpeas.components.silvercrawler.model;
 
-import org.silverpeas.core.exception.SilverpeasTrappedException;
+import org.silverpeas.core.SilverpeasException;
 
-public class SilverCrawlerForbiddenActionException extends SilverpeasTrappedException {
-  private static final long serialVersionUID = -1605595738572103831L;
+public class SilverCrawlerForbiddenActionException extends SilverpeasException {
 
-  @Override
-  public String getModule() {
-    return "silverCrawler";
+  public SilverCrawlerForbiddenActionException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public SilverCrawlerForbiddenActionException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public SilverCrawlerForbiddenActionException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public SilverCrawlerForbiddenActionException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public SilverCrawlerForbiddenActionException(final Throwable cause) {
+    super(cause);
   }
-
-  public SilverCrawlerForbiddenActionException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public SilverCrawlerForbiddenActionException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
-  }
-
 }
